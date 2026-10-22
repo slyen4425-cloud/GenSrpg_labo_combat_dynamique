@@ -585,6 +585,68 @@ const server = createServer(async (req, res) => {
               if(!get("marker-permanent").checked || !get("marker-duration").disabled)
                 throw Error("loading permanent marker lost unchecked duration model");
               fill("marker-library-select","poison");
+              // Advanced marker controls: real Chromium creation, 3-charge threshold,
+              // repeated movement slow and two extra native debuffs; reload/export.
+              get("marker-new").click();
+              fill("marker-name","Lenteur avancée");
+              fill("marker-max",24);
+              fill("marker-duration",20);
+              const thresholdToggle=get("marker-threshold-enabled");
+              thresholdToggle.checked=true;
+              thresholdToggle.dispatchEvent(new Event("change",{bubbles:true}));
+              fill("marker-threshold-count",3);
+              fill("marker-threshold-consume","keep");
+              get("marker-threshold-repeat").checked=true;
+              get("marker-threshold-repeat").dispatchEvent(new Event("change",{bubbles:true}));
+              fill("marker-threshold-effect","slow_movement");
+              fill("marker-threshold-amount",15);
+              fill("marker-threshold-status-duration",4);
+              const extrasHost=get("marker-threshold-extra-host");
+              get("marker-threshold-add-effect").click();
+              let advancedExtra=[...extrasHost.querySelectorAll("[data-marker-threshold-extra]")].at(-1);
+              if(!advancedExtra)throw Error("advanced marker extra effect row missing");
+              const setExtra=(row,key,val)=>{
+                const node=row.querySelector("[data-"+key+"]");
+                if(!node)throw Error("advanced marker extra field missing: "+key);
+                node.value=String(val);node.dispatchEvent(new Event("change",{bubbles:true}));
+              };
+              setExtra(advancedExtra,"marker-extra-kind","slow_cooldown");
+              setExtra(advancedExtra,"marker-extra-amount",10);
+              setExtra(advancedExtra,"marker-extra-duration",4);
+              get("marker-threshold-add-effect").click();
+              advancedExtra=[...extrasHost.querySelectorAll("[data-marker-threshold-extra]")].at(-1);
+              setExtra(advancedExtra,"marker-extra-kind","reduce_stat");
+              setExtra(advancedExtra,"marker-extra-amount",5);
+              setExtra(advancedExtra,"marker-extra-duration",4);
+              if(![...advancedExtra.querySelector("[data-marker-extra-stat]").options].some(x=>x.value==="esprit"))
+                throw Error("Esprit missing from real advanced marker stat dropdown");
+              setExtra(advancedExtra,"marker-extra-stat","esprit");
+              get("marker-save").click();
+              if(!get("marker-library-state").textContent.includes("enregistré"))
+                throw Error("advanced marker save failed: "+get("marker-library-state").textContent);
+              fill("marker-library-select","lenteur-avancee");
+              if(get("marker-threshold-count").value!=="3" ||
+                 !get("marker-threshold-repeat").checked ||
+                 get("marker-threshold-effect").value!=="slow_movement" ||
+                 extrasHost.querySelectorAll("[data-marker-threshold-extra]").length!==2)
+                throw Error("advanced marker form did not survive saved-library reload");
+              let advancedBlob=null;
+              const originalMarkerExport=URL.createObjectURL;
+              try {
+                URL.createObjectURL=blob=>{advancedBlob=blob;return originalMarkerExport.call(URL,blob);};
+                get("marker-export").click();
+              } finally {URL.createObjectURL=originalMarkerExport;}
+              const exportedAdvanced=advancedBlob?JSON.parse(await advancedBlob.text()):null;
+              const advancedEntry=exportedAdvanced?.markers?.find(x=>x.id==="lenteur-avancee");
+              if(!advancedEntry ||
+                 advancedEntry.maxStacks!==24 ||
+                 advancedEntry.onStackThreshold?.repeat!=="each_addition" ||
+                 advancedEntry.onStackThreshold?.effects?.length!==3 ||
+                 advancedEntry.onStackThreshold.effects[0]?.status?.kind!=="approach_time_modifier" ||
+                 advancedEntry.onStackThreshold.effects[1]?.status?.kind!=="skill_cooldown_rate_modifier" ||
+                 advancedEntry.onStackThreshold.effects[2]?.status?.statId!=="esprit")
+                throw Error("advanced marker export lost repeat, native status kinds or Esprit stat");
+              fill("marker-library-select","poison");
               lib.value="lib_aqua_heal";lib.dispatchEvent(new Event("change",{bubbles:true}));
               get("skill-marker-cost-enabled").checked=true;
               get("skill-marker-cost-enabled").dispatchEvent(new Event("change",{bubbles:true}));

@@ -232,7 +232,11 @@ function refreshedLifetime(existing, now) {
 
 function resolveStackThresholdV1({ state, status, sourceActorId, targetActorId, sourceSkillId, atMs, eventAtMs, hitsIntangible, before, after, thresholdDepth, onThresholdEvents }) {
   const trigger = status.onStackThreshold;
-  if (!trigger || !(before < trigger.count && after >= trigger.count)) return state;
+  if (!trigger) return state;
+  const crossed = before < trigger.count && after >= trigger.count;
+  const repeated = trigger.repeat === "each_addition" &&
+    before >= trigger.count && after > before;
+  if (!crossed && !repeated) return state;
   if (thresholdDepth >= 8) throw new RangeError("Stack threshold recursion limit reached");
   const consumed = trigger.consume === "reset"
     ? removeInstanceById(state, targetActorId, status.id, sourceSkillId)
