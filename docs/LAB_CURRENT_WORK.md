@@ -1,3 +1,15 @@
+## 2026-10-22 — Bouclier spirituel Kitsune : 20 frames importées / CI de publication verte
+
+- **Source approuvée** : `KITSUNE_BOUCLIER_SPIRITUEL_ORBE_20F.zip`, SHA-256 `e546b3f9a9a98360f11cff8bee309bbd7089761ca371a568a3d271d08549a06c`, provenant du dépôt sur `work/global-assets-kitsune-spirit-shield-v1-2026-10-22`. Source planche 1402×1122 ; 20 PNG RGBA 512×512 conservés octet pour octet sans régénération ni redécoupe.
+- **Import vérifié** : Actions `39851848846` SUCCESS, commit `2ad71541ca359923b573e1b711ca4c108e8c8b33`, 20 vrais PNG, atlas WebP lossless 7680×384 et manifestes/provenance SHA-256.
+- **Publication isolée** : checkpoint départ `checkpoint/global-assets-before-kitsune-spirit-shield-publish-v1-2026-10-22`, basé sur `global-assets@ff9e5070e5c872bafa2912e16542e73e7e068684` pour protéger les nouveaux assets Braisombre et icônes ; branche `work/global-assets-kitsune-spirit-shield-publish-v1-2026-10-22`. Transfert exact des 24 blobs médias + importer/test, ajout d'un unique ID au catalogue global (217 → 218 assets, 118 → 119 sprites).
+- **CI sur vrais médias** : run `39852286598` SUCCESS sur `f9a68b5db60abcc9690fad835e7e71c32b75ce3e`. Le présent commit documentaire doit aussi passer la CI avant promotion. Revue du diff obligatoire.
+- **ID stable** : `pack:capture:sprite-kitsune-lunaire-spirit-shield-01`, catégorie `skill`, sélectionnable par le catalogue commun de Capture. Animation `once`, 20 frames × 80 ms ; manifeste conserve `hold_last_frame=true` pour durée de barrière, sans garantir le comportement du moteur tant que non testé dans la vraie session.
+- **Périmètre protégé** : autres créatures/compétences/audio, `main`, `gh-pages`, `Zombicide-40k`. Pas de changement gameplay ni affectation automatique à une capacité auteur. QA mobile / vraie preview à faire avant d'annoncer la validation visuelle finale.
+- **Rapport** : `docs/LAB_KITSUNE_SPIRIT_SHIELD_2026-10-22.md`.
+
+---
+
 ## 2026-10-22 — Braisombre DOS, 12 frames Vol et Attaque
 
 - Source auteur réelle : \`_incoming/BRAISOMBRE_DOS_12F_VOL_ATTAQUE_APPROUVE_2026-10-22.zip\` (SHA256 \`e991b4e403cc40bd56a6b87577062aff3bc8fa3745eae95c04ae1e33473ea6a4\`, Git blob \`9db159a1e82ebf1005e0099f2a702e3598ad618b\`). Deux planches approuvées 1448×1086 RGBA, 12 silhouettes chacune.
