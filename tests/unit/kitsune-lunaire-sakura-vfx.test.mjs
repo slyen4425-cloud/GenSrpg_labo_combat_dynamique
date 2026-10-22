@@ -52,8 +52,17 @@ test('Kitsune Sakura VFX: no partial catalog publication, real physical RGBA fra
     const atlas = readFileSync(resolve(base, seq.atlas.file));
     assert.equal(atlas.toString('ascii', 0, 4), 'RIFF');
     assert.equal(atlas.toString('ascii', 8, 12), 'WEBP');
-    assert.equal(1 + atlas.readUIntLE(24, 3), 7680);
-    assert.equal(1 + atlas.readUIntLE(27, 3), 384);
+    const chunk = atlas.toString('ascii', 12, 16);
+    if (chunk === 'VP8L') {
+      assert.equal(atlas[20], 0x2f);
+      assert.equal(1 + atlas[21] + ((atlas[22] & 0x3f) << 8), 7680);
+      assert.equal(1 + (atlas[22] >> 6) + (atlas[23] << 2) + ((atlas[24] & 0x0f) << 10), 384);
+    } else if (chunk === 'VP8X') {
+      assert.equal(1 + atlas.readUIntLE(24, 3), 7680);
+      assert.equal(1 + atlas.readUIntLE(27, 3), 384);
+    } else {
+      assert.fail('Unsupported WebP encoding ' + chunk);
+    }
     assert.equal(createHash('sha256').update(atlas).digest('hex'), provenance[role].atlas_sha256);
   }
 });
