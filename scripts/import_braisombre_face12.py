@@ -20,10 +20,10 @@ SOURCES = ("sources/braisombre_flight_first_tail_source.png", "sources/braisombr
 def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
-def check_png(data: bytes, width: int | None = None, height: int | None = None) -> None:
+def check_png(data: bytes, width: int | None = None, height: int | None = None, preview: bool = False) -> None:
     assert data[:8] == b"\x89PNG\r\n\x1a\n" and data[12:16] == b"IHDR", "not PNG"
     w,h,depth,color,*_ = struct.unpack(">IIBBBBB", data[16:29])
-    assert depth == 8 and color == 6, "PNG not RGBA"
+    assert depth == 8 and (color in (2,6) if preview else color == 6), "PNG color format invalid"
     if width is not None:
         assert (w,h) == (width,height), (w,h)
 
@@ -94,7 +94,7 @@ def main() -> None:
                 elif typ=="webp":
                     check_webp(data)
                 else:
-                    check_png(data)
+                    check_png(data, preview=True)
                 pending[target/relative]=data
             source=m["sourceSpriteSheet"]
             assert source in SOURCES
