@@ -44,7 +44,15 @@
 5. CI GitHub finale SUCCESS sur le HEAD **après import**, revue du diff sans modifications hors périmètre.
 6. Publier par fast-forward sur `global-assets`, créer un checkpoint GREEN technique après succès ; jamais annoncer une validation du mouvement ou de l'attaque en jeu sans test utilisateur.
 
-**Statut de préparation :** outillage / ZIP local prêts. Les médias ne sont pas déclarés publiés sur GitHub tant que l'archive et son import n'y sont pas physiquement présents.
+**Statut technique** : ZIP reçu et importé physiquement sur branche de travail ; tests finaux et publication global-assets à clore.
+
+## Import GitHub vérifié du ZIP déposé
+
+- Source déposée sur la branche initiale : 15 855 834 octets, SHA256 d17cad61ff2acdd982f13f04ced325dc1c638f2cdcefcc7bf049e924c0d93f13.
+- Blob source repris sans modification sur la branche de publication récente, GitHub Actions import run 39798935527 SUCCESS ; médias commit f5dd1690014b2192ce7d1d665c0689ac1362876c.
+- 24 PNG RGBA 512 × 512, 2 atlas WebP, 6 aperçus, 2 manifestes et 2 sources réelles avec CRC, dimensions, alpha, hashes contrôlés.
+- Catalogue 210 assets, 116 sprites, 2 IDs Braisombre face. Comparaison initiale : 45 fichiers liés au lot, aucun moteur/runtime ni autre créature remplacé.
+- Raccord bibliothèque et sélecteurs éditeur ; l'attribution en fiche combat demeure distincte et non testée.
 
 ## Réception effective du ZIP auteur et reprise sur la base récente
 
