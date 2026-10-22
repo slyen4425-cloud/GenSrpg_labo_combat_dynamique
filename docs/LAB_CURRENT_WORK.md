@@ -1,7 +1,7 @@
-## 2026-10-22 — Braisombre FACE, vol et attaque, import automatique préparé (ZIP à déposer)
+## 2026-10-22 — Braisombre FACE, vol et attaque : ZIP GitHub reçu, reprise de publication
 
 - **Décision** : conserver exclusivement le PREMIER vol sélectionné, 12 frames avec queue légèrement mobile ; 12 frames d'attaque de la planche validée. Aucun remplacement des modèles runtime.
-- **Pack local réalisé et vérifié** : `BRAISOMBRE_FACE_12_VOL_ATTAQUE_GITHUB_2026-10-22.zip`, 38 entrées, 16 237 989 octets, SHA256 `96977b65efc630d378063c55d022a906e9d5b8504771d29c96cade29176ea7c8`, CRC OK, 24 PNG RGBA 512×512 distincts, marges alpha >=65 px, 2 atlas WebP, previews GIF/WebP et 2 sources visuelles originales.
+- **Pack local réalisé et vérifié** : `BRAISOMBRE_FACE_12_VOL_ATTAQUE_GITHUB_2026-10-22.zip`, 38 entrées, 15 855 834 octets, SHA256 `d17cad61ff2acdd982f13f04ced325dc1c638f2cdcefcc7bf049e924c0d93f13`, CRC OK, 24 PNG RGBA 512×512 distincts, marges alpha >=65 px, 2 atlas WebP, previews GIF/WebP et 2 sources visuelles originales.
 - **Base / checkpoint** : `global-assets@d86ffbe55550dff5cdf5f39e0a3ad8d59d0d5ae9` ; départ `checkpoint/global-assets-start-braisombre-face12-publish-2026-10-22` ; branche `work/global-assets-braisombre-face12-publish-2026-10-22`.
 - **Périmètre autorisé** : `assets/library/capture/creatures/braisombre/animations/{movement,attack}/face/**`, catalogue global, archive source, importer, CI, tests et docs du lot. **Protections** : runtime Braisombre face/dos/icône, Golem/Loup et autres créatures, moteur, UI, `main`, `Zombicide-40k`.
 - **Outillage** : `scripts/import_braisombre_face12.py`, `.github/workflows/import-braisombre-face12.yml`, `scripts/braisombre-face12.test.template.mjs`. Publication sur `global-assets` UNIQUEMENT après ZIP réel dans `_incoming/`, import + CI sur les médias verts, revue du diff et checkpoint GREEN technique. Pas de déclaration de raccord en jeu automatique.

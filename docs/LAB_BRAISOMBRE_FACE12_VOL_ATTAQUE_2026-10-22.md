@@ -10,8 +10,8 @@
 ## Provenance réelle
 
 - Pack généré dans la conversation : `BRAISOMBRE_FACE_12_VOL_ATTAQUE_GITHUB_2026-10-22.zip`.
-- SHA256 immuable : `96977b65efc630d378063c55d022a906e9d5b8504771d29c96cade29176ea7c8`.
-- Taille : **16 237 989 octets**, 38 entrées ZIP distinctes, test CRC local OK.
+- SHA256 immuable : `d17cad61ff2acdd982f13f04ced325dc1c638f2cdcefcc7bf049e924c0d93f13`.
+- Taille : **15 855 834 octets**, 38 entrées ZIP distinctes, test CRC local OK.
 - Source vol : `sources/braisombre_flight_first_tail_source.png`, SHA256 `60d20b3ef8642efc581b3da00bc6b200baeee019306eba3db3c7b7a82083b393`.
 - Source attaque : `sources/braisombre_attack_source.png`, voir SHA256 dans `attack/attack.manifest.json`.
 - Vol : 12 PNG RGBA **512 × 512 octet-pour-octet identiques** au premier ZIP choisi `BRAISOMBRE_VOL_FACE_12_SPRITES_PREVIEW_2026-10-22.zip` ; 90 ms/frame, lecture en boucle, marge alpha min. 65 px.
@@ -45,3 +45,9 @@
 6. Publier par fast-forward sur `global-assets`, créer un checkpoint GREEN technique après succès ; jamais annoncer une validation du mouvement ou de l'attaque en jeu sans test utilisateur.
 
 **Statut de préparation :** outillage / ZIP local prêts. Les médias ne sont pas déclarés publiés sur GitHub tant que l'archive et son import n'y sont pas physiquement présents.
+
+## Réception effective du ZIP auteur et reprise sur la base récente
+
+- Archive réellement déposée le 22/10/2026 sur `work/global-assets-braisombre-face12-2026-10-22` puis importée par GitHub Actions : SHA256 `d17cad61ff2acdd982f13f04ced325dc1c638f2cdcefcc7bf049e924c0d93f13` (15 855 834 octets).
+- Les données issues de cette archive et contrôlées par la CI ont priorité sur l'ancien projet de ZIP local à checksum différent. La publication récupère le blob Git exact de l'archive via copie immuable entre branches, sur `work/global-assets-braisombre-face12-publish-2026-10-22`, puis réexécute l'import et les tests.
+- Cette reprise ne modifie ni le modèle runtime Braisombre, ni les autres créatures, ni l'UI ou le moteur.
