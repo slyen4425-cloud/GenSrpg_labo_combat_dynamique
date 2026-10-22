@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 201,
+    "assets": 204,
     "icons": 74,
-    "sprites": 108,
+    "sprites": 110,
     "fx": 2,
-    "portraits": 12,
+    "portraits": 13,
     "backgrounds": 5,
-    "creatures": 32
+    "creatures": 34
   },
   "assets": [
     {
@@ -6663,6 +6663,109 @@
           "capture",
           "editor"
         ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-renard-lunaire-opponent-01",
+      "label": "Renard lunaire — face (adversaire)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "renard-lunaire",
+        "lunar",
+        "arcane",
+        "moon",
+        "opponent",
+        "face",
+        "static"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / visuels fournis par le créateur 2026-10-21",
+        "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      },
+      "resource": {
+        "file": "capture/creatures/renard_lunaire/runtime/renard_lunaire_face.webp",
+        "mime": "image/webp"
+      }
+    },
+    {
+      "id": "pack:capture:creature-renard-lunaire-player-01",
+      "label": "Renard lunaire — dos (joueur)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "renard-lunaire",
+        "lunar",
+        "arcane",
+        "moon",
+        "player",
+        "dos",
+        "static"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / visuels fournis par le créateur 2026-10-21",
+        "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      },
+      "resource": {
+        "file": "capture/creatures/renard_lunaire/runtime/renard_lunaire_dos.webp",
+        "mime": "image/webp"
+      }
+    },
+    {
+      "id": "pack:capture:creature-renard-lunaire-icon-01",
+      "label": "Renard lunaire — icône de créature",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "renard-lunaire",
+        "lunar",
+        "arcane",
+        "moon",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / visuels fournis par le créateur 2026-10-21",
+        "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      },
+      "resource": {
+        "file": "capture/creatures/renard_lunaire/runtime/renard_lunaire_icon.webp",
+        "mime": "image/webp"
       }
     }
   ]
