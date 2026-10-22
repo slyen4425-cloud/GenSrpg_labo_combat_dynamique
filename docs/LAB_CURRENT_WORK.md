@@ -1,3 +1,18 @@
+## 2026-10-22 — Kitsune lunaire : aura / charge / projectile / impact Sakura (IMPORT PRÉPARÉ, MÉDIAS EN ATTENTE)
+
+- **Objet** : découper les quatre planches déjà approuvées (sans régénération), 20 frames 512×512 RGBA chacune, puis construire quatre strips WebP, manifester quatre IDs et rendre les sprites disponibles aux sélecteurs Capture via le catalogue unique.
+- **Propriétaire** : Asset Input + bibliothèque `global-assets`. Aucun changement du moteur ou de la fiche creature.
+- **Base** : `global-assets@685a8f8f1638393fe5c156d6bb4f4578b0f10067` ; départ `checkpoint/global-assets-start-kitsune-sakura-vfx-2026-10-22` ; branche `work/global-assets-kitsune-sakura-vfx-2026-10-22`.
+- **Source originale** : archive exacte `_incoming/KITSUNE_LUNAIRE_SAKURA_FX_4_PLANCHES_20F.zip`, SHA256 `32eb218cb63844791c3d8882c8c803f51ae82162d509e82a1b5bc8c92b2d1d5d`, quatre planches RGBA 2944×2360, 5×4 cases 512px, écart 72px, marge 48px. Recadrage déterministe, sans modification artistique. Les 80 PNG préexistants ont été vérifiés pixel pour pixel identiques au découpage des planches dans le pack source.
+- **Autorisé** : `assets/library/capture/sprites/skills/kitsune_lunaire_sakura/**`, 4 entrées supplémentaires du catalogue `data/assets/catalog/global-visual-assets.v1.json`, source `_incoming/`, script `scripts/import_kitsune_lunaire_sakura_vfx.py`, workflow `.github/workflows/import-kitsune-sakura-vfx.yml`, sentinelle `tests/unit/kitsune-lunaire-sakura-vfx.test.mjs`, ce journal.
+- **Protégé** : `main`, `gh-pages`, `Zombicide-40k`, toutes autres créatures/compétences, règles de combat, éditeur et fichiers `configuredCreatures`/`configuredSkills`. Ne pas lier automatiquement l'asset à une compétence inexistante.
+- **IDs prévus** : `pack:capture:sprite-kitsune-lunaire-{aura,cast,projectile,impact}-01`. Boucle : aura/projectile ; lecture unique : cast/impact. Durées réglables par données 85/70/55/60 ms.
+- **QA locale** : script exécuté avec succès sur les vrais médias ; 80 PNG / 4 WebP / 4 IDs sans collision ; contrôle alpha et marges ; vérification des 20 SHA distincts pour chaque séquence. Ce test local ne vaut **pas** CI GitHub ni validation en jeu.
+- **Passage GitHub** : importer l'archive exacte sur la branche isolée dans `_incoming/` déclenche GitHub Actions, qui vérifie SHA256, découpe, publie les médias et IDs sur cette **branche**, supprime le ZIP, puis lance `npm run ci` avant commit. Aucune publication sur `global-assets` et aucun checkpoint GREEN tant que le ZIP n'est pas présent, la CI verte et le vrai rendu vérifié.
+- **Risque restant** : transfert du ZIP binaire de l'environnement de travail vers le dépôt GitHub ; la connexion fournit lecture/commits texte, pas d'accès direct aux octets locaux via `mcp__GitHub__create_file`. Ne pas annoncer de médias publiés avant apparition des vrais binaires dans GitHub.
+
+---
+
 ## 2026-10-21 — Golem moussu DOS 12 frames (PUBLIÉ, GREEN technique ; essai course en jeu à faire)
 
 - **Décision** : publier mouvement + attaque DOS, 12 PNG 512×512 chacune, utilisateur valide l'attaque et autorise l'essai en jeu du mouvement sans le valider définitivement.
