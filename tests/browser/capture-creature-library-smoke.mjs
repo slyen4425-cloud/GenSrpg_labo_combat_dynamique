@@ -210,7 +210,18 @@ const server = createServer(async (req, res) => {
             tab.click();
             if(panel.hidden||tab.dataset.active!=="true")throw Error("tab not activated");
             const pick=selector=>panel.querySelector('[data-soundtrack-'+selector+']');
-            if(!pick("track-list").textContent.includes("silencieux"))throw Error("audio editor did not mount");
+            if(pick("track-list").querySelectorAll("li").length!==6)throw Error("six Battle missing from default playlist");
+            const upload=pick("local-files");
+            if(!upload||!upload.multiple)throw Error("local soundtrack importer missing");
+            const transfer=new DataTransfer();
+            for(let i=1;i<=6;i++)transfer.items.add(
+              new File([new Uint8Array(24)],"Battle_"+i+".mp3",{type:"audio/mpeg"})
+            );
+            upload.files=transfer.files;
+            upload.dispatchEvent(new Event("change",{bubbles:true}));
+            if(!pick("local-status").textContent.includes("6 / 6"))
+              throw Error("six local Battle MP3s did not reach real editor resolver");
+            document.documentElement.dataset.soundtrackLocalProbe="ok:six-battle:blob-session";
             pick("project-id").value="capture-browser-test";
             pick("new-project").click();
             pick("save").click();
@@ -1575,7 +1586,11 @@ try {
   const soundtrackProbe=soundtrackDom.match(/data-soundtrack-authoring-probe="([^"]+)"/)?.[1]??"missing";
   if(soundtrackProbe!=="ok:tab:new-project:silent-save")
     throw Error("Real Capture music tab / project config save failed: "+soundtrackProbe);
-  console.log("Soundtrack authoring Chrome: music tab, new independent game, silent-scene save verified");
+  const localMusicProbe=soundtrackDom.match(/data-soundtrack-local-probe="([^"]+)"/)?.[1]??"missing";
+  if(localMusicProbe!=="ok:six-battle:blob-session")
+    throw Error("Real Capture soundtrack local import failed: "+localMusicProbe+
+      " author="+soundtrackProbe);
+  console.log("Soundtrack authoring Chrome: six Battle loaded locally + new project silent save verified");
   const movementDom=await dumpDom(url+"?verify-movement-face-back=1");
   assertCreatures(movementDom,"Loup movement FACE/DOS authoring real Chrome");
   const movementProbe=movementDom.match(/data-movement-face-back-probe="([^"]+)"/)?.[1]??"missing";
