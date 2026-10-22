@@ -5,19 +5,20 @@ Fichier `gensrpg-capture-database-v1(2).json`, SHA-256 `81a1fff688b9ad59a357fdb2
 - Nouvelle créature `kitsune_lunaire` / Kitsune Lunaire.
 - `crea_mossback` / Moussados : changement du champ `draft.presentation`, version 2 → 9 et configurations de déplacement/attaque FACE et DOS, plus champs de stats zero.
 - Nouvelle statistique `esprit` dans `statRegistry` : `label:Esprit`, `damageChannel:esprit`, `resistanceChannel:spirit`, dégâts et résistance chacun `1` par point. Respecter la distinction littérale entre ces deux identifiants de canal ; pas de renommage implicite.
-- Les 93 autres anciennes créatures modifiées dans l'export ont uniquement le champ de stat `nature:0` ajouté (absence équivalente à zéro pour la configuration actuelle). Les 119 compétences et règles de progression ne changent pas.
+- Les 93 autres anciennes créatures modifiées dans l'export ont uniquement le champ de stat `nature:0` ajouté (absence équivalente à zéro pour la configuration actuelle). Une différence d'export a été détectée sur `lib_fire_bolt` (enregistrement imposé par l'interface pour exporter la base). **Le créateur a confirmé que cette différence est involontaire** : aucune compétence n'est intégrée ni remplacée. Les règles de progression sont inchangées.
 
 ## Autorités : import ponctuel, sans double catalogue
 - Seul `data/capture/monster-capture-stat-registry.v1.json` contient la définition de `esprit`, en fin de registre ; Acier/Nature et les 12 entrées précédentes restent strictement identiques.
 - `data/capture/showcase/crea_mossback.capture-creature-transfer-v1.json` conserve l'ID Moussados, remplace la fiche V2 par l'export auteur V9, les sockets et le son de déplacement existants.
 - `data/capture/showcase/kitsune_lunaire.capture-creature-transfer-v1.json` est une nouvelle fiche `capture-creature-transfer-v1` active, indexée une seule fois dans `src/catalogs/capture-showcase-creature-presets-v1.js`. Elle ne reçoit aucune capacité ni animation artificielle ; l'export n'en fournit pas.
 - Deux copies de provenance **inactives** dans `data/capture/source-exports/gensrpg-capture-creature-{crea_mossback,kitsune_lunaire}-2026-10-22.json`. Ces exports sont identiques aux fiches actives, mais n'apparaissent pas dans l'index.
-- Ne pas recharger les 104 créatures historiques depuis le grand export dans la vitrine (l'index contient une sélection auteur) ; les champs `nature:0` manquants n'obligent pas à réécrire les 93 anciennes fiches ou écraser les réglages du Loup/Scarabacier. Aucun skill du fichier n'est modifié.
+- Ne pas recharger les 104 créatures historiques depuis le grand export dans la vitrine (l'index contient une sélection auteur) ; les champs `nature:0` manquants n'obligent pas à réécrire les 93 anciennes fiches ou écraser les réglages du Loup/Scarabacier. Aucune des 119 compétences n'est modifiée dans le catalogue actif : l'écart `lib_fire_bolt` du fichier auteur est exclu à la demande du créateur ; l'index `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` reste inchangé.
 
 ## Assets existants et vérifiés
 - Moussados : FACE `creature-golem-moussu-opponent-01`, DOS `creature-golem-moussu-player-01`, icône `creature-golem-moussu-icon-01`; mouvement FACE/DOS et attaque FACE/DOS, 4 sprites de 12 frames déjà présents sur `global-assets`.
 - Kitsune : FACE `creature-renard-lunaire-opponent-01`, DOS `creature-renard-lunaire-player-01`, médaillon `creature-renard-lunaire-icon-01`. Trois images statiques 512/512/384 déjà déposées ; ne pas les inscrire dans les sélecteurs de sprites animés.
 - Aucun changement du catalogue `global-assets`, ni des ressources visuelles, ni des licences.
+- Anomalie d'interface à étudier dans un chantier distinct : l'export de toute la base exige l'enregistrement d'une capacité que le créateur n'a pourtant pas modifiée. Ne pas transformer ce défaut en modification de donnée de compétence.
 
 ## Tests et gouvernance
 - Base publiée `gh-pages@123346186868a3b7e1e3dd5e89e0274a49e6595d`, checkpoint de départ `checkpoint/lab-start-author-database-kitsune-moss-esprit-2026-10-22`, branche isolée `work/lab-author-database-kitsune-moss-esprit-2026-10-22`.
