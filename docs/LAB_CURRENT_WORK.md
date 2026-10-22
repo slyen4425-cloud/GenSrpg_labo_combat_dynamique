@@ -2,7 +2,7 @@
 
 - **Demande / décision** : conserver la première animation vol choisie (12 frames, petit mouvement de queue) sans utiliser les itérations ultérieures ; découper la planche d'attaque et publier les 2 assets dans la bibliothèque.
 - **Base GitHub** : `global-assets@685a8f8f1638393fe5c156d6bb4f4578b0f10067` ; checkpoint départ `checkpoint/global-assets-start-braisombre-face12-2026-10-22` ; branche `work/global-assets-braisombre-face12-2026-10-22`.
-- **Pack local réel** : `BRAISOMBRE_FACE_12_VOL_ATTAQUE_GITHUB_2026-10-22.zip`, 14 636 457 octets, SHA256 `caa6db851e2fe86ada75642d0d303d57d7ebef0dbfd09f2969d34172fba3872b`, 38 entrées ZIP.
+- **Pack local réel** : `BRAISOMBRE_FACE_12_VOL_ATTAQUE_GITHUB_2026-10-22.zip`, 15 855 834 octets, SHA256 `d17cad61ff2acdd982f13f04ced325dc1c638f2cdcefcc7bf049e924c0d93f13`, 38 entrées ZIP.
 - **Médias préparés** : 24 PNG RGBA 512×512 (12 mouvement vol, 12 attaque), marges >=65px, 2 atlas WebP, 2 previews GIF, 2 WebP animés, 2 planches ; mêmes teintes conservées sans recoloration. Le vol utilise les PNG du premier pack existant, **octet-pour-octet**.
 - **Outillage et branche** : `scripts/import_braisombre_face12.py`, `.github/workflows/import-braisombre-face12.yml`, `scripts/braisombre-face12.test.template.mjs`, doc dédiée ; la sentinelle est générée lors de l'import effectif.
 - **Destination** : `assets/library/capture/creatures/braisombre/animations/{movement,attack}/face/` ; IDs `pack:capture:creature-braisombre-movement-face-12-v1` et `pack:capture:creature-braisombre-attack-face-12-v1`.
