@@ -1,4 +1,10 @@
 import {
+  SOUNDTRACK_STARTER_CATALOG_V1,
+  SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1,
+  SOUNDTRACK_STARTER_BATTLE_IDS_V1
+} from "../../src/assets/soundtrack-starter-catalog-v1.js";
+import {createSoundtrackLocalMediaV1} from "../../src/assets/soundtrack-local-media-v1.js";
+import {
   mountSoundtrackAuthoringV1
 } from "../../src/ui/soundtrack-editor-v1.js";
 import {
@@ -117,7 +123,34 @@ arenaSelect.value = "city";
 // Independent per-game soundtrack authoring. No coupling to creature drafts,
 // skill FX, test-runtime timing or user-upload storage.
 const soundtrackEditor = mountSoundtrackAuthoringV1({
-  root: root.querySelector("[data-soundtrack-editor]")
+  root: root.querySelector("[data-soundtrack-editor]"),
+  initialCatalog:SOUNDTRACK_STARTER_CATALOG_V1,
+  initialProject:SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1
+});
+const soundtrackLocalMedia=createSoundtrackLocalMediaV1({
+  catalog:SOUNDTRACK_STARTER_CATALOG_V1
+});
+const soundtrackLocalInput=root.querySelector("[data-soundtrack-local-files]");
+const soundtrackLocalStatus=root.querySelector("[data-soundtrack-local-status]");
+if(!soundtrackLocalInput||!soundtrackLocalStatus)
+  throw new Error("Champs d'import de musiques manquants");
+function showSoundtrackLocalStatus(message=null,error=false) {
+  const ready=SOUNDTRACK_STARTER_BATTLE_IDS_V1
+    .filter(id=>soundtrackLocalMedia.runtimeAsset(id)).length;
+  soundtrackLocalStatus.textContent=message ??
+    ready+" / 6 musiques Battle chargées : "+
+    (ready===6?"prêtes pour la prévisualisation Combat.":"charge les MP3 manquants pour la playlist complète.");
+  soundtrackLocalStatus.dataset.tone=error?"error":"info";
+}
+soundtrackLocalInput.addEventListener("change",()=>{
+  try {
+    soundtrackLocalMedia.importFiles(soundtrackLocalInput.files);
+    showSoundtrackLocalStatus();
+  } catch(error) {
+    showSoundtrackLocalStatus("Import musique refusé : "+(error?.message??String(error)),true);
+  } finally {
+    soundtrackLocalInput.value="";
+  }
 });
 
 
@@ -128,6 +161,7 @@ const creatorAudioAssets =
 
 function resolveEditorAudioAsset(assetId) {
   return (
+    soundtrackLocalMedia.runtimeAsset(assetId) ??
     creatorAudioAssets.runtimeAsset(assetId) ??
     privateAudioRuntimeAssetV1(assetId) ??
     demoPresentationAssets.audioAsset(assetId)
@@ -574,6 +608,7 @@ window.addEventListener(
 globalThis.addEventListener(
   "pagehide",
   () => {
+    soundtrackLocalMedia.dispose();
     creatorAudioAssets.dispose();
     creatorVisualAssets.dispose();
   },
