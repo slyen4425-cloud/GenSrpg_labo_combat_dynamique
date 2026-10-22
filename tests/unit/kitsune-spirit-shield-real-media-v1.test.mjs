@@ -28,7 +28,8 @@ test('Kitsune spiritual sphere: physical 20 RGBA frames, transparent WEBP atlas 
   const prov=JSON.parse(readFileSync(resolve(dir,'provenance.json')));
   assert.equal(manifest.id,id);
   assert.deepEqual(manifest.frame_size,[512,512]);
-  assert.deepEqual(manifest.source.pixel_size,[1491,1055]);
+  assert.deepEqual(manifest.source.pixel_size,[1402,1122]);
+  assert.equal(manifest.source.sha256,'e546b3f9a9a98360f11cff8bee309bbd7089761ca371a568a3d271d08549a06c');
   assert.deepEqual(manifest.source.grid,[5,4]);
   assert.equal(manifest.hold_last_frame,true);
   assert.equal(manifest.hold_frame_index,19);
