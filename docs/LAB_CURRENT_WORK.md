@@ -5,7 +5,7 @@
 - **Propriétaire** : `global-assets` + catalogue unique ; médias réels WebP RGB 128×128 ; cinq `assetId` distincts `pack:capture:icon-skill-*-01`. Aucune attribution automatique à une compétence auteur.
 - **Périmètre** : 5 fichiers WebP sous `assets/library/capture/icons/skills/`, catalogue, manifeste, test sentinelle, documentation et présent journal. **Protégés** : autres médias, runtime combat/UI, fiches exportées, `main`, `gh-pages`, GenSrpG principal.
 - **Tests** : contrôles originaux PNG 512×512, visuels, hashes des WebP 128×128 et Git blobs ; sentinelle Node + `npm run ci` sur les vrais médias ; CI GitHub requise avant checkpoint GREEN et publication sur `global-assets`.
-- **État** : médias sources utilisateur approuvés, cinq blobs WebP authentiques transférés et hashes contrôlés ; publication et CI restent à vérifier avant de conclure.
+- **Contrôles techniques vérifiés** : cinq médias binaires réels, empreintes SHA-256 et Git blobs cohérentes ; CI GitHub de la branche après correctif du séparateur Git : run `39803458110` **SUCCESS** sur le commit `4e044b33b230de6ea3ea917ec90923332c5c97aa`. La référence effective de publication est la tête de `global-assets` ; pas d'affectation automatique à une compétence auteur ni de validation en jeu annoncée.
 
 ---
 

@@ -21,3 +21,9 @@ Cinq icônes approuvées : **Onde spirituelle** (miroir qui renvoie les dégâts
 ## Correspondance de gameplay (aucune modification des compétences)
 - Onde : représentation d'un miroir renvoyant les dégâts ; `reflect` est un tag de recherche visuelle et ne programme pas un renvoi.
 - Sangsue : représentation du siphonnage ; aucune mécanique de drain ajoutée ici.
+
+## Contrôle technique du lot
+
+- CI GitHub : run [39803458110](https://github.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/actions/runs/39803458110), **SUCCESS** sur le commit `4e044b33b230de6ea3ea917ec90923332c5c97aa` après correction du test de hash Git.
+- Revue de diff depuis la base : 10 chemins strictement limités aux cinq médias, catalogue, provenance, documentation et sentinelle ; aucun moteur, gameplay, `main` ou `gh-pages` modifié.
+- Pour vérifier l'état de publication effectif, consulter `global-assets` plutôt qu'une affirmation figée dans ce document. La validation Android réelle reste distincte.
