@@ -30,7 +30,7 @@ export function soundtrackAuthoringCatalogGroupsV1(rawCatalog,channel) {
       label:x.title+" · "+ORIGIN[x.origin]})));
 }
 
-export function mountSoundtrackAuthoringV1({root}) {
+export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,initialProject=null}) {
   if (!root?.querySelector) throw new TypeError("audio editor root required");
   const one=key=>{
     const element=root.querySelector("[data-soundtrack-"+key+"]");
@@ -46,8 +46,12 @@ export function mountSoundtrackAuthoringV1({root}) {
   };
   const listeners=[];
   const on=(node,event,fn)=>{node.addEventListener(event,fn);listeners.push([node,event,fn]);};
-  let catalog=normalizeSoundtrackCatalogV1(EMPTY_CATALOG);
-  let project=createEmptySoundtrackProjectV1(el.project.value || "capture-demo");
+  let catalog=normalizeSoundtrackCatalogV1(initialCatalog);
+  let project=normalizeSoundtrackProjectV1(
+    initialProject??createEmptySoundtrackProjectV1(el.project.value || "capture-demo"),
+    catalog
+  );
+  el.project.value=project.projectId;
   let tracks=[];
   let destroyed=false;
 
