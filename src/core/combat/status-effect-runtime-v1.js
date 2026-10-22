@@ -230,6 +230,21 @@ function refreshedLifetime(existing, now) {
   };
 }
 
+// Reuse the same authoritative tactical-effect resolver as stack thresholds.
+// Each real new charge fires exactly once; capped/consumed charges never do.
+function resolveMarkerStackAdditionV1({state,status,sourceActorId,targetActorId,sourceSkillId,
+  atMs,eventAtMs,hitsIntangible,before,after,thresholdDepth,onThresholdEvents}) {
+  if (!status.onStackAdded || after <= before) return state;
+  if (thresholdDepth >= 8) throw new RangeError("Stack addition recursion limit reached");
+  const resolved = applyImmediateTacticalEffectsV1({
+    state,actorId:sourceActorId,targetId:targetActorId,
+    skill:{id:sourceSkillId ?? status.id,effects:status.onStackAdded.effects,hitsIntangible},
+    atMs:eventAtMs,combatAtMs:atMs,thresholdDepth:thresholdDepth + 1
+  });
+  if (typeof onThresholdEvents === "function") onThresholdEvents(resolved.events);
+  return resolved.state;
+}
+
 function resolveStackThresholdV1({ state, status, sourceActorId, targetActorId, sourceSkillId, atMs, eventAtMs, hitsIntangible, before, after, thresholdDepth, onThresholdEvents }) {
   const trigger = status.onStackThreshold;
   if (!trigger) return state;
@@ -331,7 +346,10 @@ export function applyStatusEffectV1({
         appliedAtMs: now
       })
     );
-    return resolveStackThresholdV1({ state: applied, status, sourceActorId, targetActorId,
+    const charged = resolveMarkerStackAdditionV1({state:applied,status,sourceActorId,targetActorId,
+      sourceSkillId,atMs:now,eventAtMs,hitsIntangible,before:0,after:1,
+      thresholdDepth,onThresholdEvents});
+    return resolveStackThresholdV1({ state: charged, status, sourceActorId, targetActorId,
       sourceSkillId, atMs: now, eventAtMs, hitsIntangible, before: 0, after: 1,
       thresholdDepth, onThresholdEvents });
   }
@@ -377,7 +395,10 @@ export function applyStatusEffectV1({
   });
 
   const applied = replaceInstance(state, targetActorId, stacked);
-  return resolveStackThresholdV1({state: applied, status, sourceActorId, targetActorId,
+  const charged = resolveMarkerStackAdditionV1({state:applied,status,sourceActorId,targetActorId,
+    sourceSkillId,atMs:now,eventAtMs,hitsIntangible,before:existing.stacks,after:nextStacks,
+    thresholdDepth,onThresholdEvents});
+  return resolveStackThresholdV1({state: charged, status, sourceActorId, targetActorId,
     sourceSkillId, atMs: now, eventAtMs, hitsIntangible, before: existing.stacks,
     after: nextStacks, thresholdDepth, onThresholdEvents });
 }
