@@ -1,3 +1,17 @@
+## 2026-10-22 — Bouclier spirituel du Kitsune lunaire (sphère complète validée ; import source en attente)
+
+- **Validation** : sphère entièrement fermée rose-violette, animation de bouclier énergétique avec effets floraux, planche approuvée dans le projet « Création sprite gensrpg » le 22 octobre, intitulée `Sprites de boucliers magiques lunaires.png`.
+- **Base officielle** : `global-assets@3611cc015206f4bb12614d844fcdafd6122b69f3` ; checkpoint `checkpoint/global-assets-start-kitsune-spirit-shield-v1-2026-10-22` ; branche `work/global-assets-kitsune-spirit-shield-v1-2026-10-22`.
+- **Propriétaire** : Asset Input et catalogue visuel `global-assets` ; aucune logique de gameplay ou renderer modifiée.
+- **Autorisé** : `scripts/import_kitsune_spirit_shield_v1.py`, `.github/workflows/import-kitsune-spirit-shield.yml`, `tests/unit/kitsune-spirit-shield-real-media-v1.test.mjs`, ce journal, archive source `_incoming/Sprites de boucliers magiques lunaires.png` et après import `assets/library/capture/sprites/skills/kitsune_spirit_shield/**` + exactement un nouveau `assetId` du catalogue unique.
+- **Protégés** : `main`, `gh-pages`, `Zombicide-40k`, sprites Kitsune Sakura préexistants, autres assets, UI/moteur, compétences et fiches auteurs.
+- **Source** : PNG approuvé 1491×1055 RGBA, grille 5×4 ; on respecte la provenance : images découpées, rescalées isotropiquement sur canevas 512×512 transparent. Ce ne sont **pas** des détails nativement dessinés en 512 pixels. Aucun remplacement d'image ni régénération artistique.
+- **Données de lecture** : 20 frames, 80 ms/frame, lecture unique avec arrêt sur la dernière frame (`hold_last_frame=true` dans le manifeste) pour bouclier persistant. Le runtime reste responsable de la durée de l'effet ; la publication seule ne garantit pas la prise en charge de cette propriété par le moteur.
+- **Contrôles prévus** : présence réelle du PNG original dans `_incoming/`, format/alpha/dimension, 20 PNG RGBA 512×512 distincts, marges, atlas WebP 7680×384, provenance SHA256, identifiant unique `pack:capture:sprite-kitsune-lunaire-spirit-shield-01`, sentinelles et `npm run ci`, revue du diff puis checkpoint GREEN après vérification.
+- **État actuel** : script d'import et workflow branchés ; **octets de la planche validée non encore transférés** dans ce dépôt, donc aucun des 20 fichiers physiques ni catalogue publié. Ne jamais déclarer l'import ni le raccord visuel terminés avant l'opération réelle.
+
+---
+
 ## 2026-10-22 — Lot des 5 icônes spirituelles Capture (création et publication)
 
 - **Demande** : déposer les cinq icônes approuvées Onde spirituelle, Flèche spirituelle, Charge spirituelle, Sangsue, Soins spirituels à leur emplacement canonique sur GitHub.
