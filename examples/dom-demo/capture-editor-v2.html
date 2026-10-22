@@ -1017,7 +1017,7 @@
             <input data-marker-duration type="number" min="0.1" step="0.5" value="10">
           </label>
           <label>Maximum de charges
-            <input data-marker-max type="number" min="1" max="999" step="1" value="10">
+            <input data-marker-max type="number" min="1" step="1" value="10">
           </label>
           <label>Icône du marqueur (bibliothèque GenSrpG)
             <select data-marker-icon><option value="">Aucune icône personnalisée</option></select>
@@ -1076,6 +1076,14 @@
                 <option value="energy_restore">Récupérer de l'énergie</option>
                 <option value="energy_drain">Drainer de l'énergie</option>
                 <option value="stun">Étourdir (durée en secondes)</option>
+                <option value="slow_movement">Ralentir déplacement / approche (%)</option>
+                <option value="slow_cooldown">Ralentir recharge des capacités (%)</option>
+                <option value="slow_energy">Réduire régénération d'énergie (%)</option>
+                <option value="reduce_damage">Réduire les dégâts infligés (%)</option>
+                <option value="reduce_stat">Réduire une caractéristique (points ou %)</option>
+                <option value="silence">Silence (durée réglable)</option>
+                <option value="immobilize">Immobilisation (durée réglable)</option>
+                <option value="preserve">Statut importé conservé sans modification</option>
                 <option value="knockout">K.O. via le moteur natif (immunités respectées)</option>
               </select>
             </label>
@@ -1085,9 +1093,24 @@
             <label>Élément des dégâts au seuil (facultatif)
               <select data-marker-threshold-channel data-marker-channel-choice data-marker-optional="true" data-marker-optional-label="Canal par défaut du moteur"><option value="">Canal par défaut du moteur</option></select>
             </label>
+            <label data-marker-threshold-status-duration-setting>Durée du statut appliqué (secondes)
+              <input data-marker-threshold-status-duration type="number" min="0.1" step="0.5" value="5">
+            </label>
+            <label data-marker-threshold-stat-setting>Caractéristique à modifier
+              <select data-marker-threshold-stat data-marker-stat-choice><option value="">Choisir une caractéristique</option></select>
+            </label>
+            <label data-marker-threshold-stat-mode-setting>Mode du malus de caractéristique
+              <select data-marker-threshold-stat-mode><option value="points">Points</option><option value="percent">Pourcentage de la statistique de base</option></select>
+            </label>
           </div>
+          <label class="switch-line"><input type="checkbox" data-marker-threshold-repeat>
+            <span>Répéter l'effet à chaque nouvelle charge après le seuil (cumul possible ; nécessite « Conserver les charges »)</span>
+          </label>
+          <div class="skill-status-config__grid" data-marker-threshold-extra-host></div>
+          <button type="button" class="secondary-action" data-marker-threshold-add-effect>+ Ajouter un autre effet (buff ou malus)</button>
+          <small class="note">Tu peux combiner plusieurs effets au même seuil : caractéristiques, déplacement, recharge, énergie, puissance, immobilisation, silence, soins ou dégâts. Les ralentissements sont appliqués par le moteur de combat, pas par l'animation.</small>
         </div>
-        <p class="note">Les charges partagent une seule durée, rafraîchie à chaque ajout. Le K.O. utilise le moteur natif de dégâts et de crédit des K.O. : les boucliers sont absorbés et l'immunité aux dégâts protège. Les marqueurs sans seuil n'ont aucun effet propre.</p>
+        <p class="note">Les charges partagent une seule durée, rafraîchie à chaque ajout. Le K.O. utilise le moteur natif de dégâts et de crédit des K.O. : les boucliers sont absorbés et l'immunité aux dégâts protège. Les marqueurs sans seuil n'ont aucun effet propre. Le seuil et la répétition peuvent désormais combiner plusieurs effets de durée différente.</p>
         <div class="skill-save-actions">
           <button type="button" class="secondary-action" data-marker-new>Nouveau</button>
           <button type="button" class="primary-action" data-marker-save>Enregistrer le marqueur</button>
