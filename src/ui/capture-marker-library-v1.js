@@ -361,8 +361,8 @@ function syncVisibility(root){
   const usesStat=["reduce_stat","increase_stat"].includes(kind);
   if(stat)stat.hidden=!usesStat;
   if(statMode)statMode.hidden=!usesStat;
-  const duration=selected(root,"marker-threshold-status-duration-setting");
-  if(duration)duration.hidden=!Object.hasOwn(ADVANCED_MARKER_STATUS_KINDS_V1,kind)||kind==="stun";
+  const statusDuration=selected(root,"marker-threshold-status-duration-setting");
+  if(statusDuration)statusDuration.hidden=!Object.hasOwn(ADVANCED_MARKER_STATUS_KINDS_V1,kind)||kind==="stun";
   const repeat=selected(root,"marker-threshold-repeat");
   if(repeat && repeat.checked && value(root,"marker-threshold-consume")!=="keep"){
     repeat.checked=false;
