@@ -3,7 +3,7 @@
 - Base `gh-pages@155c7270cfd2ca0ebdf390bead7bcd97ec627dde` ; START `checkpoint/lab-start-marker-individual-effects-2026-10-22` ; work `work/lab-marker-individual-effects-2026-10-22`. Contrat facultatif `onStackAdded.effects` (max 12) sur le `stack_counter` marqueur partagé uniquement, dispatch via l'unique `applyImmediateTacticalEffectsV1` + Status Runtime à chaque **vrai** ajout de charge ; durée des statuts déclenchés indépendante, pas de deuxième compteur. Le seuil et son repeat restent inchangés.
 - Périmètre : `src/contracts/{capture-marker-v1,status-effect-v1}.js`, `src/core/combat/status-effect-runtime-v1.js`, `src/ui/capture-marker-library-v1.js`, `examples/dom-demo/capture-editor-v2.html`, test `tests/unit/capture-marker-individual-effects-2026-10-22.test.mjs`, vraie sentinelle navigateur ciblée si nécessaire, `docs/LAB_MARKER_INDIVIDUAL_EFFECTS_2026-10-22.md` et ce journal.
 - Protégés : périodiques anciens dégâts/soins, déclencheur seuil, capacités/creatures, moteur dégâts/cooldown, audio/FX, `main`, `global-assets`, labo Exploration et GenSrpG principal.
-- Tests : une charge suffit, 3 charges cumulent, plafond n'ajoute pas d'effet, protections et stat registry, effets individuels + seuil coexistants, import/export rétrocompatibles, UI Save/Load/Export réel, 5 CI + navigateur ; GREEN seulement sur résultats vérifiés.
+- Tests : une charge suffit, 3 charges cumulent, plafond n'ajoute pas d'effet, protections et stat registry, effets individuels + seuil coexistants, import/export rétrocompatibles, UI Save/Load/Export réel. CI du commit cb842463 : run 39851925050, cinq jobs GREEN dont Foundation et vrai navigateur. Documentation synchronisée dans 2b30c29 ; CI finale à revalider avant création du checkpoint GREEN et fusion.
 
 ---
 
