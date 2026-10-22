@@ -10,8 +10,8 @@
 ## Provenance réelle
 
 - Pack généré dans la conversation : `BRAISOMBRE_FACE_12_VOL_ATTAQUE_GITHUB_2026-10-22.zip`.
-- SHA256 immuable : `caa6db851e2fe86ada75642d0d303d57d7ebef0dbfd09f2969d34172fba3872b`.
-- Taille : **14 636 457 octets**, 38 entrées ZIP distinctes, test CRC local OK.
+- SHA256 immuable : `d17cad61ff2acdd982f13f04ced325dc1c638f2cdcefcc7bf049e924c0d93f13`.
+- Taille : **15 855 834 octets**, 38 entrées ZIP distinctes, test CRC local OK.
 - Source vol : `sources/braisombre_flight_first_tail_source.png`, SHA256 `60d20b3ef8642efc581b3da00bc6b200baeee019306eba3db3c7b7a82083b393`.
 - Source attaque : `sources/braisombre_attack_source.png`, voir SHA256 dans `attack/attack.manifest.json`.
 - Vol : 12 PNG RGBA **512 × 512 octet-pour-octet identiques** au premier ZIP choisi `BRAISOMBRE_VOL_FACE_12_SPRITES_PREVIEW_2026-10-22.zip` ; 90 ms/frame, lecture en boucle, marge alpha min. 65 px.
