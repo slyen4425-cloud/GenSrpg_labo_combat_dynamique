@@ -19,7 +19,7 @@ Les six morceaux `Battle_1.mp3` à `Battle_6.mp3` doivent s'entendre automatique
 5. L'onglet Musiques ne crée aucun lien de téléchargement ni n'enregistre d'URL dans le JSON du jeu.
 
 ## État de livraison
-La conversion privée a réussi, mais le transfert automatique des six octets runtime vers la branche publique a été bloqué par l'outil. Les seuls `assetId`/adapters ne rendent pas la musique jouable. Ne pas fusionner la PR #68 ou créer checkpoint GREEN avant présence effective des six fichiers, SHA-256 validés et CI 5/5.
+Les six copies MP3 optimisées sont présentes dans `assets/runtime/audio/music-v1/` sur la branche de travail. Le contrôle d'intégrité des six fichiers passe, et les exécutions CI 39839030941 et 39839036237 ont chacune réussi les cinq jobs. Publication sur le site public après fusion de la PR #68. Validation auditive PC et mobile par l'auteur ensuite.
 
 ## Essai
 Ouvrir la [prévisualisation Capture](https://slyen4425-cloud.github.io/GenSrpg_labo_combat_dynamique/examples/dom-demo/capture-editor-v2.html), puis cliquer **Lancer combat**. La piste `Battle_1` doit commencer après le geste utilisateur, puis `Battle_2`, etc. Retour éditeur = arrêt de la musique. Le navigateur peut bloquer `Audio.play` selon ses politiques ; dans ce cas le combat doit rester jouable et le blocage est diagnostiqué en console. Le statut `6 / 6` dans l'import facultatif se rapporte uniquement aux remplacements locaux et n'est pas un indicateur de disponibilité des MP3 partagés.
