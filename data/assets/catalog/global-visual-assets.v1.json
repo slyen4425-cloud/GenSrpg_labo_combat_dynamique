@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 204,
+    "assets": 208,
     "icons": 74,
-    "sprites": 110,
+    "sprites": 114,
     "fx": 2,
     "portraits": 13,
     "backgrounds": 5,
@@ -6766,6 +6766,162 @@
       "resource": {
         "file": "capture/creatures/renard_lunaire/runtime/renard_lunaire_icon.webp",
         "mime": "image/webp"
+      }
+    },
+    {
+      "id": "pack:capture:sprite-kitsune-lunaire-aura-01",
+      "label": "Aura lunaire Sakura",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "kitsune",
+        "lunaire",
+        "sakura",
+        "rose",
+        "violet",
+        "animated",
+        "aura"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/kitsune_lunaire_sakura/atlases/sprite_skill_kitsune_lunaire_aura_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 85,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-kitsune-lunaire-cast-01",
+      "label": "Charge lunaire Sakura",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "capture",
+        "skill",
+        "kitsune",
+        "lunaire",
+        "sakura",
+        "rose",
+        "violet",
+        "animated",
+        "cast"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/kitsune_lunaire_sakura/atlases/sprite_skill_kitsune_lunaire_cast_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 70,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-kitsune-lunaire-projectile-01",
+      "label": "Projectile lunaire Sakura",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "capture",
+        "skill",
+        "kitsune",
+        "lunaire",
+        "sakura",
+        "rose",
+        "violet",
+        "animated",
+        "projectile"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/kitsune_lunaire_sakura/atlases/sprite_skill_kitsune_lunaire_projectile_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 55,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-kitsune-lunaire-impact-01",
+      "label": "Impact lunaire Sakura",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "capture",
+        "skill",
+        "kitsune",
+        "lunaire",
+        "sakura",
+        "rose",
+        "violet",
+        "animated",
+        "impact"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/kitsune_lunaire_sakura/atlases/sprite_skill_kitsune_lunaire_impact_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 60,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
       }
     }
   ]

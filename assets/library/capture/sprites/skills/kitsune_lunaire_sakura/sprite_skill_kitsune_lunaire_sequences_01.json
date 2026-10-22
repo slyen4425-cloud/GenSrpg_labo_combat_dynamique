@@ -1,0 +1,174 @@
+{
+  "id": "pack:capture:kitsune-lunaire-sakura-vfx-v1",
+  "frame_size": [
+    512,
+    512
+  ],
+  "sequences": {
+    "aura": {
+      "id": "pack:capture:sprite-kitsune-lunaire-aura-01",
+      "label": "Aura lunaire Sakura",
+      "frame_count": 20,
+      "frame_ms": 85,
+      "loop": true,
+      "playback_mode": "loop",
+      "frames": [
+        "frames/sprite_skill_kitsune_lunaire_aura_01.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_02.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_03.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_04.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_05.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_06.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_07.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_08.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_09.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_10.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_11.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_12.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_13.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_14.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_15.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_16.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_17.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_18.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_19.png",
+        "frames/sprite_skill_kitsune_lunaire_aura_20.png"
+      ],
+      "atlas": {
+        "file": "atlases/sprite_skill_kitsune_lunaire_aura_atlas_01.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 384,
+        "frameHeight": 384
+      },
+      "source_sheet_sha256": "dfbde911673f6c2e7942893ceb1841e886d5512b5adbf8f2260bad757f44632f"
+    },
+    "cast": {
+      "id": "pack:capture:sprite-kitsune-lunaire-cast-01",
+      "label": "Charge lunaire Sakura",
+      "frame_count": 20,
+      "frame_ms": 70,
+      "loop": false,
+      "playback_mode": "once",
+      "frames": [
+        "frames/sprite_skill_kitsune_lunaire_cast_01.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_02.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_03.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_04.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_05.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_06.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_07.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_08.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_09.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_10.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_11.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_12.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_13.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_14.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_15.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_16.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_17.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_18.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_19.png",
+        "frames/sprite_skill_kitsune_lunaire_cast_20.png"
+      ],
+      "atlas": {
+        "file": "atlases/sprite_skill_kitsune_lunaire_cast_atlas_01.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 384,
+        "frameHeight": 384
+      },
+      "source_sheet_sha256": "9477ed99f55f2d055b4928b90979e7da9ca3b77af56aec9cccf3a0921ad82c4a"
+    },
+    "projectile": {
+      "id": "pack:capture:sprite-kitsune-lunaire-projectile-01",
+      "label": "Projectile lunaire Sakura",
+      "frame_count": 20,
+      "frame_ms": 55,
+      "loop": true,
+      "playback_mode": "loop",
+      "frames": [
+        "frames/sprite_skill_kitsune_lunaire_projectile_01.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_02.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_03.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_04.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_05.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_06.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_07.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_08.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_09.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_10.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_11.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_12.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_13.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_14.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_15.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_16.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_17.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_18.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_19.png",
+        "frames/sprite_skill_kitsune_lunaire_projectile_20.png"
+      ],
+      "atlas": {
+        "file": "atlases/sprite_skill_kitsune_lunaire_projectile_atlas_01.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 384,
+        "frameHeight": 384
+      },
+      "source_sheet_sha256": "b0e99d6e5a8bd9fa08f7e314e9d95ab53964df309a7e1dc652fe31e072debffd"
+    },
+    "impact": {
+      "id": "pack:capture:sprite-kitsune-lunaire-impact-01",
+      "label": "Impact lunaire Sakura",
+      "frame_count": 20,
+      "frame_ms": 60,
+      "loop": false,
+      "playback_mode": "once",
+      "frames": [
+        "frames/sprite_skill_kitsune_lunaire_impact_01.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_02.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_03.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_04.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_05.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_06.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_07.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_08.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_09.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_10.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_11.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_12.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_13.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_14.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_15.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_16.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_17.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_18.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_19.png",
+        "frames/sprite_skill_kitsune_lunaire_impact_20.png"
+      ],
+      "atlas": {
+        "file": "atlases/sprite_skill_kitsune_lunaire_impact_atlas_01.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 384,
+        "frameHeight": 384
+      },
+      "source_sheet_sha256": "f438ce7802c06bc9da4befe51e135df97113a2314247a3a675a2fb0f8d08ca9a"
+    }
+  },
+  "source": {
+    "sha256": "32eb218cb63844791c3d8882c8c803f51ae82162d509e82a1b5bc8c92b2d1d5d",
+    "sheet_size": [
+      2944,
+      2360
+    ],
+    "grid": [
+      5,
+      4
+    ],
+    "cell_spacing_px": 72,
+    "outer_margin_px": 48
+  }
+}
