@@ -1,3 +1,8 @@
+### Revue CI — tests hérités et images statiques (avant modification)
+- CI initiale PR #59 : 4 échecs documentés dans `tests/unit/capture-creature-visual-selector-roles-2026-10-19.test.mjs`, `tests/unit/capture-ranged-appearance-groups-2026-10-19.test.mjs` et `tests/unit/creature-movement-appearance-v1.test.mjs`. Ces fichiers considéraient comme nouveau mouvement/attaque une image fixe ou un asset sans `resource.frameCount`. Cela contredit le tri demandé et le filtre `frameCount>1` validé dans le lot.
+- Trois fichiers de tests ajoutés au périmètre autorisé, **sans modifier** leurs sentinelles gameplay/rendering. Mettre `resource.frameCount:12` sur les fixtures représentant une véritable animation ; vérifier au contraire que les illustrations à une frame/modèles restent utilisables pour FACE/DOS mais ne figurent plus comme nouvelles animations. Les imports PNG personnels statiques restent possibles en catalogue Creature; le catalogue d'animation accepte seulement un vrai sprite strip déclaré multi-frame. Protéger le comportement sauvegarde/compatibilité hors menu.
+- Conserver le contrôle ancien `CREATOR_VISUAL_ROLES_V1` disponible à l'import même si la sélection nouvelle n'accepte plus de faux sprites. Refaire CI complète sur le nouveau SHA.
+
 ### Recadrage des sentinelles préexistantes (avant test)
 - `tests/unit/capture-creature-movement-face-back-2026-10-21.test.mjs` a un faux asset `movement` de type sprite **sans `resource.frameCount`** ; il ne satisfait plus la demande « pas de visuel simple ». Ajouter dans le fixture `resource:{frameCount:12}` pour tester le vrai chemin autorisé, plus assertion que son clone non animé est refusé ; ne pas affaiblir les tests FACE/DOS ni modifier leur intégration. Fichier désormais autorisé dans le lot.
 
