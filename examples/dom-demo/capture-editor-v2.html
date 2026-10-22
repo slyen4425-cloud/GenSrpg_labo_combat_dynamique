@@ -1034,6 +1034,60 @@
         </div>
         <p class="note">Un marqueur permanent ne perd pas ses charges avec le temps. S'il produit des dégâts/soins périodiques, ceux-ci continuent selon l'horloge combat tant qu'il est présent. La case illimitée désactive le champ de durée en secondes.</p>
         <p class="note">Pour créer un marqueur, saisis seulement son nom puis touche « Enregistrer le marqueur ».  L'identifiant est créé automatiquement (sans accents ni espaces) et reste stable pour toutes les capacités. Les éléments et icônes se choisissent dans les listes existantes : aucun identifiant à recopier. Pour modifier un marqueur existant, sélectionne-le dans la liste ci-dessus.</p>
+        <details class="skill-activation-config" data-marker-charge-card>
+          <summary>Effet individuel — dès la première charge (facultatif)</summary>
+          <label class="switch-line"><input type="checkbox" data-marker-charge-enabled>
+            <span>Déclencher un ou plusieurs effets pour chaque nouvelle charge, sans attendre un seuil</span>
+          </label>
+          <div data-marker-charge-fields hidden>
+            <div class="grid two">
+              <label>Effet par charge
+                <select data-marker-charge-effect>
+                <option value="damage">Dégâts immédiats</option>
+                <option value="heal">Soin</option>
+                <option value="energy_restore">Récupérer de l'énergie</option>
+                <option value="energy_drain">Drainer de l'énergie</option>
+                <option value="stun">Étourdir (durée en secondes)</option>
+                <option value="slow_movement">Ralentir déplacement / approche (%)</option>
+                <option value="boost_movement">Accélérer déplacement / approche (%)</option>
+                <option value="slow_cooldown">Ralentir recharge des capacités (%)</option>
+                <option value="boost_cooldown">Accélérer recharge des capacités (%)</option>
+                <option value="slow_energy">Réduire régénération d'énergie (%)</option>
+                <option value="boost_energy">Augmenter régénération d'énergie (%)</option>
+                <option value="reduce_damage">Réduire les dégâts infligés (%)</option>
+                <option value="boost_damage">Augmenter les dégâts infligés (%)</option>
+                <option value="reduce_stat">Réduire une caractéristique (points ou %)</option>
+                <option value="increase_stat">Augmenter une caractéristique (points ou %)</option>
+                <option value="silence">Silence (durée réglable)</option>
+                <option value="immobilize">Immobilisation (durée réglable)</option>
+                <option value="preserve">Statut importé conservé sans modification</option>
+                <option value="knockout">K.O. via le moteur natif (immunités respectées)</option>
+              </select>
+              </label>
+              <label>Valeur (points ou %)
+                <input data-marker-charge-amount type="number" min="0" step="any" value="10">
+              </label>
+              <label data-marker-charge-channel-setting>Élément des dégâts
+                <select data-marker-charge-channel data-marker-channel-choice data-marker-optional="true" data-marker-optional-label="Canal par défaut du moteur"><option value="">Canal par défaut du moteur</option></select>
+              </label>
+              <label data-marker-charge-duration-setting>Durée de l'effet (secondes)
+                <input data-marker-charge-status-duration type="number" min="0.1" step="0.5" value="5">
+              </label>
+              <label data-marker-charge-stat-setting>Caractéristique
+                <select data-marker-charge-stat data-marker-stat-choice><option value="">Choisir une caractéristique</option></select>
+              </label>
+              <label data-marker-charge-stat-mode-setting>Variation de caractéristique
+                <select data-marker-charge-stat-mode>
+                  <option value="points">Points</option>
+                  <option value="percent">Pourcentage de la base</option>
+                </select>
+              </label>
+            </div>
+            <div class="skill-status-config__grid" data-marker-charge-extra-host></div>
+            <button type="button" class="secondary-action" data-marker-charge-add-effect>+ Ajouter un autre effet par charge</button>
+            <p class="note">Dès la première charge et à chaque charge réellement ajoutée : dégâts, soins, énergie, caractéristiques, déplacement, recharge, puissance, silence, immobilisation ou étourdissement. Les statuts ont leur durée propre ; consommer les charges ne supprime pas un statut déjà appliqué. Fonctionne indépendamment des effets périodiques et des seuils.</p>
+          </div>
+        </details>
         <details class="skill-activation-config" data-marker-periodic-card>
           <summary>Effet périodique par charge (facultatif)</summary>
           <label class="switch-line"><input type="checkbox" data-marker-periodic-enabled>
@@ -1123,7 +1177,7 @@
           <button type="button" class="secondary-action" data-marker-threshold-add-effect>+ Ajouter un autre effet (buff ou malus)</button>
           <small class="note">Tu peux combiner plusieurs effets au même seuil : caractéristiques, déplacement, recharge, énergie, puissance, immobilisation, silence, soins ou dégâts. Les ralentissements sont appliqués par le moteur de combat, pas par l'animation.</small>
         </div>
-        <p class="note">Les charges partagent une seule durée, rafraîchie à chaque ajout. Le K.O. utilise le moteur natif de dégâts et de crédit des K.O. : les boucliers sont absorbés et l'immunité aux dégâts protège. Les marqueurs sans seuil n'ont aucun effet propre. Le seuil et la répétition peuvent désormais combiner plusieurs effets de durée différente.</p>
+        <p class="note">Les charges partagent une seule durée, rafraîchie à chaque ajout. Le K.O. utilise le moteur natif de dégâts et de crédit des K.O. : les boucliers sont absorbés et l'immunité aux dégâts protège. Les marqueurs peuvent cumuler des effets individuels dès la première charge, des dégâts/soins périodiques et des effets au seuil. Chaque statut appliqué conserve sa propre durée.</p>
         <div class="skill-save-actions">
           <button type="button" class="secondary-action" data-marker-new>Nouveau</button>
           <button type="button" class="primary-action" data-marker-save>Enregistrer le marqueur</button>
