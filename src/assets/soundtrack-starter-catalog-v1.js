@@ -11,7 +11,8 @@ export const SOUNDTRACK_STARTER_CATALOG_V1 = Object.freeze({
   version:1,
   assets:Object.freeze([
     ...SOUNDTRACK_STARTER_BATTLE_IDS_V1.map((assetId,i)=>Object.freeze({
-      assetId,kind:"music",origin:"app",title:`Battle_${i+1}`
+      assetId,kind:"music",origin:"app",title:`Battle_${i+1}`,
+      licenseRef:"author-declared-suno-paid-rights-2026-10-22"
     })),
     ...SOUNDTRACK_STARTER_EXPLORATION_IDS_V1.map((assetId,i)=>Object.freeze({
       assetId,kind:"music",origin:"app",title:`Exploration_${i+1}`
