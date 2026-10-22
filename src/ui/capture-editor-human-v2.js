@@ -3176,10 +3176,36 @@ export function captureSkillDraftHasUnsavedChangesV1({
     return true;
   }
 
-  return (
-    JSON.stringify(currentDraft) !==
-    JSON.stringify(savedDraft)
-  );
+  // A legacy offensive skill can be hydrated automatically by the editor:
+  // effect.damage:N -> effects:[{kind:"damage",amount:N,...}].
+  // This is only a SERIALIZATION change, not a user edit. Compare it against
+  // the same canonical form used by the editor, while retaining the strict
+  // check for all other skills and truly modified controls.
+  if (JSON.stringify(currentDraft) === JSON.stringify(savedDraft)) {
+    return false;
+  }
+  const legacyEffect = savedDraft.definition?.effect ?? null;
+  const legacyEffects = savedDraft.definition?.effects ?? [];
+  const canHydrateLegacyDamageOnly =
+    Number(legacyEffect?.damage ?? 0) > 0 &&
+    (!Array.isArray(legacyEffects) || legacyEffects.length === 0) &&
+    Number(legacyEffect?.heal ?? 0) === 0 &&
+    Number(legacyEffect?.stunMs ?? 0) === 0 &&
+    legacyEffect?.interruptsPreparation !== true &&
+    (!Array.isArray(legacyEffect?.tags) || legacyEffect.tags.length === 0);
+  if (!canHydrateLegacyDamageOnly) {
+    return true;
+  }
+
+  try {
+    const editorCanonicalDraft = buildHumanSkillDraftV1(
+      humanSkillEditorFieldsFromDraftV1(savedDraft)
+    );
+    return JSON.stringify(currentDraft) !== JSON.stringify(editorCanonicalDraft);
+  } catch {
+    // Never silently dismiss a real unsaved edit on an invalid legacy draft.
+    return true;
+  }
 }
 
 export function buildHumanLoadoutV1({
