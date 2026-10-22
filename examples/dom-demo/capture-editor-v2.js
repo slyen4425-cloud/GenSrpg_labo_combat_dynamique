@@ -4,6 +4,7 @@ import {
   SOUNDTRACK_STARTER_BATTLE_IDS_V1
 } from "../../src/assets/soundtrack-starter-catalog-v1.js";
 import {createSoundtrackLocalMediaV1} from "../../src/assets/soundtrack-local-media-v1.js";
+import {soundtrackRuntimeAssetV1} from "../../src/assets/soundtrack-runtime-library-v1.js";
 import {
   mountSoundtrackAuthoringV1
 } from "../../src/ui/soundtrack-editor-v1.js";
@@ -162,6 +163,7 @@ const creatorAudioAssets =
 function resolveEditorAudioAsset(assetId) {
   return (
     soundtrackLocalMedia.runtimeAsset(assetId) ??
+    soundtrackRuntimeAssetV1(assetId) ??
     creatorAudioAssets.runtimeAsset(assetId) ??
     privateAudioRuntimeAssetV1(assetId) ??
     demoPresentationAssets.audioAsset(assetId)
