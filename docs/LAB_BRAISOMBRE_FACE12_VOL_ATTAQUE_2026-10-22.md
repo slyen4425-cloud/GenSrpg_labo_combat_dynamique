@@ -10,12 +10,12 @@
 ## Provenance réelle
 
 - Pack généré dans la conversation : `BRAISOMBRE_FACE_12_VOL_ATTAQUE_GITHUB_2026-10-22.zip`.
-- SHA256 immuable : `108acd0bd2c778070bd877a2f0c8e4062bd2a1510f0cbba9a5275052a5a1a9da`.
-- Taille : **15 446 796 octets**, 38 entrées ZIP distinctes, test CRC local OK.
+- SHA256 immuable : `caa6db851e2fe86ada75642d0d303d57d7ebef0dbfd09f2969d34172fba3872b`.
+- Taille : **14 636 457 octets**, 38 entrées ZIP distinctes, test CRC local OK.
 - Source vol : `sources/braisombre_flight_first_tail_source.png`, SHA256 `60d20b3ef8642efc581b3da00bc6b200baeee019306eba3db3c7b7a82083b393`.
 - Source attaque : `sources/braisombre_attack_source.png`, voir SHA256 dans `attack/attack.manifest.json`.
 - Vol : 12 PNG RGBA **512 × 512 octet-pour-octet identiques** au premier ZIP choisi `BRAISOMBRE_VOL_FACE_12_SPRITES_PREVIEW_2026-10-22.zip` ; 90 ms/frame, lecture en boucle, marge alpha min. 65 px.
-- Attaque : découpe non destructive par composantes connexes, évitant les ailes qui débordent des cases 4×3 ; 12 PNG RGBA **512 × 512**, 100 ms/frame, lecture une fois, marge min. 62 px.
+- Attaque : découpe non destructive par composantes connexes, évitant les ailes qui débordent des cases 4×3 ; 12 PNG RGBA **512 × 512**, 100 ms/frame, lecture une fois, marge min. 72 px.
 - 2 atlas WebP bande de 12 × 384px, 2 GIF, 2 WebP animés, 2 planches de preview, 2 manifestes contenant les hashes de chaque frame.
 - Les sources exactes sont incluses dans le ZIP et copiées dans `animations/sources/` pour audit. Les couleurs n'ont pas été recolorées.
 
