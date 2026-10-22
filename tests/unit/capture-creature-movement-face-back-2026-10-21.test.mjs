@@ -53,8 +53,11 @@ test("author UI exposes TWO movement menus both sourced from the existing moveme
   assert.match(html,/Sprite de déplacement — DOS \(joueur\)/);
   assert.equal((html.match(/data-creature-movement(?:-back)?-visual data-asset-role="movement"/g)||[]).length,2);
   const tag={category:"creature",assetType:"sprite",mediaType:"image",
-    tags:["creature","movement"],compatibility:{uses:["editor"]}};
+    tags:["creature","movement"],resource:{frameCount:12},
+    compatibility:{uses:["editor"]}};
   assert.equal(captureEditorAssetMatchesRoleV1(tag,"movement"),true);
+  assert.equal(captureEditorAssetMatchesRoleV1({...tag,resource:{frameCount:1}},"movement"),false);
+  assert.equal(captureEditorAssetMatchesRoleV1({...tag,resource:undefined},"movement"),false);
   assert.equal(captureEditorAssetMatchesRoleV1({...tag,category:"skill",tags:["skill","projectile"]},"movement"),false);
   const source=readFileSync(new URL("../../src/ui/capture-editor-human-v2.js",import.meta.url),"utf8");
   for(const part of [
