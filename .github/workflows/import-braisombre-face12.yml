@@ -3,7 +3,7 @@ name: Import Braisombre face vol et attaque 12 frames
 on:
   push:
     branches:
-      - work/global-assets-braisombre-face12-2026-10-22
+      - work/global-assets-braisombre-face12-publish-2026-10-22
     paths:
       - _incoming/BRAISOMBRE_FACE_12_VOL_ATTAQUE_GITHUB_2026-10-22.zip
   workflow_dispatch:
@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   import:
-    if: github.ref == 'refs/heads/work/global-assets-braisombre-face12-2026-10-22'
+    if: github.ref == 'refs/heads/work/global-assets-braisombre-face12-publish-2026-10-22'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,4 +40,4 @@ jobs:
           git add tests/unit/braisombre-face12-assets.test.mjs
           git diff --cached --check
           git commit -m "assets(capture): importer vol et attaque Braisombre face 12 frames"
-          git push origin HEAD:work/global-assets-braisombre-face12-2026-10-22
+          git push origin HEAD:work/global-assets-braisombre-face12-publish-2026-10-22

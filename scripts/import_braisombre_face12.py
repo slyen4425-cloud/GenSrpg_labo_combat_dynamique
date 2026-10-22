@@ -9,7 +9,7 @@ import hashlib, json, pathlib, shutil, struct, zipfile
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 NAME = "BRAISOMBRE_FACE_12_VOL_ATTAQUE_GITHUB_2026-10-22.zip"
 SOURCE = ROOT / "_incoming" / NAME
-SOURCE_SHA256 = "caa6db851e2fe86ada75642d0d303d57d7ebef0dbfd09f2969d34172fba3872b"
+SOURCE_SHA256 = "96977b65efc630d378063c55d022a906e9d5b8504771d29c96cade29176ea7c8"
 BASE = ROOT / "assets/library/capture/creatures/braisombre/animations"
 CATALOG = ROOT / "data/assets/catalog/global-visual-assets.v1.json"
 TEST_TEMPLATE = ROOT / "scripts/braisombre-face12.test.template.mjs"
