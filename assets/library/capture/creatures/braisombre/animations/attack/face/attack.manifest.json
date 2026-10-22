@@ -1,0 +1,301 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "braisombre",
+  "action": "attack",
+  "view": "face",
+  "assetId": "pack:capture:creature-braisombre-attack-face-12-v1",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 100,
+  "playbackMode": "once",
+  "authorApproved": true,
+  "approvalStatus": "approved_for_ingame_trial",
+  "sourceImage": "planche_de_sprites_du_dragon_flamboyant.png",
+  "sourceImageSha256": "841283c1248765d4bda1730a662d93fc11b0a8e4c8e1044e5185a2b085b298ca",
+  "technicalStatus": "isolated_12_connected_poses_no_cell_crop",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/braisombre_attack_face_01.png",
+      "sha256": "7233bce6f531446c3bfe0c16095b0e409bd8f2b60004c5b3d6a6a9fcef5b0a09",
+      "marginsLTRB": [
+        93,
+        161,
+        93,
+        66
+      ],
+      "sourceGridCell": [
+        0,
+        0
+      ],
+      "sourceConnectedComponentArea": 62544,
+      "sourceComponentBoundingBox": [
+        20,
+        53,
+        378,
+        366
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/braisombre_attack_face_02.png",
+      "sha256": "00d1682d8fe3bd0587301abbe22e188e80ba366a27bf0daaad13095a8561598b",
+      "marginsLTRB": [
+        107,
+        188,
+        107,
+        66
+      ],
+      "sourceGridCell": [
+        1,
+        0
+      ],
+      "sourceConnectedComponentArea": 55045,
+      "sourceComponentBoundingBox": [
+        400,
+        87,
+        728,
+        370
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/braisombre_attack_face_03.png",
+      "sha256": "948608e7a09cd1c6ff34b7f6b9d636953430534e43f37fc44734331fe1b93e8c",
+      "marginsLTRB": [
+        93,
+        197,
+        93,
+        66
+      ],
+      "sourceGridCell": [
+        2,
+        0
+      ],
+      "sourceConnectedComponentArea": 53884,
+      "sourceComponentBoundingBox": [
+        745,
+        111,
+        1103,
+        385
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/braisombre_attack_face_04.png",
+      "sha256": "57f4c44e0738bfd044888ac8e70cc2f39b955f1d0342791b58f2cf154286aa45",
+      "marginsLTRB": [
+        97,
+        114,
+        98,
+        66
+      ],
+      "sourceGridCell": [
+        3,
+        0
+      ],
+      "sourceConnectedComponentArea": 66158,
+      "sourceComponentBoundingBox": [
+        1093,
+        16,
+        1441,
+        381
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/braisombre_attack_face_05.png",
+      "sha256": "422478749ebfabcbfb828e9fe440d6e1dadd19c45a82728d95cb28a4f866cb3c",
+      "marginsLTRB": [
+        73,
+        159,
+        73,
+        66
+      ],
+      "sourceGridCell": [
+        0,
+        1
+      ],
+      "sourceConnectedComponentArea": 64151,
+      "sourceComponentBoundingBox": [
+        9,
+        419,
+        411,
+        734
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/braisombre_attack_face_06.png",
+      "sha256": "4318b181cbf29e7ec583790754ed3486693ddb419eaa473fbee23c05f5b3f192",
+      "marginsLTRB": [
+        76,
+        138,
+        77,
+        66
+      ],
+      "sourceGridCell": [
+        1,
+        1
+      ],
+      "sourceConnectedComponentArea": 65823,
+      "sourceComponentBoundingBox": [
+        380,
+        393,
+        775,
+        732
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/braisombre_attack_face_07.png",
+      "sha256": "921fd89e52b8c03d391a1496b2483039fd1debf7b83ba5e2ca0ce9a6312b7ad4",
+      "marginsLTRB": [
+        86,
+        155,
+        87,
+        66
+      ],
+      "sourceGridCell": [
+        2,
+        1
+      ],
+      "sourceConnectedComponentArea": 56904,
+      "sourceComponentBoundingBox": [
+        740,
+        413,
+        1113,
+        733
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/braisombre_attack_face_08.png",
+      "sha256": "250add6baaee0256d69f9667ac24da54e324dd7d20dbd128df84d3c64b91ac03",
+      "marginsLTRB": [
+        110,
+        156,
+        110,
+        66
+      ],
+      "sourceGridCell": [
+        3,
+        1
+      ],
+      "sourceConnectedComponentArea": 56672,
+      "sourceComponentBoundingBox": [
+        1120,
+        416,
+        1441,
+        735
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/braisombre_attack_face_09.png",
+      "sha256": "75334dd71bc17000f2f116124adf129ec7125ed33f6753cbdddf837a0cf35f0c",
+      "marginsLTRB": [
+        91,
+        191,
+        91,
+        66
+      ],
+      "sourceGridCell": [
+        0,
+        2
+      ],
+      "sourceConnectedComponentArea": 58657,
+      "sourceComponentBoundingBox": [
+        15,
+        775,
+        378,
+        1055
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/braisombre_attack_face_10.png",
+      "sha256": "effd7c695d3634d42ac8c6676918a1f228f8ed5c1a94c81e9b1ff7043e3c6bda",
+      "marginsLTRB": [
+        113,
+        186,
+        113,
+        66
+      ],
+      "sourceGridCell": [
+        1,
+        2
+      ],
+      "sourceConnectedComponentArea": 55619,
+      "sourceComponentBoundingBox": [
+        414,
+        776,
+        728,
+        1062
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/braisombre_attack_face_11.png",
+      "sha256": "7ce0d8a5905d1ccaa68434ce1c19721c5b6c2ef3901b2091ac6511fa25a25cfd",
+      "marginsLTRB": [
+        89,
+        172,
+        89,
+        66
+      ],
+      "sourceGridCell": [
+        2,
+        2
+      ],
+      "sourceConnectedComponentArea": 59946,
+      "sourceComponentBoundingBox": [
+        732,
+        761,
+        1099,
+        1062
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/braisombre_attack_face_12.png",
+      "sha256": "9022330899619132c87eda1747537b683ab31af9e8f3b059bcaf1a4af03896da",
+      "marginsLTRB": [
+        103,
+        181,
+        104,
+        66
+      ],
+      "sourceGridCell": [
+        3,
+        2
+      ],
+      "sourceConnectedComponentArea": 53683,
+      "sourceComponentBoundingBox": [
+        1105,
+        771,
+        1440,
+        1062
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/braisombre_attack_face_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "cd981577ba024af795b121ec9b6eeec1e2de200c49b541c4008048f80a31b654"
+  },
+  "preview": "previews/braisombre_attack_face_12_preview.gif",
+  "previews": {
+    "gif": "previews/braisombre_attack_face_12_preview.gif",
+    "webp": "previews/braisombre_attack_face_12_preview_transparent.webp",
+    "planche": "previews/braisombre_attack_face_12_planche.png"
+  },
+  "sourceSpriteSheet": "sources/braisombre_attack_source.png",
+  "sourceSpriteSheetSha256": "841283c1248765d4bda1730a662d93fc11b0a8e4c8e1044e5185a2b085b298ca"
+}

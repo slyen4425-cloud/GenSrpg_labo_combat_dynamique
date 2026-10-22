@@ -1,0 +1,228 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "braisombre",
+  "action": "movement",
+  "motionKind": "flight",
+  "view": "face",
+  "assetId": "pack:capture:creature-braisombre-movement-face-12-v1",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 90,
+  "playbackMode": "loop",
+  "authorApproved": true,
+  "approvalStatus": "approved_for_ingame_trial",
+  "sourceSpriteSheet": "sources/braisombre_flight_first_tail_source.png",
+  "sourceSpriteSheetSha256": "60d20b3ef8642efc581b3da00bc6b200baeee019306eba3db3c7b7a82083b393",
+  "sourceNote": "First chosen flight animation pack: its 12 PNG frame bytes are unchanged",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/braisombre_movement_face_01.png",
+      "sha256": "da692e485ac5260a0026165394f62426cba10c44e130eaa4f73e958722593bec",
+      "marginsLTRB": [
+        90,
+        117,
+        97,
+        112
+      ],
+      "sourceGridCell": [
+        0,
+        0
+      ],
+      "componentAreaPx": 42948
+    },
+    {
+      "index": 1,
+      "file": "frames/braisombre_movement_face_02.png",
+      "sha256": "c5f2c8d8fdf321b41c4b3edb5643b909f607d651389ae0feca646e53be38ff23",
+      "marginsLTRB": [
+        114,
+        117,
+        90,
+        112
+      ],
+      "sourceGridCell": [
+        1,
+        0
+      ],
+      "componentAreaPx": 39579
+    },
+    {
+      "index": 2,
+      "file": "frames/braisombre_movement_face_03.png",
+      "sha256": "fee3e2840b6502b650f92385c9672fc326b0c7ffbade62e37769aadfcb576b5f",
+      "marginsLTRB": [
+        78,
+        155,
+        100,
+        132
+      ],
+      "sourceGridCell": [
+        2,
+        0
+      ],
+      "componentAreaPx": 35422
+    },
+    {
+      "index": 3,
+      "file": "frames/braisombre_movement_face_04.png",
+      "sha256": "41623ea74882f40459cae8d84f72d4884c10898bf4a98fde8b43b1ace03ff58d",
+      "marginsLTRB": [
+        65,
+        187,
+        84,
+        129
+      ],
+      "sourceGridCell": [
+        3,
+        0
+      ],
+      "componentAreaPx": 32781
+    },
+    {
+      "index": 4,
+      "file": "frames/braisombre_movement_face_05.png",
+      "sha256": "baa97c36c13ddcc0e9c7fa65a82b178cbf6d509f5b315c4593a991f31774bbf0",
+      "marginsLTRB": [
+        76,
+        183,
+        74,
+        115
+      ],
+      "sourceGridCell": [
+        0,
+        1
+      ],
+      "componentAreaPx": 34307
+    },
+    {
+      "index": 5,
+      "file": "frames/braisombre_movement_face_06.png",
+      "sha256": "48c4b97d0d9983fc69667098a0a39a8fc4061ac985d320c202ae528312e40057",
+      "marginsLTRB": [
+        87,
+        123,
+        77,
+        112
+      ],
+      "sourceGridCell": [
+        1,
+        1
+      ],
+      "componentAreaPx": 38502
+    },
+    {
+      "index": 6,
+      "file": "frames/braisombre_movement_face_07.png",
+      "sha256": "79ffa64171934d1068a91be9ee1b16521aff42aec93c2f5c451f413fb6175bc9",
+      "marginsLTRB": [
+        99,
+        118,
+        97,
+        111
+      ],
+      "sourceGridCell": [
+        2,
+        1
+      ],
+      "componentAreaPx": 39034
+    },
+    {
+      "index": 7,
+      "file": "frames/braisombre_movement_face_08.png",
+      "sha256": "1942cd3ed81b4f78c2542959f70d0f6c6372199dfeb64a580ea5dfa9f6038228",
+      "marginsLTRB": [
+        72,
+        167,
+        86,
+        136
+      ],
+      "sourceGridCell": [
+        3,
+        1
+      ],
+      "componentAreaPx": 35256
+    },
+    {
+      "index": 8,
+      "file": "frames/braisombre_movement_face_09.png",
+      "sha256": "1ae1fa1a0cd7685b15087b1f41ca2f8a504ce5f94ae390841ffbccc25aff256c",
+      "marginsLTRB": [
+        78,
+        172,
+        86,
+        124
+      ],
+      "sourceGridCell": [
+        0,
+        2
+      ],
+      "componentAreaPx": 32658
+    },
+    {
+      "index": 9,
+      "file": "frames/braisombre_movement_face_10.png",
+      "sha256": "04ccdc5e132e374a3a292566e13bed86aa8af1c2aaee73f01306e3d456c045bb",
+      "marginsLTRB": [
+        99,
+        124,
+        95,
+        136
+      ],
+      "sourceGridCell": [
+        1,
+        2
+      ],
+      "componentAreaPx": 38692
+    },
+    {
+      "index": 10,
+      "file": "frames/braisombre_movement_face_11.png",
+      "sha256": "4c1e2f6231a76614d1377b74676d802d387461a3e5f273f3908b369f6738b990",
+      "marginsLTRB": [
+        102,
+        115,
+        99,
+        107
+      ],
+      "sourceGridCell": [
+        2,
+        2
+      ],
+      "componentAreaPx": 39619
+    },
+    {
+      "index": 11,
+      "file": "frames/braisombre_movement_face_12.png",
+      "sha256": "de35dbee7754fead2597eae922ca5696d9d07f2cd0adea1cfd0269f53cc8106c",
+      "marginsLTRB": [
+        74,
+        174,
+        86,
+        133
+      ],
+      "sourceGridCell": [
+        3,
+        2
+      ],
+      "componentAreaPx": 33451
+    }
+  ],
+  "atlas": {
+    "file": "atlases/braisombre_flight_face_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "8d64c5152441aa4514d0e4f2e54d903b69e3db8298c587bf4650026ee7efd4d5"
+  },
+  "preview": "previews/braisombre_flight_face_12_preview.gif",
+  "previews": {
+    "gif": "previews/braisombre_flight_face_12_preview.gif",
+    "webp": "previews/braisombre_flight_face_12_preview_transparent.webp",
+    "planche": "previews/braisombre_flight_face_12_planche.png"
+  }
+}

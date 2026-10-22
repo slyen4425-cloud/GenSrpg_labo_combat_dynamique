@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 208,
+    "assets": 210,
     "icons": 74,
-    "sprites": 114,
+    "sprites": 116,
     "fx": 2,
     "portraits": 13,
     "backgrounds": 5,
-    "creatures": 34
+    "creatures": 36
   },
   "assets": [
     {
@@ -6914,6 +6914,84 @@
         "mime": "image/webp",
         "frameCount": 20,
         "frameMs": 60,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-braisombre-movement-face-12-v1",
+      "label": "Braisombre — vol / déplacement face (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "braisombre",
+        "dragon",
+        "fire",
+        "movement",
+        "animated",
+        "face",
+        "flight",
+        "flying"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / sprites auteur 2026-10-22",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/braisombre/animations/movement/face/atlases/braisombre_flight_face_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 90,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-braisombre-attack-face-12-v1",
+      "label": "Braisombre — attaque face (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "braisombre",
+        "dragon",
+        "fire",
+        "attack",
+        "animated",
+        "face"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / sprites auteur 2026-10-22",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/braisombre/animations/attack/face/atlases/braisombre_attack_face_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 100,
         "playbackMode": "once"
       },
       "compatibility": {
