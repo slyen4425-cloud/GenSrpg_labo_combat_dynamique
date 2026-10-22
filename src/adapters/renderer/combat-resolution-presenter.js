@@ -5,6 +5,9 @@ import {
   planSkillReleaseFx
 } from "../../core/fx/skill-fx-plan.js";
 
+// Presentation anticipation only: Combat Runtime retains exclusive ownership of hit timing.
+const DEFAULT_INSTANT_ATTACK_ANTICIPATION_MS = 250;
+
 function defaultSetTimer(callback, delayMs) {
   return setTimeout(callback, delayMs);
 }
@@ -19,7 +22,8 @@ export function createCombatResolutionPresenter({
   audio = null,
   onActionContact = null,
   setTimer = defaultSetTimer,
-  clearTimer = defaultClearTimer
+  clearTimer = defaultClearTimer,
+  instantAttackAnticipationMs = DEFAULT_INSTANT_ATTACK_ANTICIPATION_MS
 }) {
   if (
     !visuals ||
@@ -46,8 +50,13 @@ export function createCombatResolutionPresenter({
     throw new TypeError("timer functions are required");
   }
 
+  if (!Number.isFinite(instantAttackAnticipationMs) || instantAttackAnticipationMs < 0) {
+    throw new RangeError("instantAttackAnticipationMs must be nonnegative");
+  }
+
   let disposed = false;
   const timers = new Set();
+  const preparedAttacksByActor = new Map();
   const preparationFxByActor = new Map();
   const preparationAudioByActor = new Map();
   const travelAudioByActor = new Map();
@@ -108,6 +117,27 @@ export function createCombatResolutionPresenter({
     return timerId;
   }
 
+  // A single scheduled presentation cue belongs to this actor's current cast.
+  // Consuming it on release preserves a pose that already started, without
+  // playing a duplicate. Interrupting it also cancels the pose if necessary.
+  function consumePreparedAttack(actorSlot) {
+    const cue = preparedAttacksByActor.get(actorSlot) ?? null;
+    if (!cue) return null;
+    preparedAttacksByActor.delete(actorSlot);
+    if (cue.timerId !== null) {
+      clearTimer(cue.timerId);
+      timers.delete(cue.timerId);
+      cue.timerId = null;
+    }
+    return cue;
+  }
+
+  function cancelPreparedAttack(actorSlot) {
+    const cue = consumePreparedAttack(actorSlot);
+    if (cue?.started) visuals.cancelFor(actorSlot);
+    return Boolean(cue);
+  }
+
   function outcomeTime(resolution) {
     if (resolution.outcome === "countered") {
       return (
@@ -124,7 +154,7 @@ export function createCombatResolutionPresenter({
     actorSlot = "player",
     { audioMode = "all" } = {}
   ) {
-    let cancelled = false;
+    let cancelled = cancelPreparedAttack(actorSlot);
 
     const fxHandle = preparationFxByActor.get(actorSlot);
     if (fxHandle) {
@@ -267,6 +297,31 @@ export function createCombatResolutionPresenter({
 
     cancelPreparation(actorSlot);
 
+    // For an instant-impact ranged attack, release and damage occur on the
+    // same native combat tick. Start its creature pose near the end of the
+    // existing preparation, before the hit. Do not postpone gameplay damage.
+    if (action?.actionType === "skill" &&
+        ["projectile", "beam", "area"].includes(action.skill?.form) &&
+        (action.skill?.approachMode ?? "none") === "none" &&
+        Number(action.travelMs) === 0 &&
+        Number(action.preparationMs) > 0 &&
+        instantAttackAnticipationMs > 0) {
+      const leadMs = Math.min(
+        Number(action.preparationMs), instantAttackAnticipationMs
+      );
+      const cue = { timerId: null, started: false };
+      preparedAttacksByActor.set(actorSlot, cue);
+      cue.timerId = schedule(() => {
+        cue.timerId = null;
+        if (preparedAttacksByActor.get(actorSlot) !== cue) return;
+        cue.started = true;
+        Promise.resolve(visuals.playEventFor(actorSlot, "attack", {
+          targetSlot: action.targetId,
+          metadata: { useRangedAppearance: true }
+        })).catch(() => {});
+      }, Math.max(0, Number(action.releaseAtMs ?? action.preparationMs) - leadMs));
+    }
+
     if (action?.actionType === "command") {
       if (["recall", "switch"].includes(action.command?.kind) && action.preparationMs > 0) {
         cancelActionPresentation(actorSlot);
@@ -336,6 +391,7 @@ export function createCombatResolutionPresenter({
       return Object.freeze({ status: "disposed" });
     }
 
+    const preparedAttack = consumePreparedAttack(actorSlot);
     cancelPreparation(
       actorSlot,
       { audioMode: "loop-only" }
@@ -426,7 +482,7 @@ export function createCombatResolutionPresenter({
             }
           }
         });
-    } else if (!action.mirrorReturn) {
+    } else if (!action.mirrorReturn && !preparedAttack?.started) {
       // Only an explicitly authored ranged creature pose replaces the
       // default attacking silhouette; FX projectiles/beams remain unchanged.
       visuals
@@ -727,6 +783,9 @@ export function createCombatResolutionPresenter({
       ...footfallTokenByActor.keys(),
       ...repeatingMovementByActor.keys()
     ]);
+    for (const actorSlot of preparedAttacksByActor.keys()) {
+      cancelPreparedAttack(actorSlot);
+    }
     for (const actorSlot of presentationActors) {
       cancelPreparation(actorSlot);
       cancelTravelAudio(actorSlot);
