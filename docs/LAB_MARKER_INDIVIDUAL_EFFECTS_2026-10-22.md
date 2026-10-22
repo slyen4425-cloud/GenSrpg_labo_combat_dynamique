@@ -1,4 +1,4 @@
-# Audio? Non — Marqueurs : effet individuel dès la première charge (22/10/2026)
+# Marqueurs : effet individuel dès la première charge (22 octobre 2026)
 
 ## Demande et diagnostic
 Le réglage « effet propre du marqueur » ne permet aujourd'hui que dégâts ou soins périodiques. L'auteur veut également toutes les familles déjà autorisées par les effets natifs : malus/bonus déplacement, recharge, énergie, dégâts sortants, stat en points/% et états de contrôle. La mécanique de seuil multiple validée ne doit pas être modifiée.
@@ -22,3 +22,10 @@ Base `gh-pages@155c7270cfd2ca0ebdf390bead7bcd97ec627dde`.
 START `checkpoint/lab-start-marker-individual-effects-2026-10-22`.
 Work `work/lab-marker-individual-effects-2026-10-22`.
 CI 5/5 + vrai éditeur navigateur, checkpoint GREEN après validation.
+
+## Validation technique
+- CI branche 39851925050 : cinq jobs réussis (foundation, créatures navigateur, zones Firestorm, vague 2v2 et vague mobile).
+- Le parcours Chrome crée un effet individuel de stat Esprit et un deuxième effet de recharge, réenregistre le marqueur, le recharge, puis vérifie l'export des effets individuels et de l'ancien seuil.
+- Les tests unitaires couvrent l'ajout de 1 ou plusieurs charges, le plafond, les durées natives indépendantes, la consommation, le cumul des pénalités et le fonctionnement ancien.
+- Le marqueur peut combiner trois domaines indépendants : `onStackAdded` immédiat, `periodic` dégâts/soins selon l'horloge, et `onStackThreshold` au seuil. Les effets natifs ne sont pas supprimés rétroactivement avec la charge : leur propre durée s'applique.
+- Validation du ressenti sur smartphone et configuration exacte des marqueurs existants par l'auteur après la fusion.
