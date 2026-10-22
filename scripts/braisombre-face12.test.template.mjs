@@ -12,7 +12,7 @@ const hash=x=>createHash('sha256').update(x).digest('hex');
 const catalog=json('data/assets/catalog/global-visual-assets.v1.json');
 const prefix='assets/library/capture/creatures/braisombre/animations';
 const zipName='BRAISOMBRE_FACE_12_VOL_ATTAQUE_GITHUB_2026-10-22.zip';
-const zipSha='caa6db851e2fe86ada75642d0d303d57d7ebef0dbfd09f2969d34172fba3872b';
+const zipSha='d17cad61ff2acdd982f13f04ced325dc1c638f2cdcefcc7bf049e924c0d93f13';
 
 test('Braisombre: archive réelle, SHA stable et IDs uniques',()=>{
   assert.equal(hash(bytes('_incoming/'+zipName)),zipSha);
