@@ -9,7 +9,9 @@ import { createCreatorVisualAssetSessionV1 } from "../../src/assets/creator-visu
 
 const compatible = { uses: ["combat", "capture", "editor"] };
 const make = (id, category, assetType, tags = []) =>
-  ({ id, category, assetType, tags, mediaType: "image", compatibility: compatible });
+  ({ id, category, assetType, tags, mediaType: "image",
+    resource:{frameCount:tags.includes("animated") || tags.includes("roll") ? 12 : 1},
+    compatibility: compatible });
 
 test("creature movement and attack menus never include skill projectiles or cast/impact VFX", () => {
   const fireball = make("fireball", "travel", "sprite", ["skill", "fire", "projectile"]);
@@ -27,8 +29,8 @@ test("creature movement and attack menus never include skill projectiles or cast
   assert.equal(captureEditorAssetMatchesRoleV1(roll, "attack"), false);
   assert.equal(captureEditorAssetMatchesRoleV1(attack, "attack"), true);
   assert.equal(captureEditorAssetMatchesRoleV1(attack, "movement"), false);
-  assert.equal(captureEditorAssetMatchesRoleV1(model, "attack"), true, "static fallback");
-  assert.equal(captureEditorAssetMatchesRoleV1(model, "movement"), true, "static fallback");
+  assert.equal(captureEditorAssetMatchesRoleV1(model, "attack"), false, "static models no longer offered as new animations");
+  assert.equal(captureEditorAssetMatchesRoleV1(model, "movement"), false, "historic static selections survive only via selected-value fallback");
   assert.equal(captureEditorCreatureVisualKindV1(roll), "movement");
   assert.equal(captureEditorCreatureVisualKindV1(attack), "attack");
   assert.equal(captureEditorCreatureVisualKindV1(model), "model");
@@ -46,8 +48,9 @@ test("creator visual import has independent attack role without breaking older m
   assert.equal(attack.category, "creature");
   assert.ok(attack.tags.includes("attack"));
   assert.equal(movement.category, "movement");
-  assert.equal(captureEditorAssetMatchesRoleV1(attack, "attack"), true);
-  assert.equal(captureEditorAssetMatchesRoleV1(movement, "movement"), true);
+  assert.equal(captureEditorAssetMatchesRoleV1(attack, "attack"), false, "single imported PNG is not an animation until classified multi-frame");
+  assert.equal(captureEditorAssetMatchesRoleV1(movement, "movement"), false, "single imported PNG is not an animation until classified multi-frame");
+  assert.equal(captureEditorAssetMatchesRoleV1(attack, "creature"), true, "creator imports remain in Creature models");
   session.dispose();
 });
 
