@@ -1,3 +1,6 @@
+### Recadrage des sentinelles préexistantes (avant test)
+- `tests/unit/capture-creature-movement-face-back-2026-10-21.test.mjs` a un faux asset `movement` de type sprite **sans `resource.frameCount`** ; il ne satisfait plus la demande « pas de visuel simple ». Ajouter dans le fixture `resource:{frameCount:12}` pour tester le vrai chemin autorisé, plus assertion que son clone non animé est refusé ; ne pas affaiblir les tests FACE/DOS ni modifier leur intégration. Fichier désormais autorisé dans le lot.
+
 ## 2026-10-22 — Lot sélecteurs Creature FACE/DOS : animation et rangement par élément
 - Auteur : ajouter ultérieurement deux vues originales FACE/DOS et l'icône du Renard lunaire à `global-assets`; éliminer les modèles **fixes** des choix nouveaux de déplacement et d'attaque, trier les animations par élément, conserver les configurations historiques. Icône : format de jeu attesté médaillon circulaire, contour élémentaire, transparent hors rond ; WebP 192 ou 384, pas une illustration rectangle. Les deux vues statiques ne doivent jamais être proposées comme animations.
 - Base active `gh-pages@3fb1d42a594dc5a2062aa4f7a42ed0da9bbfb745` (Scarabacier/Nature GREEN), checkpoint `checkpoint/lab-start-creature-asset-selector-cleanup-2026-10-22`, branche `work/lab-creature-asset-selector-cleanup-2026-10-22`.
