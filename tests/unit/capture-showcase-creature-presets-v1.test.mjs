@@ -35,11 +35,12 @@ async function importedPreset(file) {
   );
 }
 
-test("showcase preset catalog discovers ten authored transfer files without duplicating creature ids", () => {
+test("showcase preset catalog discovers eleven authored transfer files without duplicating creature ids", () => {
   assert.deepEqual(
     CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1,
     [
       "data/capture/showcase/crea_mossback.capture-creature-transfer-v1.json",
+      "data/capture/showcase/kitsune_lunaire.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea-loup.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea_maraileron.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea_ailevent.capture-creature-transfer-v1.json",
@@ -91,7 +92,7 @@ test("Moussados showcase preset preserves the editor-authored model", async () =
 
 test("Loup volcanique showcase preset preserves health natural matchup visuals and planned loadout", async () => {
   const imported = await importedPreset(
-    CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1[1]
+    CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.find(path=>path.endsWith("/crea-loup.capture-creature-transfer-v1.json"))
   );
   const record = imported.value;
 

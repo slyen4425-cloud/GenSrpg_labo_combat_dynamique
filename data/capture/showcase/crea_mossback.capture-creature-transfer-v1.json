@@ -103,7 +103,7 @@
     ],
     "presentation": {
       "id": "creature:crea_mossback",
-      "version": 2,
+      "version": 9,
       "subjectType": "creature",
       "subjectId": "crea_mossback",
       "profileId": "massive",
@@ -121,7 +121,7 @@
           }
         },
         "opponent": {
-          "displayScale": 1.2,
+          "displayScale": 0.9,
           "position": {
             "x": -30,
             "y": 35
@@ -141,6 +141,46 @@
         },
         "icon": {
           "assetId": "pack:capture:creature-golem-moussu-icon-01"
+        },
+        "movement": {
+          "assetId": "pack:capture:creature-golem-moussu-movement-face-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 3,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttack": {
+          "assetId": "pack:capture:creature-golem-moussu-attack-face-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttackBack": {
+          "assetId": "pack:capture:creature-golem-moussu-attack-dos-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "movementScaleByView": {
+          "player": 1,
+          "opponent": 1
+        },
+        "movementPlayback": {
+          "frameMs": 0,
+          "mode": "loop"
+        },
+        "movementBack": {
+          "assetId": "pack:capture:creature-golem-moussu-movement-dos-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 3,
+          "frameCount": 1,
+          "transitionMs": 80
         }
       },
       "sockets": [
@@ -228,7 +268,10 @@
       "electric": 0,
       "light": 0,
       "shadow": 0,
-      "poison": 0
+      "poison": 0,
+      "acier": 0,
+      "nature": 0,
+      "esprit": 0
     }
   },
   "loadout": {

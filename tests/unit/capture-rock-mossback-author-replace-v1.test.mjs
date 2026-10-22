@@ -47,7 +47,7 @@ test("the new Impact rocheux author JSON is exact, unique, has its preserved FX 
 
 test("Moussados author JSON is exact, unique, imports views without changing stats, sockets or loadout", async () => {
   const raw = await load(creaturePath);
-  assert.equal(sha(raw), "1c9ec63d0b5ff99e67cb228039a3bd7420fefc27e7eccc5078a401124027fa3e");
+  assert.equal(raw,await load("data/capture/source-exports/gensrpg-capture-creature-crea_mossback-2026-10-22.json"),"V9 is exact authored export");
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(p => p === creaturePath).length, 1);
   const registry = normalizeCaptureStatRegistryV1(JSON.parse(await load("data/capture/monster-capture-stat-registry.v1.json")));
   const imported = importCaptureTransferJsonV1(raw, {statRegistry:registry});
@@ -58,9 +58,12 @@ test("Moussados author JSON is exact, unique, imports views without changing sta
   assert.equal(draft.level, 1);
   assert.deepEqual(draft.presentation.viewOverrides, {
     player:{displayScale:1.7,position:{x:0,y:0}},
-    opponent:{displayScale:1.2,position:{x:-30,y:35}}
+    opponent:{displayScale:0.9,position:{x:-30,y:35}}
   });
   assert.equal(draft.presentation.profileId, "massive");
+  assert.equal(draft.presentation.version,9);
+  assert.equal(draft.presentation.visual.movementBack.assetId,"pack:capture:creature-golem-moussu-movement-dos-12-v1");
+  assert.equal(draft.presentation.visual.rangedAttackBack.assetId,"pack:capture:creature-golem-moussu-attack-dos-12-v1");
   assert.equal(draft.presentation.sockets.find(s=>s.id==="mouth").back.x, 0.9318691325306842);
   assert.equal(draft.presentation.sockets.find(s=>s.id==="mouth").front.y, 0.6934029261271158);
   assert.equal(statValues.values.health, 200);
