@@ -19,7 +19,7 @@ function apply(mark,charges=1,state=null){
   return applyImmediateTacticalEffectsV1({state:current,actorId:"a",targetId:"b",skill,atMs:0,combatAtMs:0}).state;
 }
 const debuff=(kind,opts={})=>captureMarkerAdvancedThresholdEffectV1({
-  id:"froid",kind,amount:25,durationSeconds:4,maxStacks:50,...opts
+  id:"froid",kind,amount:25,durationSeconds:4,maxStacks:50,repeat:true,...opts
 });
 const marker=({count=1,repeat=true,effects=[debuff("slow_movement")],maxStacks=50}={})=>({
   id:"froid",name:"Froid",polarity:"detrimental",durationMs:20000,maxStacks,
