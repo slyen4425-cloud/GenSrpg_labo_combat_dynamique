@@ -99,6 +99,7 @@ const COMMON_FIELDS = new Set([
   "maxStacks",
   "tags",
   "onStackThreshold",
+  "onStackAdded",
   "periodic"
 ]);
 
@@ -414,6 +415,33 @@ export function normalizeStatusEffectV1(input) {
     output.onStackThreshold = Object.freeze({
       count, consume, ...(repeat === "once" ? {} : {repeat}), effects: Object.freeze(effects)
     });
+  }
+
+  // A marker may apply ordinary native combat effects on EVERY actual stack
+  // addition, independently of the configured threshold. No extra clock.
+  if (value.onStackAdded != null) {
+    if (kind !== "stack_counter" || stacking !== "stack" ||
+        !output.tags.includes("gensrpg:marker:v1")) {
+      throw new RangeError("onStackAdded is only supported by shared markers");
+    }
+    const added = objectValue(value.onStackAdded,"onStackAdded");
+    assertKnownFields(added,new Set(["effects"]),"onStackAdded");
+    if (!Array.isArray(added.effects) || added.effects.length < 1 ||
+        added.effects.length > 12) {
+      throw new RangeError("onStackAdded.effects must contain 1 to 12 effects");
+    }
+    const effects = added.effects.map(rawEffect => {
+      const effect = normalizeSkillEffectV1(rawEffect);
+      if (!["damage","heal","energy_restore","energy_drain","knockout",
+            "apply_status","cleanse","dispel"].includes(effect.kind)) {
+        throw new RangeError("Unsupported onStackAdded effect: " + effect.kind);
+      }
+      if (!["target","self"].includes(effect.targetScope)) {
+        throw new RangeError("onStackAdded targetScope must be target or self");
+      }
+      return effect;
+    });
+    output.onStackAdded = Object.freeze({effects:Object.freeze(effects)});
   }
 
   // Shared markers reuse this native stack counter for periodic damage/heal.
