@@ -131,7 +131,8 @@
       "resistancePctPerPoint": 1,
       "chargeTimeReductionPctPerPoint": 0,
       "maxHpPerPoint": 0,
-      "damageReductionPctPerPoint": 0
+      "damageReductionPctPerPoint": 0,
+      "outgoingDamagePctPerPoint": 0
     },
     {
       "id": "esprit",
