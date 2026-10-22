@@ -1,0 +1,107 @@
+{
+  "source_zip_sha256": "e546b3f9a9a98360f11cff8bee309bbd7089761ca371a568a3d271d08549a06c",
+  "original_sheet_sha256": "a8013d7bf2ee48c5b58586ed4a1f0f2d17118d742e0374c16fe860738893580c",
+  "frames": [
+    {
+      "index": 1,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_01.png",
+      "sha256": "21e49fd6b4c21a24ccbeabbe59c75c23b6f01d5ac89f7a7b1c55603a2deb51b1"
+    },
+    {
+      "index": 2,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_02.png",
+      "sha256": "fe92d0e751e1e0b78efe386191577b2f684fc8481127182fbb4031433548bb24"
+    },
+    {
+      "index": 3,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_03.png",
+      "sha256": "553324e23b06c043cfe6e9a3a59ef6594f4d1e184c70ff45f66c90ffdf8df4df"
+    },
+    {
+      "index": 4,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_04.png",
+      "sha256": "bfb36fabfa07aa7a44ea7289b4cfa59cef1ed4f977b809599bb425a620f98523"
+    },
+    {
+      "index": 5,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_05.png",
+      "sha256": "e773c4dbf7977047bacc779f4d9479fb6d76dc3b4fcfc04948711e219c1d4227"
+    },
+    {
+      "index": 6,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_06.png",
+      "sha256": "edd28e7c0db26fb182148da55babd249287655ec6a7177e93791e803fed5e248"
+    },
+    {
+      "index": 7,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_07.png",
+      "sha256": "1fce798c52348cf88f1e06311aa0ec0fb5abbb6d3d51a1d8b06737c7a15ea432"
+    },
+    {
+      "index": 8,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_08.png",
+      "sha256": "7847c21bc8edd1f209edd11064eed2c37a0c745eb6e144ac33340fc9d8cd16b0"
+    },
+    {
+      "index": 9,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_09.png",
+      "sha256": "d5c77c791fe587ab0f91331c0a3811ee1303f693983b14341e9f69e1fb8a4fc3"
+    },
+    {
+      "index": 10,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_10.png",
+      "sha256": "a32bb801ff42f5dd3b3a91c2096287420b1a43ff80f0498f642f2c973f31881f"
+    },
+    {
+      "index": 11,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_11.png",
+      "sha256": "b532574b258bc8d468a58b25742fd816d64d3a75ecfc9fddc9a04900fa012008"
+    },
+    {
+      "index": 12,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_12.png",
+      "sha256": "0005d6df26729b04ae8b3b92f80338009e925cf228b26746cabf16d820b20c56"
+    },
+    {
+      "index": 13,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_13.png",
+      "sha256": "4ca9181b6953d7addb20007017e24b330ebdbb9a0f24c4b145d2f88234891ed2"
+    },
+    {
+      "index": 14,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_14.png",
+      "sha256": "ea21c0977a3a68c4c9184ebd15d00d49a69ad264eb905f54f8b6c2948b194093"
+    },
+    {
+      "index": 15,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_15.png",
+      "sha256": "0075e1bc1b973215ae6016c943ccdbe90debbc2b095658648c7af42ad37aada1"
+    },
+    {
+      "index": 16,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_16.png",
+      "sha256": "ba7a98fcd4fe5419318cd6a81909007990fcf56fd8e33c5cd1c40ca72a5b8da6"
+    },
+    {
+      "index": 17,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_17.png",
+      "sha256": "daae26ee174e5b88700e9e6c235d906cb55849e0806559367c74e06cd64f1a9d"
+    },
+    {
+      "index": 18,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_18.png",
+      "sha256": "d4427f5d9e173c49ab0c2f93a5de4908f2d8cf1cc2c7115b9736784ff0b3469a"
+    },
+    {
+      "index": 19,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_19.png",
+      "sha256": "55e2452c59dfecb612812ff682afd49a711f99b95e6584997ca6cacb67b97d3a"
+    },
+    {
+      "index": 20,
+      "file": "frames/sprite_skill_kitsune_spirit_shield_20.png",
+      "sha256": "a11edfabe3a41d4aedb239ae2873ed2ceffbfba3e9d074b32d2f548d4bd1e1f6"
+    }
+  ],
+  "atlas_sha256": "6d091b259170ef008c23c89b4f02e0482e4c3bd7b159dfce3c5bab357ac11d51"
+}
