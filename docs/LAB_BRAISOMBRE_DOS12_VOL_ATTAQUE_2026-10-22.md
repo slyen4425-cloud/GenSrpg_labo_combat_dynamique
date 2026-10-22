@@ -9,3 +9,10 @@ Asset IDs : pack:capture:creature-braisombre-movement-dos-12-v1 et pack:capture:
 Départ global-assets@3611cc015206f4bb12614d844fcdafd6122b69f3 ; checkpoint/global-assets-start-braisombre-dos12-2026-10-22 ; branche work/global-assets-braisombre-dos12-2026-10-22. Protéger les runtime Braisombre, les animations FACE, les autres créatures, le moteur, l'UI, main, gh-pages et GenSrpG.
 
 CI npm run ci sur vrais médias et Git SHA final, revue diff, checkpoint GREEN puis publication global-assets FF, sans affectation automatique aux fiches auteur. Une validation smartphone est distincte.
+
+## Import GitHub vérifié
+
+- Workflow d'import GitHub Actions run `39816423656` **SUCCESS** ; commit avec médias physiques `ff5e88c309703b8095656e5527467284ec2d8d52`.
+- Les deux planches source de l'auteur sont conservées intégralement ; 24 PNG RGBA 512×512, deux strips WebP (12 frames chacun), 6 previews animées / planches, 2 manifestes, 2 sources originales ; catalogue 217 assets et 118 sprites, deux IDs Braisombre DOS uniques.
+- Diff vs `global-assets@3611cc015206f4bb12614d844fcdafd6122b69f3` : 43 fichiers, uniquement assets Braisombre DOS, catalogue, tests, documentation et outillage, aucun changement du runtime Braisombre ni des autres créatures.
+- Le lancement d'import a exécuté `npm run ci` avec succès **avant** le commit média. La CI du **HEAD final** reste un gate indépendant avant checkpoint/promotion. Le test Android reste à faire par l'auteur.
