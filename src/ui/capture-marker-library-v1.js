@@ -35,6 +35,10 @@ export function captureMarkerRefreshReferenceChoicesV1(root){
     selectChoices(select,captureMarkerChannelOptionsV1(root,current),
       select.dataset.markerOptional==="true"?(select.dataset.markerOptionalLabel || "Même élément que la capacité"):null,current);
   }
+  for(const select of root.querySelectorAll("[data-marker-stat-choice]")){
+    const current=select.value;
+    selectChoices(select,captureMarkerStatOptionsV1(root,current),"Choisir une caractéristique",current);
+  }
   for(const select of root.querySelectorAll("[data-marker-result-tag-choice]")){
     const current=select.value;
     selectChoices(select,captureMarkerStatusTagOptionsV1(root,current),"Tous les statuts",current);
@@ -248,8 +252,16 @@ function markerFromFields(root){
   const id=captureMarkerAuthorSlugV1(value(root,"marker-id").trim() || name);
   if (!id) throw new RangeError("Donne un nom au marqueur pour créer son identifiant.");
   const on=selected(root,"marker-threshold-enabled")?.checked===true;
-  const effect=on?thresholdEffect(root,id):null;
-  if(on && !effect)throw new RangeError("Choisis un effet de seuil ou désactive le seuil");
+  const repeat=selected(root,"marker-threshold-repeat")?.checked===true;
+  const consume=value(root,"marker-threshold-consume");
+  if(on && repeat && consume!=="keep") throw new RangeError("Pour répéter à chaque charge, conserve les charges après le seuil.");
+  const effects=on?[
+    thresholdEffect(root,id),
+    ...[...(find(root,"marker-threshold-extra-host")?.querySelectorAll("[data-marker-threshold-extra]")??[])]
+      .map((row,index)=>thresholdExtraEffectV1(root,row,id,index+1))
+  ].filter(Boolean):[];
+  if(on && !effects.length)throw new RangeError("Choisis au moins un effet de seuil");
+  if(effects.length>12)throw new RangeError("12 effets maximum par seuil (contrat existant)");
   const periodicOn=selected(root,"marker-periodic-enabled")?.checked===true;
   const periodic=periodicOn ? {
     kind:value(root,"marker-periodic-kind"),
@@ -268,9 +280,11 @@ function markerFromFields(root){
     maxStacks:Number(value(root,"marker-max")),
     ...(periodic == null ? {} : {periodic}),
     ...(value(root,"marker-icon").trim()?{iconAssetId:value(root,"marker-icon").trim()}:{}),
-    ...(effect?{onStackThreshold:{
+    ...(effects.length?{onStackThreshold:{
       count:Number(value(root,"marker-threshold-count")),
-      consume:value(root,"marker-threshold-consume"),effects:[effect]}}:{})
+      consume,
+      ...(repeat?{repeat:"each_addition"}:{}),
+      effects}}:{})
   });
 }
 function loadFields(root,marker){
@@ -278,7 +292,8 @@ function loadFields(root,marker){
     const node=find(root,key);if(!node)return;
     const chosen=String(content??"");
     if(node.matches("select[data-marker-channel-choice]") ||
-       node.matches("select[data-marker-icon]")){
+       node.matches("select[data-marker-icon]") ||
+       node.matches("select[data-marker-stat-choice]")){
       if(chosen && ![...node.options].some(o=>o.value===chosen)){
         const fallback=elem("option",chosen+" (référence importée conservée)");
         fallback.value=chosen;node.append(fallback);
@@ -301,14 +316,22 @@ function loadFields(root,marker){
   toggle.checked=marker.onStackThreshold!=null;
   set("marker-threshold-count",marker.onStackThreshold?.count??2);
   set("marker-threshold-consume",marker.onStackThreshold?.consume??"reset");
-  const effect=marker.onStackThreshold?.effects?.[0];
-  if(!effect)set("marker-threshold-effect","damage");
-  else if(effect.kind==="apply_status"&&effect.status.kind==="stun"){
-    set("marker-threshold-effect","stun");set("marker-threshold-amount",effect.status.durationMs/1000);
-  }else{
-    set("marker-threshold-effect",effect.kind);
-    set("marker-threshold-amount",effect.amount??10);
-    set("marker-threshold-channel",effect.channel??"");
+  const effects=marker.onStackThreshold?.effects??[];
+  const first=markerThresholdFieldsForEffectV1(effects[0]);
+  const choose=find(root,"marker-threshold-effect");
+  choose.dataset.markerOriginal=effects[0]?JSON.stringify(effects[0]):"";
+  set("marker-threshold-effect",first.kind);
+  set("marker-threshold-amount",first.amount);
+  set("marker-threshold-channel",first.channel);
+  set("marker-threshold-status-duration",first.durationSeconds);
+  set("marker-threshold-stat",first.statId);
+  set("marker-threshold-stat-mode",first.statMode);
+  selected(root,"marker-threshold-repeat").checked=
+    marker.onStackThreshold?.repeat==="each_addition";
+  const extraHost=find(root,"marker-threshold-extra-host");
+  if(extraHost){
+    extraHost.replaceChildren();
+    for(const effect of effects.slice(1)) appendMarkerThresholdExtraV1(root,effect);
   }
   captureMarkerRefreshReferenceChoicesV1(root);
   syncVisibility(root);
@@ -328,10 +351,22 @@ function syncVisibility(root){
   const on=selected(root,"marker-threshold-enabled")?.checked;
   const field=find(root,"marker-threshold-fields");
   if(field)field.hidden=!on;
+  const kind=value(root,"marker-threshold-effect");
   const damage=selected(root,"marker-threshold-channel")?.closest("label");
-  if(damage)damage.hidden=value(root,"marker-threshold-effect")!=="damage";
+  if(damage)damage.hidden=kind!=="damage";
   const amount=selected(root,"marker-threshold-amount")?.closest("label");
-  if(amount)amount.hidden=value(root,"marker-threshold-effect")==="knockout";
+  if(amount)amount.hidden=["knockout","silence","immobilize","preserve","none"].includes(kind);
+  const stat=selected(root,"marker-threshold-stat-setting");
+  const statMode=selected(root,"marker-threshold-stat-mode-setting");
+  const usesStat=["reduce_stat","increase_stat"].includes(kind);
+  if(stat)stat.hidden=!usesStat;
+  if(statMode)statMode.hidden=!usesStat;
+  const duration=selected(root,"marker-threshold-status-duration-setting");
+  if(duration)duration.hidden=!Object.hasOwn(ADVANCED_MARKER_STATUS_KINDS_V1,kind)||kind==="stun";
+  const repeat=selected(root,"marker-threshold-repeat");
+  if(repeat && repeat.checked && value(root,"marker-threshold-consume")!=="keep"){
+    repeat.checked=false;
+  }
 }
 function refresh(root,newMarkerId=null){
   const state=sessions.get(root);
@@ -482,6 +517,19 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills,getSta
   }
   listen(find(root,"marker-threshold-enabled"),"change",()=>syncVisibility(root));
   listen(find(root,"marker-threshold-effect"),"change",()=>syncVisibility(root));
+  listen(find(root,"marker-threshold-consume"),"change",()=>syncVisibility(root));
+  listen(find(root,"marker-threshold-repeat"),"change",()=>{
+    if(selected(root,"marker-threshold-repeat").checked){
+      find(root,"marker-threshold-consume").value="keep";
+    }
+    syncVisibility(root);
+  });
+  listen(find(root,"marker-threshold-add-effect"),"click",()=>{
+    const count=find(root,"marker-threshold-extra-host")?.querySelectorAll("[data-marker-threshold-extra]").length??0;
+    if(count>=11){say(root,"Maximum 12 effets au même seuil.","warning");return;}
+    appendMarkerThresholdExtraV1(root);
+    captureMarkerRefreshReferenceChoicesV1(root);
+  });
   listen(find(root,"marker-new"),"click",()=>{
     const sel=selected(root,"marker-library-select");sel.value="";
     loadFields(root,{id:"",name:"",maxStacks:10,polarity:"neutral",durationMs:10000});
@@ -498,11 +546,6 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills,getSta
       const chosen=value(root,"marker-library-select");
       if(existing && chosen!==marker.id){
         throw new RangeError("Ce nom correspond au marqueur déjà enregistré « "+existing.name+" ». Sélectionne-le dans la liste pour le modifier, ou choisis un autre nom.");
-      }
-      // The compact form cannot represent complex, imported multi-effect
-      // thresholds. Never silently erase advanced author configurations.
-      if (existing?.onStackThreshold?.effects?.length > 1) {
-        throw new RangeError("Ce marqueur possède plusieurs effets de seuil : édition rapide bloquée pour éviter toute perte. Le JSON exporté reste intact.");
       }
       const linked=propagateMarker(root,marker);
       markers.set(marker.id,marker);
