@@ -601,6 +601,26 @@ const server = createServer(async (req, res) => {
               get("marker-new").click();
               fill("marker-name","Lenteur avancée");
               fill("marker-max",24);
+              // Independent effect applies already at the FIRST stack, not after threshold.
+              const chargeEnabled=get("marker-charge-enabled");
+              chargeEnabled.checked=true;
+              chargeEnabled.dispatchEvent(new Event("change",{bubbles:true}));
+              fill("marker-charge-effect","reduce_stat");
+              fill("marker-charge-amount",2);
+              fill("marker-charge-status-duration",6);
+              fill("marker-charge-stat-mode","points");
+              if(![...get("marker-charge-stat").options].some(x=>x.value==="esprit"))
+                throw Error("Esprit unavailable for single-charge marker native stat debuff");
+              fill("marker-charge-stat","esprit");
+              const chargeHost=get("marker-charge-extra-host");
+              get("marker-charge-add-effect").click();
+              const chargeExtra=chargeHost.querySelector("[data-marker-charge-extra]");
+              if(!chargeExtra)throw Error("single-charge marker multi-effect authoring not mounted");
+              const chargeExtraKind=chargeExtra.querySelector("[data-marker-extra-kind]");
+              chargeExtraKind.value="slow_cooldown";
+              chargeExtraKind.dispatchEvent(new Event("change",{bubbles:true}));
+              chargeExtra.querySelector("[data-marker-extra-amount]").value="10";
+              chargeExtra.querySelector("[data-marker-extra-duration]").value="6";
               fill("marker-duration",20);
               const thresholdToggle=get("marker-threshold-enabled");
               thresholdToggle.checked=true;
@@ -636,6 +656,11 @@ const server = createServer(async (req, res) => {
               if(!get("marker-library-state").textContent.includes("enregistré"))
                 throw Error("advanced marker save failed: "+get("marker-library-state").textContent);
               fill("marker-library-select","lenteur-avancee");
+              if(!get("marker-charge-enabled").checked ||
+                 get("marker-charge-effect").value!=="reduce_stat" ||
+                 get("marker-charge-stat").value!=="esprit" ||
+                 chargeHost.querySelectorAll("[data-marker-charge-extra]").length!==1)
+                throw Error("individual per-charge status settings did not survive author reload");
               if(get("marker-threshold-count").value!=="3" ||
                  !get("marker-threshold-repeat").checked ||
                  get("marker-threshold-effect").value!=="slow_movement" ||
@@ -650,6 +675,10 @@ const server = createServer(async (req, res) => {
               const exportedAdvanced=advancedBlob?JSON.parse(await advancedBlob.text()):null;
               const advancedEntry=exportedAdvanced?.markers?.find(x=>x.id==="lenteur-avancee");
               if(!advancedEntry ||
+                 advancedEntry.onStackAdded?.effects?.length!==2 ||
+                 advancedEntry.onStackAdded.effects[0]?.status?.kind!=="stat_modifier" ||
+                 advancedEntry.onStackAdded.effects[0]?.status?.statId!=="esprit" ||
+                 advancedEntry.onStackAdded.effects[1]?.status?.kind!=="skill_cooldown_rate_modifier" ||
                  advancedEntry.maxStacks!==24 ||
                  advancedEntry.onStackThreshold?.repeat!=="each_addition" ||
                  advancedEntry.onStackThreshold?.effects?.length!==3 ||
