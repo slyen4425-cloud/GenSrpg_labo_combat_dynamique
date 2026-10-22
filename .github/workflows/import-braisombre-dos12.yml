@@ -1,0 +1,43 @@
+name: Import Braisombre DOS 12 frames
+on:
+  push:
+    branches:
+      - work/global-assets-braisombre-dos12-2026-10-22
+    paths:
+      - scripts/import_braisombre_dos12.py
+      - scripts/braisombre-dos12.test.template.mjs
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    if: github.ref == 'refs/heads/work/global-assets-braisombre-dos12-2026-10-22'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/global-assets-braisombre-dos12-2026-10-22
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pixel-level tooling
+        run: pip install Pillow==11.3.0 numpy==2.2.6 opencv-python-headless==4.12.0.88
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Import exact author ZIP into real images
+        run: python3 scripts/import_braisombre_dos12.py
+      - name: Run all laboratory validation including media sentinel
+        run: npm run ci
+      - name: Commit tested derived media to work branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/library/capture/creatures/braisombre/animations
+          git add data/assets/catalog/global-visual-assets.v1.json
+          git add tests/unit/braisombre-dos12-assets.test.mjs
+          git add docs/LAB_CURRENT_WORK.md
+          git diff --cached --check
+          git commit -m 'assets(capture): importer Braisombre DOS vol attaque 12 frames'
+          git push origin HEAD:work/global-assets-braisombre-dos12-2026-10-22
