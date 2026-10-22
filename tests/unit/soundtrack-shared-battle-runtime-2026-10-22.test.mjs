@@ -16,6 +16,16 @@ import {createCombatSoundtrackPreviewBridgeV1} from "../../src/adapters/audio/co
 
 const source=readFileSync(new URL("../../examples/dom-demo/capture-editor-v2.js",import.meta.url),"utf8");
 const html=readFileSync(new URL("../../examples/dom-demo/capture-editor-v2.html",import.meta.url),"utf8");
+// Fixed integrity reference from private 96 kbps MP3 runtime conversion manifest.
+const EXPECTED_RUNTIME_SHA256=[
+  "a640550734f7c55ea8fe76c58dba064ec3ac1353146f03ad7d9a975daa68edc0",
+  "1dbed1af1b1985519fe5013c4c368a2198c9c42bc0f799c0f4e1aaafc542b3b3",
+  "9c15b6f965c4088683a10e756a903167a2bb5ae99881a20062f78b0c660a4659",
+  "6e2675198e185bb8229403415182285e54b4be95f5beaf8282531e95e235616c",
+  "55995b9c4672b69e58ce7b2c65af6aaa7b43b55995b903b185c0dee22e03250a",
+  "48705e1f87a2d74732151431ff4e2497bf6a19b9b6b1fa8e9e85a4daedf1381b"
+];
+const EXPECTED_RUNTIME_SIZES=[2074952,2433510,2612070,1499530,1829284,1728774];
 test("the six real Battle runtime copies resolve by the existing stable assetIds",()=>{
   assert.equal(filenames.length,6);
   assert.equal(battle.length,6);
@@ -29,8 +39,9 @@ test("the six real Battle runtime copies resolve by the existing stable assetIds
     assert.ok(data.length>100000,"missing or tiny MP3 runtime "+filenames[index]);
     const tag=data.subarray(0,3).toString("ascii");
     assert.ok(tag==="ID3" || data[0]===0xff,"MP3 signature missing "+filenames[index]);
-    assert.equal(statSync(path).size,data.length);
-    assert.equal(createHash("sha256").update(data).digest("hex").length,64);
+    assert.equal(statSync(path).size,EXPECTED_RUNTIME_SIZES[index]);
+    assert.equal(createHash("sha256").update(data).digest("hex"),EXPECTED_RUNTIME_SHA256[index]);
+    assert.equal(catalog.assets.find(x=>x.assetId===id).licenseRef,"author-declared-suno-paid-rights-2026-10-22");
   }
   assert.deepEqual(project.scenes["capture:combat:normal"].music.tracks,battle);
   assert.ok(exploration.every(x=>soundtrackRuntimeAssetV1(x)===null));
@@ -45,8 +56,16 @@ test("any visitor gets a playable authorized runtime URL without local upload",(
   }};
   const timers=new Map();let idx=0;
   const clock={setTimeout(fn,ms){const k=++idx;timers.set(k,[fn,ms]);return k;},clearTimeout(k){timers.delete(k);}};
+  // Node imports resolve import.meta.url to file:, whereas the real GitHub
+  // Pages import resolves to https:. Validate the real resolver in the asset
+  // test above; supply its same filenames with a browser HTTPS base here.
+  const browserResolver=id=>{
+    const asset=soundtrackRuntimeAssetV1(id);
+    const index=battle.indexOf(id);
+    return asset && index>=0 ? {assetId:id,url:"https://example.test/assets/runtime/audio/music-v1/"+filenames[index]} : null;
+  };
   const bridge=createCombatSoundtrackPreviewBridgeV1({
-    project,catalog,output,clock,resolveAudioAsset:soundtrackRuntimeAssetV1
+    project,catalog,output,clock,resolveAudioAsset:browserResolver
   });
   let result=bridge.transitionTo("capture:combat:normal");
   assert.equal(result.status,"playing");
