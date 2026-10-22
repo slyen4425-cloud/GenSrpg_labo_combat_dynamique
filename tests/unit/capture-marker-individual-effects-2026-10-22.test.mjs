@@ -11,7 +11,9 @@ import {effectiveApproachTimingMs,advanceSkillCooldownDeadlinesV1} from "../../s
 import {captureMarkerAdvancedThresholdEffectV1} from "../../src/ui/capture-marker-library-v1.js";
 
 const fighter=id=>({id,maxHp:100,initialHp:100,maxEnergy:20,initialEnergy:20,
-  energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0});
+  energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0,
+  statEffectRulesById:{esprit:{damageChannel:null,resistanceChannel:null,
+    damagePctPerPoint:0,resistancePctPerPoint:0,chargeTimeReductionPctPerPoint:0}}});
 const state=()=>createCombatState({fighters:[fighter("a"),fighter("b")]});
 const status=(kind,amount=10,index=0,opts={})=>captureMarkerAdvancedThresholdEffectV1({
   id:"charge-venin",index,kind,amount,durationSeconds:4,maxStacks:8,repeat:true,
