@@ -7629,8 +7629,13 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
     return asset.assetType === "icon";
   }
   if (role === "movement" || role === "attack") {
-    const kind = captureEditorCreatureVisualKindV1(asset);
-    return kind === role || kind === "model"; // static model remains available for older configs
+    // The selectable catalog contains genuine animated creature sprite strips
+    // only. Legacy static choices are preserved by populateSelect's fallback,
+    // never offered as NEW movement or attack animation options.
+    return captureEditorCreatureVisualKindV1(asset) === role &&
+      asset.assetType === "sprite" &&
+      Number.isInteger(asset.resource?.frameCount) &&
+      asset.resource.frameCount > 1;
   }
 
   if (
@@ -7824,16 +7829,23 @@ function populateSelect(select, assets, role) {
     }
 
     if (creatureAnimationSelector) {
-      // Mobile-native categories; distinguish animations from fallback models.
-      const wanted = role === "movement" ? "movement" : "attack";
-      for (const [kind, label] of [[wanted, role === "movement" ? "Déplacement" : "Attaque de créature"], ["model", "Modèles fixes (compatibilité)"]]) {
-        const items = groupAssets.filter(asset => captureEditorCreatureVisualKindV1(asset) === kind);
-        if (!items.length) continue;
+      // Native mobile combobox groups, no nested optgroups. Element + source
+      // are derived from the ONE catalog; a static illustration never joins
+      // this list, even when tagged "creature" or "movement".
+      const compatible = groupAssets.filter(asset =>
+        captureEditorCreatureVisualKindV1(asset) === role
+      );
+      for (const elementGroup of humanVisualAssetGroupsV1(compatible)) {
         const group = document.createElement("optgroup");
-        group.label = libraryGroup.label + " · " + label;
+        group.label = libraryGroup.label + " · " + elementGroup.label;
         group.dataset.assetOrigin = libraryGroup.id;
-        group.dataset.assetKind = kind;
-        for (const asset of items.sort((a, b) => String(a.label || a.id).localeCompare(String(b.label || b.id), "fr"))) {
+        group.dataset.assetElement = elementGroup.element ?? "none";
+        group.dataset.assetKind = role;
+        for (const asset of [...elementGroup.entries].sort((a,b) =>
+          String(a.label || a.id).localeCompare(
+            String(b.label || b.id), "fr", {sensitivity:"base"}
+          )
+        )) {
           createOption(group, asset.id, asset.label || asset.id);
         }
         select.append(group);
@@ -7868,7 +7880,9 @@ function populateSelect(select, assets, role) {
       createOption(
         select,
         previous,
-        previous + " — hors catalogue"
+        previous + (creatureAnimationSelector
+          ? " — ancien choix (conservé, hors animations)"
+          : " — hors catalogue")
       );
     }
     select.value = previous;
