@@ -1,0 +1,106 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "fleche_spirituel",
+    "description": "Projectile d énergie pur qui ralenti l ennemie",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "fleche_spirituel",
+      "name": "Flèche spirituel",
+      "category": "offensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "spirit",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 0,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "eclat-spirituel",
+            "name": "Éclat spirituel",
+            "polarity": "detrimental",
+            "durationMs": 20000,
+            "maxStacks": 3,
+            "onStackThreshold": {
+              "count": 3,
+              "consume": "reset",
+              "effects": [
+                {
+                  "kind": "damage",
+                  "targetScope": "target",
+                  "amount": 10,
+                  "channel": "esprit"
+                }
+              ]
+            }
+          },
+          "charges": 1
+        },
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 9,
+          "channel": "spirit",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        }
+      ]
+    },
+    "presentation": null
+  }
+}
