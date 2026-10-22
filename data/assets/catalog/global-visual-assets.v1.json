@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 217,
+    "assets": 218,
     "icons": 79,
-    "sprites": 118,
+    "sprites": 119,
     "fx": 2,
     "portraits": 13,
     "backgrounds": 5,
@@ -7230,6 +7230,48 @@
         "mime": "image/webp",
         "frameCount": 12,
         "frameMs": 100,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-kitsune-lunaire-spirit-shield-01",
+      "label": "Kitsune lunaire — Bouclier spirituel (sphère complète)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "spirit",
+        "shield",
+        "barrier",
+        "lunar",
+        "kitsune",
+        "sakura",
+        "pink",
+        "purple",
+        "animated",
+        "hold-last-frame"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/kitsune_spirit_shield/atlases/sprite_skill_kitsune_spirit_shield_atlas_01.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 80,
         "playbackMode": "once"
       },
       "compatibility": {
