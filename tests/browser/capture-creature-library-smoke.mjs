@@ -1148,7 +1148,7 @@ const server = createServer(async (req, res) => {
               if (!["Feu","Eau"].every(x=>skillGroups.includes(x)))
                 throw Error("skill groups: "+skillGroups.join(","));
               const ids=[...creature.options].map(x=>x.value).filter(Boolean);
-              if(ids.length!==103 || new Set(ids).size!==103)
+              if(ids.length!==104 || new Set(ids).size!==104)
                 throw Error("creature identity count "+ids.length);
               creature.value="crea_aquafin";
               creature.dispatchEvent(new Event("change",{bubbles:true}));
@@ -1167,7 +1167,7 @@ const server = createServer(async (req, res) => {
               const assetGroups=fx ? groups(fx) : [];
               if(assetGroups.length && assetGroups.some(x=>!x.includes(" · ")))
                 throw Error("asset provenance + element grouping missing: "+assetGroups.join(","));
-              document.body.dataset.elementLibraryProbe="ok:103:multi:skill:asset";
+              document.body.dataset.elementLibraryProbe="ok:104:multi:skill:asset";
             }catch(error){document.body.dataset.elementLibraryProbe="fail:"+error.message;}
           },200);
         });
@@ -1462,7 +1462,7 @@ function assertCreatures(dom, scenario) {
   if (!select) throw new Error(scenario + ": creature library <select> missing");
   const options = [...select[1].matchAll(/<option\b[^>]*value="([^"]+)"/g)]
     .map((match) => match[1]).filter(Boolean);
-  const required = ["crea_maraileron", "crea_mossback", "crea-loup"];
+  const required = ["crea_maraileron", "crea_mossback", "crea-loup", "kitsune_lunaire"];
   for (const id of required) {
     if (!options.includes(id)) {
       const libraryStatus = dom.match(/data-creature-library-state[^>]*>([^<]*)/i)?.[1]?.trim() ?? "not mounted";
@@ -1473,8 +1473,8 @@ function assertCreatures(dom, scenario) {
         "; jsError=" + error.slice(0,600));
     }
   }
-  if (options.length !== 103 || new Set(options).size !== 103) {
-    throw new Error(scenario + ": expected 103 unique creature ids; got " + options.length);
+  if (options.length !== 104 || new Set(options).size !== 104) {
+    throw new Error(scenario + ": expected 104 unique creature ids; got " + options.length);
   }
   console.log(scenario + ": " + options.length + " active creatures, all required IDs present");
 }
@@ -1598,15 +1598,15 @@ try {
   const elementDom=await dumpDom(url+"?verify-element-library=1");
   assertCreatures(elementDom,"element groups actual browser bootstrap");
   const elementProbe=elementDom.match(/data-element-library-probe="([^"]+)"/)?.[1] ?? "missing";
-  if(elementProbe!=="ok:103:multi:skill:asset")
+  if(elementProbe!=="ok:104:multi:skill:asset")
     throw Error("Real editor element grouping / identity regression: "+elementProbe);
-  console.log("Element library UI: 103 unique creatures, fire/water/air groups, multi-element and same-name IDs retained, asset groups");
+  console.log("Element library UI: 104 unique creatures, fire/water/air groups, multi-element and same-name IDs retained, asset groups");
   const markerDom=await dumpDom(url+"?verify-markers=1");
   assertCreatures(markerDom,"marker library and active skill editor real browser bootstrap");
   const markerProbe=markerDom.match(/data-marker-probe="([^"]+)"/)?.[1] ?? "missing";
   if(markerProbe!=="ok:library:periodic:cost:placement:consume:roundtrip:combat-export:permanent")
     throw Error("Native marker authoring / skill roundtrip regression: "+markerProbe);
-  console.log("Shared marker library and skill UI: real Chrome authoring, 103 creatures, placement/consume and combat export");
+  console.log("Shared marker library and skill UI: real Chrome authoring, 104 creatures, placement/consume and combat export");
   const guardDom=await dumpDom(url+"?verify-creature-reaction=1");
   assertCreatures(guardDom,"per-creature reaction real browser bootstrap");
   const guardProbe=guardDom.match(/data-creature-reaction-probe="([^"]+)"/)?.[1] ?? "missing";
@@ -1637,7 +1637,7 @@ try {
   const reflectionProbe=reflectionDom.match(/data-damage-reflection-probe="([^"]+)"/)?.[1] ?? "missing";
   if(reflectionProbe!=="ok:35:12000")
     throw Error("Human Editor saved reflection status is missing from real export: "+reflectionProbe);
-  console.log("Damage reflection real editor: 35% during 12s saved and exported, 103 creatures retained");
+  console.log("Damage reflection real editor: 35% during 12s saved and exported, 104 creatures retained");
   const zoneStatusDom=await dumpDom(url+"?verify-zone-status=1");
   assertCreatures(zoneStatusDom,"zone status actual editor bootstrap");
   const zoneStatusProbe=zoneStatusDom.match(/data-zone-status-probe="([^"]+)"/)?.[1] ?? "missing";
