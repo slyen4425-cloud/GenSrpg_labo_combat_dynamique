@@ -19,7 +19,7 @@ export function normalizeCaptureMarkerV1(input) {
   }
   const allowed = new Set([
     "id", "name", "polarity", "durationMs", "permanent", "maxStacks",
-    "iconAssetId", "onStackThreshold", "periodic"
+    "iconAssetId", "onStackThreshold", "onStackAdded", "periodic"
   ]);
   for (const key of Object.keys(input)) {
     if (!allowed.has(key)) throw new TypeError("Unknown marker field: " + key);
@@ -51,7 +51,8 @@ export function normalizeCaptureMarkerV1(input) {
     maxStacks: input.maxStacks ?? 10,
     tags: [CAPTURE_MARKER_TAG_V1, CAPTURE_MARKER_ID_PREFIX_V1 + id],
     ...(input.periodic == null ? {} : {periodic:input.periodic}),
-    ...(input.onStackThreshold == null ? {} : {onStackThreshold: input.onStackThreshold})
+    ...(input.onStackThreshold == null ? {} : {onStackThreshold: input.onStackThreshold}),
+    ...(input.onStackAdded == null ? {} : {onStackAdded: input.onStackAdded})
   });
   return Object.freeze({
     id,
@@ -62,7 +63,8 @@ export function normalizeCaptureMarkerV1(input) {
     maxStacks: status.maxStacks,
     ...(iconAssetId === null ? {} : {iconAssetId}),
     ...(status.periodic == null ? {} : {periodic: status.periodic}),
-    ...(status.onStackThreshold == null ? {} : {onStackThreshold: status.onStackThreshold})
+    ...(status.onStackThreshold == null ? {} : {onStackThreshold: status.onStackThreshold}),
+    ...(status.onStackAdded == null ? {} : {onStackAdded: status.onStackAdded})
   });
 }
 
@@ -79,7 +81,8 @@ export function markerStatusDefinitionV1(marker) {
     maxStacks: entry.maxStacks,
     tags: [CAPTURE_MARKER_TAG_V1, CAPTURE_MARKER_ID_PREFIX_V1 + entry.id],
     ...(entry.periodic == null ? {} : {periodic:entry.periodic}),
-    ...(entry.onStackThreshold == null ? {} : {onStackThreshold: entry.onStackThreshold})
+    ...(entry.onStackThreshold == null ? {} : {onStackThreshold: entry.onStackThreshold}),
+    ...(entry.onStackAdded == null ? {} : {onStackAdded: entry.onStackAdded})
   });
 }
 
