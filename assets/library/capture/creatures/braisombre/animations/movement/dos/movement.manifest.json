@@ -1,0 +1,305 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "braisombre",
+  "action": "movement",
+  "motionKind": "flight",
+  "view": "dos",
+  "assetId": "pack:capture:creature-braisombre-movement-dos-12-v1",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 90,
+  "playbackMode": "loop",
+  "authorApproved": true,
+  "approvalStatus": "approved_for_ingame_trial",
+  "sourceSpriteSheet": "sources/BRAISOMBRE_DOS_VOL_12F_APPROUVE_2026-10-22.png",
+  "sourceSpriteSheetSha256": "92af934246987d522c563463dabecd1cb1e1f13cbf1829b4895b1f5ee57b3539",
+  "sourceLayout": [
+    4,
+    3
+  ],
+  "isolation": "connected-alpha-silhouette",
+  "isolationAlphaSeed": 8,
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/braisombre_movement_dos_01.png",
+      "sha256": "a060a45a43b6ff73afef9cf0664ed34fd2b089c829b789a3ddf8418c6d24b611",
+      "sourceGridCell": [
+        0,
+        0
+      ],
+      "sourceComponentAreaPx": 53620,
+      "sourceComponentBoundingBox": [
+        17,
+        16,
+        328,
+        364
+      ],
+      "marginsLTRB": [
+        98,
+        80,
+        99,
+        80
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/braisombre_movement_dos_02.png",
+      "sha256": "b8d6ea088127b42dad2e9626f35263beb8052d2aa9108be3c487320549475c13",
+      "sourceGridCell": [
+        1,
+        0
+      ],
+      "sourceComponentAreaPx": 50759,
+      "sourceComponentBoundingBox": [
+        359,
+        41,
+        707,
+        363
+      ],
+      "marginsLTRB": [
+        80,
+        93,
+        80,
+        93
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/braisombre_movement_dos_03.png",
+      "sha256": "f4c4cb63f3a18e9602c231c74b7dc2c8cbb4a1bb46125f5d8550d2f0c9ec9ca9",
+      "sourceGridCell": [
+        2,
+        0
+      ],
+      "sourceComponentAreaPx": 49489,
+      "sourceComponentBoundingBox": [
+        710,
+        65,
+        1093,
+        355
+      ],
+      "marginsLTRB": [
+        64,
+        112,
+        64,
+        112
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/braisombre_movement_dos_04.png",
+      "sha256": "e4d402e67f7da42f1a6bda9cba62172fb5e356effddc0b8b32aa6ecbc80ef86d",
+      "sourceGridCell": [
+        3,
+        0
+      ],
+      "sourceComponentAreaPx": 41445,
+      "sourceComponentBoundingBox": [
+        1094,
+        108,
+        1441,
+        362
+      ],
+      "marginsLTRB": [
+        80,
+        127,
+        81,
+        128
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/braisombre_movement_dos_05.png",
+      "sha256": "145142bdd31977158e607da6f41040804a09968e26bf4e95f54b97d29603e393",
+      "sourceGridCell": [
+        0,
+        1
+      ],
+      "sourceComponentAreaPx": 43172,
+      "sourceComponentBoundingBox": [
+        7,
+        462,
+        392,
+        707
+      ],
+      "marginsLTRB": [
+        64,
+        134,
+        64,
+        134
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/braisombre_movement_dos_06.png",
+      "sha256": "33cbd20ec87394bfddd7cf0243e955dde90bbaa9e70be1ddb950df493b15d84e",
+      "sourceGridCell": [
+        1,
+        1
+      ],
+      "sourceComponentAreaPx": 47572,
+      "sourceComponentBoundingBox": [
+        397,
+        416,
+        735,
+        705
+      ],
+      "marginsLTRB": [
+        85,
+        109,
+        85,
+        110
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/braisombre_movement_dos_07.png",
+      "sha256": "399c7e8ac665bf37c2340eddd58f213ef80595ce2f736c3fbd47818c2d5e0ef4",
+      "sourceGridCell": [
+        2,
+        1
+      ],
+      "sourceComponentAreaPx": 48723,
+      "sourceComponentBoundingBox": [
+        752,
+        392,
+        1081,
+        709
+      ],
+      "marginsLTRB": [
+        89,
+        96,
+        90,
+        96
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/braisombre_movement_dos_08.png",
+      "sha256": "49f683bdcc458ac999275bb41986e9af8ecf51c85654a42e2fa7ded443df67d2",
+      "sourceGridCell": [
+        3,
+        1
+      ],
+      "sourceComponentAreaPx": 49294,
+      "sourceComponentBoundingBox": [
+        1113,
+        378,
+        1436,
+        704
+      ],
+      "marginsLTRB": [
+        92,
+        91,
+        93,
+        92
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/braisombre_movement_dos_09.png",
+      "sha256": "889798a73638e50a1bb013cdf962c131ad6410f574b1de64ec04426e98e5b54e",
+      "sourceGridCell": [
+        0,
+        2
+      ],
+      "sourceComponentAreaPx": 51327,
+      "sourceComponentBoundingBox": [
+        33,
+        718,
+        334,
+        1068
+      ],
+      "marginsLTRB": [
+        104,
+        79,
+        104,
+        79
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/braisombre_movement_dos_10.png",
+      "sha256": "7312290ff02e4e0f660cc2fe4620b8e157170198cc993b27fb7fd88d0c6941aa",
+      "sourceGridCell": [
+        1,
+        2
+      ],
+      "sourceComponentAreaPx": 51311,
+      "sourceComponentBoundingBox": [
+        380,
+        732,
+        709,
+        1065
+      ],
+      "marginsLTRB": [
+        89,
+        88,
+        90,
+        88
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/braisombre_movement_dos_11.png",
+      "sha256": "06e1b0be3578b27b613441eb351fd5888a900dffc24459df60eef80d03f90665",
+      "sourceGridCell": [
+        2,
+        2
+      ],
+      "sourceComponentAreaPx": 49593,
+      "sourceComponentBoundingBox": [
+        736,
+        757,
+        1091,
+        1060
+      ],
+      "marginsLTRB": [
+        76,
+        102,
+        77,
+        103
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/braisombre_movement_dos_12.png",
+      "sha256": "d7d27e5ae235e4d40bf411c3733db8c93669adc4227947fc0497051d69f69b6e",
+      "sourceGridCell": [
+        3,
+        2
+      ],
+      "sourceComponentAreaPx": 52693,
+      "sourceComponentBoundingBox": [
+        1112,
+        717,
+        1415,
+        1064
+      ],
+      "marginsLTRB": [
+        103,
+        81,
+        103,
+        81
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/braisombre_flight_dos_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "93aefe01d8392d9153b5b031ad8d486cc13add20817fe80187bb40474f6864cd"
+  },
+  "preview": "previews/braisombre_flight_dos_12_preview.gif",
+  "previews": {
+    "gif": "previews/braisombre_flight_dos_12_preview.gif",
+    "webp": "previews/braisombre_flight_dos_12_preview_transparent.webp",
+    "planche": "previews/braisombre_flight_dos_12_planche.png"
+  }
+}

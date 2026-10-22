@@ -1,3 +1,14 @@
+## 2026-10-22 — Braisombre DOS, 12 frames Vol et Attaque
+
+- Source auteur réelle : \`_incoming/BRAISOMBRE_DOS_12F_VOL_ATTAQUE_APPROUVE_2026-10-22.zip\` (SHA256 \`e991b4e403cc40bd56a6b87577062aff3bc8fa3745eae95c04ae1e33473ea6a4\`, Git blob \`9db159a1e82ebf1005e0099f2a702e3598ad618b\`). Deux planches approuvées 1448×1086 RGBA, 12 silhouettes chacune.
+- Base \`global-assets@3611cc015206f4bb12614d844fcdafd6122b69f3\`, checkpoint départ \`checkpoint/global-assets-start-braisombre-dos12-2026-10-22\`, branche \`work/global-assets-braisombre-dos12-2026-10-22\`.
+- Propriétaire : catalogue unique visuel Capture, IDs \`pack:capture:creature-braisombre-movement-dos-12-v1\` et \`pack:capture:creature-braisombre-attack-dos-12-v1\`. Import : 24 PNG RGBA 512px, deux atlases WebP, six previews, deux manifestes et deux sources. Découpe par silhouettes pour préserver les ailes hors cellules.
+- Protégés : runtime Braisombre, deux animations FACE, autres créatures, moteurs et UI, \`main\`, \`gh-pages\`, GenSrpG et Exploration.
+- Gates : contrôle médias réels, tests source/sha/alpha/frames, CI SHA final, checkpoint GREEN avant fast-forward \`global-assets\`. Le catalogue ne vaut pas affectation automatique ni essai réel en combat.
+- Détail : \`docs/LAB_BRAISOMBRE_DOS12_VOL_ATTAQUE_2026-10-22.md\`.
+
+---
+
 ## 2026-10-22 — Lot des 5 icônes spirituelles Capture (création et publication)
 
 - **Demande** : déposer les cinq icônes approuvées Onde spirituelle, Flèche spirituelle, Charge spirituelle, Sangsue, Soins spirituels à leur emplacement canonique sur GitHub.
