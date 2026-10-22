@@ -135,7 +135,8 @@ test("Appearance has five accessible disclosure chapters, with both motion contr
   assert.match(group,/data-creature-movement-visual/);
   assert.match(group,/data-creature-ranged-attack-visual/);
   assert.match(css,/creature-appearance-group > summary:focus-visible/);
-  assert.equal(captureEditorAssetMatchesRoleV1({mediaType:"image",assetType:"sprite",category:"movement",compatibility:{uses:["editor"]}},"movement"),true);
+  assert.equal(captureEditorAssetMatchesRoleV1({mediaType:"image",assetType:"sprite",category:"movement",resource:{frameCount:12},compatibility:{uses:["editor"]}},"movement"),true);
+  assert.equal(captureEditorAssetMatchesRoleV1({mediaType:"image",assetType:"sprite",category:"movement",resource:{frameCount:1},compatibility:{uses:["editor"]}},"movement"),false);
 });
 function fixture(){
   const listeners=[];
