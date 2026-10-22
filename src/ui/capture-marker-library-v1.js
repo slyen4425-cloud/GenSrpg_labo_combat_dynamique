@@ -183,10 +183,24 @@ function thresholdEffect(root,id){
   });
 }
 
-function appendMarkerThresholdExtraV1(root,existing=null) {
-  const host=find(root,"marker-threshold-extra-host");
+function markerIndividualEffectV1(root,id) {
+  const pick=find(root,"marker-charge-effect");
+  return captureMarkerAdvancedThresholdEffectV1({
+    id:"charge-"+id,index:0,kind:pick.value,
+    amount:value(root,"marker-charge-amount"),
+    durationSeconds:value(root,"marker-charge-status-duration"),
+    statId:value(root,"marker-charge-stat"),
+    statMode:value(root,"marker-charge-stat-mode"),
+    maxStacks:Number(value(root,"marker-max")),repeat:true,
+    targetScope:"target",channel:value(root,"marker-charge-channel"),
+    original:pick.dataset.markerOriginal?JSON.parse(pick.dataset.markerOriginal):null
+  });
+}
+
+function appendMarkerThresholdExtraV1(root,existing=null,mode="threshold") {
+  const host=find(root,mode==="charge"?"marker-charge-extra-host":"marker-threshold-extra-host");
   if (!host) return null;
-  const row=elem("div");row.dataset.markerThresholdExtra="true";
+  const row=elem("div");row.dataset[mode==="charge"?"markerChargeExtra":"markerThresholdExtra"]="true";
   row.className="skill-status-config__grid";
   const details=markerThresholdFieldsForEffectV1(existing);
   row.dataset.markerOriginal=existing?JSON.stringify(existing):"";
@@ -202,7 +216,7 @@ function appendMarkerThresholdExtraV1(root,existing=null) {
     for(const [id,label] of options){const option=elem("option",label);option.value=id;pick.append(option);}
     pick.value=chosen;row.append(labeled(title,pick));return pick;
   };
-  const template=find(root,"marker-threshold-effect");
+  const template=find(root,mode==="charge"?"marker-charge-effect":"marker-threshold-effect");
   const options=[...template.options].map(o=>[o.value,o.textContent]);
   const kind=makeSelect("markerExtraKind","Type d'effet",options,details.kind);
   makeSelect("markerExtraTarget","Sur",[["target","Porteur des charges"],["self","Lanceur"]],details.targetScope);
@@ -234,14 +248,14 @@ function appendMarkerThresholdExtraV1(root,existing=null) {
   host.append(row);return row;
 }
 
-function thresholdExtraEffectV1(root,row,id,index) {
+function thresholdExtraEffectV1(root,row,id,index,perCharge=false) {
   const get=key=>row.querySelector("[data-"+key+"]")?.value??"";
   return captureMarkerAdvancedThresholdEffectV1({
     id,index,kind:get("marker-extra-kind"),amount:get("marker-extra-amount"),
     durationSeconds:get("marker-extra-duration"),
     statId:get("marker-extra-stat"),statMode:get("marker-extra-stat-mode"),
     targetScope:get("marker-extra-target"),channel:get("marker-extra-channel"),
-    repeat:selected(root,"marker-threshold-repeat")?.checked===true,
+    repeat:perCharge||selected(root,"marker-threshold-repeat")?.checked===true,
     maxStacks:Number(value(root,"marker-max")),
     original:row.dataset.markerOriginal?JSON.parse(row.dataset.markerOriginal):null
   });
@@ -262,6 +276,14 @@ function markerFromFields(root){
   ].filter(Boolean):[];
   if(on && !effects.length)throw new RangeError("Choisis au moins un effet de seuil");
   if(effects.length>12)throw new RangeError("12 effets maximum par seuil (contrat existant)");
+  const chargeOn=selected(root,"marker-charge-enabled")?.checked===true;
+  const chargeEffects=chargeOn?[
+    markerIndividualEffectV1(root,id),
+    ...[...(find(root,"marker-charge-extra-host")?.querySelectorAll("[data-marker-charge-extra]")??[])]
+      .map((row,index)=>thresholdExtraEffectV1(root,row,"charge-"+id,index+1,true))
+  ].filter(Boolean):[];
+  if(chargeOn&&!chargeEffects.length)throw new RangeError("Choisis au moins un effet individuel");
+  if(chargeEffects.length>12)throw new RangeError("12 effets maximum par charge");
   const periodicOn=selected(root,"marker-periodic-enabled")?.checked===true;
   const periodic=periodicOn ? {
     kind:value(root,"marker-periodic-kind"),
@@ -279,6 +301,7 @@ function markerFromFields(root){
       : {durationMs:Math.round(Number(value(root,"marker-duration"))*1000)}),
     maxStacks:Number(value(root,"marker-max")),
     ...(periodic == null ? {} : {periodic}),
+    ...(chargeEffects.length?{onStackAdded:{effects:chargeEffects}}:{}),
     ...(value(root,"marker-icon").trim()?{iconAssetId:value(root,"marker-icon").trim()}:{}),
     ...(effects.length?{onStackThreshold:{
       count:Number(value(root,"marker-threshold-count")),
@@ -312,6 +335,22 @@ function loadFields(root,marker){
   set("marker-periodic-seconds",(marker.periodic?.intervalMs??5000)/1000);
   set("marker-periodic-mode",marker.periodic?.damageMode??"fixed");
   set("marker-periodic-channel",marker.periodic?.channel??"physical");
+  const chargeEffects=marker.onStackAdded?.effects??[];
+  selected(root,"marker-charge-enabled").checked=chargeEffects.length>0;
+  const firstCharge=markerThresholdFieldsForEffectV1(chargeEffects[0]);
+  const chargePick=find(root,"marker-charge-effect");
+  chargePick.dataset.markerOriginal=chargeEffects[0]?JSON.stringify(chargeEffects[0]):"";
+  set("marker-charge-effect",firstCharge.kind);
+  set("marker-charge-amount",firstCharge.amount);
+  set("marker-charge-channel",firstCharge.channel);
+  set("marker-charge-status-duration",firstCharge.durationSeconds);
+  set("marker-charge-stat",firstCharge.statId);
+  set("marker-charge-stat-mode",firstCharge.statMode);
+  const chargeHost=find(root,"marker-charge-extra-host");
+  if(chargeHost){
+    chargeHost.replaceChildren();
+    for(const effect of chargeEffects.slice(1))appendMarkerThresholdExtraV1(root,effect,"charge");
+  }
   const toggle=selected(root,"marker-threshold-enabled");
   toggle.checked=marker.onStackThreshold!=null;
   set("marker-threshold-count",marker.onStackThreshold?.count??2);
@@ -348,6 +387,21 @@ function syncVisibility(root){
   const channel=selected(root,"marker-periodic-channel-setting");
   if(mode)mode.hidden=!showDamage;
   if(channel)channel.hidden=!showDamage||value(root,"marker-periodic-mode")!=="combat";
+  const chargeOn=selected(root,"marker-charge-enabled")?.checked===true;
+  const chargeBox=find(root,"marker-charge-fields");
+  if(chargeBox)chargeBox.hidden=!chargeOn;
+  const chargeKind=value(root,"marker-charge-effect");
+  const chargeChannel=selected(root,"marker-charge-channel-setting");
+  if(chargeChannel)chargeChannel.hidden=chargeKind!=="damage";
+  const chargeAmount=selected(root,"marker-charge-amount")?.closest("label");
+  if(chargeAmount)chargeAmount.hidden=["knockout","silence","immobilize","preserve","none"].includes(chargeKind);
+  const chargeStat=["reduce_stat","increase_stat"].includes(chargeKind);
+  const chargeStatField=selected(root,"marker-charge-stat-setting");
+  const chargeStatMode=selected(root,"marker-charge-stat-mode-setting");
+  if(chargeStatField)chargeStatField.hidden=!chargeStat;
+  if(chargeStatMode)chargeStatMode.hidden=!chargeStat;
+  const chargeDuration=selected(root,"marker-charge-duration-setting");
+  if(chargeDuration)chargeDuration.hidden=!Object.hasOwn(ADVANCED_MARKER_STATUS_KINDS_V1,chargeKind)||chargeKind==="stun";
   const on=selected(root,"marker-threshold-enabled")?.checked;
   const field=find(root,"marker-threshold-fields");
   if(field)field.hidden=!on;
@@ -515,6 +569,14 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills,getSta
   for(const key of ["marker-permanent","marker-periodic-enabled","marker-periodic-kind","marker-periodic-mode"]) {
     listen(find(root,key),"change",()=>syncVisibility(root));
   }
+  listen(find(root,"marker-charge-enabled"),"change",()=>syncVisibility(root));
+  listen(find(root,"marker-charge-effect"),"change",()=>syncVisibility(root));
+  listen(find(root,"marker-charge-add-effect"),"click",()=>{
+    const count=find(root,"marker-charge-extra-host")?.querySelectorAll("[data-marker-charge-extra]").length??0;
+    if(count>=11){say(root,"Maximum 12 effets par charge.","warning");return;}
+    appendMarkerThresholdExtraV1(root,null,"charge");
+    captureMarkerRefreshReferenceChoicesV1(root);
+  });
   listen(find(root,"marker-threshold-enabled"),"change",()=>syncVisibility(root));
   listen(find(root,"marker-threshold-effect"),"change",()=>syncVisibility(root));
   listen(find(root,"marker-threshold-consume"),"change",()=>syncVisibility(root));
