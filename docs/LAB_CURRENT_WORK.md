@@ -1,4 +1,4 @@
-## 2026-10-22 — Kitsune lunaire : aura / charge / projectile / impact Sakura (IMPORT PRÉPARÉ, MÉDIAS EN ATTENTE)
+## 2026-10-22 — Kitsune lunaire : aura / charge / projectile / impact Sakura (ASSETS IMPORTÉS SUR BRANCHE ; CONTRÔLE DE PUBLICATION)
 
 - **Objet** : découper les quatre planches déjà approuvées (sans régénération), 20 frames 512×512 RGBA chacune, puis construire quatre strips WebP, manifester quatre IDs et rendre les sprites disponibles aux sélecteurs Capture via le catalogue unique.
 - **Propriétaire** : Asset Input + bibliothèque `global-assets`. Aucun changement du moteur ou de la fiche creature.
@@ -8,8 +8,8 @@
 - **Protégé** : `main`, `gh-pages`, `Zombicide-40k`, toutes autres créatures/compétences, règles de combat, éditeur et fichiers `configuredCreatures`/`configuredSkills`. Ne pas lier automatiquement l'asset à une compétence inexistante.
 - **IDs prévus** : `pack:capture:sprite-kitsune-lunaire-{aura,cast,projectile,impact}-01`. Boucle : aura/projectile ; lecture unique : cast/impact. Durées réglables par données 85/70/55/60 ms.
 - **QA locale** : script exécuté avec succès sur les vrais médias ; 80 PNG / 4 WebP / 4 IDs sans collision ; contrôle alpha et marges ; vérification des 20 SHA distincts pour chaque séquence. Ce test local ne vaut **pas** CI GitHub ni validation en jeu.
-- **Passage GitHub** : importer l'archive exacte sur la branche isolée dans `_incoming/` déclenche GitHub Actions, qui vérifie SHA256, découpe, publie les médias et IDs sur cette **branche**, supprime le ZIP, puis lance `npm run ci` avant commit. Aucune publication sur `global-assets` et aucun checkpoint GREEN tant que le ZIP n'est pas présent, la CI verte et le vrai rendu vérifié.
-- **Risque restant** : transfert du ZIP binaire de l'environnement de travail vers le dépôt GitHub ; la connexion fournit lecture/commits texte, pas d'accès direct aux octets locaux via `mcp__GitHub__create_file`. Ne pas annoncer de médias publiés avant apparition des vrais binaires dans GitHub.
+- **Import GitHub réel** : archive reçue puis vérifiée et supprimée après extraction par workflow `39785984524` SUCCESS (GitHub Actions), SHA de commit des médias `485126f2b278d5f014cc1071d12f916629c39814`. **80 PNG physiques + 4 atlases WebP physiques**, quatre manifestes rôles et SHA de provenance ; catalogue passe de 204 assets / 110 sprites à 208 assets / 114 sprites, IDs uniques. Les 92 changements de la branche sont limités aux médias du Kitsune et aux fichiers documentés du lot. Le workflow a exécuté `npm run ci` SUCCESS sur les médias avant de committer. Une nouvelle CI est requise sur le dernier SHA documentaire puis publication fast-forward de `global-assets` si elle réussit. Aucune validation visuelle en jeu mobile revendiquée ; la sélection via le catalogue n'est pas une affectation automatique à une capacité.
+- **Statut** : transfert binaire effectué par l'auteur, médias importés physiquement et catalogue inscrit sur la branche isolée ; publication officielle et essai réel en jeu restent deux étapes distinctes. Point à valider : accès des menus éditeur aux nouveaux ID une fois `global-assets` actualisé.
 
 ---
 
