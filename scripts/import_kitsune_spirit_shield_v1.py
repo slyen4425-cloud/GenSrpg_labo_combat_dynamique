@@ -102,7 +102,7 @@ def main():
                  "frameWidth":384,"frameHeight":384},
         "source":{"file":INCOMING.name,"sha256":ZIP_SHA256,
                   "original_sheet_file":"PLANCHE_bouclier_spirituel_orbe_20f.png",
-                  "original_sheet_sha256":SOURCE_SHA256,"pixel_size":[1402,1122],
+                  "original_sheet_sha256":SOURCE_SHA256,"pixel_size":[1402,1122],"grid":[5,4],
                   "frame_pngs_preserved_byte_for_byte":True,
                   "note":"20 original author-approved 512px PNGs, no re-generation or re-slicing. Source sheet originally 1402x1122, 5x4."}
     }
