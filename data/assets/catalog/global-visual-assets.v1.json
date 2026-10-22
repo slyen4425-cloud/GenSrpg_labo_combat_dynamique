@@ -14,8 +14,8 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 210,
-    "icons": 74,
+    "assets": 215,
+    "icons": 79,
     "sprites": 116,
     "fx": 2,
     "portraits": 13,
@@ -6993,6 +6993,166 @@
         "frameCount": 12,
         "frameMs": 100,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-onde-spirituelle-01",
+      "label": "Onde spirituelle",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "spirit",
+        "reflect",
+        "mirror",
+        "damage"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (user-approved spirit icons, WebP optimized)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_onde_spirituelle_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-fleche-spirituelle-01",
+      "label": "Flèche spirituelle",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "spirit",
+        "projectile",
+        "magic",
+        "attack"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (user-approved spirit icons, WebP optimized)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_fleche_spirituelle_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-charge-spirituelle-01",
+      "label": "Charge spirituelle",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "spirit",
+        "charge",
+        "melee",
+        "attack"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (user-approved spirit icons, WebP optimized)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_charge_spirituelle_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-sangsue-01",
+      "label": "Sangsue",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "spirit",
+        "drain",
+        "leech",
+        "debuff"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (user-approved spirit icons, WebP optimized)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_sangsue_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-soins-spirituels-01",
+      "label": "Soins spirituels",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "spirit",
+        "heal",
+        "support",
+        "magic"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (user-approved spirit icons, WebP optimized)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_soins_spirituels_01.webp",
+        "mime": "image/webp"
       },
       "compatibility": {
         "uses": [

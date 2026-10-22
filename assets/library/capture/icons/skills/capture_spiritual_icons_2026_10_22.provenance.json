@@ -1,0 +1,75 @@
+{
+  "schema": "capture-spiritual-skill-icon-provenance-v1",
+  "date": "2026-10-22",
+  "owner": "global-assets",
+  "sourceType": "ChatGPT generated five-icon sheet; approved by author; five isolated PNG 512x512 sources",
+  "sourceDimensions": [
+    512,
+    512
+  ],
+  "runtimeDimensions": [
+    128,
+    128
+  ],
+  "format": "image/webp VP8 RGB opaque",
+  "settings": {
+    "library": "Pillow",
+    "resampling": "LANCZOS (existing derived 128px originals before final quality optimization)",
+    "quality": 40,
+    "method": 6
+  },
+  "license": "project-internal",
+  "sourceValidation": "PNG source and final WebP visually inspected; each binary validated by SHA-256 and Git blob ID",
+  "assets": [
+    {
+      "assetId": "pack:capture:icon-skill-onde-spirituelle-01",
+      "label": "Onde spirituelle",
+      "sourceFile": "icon_skill_onde_spirituelle_01.png",
+      "sourceSha256": "948fb3b4f9543d846768ab575662dff0b8a3d8c8ed7ecf6669a664d70db7457f",
+      "derivedFile": "capture/icons/skills/icon_skill_onde_spirituelle_01.webp",
+      "derivedSha256": "1f93616d375f2704607cdb82ba60aa86057ac569dffd44db0380986f6fbac933",
+      "gitBlobSHA": "de98e8fb784f92eeab5a68a74e4f759abeef8149",
+      "bytes": 3122
+    },
+    {
+      "assetId": "pack:capture:icon-skill-fleche-spirituelle-01",
+      "label": "Flèche spirituelle",
+      "sourceFile": "icon_skill_fleche_spirituelle_01.png",
+      "sourceSha256": "38f9b0dac523f89148d2fd459040eae299155aeb1e18693131e8e797ebe4f3ee",
+      "derivedFile": "capture/icons/skills/icon_skill_fleche_spirituelle_01.webp",
+      "derivedSha256": "110c7b05817b8dbdd5b5a7ee5dad3aba949b1b03791dd39dd581b6a6da135894",
+      "gitBlobSHA": "05bd0726664438e864e7dfddc4f1b11068bf62b8",
+      "bytes": 2300
+    },
+    {
+      "assetId": "pack:capture:icon-skill-charge-spirituelle-01",
+      "label": "Charge spirituelle",
+      "sourceFile": "icon_skill_charge_spirituelle_01.png",
+      "sourceSha256": "4f5f42833ce03c26f1c14c07d0815dd748426bc4ed4cef6cf0324e5c79a96b20",
+      "derivedFile": "capture/icons/skills/icon_skill_charge_spirituelle_01.webp",
+      "derivedSha256": "d2c7bcdcb2e2c42bfc4c42c2bd65fecd4c297b0256910880e7ad29312d9d649d",
+      "gitBlobSHA": "e571fc85de1dc1d4b674c44e7cf40780a98ad8f4",
+      "bytes": 2544
+    },
+    {
+      "assetId": "pack:capture:icon-skill-sangsue-01",
+      "label": "Sangsue",
+      "sourceFile": "icon_skill_sangsue_01.png",
+      "sourceSha256": "ab161a008d6a7b51a3d1f908cbb7ad2d81345be7cf88737413d337baa0a02889",
+      "derivedFile": "capture/icons/skills/icon_skill_sangsue_01.webp",
+      "derivedSha256": "49e3de441397e66f5745c7f197c416400227e42df3cd6e4d6b6f2b148a0061ba",
+      "gitBlobSHA": "f5711004e03aa2f88724940e9e62602cd4c3aa7c",
+      "bytes": 2122
+    },
+    {
+      "assetId": "pack:capture:icon-skill-soins-spirituels-01",
+      "label": "Soins spirituels",
+      "sourceFile": "icon_skill_soins_spirituels_01.png",
+      "sourceSha256": "e62bf749c55218bd9380ca8640865539033c080bc5538cdc9cd9afdabe53e79e",
+      "derivedFile": "capture/icons/skills/icon_skill_soins_spirituels_01.webp",
+      "derivedSha256": "de7f50ded29a156cde0ab7a223f3ff5b6b3b0eaa6a9976bcd7be9451a427efe7",
+      "gitBlobSHA": "7c71f30eb7482460fd9e684a740476c33668c917",
+      "bytes": 2286
+    }
+  ]
+}
