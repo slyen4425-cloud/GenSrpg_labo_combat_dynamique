@@ -180,8 +180,8 @@ test("real Human Editor startup data keeps historical creature library when auth
 
   assert.equal(
     configuredCreatures.size,
-    103,
-    "Showcase replacement must preserve 102 canonical historical creatures and add only the non-historical Loup"
+    104,
+    "Preserve 102 historical creatures; add Loup and Kitsune once each"
   );
   assert.equal(
     configuredCreatures.get("crea_maraileron")?.draft?.displayName,
@@ -199,6 +199,7 @@ test("real Human Editor startup data keeps historical creature library when auth
     configuredCreatures.get("crea-loup")?.draft?.displayName,
     "Loup volcanique"
   );
+  assert.equal(configuredCreatures.get("kitsune_lunaire")?.draft?.displayName,"Kitsune Lunaire");
 
   const historicalIds =
     new Set(
