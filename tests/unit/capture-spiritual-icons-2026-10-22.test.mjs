@@ -29,7 +29,7 @@ test('Five real spiritual icons: exact binary content, dimensions and Git proven
   assert.equal(b.toString('ascii',12,16),'VP8 ');
   assert.deepEqual([b.readUInt16LE(26)&0x3fff,b.readUInt16LE(28)&0x3fff],[128,128]);
   assert.equal(createHash('sha256').update(b).digest('hex'),entry.derivedSha256);
-  assert.equal(createHash('sha1').update('blob '+b.length+'\\0').update(b).digest('hex'),entry.gitBlobSHA);
+  assert.equal(createHash('sha1').update('blob '+b.length+'\0').update(b).digest('hex'),entry.gitBlobSHA);
  }
 });
 test('Five stable catalog assets with no collisions; previous assets protected',()=>{
