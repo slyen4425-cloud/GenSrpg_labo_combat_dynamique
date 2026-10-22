@@ -132,6 +132,17 @@
       "chargeTimeReductionPctPerPoint": 0,
       "maxHpPerPoint": 0,
       "damageReductionPctPerPoint": 0
+    },
+    {
+      "id": "esprit",
+      "label": "Esprit",
+      "damageChannel": "esprit",
+      "resistanceChannel": "spirit",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0,
+      "maxHpPerPoint": 0,
+      "damageReductionPctPerPoint": 0
     }
   ]
 }
