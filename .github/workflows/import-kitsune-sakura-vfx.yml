@@ -1,0 +1,35 @@
+name: Import approved Kitsune Sakura VFX
+on:
+  push:
+    branches:
+      - work/global-assets-kitsune-sakura-vfx-2026-10-22
+    paths:
+      - _incoming/KITSUNE_LUNAIRE_SAKURA_FX_4_PLANCHES_20F.zip
+permissions:
+  contents: write
+concurrency:
+  group: kitsune-lunaire-sakura-vfx-import
+  cancel-in-progress: false
+jobs:
+  import-media:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'Pillow>=10,<13'
+      - name: Verify approved sheets and import 80 physical frames and four atlases
+        run: python scripts/import_kitsune_lunaire_sakura_vfx.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Full laboratory validation
+        run: npm run ci
+      - name: Commit actual imported media and catalog on work branch only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- assets/library/capture/sprites/skills/kitsune_lunaire_sakura data/assets/catalog/global-visual-assets.v1.json _incoming/KITSUNE_LUNAIRE_SAKURA_FX_4_PLANCHES_20F.zip
+          git commit -m 'assets(capture): import 80 validated Kitsune Sakura VFX frames'
+          git push origin HEAD:work/global-assets-kitsune-sakura-vfx-2026-10-22
