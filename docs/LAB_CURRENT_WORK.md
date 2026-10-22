@@ -1,3 +1,17 @@
+## 2026-10-22 — Braisombre FACE : vol et attaque, 12 frames (import ZIP en attente)
+
+- **Demande / décision** : conserver la première animation vol choisie (12 frames, petit mouvement de queue) sans utiliser les itérations ultérieures ; découper la planche d'attaque et publier les 2 assets dans la bibliothèque.
+- **Base GitHub** : `global-assets@685a8f8f1638393fe5c156d6bb4f4578b0f10067` ; checkpoint départ `checkpoint/global-assets-start-braisombre-face12-2026-10-22` ; branche `work/global-assets-braisombre-face12-2026-10-22`.
+- **Pack local réel** : `BRAISOMBRE_FACE_12_VOL_ATTAQUE_GITHUB_2026-10-22.zip`, 15 089 235 octets, SHA256 `2a0637d1fcf81472076ed434de2c5a4eeeb14415f838c7f510dec16b8b0c2842`, 38 entrées ZIP.
+- **Médias préparés** : 24 PNG RGBA 512×512 (12 mouvement vol, 12 attaque), marges >=66px, 2 atlas WebP, 2 previews GIF, 2 WebP animés, 2 planches ; mêmes teintes conservées sans recoloration. Le vol utilise les PNG du premier pack existant, **octet-pour-octet**.
+- **Outillage et branche** : `scripts/import_braisombre_face12.py`, `.github/workflows/import-braisombre-face12.yml`, `scripts/braisombre-face12.test.template.mjs`, doc dédiée ; la sentinelle est générée lors de l'import effectif.
+- **Destination** : `assets/library/capture/creatures/braisombre/animations/{movement,attack}/face/` ; IDs `pack:capture:creature-braisombre-movement-face-12-v1` et `pack:capture:creature-braisombre-attack-face-12-v1`.
+- **Protégé** : 3 images Braisombre `runtime/`, sprites dos, autres créatures, moteur, éditeur, `main`, `Zombicide-40k`. Aucune modification automatique de la fiche combat.
+- **Gate** : réception réelle de `_incoming/BRAISOMBRE_FACE_12_VOL_ATTAQUE_GITHUB_2026-10-22.zip` sur la branche de travail -> import Actions -> 24 hashes/marges/source, catalogue+2, CI finale -> fast-forward `global-assets` puis checkpoint GREEN technique. **Ne pas déclarer les fichiers publiés tant que le ZIP GitHub est absent.**
+- **Référence** : `docs/LAB_BRAISOMBRE_FACE12_VOL_ATTAQUE_2026-10-22.md`.
+
+---
+
 ## 2026-10-21 — Golem moussu DOS 12 frames (PUBLIÉ, GREEN technique ; essai course en jeu à faire)
 
 - **Décision** : publier mouvement + attaque DOS, 12 PNG 512×512 chacune, utilisateur valide l'attaque et autorise l'essai en jeu du mouvement sans le valider définitivement.
