@@ -382,7 +382,7 @@ export function normalizeStatusEffectV1(input) {
     if (!threshold || typeof threshold !== "object" || Array.isArray(threshold)) {
       throw new TypeError("onStackThreshold must be an object");
     }
-    assertKnownFields(threshold, new Set(["count", "consume", "effects"]), "onStackThreshold");
+    assertKnownFields(threshold, new Set(["count", "consume", "effects", "repeat"]), "onStackThreshold");
     const count = positiveInteger(threshold.count, "onStackThreshold.count");
     if (count > output.maxStacks) {
       throw new RangeError("onStackThreshold.count must not exceed maxStacks");
@@ -394,6 +394,11 @@ export function normalizeStatusEffectV1(input) {
     if (!Array.isArray(threshold.effects) || threshold.effects.length === 0 ||
         threshold.effects.length > 12) {
       throw new RangeError("onStackThreshold.effects must contain 1 to 12 effects");
+    }
+    const repeat = threshold.repeat ?? "once";
+    if (!["once", "each_addition"].includes(repeat)) throw new RangeError("Unsupported onStackThreshold.repeat: " + repeat);
+    if (repeat === "each_addition" && consume !== "keep") {
+      throw new RangeError("onStackThreshold.repeat each_addition requires consume: keep");
     }
     const effects = threshold.effects.map(rawEffect => {
       const effect = normalizeSkillEffectV1(rawEffect);
@@ -407,7 +412,7 @@ export function normalizeStatusEffectV1(input) {
       return effect;
     });
     output.onStackThreshold = Object.freeze({
-      count, consume, effects: Object.freeze(effects)
+      count, consume, ...(repeat === "once" ? {} : {repeat}), effects: Object.freeze(effects)
     });
   }
 
