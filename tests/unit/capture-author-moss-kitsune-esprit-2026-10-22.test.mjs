@@ -50,7 +50,8 @@ test("Kitsune is unique in the active catalog; old source remains immutable",()=
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(p=>p===active(moss)).length,1);
  for(const id of [kitsune,moss]){
    assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.includes(archive(id)),false);
-   assert.equal(read(active(id)),read(archive(id)));
+   if(id===moss)assert.equal(read(active(id)),read(archive(id)));
+   else assert.equal(read(active(id)),read("data/capture/source-exports/gensrpg-capture-creature-kitsune_lunaire-2026-10-22-r2.json"));
    const normalized=importCaptureTransferJsonV1(read(active(id)),{statRegistry:registry});
    assert.equal(normalized.kind,"creature");
    assert.equal(normalized.value.draft.id,id);
@@ -83,7 +84,7 @@ test("Moussados V9 uses four distinct official 12-frame movement/attack assets F
  assert.equal(value.statValues.values.nature,0);
  assert.equal(p.sockets.length,5);
 });
-test("Kitsune Lunaire is Spirit and has real static Renard FACE/DOS/icon; no invented skills/animation",()=>{
+test("Kitsune Lunaire keeps static Renard FACE/DOS/icon and now equips three author skills without inventing animation",()=>{
  const {value}=importCaptureTransferJsonV1(read(active(kitsune)),{statRegistry:registry});
  const p=value.draft.presentation,visual=p.visual;
  assert.equal(value.draft.displayName,"Kitsune Lunaire");
@@ -95,8 +96,12 @@ test("Kitsune Lunaire is Spirit and has real static Renard FACE/DOS/icon; no inv
  assert.equal(visual.movementBack,undefined);
  assert.equal(visual.rangedAttack,undefined);
  assert.equal(visual.rangedAttackBack,undefined);
- assert.deepEqual(value.draft.skillIds,[]);
- assert.deepEqual(value.loadout.slots.map(s=>s.skillId),[null,null,null,null,null]);
+ assert.deepEqual(value.draft.skillIds,["teleport-strike","Onde Spirituel","fleche_spirituel"]);
+ assert.deepEqual(value.loadout.slots.map(s=>s.skillId),["teleport-strike","Onde Spirituel","fleche_spirituel",null,null]);
+ assert.equal(p.viewOverrides.player.displayScale,1);
+ assert.equal(p.viewOverrides.opponent.displayScale,.7);
+ assert.deepEqual(p.viewOverrides.opponent.position,{x:-30,y:50});
+ for(const id of value.draft.skillIds)assert.ok(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.some(f=>f.endsWith("/"+id+".capture-skill-transfer-v1.json")),id+" missing from active skill presets");
  assert.equal(value.statValues.values.health,110);
  assert.equal(value.statValues.values.speed,20);
  assert.equal(value.draft.combat.approachTimeModifierPct,-40);
