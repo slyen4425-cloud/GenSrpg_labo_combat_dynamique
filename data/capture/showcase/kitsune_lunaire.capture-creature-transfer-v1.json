@@ -98,7 +98,11 @@
         "damageReductionPct": 50
       }
     },
-    "skillIds": [],
+    "skillIds": [
+      "teleport-strike",
+      "Onde Spirituel",
+      "fleche_spirituel"
+    ],
     "presentation": {
       "id": "creature:kitsune_lunaire",
       "version": 2,
@@ -109,6 +113,22 @@
       "position": {
         "x": 0,
         "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 0.7,
+          "position": {
+            "x": -30,
+            "y": 50
+          }
+        }
       },
       "transformOrigin": {
         "x": "50%",
@@ -169,15 +189,15 @@
     "slots": [
       {
         "id": "slot-1",
-        "skillId": null
+        "skillId": "teleport-strike"
       },
       {
         "id": "slot-2",
-        "skillId": null
+        "skillId": "Onde Spirituel"
       },
       {
         "id": "slot-3",
-        "skillId": null
+        "skillId": "fleche_spirituel"
       },
       {
         "id": "slot-4",
