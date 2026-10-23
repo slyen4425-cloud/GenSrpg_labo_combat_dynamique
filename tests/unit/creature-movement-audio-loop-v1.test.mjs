@@ -9,7 +9,7 @@ import {createCombatResolutionPresenter} from "../../src/adapters/renderer/comba
 
 test("creature-only movement mode roundtrips and old exports remain once",()=>{
  const read=p=>JSON.parse(readFileSync(new URL("../../"+p,import.meta.url)));
- const raw=read("data/capture/showcase/crea_dracendre.capture-creature-transfer-v1.json");
+ const raw=read("data/capture/source-exports/gensrpg-capture-creature-crea_dracendre-original-before-2026-10-23.json");
  const original=normalizeCreaturePresentationBinding(raw.draft.presentation);
  assert.equal(original.audio.movement.mode,undefined);
  const registry=normalizeCaptureStatRegistryV1(read("data/capture/monster-capture-stat-registry.v1.json"));
