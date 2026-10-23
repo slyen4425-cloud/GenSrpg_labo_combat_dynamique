@@ -169,17 +169,17 @@
         },
         "aura": {
           "assetId": "pack:capture:sprite-kitsune-lunaire-aura-01",
-          "displayScale": 1.8,
+          "displayScale": 1.6,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "fixed-source",
           "anchor": null,
-          "offsetX": 15,
-          "offsetY": -15,
+          "offsetX": -20,
+          "offsetY": -60,
           "trigger": "impact",
           "playbackMode": "loop",
           "rotationDeg": 0,
-          "opacity": 0.6,
+          "opacity": 0.2,
           "layerByView": {
             "player": "behind",
             "opponent": "behind"
