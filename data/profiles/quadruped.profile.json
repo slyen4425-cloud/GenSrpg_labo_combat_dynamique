@@ -46,7 +46,8 @@
       "returnMs": 150
     },
     "aerial": {
-      "riseRatio": 0.42,
+      "riseRatio": 0.64,
+      "diveEasing": "ease-in",
       "repositionRatio": 0.1,
       "riseY": -245,
       "diveHeight": 265,
