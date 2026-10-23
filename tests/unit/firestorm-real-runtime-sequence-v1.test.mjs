@@ -347,7 +347,7 @@ test("Firestorm player and AI use the same real Runtime reinforcement and render
       const session = createCombatSession({
         distance: "long",
         battleFormat,
-        fighters: allIds.map(id => fighter(id))
+        fighters: allIds.map(id => ({ ...fighter(id), maxHp: 1000, initialHp: 1000 }))
       });
       const arena = fakeNode({ left: 0, top: 0, width: 600, height: 300 });
       arena.ownerDocument = {
