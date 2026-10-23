@@ -101,7 +101,9 @@
     "skillIds": [
       "teleport-strike",
       "Onde Spirituel",
-      "fleche_spirituel"
+      "fleche_spirituel",
+      "aura-lunaire",
+      "Sacrifice_kitsune"
     ],
     "presentation": {
       "id": "creature:kitsune_lunaire",
@@ -201,11 +203,11 @@
       },
       {
         "id": "slot-4",
-        "skillId": null
+        "skillId": "aura-lunaire"
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "Sacrifice_kitsune"
       }
     ]
   }
