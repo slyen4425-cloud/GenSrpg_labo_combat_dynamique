@@ -911,7 +911,7 @@ const server = createServer(async (req, res) => {
             if(!document.querySelector('[data-context-help="skill"]').open)throw Error("skill info cannot open");
             library.value="cap_fire_atk_6";
             library.dispatchEvent(new Event("change",{bubbles:true}));
-            if(!skillText().includes("15 s") || !skillText().includes("5 dégâts") ||
+            if(!skillText().includes("15 s") || !skillText().includes("10 dégâts") ||
               !skillText().includes("agrandit"))throw Error("authored Firestorm missing: "+skillText());
             set(document.querySelector("[data-skill-zone-duration-seconds]"),13);
             if(!skillText().includes("13 s") || skillText().includes("15 s"))throw Error("skill edit not live: "+skillText());

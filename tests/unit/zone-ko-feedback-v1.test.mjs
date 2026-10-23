@@ -1,3 +1,4 @@
+// Fixture historique 5 dégâts / 1000 ms : ces tests isolent le Runtime des réglages auteur actuels.
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -18,7 +19,7 @@ function harness(session, options = {}) {
   return { runtime, tick(ms) { now = ms; tick(); }, contact(ms, input) { now = ms; return runtime.reportActionContact(input); } };
 }
 async function zoneSession(activations = 1) {
-  const transfer = await json("data/capture/showcase/cap_fire_atk_6.capture-skill-transfer-v1.json");
+  const transfer = await json("tests/fixtures/firestorm-pre-settings-2026-10-23.capture-skill-transfer-v1.json");
   const storm = normalizeSkillDefinition({ ...transfer.draft.definition, energyCost: 0, preparationMs: 0, cooldownMs: 0, activationRequirements: { mode: "all", conditions: [] } });
   const format = { actors: [{ actorId: "local" }, { actorId: "enemy" }], teamOf: id => id };
   const session = createCombatSession({ fighters: [fighter("local"), fighter("enemy")], battleFormat: format });

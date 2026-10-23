@@ -1,3 +1,4 @@
+// Fixture historique 5 dégâts / 1000 ms : ces tests isolent le Runtime des réglages auteur actuels.
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -46,7 +47,7 @@ async function showcaseFireStorm() {
   const transfer = JSON.parse(
     await readFile(
       new URL(
-        "../../data/capture/showcase/cap_fire_atk_6.capture-skill-transfer-v1.json",
+        "../../tests/fixtures/firestorm-pre-settings-2026-10-23.capture-skill-transfer-v1.json",
         import.meta.url
       ),
       "utf8"
