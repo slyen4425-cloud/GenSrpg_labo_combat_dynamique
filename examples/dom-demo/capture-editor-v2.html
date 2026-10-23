@@ -561,6 +561,18 @@
           <label>Décalage Y — adversaire (px)<input type="number" step="5" value="0" data-creature-opponent-y></label>
         </div>
         <p class="note">Sans personnalisation, les deux vues utilisent la taille commune. Les réglages par vue ajustent les images face/dos ; la perspective des déplacements reste automatique.</p>
+        <fieldset data-creature-shadow-adjustment>
+          <legend>Position de l'ombre — ajustement manuel facultatif</legend>
+          <p class="note">Par défaut 0 / 0 : placement automatique. Pour une queue plus basse que les pattes, décale uniquement l’ombre sans déplacer la créature ni modifier les collisions. X positif = droite ; Y positif = bas. Unité : % du cadre de l'image, commun aux vues face/dos.</p>
+          <div class="grid two">
+            <label>Ombre — décalage X (%)
+              <input data-creature-shadow-offset-x type="number" step="1" min="-40" max="40" value="0">
+            </label>
+            <label>Ombre — décalage Y (%)
+              <input data-creature-shadow-offset-y type="number" step="1" min="-40" max="40" value="0">
+            </label>
+          </div>
+        </fieldset>
           </div>
         </details>
 
