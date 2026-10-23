@@ -203,6 +203,7 @@ summary {
      appear airborne. The silhouette now shears AROUND its alpha foot pivot,
      preserving contact while the upper shape casts directionally. */
   transform:
+    translate(var(--creature-shadow-offset-x, 0%), var(--creature-shadow-offset-y, 0%))
     skewX(var(--shadow-light-skew, 0deg))
     scaleY(var(--shadow-light-flatten, 0.2));
   filter: blur(var(--shadow-light-blur, 4px));
