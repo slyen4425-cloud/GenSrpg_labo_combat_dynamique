@@ -836,6 +836,13 @@ export async function mountCombatDemo({
             targetModel: target.collisionModel,
             continuous: approachMode !== "teleport",
             onContact() {
+              // Aerial contact resolves damage once through CombatRuntime,
+              // but the creature must complete its planned dive and normal
+              // home phase. Only ground contact can stop outbound travel.
+              if (approachMode === "aerial") {
+                onContact();
+                return;
+              }
               if (
                 !contactStoppedOutbound &&
                 approachMode !== "teleport" &&
