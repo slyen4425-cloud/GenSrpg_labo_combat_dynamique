@@ -37,7 +37,10 @@
       "targetLocations": [
         "active"
       ],
-      "hitPresenceStates": null,
+      "hitPresenceStates": [
+      "surface",
+      "airborne"
+    ],
       "dodgeable": true,
       "hitsIntangible": false,
       "activationRequirements": {
