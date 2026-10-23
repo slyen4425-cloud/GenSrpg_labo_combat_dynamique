@@ -40,6 +40,7 @@ test("showcase preset catalog discovers eleven authored transfer files without d
     CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1,
     [
       "data/capture/showcase/crea_mossback.capture-creature-transfer-v1.json",
+      "data/capture/showcase/crea_tox_2.capture-creature-transfer-v1.json",
       "data/capture/showcase/kitsune_lunaire.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea-loup.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea_maraileron.capture-creature-transfer-v1.json",
