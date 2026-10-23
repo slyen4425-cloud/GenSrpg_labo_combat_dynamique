@@ -22,7 +22,7 @@ test('Two genuine approved framed fire and water icons, catalog and file digests
   const b=readFileSync(resolve(root,catalog.storage.libraryRoot,a.resource.file));
   assert.equal(b.length,item.bytes);
   assert.equal(createHash('sha256').update(b).digest('hex'),item.derivedSha256);
-  assert.equal(createHash('sha1').update(Buffer.from(`blob ${b.length}\\0`)).update(b).digest('hex'),item.gitBlobSHA);
+  assert.equal(createHash('sha1').update(Buffer.from(`blob ${b.length}\0`)).update(b).digest('hex'),item.gitBlobSHA);
   assert.equal(b.toString('ascii',0,4),'RIFF');assert.equal(b.toString('ascii',8,12),'WEBP');
   assert.equal(b.toString('ascii',12,16),'VP8 ');
   assert.equal(b.readUInt16LE(26)&0x3fff,128);
