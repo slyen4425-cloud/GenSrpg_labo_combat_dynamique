@@ -119,7 +119,9 @@ test("real Demo UI sends the first aerial silhouette contact to Runtime without 
   const aerial=source.indexOf('if (approachMode === "aerial") {',watcher);
   const ground=source.indexOf("contactStoppedOutbound = true;",watcher);
   assert.ok(begin>=0 && watcher>begin && aerial>watcher && ground>aerial);
-  const branch=source.slice(aerial,ground);
+  const nextGroundBranch=source.indexOf("if (\n                !contactStoppedOutbound",aerial);
+  assert.ok(nextGroundBranch>aerial && nextGroundBranch<ground);
+  const branch=source.slice(aerial,nextGroundBranch);
   assert.match(branch,/onContact\(\);\s*return;/);
   assert.doesNotMatch(branch,/returnActiveToBaseFromCurrent|cueSchedule\.clear/);
   assert.match(source.slice(ground,ground+1000),/returnActiveToBaseFromCurrent/,
