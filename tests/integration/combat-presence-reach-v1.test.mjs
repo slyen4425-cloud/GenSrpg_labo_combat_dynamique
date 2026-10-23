@@ -552,7 +552,7 @@ test("ground melee still hits a grounded target and an explicitly airborne-reach
   }
 });
 
-test("aerial contact and distance attacks preserve existing airborne reach semantics",()=>{
+test("ordinary aerial contact cannot chase and damage an already airborne opponent",()=>{
   const {session,clock,runtime,resolutions}=harness();
   try{
     runtime.startSkill({actorId:"player",targetId:"opponent",
@@ -561,7 +561,7 @@ test("aerial contact and distance attacks preserve existing airborne reach seman
       skill:skill({id:"aerial-melee-chaser",form:"contact",approachMode:"aerial",travelMs:1000,damage:11})});
     clock.setTime(1000);
     clock.fireNext();
-    assert.equal(resolutions.find(x=>x.skillId==="aerial-melee-chaser")?.outcome,"hit");
-    assert.equal(session.snapshot().fighters.player.hp,89);
+    assert.equal(resolutions.find(x=>x.skillId==="aerial-melee-chaser")?.outcome,"evaded");
+    assert.equal(session.snapshot().fighters.player.hp,100);
   } finally{runtime.dispose();}
 });
