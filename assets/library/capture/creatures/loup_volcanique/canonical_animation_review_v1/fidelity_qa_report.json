@@ -1,0 +1,1352 @@
+{
+  "status": "PREVIEW_ONLY_ART_REVIEW_REQUIRED",
+  "publishedCanonicalMatches512Master": {
+    "face": true,
+    "dos": true
+  },
+  "strictFrame1And20": true,
+  "untouchedApprovedCreatureModel": true,
+  "noCreatureImageGeneration": true,
+  "fourAnimations": [
+    {
+      "action": "movement",
+      "view": "face",
+      "movingFrames": 18,
+      "medianChangedPixels": 16391,
+      "minMargin": 47,
+      "inheritedMasterMarginsLTRB": [
+        66,
+        100,
+        47,
+        105
+      ],
+      "frames": [
+        {
+          "frame": 1,
+          "changedPixelsFromMaster": 0,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            406
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            105
+          ]
+        },
+        {
+          "frame": 2,
+          "changedPixelsFromMaster": 16370,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 3,
+          "changedPixelsFromMaster": 16730,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 4,
+          "changedPixelsFromMaster": 16704,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 5,
+          "changedPixelsFromMaster": 16194,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 6,
+          "changedPixelsFromMaster": 15823,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            406
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            105
+          ]
+        },
+        {
+          "frame": 7,
+          "changedPixelsFromMaster": 16412,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            407
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            104
+          ]
+        },
+        {
+          "frame": 8,
+          "changedPixelsFromMaster": 16616,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            407
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            104
+          ]
+        },
+        {
+          "frame": 9,
+          "changedPixelsFromMaster": 16503,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            407
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            104
+          ]
+        },
+        {
+          "frame": 10,
+          "changedPixelsFromMaster": 15988,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            406
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            105
+          ]
+        },
+        {
+          "frame": 11,
+          "changedPixelsFromMaster": 16017,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 12,
+          "changedPixelsFromMaster": 16612,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 13,
+          "changedPixelsFromMaster": 16766,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 14,
+          "changedPixelsFromMaster": 16480,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 15,
+          "changedPixelsFromMaster": 15833,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 16,
+          "changedPixelsFromMaster": 16161,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            406
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            105
+          ]
+        },
+        {
+          "frame": 17,
+          "changedPixelsFromMaster": 16587,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            407
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            104
+          ]
+        },
+        {
+          "frame": 18,
+          "changedPixelsFromMaster": 16598,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            407
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            104
+          ]
+        },
+        {
+          "frame": 19,
+          "changedPixelsFromMaster": 16303,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            407
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            104
+          ]
+        },
+        {
+          "frame": 20,
+          "changedPixelsFromMaster": 0,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            406
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            105
+          ]
+        }
+      ]
+    },
+    {
+      "action": "movement",
+      "view": "dos",
+      "movingFrames": 18,
+      "medianChangedPixels": 27654,
+      "minMargin": 42,
+      "inheritedMasterMarginsLTRB": [
+        54,
+        85,
+        54,
+        86
+      ],
+      "frames": [
+        {
+          "frame": 1,
+          "changedPixelsFromMaster": 0,
+          "alphaBBox": [
+            54,
+            85,
+            457,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            54,
+            86
+          ]
+        },
+        {
+          "frame": 2,
+          "changedPixelsFromMaster": 27498,
+          "alphaBBox": [
+            54,
+            85,
+            450,
+            427
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            61,
+            84
+          ]
+        },
+        {
+          "frame": 3,
+          "changedPixelsFromMaster": 28404,
+          "alphaBBox": [
+            54,
+            85,
+            445,
+            428
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            66,
+            83
+          ]
+        },
+        {
+          "frame": 4,
+          "changedPixelsFromMaster": 28278,
+          "alphaBBox": [
+            54,
+            85,
+            446,
+            428
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            65,
+            83
+          ]
+        },
+        {
+          "frame": 5,
+          "changedPixelsFromMaster": 27152,
+          "alphaBBox": [
+            54,
+            85,
+            451,
+            427
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            60,
+            84
+          ]
+        },
+        {
+          "frame": 6,
+          "changedPixelsFromMaster": 26316,
+          "alphaBBox": [
+            54,
+            85,
+            459,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            52,
+            86
+          ]
+        },
+        {
+          "frame": 7,
+          "changedPixelsFromMaster": 27811,
+          "alphaBBox": [
+            54,
+            85,
+            466,
+            424
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            45,
+            87
+          ]
+        },
+        {
+          "frame": 8,
+          "changedPixelsFromMaster": 28436,
+          "alphaBBox": [
+            54,
+            85,
+            469,
+            424
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            42,
+            87
+          ]
+        },
+        {
+          "frame": 9,
+          "changedPixelsFromMaster": 28043,
+          "alphaBBox": [
+            54,
+            85,
+            467,
+            424
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            44,
+            87
+          ]
+        },
+        {
+          "frame": 10,
+          "changedPixelsFromMaster": 26739,
+          "alphaBBox": [
+            54,
+            85,
+            461,
+            424
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            50,
+            87
+          ]
+        },
+        {
+          "frame": 11,
+          "changedPixelsFromMaster": 26694,
+          "alphaBBox": [
+            54,
+            85,
+            453,
+            426
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            58,
+            85
+          ]
+        },
+        {
+          "frame": 12,
+          "changedPixelsFromMaster": 28085,
+          "alphaBBox": [
+            54,
+            85,
+            447,
+            428
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            64,
+            83
+          ]
+        },
+        {
+          "frame": 13,
+          "changedPixelsFromMaster": 28486,
+          "alphaBBox": [
+            54,
+            85,
+            445,
+            429
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            66,
+            82
+          ]
+        },
+        {
+          "frame": 14,
+          "changedPixelsFromMaster": 27874,
+          "alphaBBox": [
+            54,
+            85,
+            448,
+            427
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            63,
+            84
+          ]
+        },
+        {
+          "frame": 15,
+          "changedPixelsFromMaster": 26297,
+          "alphaBBox": [
+            54,
+            85,
+            455,
+            426
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            56,
+            85
+          ]
+        },
+        {
+          "frame": 16,
+          "changedPixelsFromMaster": 27097,
+          "alphaBBox": [
+            54,
+            85,
+            463,
+            424
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            48,
+            87
+          ]
+        },
+        {
+          "frame": 17,
+          "changedPixelsFromMaster": 28253,
+          "alphaBBox": [
+            54,
+            85,
+            468,
+            424
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            43,
+            87
+          ]
+        },
+        {
+          "frame": 18,
+          "changedPixelsFromMaster": 28400,
+          "alphaBBox": [
+            54,
+            85,
+            469,
+            424
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            42,
+            87
+          ]
+        },
+        {
+          "frame": 19,
+          "changedPixelsFromMaster": 27471,
+          "alphaBBox": [
+            54,
+            85,
+            465,
+            424
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            46,
+            87
+          ]
+        },
+        {
+          "frame": 20,
+          "changedPixelsFromMaster": 0,
+          "alphaBBox": [
+            54,
+            85,
+            457,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            54,
+            86
+          ]
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "view": "face",
+      "movingFrames": 18,
+      "medianChangedPixels": 15699,
+      "minMargin": 47,
+      "inheritedMasterMarginsLTRB": [
+        66,
+        100,
+        47,
+        105
+      ],
+      "frames": [
+        {
+          "frame": 1,
+          "changedPixelsFromMaster": 0,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            406
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            105
+          ]
+        },
+        {
+          "frame": 2,
+          "changedPixelsFromMaster": 14628,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            406
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            105
+          ]
+        },
+        {
+          "frame": 3,
+          "changedPixelsFromMaster": 15089,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 4,
+          "changedPixelsFromMaster": 15403,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 5,
+          "changedPixelsFromMaster": 15572,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 6,
+          "changedPixelsFromMaster": 15775,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 7,
+          "changedPixelsFromMaster": 15911,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 8,
+          "changedPixelsFromMaster": 16080,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 9,
+          "changedPixelsFromMaster": 16120,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 10,
+          "changedPixelsFromMaster": 16120,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 11,
+          "changedPixelsFromMaster": 16155,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 12,
+          "changedPixelsFromMaster": 16198,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 13,
+          "changedPixelsFromMaster": 16173,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 14,
+          "changedPixelsFromMaster": 15988,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 15,
+          "changedPixelsFromMaster": 15853,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 16,
+          "changedPixelsFromMaster": 15623,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 17,
+          "changedPixelsFromMaster": 15433,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 18,
+          "changedPixelsFromMaster": 15081,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            405
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            106
+          ]
+        },
+        {
+          "frame": 19,
+          "changedPixelsFromMaster": 14614,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            406
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            105
+          ]
+        },
+        {
+          "frame": 20,
+          "changedPixelsFromMaster": 0,
+          "alphaBBox": [
+            66,
+            100,
+            464,
+            406
+          ],
+          "transparentMarginsLTRB": [
+            66,
+            100,
+            47,
+            105
+          ]
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "view": "dos",
+      "movingFrames": 18,
+      "medianChangedPixels": 12620,
+      "minMargin": 54,
+      "inheritedMasterMarginsLTRB": [
+        54,
+        85,
+        54,
+        86
+      ],
+      "frames": [
+        {
+          "frame": 1,
+          "changedPixelsFromMaster": 0,
+          "alphaBBox": [
+            54,
+            85,
+            457,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            54,
+            86
+          ]
+        },
+        {
+          "frame": 2,
+          "changedPixelsFromMaster": 10663,
+          "alphaBBox": [
+            54,
+            85,
+            457,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            54,
+            86
+          ]
+        },
+        {
+          "frame": 3,
+          "changedPixelsFromMaster": 12101,
+          "alphaBBox": [
+            54,
+            85,
+            456,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            55,
+            86
+          ]
+        },
+        {
+          "frame": 4,
+          "changedPixelsFromMaster": 12359,
+          "alphaBBox": [
+            54,
+            85,
+            454,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            57,
+            86
+          ]
+        },
+        {
+          "frame": 5,
+          "changedPixelsFromMaster": 12522,
+          "alphaBBox": [
+            54,
+            85,
+            452,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            59,
+            86
+          ]
+        },
+        {
+          "frame": 6,
+          "changedPixelsFromMaster": 12663,
+          "alphaBBox": [
+            54,
+            85,
+            450,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            61,
+            86
+          ]
+        },
+        {
+          "frame": 7,
+          "changedPixelsFromMaster": 12813,
+          "alphaBBox": [
+            54,
+            85,
+            448,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            63,
+            86
+          ]
+        },
+        {
+          "frame": 8,
+          "changedPixelsFromMaster": 12930,
+          "alphaBBox": [
+            54,
+            85,
+            446,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            65,
+            86
+          ]
+        },
+        {
+          "frame": 9,
+          "changedPixelsFromMaster": 12989,
+          "alphaBBox": [
+            54,
+            85,
+            445,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            66,
+            86
+          ]
+        },
+        {
+          "frame": 10,
+          "changedPixelsFromMaster": 12998,
+          "alphaBBox": [
+            54,
+            85,
+            446,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            65,
+            86
+          ]
+        },
+        {
+          "frame": 11,
+          "changedPixelsFromMaster": 13036,
+          "alphaBBox": [
+            54,
+            85,
+            444,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            67,
+            86
+          ]
+        },
+        {
+          "frame": 12,
+          "changedPixelsFromMaster": 13060,
+          "alphaBBox": [
+            54,
+            85,
+            445,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            66,
+            86
+          ]
+        },
+        {
+          "frame": 13,
+          "changedPixelsFromMaster": 13034,
+          "alphaBBox": [
+            54,
+            85,
+            446,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            65,
+            86
+          ]
+        },
+        {
+          "frame": 14,
+          "changedPixelsFromMaster": 12921,
+          "alphaBBox": [
+            54,
+            85,
+            448,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            63,
+            86
+          ]
+        },
+        {
+          "frame": 15,
+          "changedPixelsFromMaster": 12745,
+          "alphaBBox": [
+            54,
+            85,
+            450,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            61,
+            86
+          ]
+        },
+        {
+          "frame": 16,
+          "changedPixelsFromMaster": 12577,
+          "alphaBBox": [
+            54,
+            85,
+            452,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            59,
+            86
+          ]
+        },
+        {
+          "frame": 17,
+          "changedPixelsFromMaster": 12410,
+          "alphaBBox": [
+            54,
+            85,
+            454,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            57,
+            86
+          ]
+        },
+        {
+          "frame": 18,
+          "changedPixelsFromMaster": 12029,
+          "alphaBBox": [
+            54,
+            85,
+            456,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            55,
+            86
+          ]
+        },
+        {
+          "frame": 19,
+          "changedPixelsFromMaster": 10374,
+          "alphaBBox": [
+            54,
+            85,
+            457,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            54,
+            86
+          ]
+        },
+        {
+          "frame": 20,
+          "changedPixelsFromMaster": 0,
+          "alphaBBox": [
+            54,
+            85,
+            457,
+            425
+          ],
+          "transparentMarginsLTRB": [
+            54,
+            85,
+            54,
+            86
+          ]
+        }
+      ]
+    }
+  ]
+}

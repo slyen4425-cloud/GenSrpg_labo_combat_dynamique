@@ -1,0 +1,50 @@
+{
+  "model": "loup_volcanique",
+  "status": "DRAFT_AUTHOR_REVIEW",
+  "runtimeIntegrated": false,
+  "generatedCreatureArt": false,
+  "method": "rigid pixel cutouts of exact official wolf master; jointed animation prototype",
+  "warnings": [
+    "Visible seam risk at shoulder/hips; artist approval required",
+    "Official player model has been published with the isolated rogue shard cleaned",
+    "Needs visual examination of all 80 frames; not a production animation yet"
+  ],
+  "actions": [
+    {
+      "view": "face",
+      "action": "movement",
+      "frames": 20,
+      "frameOneEqualsMaster": true,
+      "masterSha256": "58bb1570a2a637952ebdd0e8784c20abccce969ef3534cead0c8ac3b7639ef9c",
+      "path": "movement/face",
+      "preview": "preview.webp"
+    },
+    {
+      "view": "face",
+      "action": "attack",
+      "frames": 20,
+      "frameOneEqualsMaster": true,
+      "masterSha256": "58bb1570a2a637952ebdd0e8784c20abccce969ef3534cead0c8ac3b7639ef9c",
+      "path": "attack/face",
+      "preview": "preview.webp"
+    },
+    {
+      "view": "dos",
+      "action": "movement",
+      "frames": 20,
+      "frameOneEqualsMaster": true,
+      "masterSha256": "535770c19edead2a99c73c1ef50e93b259c4239352facb55cbfa56616ce8ae85",
+      "path": "movement/dos",
+      "preview": "preview.webp"
+    },
+    {
+      "view": "dos",
+      "action": "attack",
+      "frames": 20,
+      "frameOneEqualsMaster": true,
+      "masterSha256": "535770c19edead2a99c73c1ef50e93b259c4239352facb55cbfa56616ce8ae85",
+      "path": "attack/dos",
+      "preview": "preview.webp"
+    }
+  ]
+}
