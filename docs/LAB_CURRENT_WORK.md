@@ -1,3 +1,11 @@
+## 2026-10-23 — Synchronisation de l'export auteur Capture vers les presets GitHub (lot isolé)
+- Demande : reporter **sur le dépôt**, et pas seulement dans un JSON téléchargeable, les modifications de la base `gensrpg-capture-database-v1.json`. Source SHA256 `5c81d6d1c0712f1614f63f5d4936b92e8c0a3afb32852d15d146592cc0cd6865`.
+- Base `gh-pages@bdae1da28e0eeb251d6963fa380c3bdd1fb45a5d`, START `checkpoint/lab-start-author-db-sync-2026-10-23`, work `work/lab-author-db-sync-2026-10-23`. Uniquement données Capture Showcase, manifeste et test ; aucun moteur, UI, catalogue, asset, `main` ou autre laboratoire modifié.
+- Audit : sur 51 compétences actives, 29 inchangées, 22 presets author à synchroniser ; sur 11 créatures, 9 inchangées, Dracendre et Kitsune actualisées. Ultime **Brasier primordial** (`cap_fire_atk_7`) : coût énergie 0 → 8 ; **Vague de chaleur** (`lib_heat_wave`) inchangée. Conserver Sacrifice `targetRelations=["self"]` de la PR #74, ses zones et l'aura utilisateur.
+- Fichiers et provenance : `docs/LAB_CAPTURE_AUTHOR_DATABASE_SYNC_2026-10-23.md`, `data/capture/source-exports/capture-author-refresh-manifest-2026-10-23.json`, `tests/unit/capture-author-database-sync-2026-10-23.test.mjs`. Critère GREEN : CI Node + 4 jobs vrais navigateurs, checkpoint green sur SHA exact, PR et fusion sur `gh-pages` après tests. Validation téléphone distincte.
+
+---
+
 ## 2026-10-23 — Correctif UI bonus dégâts d'une zone (lot isolé)
 - Bug auteur : erreur cachée « Variation dégâts infligés (%) doit être un nombre » en sauvant le visuel de Sacrifice Kitsune. Cause : formulaire de zone sans contrôle ni lecture `outgoing_damage_modifier.modifierPct`, alors que le contrat le requiert.
 - Base `gh-pages@e4001ee7e6b8052fd3956d3af9a6ce1e02a1170b` ; START `checkpoint/lab-start-zone-outgoing-damage-ui-2026-10-23` ; work `work/lab-zone-outgoing-damage-ui-2026-10-23`. Responsable : seul éditeur humain Capture.
