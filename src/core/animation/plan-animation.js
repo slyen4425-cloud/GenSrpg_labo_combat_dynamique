@@ -649,9 +649,8 @@ export function planAnimation({ event, actor, profile }) {
         1,
         target.travelMs - riseMs
       );
-      const apexProgress =
-        riseMs / target.travelMs;
-
+      // Rise above the starting camp; only the second phase travels
+      // horizontally toward the rival camp. Animation Core owns this path.
       return createAnimationPlan({
         actorId: actor.id,
         eventType: event.type,
@@ -661,12 +660,12 @@ export function planAnimation({ event, actor, profile }) {
             durationMs: riseMs,
             easing: "cubic-bezier(0.42, 0, 0.58, 1)",
             ground: {
-              translateX: target.x * apexProgress,
-              translateY: target.y * apexProgress,
-              scale: (1 + (perspectiveScale - 1) * apexProgress) * shadowApexScale
+              translateX: 0,
+              translateY: 0,
+              scale: shadowApexScale
             },
             transform: {
-              translateX: target.x * apexProgress,
+              translateX: 0,
               translateY: apexY,
               scaleX: 0.98 * perspectiveScale,
               scaleY: 1.02 * perspectiveScale,
@@ -677,7 +676,7 @@ export function planAnimation({ event, actor, profile }) {
           {
             label: "aerial-arc-impact",
             durationMs: diveMs,
-            easing: "cubic-bezier(0.42, 0, 0.58, 1)",
+            easing: cfg.diveEasing ?? "ease-in",
             ground: { translateX: target.x, translateY: target.y, scale: perspectiveScale },
             transform: {
               translateX: target.x,
