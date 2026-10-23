@@ -52,14 +52,17 @@ function harness(nextAction) {
         hp: 100,
         maxHp: 100,
         energy: 10,
-        chargeTimeEffects: []
+        chargeTimeEffects: [],
+        // Status list is mandatory once aerial motion continues past contact.
+        statusEffects: []
       },
       opponent: {
         id: "opponent",
         hp: 100,
         maxHp: 100,
         energy: 10,
-        chargeTimeEffects: []
+        chargeTimeEffects: [],
+        statusEffects: []
       }
     }
   };
