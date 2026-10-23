@@ -5,6 +5,8 @@
 - Portée : preset Ailevent (seulement 4 champs auteur), ajouter Venombre (crea_tox_2) et la capacité Morsure venimeuse (cap_poison_atk_2) aux 2 catalogues Showcase existants ; contrôle automatique par ID natif, aucun alias. Original export Venombre indique profileId=quadruped alors que l'auteur confirme qu'il est bipède ; conserver la source dans le rapport, positionner la présentation active biped selon correction explicite.
 - Aucune modification de moteur de dégâts, des règles de profil/ombres, des autres créatures/skills, des assets, de main/global-assets/Zombicide-40k. Le diagnostic et l'architecture générale des ombres se font dans un second lot dédié.
 - Tests : données précisées au champ près, anciens presets anti-air inchangés, aucune duplication d'identifiants, Venombre biped dans la projection active. 5 jobs CI requis + checkpoint GREEN avant fusion.
+- CI RED documentée : ajout de nouveaux identifiants dans les deux catalogues avait créé des doublons par deux points d'insertion concurrents ; retirés par conservation de la première entrée. Les sentinelles historiques attendent l'ancien catalogue (11→12) et le précédent réglage Ailevent : six fichiers de tests explicitement recadrés sans retirer les assertions ; empreinte SHA256 de la version auteur précédente toujours contrôlée par **reconstruction soustractive** des seuls 4 nouveaux champs (position, scale, deux slots). Aucune modification moteur ou archive.
+
 
 ---
 ## 2026-10-23 — Montée aérienne plus vive, vitesse du piqué inchangée
