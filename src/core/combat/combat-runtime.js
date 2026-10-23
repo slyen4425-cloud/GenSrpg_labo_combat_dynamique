@@ -490,14 +490,16 @@ export function createCombatRuntime({
     if (!record?.resolved) {
       return null;
     }
-    return (
-      record.startedAtClockMs +
+    // Visible aerial contact resolves damage early, not the flight itself.
+    // Keep the existing action record through its original travel deadline:
+    // this is the same CombatRuntime clock used for defensive presence.
+    const recoveredAtMs =
       record.resolvedAtMs +
-      Math.max(
-        0,
-        Number(record.action.recoveryMs) || 0
-      )
-    );
+      Math.max(0, Number(record.action.recoveryMs) || 0);
+    const completeAtMs = record.aerialFollowThrough === true
+      ? Math.max(recoveredAtMs, record.action.impactAtMs)
+      : recoveredAtMs;
+    return record.startedAtClockMs + completeAtMs;
   }
 
   function processRecoveryComplete(
@@ -537,7 +539,10 @@ export function createCombatRuntime({
       Number(record.action.recoveryMs) || 0
     );
 
-    if (!record.mirrorReturn && typeof session.setMovementActiveV1 === "function") {
+    // A mid-dive hit is not the end of the creature's aerial movement.
+    // removeRecord() clears movementActive when the natural flight ends.
+    if (!record.mirrorReturn && record.aerialFollowThrough !== true &&
+        typeof session.setMovementActiveV1 === "function") {
       session.setMovementActiveV1(record.action.actorId, false);
     }
     record.resolved = true;
@@ -546,7 +551,7 @@ export function createCombatRuntime({
       Number(resolvedAtMs) || 0
     );
 
-    if (recoveryMs <= 0) {
+    if (recoveryMs <= 0 && record.aerialFollowThrough !== true) {
       removeRecord(record);
       if (!record.mirrorReturn) onProgress(idleProgress(record.action.actorId));
       return false;
@@ -632,7 +637,7 @@ export function createCombatRuntime({
       }
 
       removeRecord(record);
-      if (record.resolved) {
+      if (record.resolved && record.aerialFollowThrough !== true) {
         onProgress(
           idleProgress(record.action.actorId)
         );
@@ -674,7 +679,8 @@ export function createCombatRuntime({
   function stopImmobilizedApproaches() {
     const state = session.snapshot();
     for (const record of activeRecords()) {
-      if (record.resolved || record.action?.actionType !== "skill") continue;
+      if ((record.resolved && record.aerialFollowThrough !== true) ||
+          record.action?.actionType !== "skill") continue;
       if ((record.action.skill?.approachMode ?? "none") === "none") continue;
       const actorId = record.action.actorId;
       if (hasActiveStatusKindV1(state, actorId, "immobilize")) {
@@ -872,7 +878,7 @@ export function createCombatRuntime({
     const targetActionContext =
       targetRecord &&
       targetRecord !== record &&
-      !targetRecord.resolved
+      (!targetRecord.resolved || targetRecord.aerialFollowThrough === true)
         ? Object.freeze({
             action: targetRecord.action,
             elapsedMs: Math.max(
@@ -918,6 +924,13 @@ export function createCombatRuntime({
         ? effectiveReaction.readyAtMs
         : effectiveAction.impactAtMs;
 
+    // Visible body contact ends the damage exchange once, but aerial
+    // follow-through has its own remaining *existing* travel window.
+    // Do not create a separate dodge state or visual clock.
+    record.aerialFollowThrough =
+      visibleContact && !record.mirrorReturn &&
+      record.action.skill?.approachMode === "aerial" &&
+      effectiveImpactAtMs < record.action.impactAtMs;
     enterRecovery(record, {
       resolvedAtMs,
       atNowMs
@@ -1628,7 +1641,7 @@ export function createCombatRuntime({
     if (reason === "stun" &&
         hasActiveStatusKindV1(session.snapshot(), targetActorId, "stun")) {
       const record = activeByActor.get(targetActorId);
-      if (record && !record.resolved) {
+      if (record && (!record.resolved || record.aerialFollowThrough === true)) {
         const cancelled = cancelActionsForActor(targetActorId, {reason:"stun"});
         return cancelled.cancelled[0] ?? Object.freeze({ok:false,outcome:"no_action"});
       }
@@ -1739,7 +1752,8 @@ export function createCombatRuntime({
     }
     const targetRecord = activeByActor.get(targetId) ?? null;
     const targetActionContext =
-      targetRecord && targetRecord !== record && !targetRecord.resolved
+      targetRecord && targetRecord !== record &&
+      (!targetRecord.resolved || targetRecord.aerialFollowThrough === true)
         ? Object.freeze({
             action: targetRecord.action,
             elapsedMs: elapsedFor(targetRecord, current)
