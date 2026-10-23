@@ -17,8 +17,16 @@ test("the exact three current creator skill exports each replace one stable show
     const path="data/capture/showcase/"+file+".capture-skill-transfer-v1.json";
     assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(x=>x===path).length,1);
     const raw=await readFile(new URL("../../"+path,import.meta.url),"utf8");
-    assert.equal(createHash("sha256").update(raw).digest("hex"),hash);
+    // Keep the immutable creator-file fingerprint. The only authorized
+    // difference in active Tornade is its explicit native anti-air reach.
+    const originalBytes=id==="cap_air_atk_4"
+      ? raw.replace(/"hitPresenceStates": \[\s*"surface",\s*"airborne"\s*\]/,
+        '"hitPresenceStates": null')
+      : raw;
+    if(id==="cap_air_atk_4")assert.notEqual(originalBytes,raw,"anti-air reach must be declared");
+    assert.equal(createHash("sha256").update(originalBytes).digest("hex"),hash);
     const imported=importCaptureTransferJsonV1(raw);
+    if(id==="cap_air_atk_4")assert.deepEqual(imported.value.draft.definition.hitPresenceStates,["surface","airborne"]);
     assert.equal(imported.kind,"skill");
     assert.equal(imported.value.draft.id,id);
   }
