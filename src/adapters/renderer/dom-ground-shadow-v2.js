@@ -265,7 +265,9 @@ export function shadowGeometryFromOpaqueMaskV2(
     heightPct,
     opaqueWidthRatio,
     opaqueHeightRatio,
-    contactYRatio: (yBounds.end + 0.5) / mask.height,
+    // The actual foot support, not the lowest opaque tail/pixel, owns the
+    // shared contact for both ellipse and projected silhouette modes.
+    contactYRatio: supports.yRatio,
     centerXRatio,
     contactXRatio: supports.xRatio,
     supportYRatio: supports.yRatio
@@ -297,7 +299,7 @@ export function groundShadowLayoutFromOpaqueMaskV2(
     centerXPct: geometry.centerXRatio * 100,
     contactXPct: geometry.contactXRatio * 100,
     // One alpha-owned foot pivot for the full projected silhouette.
-    contactYPct: geometry.contactYRatio === null ? null : geometry.supportYRatio * 100,
+    contactYPct: geometry.contactYRatio === null ? null : geometry.contactYRatio * 100,
     opacity: Number.isFinite(opacity) ? clamp(opacity, 0, 1) : 0.42,
     opaqueWidthRatio: geometry.opaqueWidthRatio
   });
