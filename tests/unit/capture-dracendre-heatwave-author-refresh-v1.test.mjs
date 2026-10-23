@@ -7,12 +7,13 @@ import {normalizeCaptureStatRegistryV1} from "../../src/contracts/capture-stat-r
 import {CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1 as creatureFiles} from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
 import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 as skillFiles} from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 const cPath="data/capture/showcase/crea_dracendre.capture-creature-transfer-v1.json";
+const historicalDracendrePath="data/capture/source-exports/gensrpg-capture-creature-crea_dracendre-original-before-2026-10-23.json";
 const sPath="data/capture/showcase/lib_heat_wave.capture-skill-transfer-v1.json";
 const read=p=>readFileSync(new URL("../../"+p,import.meta.url));
 const sha=x=>createHash("sha256").update(x).digest("hex");
 const registry=normalizeCaptureStatRegistryV1(JSON.parse(read("data/capture/monster-capture-stat-registry.v1.json")));
 test("Dracendre and Heat Wave authored exports replace exactly one existing owner",()=>{
- const cb=read(cPath),sb=read(sPath);
+ const cb=read(historicalDracendrePath),sb=read(sPath);
  assert.equal(cb.length,4452);
  assert.equal(sb.length,3025);
  assert.equal(sha(cb),"cdc0d760eddc2558ff8542ec975e5b699af1bd7f41c34ef1ca2b0c76a6ed398e");
@@ -32,7 +33,7 @@ test("Dracendre and Heat Wave authored exports replace exactly one existing owne
 test("Dracendre author's movement audio and newly equipped ultimate survive export",()=>{
  const c=importCaptureTransferJsonV1(read(cPath).toString("utf8"),{statRegistry:registry}).value;
  assert.equal(c.draft.presentation.profileId,"flying");
- assert.deepEqual(c.draft.presentation.audio.movement,{assetId:"gensrpg:sound:sanctuary-367a77dd",volume:1});
+ assert.deepEqual(c.draft.presentation.audio.movement,{assetId:"gensrpg:sound:sanctuary-367a77dd",volume:1,mode:"repeat",repeatIntervalMs:400});
  assert.deepEqual(c.loadout.slots.map(x=>x.skillId),["lib_heat_wave","fireball","cap_fire_special_2","cap_fire_atk_5","cap_fire_atk_7"]);
  assert.equal(c.draft.skillIds.length,20);
  assert.equal(c.draft.combat.maxHp,160);
