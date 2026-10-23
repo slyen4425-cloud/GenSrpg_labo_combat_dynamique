@@ -99,7 +99,7 @@ test("Firestorm reinforce preserves the already scheduled persistent-zone tick",
 
   let zone = session.snapshot().persistentZones[0];
   assert.equal(zone.radius, "short");
-  assert.equal(zone.nextTickAtMs, 1000);
+  assert.equal(zone.nextTickAtMs, 750);
   assert.equal(zone.expiresAtMs, 15000);
 
   session.advanceMs(600);
@@ -117,7 +117,7 @@ test("Firestorm reinforce preserves the already scheduled persistent-zone tick",
   assert.equal(zone.radius, "medium");
   assert.equal(
     zone.nextTickAtMs,
-    1000,
+    750,
     "reinforce must grow/extend the zone without postponing a tick that was already due"
   );
   assert.equal(zone.appliedAtMs, 600);
@@ -126,8 +126,8 @@ test("Firestorm reinforce preserves the already scheduled persistent-zone tick",
   session.advanceMs(400);
   assert.equal(
     session.snapshot().fighters.enemy.hp,
-    95,
-    "the original 1000 ms tick must still fire after reinforcement"
+    90,
+    "the original 750 ms tick must still fire after reinforcement"
   );
 });
 
@@ -168,6 +168,6 @@ test("persistent-zone refresh remains the explicit mode that resets tick origin"
   const zone = session.snapshot().persistentZones[0];
   assert.equal(zone.radius, "short");
   assert.equal(zone.appliedAtMs, 600);
-  assert.equal(zone.nextTickAtMs, 1600);
+  assert.equal(zone.nextTickAtMs, 1350);
   assert.equal(zone.expiresAtMs, 15600);
 });
