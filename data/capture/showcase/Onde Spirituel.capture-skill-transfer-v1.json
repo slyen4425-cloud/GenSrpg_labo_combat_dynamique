@@ -86,7 +86,7 @@
     },
     "presentation": {
       "id": "skill:Onde Spirituel",
-      "version": 2,
+      "version": 3,
       "subjectType": "skill",
       "subjectId": "Onde Spirituel",
       "visual": {
@@ -94,7 +94,28 @@
           "assetId": "pack:capture:icon-skill-miroir-magique-01"
         }
       },
-      "audio": {}
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:genrpg-pack2-cc66c3dd",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {
+        "status-1": {
+          "mode": "sprite",
+          "tintBlinkEnabled": false,
+          "tintBlinkPeriodMs": 600,
+          "tintColor": "#9b59d0",
+          "tintOpacity": 0.35,
+          "sprite": {
+            "playbackMode": "hold-last",
+            "assetId": "pack:capture:sprite-kitsune-lunaire-spirit-shield-01",
+            "displayScale": 2.7,
+            "opacity": 0.4
+          }
+        }
+      }
     }
   }
 }

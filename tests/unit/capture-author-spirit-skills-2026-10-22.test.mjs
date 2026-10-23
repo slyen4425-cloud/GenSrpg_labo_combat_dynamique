@@ -16,7 +16,10 @@ for(const [id,archive] of entries){
   const copy="data/capture/source-exports/gensrpg-capture-skill-"+archive+"-2026-10-22.json";
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===path).length,1);
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.includes(copy),false);
-  assert.equal(load(path),load(copy));
+  // Keep the immutable 22 October archive as historical author input.
+  assert.notEqual(load(path),load(copy));
+  const latest="data/capture/source-exports/gensrpg-capture-skill-"+archive+"-2026-10-23.json";
+  assert.equal(load(path),load(latest));
   const raw=JSON.parse(load(path)),normalized=normalizeCaptureSkillTransferV1(raw);
   assert.equal(normalized.draft.id,id);
   assert.equal(normalized.draft.definition.id,id);
@@ -36,17 +39,22 @@ test("Spirit mirror keeps original authored 2s reflection, no invented visuals",
 });
 test("Spirit arrow keeps both distinct original damage channels and shared marker",()=>{
  const {draft}=JSON.parse(load("data/capture/showcase/fleche_spirituel.capture-skill-transfer-v1.json"));
- assert.equal(draft.presentation,null);
+ assert.equal(draft.definition.form,"projectile");
+ assert.equal(draft.definition.preparationMs,700);
+ assert.equal(draft.definition.travelMs,850);
+ assert.equal(draft.definition.cooldownMs,9000);
+ assert.equal(draft.presentation.visual.travel.assetId,"pack:capture:sprite-kitsune-lunaire-projectile-01");
  const [markerEffect,damage]=draft.definition.effects;
  assert.equal(damage.channel,"spirit");
  assert.equal(damage.amount,9);
  assert.equal(markerEffect.marker.id,"eclat-spirituel");
  assert.equal(markerEffect.marker.durationMs,20000);
  assert.equal(markerEffect.marker.maxStacks,3);
- assert.equal(markerEffect.marker.onStackThreshold.count,3);
- assert.equal(markerEffect.marker.onStackThreshold.consume,"reset");
- assert.equal(markerEffect.marker.onStackThreshold.effects[0].channel,"esprit");
- assert.equal(markerEffect.marker.onStackThreshold.effects[0].amount,10);
+ const effect=markerEffect.marker.onStackAdded.effects[0];
+ assert.equal(effect.kind,"apply_status");
+ assert.equal(effect.status.kind,"approach_time_modifier");
+ assert.equal(effect.status.modifierPct,10);
+ assert.equal(effect.status.stacking,"stack");
  assert.equal(normalizeCaptureMarkerV1(markerEffect.marker).id,"eclat-spirituel");
 });
 test("No active old skill was replaced with accidental re-export",()=>{
