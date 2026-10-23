@@ -24,9 +24,10 @@ test("Brasier primordial: exact author gameplay and independent all-enemies + re
   assert.equal(skill.projectileTargeting,"fixed_point");
   assert.equal(skill.loadoutSlot,"ultimate");
   assert.equal(skill.element,"fire");
-  assert.equal(skill.energyCost,0);
+  assert.equal(skill.energyCost,8);
   assert.equal(skill.preparationMs,3500);
-  assert.equal(skill.travelMs,1000);
+  assert.equal(skill.travelMs,600);
+  assert.equal(skill.maxUsesPerCombat,1);
   assert.equal(skill.recoveryMs,0);
   assert.equal(skill.cooldownMs,0);
   assert.equal(skill.projectileClash.power,0);

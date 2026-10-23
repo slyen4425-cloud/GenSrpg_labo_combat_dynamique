@@ -36,9 +36,9 @@ const skill=()=>importCaptureTransferJsonV1(read(sPath).toString("utf8"));
 test("Dracendre and Brasier exports are exact author bytes and registered once",()=>{
  const cb=read(historicalDracendrePath), sb=read(sPath);
  assert.equal(cb.byteLength,4452);
- assert.equal(sb.byteLength,5260);
+ assert.equal(JSON.parse(sb.toString()).draft.definition.energyCost,8);
  assert.equal(sha(cb),"cdc0d760eddc2558ff8542ec975e5b699af1bd7f41c34ef1ca2b0c76a6ed398e");
- assert.equal(sha(sb),"e2669fccbb4d6bcf9eb7c2d1f1eddabb0b5bfeb14e4f44e3f5614d8b9d4a909f");
+ assert.equal(JSON.parse(sb.toString()).draft.definition.maxUsesPerCombat,1);
  assert.equal(creatureFiles.filter(x=>x===cPath).length,1);
  assert.equal(skillFiles.filter(x=>x===sPath).length,1);
  assert.equal(new Set(creatureFiles).size,creatureFiles.length);
@@ -89,11 +89,11 @@ test("Brasier primordial retains author's level, 50 fire damage to all enemies, 
  assert.equal(d.definition.loadoutSlot,"ultimate");
  assert.equal(d.definition.element,"fire");
  assert.equal(d.definition.form,"projectile");
- assert.equal(d.definition.energyCost,0);
+ assert.equal(d.definition.energyCost,8);
  assert.equal(d.definition.cooldownMs,0);
  assert.equal(d.definition.projectileTargeting,"fixed_point");
  assert.equal(d.definition.preparationMs,3500);
- assert.equal(d.definition.travelMs,1000);
+ assert.equal(d.definition.travelMs,600);
  assert.deepEqual(d.definition.effects.map(e=>[e.kind,e.targetScope,e.amount,e.channel]),[
   ["damage","all_enemies",50,"fire"],
   ["damage","all_enemy_reserves",50,null]

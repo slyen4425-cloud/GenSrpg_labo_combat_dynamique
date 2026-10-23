@@ -18,7 +18,13 @@ test("exact new author JSON replaces only two existing active showcase skills",(
     const active="data/capture/showcase/"+id+".capture-skill-transfer-v1.json";
     const source="data/capture/source-exports/gensrpg-capture-skill-"+slug+"-2026-10-23.json";
     assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===active).length,1);
-    assert.deepEqual(load(active),load(source));
+    if(id==="fleche_spirituel"){
+      const updated=JSON.parse(load(active)),historical=JSON.parse(load(source));
+      assert.equal(updated.draft.definition.projectileClash.power,1,
+        "latest author sets projectile collision power to 1");
+      updated.draft.definition.projectileClash.power=0;
+      assert.deepEqual(updated,historical,"2026-10-23 archive stays immutable");
+    }else assert.deepEqual(load(active),load(source));
     assert.equal(sha(load(source)),expectedSha);
     const parsed=JSON.parse(load(active));
     assert.equal(normalizeCaptureSkillTransferV1(parsed).draft.id,id);
