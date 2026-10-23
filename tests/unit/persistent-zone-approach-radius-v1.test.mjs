@@ -219,7 +219,7 @@ test("Tempête de flammes level 1 damages only when a ground attacker enters the
   h.tickAt(shortEntryAt);
   assert.equal(
     session.snapshot().fighters.enemy.hp,
-    95,
+    90,
     "level 1 must damage when the melee attacker crosses into the short zone"
   );
 
@@ -282,7 +282,7 @@ test("Tempête de flammes level 2 stays out of the enemy camp but is entered ear
   h.tickAt(mediumEntryAt);
   assert.equal(
     session.snapshot().fighters.enemy.hp,
-    95,
+    90,
     "level 2 must damage before the level-1 short boundary"
   );
   assert.ok(
@@ -310,16 +310,16 @@ test("Tempête de flammes level 3 damages the enemy camp without an attack", asy
 
   const h = harness({ session });
 
-  h.tickAt(999);
+  h.tickAt(749);
   assert.equal(
     session.snapshot().fighters.enemy.hp,
     100
   );
 
-  h.tickAt(1000);
+  h.tickAt(750);
   assert.equal(
     session.snapshot().fighters.enemy.hp,
-    95,
+    90,
     "level 3 long zone must cover the enemy camp even with no active attack"
   );
 
@@ -389,7 +389,7 @@ test("Tempête de flammes long range remains authoritative when a visual sample 
 
   assert.equal(
     session.snapshot().fighters.enemy.hp,
-    95,
+    90,
     "long range is a gameplay guarantee and must not flicker off at the visual boundary"
   );
   assert.deepEqual(
@@ -561,7 +561,7 @@ test("Tempête de flammes does not miss short-zone entry when visible contact la
   assert.equal(contact.ok, true);
   assert.equal(
     session.snapshot().fighters.enemy.hp,
-    95,
+    90,
     "crossing the zone before an accepted visible contact must apply the entry damage even between scheduled ticks"
   );
 
