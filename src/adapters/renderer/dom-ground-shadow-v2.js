@@ -291,12 +291,22 @@ export function groundShadowLayoutFromOpaqueMaskV2(
   const bottomPct = geometry.contactYRatio === null
     ? clamp(Number.isFinite(fallbackBottom) ? fallbackBottom : 8, 0, 60)
     : clamp((1 - geometry.contactYRatio) * 100 - geometry.heightPct / 2, 0, 60);
+  // A creature-specific author adjustment shifts the existing footprint,
+  // not the single alpha-derived foot pivot, image mask or collision model.
+  const offsetXPct = Number(profileShadow.offsetXPct ?? 0);
+  const offsetYPct = Number(profileShadow.offsetYPct ?? 0);
+  if (!Number.isFinite(offsetXPct) || !Number.isFinite(offsetYPct) ||
+      Math.abs(offsetXPct) > 40 || Math.abs(offsetYPct) > 40) {
+    throw new RangeError("creature shadow offsets must be finite and within ±40%");
+  }
   const opacity = Number(profileShadow.opacity);
   return Object.freeze({
     widthPct: geometry.widthPct,
     heightPct: geometry.heightPct,
-    bottomPct,
-    centerXPct: geometry.centerXRatio * 100,
+    bottomPct: clamp(bottomPct - offsetYPct, 0, 60),
+    centerXPct: clamp(geometry.centerXRatio * 100 + offsetXPct, 0, 100),
+    offsetXPct,
+    offsetYPct,
     contactXPct: geometry.contactXRatio * 100,
     // One alpha-owned foot pivot for the full projected silhouette.
     contactYPct: geometry.contactYRatio === null ? null : geometry.contactYRatio * 100,

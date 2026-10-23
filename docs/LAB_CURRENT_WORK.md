@@ -1,3 +1,12 @@
+## 2026-10-23 — Apparence : décalage manuel X/Y d'ombre propre à la créature (validation Venombre en attente)
+- Retour auteur : Venombre bipède mais silhouette à queue plus basse ; l'ombre peut être attachée au mauvais endroit malgré le calcul de contact alpha unifié. L'auteur refuse le rendu précédent et demande une option manuelle X/Y dans Apparence, conservant l'automatisme normal.
+- Source : gh-pages@4d149a92ee368f97e737a68e9a125c3422c49c3a (contient le correctif shadow-ground-anchor du 23/10). Départ checkpoint/lab-start-creature-shadow-offset-2026-10-23 et branche work/lab-creature-shadow-offset-2026-10-23.
+- Propriétaire unique : Creature Presentation porte un offset X/Y facultatif en % du cadre image, normalisé en version 10 ; Render Adapter propriétaire de l'unique disposition et de l'unique silhouette d'ombre à partir du masque alpha accepté. L'interface Apparence édite les champs sans calcul de projection. Le mode automatique et le style locomotion restent inchangés.
+- Portée autorisée : contrat presentation v10 + routeur, créateur (lecture/écriture/hydratation), HTML Apparence, adaptateur export vers meta native, rendu/démo pour transmettre l'offset au propriétaire d'ombre, CSS projection, tests sentinelles et ce journal.
+- Protégés : calibration globale lumière, contact alpha, combat et collision, profileId, métadonnées Venombre initiales (ne pas inventer un réglage final à sa place), sauvegardes antérieures, capacités, assets, autres dépôts, main et global-assets.
+- Tests : valeurs par défaut 0/0 sans régression ; roundtrip export/import > présentation v10 > meta > layout > style des deux modes ; valeurs négatives/positives, borne et NaN refusés ; 1v1, vue face/dos, bipède et volant stables ; CI 5 jobs avant tout checkpoint GREEN. Validation Android de Venombre par l'auteur reste nécessaire.
+
+---
 ## 2026-10-23 — Ombres : un seul point d'appui silhouette pour sol/projection
 - Retour auteur : Venombre est biped, mais semble flotter à cause d'une ombre visuellement décollée. L'import Venombre et son profil biped sont déjà publiés par PR #81.
 - Diagnostic exact : dans dom-ground-shadow-v2.js, la projection de silhouette utilise supports.yRatio (enveloppe basse/amas de contacts), alors que la position ellipse bottomPct utilise geometry.contactYRatio calculé à partir de yBounds.end (dernier pixel visible, souvent queue/appendice). Deux points d'appui divergents sous les différents modes d'ombre. En parallèle, applyShadowLight a deux sources de signal aérien : locomotion.style et le nom actor.profile.

@@ -1177,6 +1177,8 @@ function createSlot({
     slotContainer.style?.setProperty?.("--creature-shadow-bottom", (projected ? 0 : lastShadowLayout.bottomPct).toFixed(2) + "%");
     slotContainer.style?.setProperty?.("--shadow-light-foot-x", lastShadowLayout.contactXPct.toFixed(2) + "%");
     slotContainer.style?.setProperty?.("--shadow-light-foot-y", (lastShadowLayout.contactYPct ?? (100 - lastShadowLayout.bottomPct - lastShadowLayout.heightPct / 2)).toFixed(2) + "%");
+    slotContainer.style?.setProperty?.("--creature-shadow-offset-x", lastShadowLayout.offsetXPct.toFixed(2) + "%");
+    slotContainer.style?.setProperty?.("--creature-shadow-offset-y", lastShadowLayout.offsetYPct.toFixed(2) + "%");
     slotContainer.style?.setProperty?.("--creature-shadow-opacity", String(settings.mode === "contact" ? lastShadowLayout.opacity : projection.opacity));
     slotContainer.style?.setProperty?.("--shadow-light-cast-x", projection.castXPct.toFixed(2) + "%");
     slotContainer.style?.setProperty?.("--shadow-light-cast-y", projection.castYPct.toFixed(2) + "%");
@@ -1248,8 +1250,11 @@ function createSlot({
       // hidden: ground-shadow layout must not depend on screen geometry.
       const opaqueMask = collisionModel.opaqueMask;
       if (!opaqueMask) return;
-      const profileShadow =
-        profiles.get(actor.profile).presentation?.shadow ?? {};
+      const profileShadow = {
+        ...(profiles.get(actor.profile).presentation?.shadow ?? {}),
+        offsetXPct: meta.shadowOffset?.x ?? 0,
+        offsetYPct: meta.shadowOffset?.y ?? 0
+      };
       const layout = groundShadowLayoutFromOpaqueMaskV2(
         opaqueMask, profileShadow
       );

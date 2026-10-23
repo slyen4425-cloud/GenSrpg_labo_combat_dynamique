@@ -310,6 +310,8 @@ export function adaptCaptureExportToNativeVisualSourceV1({
       id: creature.id,
       name: creature.displayName,
       profile: binding.profileId,
+      // Authored offsets pass through the existing visual-source contract.
+      shadowOffset: binding.version >= 10 ? binding.shadowOffset ?? null : null,
       views: Object.freeze({
         player: backUrl,
         opponent: frontUrl,

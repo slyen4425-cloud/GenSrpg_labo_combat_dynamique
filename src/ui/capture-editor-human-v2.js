@@ -2290,6 +2290,11 @@ export function buildHumanCreatureDraftV3(fields) {
   const movementPlaybackMode = fields?.visual?.movementPlaybackMode ?? "loop";
   const movementPlayback = commonMovement === null ? null : { frameMs: movementFrameMs, mode: movementPlaybackMode };
   const hasAppearanceV9 = movementBackVisual !== null;
+  const shadowOffset = {
+    x: finiteNumber(fields?.shadowOffset?.x ?? 0, "Décalage X de l’ombre"),
+    y: finiteNumber(fields?.shadowOffset?.y ?? 0, "Décalage Y de l’ombre")
+  };
+  const hasShadowOffset = shadowOffset.x !== 0 || shadowOffset.y !== 0;
   const hasAppearanceV8 = (
     (movementScaleByView !== null && (
       movementScaleByView.player !== commonMovement.displayScale ||
@@ -2337,8 +2342,9 @@ export function buildHumanCreatureDraftV3(fields) {
         : {
             ...base.presentation,
             version:
-              hasAppearanceV9 ? 9 : (hasAppearanceV8 ? 8 : (hasAttackPlacement ? 7 : (rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3)))))),
+              hasShadowOffset ? 10 : (hasAppearanceV9 ? 9 : (hasAppearanceV8 ? 8 : (hasAttackPlacement ? 7 : (rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3))))))),
             displayScale,
+            ...(hasShadowOffset ? { shadowOffset } : {}),
             ...(fields?.viewOverrides == null ? {} : { viewOverrides: fields.viewOverrides }),
             position:
               fields?.position ?? {
@@ -4068,6 +4074,8 @@ function writeCreatureRecordFields(
       "[data-creature-profile]",
       presentation?.profileId ?? "biped"
     ],
+    ["[data-creature-shadow-offset-x]", presentation?.shadowOffset?.x ?? 0],
+    ["[data-creature-shadow-offset-y]", presentation?.shadowOffset?.y ?? 0],
     [
       "[data-creature-display-scale]",
       presentation?.displayScale ?? 1
@@ -4334,6 +4342,8 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-mobility-preset]", "normal"],
     ["[data-creature-approach-time-modifier]", 0],
     ["[data-creature-display-scale]", 1],
+    ["[data-creature-shadow-offset-x]", 0],
+    ["[data-creature-shadow-offset-y]", 0],
     ["[data-creature-player-scale]", 1],
     ["[data-creature-opponent-scale]", 1],
     ["[data-creature-player-x]", 0],
@@ -9127,6 +9137,10 @@ function readCreatureFields(
       root,
       "[data-creature-display-scale]"
     ),
+    shadowOffset: {
+      x: numericValue(root, "[data-creature-shadow-offset-x]"),
+      y: numericValue(root, "[data-creature-shadow-offset-y]")
+    },
     ...(one(root, "[data-creature-custom-views]").checked ? {
       viewOverrides: Object.fromEntries(["player", "opponent"].map(view => [view, {
         displayScale: numericValue(root, "[data-creature-" + view + "-scale]"),
