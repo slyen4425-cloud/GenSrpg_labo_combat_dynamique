@@ -54,7 +54,7 @@ test("Venombre enters the same registered biped rules as all author-created grou
   const profile=JSON.parse(read("data/profiles/"+x.draft.presentation.profileId+".profile.json"));
   assert.notEqual(profile.locomotion.style,"flight");
   const source=read("src/ui/demo-app.js");
-  assert.match(source,/const flying = profile\.locomotion\.style === "flight";/);
+  assert.match(source,/const flying = profile\?\.locomotion\?\.style === "flight";/);
   assert.doesNotMatch(source,/profile\?\.locomotion\?\.style === "flight" \|\| actor\.profile === "flying"/);
 });
 
