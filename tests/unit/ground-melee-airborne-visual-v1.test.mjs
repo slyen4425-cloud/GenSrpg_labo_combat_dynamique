@@ -24,7 +24,7 @@ test("ground aim honors user positioning offsets and responsive distance scale",
 test("one shared visual owner separates grounded aim from live visible silhouette contact in 1v1/2v2",()=>{
  const source=read("src/ui/demo-app.js");
  assert.match(source,/function playApproachFor[\s\S]*?activeApproachBySlot\.get\(targetSlot\)\?\.approachMode === "aerial"/);
- assert.match(source,/const targetAim = airborneTarget[\s\S]*?restingTargetCenterForApproachV1\(target\)/);
+ assert.match(source,/const targetAim = approachMode === "aerial" \|\| airborneTarget[\s\S]*?restingTargetCenterForApproachV1\(target\)/);
  assert.match(source,/const approachRecord = Object\.freeze\(\{[\s\S]*?approachMode/);
  assert.match(source,/watchVisibleModelContact\(\{[\s\S]*?sourceModel: slot\.collisionModel,[\s\S]*?targetModel: target\.collisionModel/);
  assert.match(source,/container: slotContainer/);
