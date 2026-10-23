@@ -75,14 +75,14 @@
           "zoneId": "zone",
           "radius": "short",
           "durationMs": 15000,
-          "tickIntervalMs": 1000,
+          "tickIntervalMs": 750,
           "reactivation": "reinforce",
           "maxActivations": 3,
           "radiusGrowthSteps": 1,
           "tickEffect": {
             "kind": "damage",
             "targetScope": "all_enemies",
-            "amount": 5,
+            "amount": 10,
             "channel": null
           }
         }
