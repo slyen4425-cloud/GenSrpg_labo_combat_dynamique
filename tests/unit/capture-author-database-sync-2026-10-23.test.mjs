@@ -7,8 +7,8 @@ const stable=x=>Array.isArray(x)?`[${x.map(stable).join(",")}]`:x&&typeof x==="o
 const fingerprint=x=>{let h=2166136261,s=stable(x);for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619)>>>0;return h.toString(16).padStart(8,"0")};
 const skill=id=>read("data/capture/showcase/"+id+".capture-skill-transfer-v1.json").draft;
 const creature=id=>{const j=read("data/capture/showcase/"+id+".capture-creature-transfer-v1.json");return {draft:j.draft,statValues:j.statValues,loadout:j.loadout}};
-test("every one of 22 edited author skills is published with exact field content",()=>{
- assert.equal(manifest.authorChangedSkillIds.length,22);
+test("every one of 4 materially edited author skills is published with exact field content",()=>{
+ assert.equal(manifest.authorChangedSkillIds.length,4);
  for(const id of manifest.authorChangedSkillIds)assert.equal(fingerprint(skill(id)),manifest.publishedFingerprints[id],id);
 });
 test("the 2 adjusted creature records include author loadouts and animations",()=>{

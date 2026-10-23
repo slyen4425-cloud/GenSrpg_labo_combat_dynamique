@@ -15,7 +15,6 @@
       "name": "Morsure de marée",
       "category": "offensive",
       "form": "contact",
-      "projectileTargeting": "direct",
       "loadoutSlot": "standard",
       "element": "water",
       "approachMode": "burrow",
@@ -42,7 +41,6 @@
         "underground"
       ],
       "dodgeable": true,
-      "hitsIntangible": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": []

@@ -15,7 +15,6 @@
       "name": "Séisme primordial",
       "category": "offensive",
       "form": "projectile",
-      "projectileTargeting": "direct",
       "loadoutSlot": "ultimate",
       "element": "earth",
       "approachMode": "none",
@@ -42,7 +41,6 @@
         "underground"
       ],
       "dodgeable": false,
-      "hitsIntangible": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": [

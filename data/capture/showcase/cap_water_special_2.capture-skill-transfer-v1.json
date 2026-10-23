@@ -15,7 +15,6 @@
       "name": "Voile aqueux",
       "category": "defensive",
       "form": "self",
-      "projectileTargeting": "direct",
       "loadoutSlot": "ultimate",
       "element": "water",
       "approachMode": "none",
@@ -39,7 +38,6 @@
       ],
       "hitPresenceStates": null,
       "dodgeable": true,
-      "hitsIntangible": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": []
