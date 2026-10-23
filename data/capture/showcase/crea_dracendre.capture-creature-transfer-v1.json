@@ -185,8 +185,8 @@
           "transitionMs": 80
         },
         "movementScaleByView": {
-          "player": 1,
-          "opponent": 1
+          "player": 1.7,
+          "opponent": 1.7
         },
         "rangedAttackScaleByView": {
           "player": 1.2,
