@@ -27,6 +27,33 @@
       }
     },
     {
+      "id": "eclat-spirituel",
+      "name": "Éclat spirituel",
+      "polarity": "detrimental",
+      "durationMs": 20000,
+      "maxStacks": 3,
+      "iconAssetId": "pack:capture:icon-skill-fleche-spirituelle-01",
+      "onStackAdded": {
+        "effects": [
+          {
+            "kind": "apply_status",
+            "targetScope": "target",
+            "status": {
+              "id": "marker-effect-charge-eclat-spirituel-0",
+              "kind": "approach_time_modifier",
+              "polarity": "detrimental",
+              "durationModel": "time_ms",
+              "durationMs": 20000,
+              "stacking": "stack",
+              "maxStacks": 3,
+              "tags": [],
+              "modifierPct": 10
+            }
+          }
+        ]
+      }
+    },
+    {
       "id": "peste",
       "name": "Peste",
       "polarity": "detrimental",
