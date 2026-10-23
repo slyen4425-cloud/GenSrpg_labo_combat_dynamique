@@ -1,3 +1,13 @@
+## 2026-10-23 — Kit d'ultime Kitsune : Aura Lunaire et Sacrifice, héritage des zones après K.O. (lot isolé)
+- Auteur : deux exports `aura-lunaire` et `Sacrifice_kitsune`; garder les octets sources datés et leur provenance. Diagnostic : statuts soin/dégâts immédiats distincts d'une unique zone énergie sur `target`, donc aucun héritage au remplaçant après auto-K.O.
+- Base `gh-pages@2151fbc1ff9b93450a0d1104a2d09b78e862f5c5`; START `checkpoint/lab-start-kitsune-dual-skills-zone-2026-10-23` ; branche `work/lab-kitsune-dual-skills-zone-2026-10-23`.
+- Responsable : données Capture Showcase et leur catalogue ; le moteur natif Persistent Zone / Roster, Demo UI, animations Dracendre, audio et autres capacités restent inchangés et protégés.
+- Périmètre : les 2 actifs + 2 archives, `src/catalogs/capture-showcase-skill-presets-v1.js`, test ciblé, `docs/LAB_KITSUNE_SACRIFICE_2026-10-23.md`, ce journal. Sacrifice actif : 3 zones natives alliées persistantes (énergie, HoT, dégâts) de 45 s, auto-K.O., source brute intacte ; Aura actif inchangé. Aucun équipement de créature inventé.
+- Tests prévus : SHA256 export originaux, import normalisé, unique IDs, KO réel puis remplacement du membre via `RosterSession`, trois statuts hérités, tick PV, dégâts boostés, expiration, absence de buff ennemi et contrôle UI/CI. Risque : trois zones superposées peuvent superposer aussi leurs sprites ; validation visuelle smartphone nécessaire.
+- Critère GREEN : tests Node + vrais navigateurs CI, pas de régression ; publier sur `gh-pages` uniquement après revue et merge ; documenter la validation visuelle auteur séparément.
+
+---
+
 ## 2026-10-23 — Correctif mouvement aérien animé pour Dracendre (lot isolé)
 - Diagnostic code : `CombatResolutionPresenter.presentRelease` transmet correctement `approachMode:"aerial"` à `playApproachFor`, mais `src/ui/demo-app.js` n'appelle `slot.playMovementAppearance` que pour `ground`. Le plan de vol bouge bien le personnage, pas les frames des sprites de mouvement V9.
 - Base `gh-pages@82592abd5e366e1639d63d2ce0cd336ac2f370b6`, START `checkpoint/lab-start-aerial-movement-sprite-2026-10-23`, branche `work/lab-aerial-movement-sprite-2026-10-23`.
