@@ -53,6 +53,7 @@
       "shadowApexScale": 0.86,
       "riseRatio": 0.64,
       "diveEasing": "ease-in",
+      "followThroughRatio": 0.35,
       "repositionRatio": 0.1,
       "riseY": -260,
       "diveHeight": 280,

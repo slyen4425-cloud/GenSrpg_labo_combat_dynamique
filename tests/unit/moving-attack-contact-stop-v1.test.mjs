@@ -132,7 +132,7 @@ test("renderer can stop an active moving attack at its visible pose and return c
   assert.equal(element.style.transform, composeDomTransform(currentActor));
 });
 
-test("continuous contact approaches wire the visible contact to renderer-owned return before reporting gameplay contact", async () => {
+test("only ground approach stops at contact; aerial resolves once and completes its dive", async () => {
   const source = await readFile(
     new URL("../../src/ui/demo-app.js", import.meta.url),
     "utf8"
@@ -141,11 +141,17 @@ test("continuous contact approaches wire the visible contact to renderer-owned r
   assert.match(
     source,
     /watchVisibleModelContact[\s\S]*onContact[\s\S]*returnActiveToBaseFromCurrent/,
-    "ground/aerial contact must stop outbound motion through the existing renderer"
+    "ground contact must stop outbound motion through the existing renderer"
   );
   assert.match(
     source,
     /approachMode\s*!==\s*"teleport"[\s\S]*returnActiveToBaseFromCurrent/,
-    "teleport keeps its dedicated return while continuous approaches are contact-stopped"
+    "teleport keeps its dedicated return while ground approaches are contact-stopped"
   );
+  const aerialBranch = source.indexOf('if (approachMode === "aerial") {', source.indexOf("function playApproachFor"));
+  const groundReturn = source.indexOf("contactStoppedOutbound = true;", aerialBranch);
+  assert.ok(aerialBranch > 0 && groundReturn > aerialBranch,
+    "aerial contact is routed before ground-only early return");
+  assert.match(source.slice(aerialBranch, groundReturn), /onContact\(\);\s*return;/,
+    "aerial contact reports damage without cancelling its native animation or cues");
 });

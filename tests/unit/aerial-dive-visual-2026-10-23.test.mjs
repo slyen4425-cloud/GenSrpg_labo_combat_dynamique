@@ -35,9 +35,9 @@ test("all data profiles rise vertically and dive rapidly toward the rival camp",
     assert.equal(rise.ground.translateY, 0);
     assert.ok(rise.transform.translateY < 0);
     assert.equal(dive.label, "aerial-arc-impact");
-    assert.equal(dive.transform.translateX, 220);
+    assert.equal(dive.transform.translateX, 220 * (1 + p.specialMoves.aerial.followThroughRatio));
     assert.equal(dive.transform.translateY, 35);
-    assert.equal(dive.ground.translateX, 220);
+    assert.equal(dive.ground.translateX, 220 * (1 + p.specialMoves.aerial.followThroughRatio));
     assert.equal(dive.easing, p.specialMoves.aerial.diveEasing);
     assert.ok(dive.durationMs < rise.durationMs, id + " dive must be quicker than ascent");
     assert.equal(rise.durationMs + dive.durationMs, 1000,

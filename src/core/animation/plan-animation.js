@@ -641,6 +641,15 @@ export function planAnimation({ event, actor, profile }) {
         riseY,
         target.y - cfg.diveHeight
       );
+      // A configured portion beyond the rival camp centre gives the
+      // aerial pass-through a visible continuation after first contact.
+      // No change to gameplay damage or the travel deadline.
+      const followThroughRatio = Number(cfg.followThroughRatio ?? 0);
+      if (!Number.isFinite(followThroughRatio) ||
+          followThroughRatio < 0 || followThroughRatio > 0.8) {
+        throw new RangeError("specialMoves.aerial.followThroughRatio must be 0..0.8");
+      }
+      const diveEndX = target.x * (1 + followThroughRatio);
       const riseMs = Math.max(
         1,
         Math.round(target.travelMs * cfg.riseRatio)
@@ -677,9 +686,9 @@ export function planAnimation({ event, actor, profile }) {
             label: "aerial-arc-impact",
             durationMs: diveMs,
             easing: cfg.diveEasing ?? "ease-in",
-            ground: { translateX: target.x, translateY: target.y, scale: perspectiveScale },
+            ground: { translateX: diveEndX, translateY: target.y, scale: perspectiveScale },
             transform: {
-              translateX: target.x,
+              translateX: diveEndX,
               translateY: target.y,
               scaleX: 1.05 * perspectiveScale,
               scaleY: 0.96 * perspectiveScale,
