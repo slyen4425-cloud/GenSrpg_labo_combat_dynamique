@@ -402,7 +402,7 @@ test("Tempête de flammes long range remains authoritative when a visual sample 
       {
         actorId: "enemy",
         kind: "damage",
-        amount: 5
+        amount: 10
       }
     ],
     "the native HP change must emit the same damage feedback event"
