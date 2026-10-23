@@ -12,5 +12,4 @@ export const CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1 =
     "data/capture/showcase/crea_lumilo.capture-creature-transfer-v1.json",
     "data/capture/showcase/crea_ombre_2.capture-creature-transfer-v1.json",
     "data/capture/showcase/crea_scar_2.capture-creature-transfer-v1.json",
-    "data/capture/showcase/crea_tox_2.capture-creature-transfer-v1.json"
   ]);
