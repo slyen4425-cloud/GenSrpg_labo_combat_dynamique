@@ -61,7 +61,13 @@ test("RED: ground, aerial and teleport movement that receive Arc stun stop visua
  for(const mode of ["ground","aerial","teleport"]){
   const h=harness();
   h.runtime.startSkill({actorId:"victim",targetId:"caster",skill:movingSkill("approach-"+mode,mode)});
-  h.runtime.startSkill({actorId:"caster",targetId:"victim",skill:arc});
+  // An aerial target is reachable by stun only through an explicit
+  // anti-air skill. Test the real interrupt route without changing Arc's
+  // authored data or inventing a second immunity/interrupt owner.
+  const strike = mode==="aerial"
+    ? normalizeSkillDefinition({...arc,hitPresenceStates:["surface","airborne"]})
+    : arc;
+  h.runtime.startSkill({actorId:"caster",targetId:"victim",skill:strike});
   h.step(400);h.step(1600);
   assert.equal(h.runtime.hasActiveActionFor("victim"),false,mode);
   assert.equal(h.visualCalls.filter(x=>x[0]==="cancel"&&x[1]==="victim").length,1,mode);

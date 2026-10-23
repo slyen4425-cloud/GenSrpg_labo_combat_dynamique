@@ -68,13 +68,13 @@ for (const view of ["player", "opponent"]) {
       assert.equal(timeline.shadowKeyframes.at(-1).transform, timeline.shadowKeyframes[0].transform);
     });
   }
-  test(view + ": aerial shadow crosses the ground, never the offscreen apex", () => {
+  test(view + ": aerial shadow stays at takeoff during rise then crosses the camp during dive", () => {
     const actor = actorFor("flying", view), plan = planFor(actor, "aerial-attack");
     const timeline = animationPlanToDomTimeline(plan, actor);
     assert.ok(timeline.shadowKeyframes);
     const ground = translation(timeline.shadowKeyframes[1]), body = translation(timeline.keyframes[1]);
-    assert.equal(ground[0], body[0]);
-    assert.ok(Math.abs(ground[1] - (-4 + (view === "player" ? -80 : 80) * 0.42)) < 0.0011);
+    assert.deepEqual(ground, [12,-4], "shadow stays under the vertical ascent");
+    assert.equal(body[0],12,"creature ascends straight up before diving");
     assert.ok(body[1] < -400);
     assert.equal(timeline.shadowKeyframes[2].transform.includes(view === "player" ? "-84px" : "76px"), true);
   });

@@ -77,9 +77,10 @@ export function skillPresenceReachV1({
     Array.isArray(
       skill?.hitPresenceStates
     );
-  // A legacy offensive skill without an explicit reach list is a
-  // surface attack. Burrow is a gameplay presence, not visual opacity.
-  // Keep legacy airborne/evasion semantics and support skills unchanged.
+  // An offensive skill without explicit reach is a surface attack.
+  // Airborne and underground are Combat Rules presence states, not DOM effects.
+  // Authored anti-air abilities opt in through hitPresenceStates; support
+  // skills retain their previous target semantics.
   const waveUndergroundRestriction =
     !configured &&
     skill?.projectileTargeting === "expanding_wave" &&
@@ -88,15 +89,13 @@ export function skillPresenceReachV1({
     !configured &&
     presence === "underground" &&
     skill?.category === "offensive";
-  // Ordinary ground-contact melee is surface-bound, even if its visual
-  // approach starts while the defender is mid-flight. An authored anti-air
-  // ability must opt into airborne explicitly via hitPresenceStates.
-  const implicitAirborneGroundMeleeRestriction =
+  // Every ordinary offensive action misses an airborne defender while
+  // its aerial travel is active, including a simultaneous aerial charge.
+  // Only an explicitly authored airborne reach may hit during that window.
+  const implicitAirborneRestriction =
     !configured &&
     presence === "airborne" &&
-    skill?.category === "offensive" &&
-    skill?.form === "contact" &&
-    skill?.approachMode === "ground";
+    skill?.category === "offensive";
 
   return Object.freeze({
     configured,
@@ -108,7 +107,7 @@ export function skillPresenceReachV1({
       : !(
           implicitUndergroundRestriction ||
           waveUndergroundRestriction ||
-          implicitAirborneGroundMeleeRestriction
+          implicitAirborneRestriction
         )
   });
 }

@@ -70,12 +70,13 @@ test("teleport after its reappearance is vulnerable again",()=>{
   assert.equal(x.session.snapshot().fighters.player.hp,80);
   x.runtime.dispose();
 });
-test("ground and aerial travel do not become blanket protection from direct Fireballs",()=>{
+test("direct projectile hits a ground mover but misses an airborne mover without anti-air reach",()=>{
   for(const approach of ["ground","aerial"]){
     const x=scenario({approach});
     const result=x.runTo(900);
-    assert.equal(result?.outcome,"hit",approach);
-    assert.equal(x.session.snapshot().fighters.player.hp,80,approach);
+    assert.equal(result?.outcome,approach==="aerial"?"evaded":"hit",approach);
+    if(approach==="aerial") assert.equal(result?.evasionReason,"presence");
+    assert.equal(x.session.snapshot().fighters.player.hp,approach==="aerial"?100:80,approach);
     x.runtime.dispose();
   }
 });
