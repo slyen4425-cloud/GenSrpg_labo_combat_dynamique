@@ -1,3 +1,11 @@
+## 2026-10-23 — Correctif UI bonus dégâts d'une zone (lot isolé)
+- Bug auteur : erreur cachée « Variation dégâts infligés (%) doit être un nombre » en sauvant le visuel de Sacrifice Kitsune. Cause : formulaire de zone sans contrôle ni lecture `outgoing_damage_modifier.modifierPct`, alors que le contrat le requiert.
+- Base `gh-pages@e4001ee7e6b8052fd3956d3af9a6ce1e02a1170b` ; START `checkpoint/lab-start-zone-outgoing-damage-ui-2026-10-23` ; work `work/lab-zone-outgoing-damage-ui-2026-10-23`. Responsable : seul éditeur humain Capture.
+- Périmètre : `src/ui/capture-editor-human-v2.js`, test UI ciblé, `docs/LAB_ZONE_OUTGOING_DAMAGE_UI_2026-10-23.md`, journal. Tous JSON auteur/actifs Sacrifice/Aura, moteur, zones, animations, musique, autres dépôts et `main` protégés.
+- Critère GREEN : champ conditionnel montrant +200, lecture/sauvegarde via la voie existante, tests Node + 5 jobs CI et aucune régression ; validation smartphone auteur distincte.
+
+---
+
 ## 2026-10-23 — Kit d'ultime Kitsune : Aura Lunaire et Sacrifice, héritage des zones après K.O. (lot isolé)
 - Auteur : deux exports `aura-lunaire` et `Sacrifice_kitsune`; garder les octets sources datés et leur provenance. Diagnostic : statuts soin/dégâts immédiats distincts d'une unique zone énergie sur `target`, donc aucun héritage au remplaçant après auto-K.O.
 - Base `gh-pages@2151fbc1ff9b93450a0d1104a2d09b78e862f5c5`; START `checkpoint/lab-start-kitsune-dual-skills-zone-2026-10-23` ; branche `work/lab-kitsune-dual-skills-zone-2026-10-23`.
