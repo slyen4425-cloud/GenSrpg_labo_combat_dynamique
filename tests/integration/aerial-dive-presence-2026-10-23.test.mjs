@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import { normalizeSkillDefinition } from "../../src/contracts/skill-definition.js";
 import { createCombatSession } from "../../src/core/combat/combat-session.js";
@@ -123,4 +124,20 @@ test("presence protection exists only during release-to-impact flight and leaves
     hitPresenceStates: ["surface", "airborne"]
   })).reachable, true);
   assert.equal(reach(1000, { category: "support", hitPresenceStates: null }).reachable, true);
+});
+
+test("existing Tornade, Arc and Ouragan explicitly retain their anti-air reach", () => {
+  for (const id of ["cap_air_atk_4", "lib_chain_lightning", "cap_air_atk_7"]) {
+    const data = JSON.parse(readFileSync(new URL(
+      `../../data/capture/showcase/${id}.capture-skill-transfer-v1.json`, import.meta.url
+    ), "utf8"));
+    const authored = normalizeSkillDefinition(data.draft.definition);
+    assert.deepEqual(authored.hitPresenceStates, ["surface", "airborne"], id);
+    const flight = skill("flying-target", { approachMode: "aerial", travelMs: 2000 });
+    const targetActionContext = { action: {
+      actionType: "skill", actionId: "flight", skill: flight,
+      releaseAtMs: 0, impactAtMs: 2000
+    }, elapsedMs: 700 };
+    assert.equal(skillPresenceReachV1({ skill: authored, targetActionContext }).reachable, true, id);
+  }
 });
