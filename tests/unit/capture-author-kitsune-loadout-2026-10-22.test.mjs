@@ -13,9 +13,9 @@ const archiveNew="data/capture/source-exports/gensrpg-capture-creature-kitsune_l
 const registry=normalizeCaptureStatRegistryV1(JSON.parse(read("data/capture/monster-capture-stat-registry.v1.json")));
 const active=()=>importCaptureTransferJsonV1(read(path),{statRegistry:registry}).value;
 
-test("Kitsune R2 active author JSON equals new inactive archive without duplicate ID",()=>{
+test("Kitsune R2 source archives remain intact as new active author slots are added",()=>{
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(p=>p===path).length,1);
- assert.equal(read(path),read(archiveNew));
+ assert.notEqual(read(path),read(archiveNew),"R2 inactive archive remains immutable after the newer active author export");
  assert.ok(read(archiveOld)!==read(archiveNew),"original Kitsune R1 must remain archived immutably");
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.includes(archiveNew),false);
  const old=JSON.parse(read(archiveOld));
@@ -23,11 +23,11 @@ test("Kitsune R2 active author JSON equals new inactive archive without duplicat
  assert.equal(active().draft.id,"kitsune_lunaire");
 });
 
-test("Kitsune equips only the three exact authored skills, whose configuredSkill imports resolve",()=>{
+test("Kitsune equips the five exact authored skills, whose configuredSkill imports resolve",()=>{
  const creature=active();
- const ids=["teleport-strike","Onde Spirituel","fleche_spirituel"];
+ const ids=["teleport-strike","Onde Spirituel","fleche_spirituel","aura-lunaire","Sacrifice_kitsune"];
  assert.deepEqual(creature.draft.skillIds,ids);
- assert.deepEqual(creature.loadout.slots.map(s=>s.skillId),[...ids,null,null]);
+ assert.deepEqual(creature.loadout.slots.map(s=>s.skillId),ids);
  for(const id of ids){
    const skillPath="data/capture/showcase/"+id+".capture-skill-transfer-v1.json";
    assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===skillPath).length,1);
