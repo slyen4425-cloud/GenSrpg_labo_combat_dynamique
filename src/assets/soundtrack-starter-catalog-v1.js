@@ -27,7 +27,7 @@ export const SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1 = Object.freeze({
     "capture:combat:normal":Object.freeze({
       music:Object.freeze({
         tracks:SOUNDTRACK_STARTER_BATTLE_IDS_V1,
-        order:"sequence",volume:0.65,fadeMs:700,repeat:true
+        order:"shuffle",volume:0.65,fadeMs:700,repeat:true
       }),
       ambience:null
     })

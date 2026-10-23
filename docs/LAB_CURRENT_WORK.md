@@ -1,3 +1,11 @@
+## 2026-10-23 — Lot Audio G : démarrage aléatoire de Battle en combat (isolé)
+- Auteur : les combats de test démarrent toujours sur Battle 1 ; activer le mode `shuffle` déjà natif sur la playlist initiale Capture, sans nouveau lecteur et sans toucher aux six MP3, volume, fade, répétition ni SFX.
+- Base `gh-pages@0915c7400c79aa81b73d790fe46a84ce71c12707`; START `checkpoint/lab-start-combat-music-shuffle-2026-10-23`; travail `work/lab-combat-music-shuffle-2026-10-23`.
+- Périmètre : `src/assets/soundtrack-starter-catalog-v1.js`, `tests/unit/soundtrack-default-shuffle-2026-10-23.test.mjs`, `docs/LAB_COMBAT_MUSIC_SHUFFLE_2026-10-23.md`, journal.
+- Propriétaire unique : moteur `SoundtrackSessionV1` inchangé ; alternance sans doublon consécutif dans la même session ; démarrage aléatoire des sessions indépendantes. Tests audio unitaires + CI 5 jobs + checkpoint GREEN avant fusion. UI de personnalisation séquence conservée.
+
+---
+
 ## 2026-10-22 — Marqueur individuel : effet natif dès la première charge (lot isolé)
 - Demande auteur : le paramètre actuel « effet propre par charge » est limité aux dégâts et soins. Ajouter pour **chaque charge déposée** les malus et bonus natifs (déplacement, recharge, régénération, dégâts sortants, caractéristiques en points/% et contrôle), sans affecter la mécanique indépendante à N charges précédemment validée.
 - Base `gh-pages@155c7270cfd2ca0ebdf390bead7bcd97ec627dde` ; START `checkpoint/lab-start-marker-individual-effects-2026-10-22` ; work `work/lab-marker-individual-effects-2026-10-22`. Contrat facultatif `onStackAdded.effects` (max 12) sur le `stack_counter` marqueur partagé uniquement, dispatch via l'unique `applyImmediateTacticalEffectsV1` + Status Runtime à chaque **vrai** ajout de charge ; durée des statuts déclenchés indépendante, pas de deuxième compteur. Le seuil et son repeat restent inchangés.

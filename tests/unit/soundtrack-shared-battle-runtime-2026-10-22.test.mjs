@@ -65,7 +65,7 @@ test("any visitor gets a playable authorized runtime URL without local upload",(
     return asset && index>=0 ? {assetId:id,url:"https://example.test/assets/runtime/audio/music-v1/"+filenames[index]} : null;
   };
   const bridge=createCombatSoundtrackPreviewBridgeV1({
-    project,catalog,output,clock,resolveAudioAsset:browserResolver
+    project,catalog,output,clock,random:()=>0,resolveAudioAsset:browserResolver
   });
   let result=bridge.transitionTo("capture:combat:normal");
   assert.equal(result.status,"playing");

@@ -92,7 +92,7 @@ test("six chosen MP3 play via the real CombatSoundtrackPreviewBridge and stop on
     clearTimeout(id){timers.delete(id);}
   };
   const bridge=createCombatSoundtrackPreviewBridgeV1({
-    catalog,project,output,clock,resolveAudioAsset:id=>media.runtimeAsset(id)
+    catalog,project,output,clock,random:()=>0,resolveAudioAsset:id=>media.runtimeAsset(id)
   });
   const playing=bridge.transitionTo("capture:combat:normal");
   assert.equal(playing.status,"playing");
