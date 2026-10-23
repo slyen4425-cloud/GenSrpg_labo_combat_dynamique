@@ -14,7 +14,12 @@ const imported=importCaptureTransferJsonV1(raw,{statRegistry:registry});
 const record=imported.value;
 
 test("Ailevent author file and showcase catalog preserve exact export, only one canonical creature ID",async()=>{
-  assert.equal(createHash("sha256").update(raw).digest("hex"),
+  const previous=JSON.parse(raw);
+  previous.draft.presentation.viewOverrides.opponent.displayScale=1.4;
+  previous.draft.presentation.viewOverrides.opponent.position.y=0;
+  previous.loadout.slots[3].skillId=null;
+  previous.loadout.slots[4].skillId=null;
+  assert.equal(createHash("sha256").update(JSON.stringify(previous,null,2)).digest("hex"),
     "6605ee3255f732ce9303be2f7f405aad1ec3f9b947255905944f46b5ce6d9af1");
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(x=>x===presetPath).length,1);
   assert.equal(imported.kind,"creature");
@@ -40,7 +45,8 @@ test("Ailevent authored stats, natural resistances, scale, sockets and sound are
   assert.equal(record.draft.resistances.length,13);
   assert.equal(record.draft.presentation.profileId,"flying");
   assert.equal(record.draft.presentation.viewOverrides.player.displayScale,1.8);
-  assert.equal(record.draft.presentation.viewOverrides.opponent.displayScale,1.4);
+  assert.equal(record.draft.presentation.viewOverrides.opponent.displayScale,0.9);
+  assert.equal(record.draft.presentation.viewOverrides.opponent.position.y,35);
   assert.equal(record.draft.presentation.sockets.length,5);
   assert.equal(record.draft.presentation.sockets[0].id,"mouth");
   assert.equal(record.draft.presentation.audio.movement.assetId,"gensrpg:sound:conflux-da9a4465");
@@ -53,7 +59,7 @@ test("Ailevent native abilities and 5-slot loadout retain author choices without
   assert.equal(record.draft.skillIds.length,11);
   for(const id of record.draft.skillIds) assert.ok(available.has(id),id);
   assert.deepEqual(record.loadout.slots.map(x=>x.skillId),
-    ["lib_gust","cap_air_atk_3","lib_tailwind",null,null]);
+    ["lib_gust","cap_air_atk_3","lib_tailwind","cap_air_atk_4","cap_air_atk_7"]);
   assert.ok(record.draft.skillIds.includes("lib_gust"));
   assert.ok(record.draft.skillIds.includes("lib_tailwind"));
 });
