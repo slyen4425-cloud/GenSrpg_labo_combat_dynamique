@@ -19,7 +19,12 @@ for(const [id,archive] of entries){
   // Keep the immutable 22 October archive as historical author input.
   assert.notEqual(load(path),load(copy));
   const latest="data/capture/source-exports/gensrpg-capture-skill-"+archive+"-2026-10-23.json";
-  assert.equal(load(path),load(latest));
+  if(id==="fleche_spirituel") {
+    const now=JSON.parse(load(path)),history=JSON.parse(load(latest));
+    assert.equal(now.draft.definition.projectileClash.power,1);
+    history.draft.definition.projectileClash.power=1;
+    assert.deepEqual(now,history,"unchanged historical 23-Oct export except intentional projectile power");
+   } else assert.equal(load(path),load(latest));
   const raw=JSON.parse(load(path)),normalized=normalizeCaptureSkillTransferV1(raw);
   assert.equal(normalized.draft.id,id);
   assert.equal(normalized.draft.definition.id,id);
