@@ -1,3 +1,13 @@
+## 2026-10-23 — Maraileron, deux animations (ZIP auteur reçu)
+
+- Archive : `_incoming/CREATURE_AQUATIQUE_2_ANIMATIONS_NAGE_ATTAQUE.zip`, 6 196 877 octets, SHA256 `397e5435260bbb48f0c33591c1a2eb15c51942e4857a552e4e38e70ad018ea2a`, Git blob `fdb3d6219db341ad6a16259cbcc85110b7ae26ea` ; 6 frames nage + 12 attaque RGBA 512², validées par l'auteur.
+- Identité `maraileron` profil `serpentine`, seule vue `player` concernée. Catalogue global-assets, deux IDs `pack:capture:creature-maraileron-{movement-player-6,attack-player-12}-v1`.
+- Base `279fa8a800549739c5e42bbda893cc1db5dbca99` CI 40020043256 SUCCESS, checkpoint `checkpoint/global-assets-before-maraileron-swim-attack-2026-10-23`, branche `work/global-assets-maraileron-swim-attack-2026-10-23`.
+- Périmètre: dossier animations Maraileron, catalogue (+2), importer, sentinelle/CI, documentation. Interdit de modifier runtime, fiches auteur, UI, moteur, autres créatures, main, gh-pages et dépôts voisins. Import via GitHub Actions, validation des médias réels et CI SHA final, GREEN et FF seulement ensuite ; test en jeu distinct.
+- Rapport : `docs/LAB_MARAILERON_SWIM_ATTACK_2026-10-23.md`.
+
+---
+
 ## 2026-10-23 — Icônes Explosion de flammes / Tsunami : lot asset + charte de style
 
 - **Objectif** : finaliser deux icônes reformattées dans l'esprit Monster Capture du laboratoire, publier deux WebP RGB 128×128 et enregistrer la charte visuelle comme source durable pour les créations suivantes.
