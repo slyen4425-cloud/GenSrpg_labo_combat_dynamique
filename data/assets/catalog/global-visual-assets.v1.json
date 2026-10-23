@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 220,
+    "assets": 222,
     "icons": 81,
-    "sprites": 119,
+    "sprites": 121,
     "fx": 2,
     "portraits": 13,
     "backgrounds": 5,
-    "creatures": 38
+    "creatures": 40
   },
   "assets": [
     {
@@ -7337,6 +7337,84 @@
       "resource": {
         "file": "capture/icons/skills/icon_skill_tsunami_01.webp",
         "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-maraileron-movement-player-6-v1",
+      "label": "Maraileron — nage ondulante côté joueur (6 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "maraileron",
+        "water",
+        "serpentine",
+        "movement",
+        "animated",
+        "player",
+        "swim",
+        "swimming"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / visuels validés 2026-10-23",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/maraileron/animations/movement/player/atlases/maraileron_movement_player_6_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 6,
+        "frameMs": 90,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-maraileron-attack-player-12-v1",
+      "label": "Maraileron — attaque côté joueur (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "maraileron",
+        "water",
+        "serpentine",
+        "attack",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / visuels validés 2026-10-23",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/maraileron/animations/attack/player/atlases/maraileron_attack_player_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 100,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [

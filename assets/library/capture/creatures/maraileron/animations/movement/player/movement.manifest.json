@@ -1,0 +1,106 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "maraileron",
+  "action": "movement",
+  "view": "player",
+  "profile": "serpentine",
+  "assetId": "pack:capture:creature-maraileron-movement-player-6-v1",
+  "frameCount": 6,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 90,
+  "playbackMode": "loop",
+  "authorApproved": true,
+  "sourceArchive": "_incoming/CREATURE_AQUATIQUE_2_ANIMATIONS_NAGE_ATTAQUE.zip",
+  "sourceArchiveSha256": "397e5435260bbb48f0c33591c1a2eb15c51942e4857a552e4e38e70ad018ea2a",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/maraileron_movement_player_01.png",
+      "sha256": "49521b88c5b51a89e1421cc02d4d4b112348c047d54b2435cb7a7572320b796a",
+      "marginsLTRB": [
+        152,
+        120,
+        152,
+        99
+      ],
+      "zipPath": "NAGE_ONDULATION_6_FRAMES/ondulation_fluide_01.png"
+    },
+    {
+      "index": 1,
+      "file": "frames/maraileron_movement_player_02.png",
+      "sha256": "9e256f3c6cc23ed6703d4b129805d28674e541334e3f395e14c699b4faa47cfa",
+      "marginsLTRB": [
+        141,
+        120,
+        141,
+        99
+      ],
+      "zipPath": "NAGE_ONDULATION_6_FRAMES/ondulation_fluide_02.png"
+    },
+    {
+      "index": 2,
+      "file": "frames/maraileron_movement_player_03.png",
+      "sha256": "330c25f2228e61ddd84a532ae3684a35b65443b6db18fc275bfae9eb7c18c4cd",
+      "marginsLTRB": [
+        147,
+        109,
+        148,
+        110
+      ],
+      "zipPath": "NAGE_ONDULATION_6_FRAMES/ondulation_fluide_03.png"
+    },
+    {
+      "index": 3,
+      "file": "frames/maraileron_movement_player_04.png",
+      "sha256": "b4d4c7b7777bca752e3c5f8546b46f4eba9e5726ae946b708b5b5c772ac3ee41",
+      "marginsLTRB": [
+        160,
+        109,
+        161,
+        110
+      ],
+      "zipPath": "NAGE_ONDULATION_6_FRAMES/ondulation_fluide_04.png"
+    },
+    {
+      "index": 4,
+      "file": "frames/maraileron_movement_player_05.png",
+      "sha256": "5852353f3028c9a993cd8fe253bad5e77dc6d4924fdbaee12fb862aa26551c41",
+      "marginsLTRB": [
+        153,
+        109,
+        154,
+        110
+      ],
+      "zipPath": "NAGE_ONDULATION_6_FRAMES/ondulation_fluide_05.png"
+    },
+    {
+      "index": 5,
+      "file": "frames/maraileron_movement_player_06.png",
+      "sha256": "93e0a50818ac141a437df1350e8d38aea0dea9e61187293ebfd85dd5c3c8fe89",
+      "marginsLTRB": [
+        141,
+        110,
+        143,
+        110
+      ],
+      "zipPath": "NAGE_ONDULATION_6_FRAMES/ondulation_fluide_06.png"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/maraileron_movement_player_6_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 6,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "7c2309efd497ab82a369567ae673b9331640acfc2cdaf141ae3bdf3de20f3118"
+  },
+  "previews": {
+    "gif": "previews/maraileron_movement_player_6_gif.gif",
+    "planche": "previews/maraileron_movement_player_6_planche.png",
+    "webp": "previews/maraileron_movement_player_6_webp.webp"
+  },
+  "preview": "previews/maraileron_movement_player_6_gif.gif"
+}

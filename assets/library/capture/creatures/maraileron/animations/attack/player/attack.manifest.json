@@ -1,0 +1,178 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "maraileron",
+  "action": "attack",
+  "view": "player",
+  "profile": "serpentine",
+  "assetId": "pack:capture:creature-maraileron-attack-player-12-v1",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 100,
+  "playbackMode": "once",
+  "authorApproved": true,
+  "sourceArchive": "_incoming/CREATURE_AQUATIQUE_2_ANIMATIONS_NAGE_ATTAQUE.zip",
+  "sourceArchiveSha256": "397e5435260bbb48f0c33591c1a2eb15c51942e4857a552e4e38e70ad018ea2a",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/maraileron_attack_player_01.png",
+      "sha256": "6bfaaa1d8e7c690377142ada07f2d9de767829c414d3a7a49ad5fadbed30b8aa",
+      "marginsLTRB": [
+        127,
+        87,
+        128,
+        56
+      ],
+      "zipPath": "ATTAQUE_12_FRAMES/attaque_aquatique_01.png"
+    },
+    {
+      "index": 1,
+      "file": "frames/maraileron_attack_player_02.png",
+      "sha256": "7fbf882b57650ca56e5a0ef53ec024f43d6d0af0e77c48fe5b0cf0eae4f54e72",
+      "marginsLTRB": [
+        115,
+        113,
+        115,
+        56
+      ],
+      "zipPath": "ATTAQUE_12_FRAMES/attaque_aquatique_02.png"
+    },
+    {
+      "index": 2,
+      "file": "frames/maraileron_attack_player_03.png",
+      "sha256": "c4aeabe64b72e1a389a288652e9d36189ff5cfcddf66cf9f6849476a9964bdb5",
+      "marginsLTRB": [
+        110,
+        131,
+        110,
+        56
+      ],
+      "zipPath": "ATTAQUE_12_FRAMES/attaque_aquatique_03.png"
+    },
+    {
+      "index": 3,
+      "file": "frames/maraileron_attack_player_04.png",
+      "sha256": "0b5d113b14c8b51c0e78ee698d262987f7862552d07be99db6aa26430fbe6bbb",
+      "marginsLTRB": [
+        91,
+        106,
+        91,
+        56
+      ],
+      "zipPath": "ATTAQUE_12_FRAMES/attaque_aquatique_04.png"
+    },
+    {
+      "index": 4,
+      "file": "frames/maraileron_attack_player_05.png",
+      "sha256": "28057d4a74294aa424d89930ee2555403eb506371a045027e27cdfd0351c776b",
+      "marginsLTRB": [
+        84,
+        212,
+        84,
+        56
+      ],
+      "zipPath": "ATTAQUE_12_FRAMES/attaque_aquatique_05.png"
+    },
+    {
+      "index": 5,
+      "file": "frames/maraileron_attack_player_06.png",
+      "sha256": "fd4b61f867f27978fe9cd8b7a5b2a6d0fd6ef0e95f31c32f148b0f8814f65e93",
+      "marginsLTRB": [
+        70,
+        214,
+        71,
+        56
+      ],
+      "zipPath": "ATTAQUE_12_FRAMES/attaque_aquatique_06.png"
+    },
+    {
+      "index": 6,
+      "file": "frames/maraileron_attack_player_07.png",
+      "sha256": "ba7acd17bf6ca65db37104363abf83ed38ebc1870ba900fd555b78f918a1389d",
+      "marginsLTRB": [
+        72,
+        172,
+        72,
+        56
+      ],
+      "zipPath": "ATTAQUE_12_FRAMES/attaque_aquatique_07.png"
+    },
+    {
+      "index": 7,
+      "file": "frames/maraileron_attack_player_08.png",
+      "sha256": "927ea80cc1e63b8a7229681e7a99d1109928f8603de82de71226042b9816bb1a",
+      "marginsLTRB": [
+        90,
+        191,
+        90,
+        56
+      ],
+      "zipPath": "ATTAQUE_12_FRAMES/attaque_aquatique_08.png"
+    },
+    {
+      "index": 8,
+      "file": "frames/maraileron_attack_player_09.png",
+      "sha256": "f39e292577b31ffb6e7ff2933f4f8bc85a21c1197ced10198645d99040c7ec28",
+      "marginsLTRB": [
+        97,
+        127,
+        98,
+        56
+      ],
+      "zipPath": "ATTAQUE_12_FRAMES/attaque_aquatique_09.png"
+    },
+    {
+      "index": 9,
+      "file": "frames/maraileron_attack_player_10.png",
+      "sha256": "af59560419a566a203999d790a78c0665f5e5de84b8bd68258f16672690ea967",
+      "marginsLTRB": [
+        105,
+        134,
+        105,
+        56
+      ],
+      "zipPath": "ATTAQUE_12_FRAMES/attaque_aquatique_10.png"
+    },
+    {
+      "index": 10,
+      "file": "frames/maraileron_attack_player_11.png",
+      "sha256": "68252fdeb46a629dab3a590c0dc4704466ac4ac1feecd48bbbf0a33e998193c1",
+      "marginsLTRB": [
+        124,
+        120,
+        125,
+        56
+      ],
+      "zipPath": "ATTAQUE_12_FRAMES/attaque_aquatique_11.png"
+    },
+    {
+      "index": 11,
+      "file": "frames/maraileron_attack_player_12.png",
+      "sha256": "72bcda84f8e300a9d408efde5a33540c88777e2e0a64edf1d4e8d8da0908d6d4",
+      "marginsLTRB": [
+        129,
+        104,
+        130,
+        56
+      ],
+      "zipPath": "ATTAQUE_12_FRAMES/attaque_aquatique_12.png"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/maraileron_attack_player_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "cdea2789ecbf95a1861a2d439c89f5a56c218488ba7e010eab7048dee3f08a2d"
+  },
+  "previews": {
+    "gif": "previews/maraileron_attack_player_12_gif.gif",
+    "webp": "previews/maraileron_attack_player_12_webp.webp",
+    "planche": "previews/maraileron_attack_player_12_planche.png"
+  },
+  "preview": "previews/maraileron_attack_player_12_gif.gif"
+}
