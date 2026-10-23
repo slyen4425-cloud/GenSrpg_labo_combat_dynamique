@@ -667,7 +667,9 @@ export function planAnimation({ event, actor, profile }) {
           {
             label: "aerial-arc-apex",
             durationMs: riseMs,
-            easing: "cubic-bezier(0.42, 0, 0.58, 1)",
+            // Reach most of the height promptly, then settle into the same
+            // apex boundary; the dive's duration and easing stay untouched.
+            easing: cfg.riseEasing ?? "cubic-bezier(0.42, 0, 0.58, 1)",
             ground: {
               translateX: 0,
               translateY: 0,
