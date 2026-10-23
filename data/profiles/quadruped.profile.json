@@ -47,7 +47,7 @@
     },
     "aerial": {
       "riseRatio": 0.64,
-      "riseEasing": "cubic-bezier(0.18, 0.8, 0.28, 1)",
+      "riseEasing": "cubic-bezier(0.25, 0.65, 0.35, 1)",
       "diveEasing": "ease-in",
       "followThroughRatio": 0.35,
       "repositionRatio": 0.1,
