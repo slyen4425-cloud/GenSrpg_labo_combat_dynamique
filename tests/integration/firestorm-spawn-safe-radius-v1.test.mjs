@@ -90,7 +90,7 @@ test("author Firestorm level 2 stays away from a stationary opponent; level 3 re
  assert.equal(e.radius,"short");
  assert.equal(e.radiusGrowthSteps,1);
  assert.equal(e.maxActivations,3);
- assert.equal(e.tickEffect.amount,5);
+ assert.equal(e.tickEffect.amount,10);
  const f=arenaFixture(data);
  const lv1=f.stage(1);assert.equal(lv1.radius,"short");assert.equal(lv1.contains,false);
  const lv2=f.stage(2);assert.equal(lv2.radius,"medium");assert.equal(lv2.contains,false);
