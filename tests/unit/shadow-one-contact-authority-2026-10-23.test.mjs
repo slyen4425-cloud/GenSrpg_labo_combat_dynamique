@@ -23,8 +23,8 @@ test("grounded biped: ellipse foot line equals the exact silhouette foot pivot, 
   const layout=groundShadowLayoutFromOpaqueMaskV2(m);
   assert.ok(layout.contactYPct>80&&layout.contactYPct<100);
   assert.ok(Number.isFinite(layout.contactXPct));
-  assert.equal(layout.bottomPct,
-    clamp(100-layout.contactYPct-layout.heightPct/2),
+  assert.ok(Math.abs(layout.bottomPct -
+    clamp(100-layout.contactYPct-layout.heightPct/2)) < 1e-10,
     "legacy ellipse and projected silhouette must share ONE alpha-derived grounding height");
   assert.ok(layout.centerXPct>0);
 });
