@@ -538,7 +538,7 @@ const server = createServer(async (req, res) => {
                 throw Error("marker icon chooser did not reuse global asset catalog");
               const iconId=[...iconPicker.options].find(x=>x.value)?.value;
               get("marker-new").click();
-              fill("marker-name","Poïson");
+              fill("marker-name","Poïson test");
               if(!get("marker-id").readOnly)throw Error("marker technical ID must never need manual entry");
               if(get("marker-id").value!=="")throw Error("new marker must not require a prefilled technical ID");
               fill("marker-max",10);
@@ -558,20 +558,20 @@ const server = createServer(async (req, res) => {
               fill("marker-threshold-channel","fire");
               get("marker-save").click();
               if(!get("marker-library-state").textContent.includes("enregistré"))throw Error("marker library save failed: "+get("marker-library-state").textContent);
-              if(get("marker-id").value!=="poison"||!get("marker-id").readOnly)
+              if(get("marker-id").value!=="poison-test"||!get("marker-id").readOnly)
                 throw Error("name-only author save failed to create and lock canonical poison ID");
               if(get("marker-periodic-channel").value!=="poison"||
                  get("marker-threshold-channel").value!=="fire"||
                  get("marker-icon").value!==iconId)
                 throw Error("marker dropdown selections lost on save");
-              if(!prePicker.querySelector('option[value="poison"]')||prePicker.value!=="venin-static")
+              if(!prePicker.querySelector('option[value="poison-test"]')||prePicker.value!=="venin-static")
                 throw Error("new marker was not offered, or existing Venin choice was silently overwritten");
               get("marker-new").click();
-              fill("marker-name","Poïson");
+              fill("marker-name","Poïson test");
               get("marker-save").click();
               if(!get("marker-library-state").textContent.includes("déjà enregistré"))
                 throw Error("new marker with existing ID silently overwrites prior author definition");
-              fill("marker-library-select","poison");
+              fill("marker-library-select","poison-test");
               if(!get("marker-id").readOnly)throw Error("existing marker ID must be immutable");
               // Real Android workflow: permanence is a checkbox, NOT durationMs=0.
               get("marker-new").click();
@@ -585,7 +585,7 @@ const server = createServer(async (req, res) => {
               if(!get("marker-library-state").textContent.includes("enregistré"))
                 throw Error("permanent marker save rejected zero duration: "+get("marker-library-state").textContent);
               if(get("marker-id").value!=="eternel")throw Error("accented permanent marker slug invalid");
-              fill("marker-library-select","poison");
+              fill("marker-library-select","poison-test");
               if(get("marker-permanent").checked || get("marker-duration").disabled)
                 throw Error("loading timed marker must restore ordinary duration field");
               if(get("marker-periodic-channel").value!=="poison" ||
@@ -595,7 +595,7 @@ const server = createServer(async (req, res) => {
               fill("marker-library-select","eternel");
               if(!get("marker-permanent").checked || !get("marker-duration").disabled)
                 throw Error("loading permanent marker lost unchecked duration model");
-              fill("marker-library-select","poison");
+              fill("marker-library-select","poison-test");
               // Advanced marker controls: real Chromium creation, 3-charge threshold,
               // repeated movement slow and two extra native debuffs; reload/export.
               get("marker-new").click();

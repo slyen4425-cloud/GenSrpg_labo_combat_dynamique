@@ -24,12 +24,19 @@ const registry=normalizeCaptureStatRegistryV1(JSON.parse(read("data/capture/mons
 const progressionRules=normalizeCaptureProgressionRulesV1(JSON.parse(read("data/capture/monster-capture-progression-rules.v1.json")));
 const gust=importCaptureTransferJsonV1(read(files[1].path));
 const ailevent=importCaptureTransferJsonV1(read(files[0].path),{statRegistry:registry});
-const slots=["lib_gust","cap_air_atk_3","lib_tailwind",null,null];
+const slots=["lib_gust","cap_air_atk_3","lib_tailwind","cap_air_atk_4","cap_air_atk_7"];
 
 test("Exact author JSON files and single canonical showcase ownership",()=>{
  for(const f of files){
   const raw=read(f.path);
-  const historicAuthorBytes=f.kind==="skill" ? raw.replace('"assetId": "pack:capture:icon-skill-rafale-01"','"assetId": "core:icon-skill-energy-beam-01"') : raw;
+  const historicAuthorBytes=f.kind==="skill" ? raw.replace('"assetId": "pack:capture:icon-skill-rafale-01"','"assetId": "core:icon-skill-energy-beam-01"') : (()=>{
+    const previous=JSON.parse(raw);
+    previous.draft.presentation.viewOverrides.opponent.displayScale=1.4;
+    previous.draft.presentation.viewOverrides.opponent.position.y=0;
+    previous.loadout.slots[3].skillId=null;
+    previous.loadout.slots[4].skillId=null;
+    return JSON.stringify(previous,null,2);
+  })();
   assert.equal(createHash("sha256").update(historicAuthorBytes).digest("hex"),f.hash);
   assert.equal(importCaptureTransferJsonV1(raw,{statRegistry:registry}).kind,f.kind);
  }

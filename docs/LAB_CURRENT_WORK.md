@@ -1,3 +1,16 @@
+## 2026-10-23 — Export auteur du soir : Ailevent, Venombre, Morsure venimeuse
+- Source : gensrpg-capture-database-v1(1)(1).json (23 octobre, 20:28 UTC) ; 104 créatures, 123 compétences. Comparaison de toutes les entrées avec l'export précédent : Ailevent (taille/position adversaire et 2 slots), Venombre (nouvelle présentation et statistiques), Morsure venimeuse (capacités, énergie, délai, visuel).
+- Différences Tornade/Arc électrique : portées anti-air déjà publiées en PR #77, ne pas écraser. Boule de feu : 2 champs ignoreDamage... à zéro ajoutés automatiquement à l'export, ne pas interpréter comme réglage voulu. Autres 102 créatures et 119 compétences sans modification métier.
+- Source git de départ gh-pages@6e6cc09d8bdb92538fff030f909982aa642b60e7, checkpoint/lab-start-author-export-venombre-2026-10-23, work/lab-author-export-venombre-2026-10-23.
+- Portée : preset Ailevent (seulement 4 champs auteur), ajouter Venombre (crea_tox_2) et la capacité Morsure venimeuse (cap_poison_atk_2) aux 2 catalogues Showcase existants ; contrôle automatique par ID natif, aucun alias. Original export Venombre indique profileId=quadruped alors que l'auteur confirme qu'il est bipède ; conserver la source dans le rapport, positionner la présentation active biped selon correction explicite.
+- Aucune modification de moteur de dégâts, des règles de profil/ombres, des autres créatures/skills, des assets, de main/global-assets/Zombicide-40k. Le diagnostic et l'architecture générale des ombres se font dans un second lot dédié.
+- Tests : données précisées au champ près, anciens presets anti-air inchangés, aucune duplication d'identifiants, Venombre biped dans la projection active. 5 jobs CI requis + checkpoint GREEN avant fusion.
+- Browser CI : la nouvelle Morsure venimeuse publie officiellement le marqueur natif ID=poison. L'ancienne sentinelle navigateur tentait précisément de créer un marqueur nommé Poïson avec le même identifiant et échouait à juste titre. La sentinelle teste maintenant le slug de création unique poison-test ; aucun changement de règle ni du marqueur auteur. L'absence de doublons et le refus de collisions restent vérifiés.
+
+- CI RED documentée : ajout de nouveaux identifiants dans les deux catalogues avait créé des doublons par deux points d'insertion concurrents ; retirés par conservation de la première entrée. Les sentinelles historiques attendent l'ancien catalogue (11→12) et le précédent réglage Ailevent : six fichiers de tests explicitement recadrés sans retirer les assertions ; empreinte SHA256 de la version auteur précédente toujours contrôlée par **reconstruction soustractive** des seuls 4 nouveaux champs (position, scale, deux slots). Aucune modification moteur ou archive.
+
+
+---
 ## 2026-10-23 — Montée aérienne plus vive, vitesse du piqué inchangée
 - Auteur : accélérer visuellement la montée de l'attaque aérienne, sans ralentir ni modifier la traversée et le retour validés. Le vol/esquive et les dégâts doivent rester synchronisés.
 - Départ exact : gh-pages@72c2d678c141c35dd34ba53fdfa7bb4f8ce0769d ; START checkpoint/lab-start-aerial-rise-dynamic-2026-10-23 ; lot work/lab-aerial-rise-dynamic-2026-10-23.

@@ -128,10 +128,10 @@
           }
         },
         "opponent": {
-          "displayScale": 1.4,
+          "displayScale": 0.9,
           "position": {
             "x": 0,
-            "y": 0
+            "y": 35
           }
         }
       },
@@ -256,11 +256,11 @@
       },
       {
         "id": "slot-4",
-        "skillId": null
+        "skillId": "cap_air_atk_4"
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "cap_air_atk_7"
       }
     ]
   }
