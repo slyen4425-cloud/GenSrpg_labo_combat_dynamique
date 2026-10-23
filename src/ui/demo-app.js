@@ -1159,7 +1159,7 @@ function createSlot({
     const profile = profiles.get(actor.profile);
     // Morphology is defined only by the active profile, never inferred again
     // from the actor profile ID (which is only a registry lookup key).
-    const flying = profile.locomotion.style === "flight";
+    const flying = profile?.locomotion?.style === "flight";
     const projection = projectArenaShadowLightV1(settings, { flying });
     const projected = settings.mode === "silhouette" && silhouetteMaskUrl !== null;
     const resolvedMode = projected ? "silhouette" : settings.mode === "silhouette" ? "soft" : settings.mode;
