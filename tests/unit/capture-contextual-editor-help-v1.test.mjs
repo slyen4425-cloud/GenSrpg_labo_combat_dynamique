@@ -58,8 +58,8 @@ test("skill explanation is derived from actual effect fields, not a fixed spell 
     effects:draft.definition.effects
   });
   assert.match(summary,/15 s/);
-  assert.match(summary,/5 dégâts de base/);
-  assert.match(summary,/1 s/);
+  assert.match(summary,/10 dégâts de base/);
+  assert.match(summary,/0,75 s/);
   assert.match(summary,/agrand/);
   assert.match(summary,/3 activations/);
   assert.match(summary,/niveau 20/);

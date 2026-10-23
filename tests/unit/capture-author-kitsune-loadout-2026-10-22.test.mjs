@@ -15,7 +15,9 @@ const active=()=>importCaptureTransferJsonV1(read(path),{statRegistry:registry})
 
 test("Kitsune R2 active author JSON equals new inactive archive without duplicate ID",()=>{
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(p=>p===path).length,1);
- assert.equal(read(path),read(archiveNew));
+ const previous=JSON.parse(read(archiveNew)),updated=JSON.parse(read(path));
+ const reconstructed={...updated,draft:{...updated.draft,skillIds:previous.draft.skillIds},loadout:previous.loadout};
+ assert.deepEqual(reconstructed,previous,"R2 author archive must remain immutable; only 2 newer equipped skills may differ");
  assert.ok(read(archiveOld)!==read(archiveNew),"original Kitsune R1 must remain archived immutably");
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.includes(archiveNew),false);
  const old=JSON.parse(read(archiveOld));
@@ -23,11 +25,11 @@ test("Kitsune R2 active author JSON equals new inactive archive without duplicat
  assert.equal(active().draft.id,"kitsune_lunaire");
 });
 
-test("Kitsune equips only the three exact authored skills, whose configuredSkill imports resolve",()=>{
+test("Kitsune now equips five exact authored skills, whose configuredSkill imports resolve",()=>{
  const creature=active();
- const ids=["teleport-strike","Onde Spirituel","fleche_spirituel"];
+ const ids=["teleport-strike","Onde Spirituel","fleche_spirituel","aura-lunaire","Sacrifice_kitsune"];
  assert.deepEqual(creature.draft.skillIds,ids);
- assert.deepEqual(creature.loadout.slots.map(s=>s.skillId),[...ids,null,null]);
+ assert.deepEqual(creature.loadout.slots.map(s=>s.skillId),ids);
  for(const id of ids){
    const skillPath="data/capture/showcase/"+id+".capture-skill-transfer-v1.json";
    assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===skillPath).length,1);

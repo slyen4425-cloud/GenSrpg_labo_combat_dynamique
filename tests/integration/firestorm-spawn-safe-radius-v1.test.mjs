@@ -1,3 +1,4 @@
+// Fixture historique 5 dégâts / 1000 ms : ces tests isolent le Runtime des réglages auteur actuels.
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
@@ -8,7 +9,7 @@ import {createDomSkillFxRenderer} from "../../src/adapters/renderer/dom-skill-fx
 import {normalizePersistentZoneSpatialV1,visiblePersistentZoneRelationV1} from "../../src/contracts/persistent-zone-spatial-v1.js";
 
 const author=()=>JSON.parse(readFileSync(new URL(
-  "../../data/capture/showcase/cap_fire_atk_6.capture-skill-transfer-v1.json",import.meta.url),"utf8")).draft;
+  "../../tests/fixtures/firestorm-pre-settings-2026-10-23.capture-skill-transfer-v1.json",import.meta.url),"utf8")).draft;
 const rect=(left,top,width,height)=>({left,top,width,height});
 
 // 16:9 mobile-like spawn. The actual native sprite-zone geometry is measured
