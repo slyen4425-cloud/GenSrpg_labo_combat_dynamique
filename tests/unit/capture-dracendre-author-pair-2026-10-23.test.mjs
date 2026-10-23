@@ -15,11 +15,14 @@ const sha=p=>createHash("sha256").update(read(p)).digest("hex");
 const json=p=>JSON.parse(read(p).toString("utf8"));
 const registry=normalizeCaptureStatRegistryV1(json("data/capture/monster-capture-stat-registry.v1.json"));
 
-test("both exact author uploads are archived, active points to the newest fully configured version",()=>{
+test("both author uploads remain exact archives; active keeps repeat audio and newer authored sprite scales",()=>{
   assert.equal(sha(variant),"b83a7982874bdfa8c2f10983f46576c2d6c2f2faf2e308af7008b617b7e81469");
   assert.equal(sha(base),"760a206a7abb632a6fc24a6da5e526038404db5ed1e71339ae45c731441c82b9");
   assert.equal(sha(historical),"cdc0d760eddc2558ff8542ec975e5b699af1bd7f41c34ef1ca2b0c76a6ed398e");
-  assert.deepEqual(read(active),read(variant));
+  const now=json(active),past=json(variant);
+   assert.deepEqual(now.draft.presentation.visual.movementScaleByView,{player:1.7,opponent:1.7});
+   past.draft.presentation.visual.movementScaleByView={player:1.7,opponent:1.7};
+   assert.deepEqual(now,past,"only the two new author movement scales differ from the archive");
   assert.equal(presets.filter(p=>p===active).length,1);
   const original=json(base),repeat=json(variant);
   assert.deepEqual(repeat.draft.presentation.audio.movement,
