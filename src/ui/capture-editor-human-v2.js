@@ -6483,6 +6483,8 @@ function appendHumanSkillEffectV1(
       appendReflectionAuthorControlsV1(container, zs, "zone-status");
       return container;
     })(),
+    zoneStatusNumber("Dégâts infligés, tous types (%) — positif = bonus","skillZoneStatusOutgoingDamageModifierPct",
+      zs.modifierPct ?? 0,{step:"1"},"outgoing_damage_modifier"),
     zoneStatusNumber("Temps de trajet (%)","skillZoneStatusApproachModifierPct",
       zs.modifierPct ?? 50,{step:"1"},"approach_time_modifier"),
     zoneStatusNumber("Régénération d'énergie (%)","skillZoneStatusEnergyRegenModifierPct",
@@ -6672,7 +6674,9 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
         maxStacks:Number(row.querySelector("[data-skill-zone-status-max-stacks]").value),
         tags:commaValuesV1(row.querySelector("[data-skill-zone-status-tags]").value)
       };
-      if(zsKind==="stat_modifier"){
+      if(zsKind==="outgoing_damage_modifier"){
+        zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-outgoing-damage-modifier-pct]").value);
+      } else if(zsKind==="stat_modifier"){
         zs.statId=row.querySelector("[data-skill-zone-status-stat-id]").value;
         zs.deltaPoints=Number(row.querySelector("[data-skill-zone-status-delta-points]").value);
       } else if(zsKind==="damage_reflection"){
