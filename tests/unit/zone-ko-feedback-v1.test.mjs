@@ -32,8 +32,8 @@ for (const activations of [1, 2]) test("native fire-zone entry occurs at an earl
   h.tick(100);
   const result = h.contact(300, { actorId: "local", targetId: "enemy", skillId: melee.id });
   assert.equal(result.ok, true);
-  assert.equal(session.snapshot().fighters.local.hp, 95, "model contact proves entry even before the nominal band threshold");
-  assert.equal(deltas.filter(d => d.actorId === "local").reduce((s, d) => s + d.amount, 0), 5);
+  assert.equal(session.snapshot().fighters.local.hp, 90, "model contact proves entry even before the nominal band threshold");
+  assert.equal(deltas.filter(d => d.actorId === "local").reduce((s, d) => s + d.amount, 0), 10);
   h.runtime.dispose();
 });
 test("same-clock visible contact still enters the zone; rejected contact signals cannot damage", async () => {
@@ -43,7 +43,7 @@ test("same-clock visible contact still enters the zone; rejected contact signals
   assert.equal(h.contact(300, { actorId: "local", targetId: "enemy", skillId: "stale" }).outcome, "skill_mismatch");
   assert.equal(session.snapshot().fighters.local.hp, 100);
   assert.equal(h.contact(300, { actorId: "local", targetId: "enemy", skillId: melee.id }).ok, true);
-  assert.equal(session.snapshot().fighters.local.hp, 95);
+  assert.equal(session.snapshot().fighters.local.hp, 90);
   h.runtime.dispose();
 });
 test("visible contact after a native band crossing does not add a second entry hit", async () => {
@@ -51,7 +51,7 @@ test("visible contact after a native band crossing does not add a second entry h
   h.runtime.startSkill({ actorId: "local", targetId: "enemy", skill: melee });
   h.tick(1110);
   const before = session.snapshot().fighters.local.hp;
-  assert.equal(before, 95);
+  assert.equal(before, 90);
   h.contact(1110, { actorId: "local", targetId: "enemy", skillId: melee.id });
   assert.equal(session.snapshot().fighters.local.hp, before);
   h.runtime.dispose();
