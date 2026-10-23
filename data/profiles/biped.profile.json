@@ -48,6 +48,7 @@
     "aerial": {
       "riseRatio": 0.64,
       "diveEasing": "ease-in",
+      "followThroughRatio": 0.35,
       "repositionRatio": 0.1,
       "riseY": -250,
       "diveHeight": 270,
