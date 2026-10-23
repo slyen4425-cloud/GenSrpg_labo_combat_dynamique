@@ -743,13 +743,13 @@ export async function mountCombatDemo({
 
     const actorCenterX = actorRect.left + actorRect.width / 2;
     const actorCenterY = actorRect.top + actorRect.height / 2;
-    // Ground melee must never use the vertical translation of an opponent's
-    // active aerial attack as its own destination. The live silhouettes
-    // remain authoritative for deciding whether physical contact happens.
+    // The aerial dive heads for the opposing camp, not after an enemy
+    // running an overlapping approach. Ground melee also uses the camp
+    // anchor when the target is aloft. Live contact remains authoritative.
     const airborneTarget =
       approachMode === "ground" &&
       activeApproachBySlot.get(targetSlot)?.approachMode === "aerial";
-    const targetAim = airborneTarget
+    const targetAim = approachMode === "aerial" || airborneTarget
       ? restingTargetCenterForApproachV1(target)
       : {
           x: targetRect.left + targetRect.width / 2,
