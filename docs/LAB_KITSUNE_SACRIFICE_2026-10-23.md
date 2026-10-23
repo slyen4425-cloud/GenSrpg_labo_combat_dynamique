@@ -32,3 +32,6 @@ Fichiers : deux presets actifs, deux archives nouvelles, catalogue, test `captur
 Tests : hashes bruts, unique IDs, import complet, adaptateur Combat natif, KO réel, `RosterSession.replaceKnockedOut`, persistance et héritage des trois statuts, tick HoT, calcul bonus dégâts, exclusion ennemi, expiration et Aura Lunaire. Contrôles complémentaires CI 5 jobs avant checkpoint GREEN. `main`, `global-assets`, `Zombicide-40k`, labo Exploration, assets, sons, Dracendre, autres créatures, moteur Combat et UI sont protégés.
 
 Validation visuelle smartphone encore à effectuer : après sacrifice, nouvelle créature au même emplacement, statut soin/bonus, transparence éventuelle du sprite de zone en triple rendu.
+
+## Timing de l'expiration
+La zone débute après la préparation de 2 s, au moment de l'impact ; le test avance jusqu'après cette échéance réelle. L'implémentation et les valeurs auteur de 45 s restent inchangées.

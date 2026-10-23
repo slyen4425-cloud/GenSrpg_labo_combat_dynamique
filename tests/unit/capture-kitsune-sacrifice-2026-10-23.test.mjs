@@ -98,7 +98,8 @@ test("native combat route: ultimate KOs Kitsune, retains three zones after KO an
  assert.ok(effective>10,"damage modifier acts through the canonical combat calculator");
  session.advanceMs(2000);
  assert.ok(session.snapshot().fighters.player.hp>60,"native HoT tick must heal the replacement");
- session.advanceMs(43000);
+ // The native 45s lifetime starts at impact, after the authored 2s preparation.
+ session.advanceMs(45000);
  assert.equal(session.snapshot().persistentZones.length,0,"zones expire at their original 45s limit");
 });
 
