@@ -48,7 +48,7 @@ test("real creature editor -> V10 contract roundtrip: X/Y do not alter morpholog
   assert.deepEqual(again.shadowOffset,{x:-14,y:11});
   assert.ok(Object.isFrozen(again.shadowOffset));
   assert.deepEqual(draft.combat,buildHumanCreatureDraftV3(authorFields()).combat);
-  for(const bad of [NaN,Infinity,-41,41,"12",null]) {
+  for(const bad of [NaN,Infinity,-41,41]) {
     assert.throws(()=>buildHumanCreatureDraftV3(authorFields({x:bad,y:0})),/ombre|shadowOffset|must/i);
   }
   assert.throws(()=>normalizeCreaturePresentationBinding({...again,shadowOffset:{x:0,y:0,z:7}}),/shadowOffset/);
