@@ -1250,14 +1250,13 @@ function createSlot({
       // hidden: ground-shadow layout must not depend on screen geometry.
       const opaqueMask = collisionModel.opaqueMask;
       if (!opaqueMask) return;
-      const profileShadow =
-        profiles.get(actor.profile).presentation?.shadow ?? {};
+      const profileShadow = {
+        ...(profiles.get(actor.profile).presentation?.shadow ?? {}),
+        offsetXPct: meta.shadowOffset?.x ?? 0,
+        offsetYPct: meta.shadowOffset?.y ?? 0
+      };
       const layout = groundShadowLayoutFromOpaqueMaskV2(
-        opaqueMask, {
-          ...profileShadow,
-          offsetXPct: meta.shadowOffset?.x ?? 0,
-          offsetYPct: meta.shadowOffset?.y ?? 0
-        }
+        opaqueMask, profileShadow
       );
       lastShadowLayout = layout;
       silhouetteMaskUrl = shadowSilhouetteUrlFromOpaqueMaskV1(opaqueMask);
