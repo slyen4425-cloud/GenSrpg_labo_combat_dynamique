@@ -1,3 +1,11 @@
+## 2026-10-23 — Synchronisation de l'export base Capture, sans régression
+- Source : base auteur 104 créatures + 123 compétences, SHA-256 `5c81d6d1c0712f1614f63f5d4936b92e8c0a3afb32852d15d146592cc0cd6865`.
+- Base `gh-pages@bdae1da28e0eeb251d6963fa380c3bdd1fb45a5d` ; START `checkpoint/lab-start-capture-author-db-refresh-2026-10-23` ; work `work/lab-capture-author-db-refresh-2026-10-23`. Propriétaire : catalogue authoring Capture.
+- Autorisés : six presets actifs (Kitsune, Dracendre, Sacrifice, Tempête flammes, Brasier primordial, Flèche spirituel), source brute archivée, sentinelles ciblées et tests, `docs/LAB_CAPTURE_AUTHOR_DB_REFRESH_2026-10-23.md`, ce journal. Dernier contrat moteur des trois zones, animations aériennes, tous autres presets, historiques et `main` protégés.
+- Lister les deltas précis et valeurs gardées dans le document du lot, tests Node + vrais navigateurs, CI 5/5, checkpoint GREEN avant fusion, test visuel auteur distinct.
+
+---
+
 ## 2026-10-23 — Correctif UI bonus dégâts d'une zone (lot isolé)
 - Bug auteur : erreur cachée « Variation dégâts infligés (%) doit être un nombre » en sauvant le visuel de Sacrifice Kitsune. Cause : formulaire de zone sans contrôle ni lecture `outgoing_damage_modifier.modifierPct`, alors que le contrat le requiert.
 - Base `gh-pages@e4001ee7e6b8052fd3956d3af9a6ce1e02a1170b` ; START `checkpoint/lab-start-zone-outgoing-damage-ui-2026-10-23` ; work `work/lab-zone-outgoing-damage-ui-2026-10-23`. Responsable : seul éditeur humain Capture.
