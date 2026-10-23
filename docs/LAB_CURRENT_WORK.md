@@ -6,6 +6,7 @@
 - Portée : src/adapters/renderer/dom-ground-shadow-v2.js, src/ui/demo-app.js (suppression seul fallback ID flying), tests/unit/shadow-one-contact-authority-2026-10-23.test.mjs, docs/LAB_SHADOW_ONE_CONTACT_AUTHORITY_2026-10-23.md et journal.
 - Protections : masques de collision, fonction de projection 2.5D, CSS et unique shadow DOM, déplacements, fausses hauteurs, sprites, audio, capacités, réglages de vue utilisateur, autres dépôts. Le profil ne change pas l'estimation d'appui, uniquement la projection de hauteur.
 - Tests : biped avec silhouette asymétrique, bas opaque plus bas que ses pattes, comparer ellipse et pivot silhouette ; 5 profils classés selon locomotion.style sans alias actor.profile, volant conserve son altitude, sol à hauteur 0 ; 5 jobs CI et checkpoint GREEN avant PR. Essai Android sur vraie image toujours auteur.
+- RED initial contrôlé : unique écart d'arrondi double précision de 6e-15 dans une assertion de comparaison directe d'ellipse/pivot ; assertion convertie en égalité avec tolérance 1e-10 sans suppression ni assouplissement significatif. Le lookup d'un profil auteur sans bloc locomotion utilise une chaîne optionnelle pour retomber au sol, mais plus aucun alias nommé `flying` ; test mis à jour. Nouveau run complet requis sur HEAD final.
 
 ---
 ## 2026-10-23 — Export auteur du soir : Ailevent, Venombre, Morsure venimeuse
