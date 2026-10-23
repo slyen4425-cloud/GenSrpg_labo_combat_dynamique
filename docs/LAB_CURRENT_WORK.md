@@ -1,3 +1,13 @@
+## 2026-10-23 — Présence aérienne maintenue après impact pendant le piqué
+- Auteur : trajectoire et piqué PR #78 acceptés, mais dégâts reçus pendant le piqué. Préserver les attaques explicitement anti-air.
+- Cause : reportActionContact résout au contact avant la fin du piqué, enterRecovery efface immédiatement l'action si recoveryMs=0, processResolution ignore les targetRecord.resolved, donc disparition précoce du targetActionContext aérien.
+- Base gh-pages@e7932ac00fe1b036f6d54c351699dd7c01a28934 ; START checkpoint/lab-start-aerial-postcontact-presence-2026-10-23 ; work/lab-aerial-postcontact-presence-2026-10-23.
+- Propriétaires : CombatRuntime pour fenêtre d'action et contexte, combat-presence-v1 pour état et portée, Animation Core pour mouvement. Garder dégâts immédiats au contact, aucune duplication.
+- Autorisés : src/core/combat/combat-runtime.js, tests/integration/aerial-postcontact-presence-2026-10-23.test.mjs, docs/LAB_AERIAL_POSTCONTACT_PRESENCE_2026-10-23.md, ce journal.
+- Protégés : compétences et réglages auteur, profiles et UI, attaques terrestres, téléport, contactHold, zones persistantes, sons, sprites, anti-air explicite, assets, main et autres dépôts.
+- GREEN : contact avant fin du vol, attaque ordinaire reçue ensuite esquivée, anti-air toujours efficace, fin de fenêtre et action terminées à la durée native; aucun double impact; 5 jobs CI obligatoires, checkpoint GREEN puis PR.
+
+---
 ## 2026-10-23 — Attaque aérienne : traversée complète au contact (correctif visuel)
 - Retour auteur après PR #77 : la créature monte puis repart dès la collision. Comportement requis : décollage vertical, piqué rapide, dégâts à la rencontre, **poursuite de la traversée même après touche**, puis retour naturel ; aucune interruption visuelle sauf annulation réelle (stun, KO, etc.).
 - Diagnostic source : `src/ui/demo-app.js/playApproachFor` appelle `returnActiveToBaseFromCurrent()` et efface les phases dès le premier `onContact` pour tout mode sauf `teleport`. Cela court-circuite le plan `aerial-arc-impact` d'Animation Core. Collision et dégâts proviennent déjà de `watchVisibleModelContact -> CombatRuntime.reportActionContact` : ne pas dupliquer.
