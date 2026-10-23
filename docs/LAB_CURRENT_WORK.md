@@ -1,3 +1,15 @@
+## 2026-10-23 — Icônes Explosion de flammes / Tsunami : lot asset + charte de style
+
+- **Objectif** : finaliser deux icônes reformattées dans l'esprit Monster Capture du laboratoire, publier deux WebP RGB 128×128 et enregistrer la charte visuelle comme source durable pour les créations suivantes.
+- **Propriétaire** : Asset Library `global-assets` (aucune autorité sur le gameplay). **Base précise** `70acd71fbe3e5ff385d5afbc89605a7387648f64`, checkpoint de départ `checkpoint/global-assets-before-fire-explosion-tsunami-icons-2026-10-23` ; branche `work/global-assets-fire-explosion-tsunami-icons-2026-10-23`.
+- **Périmètre autorisé** : `assets/library/capture/icons/skills/icon_skill_explosion_flammes_01.webp`, `icon_skill_tsunami_01.webp`, catalogue `data/assets/catalog/global-visual-assets.v1.json`, provenance du lot, `docs/LAB_CAPTURE_ICON_STYLE.md`, documentation du lot, sentinelle unitaire et ce journal.
+- **Protégés** : tous les autres assets, fiches de capacités/créatures, UI, moteurs, audio, branche `main`, `gh-pages`, dépôt `Zombicide-40k` et exploration. Aucune affectation implicite à une capacité auteur.
+- **Source graphique** : deux anciennes illustrations remaniées en paire d'icônes carrées avec cadre doré, export depuis planche image 1774×887 (2 cellules 887px). Recadrage déterministe, Pillow LANCZOS, WebP RGB qualité 20, method 6. Prévisualisation locale à 128px et vérification du contenu effectuées.
+- **Tests** : vrais octets RIFF/WEBP VP8, dimensions 128×128, SHA-256 et Git blob, IDs uniques et catalogue cohérent, `npm run ci`, CI Github finale, diff limité à la portée, checkpoint GREEN puis publication fast-forward si le SHA officiel n'a pas changé.
+- **Validation** : la validation utilisateur sur téléphone/en jeu est distincte des contrôles techniques ; ne pas annoncer GREEN visuel en jeu sans test réel.
+
+---
+
 ## 2026-10-22 — Bouclier spirituel Kitsune : 20 frames importées / CI de publication verte
 
 - **Source approuvée** : `KITSUNE_BOUCLIER_SPIRITUEL_ORBE_20F.zip`, SHA-256 `e546b3f9a9a98360f11cff8bee309bbd7089761ca371a568a3d271d08549a06c`, provenant du dépôt sur `work/global-assets-kitsune-spirit-shield-v1-2026-10-22`. Source planche 1402×1122 ; 20 PNG RGBA 512×512 conservés octet pour octet sans régénération ni redécoupe.
