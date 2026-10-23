@@ -51,7 +51,8 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/Onde Spirituel.capture-skill-transfer-v1.json",
     "data/capture/showcase/fleche_spirituel.capture-skill-transfer-v1.json",
     "data/capture/showcase/aura-lunaire.capture-skill-transfer-v1.json",
-    "data/capture/showcase/Sacrifice_kitsune.capture-skill-transfer-v1.json"
+    "data/capture/showcase/Sacrifice_kitsune.capture-skill-transfer-v1.json",
+    "data/capture/showcase/cap_poison_atk_2.capture-skill-transfer-v1.json"
   ]);
 
 // Author-approved retirement from the ACTIVE Capture skill library.
