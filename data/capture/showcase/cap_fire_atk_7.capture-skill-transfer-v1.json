@@ -19,12 +19,12 @@
       "loadoutSlot": "ultimate",
       "element": "fire",
       "approachMode": "none",
-      "energyCost": 0,
+      "energyCost": 8,
       "preparationMs": 3500,
-      "travelMs": 1000,
+      "travelMs": 600,
       "recoveryMs": 0,
       "cooldownMs": 0,
-      "maxUsesPerCombat": null,
+      "maxUsesPerCombat": 1,
       "interruptibleDuringPreparation": true,
       "allowedDistances": [
         "short",
@@ -91,6 +91,9 @@
       "subjectType": "skill",
       "subjectId": "cap_fire_atk_7",
       "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-fire-rain-01"
+        },
         "cast": {
           "assetId": "pack:capture:sprite-fluide-meteorite-cast-01",
           "displayScale": 2,

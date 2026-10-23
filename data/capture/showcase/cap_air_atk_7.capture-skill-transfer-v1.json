@@ -43,6 +43,7 @@
         "airborne"
       ],
       "dodgeable": false,
+      "hitsIntangible": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": []

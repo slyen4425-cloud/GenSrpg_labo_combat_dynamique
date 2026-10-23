@@ -39,6 +39,7 @@
       ],
       "hitPresenceStates": null,
       "dodgeable": true,
+      "hitsIntangible": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": []

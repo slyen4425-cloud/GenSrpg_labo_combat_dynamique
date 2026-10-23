@@ -15,6 +15,7 @@
       "name": "Cendre aveuglante",
       "category": "buff_debuff",
       "form": "projectile",
+      "projectileTargeting": "direct",
       "loadoutSlot": "standard",
       "element": "fire",
       "approachMode": "none",
@@ -38,6 +39,7 @@
       ],
       "hitPresenceStates": null,
       "dodgeable": true,
+      "hitsIntangible": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": []

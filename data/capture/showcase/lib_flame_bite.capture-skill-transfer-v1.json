@@ -15,6 +15,7 @@
       "name": "Morsure brûlante",
       "category": "offensive",
       "form": "contact",
+      "projectileTargeting": "direct",
       "loadoutSlot": "standard",
       "element": "fire",
       "approachMode": "ground",
@@ -33,6 +34,12 @@
       "targetRelations": [
         "enemy"
       ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": []

@@ -15,6 +15,7 @@
       "name": "Tempête de flammes",
       "category": "offensive",
       "form": "beam",
+      "projectileTargeting": "direct",
       "loadoutSlot": "ultimate",
       "element": "fire",
       "approachMode": "none",
@@ -33,6 +34,12 @@
       "targetRelations": [
         "enemy"
       ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": [
@@ -75,14 +82,14 @@
           "zoneId": "zone",
           "radius": "short",
           "durationMs": 15000,
-          "tickIntervalMs": 1000,
+          "tickIntervalMs": 750,
           "reactivation": "reinforce",
           "maxActivations": 3,
           "radiusGrowthSteps": 1,
           "tickEffect": {
             "kind": "damage",
             "targetScope": "all_enemies",
-            "amount": 5,
+            "amount": 10,
             "channel": null
           }
         }

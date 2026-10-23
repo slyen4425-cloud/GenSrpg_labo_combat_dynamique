@@ -15,6 +15,7 @@
       "name": "Onde régénérante",
       "category": "heal",
       "form": "self",
+      "projectileTargeting": "direct",
       "loadoutSlot": "standard",
       "element": "water",
       "approachMode": "none",
@@ -38,6 +39,7 @@
       ],
       "hitPresenceStates": null,
       "dodgeable": true,
+      "hitsIntangible": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": []
