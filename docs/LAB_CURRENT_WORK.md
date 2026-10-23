@@ -1,3 +1,12 @@
+## 2026-10-23 — Montée aérienne plus vive, vitesse du piqué inchangée
+- Auteur : accélérer visuellement la montée de l'attaque aérienne, sans ralentir ni modifier la traversée et le retour validés. Le vol/esquive et les dégâts doivent rester synchronisés.
+- Départ exact : gh-pages@72c2d678c141c35dd34ba53fdfa7bb4f8ce0769d ; START checkpoint/lab-start-aerial-rise-dynamic-2026-10-23 ; lot work/lab-aerial-rise-dynamic-2026-10-23.
+- Propriétaire exclusif : Animation Core plan-animation, paramètre déclaratif riseEasing des cinq profils de créatures. Accélération perceptible dans la première portion du décollage puis approche de l'apex en douceur, sans changer les frontières des segments riseRatio/diveMs. Aucun ajout de phase/attente/timer ni modification du temps CombatRuntime.
+- Fichiers autorisés : src/core/animation/plan-animation.js, data/profiles/{biped,flying,massive,quadruped,serpentine}.profile.json, tests/unit/aerial-rise-dynamic-2026-10-23.test.mjs, docs/LAB_AERIAL_RISE_DYNAMIC_2026-10-23.md et présent journal.
+- Protégés : courbe/vitesse du piqué, followThroughRatio, retour aérien, ombre, anti-aérien, CombatRuntime, temps auteur travelMs, collision réelle, contactHold, sol/teleport/souterrain, sprites, sons, main, global-assets et Zombicide-40k.
+- RED/GREEN : vérifier easing initial réellement transmis à DOM Body+Shadow, décollage nettement plus haut au même instant que l'ancien, apex et timing de piqué inchangés sur les cinq profils, test réel du plan et sentinelles. 5 jobs CI verts sur le même commit, checkpoint GREEN, PR vers gh-pages puis contrôle déploiement.
+
+---
 ## 2026-10-23 — Présence aérienne maintenue après impact pendant le piqué
 - Auteur : trajectoire et piqué PR #78 acceptés, mais dégâts reçus pendant le piqué. Préserver les attaques explicitement anti-air.
 - Cause : reportActionContact résout au contact avant la fin du piqué, enterRecovery efface immédiatement l'action si recoveryMs=0, processResolution ignore les targetRecord.resolved, donc disparition précoce du targetActionContext aérien.
