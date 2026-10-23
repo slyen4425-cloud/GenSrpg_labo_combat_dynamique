@@ -51,7 +51,7 @@ test("Kitsune is unique in the active catalog; old source remains immutable",()=
  for(const id of [kitsune,moss]){
    assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.includes(archive(id)),false);
    if(id===moss)assert.equal(read(active(id)),read(archive(id)));
-   else assert.equal(read(active(id)),read("data/capture/source-exports/gensrpg-capture-creature-kitsune_lunaire-2026-10-22-r2.json"));
+   else assert.notEqual(read(active(id)),read("data/capture/source-exports/gensrpg-capture-creature-kitsune_lunaire-2026-10-22-r2.json"),"active author loadout is newer than archived R2");
    const normalized=importCaptureTransferJsonV1(read(active(id)),{statRegistry:registry});
    assert.equal(normalized.kind,"creature");
    assert.equal(normalized.value.draft.id,id);
@@ -84,7 +84,7 @@ test("Moussados V9 uses four distinct official 12-frame movement/attack assets F
  assert.equal(value.statValues.values.nature,0);
  assert.equal(p.sockets.length,5);
 });
-test("Kitsune Lunaire keeps static Renard FACE/DOS/icon and now equips three author skills without inventing animation",()=>{
+test("Kitsune Lunaire keeps static Renard FACE/DOS/icon and now equips five author skills without inventing animation",()=>{
  const {value}=importCaptureTransferJsonV1(read(active(kitsune)),{statRegistry:registry});
  const p=value.draft.presentation,visual=p.visual;
  assert.equal(value.draft.displayName,"Kitsune Lunaire");
@@ -96,8 +96,8 @@ test("Kitsune Lunaire keeps static Renard FACE/DOS/icon and now equips three aut
  assert.equal(visual.movementBack,undefined);
  assert.equal(visual.rangedAttack,undefined);
  assert.equal(visual.rangedAttackBack,undefined);
- assert.deepEqual(value.draft.skillIds,["teleport-strike","Onde Spirituel","fleche_spirituel"]);
- assert.deepEqual(value.loadout.slots.map(s=>s.skillId),["teleport-strike","Onde Spirituel","fleche_spirituel",null,null]);
+ assert.deepEqual(value.draft.skillIds,["teleport-strike","Onde Spirituel","fleche_spirituel","aura-lunaire","Sacrifice_kitsune"]);
+ assert.deepEqual(value.loadout.slots.map(s=>s.skillId),["teleport-strike","Onde Spirituel","fleche_spirituel","aura-lunaire","Sacrifice_kitsune"]);
  assert.equal(p.viewOverrides.player.displayScale,1);
  assert.equal(p.viewOverrides.opponent.displayScale,.7);
  assert.deepEqual(p.viewOverrides.opponent.position,{x:-30,y:50});
