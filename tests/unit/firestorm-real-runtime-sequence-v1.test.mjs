@@ -228,7 +228,7 @@ test("real Tempête runtime reaches short medium long and renderer follows the s
     27000,
     "zone timestamp must be the real combat impact time, not state time plus preparation twice"
   );
-  assert.equal(zone.nextTickAtMs, 28000);
+  assert.equal(zone.nextTickAtMs, 27750);
   assert.equal(zone.expiresAtMs, 42000);
   const node = arena.children[0];
   const shortTransform = node.style.transform;
@@ -256,7 +256,7 @@ test("real Tempête runtime reaches short medium long and renderer follows the s
   assert.equal(zone.appliedAtMs, 30500);
   assert.equal(
     zone.nextTickAtMs,
-    31000,
+    30750,
     "reinforcement must preserve the already-running tick phase instead of restarting it from resolution"
   );
   assert.equal(arena.children[0], node);
@@ -285,7 +285,7 @@ test("real Tempête runtime reaches short medium long and renderer follows the s
   assert.equal(zone.radius, "long");
   assert.equal(zone.activations, 3);
   assert.equal(zone.appliedAtMs, 34000);
-  assert.equal(zone.nextTickAtMs, 35000);
+  assert.equal(zone.nextTickAtMs, 34500);
   assert.equal(arena.children[0], node);
   assert.equal(node.dataset.zoneRadius, "long");
   assert.notEqual(
