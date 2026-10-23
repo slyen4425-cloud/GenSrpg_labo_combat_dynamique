@@ -114,7 +114,7 @@ test("aerial attack reaches one apex, stays visible, impacts on time, then retur
   assert.equal(plan.segments[0].ground.translateX, 0, "shadow stays at launch camp");
   assert.ok(plan.segments[0].transform.translateY < 0);
   assert.equal(plan.segments[0].opacity, 1);
-  assert.equal(plan.segments[1].transform.translateX, 150);
+  assert.equal(plan.segments[1].transform.translateX, 150 * (1 + registry.get(current.profile).specialMoves.aerial.followThroughRatio));
   assert.equal(plan.segments[1].transform.translateY, 8);
   assert.equal(plan.segments[1].opacity, 1);
   assert.equal(plan.segments.at(-1).transform.translateX, 0);
@@ -159,7 +159,7 @@ test("aerial attack follows one visible continuous arc from departure to impact"
     approach[0].transform.translateY < Math.min(0, targetY),
     "the first approach endpoint must be the unique elevated apex"
   );
-  assert.equal(approach[1].transform.translateX, targetX);
+  assert.equal(approach[1].transform.translateX, targetX * (1 + registry.get(current.profile).specialMoves.aerial.followThroughRatio));
   assert.equal(approach[1].transform.translateY, targetY);
   assert.equal(
     approach.reduce((sum, segment) => sum + segment.durationMs, 0),
