@@ -1,3 +1,11 @@
+## 2026-10-23 — Correctif mouvement aérien animé pour Dracendre (lot isolé)
+- Diagnostic code : `CombatResolutionPresenter.presentRelease` transmet correctement `approachMode:"aerial"` à `playApproachFor`, mais `src/ui/demo-app.js` n'appelle `slot.playMovementAppearance` que pour `ground`. Le plan de vol bouge bien le personnage, pas les frames des sprites de mouvement V9.
+- Base `gh-pages@82592abd5e366e1639d63d2ce0cd336ac2f370b6`, START `checkpoint/lab-start-aerial-movement-sprite-2026-10-23`, branche `work/lab-aerial-movement-sprite-2026-10-23`.
+- Correction minimale dans l'unique propriétaire visuel Demo UI : le même contrôleur de sprite anime `ground` et `aerial`, par vue `player/back` et `opponent/front`, pendant le plan de vol ; déconnexion/annulation existante ; `burrow`, `teleport`, collision, animations d'attaque à distance et Combat Rules inchangés. Assets Dracendre V9 du lot #72 préservés ; aucun sprite inventé.
+- Nouveau test `tests/unit/capture-aerial-movement-sprite-2026-10-23.test.mjs`, document `docs/LAB_AERIAL_MOVEMENT_SPRITE_2026-10-23.md`. CI Foundation, 4 navigateurs, checkpoint GREEN avant merge ; validation visuelle smartphone par auteur obligatoire pour animation réelle.
+
+---
+
 ## 2026-10-23 — Dracendre V9 : 2 exports auteur, 1 fiche active (lot isolé)
 - Source auteur : les deux exports ID `crea_dracendre` ne diffèrent que par l'audio de mouvement : `(1)` active la répétition 400 ms. SHA256 originals `b83a7982874bdfa8c2f10983f46576c2d6c2f2faf2e308af7008b617b7e81469` et `760a206a7abb632a6fc24a6da5e526038404db5ed1e71339ae45c731441c82b9` ; anciennes données du labo conservées dans archive historique.
 - Base `gh-pages@a4e85f0fdb6e7762ce20b54d9ec9b37097cae7e6`, START `checkpoint/lab-start-dracendre-author-pair-2026-10-23`, travail `work/lab-dracendre-author-pair-2026-10-23`.
