@@ -14,8 +14,8 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 218,
-    "icons": 79,
+    "assets": 220,
+    "icons": 81,
     "sprites": 119,
     "fx": 2,
     "portraits": 13,
@@ -7273,6 +7273,70 @@
         "frameCount": 20,
         "frameMs": 80,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-explosion-flammes-01",
+      "label": "Explosion de flammes",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "fire",
+        "explosion",
+        "aoe",
+        "attack"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (final icon pair with framed Monster Capture style)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_explosion_flammes_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-tsunami-01",
+      "label": "Tsunami",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "water",
+        "wave",
+        "aoe",
+        "attack"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (final icon pair with framed Monster Capture style)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_tsunami_01.webp",
+        "mime": "image/webp"
       },
       "compatibility": {
         "uses": [

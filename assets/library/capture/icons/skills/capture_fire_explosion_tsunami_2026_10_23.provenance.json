@@ -1,0 +1,49 @@
+{
+  "schema": "capture-framed-fire-water-icons-v1",
+  "date": "2026-10-23",
+  "owner": "global-assets",
+  "sourceType": "Framed Monster Capture pair from image generation, cropped exact 887x887 square cells from 1774x887 sheet",
+  "sourceFrameDimensions": [
+    887,
+    887
+  ],
+  "sourceSheetDimensions": [
+    1774,
+    887
+  ],
+  "runtimeDimensions": [
+    128,
+    128
+  ],
+  "format": "image/webp VP8 RGB opaque",
+  "processing": {
+    "library": "Pillow",
+    "resample": "LANCZOS",
+    "quality": 20,
+    "method": 6
+  },
+  "sourceValidation": "Final PNG cropped icons visually inspected and compared with final exported 128px WebP. Source art files available in user conversation ZIP; runtime WebP binaries recorded with SHA-256 and Git blobs.",
+  "license": "project-internal",
+  "assets": [
+    {
+      "assetId": "pack:capture:icon-skill-explosion-flammes-01",
+      "label": "Explosion de flammes",
+      "sourceFile": "icon_skill_explosion_flammes_01_source.png",
+      "sourceSha256": "f54294ec44fa2da5c3911d3e1ae846833eaece051e7515f12e586ca7a101a434",
+      "derivedFile": "capture/icons/skills/icon_skill_explosion_flammes_01.webp",
+      "derivedSha256": "b114083dcd772e933cbc4727df69c3fe193e5aa77508532bf815cba7b49b3dbf",
+      "gitBlobSHA": "fcadf0e3c09d43765c2ef22ba50dada7f47873b7",
+      "bytes": 3198
+    },
+    {
+      "assetId": "pack:capture:icon-skill-tsunami-01",
+      "label": "Tsunami",
+      "sourceFile": "icon_skill_tsunami_01_source.png",
+      "sourceSha256": "ed5a3d7bd40a037cd70be317a4954188bec72c3f431f3af598c23882dfc1bf64",
+      "derivedFile": "capture/icons/skills/icon_skill_tsunami_01.webp",
+      "derivedSha256": "ca435d9f3a720ca5dd4cf3ec3bb4ed844b837bc0a1c3856241e29d61166d33d8",
+      "gitBlobSHA": "d29c83471eb7849daa22442e0ec9a14b04aeeba2",
+      "bytes": 3562
+    }
+  ]
+}
