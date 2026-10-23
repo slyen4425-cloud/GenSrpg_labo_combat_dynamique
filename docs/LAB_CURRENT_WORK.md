@@ -1,3 +1,12 @@
+## 2026-10-23 — Capture : mise à jour auteur Flèche spirituel, Onde Spirituel et marqueurs (lot isolé)
+- Trois uploads du créateur : Flèche `239933c58c9620d8b070f5a19ab248913b569648d413e6f8b6037c0360f494b9`, Onde `ae0b511f7c109c999b7996d20e6f887e7dbc0c1e08a5d39c6a134064246a615d`, marqueurs `c8e2ade953e2abcbfa965d7016e45687103493a5e2ee2b2d17ead788af0998d4` (SHA256 UTF-8).
+- Base `gh-pages@0c87aabe6187ca980d9ce8fb80d875e90e6aa931` ; START `checkpoint/lab-start-spirit-author-refresh-2026-10-23`, branche `work/lab-spirit-author-refresh-2026-10-23`. La musique Shuffle est déjà fusionnée dans la base et protégée.
+- Périmètre : deux fichiers de capacité actifs existants, `data/capture/showcase/markers.capture-markers-v1.json` (trois marqueurs dont Éclat) ; trois archives auteur datées du 23/10, nouveau test `tests/unit/capture-author-spirit-refresh-2026-10-23.test.mjs`, mise à jour du test historique `tests/unit/capture-author-spirit-skills-2026-10-22.test.mjs` pour préserver ses archives 22/10, documentation `docs/LAB_SPIRIT_AUTHOR_REFRESH_2026-10-23.md` et journal.
+- Règle : remplacer strictement les données d'auteur, jamais les noms/IDs, garder Venin statique et Peste inchangés, Éclat strictement identique dans la définition partagée et dans Flèche. Les anciens exports source datés sont immuables. Protecteurs : autres capacités et créatures, runtime combat, sons, stats, `main`, `global-assets`, labo Exploration et GenSrpG principal.
+- Tests : SHA256 des trois uploads archivés, import normalisé sur les vrais fichiers, équipements et visuels sans inventer, historique intact, vrais marqueurs et non-régression ; CI 5 jobs et checkpoint GREEN avant fusion. L'auteur valide visuellement sur smartphone.
+
+---
+
 ## 2026-10-23 — Lot Audio G : démarrage aléatoire de Battle en combat (isolé)
 - Auteur : les combats de test démarrent toujours sur Battle 1 ; activer le mode `shuffle` déjà natif sur la playlist initiale Capture, sans nouveau lecteur et sans toucher aux six MP3, volume, fade, répétition ni SFX.
 - Base `gh-pages@0915c7400c79aa81b73d790fe46a84ce71c12707`; START `checkpoint/lab-start-combat-music-shuffle-2026-10-23`; travail `work/lab-combat-music-shuffle-2026-10-23`.
