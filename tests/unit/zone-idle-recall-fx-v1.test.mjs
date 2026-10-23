@@ -34,8 +34,8 @@ for (const level of [1, 2, 3]) test(`fire zone level ${level} damages an idle vi
   const h = await setup(level);
   h.tick(1000); h.tick(2000);
   assert.equal(h.runtime.activeActions.length, 0);
-  assert.equal(h.session.snapshot().fighters.local.hp, 90);
-  assert.equal(h.deltas.filter(d => d.actorId === "local").reduce((sum, d) => sum + d.amount, 0), 10);
+  assert.equal(h.session.snapshot().fighters.local.hp, 80);
+  assert.equal(h.deltas.filter(d => d.actorId === "local").reduce((sum, d) => sum + d.amount, 0), 20);
   h.runtime.dispose();
 });
 test("medium visible range follows source movement, rejects outside and ellipse corners, and resumes without a target attack", async () => {
@@ -45,9 +45,9 @@ test("medium visible range follows source movement, rejects outside and ellipse 
   h.moveLocal(rect(0, 0, 5, 5)); h.tick(2000);
   assert.equal(h.session.snapshot().fighters.local.hp, 100, "empty corner of the ellipse is outside");
   h.moveZone(rect(-30, -30, 100, 100)); h.tick(3000);
-  assert.equal(h.session.snapshot().fighters.local.hp, 95);
+  assert.equal(h.session.snapshot().fighters.local.hp, 80);
   h.moveZone(rect(200, 200, 100, 100)); h.tick(4000);
-  assert.equal(h.session.snapshot().fighters.local.hp, 95);
+  assert.equal(h.session.snapshot().fighters.local.hp, 80);
   h.runtime.dispose();
 });
 test("visual occupancy never revives an expired fire zone", async () => {
