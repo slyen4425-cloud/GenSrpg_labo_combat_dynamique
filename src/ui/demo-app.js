@@ -31,6 +31,13 @@ export function creatureMovementAppearanceForViewV1(meta, view) {
   return meta?.movementFxByView?.[view] ?? meta?.movementFx ?? null;
 }
 
+// Aerial and ground approaches share the existing movement-sprite owner.
+export function creatureMovementAppearanceForApproachV1(meta, view, approachMode) {
+  return approachMode === "ground" || approachMode === "aerial"
+    ? creatureMovementAppearanceForViewV1(meta, view)
+    : null;
+}
+
 export function creatureRangedAppearanceForViewV1(meta, view) {
   if (view === "player") return meta?.rangedAttackBackFx ?? meta?.rangedAttackFx ?? null;
   if (view === "opponent") return meta?.rangedAttackFx ?? null;
@@ -801,10 +808,13 @@ export async function mountCombatDemo({
 
     slot.setApproachActive(true, approachDepth);
 
-    const movementAppearance = approachMode === "ground"
+    const approachAppearance = creatureMovementAppearanceForApproachV1(
+      slot.meta, slot.view, approachMode
+    );
+    const movementAppearance = approachAppearance
       ? slot.playMovementAppearance(
-          creatureMovementAppearanceForViewV1(slot.meta, slot.view),
-          travelMs,
+          approachAppearance,
+          approachMode === "aerial" ? planDurationMs : travelMs,
           targetCenterX >= actorCenterX ? 1 : -1
         )
       : null;
