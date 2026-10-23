@@ -9,7 +9,7 @@ import { adaptCaptureExportToNativeVisualSourceV1 } from "../../src/adapters/inp
 const source = path => readFileSync(new URL("../../" + path, import.meta.url), "utf8");
 function authorFields(shadowOffset = undefined) {
   return {
-    id:"crea_tox_2",displayName:"Venombre",description:"",level:1,
+    id:"crea_tox_2",displayName:"Venombre",description:"Venombre test shadow",level:1,
     sourceStats:{force:1,agility:1,intelligence:1,spirit:1,endurance:1,initiative:1},
     elements:[],resistances:{},capture:{capturable:true,captureRate:10,spawnChance:10,spawnTags:[],evolution:null},
     combat:{maxHp:100,maxEnergy:10,initialEnergy:0,energyChargeAmount:0,energyChargeIntervalMs:1000,movementEnergyPerStep:0,chargeTimeModifierPct:0},
