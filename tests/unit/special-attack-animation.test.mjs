@@ -110,8 +110,8 @@ test("aerial attack reaches one apex, stays visible, impacts on time, then retur
     plan.segments[1].durationMs;
 
   assert.equal(impactMs, travelMs);
-  assert.ok(plan.segments[0].transform.translateX > 0);
-  assert.ok(plan.segments[0].transform.translateX < 150);
+  assert.equal(plan.segments[0].transform.translateX, 0, "ascend above launch camp first");
+  assert.equal(plan.segments[0].ground.translateX, 0, "shadow stays at launch camp");
   assert.ok(plan.segments[0].transform.translateY < 0);
   assert.equal(plan.segments[0].opacity, 1);
   assert.equal(plan.segments[1].transform.translateX, 150);
@@ -152,9 +152,8 @@ test("aerial attack follows one visible continuous arc from departure to impact"
     "the continuous aerial arc must stay visible before impact"
   );
   assert.ok(
-    approach[0].transform.translateX > 0 &&
-      approach[0].transform.translateX < targetX,
-    "the unique apex must already progress horizontally toward the target"
+    approach[0].transform.translateX === 0,
+    "the unique apex rises vertically before the rapid dive to enemy camp"
   );
   assert.ok(
     approach[0].transform.translateY < Math.min(0, targetY),
@@ -384,7 +383,7 @@ test("aerial attack can place its single apex completely above the arena", () =>
 
   assert.equal(plan.segments[0].label, "aerial-arc-apex");
   assert.equal(plan.segments[0].transform.translateY, -340);
-  assert.ok(plan.segments[0].transform.translateX > 0);
+  assert.equal(plan.segments[0].transform.translateX, 0);
   assert.equal(plan.segments[0].opacity, 1);
   assert.equal(plan.segments[1].label, "aerial-arc-impact");
   assert.equal(plan.segments[1].opacity, 1);
