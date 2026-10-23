@@ -1,3 +1,12 @@
+## 2026-10-23 — Dracendre V9 : 2 exports auteur, 1 fiche active (lot isolé)
+- Source auteur : les deux exports ID `crea_dracendre` ne diffèrent que par l'audio de mouvement : `(1)` active la répétition 400 ms. SHA256 originals `b83a7982874bdfa8c2f10983f46576c2d6c2f2faf2e308af7008b617b7e81469` et `760a206a7abb632a6fc24a6da5e526038404db5ed1e71339ae45c731441c82b9` ; anciennes données du labo conservées dans archive historique.
+- Base `gh-pages@a4e85f0fdb6e7762ce20b54d9ec9b37097cae7e6`, START `checkpoint/lab-start-dracendre-author-pair-2026-10-23`, travail `work/lab-dracendre-author-pair-2026-10-23`.
+- Action : archiver les deux fichiers source sans perte ; remplacer l'unique transfert actif par `(1)` (profil flying, V9, 4 sprites mouvement/attaque face-dos, son répété, stats et loadout auteur). Protéger tous autres modèles, capacités, FX, moteur combat, audio Battle, principal GenSrpG.
+- Audit animation aérienne : `src/ui/demo-app.js` ne déclenche le sprite de mouvement que pour une approche au sol. Correction séparée dans son propriétaire Demo UI sous branche isolée après le lot de données ; ne pas mélanger les deux responsabilités.
+- Tests : intégrité SHA, import normalisé V9, unicité ID, ancienne archive historiquement figée, audio répétition ; CI 5 jobs navigateur et checkpoint GREEN avant fusion ; animation aérienne à tester dans le lot suivant et sur smartphone auteur.
+
+---
+
 ## 2026-10-23 — Capture : mise à jour auteur Flèche spirituel, Onde Spirituel et marqueurs (lot isolé)
 - Trois uploads du créateur : Flèche `239933c58c9620d8b070f5a19ab248913b569648d413e6f8b6037c0360f494b9`, Onde `ae0b511f7c109c999b7996d20e6f887e7dbc0c1e08a5d39c6a134064246a615d`, marqueurs `c8e2ade953e2abcbfa965d7016e45687103493a5e2ee2b2d17ead788af0998d4` (SHA256 UTF-8).
 - Base `gh-pages@0c87aabe6187ca980d9ce8fb80d875e90e6aa931` ; START `checkpoint/lab-start-spirit-author-refresh-2026-10-23`, branche `work/lab-spirit-author-refresh-2026-10-23`. La musique Shuffle est déjà fusionnée dans la base et protégée.

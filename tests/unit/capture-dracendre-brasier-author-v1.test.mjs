@@ -24,6 +24,7 @@ import { importMonsterCaptureStatValuesV1 } from "../../src/adapters/input/captu
 import { buildCaptureCreatureHistoricalLoadoutV1 } from "../../src/catalogs/capture-creature-historical-loadout-v1.js";
 
 const cPath="data/capture/showcase/crea_dracendre.capture-creature-transfer-v1.json";
+const historicalDracendrePath="data/capture/source-exports/gensrpg-capture-creature-crea_dracendre-original-before-2026-10-23.json";
 const sPath="data/capture/showcase/cap_fire_atk_7.capture-skill-transfer-v1.json";
 const read=p=>readFileSync(new URL("../../"+p,import.meta.url));
 const sha=b=>createHash("sha256").update(b).digest("hex");
@@ -33,7 +34,7 @@ const creature=()=>importCaptureTransferJsonV1(read(cPath).toString("utf8"),{sta
 const skill=()=>importCaptureTransferJsonV1(read(sPath).toString("utf8"));
 
 test("Dracendre and Brasier exports are exact author bytes and registered once",()=>{
- const cb=read(cPath), sb=read(sPath);
+ const cb=read(historicalDracendrePath), sb=read(sPath);
  assert.equal(cb.byteLength,4452);
  assert.equal(sb.byteLength,5260);
  assert.equal(sha(cb),"cdc0d760eddc2558ff8542ec975e5b699af1bd7f41c34ef1ca2b0c76a6ed398e");
@@ -68,7 +69,7 @@ test("Dracendre preserves stats, two elements, resistances, Braisombre assets, a
  assert.deepEqual(c.draft.presentation.viewOverrides.player,{displayScale:1.6,position:{x:0,y:0}});
  assert.deepEqual(c.draft.presentation.viewOverrides.opponent,{displayScale:0.9,position:{x:0,y:30}});
  assert.deepEqual(c.draft.presentation.sockets,[]);
- assert.deepEqual(c.draft.presentation.audio.movement,{assetId:"gensrpg:sound:sanctuary-367a77dd",volume:1});
+ assert.deepEqual(c.draft.presentation.audio.movement,{assetId:"gensrpg:sound:sanctuary-367a77dd",volume:1,mode:"repeat",repeatIntervalMs:400});
  assert.equal(c.draft.presentation.visual.front.assetId,"pack:capture:creature-braisombre-opponent-01");
  assert.equal(c.draft.presentation.visual.back.assetId,"pack:capture:creature-braisombre-player-01");
  assert.equal(c.draft.presentation.visual.icon.assetId,"pack:capture:creature-braisombre-icon-01");
