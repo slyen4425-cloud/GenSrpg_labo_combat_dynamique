@@ -12,7 +12,7 @@ function authorFields(shadowOffset = undefined) {
     id:"crea_tox_2",displayName:"Venombre",description:"",level:1,
     sourceStats:{force:1,agility:1,intelligence:1,spirit:1,endurance:1,initiative:1},
     elements:[],resistances:{},capture:{capturable:true,captureRate:10,spawnChance:10,spawnTags:[],evolution:null},
-    combat:{maxHp:100,maxEnergy:10,initialEnergy:0,energyChargeAmount:0,energyChargeIntervalMs:1000,movementEnergyPerStep:0},
+    combat:{maxHp:100,maxEnergy:10,initialEnergy:0,energyChargeAmount:0,energyChargeIntervalMs:1000,movementEnergyPerStep:0,chargeTimeModifierPct:0},
     linkedSkillIds:[],profileId:"biped",displayScale:1,
     visual:{frontAssetId:"pack:test:front",backAssetId:"",iconAssetId:""},sockets:[],audio:{},
     ...(shadowOffset === undefined ? {} : { shadowOffset })
@@ -121,6 +121,6 @@ test("the real Appearance UI and one shadow render path retain the manual X/Y th
   assert.match(bridge,/shadowOffset: binding\.version >= 10/);
   assert.match(renderer,/offsetXPct: meta\.shadowOffset\?\.x/);
   assert.match(renderer,/offsetYPct: meta\.shadowOffset\?\.y/);
-  assert.match(css,/translate\(var\(--creature-shadow-offset-x/);
+  assert.match(css,/translate:\s*var\(--creature-shadow-offset-x/);
   assert.equal((html.match(/data-demo-shadow/g)??[]).length,(html.match(/data-demo-motion/g)??[]).length);
 });
