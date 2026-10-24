@@ -75,19 +75,9 @@
           "amount": 35
         },
         {
-          "kind": "consume_marker",
+          "kind": "cleanse",
           "targetScope": "target",
-          "markerId": "*",
-          "count": "all",
-          "minimum": 1,
-          "effects": [
-            {
-              "kind": "damage",
-              "targetScope": "target",
-              "amount": 10,
-              "channel": null
-            }
-          ]
+          "statusTags": []
         }
       ]
     },
