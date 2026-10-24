@@ -60,6 +60,21 @@ export function playDomBurrowTerrainFxV2({arena,from,to,travelMs}) {
     {opacity:0,transform:"scale(.75,.7)"}
   ],Math.max(1,fx.trailAtMs+Math.min(160,fx.trailMs)));
 
+  // Digging sprays loose soil immediately as the creature drops below terrain.
+  // Same deterministic particles as emergence; no additional media or clock.
+  for (const [i,d] of fx.debris.slice(0,6).entries()) {
+    const rock=element("entry-debris",fx.from.x-d.sizePx/2,
+      fx.from.y-d.sizePx/2,d.sizePx*.8,d.sizePx*.8);
+    rock.style.background=i%2
+      ? "linear-gradient(140deg,#d3a575,#83552b)"
+      : "linear-gradient(140deg,#ad804e,#5b3c24)";
+    play(rock,[
+      {transform:"translate(0px,0px) scale(.4)",opacity:0},
+      {transform:"translate("+(d.x*.6)+"px,"+(d.y*.7-6)+"px) scale(1)",opacity:1,offset:.48},
+      {transform:"translate("+(d.x*.9)+"px,"+(d.y+10)+"px) scale(.6)",opacity:0}
+    ],Math.max(1,fx.phases.diveMs+125),i*9);
+  }
+
   // Trench: the rough disturbed-soil band advances toward the target,
   // independent of how far apart the combatants are on a 1v1/2v2 arena.
   if(fx.trailLengthPx>2 && fx.phases.hiddenMs>0){
