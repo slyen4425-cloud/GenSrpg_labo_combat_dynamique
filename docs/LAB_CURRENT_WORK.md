@@ -1,4 +1,14 @@
-## 2026-10-24 — Bestiaire : véritables icônes de capacité et descriptif généré depuis les règles (en CI)
+## 2026-10-24 — Attaque souterraine : FX terrain natifs (lot V2 en validation)
+- Demande : action burrow avec terre qui se creuse à l'entrée, descente de la créature, projection de débris, sillon animé jusqu'à la cible, trou et éclats à l'émergence.
+- Base gh-pages@772edcff90d8ee3c4e848309a4867aaeebc34d20 ; START checkpoint/lab-start-burrow-ground-fx-v2-2026-10-24 ; travail work/lab-burrow-ground-fx-v2-2026-10-24.
+- Autorités : FX Core (`src/core/fx/burrow-terrain-fx-v2.js`), Renderer DOM (`src/adapters/renderer/dom-burrow-terrain-fx-v2.js`), raccord minimal `src/ui/demo-app.js` pour points ancrés au sol et annulation. Animation Core, présence underground, Collision, Runtime et données auteur **inchangés**.
+- Rendu actuel : FX génériques procéduraux (trou + sillon + poussière + débris), pas encore des fichiers sprites PNG ; permettra remplacement futur par atlas sans autorité parallèle. Compatible multiples combattants. Aucun sprite de créature modifié.
+- Tests : `tests/unit/burrow-terrain-fx-v2.test.mjs` couvre synchronisation timings, géométrie, apparition, déplacement, interruption/cleanup ; CI Foundation + browsers requise. Détail et protections dans `docs/LAB_BURROW_TERRAIN_FX_V2_2026-10-24.md`.
+- État : branche de développement uniquement ; pas de publication sur gh-pages ni validation utilisateur Android avant CI finale et revue.
+
+---
+
+### 2026-10-24 — Bestiaire : véritables icônes de capacité et descriptif généré depuis les règles (en CI)
 - Base gh-pages@772edcff90d8ee3c4e848309a4867aaeebc34d20, checkpoint START checkpoint/lab-start-bestiary-skill-explain-2026-10-24, branche work/lab-bestiary-skill-explain-2026-10-24.
 - Diagnostic : des capacités avaient une description auteur courte (non synchronisée avec le moteur) ; les icônes `assetType=icon` existaient dans global-assets mais `readyVisual` les rejetait. Les stats n'avaient plus la présentation en vraies cases initiale.
 - Implémentation : `src/ui/capture-skill-explanation-v1.js` projette la définition normalisée sous forme de phrases françaises ordonnées, selon paramètres métier (effets, statuts, marqueurs, zones, durée, déclenchements, conditions, portée, énergie, recharge, préparation, réactions). Aucun gameplay recalculé ni texte inventé. Description auteur sommaire supprimée de la projection Bestiaire. Les vrais icons publiés `assetType=icon` sont désormais acceptés uniquement pour rôle icône, et les portraits restent stricts. Les fiches compétences sont des boutons accessibles ouvrant/fermant un descriptif, une seule ouverte à la fois.
