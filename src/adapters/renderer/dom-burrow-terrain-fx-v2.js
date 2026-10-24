@@ -1,11 +1,12 @@
 import {
   planBurrowTerrainFxV2
 } from "../../core/fx/burrow-terrain-fx-v2.js";
+import {applySpriteVisual} from "./dom-skill-fx.js";
 
 // Ground-only visuals: real-world anchor points are provided by Demo UI.
 // All elapsed times originate from the already-running burrow attack plan.
 // No DOM contact watcher, combat mutation, or independently timed hit.
-export function playDomBurrowTerrainFxV2({arena,from,to,travelMs}) {
+export function playDomBurrowTerrainFxV2({arena,from,to,travelMs,sprites=null}) {
   if (!arena?.ownerDocument ||
       typeof arena.append !== "function") {
     throw new TypeError("burrow arena requires a DOM element");
@@ -49,6 +50,65 @@ export function playDomBurrowTerrainFxV2({arena,from,to,travelMs}) {
       "radial-gradient(ellipse at center, rgba(23,16,15,.94) 0%, rgba(58,39,25,.95) 46%, rgba(122,82,44,.92) 60%, rgba(180,133,73,.42) 77%, transparent 93%)";
     n.style.boxShadow="0 2px 5px rgba(23,15,12,.28)";
     return n;
+  }
+
+  // Optional author-picked sprite renderer replaces the entire procedural
+  // fallback. Every frame is fetched from the approved 20-frame atlas and
+  // remains locked to this one Burrow V1 approach duration.
+  if(sprites!==null){
+    function spriteStage(stage,point,atMs,durationMs){
+      const visual=sprites[stage];
+      if(!visual||!visual.url)return;
+      const size=(stage==="travel"?145:125)*(Number(visual.scale)||1);
+      const center={
+        x:point.x+(Number(visual.offsetX)||0),
+        y:point.y+(Number(visual.offsetY)||0)
+      };
+      const node=element("sprite-"+stage,center.x-size/2,center.y-size/2,size,size);
+      node.className+=" skill-fx";
+      node.style.borderRadius="0";
+      node.style.zIndex="7";
+      node.style.backgroundColor="transparent";
+      const count=Math.max(1,Number(visual.frameCount)||20);
+      const frameDuration=Math.max(1,Number(visual.frameMs)||70);
+      const spriteDuration=Math.max(1,Math.min(durationMs,count*frameDuration));
+      applySpriteVisual(node,{
+        ...visual,
+        playbackMode:stage==="travel"?"loop":"stretch"
+      },spriteDuration);
+      if(stage==="travel"){
+        const dx=fx.to.x-fx.from.x,dy=fx.to.y-fx.from.y;
+        const angle=Math.atan2(dy,dx)*180/Math.PI;
+        play(node,[
+          {transform:"translate(0px,0px) rotate("+angle+"deg) scale(.86)",opacity:0},
+          {transform:"translate("+(dx*.09)+"px,"+(dy*.09)+"px) rotate("+angle+"deg) scale(1)",opacity:1,offset:.12},
+          {transform:"translate("+(dx*.89)+"px,"+(dy*.89)+"px) rotate("+angle+"deg) scale(1)",opacity:1,offset:.86},
+          {transform:"translate("+dx+"px,"+dy+"px) rotate("+angle+"deg) scale(.8)",opacity:0}
+        ],durationMs,atMs,"linear");
+      }else{
+        play(node,[
+          {opacity:0,transform:"scale(.45)"},
+          {opacity:1,transform:"scale(1)",offset:.18},
+          {opacity:1,transform:"scale(1.03)",offset:.77},
+          {opacity:0,transform:"scale(1.08)"}
+        ],durationMs,atMs);
+      }
+    }
+    spriteStage("start",fx.from,0,Math.max(1,fx.phases.diveMs));
+    if(fx.trailLengthPx>2&&fx.phases.hiddenMs>0){
+      spriteStage("travel",fx.from,fx.trailAtMs,Math.max(1,fx.trailMs));
+    }
+    spriteStage("impact",fx.to,fx.emergeAtMs,Math.max(1,fx.emergeMs));
+    return Object.freeze({
+      status:"playing",plan:fx,
+      cancel(){
+        if(cancelled)return;
+        cancelled=true;
+        for(const a of animations)a.cancel?.();
+        for(const n of nodes)n.remove?.();
+        nodes.length=0;animations.length=0;
+      }
+    });
   }
 
   // Entry: a dark cavity opens exactly under the fighter as it sinks.
