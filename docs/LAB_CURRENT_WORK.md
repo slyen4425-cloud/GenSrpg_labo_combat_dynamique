@@ -1,3 +1,14 @@
+## 2026-10-24 — Bestiaire : cas particuliers cibles volantes/souterraines/immatérielles (validation CI)
+- Demande : mentionner un avantage tactique de ciblage rare, sans réintroduire le jargon ou les détails techniques.
+- BASE gh-pages@ad3ca998492c690ae9b111a29474432e64910f93 ; START checkpoint/lab-start-bestiary-special-targets-2026-10-24 ; branche work/lab-bestiary-special-targets-2026-10-24.
+- Diagnostic moteur : src/core/combat/combat-presence-v1.js, skillPresenceReachV1 ; offensif sans hitPresenceStates explicite ne touche pas cible volante/souterraine pendant son déplacement. Seule la liste explicite hitPresenceStates autorise ces états ; hitsIntangible relève d'un booléen séparé du contrat SkillDefinition.
+- Modification UI pure : src/ui/capture-skill-explanation-v1.js construit une seule phrase « Peut aussi toucher les créatures en vol / sous terre / immatérielles » si configuration réelle, pas de mention surface banale ; sans surface dans les états explicitement autorisés, précise « mais pas celles au sol » ; aucune autre description, combat ou donnée modifiée.
+- Tests : 5 sentinelles supplémentaires réelles Tornade, Arc électrique, Ouragan ; absence de faux cas, sous-sol, immatériel combiné, absence surface explicite, anti-esquive conservé + tests Showcase précédents ; CI cinq jobs (foundation et Chromium).
+- Périmètre : un seul formateur, tests unitaires, docs et journal. Éditeur, visuels et moteur protégés. Détail : docs/LAB_BESTIAIRE_SPECIAL_TARGETS_2026-10-24.md.
+- Fin conditionnelle : GREEN sur SHA exact puis fusion gh-pages ; validation visuelle smartphone par l'auteur après publication.
+
+---
+
 ## 2026-10-24 — Bestiaire : descriptions simples pour les joueurs (en tests)
 - Retour auteur : supprimer la présentation technique de la PR #87 (trajet, durée de récupération, portée, rubriques), privilégier une ou quelques phrases combinant les vrais effets et durées.
 - Base gh-pages@8331769493eb8976ce5706e6ad08f515d07bafb7, checkpoint START checkpoint/lab-start-bestiary-player-text-2026-10-24, branche work/lab-bestiary-player-text-2026-10-24.

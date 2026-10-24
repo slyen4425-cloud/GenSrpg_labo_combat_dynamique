@@ -22,7 +22,8 @@ test("Vague incendiaire: concise impact, DoT, no internals",()=>{
   assert.match(s,/Inflige 25 dégâts de Feu/);
   assert.match(s,/Inflige 8 dégâts de Feu toutes les 2 secondes pendant 10 secondes/);
   assert.doesNotMatch(s,/trajet|portée|préparation|récupération|Énergie :|Recharge :/i);
-  assert.equal(view.sentences.length,2);
+  assert.equal(view.sentences.length,3);
+  assert.ok(view.sentences.includes("Peut aussi toucher les créatures en vol."));
 });
 test("Sangsue: keep contact hold, damage, healing and natural timing",()=>{
   const s=sentences(explain("sangsue"));
@@ -98,4 +99,51 @@ test("Bestiary uses only short player prose, no technical UI sections",()=>{
   assert.match(app,/skill.explanation.sentences/);
   assert.doesNotMatch(app,/skill.explanation.sections|skill.explanation.meta|skill.explanation.heading/);
   assert.match(app,/aria-expanded/);
+});
+
+test("ordinary and surface-only attacks never get a redundant special reach note",()=>{
+  const base=readSkill("cap_earth_atk_2");
+  const noReach=sentences(describeCaptureSkillV1({...base,hitPresenceStates:null,hitsIntangible:false}));
+  const surface=sentences(describeCaptureSkillV1({...base,hitPresenceStates:["surface"],hitsIntangible:false}));
+  for(const text of [noReach,surface]){
+    assert.doesNotMatch(text,/Peut aussi toucher les créatures|mais pas celles au sol/);
+  }
+});
+test("real Tornade, Arc électrique and Ouragan gain the anti-air detail only",()=>{
+  for(const id of ["cap_air_atk_4","lib_chain_lightning","cap_air_atk_7"]){
+    const d=readSkill(id);
+    assert.deepEqual(d.hitPresenceStates,["surface","airborne"],id);
+    const x=describeCaptureSkillV1(d).sentences;
+    assert.ok(x.includes("Peut aussi toucher les créatures en vol."),id);
+    assert.equal(x.filter(line=>/créatures en vol/.test(line)).length,1,id);
+    assert.doesNotMatch(x.join(" "),/sous terre|immatérielles|Portée :|hitPresenceStates/,id);
+  }
+});
+test("explicit underground and combined flight/underground/intangible reach reads real rules only",()=>{
+  const base=readSkill("cap_earth_atk_2");
+  const create=(hitPresenceStates,hitsIntangible=false)=>describeCaptureSkillV1({
+    ...base,hitPresenceStates,hitsIntangible
+  }).sentences;
+  assert.ok(create(["surface","underground"]).includes(
+    "Peut aussi toucher les créatures sous terre."));
+  assert.ok(create(["surface","airborne","underground"],true).includes(
+    "Peut aussi toucher les créatures en vol et sous terre, même immatérielles."));
+  assert.ok(create(null,true).includes(
+    "Peut aussi toucher les créatures immatérielles."));
+  assert.ok(create(["surface"],true).includes(
+    "Peut aussi toucher les créatures immatérielles."));
+});
+test("explicit non-surface attacks do not claim they also hit grounded defenders",()=>{
+  const base=readSkill("cap_earth_atk_2");
+  const air=describeCaptureSkillV1({...base,hitPresenceStates:["airborne"]}).sentences;
+  assert.ok(air.includes("Peut toucher les créatures en vol, mais pas celles au sol."));
+  const burrow=describeCaptureSkillV1({...base,
+    hitPresenceStates:["underground"],hitsIntangible:true}).sentences;
+  assert.ok(burrow.includes("Peut toucher les créatures sous terre, même immatérielles, mais pas celles au sol."));
+});
+test("existing unavoidable-attack detail survives special target notes",()=>{
+  const base=readSkill("cap_air_atk_7");
+  const s=describeCaptureSkillV1({...base,dodgeable:false}).sentences;
+  assert.ok(s.includes("Peut aussi toucher les créatures en vol."));
+  assert.ok(s.includes("Cette attaque ne peut pas être esquivée."));
 });
