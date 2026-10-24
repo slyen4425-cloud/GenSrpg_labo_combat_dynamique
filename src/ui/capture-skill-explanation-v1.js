@@ -22,7 +22,7 @@ const element=k=>elNames[k]??k??"";
 const elementOf=k=>/^[aeéèêiouy]/i.test(element(k))?"d'"+element(k):"de "+element(k);
 const stat=k=>statNames[k]??(elNames[k]?"l\'affinité "+elNames[k]:(k?"la caractéristique "+String(k).replace(/_/g," "):"la caractéristique"));
 const duration=ms=>{const n=ms/1000;return num(n)+" "+(n===1?"seconde":"secondes");};
-const lowerSentence=x=>lowerSentence(x).replace(/k\.o\b/gi,"K.O.");
+const lowerSentence=x=>x.replace(/^[A-Z]/,c=>c.toLowerCase()).replace(/\.$/,"").replace(/k\.o\b/gi,"K.O.");
 const frequency=ms=>ms===1000?"chaque seconde":"toutes les "+duration(ms);
 const words=(arr)=>arr.length<=1?(arr[0]??""):arr.length===2?
   arr.join(" et "):arr.slice(0,-1).join(", ")+" et "+arr[arr.length-1];
