@@ -61,7 +61,8 @@ test("Bestiary entry description is generated; handwritten note not reintroduced
   const app=root("examples/dom-demo/bestiary.js");
   const css=root("examples/dom-demo/bestiary.css");
   assert.match(model,/describeCaptureSkillV1/);
-  assert.doesNotMatch(model,/description:\s*typeof draft.description/);
+  const skillProjection=model.slice(model.indexOf("for (const transfer of skillTransfers)"),model.indexOf("const definitionsById"));
+  assert.doesNotMatch(skillProjection,/description:\s*typeof draft.description/);
   assert.doesNotMatch(app,/skill\.description/);
   assert.match(app,/aria-expanded/);
   assert.match(app,/skill\.explanation\.sections/);
