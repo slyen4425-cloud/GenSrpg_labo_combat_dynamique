@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101827">
+  <title>Bestiaire — GenSrpG Capture</title>
+  <link rel="stylesheet" href="./bestiary.css">
+</head>
+<body>
+  <main class="bestiary" data-bestiary>
+    <nav class="topbar" aria-label="Navigation Capture">
+      <a class="back-link" href="./capture-editor-v2.html">← Éditeur Capture</a>
+      <span>GenSrpG · Monster Capture</span>
+    </nav>
+    <header class="masthead">
+      <p class="eyebrow">Encyclopédie des créatures</p>
+      <h1>Bestiaire</h1>
+      <p>Explore les créatures finalisées et découvre leurs caractéristiques et capacités.</p>
+    </header>
+    <section class="layout">
+      <aside class="library" aria-label="Liste des créatures">
+        <div class="library-heading">
+          <h2>Créatures</h2>
+          <span class="counter" data-bestiary-count>Chargement…</span>
+        </div>
+        <label class="field">Rechercher
+          <input type="search" data-bestiary-search placeholder="Nom de créature…" autocomplete="off">
+        </label>
+        <label class="field">Élément
+          <select data-bestiary-element><option value="">Tous les éléments</option></select>
+        </label>
+        <div class="creature-list" data-bestiary-list aria-label="Fiches disponibles"></div>
+      </aside>
+      <article class="profile" data-bestiary-profile aria-label="Fiche de la créature">
+        <div class="profile-head">
+          <div>
+            <p class="eyebrow" data-bestiary-caption>Créature</p>
+            <h2 data-bestiary-name>Sélectionne une créature</h2>
+          </div>
+          <div class="elements" data-bestiary-elements></div>
+        </div>
+        <div class="portrait-frame" data-bestiary-portrait aria-label="Illustration de face"></div>
+        <p class="description" data-bestiary-description></p>
+        <div class="facts" data-bestiary-facts></div>
+        <div class="information-grid">
+          <section class="info-panel" aria-labelledby="bestiary-attributes">
+            <h3 id="bestiary-attributes">Caractéristiques</h3>
+            <div class="values-grid" data-bestiary-attributes></div>
+          </section>
+          <section class="info-panel" aria-labelledby="bestiary-statistics">
+            <h3 id="bestiary-statistics">Statistiques</h3>
+            <div class="values-grid" data-bestiary-measures></div>
+          </section>
+          <section class="info-panel full-width" aria-labelledby="bestiary-resistances">
+            <h3 id="bestiary-resistances">Résistances et faiblesses</h3>
+            <div class="resistance-list" data-bestiary-resistances></div>
+          </section>
+          <section class="info-panel full-width" aria-labelledby="bestiary-skills">
+            <h3 id="bestiary-skills">Compétences</h3>
+            <div class="skill-list" data-bestiary-skills></div>
+            <p class="note" data-bestiary-skills-note></p>
+          </section>
+        </div>
+      </article>
+    </section>
+    <p class="loading" data-bestiary-status role="status" aria-live="polite">Chargement des fiches publiées…</p>
+  </main>
+  <script type="module" src="./bestiary.js"></script>
+</body>
+</html>
