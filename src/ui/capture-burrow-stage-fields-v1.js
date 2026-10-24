@@ -59,3 +59,64 @@ export function updateBurrowStageVisibilityV1(root){
   const n=root.querySelector("[data-burrow-stage-fields]");
   if(n)n.hidden=select(root,"[data-skill-approach]").value!=="burrow";
 }
+
+/**
+ * One catalog, three stage selectors. Built-in assets remain available, and
+ * every compatible GenSrpG or user-imported FX sprite can be selected for any
+ * underground phase. IDs are stored by the existing V13 skill binding;
+ * this function never copies media or changes combat mechanics.
+ */
+export function populateBurrowStageAssetChoicesV1(root, assets = []) {
+  const compatible = [...new Map(
+    (Array.isArray(assets) ? assets : [])
+      .filter(asset => {
+        const tags = Array.isArray(asset?.tags) ? asset.tags : [];
+        return typeof asset?.id === "string" &&
+          (asset.assetType === "sprite" || asset.assetType === "fx") &&
+          asset.mediaType === "image" &&
+          asset.category !== "creature" &&
+          !tags.includes("creature") &&
+          asset.compatibility?.uses?.includes("editor") &&
+          (Boolean(asset.resource?.file) ||
+            Boolean(asset.resource?.runtimeUrl));
+      })
+      .map(asset => [asset.id, asset])
+  ).values()].sort((a, b) =>
+    String(a.label || a.id).localeCompare(
+      String(b.label || b.id), "fr", { sensitivity: "base" }
+    )
+  );
+  const labels = {
+    start: "Départ — creusement · 20 frames",
+    travel: "Trajet — sillon · 20 frames",
+    impact: "Arrivée — émergence · 20 frames"
+  };
+  for (const stage of BURROW_STAGE_ORDER_V1) {
+    const control = select(root, "[data-burrow-" + stage + "-asset]");
+    const currentId = String(control.value ?? "");
+    control.textContent = "";
+    const add = (id, label) => {
+      const option = root.ownerDocument.createElement("option");
+      option.value = id;
+      option.textContent = label;
+      control.append(option);
+    };
+    add("", "Aucun");
+    add(BURROW_DEFAULT_ASSETS_V1[stage], labels[stage]);
+    for (const user of [false, true]) {
+      const group = user ? "Mes assets" : "Bibliothèque GenSrpG";
+      for (const asset of compatible) {
+        if ((asset.source?.scope === "user") !== user) continue;
+        if (asset.id === BURROW_DEFAULT_ASSETS_V1[stage]) continue;
+        add(asset.id, group + " · " + (asset.label || asset.id));
+      }
+    }
+    // Preserve old saves even if the referenced asset is unavailable today:
+    // visual resolution, not this picker, remains responsible for validation.
+    if (currentId &&
+        !Array.from(control.options ?? []).some(opt => opt.value === currentId)) {
+      add(currentId, currentId + " (hors bibliothèque)");
+    }
+    control.value = currentId;
+  }
+}
