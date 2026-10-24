@@ -1,0 +1,49 @@
+{
+  "schema": "gensrpg-capture-venombre-runtime-refresh-v1",
+  "date": "2026-10-24",
+  "repository": "slyen4425-cloud/GenSrpg_labo_combat_dynamique",
+  "branch": "work/global-assets-venombre-visual-refresh-2026-10-24",
+  "baseSHA": "40efba68f2d24f1b8fb81876516a52143ae87d2e",
+  "approvedByUser": true,
+  "sourceType": "Two user-approved ChatGPT-generated creature views (front and corrected rear), original 1254x1254 RGB black background",
+  "processing": "Local OpenCV component separation, morphological close and small void fill; LANCZOS normalized to 1024x1024 transparent RGBA and quality84 WebP; kept large tail loop aperture transparent",
+  "runtimeDimensions": [
+    1024,
+    1024
+  ],
+  "alpha": true,
+  "sourceStored": "Source files and local preview/ZIP in conversation; runtime binaries stored in GitHub",
+  "iconPolicy": "unchanged",
+  "metaPolicy": "unchanged",
+  "assetIdsPolicy": "unchanged",
+  "assets": [
+    {
+      "id": "pack:capture:creature-venombre-opponent-01",
+      "role": "opponent",
+      "label": "Face adversaire",
+      "file": "capture/creatures/venombre/runtime/venombre_opponent.webp",
+      "sha256": "effa3f01e5f53f0c0e10d8362144bbaa650919ea502652dd2dd85b3a651ef733",
+      "gitBlobSHA": "c548d35051216363c7884d64cb1036fdc9c3efe3",
+      "bytes": 198664,
+      "sourceName": "bête_draconique_venimeuse_aux_lames_violettes.png",
+      "sourceSha256": "970763edd1fed4274956b651cabe3b1586b740e3ca4ddfa5241c1e75355e86d0",
+      "previousGitBlobSHA": "0a55d67d1c57771e2b5bcadb9a01437f0d7e1685"
+    },
+    {
+      "id": "pack:capture:creature-venombre-player-01",
+      "role": "player",
+      "label": "Dos joueur (queue au-dessus de la jambe)",
+      "file": "capture/creatures/venombre/runtime/venombre_player.webp",
+      "sha256": "75facf59803c9ccf9139a46c9cbf51ca950f67c6c8ab7a2da12dc8103e20b79c",
+      "gitBlobSHA": "2f9b1193508f7e5d0603c9806f28a57ed41bcbb9",
+      "bytes": 198660,
+      "sourceName": "a_high_detail_digital_fantasy_concept_art_illustra.png",
+      "sourceSha256": "959484403d901f15ea7f864ebfb95625bb7a081bb419d4967f9091af590f520f",
+      "previousGitBlobSHA": "653bdac8b6ede3db6a4378ce2bbe0cb701657a36"
+    }
+  ],
+  "protectedGitBlobs": {
+    "assets/library/capture/creatures/venombre/runtime/venombre_icon.webp": "b9fe1bb328f8d96aa9bf900119adb6767162c9c7",
+    "assets/library/capture/creatures/venombre/venombre.meta.json": "9324e3e88c5aa5d43ce6f5d014021768b424012b"
+  }
+}
