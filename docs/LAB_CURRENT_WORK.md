@@ -1,3 +1,12 @@
+## 2026-10-24 — Maraileron : intégrer l'export de configuration nage/attaque (en validation)
+- Base gh-pages@de130b41ad46d6eb6981d9560f47fec95544412e, checkpoint START checkpoint/lab-start-maraileron-author-2026-10-24, branche work/lab-maraileron-author-2026-10-24.
+- Propriétaire unique data/capture/showcase/crea_maraileron.capture-creature-transfer-v1.json ; export source original conservé dans data/capture/source-exports/gensrpg-capture-creature-crea_maraileron-2026-10-24.json.
+- Remplacement de la configuration d'auteur : présentation version 2→9, animation nage/attaque face et dos, scale par vue, loop, rotation et frameCount fidèles au fichier; statistiques préservées (0 acier/nature/esprit ajoutés), cinq capacités et sockets intacts.
+- Périmètre limité au fichier de transfert, source-exports, tests d'import réel/round-trip et docs. Moteur, éditeur, assets, catalogue et dépôt GenSrpG central intouchés.
+- Risques : IDs de sprites dépendants du catalogue global, frameCount=1 exporté même si IDs contiennent « 12 »/« 6 » ; aucune correction spéculative. CI 5 jobs, GREEN SHA exact puis PR/merge si tests verts. Détails docs/LAB_MARAILERON_AUTHOR_REFRESH_2026-10-24.md.
+
+---
+
 ## 2026-10-24 — Venombre : transfert auteur à jour (en validation)
 - Base `gh-pages@eac4dd3977951a524a0788b7fa49114f94bcca73`, START `checkpoint/lab-start-venombre-author-2026-10-24`, branche `work/lab-venombre-author-2026-10-24`.
 - Propriétaire `data/capture/showcase/crea_tox_2.capture-creature-transfer-v1.json`, remplacement entier fidèle à l'export `gensrpg-capture-creature-crea_tox_2.json`. Source historique sauvegardée sans duplication d'autorité.
