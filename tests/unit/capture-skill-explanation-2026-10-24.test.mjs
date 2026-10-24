@@ -22,7 +22,8 @@ test("Vague incendiaire: concise impact, DoT, no internals",()=>{
   assert.match(s,/Inflige 25 dégâts de Feu/);
   assert.match(s,/Inflige 8 dégâts de Feu toutes les 2 secondes pendant 10 secondes/);
   assert.doesNotMatch(s,/trajet|portée|préparation|récupération|Énergie :|Recharge :/i);
-  assert.equal(view.sentences.length,2);
+  assert.equal(view.sentences.length,3);
+  assert.ok(view.sentences.includes("Peut aussi toucher les créatures en vol."));
 });
 test("Sangsue: keep contact hold, damage, healing and natural timing",()=>{
   const s=sentences(explain("sangsue"));
