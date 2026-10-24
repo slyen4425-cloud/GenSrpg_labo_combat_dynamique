@@ -8,6 +8,19 @@
   <link rel="stylesheet" href="./capture-editor-v2.css">
   <style>
     [data-creature-view-settings][hidden] { display: none; }
+    .editor-tabs a.bestiary-link {
+      display: grid; gap: .08rem; align-content: center;
+      min-height: 3.6rem; padding: .58rem .65rem; border-radius: .65rem;
+      border: 1px solid rgba(133, 211, 225, .4);
+      background: rgba(23, 60, 73, .8); color: #ebfcff;
+      text-decoration: none; text-align: left;
+    }
+    .editor-tabs a.bestiary-link:hover,
+    .editor-tabs a.bestiary-link:focus-visible {
+      background: rgba(35, 94, 110, .95);
+      outline: 1px solid #a4e6f2;
+    }
+
   </style>
 </head>
 <body>
@@ -41,6 +54,10 @@
         <span>Musiques</span>
         <small>Bandes-son · ambiances</small>
       </button>
+      <a class="bestiary-link" href="./bestiary.html" aria-label="Ouvrir le Bestiaire Capture">
+        <span>Bestiaire</span>
+        <small>Fiches · créatures prêtes</small>
+      </a>
     </nav>
 
     <section class="card transfer-card" aria-label="Import et export Capture">
