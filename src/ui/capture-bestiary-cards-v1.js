@@ -1,5 +1,6 @@
 import {normalizeCaptureActiveSkillLoadoutV1} from "../contracts/capture-active-skill-loadout-v1.js";
 import {captureStatEffectSummaryV1} from "./capture-stat-effect-summary-v1.js";
+import {describeCaptureSkillV1} from "./capture-skill-explanation-v1.js";
 
 // The existing Capture loadout owns equipment; the Bestiary is read-only.
 const ELEMENT_LABELS = Object.freeze({
@@ -56,8 +57,9 @@ export function captureBestiaryCardsV1({
     if (typeof definition?.id !== "string" ||
         typeof definition?.name !== "string") continue;
     skillsById.set(definition.id, {
-      name:definition.name, description:"", element:definition.element ?? null,
-      requiredLevel:null, icon:null
+      name:definition.name, element:definition.element ?? null,
+      requiredLevel:null, icon:null,
+      explanation:describeCaptureSkillV1(definition)
     });
   }
   for (const transfer of skillTransfers) {
@@ -68,10 +70,10 @@ export function captureBestiaryCardsV1({
     const icon = readyVisual(assets, draft?.presentation?.visual?.icon);
     skillsById.set(definition.id, {
       name:definition.name,
-      description: typeof draft.description === "string" ? draft.description : "",
       element:definition.element || null,
       requiredLevel: statNumber(draft.requiredLevel),
-      icon
+      icon,
+      explanation:describeCaptureSkillV1(definition)
     });
   }
   const definitionsById = new Map((Array.isArray(statRegistry?.stats) ? statRegistry.stats : [])
