@@ -1,3 +1,11 @@
+## 2026-10-24 — Crachat acide : intégration de quatre ZIP déposés (chantier en cours)
+
+- Propriétaire : catalogue unique `global-assets` ; branche `work/global-assets-acid-spit-fx-2026-10-24`.
+- Base : `global-assets@19d68f29dbd9c36456fdddbd352db20d171056a0`, source de réception `86a7d513092a25952348a8ebdd8fab5f7109518d`, checkpoint `checkpoint/global-assets-before-acid-spit-import-2026-10-24`.
+- Périmètre, protections, outils et gates : `docs/LAB_ACID_SPIT_VFX_2026-10-24.md`. Publication et vérification runtime à confirmer ; aucun GREEN annoncé avant CI réelle.
+
+---
+
 ## 2026-10-24 — Maraileron FACE/adversaire, nage + attaque (12 frames)
 
 - Source auteur approuvée : _incoming/MARAILERON_FACE_2_ANIMATIONS_NAGE_ATTAQUE.zip ; 10 481 378 octets ; SHA256 96e5c35a577b73bda926dedc29ee4cf16b565e474283e925fc6bc9aa8fc6aa30 ; Git blob 0af1f0ca910817f7a444edb0bc220ea7b682e62b ; CRC OK.
