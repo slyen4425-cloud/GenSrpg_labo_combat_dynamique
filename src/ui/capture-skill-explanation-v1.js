@@ -6,10 +6,10 @@ import {normalizeSkillDefinition} from "../contracts/skill-definition.js";
 const elNames=Object.freeze({fire:"Feu",water:"Eau",earth:"Terre",air:"Air",electric:"Électricité",
   light:"Lumière",shadow:"Ombre",poison:"Poison",nature:"Nature",steel:"Acier",acier:"Acier",
   ice:"Glace",spirit:"Esprit",physical:"Physique"});
-const statNames=Object.freeze({speed:"Vitesse",defense:"Défense",attack:"Attaque",
-  hp:"PV",health:"PV",initiative:"Initiative",agility:"Agilité",
-  force:"Force",endurance:"Endurance",intelligence:"Intelligence",
-  spirit:"Esprit",energy:"Énergie"});
+const statNames=Object.freeze({speed:"la vitesse",defense:"la défense",attack:"l'attaque",
+  hp:"les PV",health:"les PV",initiative:"l'initiative",agility:"l'agilité",
+  force:"la force",endurance:"l'endurance",intelligence:"l'intelligence",
+  spirit:"l'esprit",energy:"l'énergie"});
 const scopes=Object.freeze({self:"la créature",target:"la cible",
   all_enemies:"tous les ennemis",all_allies:"tous les alliés",
   all_except_self:"toutes les autres créatures",
@@ -19,14 +19,18 @@ const events=Object.freeze({damage_dealt:"inflige des dégâts",damage_taken:"su
   movement:"se déplace",evaded:"esquive une attaque"});
 const num=n=>String(Math.round(Number(n)*100)/100).replace(".",",");
 const element=k=>elNames[k]??k??"";
-const stat=k=>statNames[k]??elNames[k]??(k?String(k).replace(/_/g," "):"statistique");
+const elementOf=k=>/^[aeéèêiouy]/i.test(element(k))?"d'"+element(k):"de "+element(k);
+const stat=k=>statNames[k]??(elNames[k]?"l\'affinité "+elNames[k]:(k?"la caractéristique "+String(k).replace(/_/g," "):"la caractéristique"));
 const duration=ms=>{const n=ms/1000;return num(n)+" "+(n===1?"seconde":"secondes");};
 const frequency=ms=>ms===1000?"chaque seconde":"toutes les "+duration(ms);
 const words=(arr)=>arr.length<=1?(arr[0]??""):arr.length===2?
   arr.join(" et "):arr.slice(0,-1).join(", ")+" et "+arr[arr.length-1];
 const subject=key=>scopes[key]??"la cible";
 const actor=key=>key==="self"?"la créature":subject(key);
-const onTarget=key=>key==="self"?"":key==="target"?" à la cible":" à "+subject(key);
+const onTarget=key=>key==="self"?"":key==="target"?" à la cible":
+  key==="all_enemies"?" à tous les ennemis":key==="all_allies"?" à tous les alliés":
+  key==="all_enemy_reserves"?" aux ennemis en réserve":
+  key==="all_ally_reserves"?" aux alliés en réserve":" à "+subject(key);
 const forTarget=key=>key==="self"?"":key==="target"?" chez la cible":" chez "+subject(key);
 const period=s=>s.durationModel==="permanent"?"de façon permanente":
   s.durationModel==="owner_action_end"?"jusqu'à la fin de sa prochaine action":
@@ -100,6 +104,13 @@ function statusStory(s){
       line="Applique un effet (« "+(s.label??s.kind)+" »)";
     }
   }
+  if(s.kind==="triggered_buff"){
+    const trigger=s.onEvent??s.onDamageDealt;
+    const evt=s.onEvent?.event??"damage_dealt";
+    return [finish("Pendant "+duration(s.durationMs)+", quand la créature "+
+      (events[evt]??"agit")+", "+
+      descriptions(trigger.effects).map(x=>x.replace(/^[A-Z]/,c=>c.toLowerCase()).replace(/\.$/,"")).join(" et "))];
+  }
   const result=[finish(line+" "+end)];
   if(s.periodic){
     const p=s.periodic;
@@ -127,7 +138,7 @@ function statusStory(s){
 }
 function statusSentence(effect){
   const result=statusStory(effect.status);
-  if(effect.targetScope==="self")return result;
+  if(effect.targetScope==="self"||effect.status.kind==="triggered_buff")return result;
   // Present targets only when they differ from the default self-effect.
   return result.map((line,i)=>i===0?
     line.replace(/\.$/,"")+" "+(effect.targetScope==="target"?"sur la cible":"sur "+subject(effect.targetScope))+".":line);
@@ -142,7 +153,7 @@ function penetrates(e){
 }
 function effectSentence(e){
   switch(e.kind){
-    case "damage":return [finish("Inflige "+num(e.amount)+" dégâts"+(e.channel?" de "+element(e.channel):"")+
+    case "damage":return [finish("Inflige "+num(e.amount)+" dégâts"+(e.channel?" "+elementOf(e.channel):"")+
       onTarget(e.targetScope)+(penetrates(e).length?" et "+words(penetrates(e)):""))];
     case "heal":return [finish("Rend "+num(e.amount)+" PV"+onTarget(e.targetScope))];
     case "energy_restore":return [finish("Rend "+num(e.amount)+" points d'énergie"+onTarget(e.targetScope))];
@@ -193,7 +204,7 @@ function zoneClause(zone){
   const change=status?simpleChange(status):null;
   if(change)return (change.positive?"augmentent ":"réduisent ")+change.text;
   if(e.kind==="damage")return "infligent "+num(e.amount)+" dégâts"+
-    (e.channel?" de "+element(e.channel):"")+
+    (e.channel?" "+elementOf(e.channel):"")+
     (zone.damageTrigger==="entry_only"?" à l'entrée dans la zone":
       zone.damageTrigger==="entry_and_tick"?" à l'entrée puis "+frequency(zone.tickIntervalMs):
       " "+frequency(zone.tickIntervalMs));
@@ -243,6 +254,24 @@ function descriptions(effects){
         }
       }
       out.push(...groupZones(same.map(j=>list[j])));
+    }else if(e.kind==="apply_marker"){
+      // A single marker applied both on the field and to reserves is one
+      // gameplay effect with two recipient groups, not two repetitions.
+      const reserve=e.targetScope==="all_enemies"?"all_enemy_reserves":
+        e.targetScope==="all_allies"?"all_ally_reserves":null;
+      let reserveIndex=-1;
+      if(reserve!==null){
+        reserveIndex=list.findIndex((x,j)=>j>i&&!used.has(j)&&
+          x.kind==="apply_marker"&&x.targetScope===reserve&&
+          x.charges===e.charges&&JSON.stringify(x.marker)===JSON.stringify(e.marker));
+      }
+      const lines=effectSentence(e);
+      if(reserveIndex>=0){
+        used.add(reserveIndex);
+        lines[0]=lines[0].replace(/\.$/,"")+
+          (reserve==="all_enemy_reserves"?", y compris ceux en réserve.":", y compris ceux en réserve.");
+      }
+      out.push(...lines);
     }else if(e.kind==="apply_status" && simpleChange(e.status)){
       const same=[];
       for(let j=i;j<list.length;j++){
@@ -305,12 +334,23 @@ export function describeCaptureSkillV1(input) {
   if(d.effect.interruptsPreparation)phrases.push("Interrompt l'action en préparation.");
   phrases.push(...descriptions(d.effects));
   if(d.contactHold){
-    const hold=d.contactHold;
-    const held=descriptions(hold.effects);
-    if(held.length)phrases.push(finish("Au corps à corps, reste accroché à la cible et "+
-      held.map(x=>x.replace(/\.$/,"").replace(/^[A-Z]/,c=>c.toLowerCase())).join(" et ")+
-      " "+frequency(hold.tickIntervalMs)+
-      (hold.maxDurationMs>0?" pendant "+duration(hold.maxDurationMs):"")));
+    const hold=d.contactHold,damage=hold.effects.filter(x=>x.kind==="damage");
+    const steal=hold.effects.filter(x=>x.kind==="life_steal");
+    if(hold.effects.length===2 && damage.length===1 && steal.length===1 &&
+       damage[0].targetScope==="target" && steal[0].targetScope==="self"){
+      phrases.push(finish("Au corps à corps, reste accroché à la cible et lui inflige "+
+        num(damage[0].amount)+" dégâts"+(damage[0].channel?" "+elementOf(damage[0].channel):"")+
+        " "+frequency(hold.tickIntervalMs)+", tout en récupérant "+num(steal[0].percent)+
+        " % de ces dégâts sous forme de PV"+
+        (steal[0].maxHeal!=null?" (maximum "+num(steal[0].maxHeal)+" PV)":"")+
+        (hold.maxDurationMs>0?" pendant "+duration(hold.maxDurationMs):"")));
+    }else{
+      const held=descriptions(hold.effects);
+      if(held.length)phrases.push(finish("Au corps à corps, reste accroché à la cible et "+
+        held.map(x=>x.replace(/\.$/,"").replace(/^[A-Z]/,c=>c.toLowerCase())).join(" et ")+
+        " "+frequency(hold.tickIntervalMs)+
+        (hold.maxDurationMs>0?" pendant "+duration(hold.maxDurationMs):"")));
+    }
   }
   phrases.push(...specialRules(d),...conditions(d));
   if(d.maxUsesPerCombat!=null)phrases.push(finish("Utilisable "+
