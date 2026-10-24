@@ -24,7 +24,16 @@ test("author Ailevent changes only opponent visual and two new skills without al
 test("Venombre keeps the imported author record and corrects only the expressly confirmed biped profile", () => {
   const c = creature("crea_tox_2");
   const original = snapshot("crea_tox_2");
-  assert.deepEqual({...c,draft:{...c.draft,presentation:{...c.draft.presentation,profileId:"quadruped"}}}, original);
+  // Compare against the immutable 23 October original after undoing only the
+  // author-approved 24 October presentation override and loadout fields.
+  assert.deepEqual({
+    ...c,
+    draft:{...c.draft,presentation:{
+      ...c.draft.presentation,profileId:"quadruped",
+      viewOverrides:original.draft.presentation.viewOverrides
+    }},
+    loadout:original.loadout
+  }, original);
   assert.equal(c.draft.id, "crea_tox_2");
   assert.equal(c.draft.displayName, "Venombre");
   assert.equal(c.draft.presentation.profileId, "biped");

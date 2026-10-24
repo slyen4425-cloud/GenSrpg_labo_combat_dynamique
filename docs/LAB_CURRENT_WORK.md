@@ -1,3 +1,11 @@
+## 2026-10-24 — Venombre : transfert auteur à jour (en validation)
+- Base `gh-pages@eac4dd3977951a524a0788b7fa49114f94bcca73`, START `checkpoint/lab-start-venombre-author-2026-10-24`, branche `work/lab-venombre-author-2026-10-24`.
+- Propriétaire `data/capture/showcase/crea_tox_2.capture-creature-transfer-v1.json`, remplacement entier fidèle à l'export `gensrpg-capture-creature-crea_tox_2.json`. Source historique sauvegardée sans duplication d'autorité.
+- Modifications autorisées : taille et y joueur/adversaire ; 4 compétences équipées. Profil biped, sockets, assets, stats, combat et évolutions protégés. `docs/LAB_VENOMBRE_AUTHOR_REFRESH_2026-10-24.md` documente risques, fichiers et tests.
+- Fin : validation import/rechargement via propriétaire existant, tests de régression, CI cinq jobs, checkpoint GREEN sur SHA, fusion `gh-pages` si vert.
+
+---
+
 ## 2026-10-24 — Lumilo / Soin lumineux : soin + purification de tous les effets négatifs (validation CI)
 - Demande auteur explicite : la compétence doit supprimer tous les effets et marqueurs négatifs sur la créature soignée, pas consommer l'ensemble des marqueurs. Description courte et fidèle dans le Bestiaire.
 - Base gh-pages@d18c1d3134d087a83124817f2d25f262ec6eb183 ; START checkpoint/lab-start-lumilo-cleanse-2026-10-24 ; branche work/lab-lumilo-cleanse-2026-10-24.
