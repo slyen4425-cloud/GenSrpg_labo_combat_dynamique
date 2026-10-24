@@ -1,0 +1,306 @@
+{
+  "source": "original approved animation sheets",
+  "correction": "remove detached glow fragments / cross-cell spill; preserve all kept pixel RGB and pose",
+  "sprites": {
+    "mouvement": {
+      "count": 12,
+      "canvas": [
+        512,
+        512
+      ],
+      "preview_frame_ms": 100,
+      "playback_mode": "loop",
+      "sha256_of_source": "7a140e23c5964de82ad8151008dfc7d8faf936abb7cf5f817d7c697cc08ca6db",
+      "stats": [
+        {
+          "kept_core_pixels": 61377,
+          "removed_bright_pixels": 0,
+          "removed_nontrivial_pixels": 81,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 52093,
+          "removed_bright_pixels": 43,
+          "removed_nontrivial_pixels": 205,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 52305,
+          "removed_bright_pixels": 0,
+          "removed_nontrivial_pixels": 59,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 54318,
+          "removed_bright_pixels": 0,
+          "removed_nontrivial_pixels": 18,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 58790,
+          "removed_bright_pixels": 27,
+          "removed_nontrivial_pixels": 390,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 57098,
+          "removed_bright_pixels": 319,
+          "removed_nontrivial_pixels": 779,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 55647,
+          "removed_bright_pixels": 255,
+          "removed_nontrivial_pixels": 571,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 55956,
+          "removed_bright_pixels": 0,
+          "removed_nontrivial_pixels": 23,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 63663,
+          "removed_bright_pixels": 0,
+          "removed_nontrivial_pixels": 5,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 58716,
+          "removed_bright_pixels": 631,
+          "removed_nontrivial_pixels": 1000,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 58959,
+          "removed_bright_pixels": 487,
+          "removed_nontrivial_pixels": 915,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 52636,
+          "removed_bright_pixels": 373,
+          "removed_nontrivial_pixels": 679,
+          "color_pixel_changes_within_core": 0
+        }
+      ],
+      "gif_preview": "GUEPE_CYBERNETIQUE_MOUVEMENT_12F_PREVIEW_CORRIGEE.gif",
+      "webp_preview": "GUEPE_CYBERNETIQUE_MOUVEMENT_12F_PREVIEW_CORRIGEE.webp",
+      "planche": "GUEPE_CYBERNETIQUE_MOUVEMENT_12F_PLANCHE_CORRIGEE.png",
+      "atlas": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/mouvement/guepe_mouvement_12f_atlas.webp",
+      "frames": [
+        {
+          "index": 1,
+          "file": "mouvement/frames/guepe_mouvement_01.png",
+          "sha256": "7b74fac28e3ef10a564cce7488cd5998681ceec3394275168a6148c75cf914d1"
+        },
+        {
+          "index": 2,
+          "file": "mouvement/frames/guepe_mouvement_02.png",
+          "sha256": "746a0d9b118fa0b49dd4c5ee75bf6793c1735471e8a7668a21e850408684fa8b"
+        },
+        {
+          "index": 3,
+          "file": "mouvement/frames/guepe_mouvement_03.png",
+          "sha256": "d13bfe586b8a2945d0277161d39f074c7a1a8e9ddfa4f8a3e90bc0ad2e221113"
+        },
+        {
+          "index": 4,
+          "file": "mouvement/frames/guepe_mouvement_04.png",
+          "sha256": "63abdfff6f29f633b3d26ac035e56faf3020bd592605541e88aec203b12de1ed"
+        },
+        {
+          "index": 5,
+          "file": "mouvement/frames/guepe_mouvement_05.png",
+          "sha256": "1ea9f12c0d73298f29714c81e35831e0b5cbcce9df4549042679b2598bcb2443"
+        },
+        {
+          "index": 6,
+          "file": "mouvement/frames/guepe_mouvement_06.png",
+          "sha256": "fc42aa6d1d4323c1cf54c74fd4349b1dde465f69b3165c8885fef9bbc17a670e"
+        },
+        {
+          "index": 7,
+          "file": "mouvement/frames/guepe_mouvement_07.png",
+          "sha256": "84eee04ee0e7b64cea226d70b66fb56b842d4658e224cb2a8238ef4ae240feee"
+        },
+        {
+          "index": 8,
+          "file": "mouvement/frames/guepe_mouvement_08.png",
+          "sha256": "cb463b1a7997467081a831374174ee218adec5c1cedf2c632d7325f99c6b39ac"
+        },
+        {
+          "index": 9,
+          "file": "mouvement/frames/guepe_mouvement_09.png",
+          "sha256": "89b62089e8547144934441344ab74fc6dd6a72c3574cad842f18ec00f7dc2adf"
+        },
+        {
+          "index": 10,
+          "file": "mouvement/frames/guepe_mouvement_10.png",
+          "sha256": "2ed687eced20f32972b82646cddc8fdcb9bc195b5a28d79cc3535b42036228c9"
+        },
+        {
+          "index": 11,
+          "file": "mouvement/frames/guepe_mouvement_11.png",
+          "sha256": "aff03283a2c3a35a8190792e4e05ad23bab2e670015fc0a3565690c749103d4b"
+        },
+        {
+          "index": 12,
+          "file": "mouvement/frames/guepe_mouvement_12.png",
+          "sha256": "4cfdf2c3c5ceb19899bdc8024c8dc1d5f4c3eb5ec0f910ddd9142c54bea6be14"
+        }
+      ]
+    },
+    "attaque": {
+      "count": 12,
+      "canvas": [
+        512,
+        512
+      ],
+      "preview_frame_ms": 100,
+      "playback_mode": "once",
+      "sha256_of_source": "4979fbd4a10e9ae55ec14c2223b5ecf1553985113a5b0e0706f2c39f4986f18e",
+      "stats": [
+        {
+          "kept_core_pixels": 56030,
+          "removed_bright_pixels": 0,
+          "removed_nontrivial_pixels": 18,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 57981,
+          "removed_bright_pixels": 0,
+          "removed_nontrivial_pixels": 7,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 64106,
+          "removed_bright_pixels": 136,
+          "removed_nontrivial_pixels": 393,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 61383,
+          "removed_bright_pixels": 23,
+          "removed_nontrivial_pixels": 256,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 65380,
+          "removed_bright_pixels": 7,
+          "removed_nontrivial_pixels": 135,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 61675,
+          "removed_bright_pixels": 2597,
+          "removed_nontrivial_pixels": 4289,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 74725,
+          "removed_bright_pixels": 4231,
+          "removed_nontrivial_pixels": 8159,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 53185,
+          "removed_bright_pixels": 1473,
+          "removed_nontrivial_pixels": 2850,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 59069,
+          "removed_bright_pixels": 0,
+          "removed_nontrivial_pixels": 197,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 57148,
+          "removed_bright_pixels": 250,
+          "removed_nontrivial_pixels": 688,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 61503,
+          "removed_bright_pixels": 256,
+          "removed_nontrivial_pixels": 541,
+          "color_pixel_changes_within_core": 0
+        },
+        {
+          "kept_core_pixels": 56353,
+          "removed_bright_pixels": 0,
+          "removed_nontrivial_pixels": 196,
+          "color_pixel_changes_within_core": 0
+        }
+      ],
+      "gif_preview": "GUEPE_CYBERNETIQUE_ATTAQUE_12F_PREVIEW_CORRIGEE.gif",
+      "webp_preview": "GUEPE_CYBERNETIQUE_ATTAQUE_12F_PREVIEW_CORRIGEE.webp",
+      "planche": "GUEPE_CYBERNETIQUE_ATTAQUE_12F_PLANCHE_CORRIGEE.png",
+      "atlas": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/attaque/guepe_attaque_12f_atlas.webp",
+      "frames": [
+        {
+          "index": 1,
+          "file": "attaque/frames/guepe_attaque_01.png",
+          "sha256": "3d8eb69f1ff8863fad283518a19d22ea2bafa14ff799df3c10554ef6aa1388bc"
+        },
+        {
+          "index": 2,
+          "file": "attaque/frames/guepe_attaque_02.png",
+          "sha256": "97c860183134211a9f71fe3ede220ff3fdb5639cdc365096780c861ba663c79f"
+        },
+        {
+          "index": 3,
+          "file": "attaque/frames/guepe_attaque_03.png",
+          "sha256": "13c6d4865646eb55bd22bf056ad96aa7de6a530aa57cee693d64a52c3caaa17b"
+        },
+        {
+          "index": 4,
+          "file": "attaque/frames/guepe_attaque_04.png",
+          "sha256": "7f7686c34f355fb806342eaf055508e16e4f2342d413c5496501219e8eaed21d"
+        },
+        {
+          "index": 5,
+          "file": "attaque/frames/guepe_attaque_05.png",
+          "sha256": "27d05aea128df02b467029f7e01625272fc58c2cd67319e88d2ae5206895999c"
+        },
+        {
+          "index": 6,
+          "file": "attaque/frames/guepe_attaque_06.png",
+          "sha256": "1be91d489cff8704195cfebd5772e6bd941cb6b15d82574b1aa13981c48fc03c"
+        },
+        {
+          "index": 7,
+          "file": "attaque/frames/guepe_attaque_07.png",
+          "sha256": "23c7e6f239a3221d20b2c0ce38733595cbeab73eb9cb17a1e4c1714ac0b97e72"
+        },
+        {
+          "index": 8,
+          "file": "attaque/frames/guepe_attaque_08.png",
+          "sha256": "fc568c2094a6614c6917443d13d6d833477f5342e58e7f336a6064cba39df3e0"
+        },
+        {
+          "index": 9,
+          "file": "attaque/frames/guepe_attaque_09.png",
+          "sha256": "c288b7f4ad5c72cdbe0715a14d638a11363d7270a93dae7b00d0537ceb7b4e17"
+        },
+        {
+          "index": 10,
+          "file": "attaque/frames/guepe_attaque_10.png",
+          "sha256": "f5d66ec15e973e8b4651894b86086f24e52e6985c5423b249a0e9dd031504a3a"
+        },
+        {
+          "index": 11,
+          "file": "attaque/frames/guepe_attaque_11.png",
+          "sha256": "5d65390e79a614cb26e2017f543a14644c702d281288e01751682056f6e5795d"
+        },
+        {
+          "index": 12,
+          "file": "attaque/frames/guepe_attaque_12.png",
+          "sha256": "148e27492d4d35778df7800641ad70a49246d6e206b237328c6f1b92723d51d8"
+        }
+      ]
+    }
+  }
+}

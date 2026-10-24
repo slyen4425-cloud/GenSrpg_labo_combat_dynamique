@@ -1,0 +1,180 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "guepe_cybernetique",
+  "action": "movement",
+  "view": "player",
+  "assetId": "pack:capture:creature-guepe-cybernetique-movement-player-12-v1",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 100,
+  "playbackMode": "loop",
+  "authorApproved": true,
+  "approvalStatus": "approved_for_ingame_trial",
+  "sourceArchive": "_incoming/GUEPE_CYBERNETIQUE_MOUVEMENT_ATTAQUE_12F_NETTOYES.zip",
+  "sourceArchiveSha256": "3912ff41f69f0e999ee47abf834030e19f2a991ec30ede72cad26156515f4923",
+  "cleanup": "detached left-side visual artifacts removed in author-approved source",
+  "sourceCleaningManifest": "sources/guepe_cybernetique_player12_cleaning_manifest.json",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/guepe_cybernetique_movement_player_01.png",
+      "sha256": "7b74fac28e3ef10a564cce7488cd5998681ceec3394275168a6148c75cf914d1",
+      "marginsLTRB": [
+        96,
+        101,
+        75,
+        87
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/mouvement/frames/guepe_mouvement_01.png"
+    },
+    {
+      "index": 1,
+      "file": "frames/guepe_cybernetique_movement_player_02.png",
+      "sha256": "746a0d9b118fa0b49dd4c5ee75bf6793c1735471e8a7668a21e850408684fa8b",
+      "marginsLTRB": [
+        107,
+        86,
+        100,
+        85
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/mouvement/frames/guepe_mouvement_02.png"
+    },
+    {
+      "index": 2,
+      "file": "frames/guepe_cybernetique_movement_player_03.png",
+      "sha256": "d13bfe586b8a2945d0277161d39f074c7a1a8e9ddfa4f8a3e90bc0ad2e221113",
+      "marginsLTRB": [
+        114,
+        88,
+        86,
+        88
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/mouvement/frames/guepe_mouvement_03.png"
+    },
+    {
+      "index": 3,
+      "file": "frames/guepe_cybernetique_movement_player_04.png",
+      "sha256": "63abdfff6f29f633b3d26ac035e56faf3020bd592605541e88aec203b12de1ed",
+      "marginsLTRB": [
+        131,
+        96,
+        75,
+        86
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/mouvement/frames/guepe_mouvement_04.png"
+    },
+    {
+      "index": 4,
+      "file": "frames/guepe_cybernetique_movement_player_05.png",
+      "sha256": "1ea9f12c0d73298f29714c81e35831e0b5cbcce9df4549042679b2598bcb2443",
+      "marginsLTRB": [
+        82,
+        91,
+        75,
+        96
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/mouvement/frames/guepe_mouvement_05.png"
+    },
+    {
+      "index": 5,
+      "file": "frames/guepe_cybernetique_movement_player_06.png",
+      "sha256": "fc42aa6d1d4323c1cf54c74fd4349b1dde465f69b3165c8885fef9bbc17a670e",
+      "marginsLTRB": [
+        94,
+        109,
+        75,
+        90
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/mouvement/frames/guepe_mouvement_06.png"
+    },
+    {
+      "index": 6,
+      "file": "frames/guepe_cybernetique_movement_player_07.png",
+      "sha256": "84eee04ee0e7b64cea226d70b66fb56b842d4658e224cb2a8238ef4ae240feee",
+      "marginsLTRB": [
+        111,
+        89,
+        80,
+        95
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/mouvement/frames/guepe_mouvement_07.png"
+    },
+    {
+      "index": 7,
+      "file": "frames/guepe_cybernetique_movement_player_08.png",
+      "sha256": "cb463b1a7997467081a831374174ee218adec5c1cedf2c632d7325f99c6b39ac",
+      "marginsLTRB": [
+        103,
+        88,
+        75,
+        91
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/mouvement/frames/guepe_mouvement_08.png"
+    },
+    {
+      "index": 8,
+      "file": "frames/guepe_cybernetique_movement_player_09.png",
+      "sha256": "89b62089e8547144934441344ab74fc6dd6a72c3574cad842f18ec00f7dc2adf",
+      "marginsLTRB": [
+        94,
+        75,
+        75,
+        94
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/mouvement/frames/guepe_mouvement_09.png"
+    },
+    {
+      "index": 9,
+      "file": "frames/guepe_cybernetique_movement_player_10.png",
+      "sha256": "2ed687eced20f32972b82646cddc8fdcb9bc195b5a28d79cc3535b42036228c9",
+      "marginsLTRB": [
+        101,
+        75,
+        75,
+        94
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/mouvement/frames/guepe_mouvement_10.png"
+    },
+    {
+      "index": 10,
+      "file": "frames/guepe_cybernetique_movement_player_11.png",
+      "sha256": "aff03283a2c3a35a8190792e4e05ad23bab2e670015fc0a3565690c749103d4b",
+      "marginsLTRB": [
+        102,
+        78,
+        75,
+        94
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/mouvement/frames/guepe_mouvement_11.png"
+    },
+    {
+      "index": 11,
+      "file": "frames/guepe_cybernetique_movement_player_12.png",
+      "sha256": "4cfdf2c3c5ceb19899bdc8024c8dc1d5f4c3eb5ec0f910ddd9142c54bea6be14",
+      "marginsLTRB": [
+        101,
+        81,
+        84,
+        110
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/mouvement/frames/guepe_mouvement_12.png"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/guepe_cybernetique_movement_player_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "ecb1f73ddb2f356e8344da946dcc297072894119db6d6ab5d80393afb7007618"
+  },
+  "preview": "previews/guepe_cybernetique_movement_player_12_gif.gif",
+  "previews": {
+    "gif": "previews/guepe_cybernetique_movement_player_12_gif.gif",
+    "webp": "previews/guepe_cybernetique_movement_player_12_webp.webp",
+    "planche": "previews/guepe_cybernetique_movement_player_12_planche.png"
+  }
+}

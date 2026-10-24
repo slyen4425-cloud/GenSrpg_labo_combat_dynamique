@@ -1,3 +1,15 @@
+## 2026-10-24 — Guêpe cybernétique PLAYER : vol + attaque (12f nettoyées)
+
+- Source réelle : global-assets/_incoming/GUEPE_CYBERNETIQUE_MOUVEMENT_ATTAQUE_12F_NETTOYES.zip ; 13 036 446 octets ; SHA256 3912ff41f69f0e999ee47abf834030e19f2a991ec30ede72cad26156515f4923 ; Git blob ef16670bf80892dbb550125d4709b5beb23562b1 ; CRC OK. Nettoyage des artefacts lumineux à gauche déjà validé par l'auteur. Aucune nouvelle génération ou retouche.
+- Base : global-assets@dd45ec7848aed0aa60136cd064eaa905f4cddd95 (CI 40128651363 SUCCESS) ; checkpoint checkpoint/global-assets-before-guepe-cybernetique-player12-2026-10-24 ; branche work/global-assets-guepe-cybernetique-player12-2026-10-24.
+- Owner : bibliothèque visuelle / catalogue unique. Deux IDs pack:capture:creature-guepe-cybernetique-{movement,attack}-player-12-v1 ; view=player (modèle auteur 3/4 dos).
+- Import : 24 PNG RGBA 512px conservés octet pour octet, 2 atlas WebP 4608x384, 6 previews GIF/WebP/planche, 2 manifestes et manifeste source de nettoyage (35 médias).
+- Protégés : runtime guêpe (player, opponent, icon), autres créatures, moteurs/UI, données auteur, main, gh-pages et dépôt principal. Aucune auto-affectation aux paramètres de créature.
+- Gates : vrai contenu/sha/marge/transparence, CI au SHA final, revue diff, checkpoint GREEN, FF global-assets ; essai Android distinct.
+- Documentation : docs/LAB_GUEPE_CYBERNETIQUE_PLAYER12_2026-10-24.md.
+
+---
+
 ## 2026-10-24 — Crachat acide : intégration de quatre ZIP déposés (chantier en cours)
 
 - Propriétaire : catalogue unique `global-assets` ; branche `work/global-assets-acid-spit-fx-2026-10-24`.

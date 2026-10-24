@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 231,
+    "assets": 233,
     "icons": 81,
-    "sprites": 130,
+    "sprites": 132,
     "fx": 2,
     "portraits": 13,
     "backgrounds": 5,
-    "creatures": 42
+    "creatures": 44
   },
   "assets": [
     {
@@ -7760,6 +7760,90 @@
         "frameCount": 20,
         "frameMs": 85,
         "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-guepe-cybernetique-movement-player-12-v1",
+      "label": "Guêpe cybernétique — vol / déplacement côté joueur (12 frames nettoyées)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "guepe-cybernetique",
+        "insect",
+        "cybernetic",
+        "electric",
+        "lightning",
+        "movement",
+        "animated",
+        "player",
+        "dos",
+        "flight",
+        "flying"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / source validée et nettoyée 2026-10-24",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/guepe_cybernetique/animations/movement/player/atlases/guepe_cybernetique_movement_player_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 100,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-guepe-cybernetique-attack-player-12-v1",
+      "label": "Guêpe cybernétique — attaque côté joueur (12 frames nettoyées)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "guepe-cybernetique",
+        "insect",
+        "cybernetic",
+        "electric",
+        "lightning",
+        "attack",
+        "animated",
+        "player",
+        "dos"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / source validée et nettoyée 2026-10-24",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/guepe_cybernetique/animations/attack/player/atlases/guepe_cybernetique_attack_player_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 100,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [

@@ -1,0 +1,180 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "guepe_cybernetique",
+  "action": "attack",
+  "view": "player",
+  "assetId": "pack:capture:creature-guepe-cybernetique-attack-player-12-v1",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 100,
+  "playbackMode": "once",
+  "authorApproved": true,
+  "approvalStatus": "approved_for_ingame_trial",
+  "sourceArchive": "_incoming/GUEPE_CYBERNETIQUE_MOUVEMENT_ATTAQUE_12F_NETTOYES.zip",
+  "sourceArchiveSha256": "3912ff41f69f0e999ee47abf834030e19f2a991ec30ede72cad26156515f4923",
+  "cleanup": "detached left-side visual artifacts removed in author-approved source",
+  "sourceCleaningManifest": "sources/guepe_cybernetique_player12_cleaning_manifest.json",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/guepe_cybernetique_attack_player_01.png",
+      "sha256": "3d8eb69f1ff8863fad283518a19d22ea2bafa14ff799df3c10554ef6aa1388bc",
+      "marginsLTRB": [
+        103,
+        104,
+        86,
+        98
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/attaque/frames/guepe_attaque_01.png"
+    },
+    {
+      "index": 1,
+      "file": "frames/guepe_cybernetique_attack_player_02.png",
+      "sha256": "97c860183134211a9f71fe3ede220ff3fdb5639cdc365096780c861ba663c79f",
+      "marginsLTRB": [
+        110,
+        113,
+        75,
+        82
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/attaque/frames/guepe_attaque_02.png"
+    },
+    {
+      "index": 2,
+      "file": "frames/guepe_cybernetique_attack_player_03.png",
+      "sha256": "13c6d4865646eb55bd22bf056ad96aa7de6a530aa57cee693d64a52c3caaa17b",
+      "marginsLTRB": [
+        130,
+        75,
+        75,
+        75
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/attaque/frames/guepe_attaque_03.png"
+    },
+    {
+      "index": 3,
+      "file": "frames/guepe_cybernetique_attack_player_04.png",
+      "sha256": "7f7686c34f355fb806342eaf055508e16e4f2342d413c5496501219e8eaed21d",
+      "marginsLTRB": [
+        113,
+        75,
+        99,
+        77
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/attaque/frames/guepe_attaque_04.png"
+    },
+    {
+      "index": 4,
+      "file": "frames/guepe_cybernetique_attack_player_05.png",
+      "sha256": "27d05aea128df02b467029f7e01625272fc58c2cd67319e88d2ae5206895999c",
+      "marginsLTRB": [
+        78,
+        77,
+        75,
+        88
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/attaque/frames/guepe_attaque_05.png"
+    },
+    {
+      "index": 5,
+      "file": "frames/guepe_cybernetique_attack_player_06.png",
+      "sha256": "1be91d489cff8704195cfebd5772e6bd941cb6b15d82574b1aa13981c48fc03c",
+      "marginsLTRB": [
+        82,
+        95,
+        75,
+        91
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/attaque/frames/guepe_attaque_06.png"
+    },
+    {
+      "index": 6,
+      "file": "frames/guepe_cybernetique_attack_player_07.png",
+      "sha256": "23c7e6f239a3221d20b2c0ce38733595cbeab73eb9cb17a1e4c1714ac0b97e72",
+      "marginsLTRB": [
+        75,
+        78,
+        75,
+        92
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/attaque/frames/guepe_attaque_07.png"
+    },
+    {
+      "index": 7,
+      "file": "frames/guepe_cybernetique_attack_player_08.png",
+      "sha256": "fc568c2094a6614c6917443d13d6d833477f5342e58e7f336a6064cba39df3e0",
+      "marginsLTRB": [
+        75,
+        103,
+        75,
+        115
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/attaque/frames/guepe_attaque_08.png"
+    },
+    {
+      "index": 8,
+      "file": "frames/guepe_cybernetique_attack_player_09.png",
+      "sha256": "c288b7f4ad5c72cdbe0715a14d638a11363d7270a93dae7b00d0537ceb7b4e17",
+      "marginsLTRB": [
+        90,
+        77,
+        75,
+        106
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/attaque/frames/guepe_attaque_09.png"
+    },
+    {
+      "index": 9,
+      "file": "frames/guepe_cybernetique_attack_player_10.png",
+      "sha256": "f5d66ec15e973e8b4651894b86086f24e52e6985c5423b249a0e9dd031504a3a",
+      "marginsLTRB": [
+        112,
+        81,
+        75,
+        90
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/attaque/frames/guepe_attaque_10.png"
+    },
+    {
+      "index": 10,
+      "file": "frames/guepe_cybernetique_attack_player_11.png",
+      "sha256": "5d65390e79a614cb26e2017f543a14644c702d281288e01751682056f6e5795d",
+      "marginsLTRB": [
+        99,
+        83,
+        75,
+        102
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/attaque/frames/guepe_attaque_11.png"
+    },
+    {
+      "index": 11,
+      "file": "frames/guepe_cybernetique_attack_player_12.png",
+      "sha256": "148e27492d4d35778df7800641ad70a49246d6e206b237328c6f1b92723d51d8",
+      "marginsLTRB": [
+        98,
+        91,
+        92,
+        110
+      ],
+      "zipPath": "GUEPE_CYBERNETIQUE_12F_ARTEFACTS_CORRIGES/attaque/frames/guepe_attaque_12.png"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/guepe_cybernetique_attack_player_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "f18086662e96a21f4959415c56da8ec93b89cf6169ab485d3f83b5104864c002"
+  },
+  "preview": "previews/guepe_cybernetique_attack_player_12_gif.gif",
+  "previews": {
+    "gif": "previews/guepe_cybernetique_attack_player_12_gif.gif",
+    "webp": "previews/guepe_cybernetique_attack_player_12_webp.webp",
+    "planche": "previews/guepe_cybernetique_attack_player_12_planche.png"
+  }
+}
