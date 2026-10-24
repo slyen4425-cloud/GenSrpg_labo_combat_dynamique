@@ -29,7 +29,7 @@ import {
 import {
   normalizeCaptureCreatureEditorDraftV3
 } from "../contracts/capture-creature-editor-draft-v3.js";
-import {burrowEditorFieldsFromVisualV1,readBurrowStageFieldsV1,writeBurrowStageFieldsV1,burrowBindingFromFieldsV1,updateBurrowStageVisibilityV1} from "./capture-burrow-stage-fields-v1.js";
+import {burrowEditorFieldsFromVisualV1,readBurrowStageFieldsV1,writeBurrowStageFieldsV1,burrowBindingFromFieldsV1,updateBurrowStageVisibilityV1,populateBurrowStageAssetChoicesV1} from "./capture-burrow-stage-fields-v1.js";
 import {
   normalizeCaptureSkillEditorDraftV1
 } from "../contracts/capture-skill-editor-draft-v1.js";
@@ -8371,6 +8371,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
     root,
     Object.freeze([...assets])
   );
+  populateBurrowStageAssetChoicesV1(root, assets);
 
   for (const select of root.querySelectorAll("[data-asset-role]")) {
     populateSelect(
@@ -8456,6 +8457,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
       root,
       Object.freeze([...assets])
     );
+    populateBurrowStageAssetChoicesV1(root, assets);
     for (
       const select of root.querySelectorAll(
         "[data-asset-role]"
