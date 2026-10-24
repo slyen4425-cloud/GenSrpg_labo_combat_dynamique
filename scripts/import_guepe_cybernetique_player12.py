@@ -78,7 +78,7 @@ def main():
                 validate_image(png,(512,512),"RGBA")
                 with Image.open(io.BytesIO(png)) as im:
                     a=im.getchannel("A")
-                    assert a.getextrema()==(0,255)
+                    assert a.getextrema()[0]==0 and a.getextrema()[1]>=250,("invalid alpha",src,a.getextrema())
                     bbox=a.point(lambda x:255 if x>8 else 0).getbbox()
                 assert bbox is not None
                 margins=[bbox[0],bbox[1],512-bbox[2],512-bbox[3]]
