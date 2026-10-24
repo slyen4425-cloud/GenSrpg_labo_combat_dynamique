@@ -1,0 +1,43 @@
+name: Import Maraileron FACE 12 frames movement attack
+on:
+  push:
+    branches:
+      - work/global-assets-maraileron-face12-2026-10-24
+    paths:
+      - scripts/import_maraileron_face12.py
+      - scripts/maraileron-face12.test.template.mjs
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    if: github.ref == 'refs/heads/work/global-assets-maraileron-face12-2026-10-24'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/global-assets-maraileron-face12-2026-10-24
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Setup real image processing
+        run: pip install Pillow==11.3.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Import verified author-approved ZIP bytes, no regeneration
+        run: python3 scripts/import_maraileron_face12.py
+      - name: Validate real medias plus full laboratory CI
+        run: npm run ci
+      - name: Publish derived media to isolated work branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/library/capture/creatures/maraileron/animations/
+          git add data/assets/catalog/global-visual-assets.v1.json
+          git add tests/unit/maraileron-face12-assets.test.mjs
+          git add docs/LAB_CURRENT_WORK.md
+          git diff --cached --check
+          git commit -m "assets(capture): Maraileron face nage et attaque 12 frames reels"
+          git push origin HEAD:work/global-assets-maraileron-face12-2026-10-24
