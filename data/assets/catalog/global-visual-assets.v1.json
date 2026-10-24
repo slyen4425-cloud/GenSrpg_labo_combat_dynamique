@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 224,
+    "assets": 227,
     "icons": 81,
-    "sprites": 123,
+    "sprites": 126,
     "fx": 2,
     "portraits": 13,
     "backgrounds": 5,
@@ -7494,6 +7494,120 @@
         "mime": "image/webp",
         "frameCount": 12,
         "frameMs": 110,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-burrow-earth-start-01",
+      "label": "Creusement — attaque souterraine",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "burrow",
+        "underground",
+        "earth",
+        "terrain",
+        "start",
+        "animated",
+        "20-frames"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / sprites validés 2026-10-24",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/burrow_terrain/start/sprite_burrow_start_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 70,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-burrow-earth-travel-01",
+      "label": "Sillon — attaque souterraine",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "burrow",
+        "underground",
+        "earth",
+        "terrain",
+        "travel",
+        "animated",
+        "20-frames"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / sprites validés 2026-10-24",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/burrow_terrain/travel/sprite_burrow_travel_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 60,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-burrow-earth-impact-01",
+      "label": "Émergence — attaque souterraine",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "burrow",
+        "underground",
+        "earth",
+        "terrain",
+        "impact",
+        "animated",
+        "20-frames"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / sprites validés 2026-10-24",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/burrow_terrain/impact/sprite_burrow_impact_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 70,
         "playbackMode": "once"
       },
       "compatibility": {
