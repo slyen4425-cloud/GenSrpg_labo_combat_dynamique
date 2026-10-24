@@ -34,7 +34,7 @@ const cards=(creatures=[example],assets=imageAssets)=>
     nativeSkills:[{definition:{id:"native",name:"Compétence native",element:"fire"}}],
     skillTransfers:[{draft:{description:"Compétence documentée.",requiredLevel:1,
       definition:{id:"s1",name:"Morsure",element:"poison"}}}],
-    statRegistry:{stats:[{id:"health",label:"Santé / PV"},{id:"speed",label:"Vitesse"}]}
+    statRegistry:{stats:[{id:"health",label:"Santé / PV",maxHpPerPoint:1},{id:"speed",label:"Vitesse",chargeTimeReductionPctPerPoint:1}]}
   });
 test("face uniquement, aucune caractéristique héritée, 5 slots selon loadout",()=>{
   const [card]=cards();
@@ -95,4 +95,37 @@ test("HTML: no redundant Force table; gallery opens one presentation route",()=>
   assert.match(app,/popstate/);
   assert.match(app,/nativeSkills/);
   assert.match(editor,/href="\.\/bestiary\.html"/);
+});
+
+test("effects under each stat derive from the identical editor-owned projection",()=>{
+  const [card]=cards();
+  assert.equal(card.measures[0].effectSummary,
+    "1 point = +1 PV max · 165 points = 165 PV max");
+  assert.equal(card.measures[1].effectSummary,
+    "1 point = -1 % temps de charge · 15 points = -15 % temps de charge");
+  const editor=readFileSync(new URL("../../src/ui/capture-editor-human-v2.js",import.meta.url),"utf8");
+  const app=readFileSync(new URL("../../examples/dom-demo/bestiary.js",import.meta.url),"utf8");
+  assert.match(editor,/captureStatEffectSummaryV1 as humanStatEffectSummaryV1/);
+  assert.doesNotMatch(editor,/function statEffectNumber\(/);
+  assert.match(app,/stat__effect/);
+  assert.match(app,/effectSummary/);
+});
+test("registered element stats preserve the editor damage/resistance formula",()=>{
+  const source=JSON.parse(readFileSync(
+    new URL("../../data/capture/monster-capture-stat-registry.v1.json",import.meta.url),"utf8"));
+  const venombre={...example,
+    statValues:{values:{poison:20,health:165,speed:15}}};
+  const [card]=captureBestiaryCardsV1({
+    creatureTransfers:[venombre],assetCatalog:imageAssets,statRegistry:source
+  });
+  const poison=card.measures.find(x=>x.key==="poison");
+  assert.ok(poison);
+  assert.equal(poison.effectSummary,
+    "1 point = +1 % dégâts Poison / +1 % résistance Poison · 20 points = +20 % dégâts / +20 % résistance");
+});
+test("unknown custom stat is not given fabricated effects",()=>{
+  const unknown={...example,statValues:{values:{mystere:4}}};
+  const [card]=cards([unknown]);
+  assert.equal(card.measures[0].label,"Mystere");
+  assert.equal("effectSummary" in card.measures[0],false);
 });
