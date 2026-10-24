@@ -157,10 +157,7 @@
 .skill__toggle[aria-expanded="true"] .skill__chevron{transform:rotate(180deg)}
 .skill__details{border-top:1px solid #46627b;background:#102137;padding:15px 13px 17px;min-width:0}
 .skill__details[hidden]{display:none}
-.skill__intro{font-size:.88rem;color:#ebf7ff;margin:0 0 12px;line-height:1.5}
-.skill__meta{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 14px}
-.skill__meta span{padding:4px 8px;font-size:.72rem;background:#274359;border:1px solid #42627a;border-radius:999px}
-.skill__section{border-top:1px solid #30485f;padding-top:10px;margin-top:10px;min-width:0}
-.skill__section h4{margin:0 0 7px;font-size:.84rem;color:#d6f1ff}
-.skill__section p{font-size:.79rem;line-height:1.55;white-space:pre-wrap;margin:5px 0;color:#c9dae6;overflow-wrap:anywhere}
+.skill__prose{display:grid;gap:9px}
+.skill__prose p{font-size:.88rem;line-height:1.55;margin:0;color:#e0eff5;overflow-wrap:anywhere}
+.skill__prose p+p{color:#c5dbe5}
 @media(max-width:540px){.skill-list{grid-template-columns:1fr}.skill__details{padding:14px}}
