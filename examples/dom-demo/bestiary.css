@@ -107,3 +107,10 @@
     height:77px;width:100%;max-width:77px
   }
 }
+
+/* Same effect explanations as the author editor; read-only and understated. */
+.stat{display:grid;gap:5px;align-items:start;justify-content:stretch;min-width:0}
+.stat__line{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
+.stat__line span{flex:1;min-width:0}
+.stat__effect{display:block;color:#9eb5c3;opacity:.79;font-size:.68rem;line-height:1.32;font-weight:400;overflow-wrap:anywhere}
+@media(max-width:540px){.values-grid{grid-template-columns:1fr}}
