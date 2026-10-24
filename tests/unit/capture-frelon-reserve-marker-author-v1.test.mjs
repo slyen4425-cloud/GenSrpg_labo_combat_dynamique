@@ -19,7 +19,7 @@ const vol="data/capture/showcase/vol_eclaire.capture-skill-transfer-v1.json";
 const nid="data/capture/showcase/Nid_frelon.capture-skill-transfer-v1.json";
 const originalNid="data/capture/source-exports/gensrpg-capture-skill-Nid_frelon-2026-10-17.json";
 const sources=[
-  {path:creature,length:5054,hash:"75c41b16850972b102396595b221ba2a161239466b626d0b464d067753bfaba9"},
+  {path:creature,length:5992,hash:"b6dc6a595d1ed1ab965eee8a0dbdd86b3d172258601fb1320e016b492c6e8fc3"},
   {path:vol,length:3947,hash:"9bd952448526afa70aba8029c054a0a09a8dff50977e2f35dc3dbd0c34bde188"},
   {path:originalNid,length:4595,hash:"90e95343c834ebd5411bf0f4bad11ccccc67395a8da13bbd4a11ba7efc14af9e"}
 ];
