@@ -16,3 +16,12 @@
 5. Checkpoint GREEN sur commit réellement validé, puis seulement publication fast-forward de `global-assets`.
 
 L'affectation automatique à la capacité auteur « Jet acide » n'est **pas** autorisée dans ce lot d'assets : un raccord visuel de la capacité exportée relève de `configuredSkills` et fera l'objet d'un contrôle distinct sans duplication. Validation visuelle smartphone distincte de la validation technique.
+
+## Réalisation vérifiée — import média sur branche de travail
+
+- Réception : quatre ZIP authentifiés par SHA-256 (aucun ZIP altéré), CRC ZIP OK, 26 fichiers par archive dont exactement 20 PNG RGBA 512×512, un atlas WebP 5120×256, une planche PNG source, aperçu PNG/GIF et manifeste original.
+- Workflow d'import `40128186934` : SUCCESS, le 24/10/2026 ; vérification des 80 PNG, quatre atlas et leurs opacités, du catalogue, et de la CI `npm run ci` avant commit.
+- Commit contenant les médias physiques originaux : `1cabb4b6fd976b539b482195f2254cf5dd189ff9`. Le stockage est `assets/library/capture/sprites/skills/acid_spit/{cast,projectile,impact,aura}/` ; manifestes et provenance inclus.
+- Quatre IDs auteur conservés : `pack:capture:sprite-crachat-acide-{cast,projectile,impact,aura}-01`. Catalogue passé de 227 à 231 médias, de 126 à 130 sprites. Rôles respectifs : `release`, `travel`, `impact`, `skill`. Vitesses 70/60/65/85 ms, boucles cast/impact OFF et projectile/aura ON.
+- Les sélecteurs de l'éditeur `gh-pages` consomment directement le catalogue `global-assets` et acceptent ces catégories ; aucune modification du moteur d'édition ou de gameplay n'est requise pour la sélection manuelle.
+- Publication sur branche canonique, CI de l'état final et validation en jeu à vérifier séparément. Aucun paramètre de `cap_poison_atk_3` (« Jet acide ») n'est modifié.
