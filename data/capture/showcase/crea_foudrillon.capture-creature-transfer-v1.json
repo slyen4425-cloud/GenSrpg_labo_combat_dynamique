@@ -123,7 +123,7 @@
     ],
     "presentation": {
       "id": "creature:crea_foudrillon",
-      "version": 3,
+      "version": 10,
       "subjectType": "creature",
       "subjectId": "crea_foudrillon",
       "profileId": "flying",
@@ -137,7 +137,7 @@
           "displayScale": 1,
           "position": {
             "x": 0,
-            "y": 0
+            "y": -20
           }
         },
         "opponent": {
@@ -168,6 +168,34 @@
           "durationMs": 700,
           "offsetX": 0,
           "offsetY": 0
+        },
+        "rangedAttackBack": {
+          "assetId": "pack:capture:creature-guepe-cybernetique-attack-player-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "movementScaleByView": {
+          "player": 1.5,
+          "opponent": 1
+        },
+        "rangedAttackScaleByView": {
+          "player": 1,
+          "opponent": 1
+        },
+        "movementPlayback": {
+          "frameMs": 0,
+          "mode": "loop"
+        },
+        "movementBack": {
+          "assetId": "pack:capture:creature-guepe-cybernetique-movement-player-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 3,
+          "frameCount": 1,
+          "transitionMs": 80
         }
       },
       "sockets": [
@@ -190,6 +218,10 @@
           "volume": 1,
           "mode": "loop"
         }
+      },
+      "shadowOffset": {
+        "x": 0,
+        "y": 30
       }
     }
   },
@@ -208,7 +240,10 @@
       "electric": 10,
       "light": 0,
       "shadow": 0,
-      "poison": 0
+      "poison": 0,
+      "acier": 0,
+      "nature": 0,
+      "esprit": 0
     }
   },
   "loadout": {

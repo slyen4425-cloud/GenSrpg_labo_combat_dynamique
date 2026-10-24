@@ -21,7 +21,7 @@ import {normalizeCaptureProgressionRulesV1} from "../../src/contracts/capture-pr
 const CREATURE="data/capture/showcase/crea_foudrillon.capture-creature-transfer-v1.json";
 const SKILL="data/capture/showcase/choc_venin.capture-skill-transfer-v1.json";
 const originals=[
-  {path:CREATURE,bytes:5054,sha256:"75c41b16850972b102396595b221ba2a161239466b626d0b464d067753bfaba9"},
+  {path:CREATURE,bytes:5992,sha256:"b6dc6a595d1ed1ab965eee8a0dbdd86b3d172258601fb1320e016b492c6e8fc3"},
   {path:SKILL,bytes:3730,sha256:"071f2b06eb12b2aa03f8d160092841a03cfae36ba184896c1b32dd1cc4d65051"}
 ];
 const read=relative=>readFile(new URL("../../"+relative,import.meta.url));
@@ -57,7 +57,7 @@ test("Freclairions: native transfer retains author level, 24 skills, equipment, 
   assert.deepEqual(c.loadout.slots.map(s=>s.skillId),
     ["lib_paralyze","choc_venin","lib_tailwind","vol_eclaire","Nid_frelon"]);
   assert.deepEqual(c.statValues.values,{health:120,speed:15,physical:0,defense:0,fire:0,water:0,
-    earth:0,air:10,electric:10,light:0,shadow:0,poison:0});
+    earth:0,air:10,electric:10,light:0,shadow:0,poison:0,acier:0,nature:0,esprit:0});
   assert.equal(c.draft.combat.approachTimeModifierPct,-40);
   assert.equal(c.draft.presentation.profileId,"flying");
   assert.equal(c.draft.presentation.visual.front.assetId,"pack:capture:creature-guepe-cybernetique-opponent-01");
