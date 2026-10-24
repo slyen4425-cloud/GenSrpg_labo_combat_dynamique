@@ -47,7 +47,7 @@ test("real mounted demo routes the aerial movement visual through the same sprit
   assert.match(block,/approachMode === "aerial" \? planDurationMs : travelMs/);
   // The original single-movement handle is now the phase-owned active handle;
   // it cancels whichever creature sprite (movement or attack) is still visible.
-  assert.match(block,/activeAppearance\\?\\.cancel\\?\\.\\(\\)/);
+  assert.ok(block.includes("activeAppearance?.cancel?.()"));
   assert.match(block,/const handle = slot\.renderer\.play\(plan\)/);
   assert.match(block,/watchVisibleModelContact\(/);
 });
