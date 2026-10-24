@@ -16,8 +16,8 @@ const catalog={assets:[
   media(visual.front,"capture/creatures/venombre/runtime/venombre_opponent.webp"),
   media(visual.back,"capture/creatures/venombre/runtime/venombre_player.webp"),
   media(visual.icon,"capture/creatures/venombre/runtime/venombre_icon.webp","portrait"),
-  {id:"pack:capture:icon-skill-toxine-01",assetType:"portrait",mediaType:"image",
-    resource:{file:"capture/ui/skill/toxine.webp"}}
+  {id:"pack:capture:icon-skill-toxine-01",assetType:"icon",mediaType:"image",
+    resource:{file:"capture/icons/skills/icon_skill_toxine_01.webp"}}
 ]};
 const probe=[
   "<script>",
