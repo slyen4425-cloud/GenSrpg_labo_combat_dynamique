@@ -7,7 +7,8 @@ const asset=(id,file)=>({id,assetType:"sprite",mediaType:"image",resource:{file}
 const imageAssets={assets:[
   asset("front","capture/creatures/test/runtime/front.webp"),
   asset("rear","capture/creatures/test/runtime/back.webp"),
-  {...asset("icon","capture/creatures/test/runtime/icon.webp"),assetType:"portrait"}
+  {...asset("icon","capture/creatures/test/runtime/icon.webp"),assetType:"portrait"},
+  {...asset("skill_icon","capture/icons/skills/test.webp"),assetType:"icon"}
 ]};
 const slots=[
   {id:"slot-1",skillId:"s1"},
@@ -31,9 +32,11 @@ const example={
 };
 const cards=(creatures=[example],assets=imageAssets)=>
   captureBestiaryCardsV1({creatureTransfers:creatures,assetCatalog:assets,
-    nativeSkills:[{definition:{id:"native",name:"Compétence native",element:"fire"}}],
+    nativeSkills:[{definition:{id:"native",name:"Compétence native",category:"offensive",form:"projectile",element:"fire"}}],
     skillTransfers:[{draft:{description:"Compétence documentée.",requiredLevel:1,
-      definition:{id:"s1",name:"Morsure",element:"poison"}}}],
+      presentation:{visual:{icon:{assetId:"skill_icon"}}},
+      definition:{id:"s1",name:"Morsure",category:"offensive",form:"contact",element:"poison",
+        effects:[{kind:"damage",targetScope:"target",amount:12,channel:"poison"}]}}}],
     statRegistry:{stats:[{id:"health",label:"Santé / PV",maxHpPerPoint:1},{id:"speed",label:"Vitesse",chargeTimeReductionPctPerPoint:1}]}
   });
 test("face uniquement, aucune caractéristique héritée, 5 slots selon loadout",()=>{
@@ -49,6 +52,8 @@ test("face uniquement, aucune caractéristique héritée, 5 slots selon loadout"
   assert.deepEqual(card.skills.map(x=>x.state),[
     "ready","ready","unpublished","empty","empty"]);
   assert.equal(card.skills[0].name,"Morsure");
+  assert.equal(card.skills[0].icon.assetId,"skill_icon");
+  assert.match(card.skills[0].explanation.sections[0].lines.join(" "),/12 dégâts Poison/);
   assert.equal(card.skills[1].name,"Compétence native");
   assert.equal(card.skills[2].name,undefined);
   assert.equal(card.skills[4].name,undefined);

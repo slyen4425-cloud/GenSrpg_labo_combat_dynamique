@@ -154,23 +154,57 @@ function renderProfile(){
   elements.skills.replaceChildren(...card.skills.map(skill=>{
     const item=element("div","skill");
     item.dataset.state=skill.state;
-    if(skill.state==="ready" && skill.icon)
-      item.append(picture(skill.icon,skill.name+" — icône"));
-    const content=element("div");
-    content.append(element("small",null,slotLabel(skill.slot)));
-    if(skill.state==="empty"){
-      content.append(element("strong",null,"Emplacement libre"));
-    }else if(skill.state==="unpublished"){
-      content.append(element("strong",null,"Compétence non publiée"));
-    }else{
-      content.append(element("strong",null,skill.name));
-      const sub=[skill.element?bestiaryElementLabelV1(skill.element):null,
-        skill.requiredLevel!=null?"Niv. "+skill.requiredLevel:null]
-        .filter(Boolean).join(" · ");
-      if(sub)content.append(element("small",null,sub));
-      if(skill.description)content.append(element("p",null,skill.description));
+    if(skill.state!=="ready"){
+      const line=element("div","skill__toggle skill__inactive");
+      line.append(element("span","skill__icon-empty","—"));
+      const label=element("div","skill__title");
+      label.append(element("small",null,slotLabel(skill.slot)),
+        element("strong",null,skill.state==="empty"?"Emplacement libre":"Compétence non publiée"));
+      line.append(label);
+      item.append(line);
+      return item;
     }
-    item.append(content);
+    const toggle=element("button","skill__toggle");
+    toggle.type="button";
+    toggle.setAttribute("aria-expanded","false");
+    const detailId="skill-detail-"+card.id.replace(/[^a-z0-9_-]/gi,"-")+"-"+skill.slot;
+    toggle.setAttribute("aria-controls",detailId);
+    if(skill.icon)toggle.append(picture(skill.icon,skill.name+" — icône","skill__icon"));
+    else {
+      const missingIcon=element("span","skill__icon-empty","—");
+      missingIcon.setAttribute("aria-label","Icône non publiée");
+      missingIcon.title="Icône non publiée pour cette capacité";
+      toggle.append(missingIcon);
+    }
+    const label=element("span","skill__title");
+    label.append(element("small",null,slotLabel(skill.slot)),element("strong",null,skill.name));
+    const sub=[skill.element?bestiaryElementLabelV1(skill.element):null,
+      skill.requiredLevel!=null?"Niv. "+skill.requiredLevel:null].filter(Boolean).join(" · ");
+    if(sub)label.append(element("small",null,sub));
+    toggle.append(label,element("span","skill__chevron","⌄"));
+    const details=element("div","skill__details");
+    details.id=detailId;
+    details.hidden=true;
+    if(skill.explanation){
+      details.append(element("p","skill__intro",skill.explanation.heading));
+      const meta=element("div","skill__meta");
+      for(const entry of skill.explanation.meta)meta.append(element("span",null,entry));
+      details.append(meta);
+      for(const section of skill.explanation.sections){
+        const part=element("section","skill__section");
+        part.append(element("h4",null,section.title));
+        for(const line of section.lines)part.append(element("p",null,line));
+        details.append(part);
+      }
+    }else details.append(element("p",null,"Définition de compétence indisponible."));
+    toggle.addEventListener("click",()=>{
+      const shouldOpen=details.hidden;
+      for(const open of elements.skills.querySelectorAll(".skill__details"))open.hidden=true;
+      for(const button of elements.skills.querySelectorAll(".skill__toggle[aria-expanded]"))
+        button.setAttribute("aria-expanded","false");
+      if(shouldOpen){details.hidden=false;toggle.setAttribute("aria-expanded","true");}
+    });
+    item.append(toggle,details);
     return item;
   }));
   const missing=card.skills.filter(skill=>skill.state==="unpublished").length;

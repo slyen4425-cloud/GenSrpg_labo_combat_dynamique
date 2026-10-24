@@ -8,6 +8,17 @@
 
 ---
 
+### 2026-10-24 — Bestiaire : véritables icônes de capacité et descriptif généré depuis les règles (en CI)
+- Base gh-pages@772edcff90d8ee3c4e848309a4867aaeebc34d20, checkpoint START checkpoint/lab-start-bestiary-skill-explain-2026-10-24, branche work/lab-bestiary-skill-explain-2026-10-24.
+- Diagnostic : des capacités avaient une description auteur courte (non synchronisée avec le moteur) ; les icônes `assetType=icon` existaient dans global-assets mais `readyVisual` les rejetait. Les stats n'avaient plus la présentation en vraies cases initiale.
+- Implémentation : `src/ui/capture-skill-explanation-v1.js` projette la définition normalisée sous forme de phrases françaises ordonnées, selon paramètres métier (effets, statuts, marqueurs, zones, durée, déclenchements, conditions, portée, énergie, recharge, préparation, réactions). Aucun gameplay recalculé ni texte inventé. Description auteur sommaire supprimée de la projection Bestiaire. Les vrais icons publiés `assetType=icon` sont désormais acceptés uniquement pour rôle icône, et les portraits restent stricts. Les fiches compétences sont des boutons accessibles ouvrant/fermant un descriptif, une seule ouverte à la fois.
+- Design : statistiques restaurées en cartes deux colonnes, légendes d'effet conservées dessous.
+- Tests : vrais presets Vague incendiaire, Sangsue, Sacrifice Kitsune, Nid de frelon, Surcharge, tous les presets du manifeste ; browser smoke Venombre pour l'icône enregistrée et l'ouverture/fermeture de la description ; test non-régression 5 compétences et portrait face.
+- Périmètre : module descriptif, modèle bestiaire, HTML/JS/CSS bestiaire, tests, docs. Contrats, runtime et éditeur ne changent pas. Suite à la suite CI, checkpoint GREEN et fusion prévus uniquement si verts.
+- Voir docs/LAB_BESTIAIRE_SKILL_EXPLANATIONS_2026-10-24.md.
+
+---
+
 ## 2026-10-24 — Bestiaire : descriptions d'effets sous chaque statistique (en test)
 - Demande : sous chaque valeur dans la fiche Bestiaire, même explication d'effets que l'éditeur Capture, en petits caractères discrets et lisibles.
 - Base : gh-pages a422762cb7593344e5c60adbfdaca2fdfea151f2 ; START checkpoint/lab-start-bestiary-stat-effects-2026-10-24 ; travail work/lab-bestiary-stat-effects-2026-10-24.
