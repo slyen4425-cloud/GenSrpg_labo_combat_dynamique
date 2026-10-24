@@ -21,6 +21,7 @@ const num=n=>String(Math.round(Number(n)*100)/100).replace(".",",");
 const element=k=>elNames[k]??k??"";
 const stat=k=>statNames[k]??elNames[k]??(k?String(k).replace(/_/g," "):"statistique");
 const duration=ms=>{const n=ms/1000;return num(n)+" "+(n===1?"seconde":"secondes");};
+const frequency=ms=>ms===1000?"chaque seconde":"toutes les "+duration(ms);
 const words=(arr)=>arr.length<=1?(arr[0]??""):arr.length===2?
   arr.join(" et "):arr.slice(0,-1).join(", ")+" et "+arr[arr.length-1];
 const subject=key=>scopes[key]??"la cible";
@@ -70,7 +71,7 @@ function durationKey(s){
 }
 function statusStory(s){
   const end=period(s);
-  const tick=s.tickIntervalMs?"toutes les "+duration(s.tickIntervalMs):"à chaque fin d'action";
+  const tick=s.tickIntervalMs?frequency(s.tickIntervalMs):"à chaque fin d'action";
   let line;
   switch(s.kind){
     case "damage_over_time":line="Inflige "+num(s.amount)+" dégâts de "+element(s.channel)+" "+tick;break;
@@ -102,7 +103,7 @@ function statusStory(s){
   const result=[finish(line+" "+end)];
   if(s.periodic){
     const p=s.periodic;
-    result.push(finish("Chaque "+duration(p.intervalMs)+", "+
+    result.push(finish(frequency(p.intervalMs).replace(/^t/,"T").replace(/^c/,"C")+", "+
       (p.kind==="damage"?"inflige "+num(p.amount)+" dégâts de "+element(p.channel):
         "rend "+num(p.amount)+" PV")));
   }
@@ -159,7 +160,7 @@ function effectSentence(e){
         (m.permanent?" sans limite de durée":m.durationMs?" pendant "+duration(m.durationMs):""))];
       if(m.periodic){
         const p=m.periodic;
-        lines.push(finish("Chaque "+duration(p.intervalMs)+", ce marqueur "+
+        lines.push(finish(frequency(p.intervalMs).replace(/^t/,"T").replace(/^c/,"C")+", ce marqueur "+
           (p.kind==="damage"?"inflige "+num(p.amount)+" dégâts de "+element(p.channel):
             "soigne "+num(p.amount)+" PV")));
       }
@@ -182,27 +183,67 @@ function effectSentence(e){
       ...descriptions(e.effects)];
     case "scheduled_effect":return [finish("Après "+duration(e.trigger.delayMs)+", "+
       descriptions(e.effects).map(x=>x.toLowerCase().replace(/\.$/,"")).join(" et "))];
-    case "persistent_zone":{
-      const periodic=e.tickEffect?.kind==="damage" && e.damageTrigger!=="entry_only"?
-        " toutes les "+duration(e.tickIntervalMs):"";
-      const result=effectSentence(e.tickEffect);
-      let summary="Crée une zone qui "+result[0].replace(/\.$/,"").replace(/^[A-Z]/,x=>x.toLowerCase())+
-        periodic+" pendant "+duration(e.durationMs);
-      if(e.damageTrigger==="entry_only")summary+=" (à l'entrée dans la zone)";
-      if(e.statusBehavior==="while_inside")summary+=" tant que les créatures restent à l'intérieur";
-      if(e.statusBehavior==="on_enter")summary+=" à leur entrée dans la zone";
-      if(e.persistAfterRecall)summary+=" ; la zone reste active après un rappel";
-      return [finish(summary),...result.slice(1)];
-    }
+    case "persistent_zone":return groupZones([e]);
     default:return [finish("Effet non encore décrit : "+e.kind)];
   }
+}
+function zoneClause(zone){
+  const e=zone.tickEffect;
+  const status=e.kind==="apply_status"?e.status:null;
+  const change=status?simpleChange(status):null;
+  if(change)return (change.positive?"augmentent ":"réduisent ")+change.text;
+  if(e.kind==="damage")return "infligent "+num(e.amount)+" dégâts"+
+    (e.channel?" de "+element(e.channel):"")+
+    (zone.damageTrigger==="entry_only"?" à l'entrée dans la zone":
+      zone.damageTrigger==="entry_and_tick"?" à l'entrée puis "+frequency(zone.tickIntervalMs):
+      " "+frequency(zone.tickIntervalMs));
+  if(status?.kind==="heal_over_time")return "rendent "+num(status.amount)+" PV "+
+    (status.tickIntervalMs?frequency(status.tickIntervalMs):"après chaque action");
+  if(status?.kind==="damage_over_time")return "infligent "+num(status.amount)+" dégâts"+
+    (status.channel?" de "+element(status.channel):"")+" "+
+    (status.tickIntervalMs?frequency(status.tickIntervalMs):"après chaque action");
+  if(status?.kind==="shield")return "accordent un bouclier de "+num(status.amount)+" points";
+  if(status?.kind==="auto_dodge")return "permettent d'esquiver automatiquement";
+  return null;
+}
+function groupZones(zones){
+  const first=zones[0], many=zones.length>1;
+  const clauses=zones.map(zoneClause);
+  if(clauses.some(x=>x===null)){
+    return zones.map(z=>finish("Crée une zone "+onTarget(z.targetScope)+
+      " pendant "+duration(z.durationMs)+" : "+
+      effectSentence(z.tickEffect).map(x=>x.replace(/\.$/,"")).join(" puis ")));
+  }
+  const target=first.targetScope==="self"?"autour de la créature":
+    first.targetScope==="all_allies"?"pour tous les alliés":
+    first.targetScope==="all_enemies"?"contre tous les ennemis":
+    "sur "+subject(first.targetScope);
+  let text="Crée "+(many?"des zones qui ":"une zone qui ")+words(clauses)+
+    " "+target+" pendant "+duration(first.durationMs);
+  if(first.statusBehavior==="while_inside")text+=", tant que les créatures s'y trouvent";
+  if(first.statusBehavior==="on_enter")text+=", dès leur entrée dans la zone";
+  if(first.persistAfterRecall)text+=" ; "+(many?"elles restent actives":"elle reste active")+
+    " après un rappel";
+  return [finish(text)];
 }
 function descriptions(effects){
   const list=effects??[], used=new Set(),out=[];
   for(let i=0;i<list.length;i++){
     if(used.has(i))continue;
     const e=list[i];
-    if(e.kind==="apply_status" && simpleChange(e.status)){
+    if(e.kind==="persistent_zone"){
+      const same=[];
+      for(let j=i;j<list.length;j++){
+        const x=list[j];
+        if(x.kind==="persistent_zone" && x.targetScope===e.targetScope &&
+           x.durationMs===e.durationMs && x.statusBehavior===e.statusBehavior &&
+           Boolean(x.persistAfterRecall)===Boolean(e.persistAfterRecall) &&
+           (x.tickEffect?.kind!=="damage" || x.damageTrigger===e.damageTrigger)){
+          same.push(j);used.add(j);
+        }
+      }
+      out.push(...groupZones(same.map(j=>list[j])));
+    }else if(e.kind==="apply_status" && simpleChange(e.status)){
       const same=[];
       for(let j=i;j<list.length;j++){
         const y=list[j];
@@ -268,7 +309,7 @@ export function describeCaptureSkillV1(input) {
     const held=descriptions(hold.effects);
     if(held.length)phrases.push(finish("Au corps à corps, reste accroché à la cible et "+
       held.map(x=>x.replace(/\.$/,"").replace(/^[A-Z]/,c=>c.toLowerCase())).join(" et ")+
-      " toutes les "+duration(hold.tickIntervalMs)+
+      " "+frequency(hold.tickIntervalMs)+
       (hold.maxDurationMs>0?" pendant "+duration(hold.maxDurationMs):"")));
   }
   phrases.push(...specialRules(d),...conditions(d));
