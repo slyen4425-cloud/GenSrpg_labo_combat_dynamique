@@ -1,3 +1,15 @@
+## 2026-10-24 — Bestiaire : descriptions simples pour les joueurs (en tests)
+- Retour auteur : supprimer la présentation technique de la PR #87 (trajet, durée de récupération, portée, rubriques), privilégier une ou quelques phrases combinant les vrais effets et durées.
+- Base gh-pages@8331769493eb8976ce5706e6ad08f515d07bafb7, checkpoint START checkpoint/lab-start-bestiary-player-text-2026-10-24, branche work/lab-bestiary-player-text-2026-10-24.
+- Propriétaire unique : refonte soustractive de src/ui/capture-skill-explanation-v1.js, toujours depuis normalizeSkillDefinition. Nouveau modèle read-only {sentences}. Bestiaire lit uniquement les phrases (pas de doublon UI, aucune description auteur).
+- Exemple réel Vent arrière : vitesse +30 points, recharge des compétences +150%, régénération énergie +100%, défense -100 points, tout 15 s. **Pas** de bonus aux dégâts dans son transfert actuellement publié. Libellés plus humains et regroupement par durées et cibles communes, sans fusionner des durées différentes. Penetration de 100% : « ignore la résistance » ; proportion partielle : « ignore X % de la résistance ».
+- Cas couverts : effets directs/DoT/HoT, statuts et renvois, marqueurs avec seuils et réserve, zones groupées, maintien Sangsue, conditions et K.O., détails utiles conservés ; titres techniques, tags et durées de trajet retirés de la présentation.
+- Domaines protégés : moteur/contrats, éditeur, stats, assets, GenSrpG central. Fichiers du lot : explicateur UI, bestiary.js et CSS, tests/unit/capture-skill-explanation-2026-10-24.test.mjs, tests/unit/capture-bestiary-cards-2026-10-24.test.mjs, tests/browser/capture-bestiary-smoke.mjs, doc et journal.
+- Sentinelles : exemples réels Vent arrière, Kitsune, Sangsue, Vague incendiaire, Nid de frelon, Surcharge + tous les presets Showcase ; UI Venombre en Chromium, 5 slots et icon, stat tiles, CI 5 jobs, checkpoint GREEN sur SHA exact.
+- Détail docs/LAB_BESTIAIRE_JOUEUR_TEXTES_2026-10-24.md.
+
+---
+
 ## 2026-10-24 — Bestiaire : véritables icônes de capacité et descriptif généré depuis les règles (en CI)
 - Base gh-pages@772edcff90d8ee3c4e848309a4867aaeebc34d20, checkpoint START checkpoint/lab-start-bestiary-skill-explain-2026-10-24, branche work/lab-bestiary-skill-explain-2026-10-24.
 - Diagnostic : des capacités avaient une description auteur courte (non synchronisée avec le moteur) ; les icônes `assetType=icon` existaient dans global-assets mais `readyVisual` les rejetait. Les stats n'avaient plus la présentation en vraies cases initiale.
