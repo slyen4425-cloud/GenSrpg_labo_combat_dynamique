@@ -1,3 +1,15 @@
+## 2026-10-24 — Venombre : remplacer les deux modèles face/dos (visuels validés)
+
+- **Objet** : remplacer UNIQUEMENT les vues existantes `venombre_opponent.webp` (face) et `venombre_player.webp` (dos), conformément aux deux générations approuvées (dos final avec queue au-dessus de la jambe), style Monster Capture épuré.
+- **Propriétaire** : bibliothèque d'assets visuels `global-assets` et `Asset Input`. Branche `work/global-assets-venombre-visual-refresh-2026-10-24`, checkpoint de départ `checkpoint/global-assets-before-venombre-visual-refresh-2026-10-24`, base exacte `40efba68f2d24f1b8fb81876516a52143ae87d2e`.
+- **Autorisé** : les 2 médias existants sous `assets/library/capture/creatures/venombre/runtime/`, un document de provenance, cette note de suivi et une sentinelle dédiée. Aucun nouvel ID, aucun nouveau propriétaire d'assets, pas de double catalogue.
+- **Protégé** : `venombre_icon.webp`, `venombre.meta.json`, catalogue unique / IDs (trois IDs existants conservés), paramètres de l'auteur, sockets, gameplay, UI, animations des autres créatures, `main`, `gh-pages`, `Zombicide-40k`.
+- **Sources** : génération approuvée Venombre face (sans vapeurs), génération approuvée dos corrigé (queue superposée à la jambe). Les images source 1254×1254 RGB sur fond noir sont normalisées en WebP **1024×1024 RGBA transparent** ; inspection de la silhouette et des points d'appui sur fond clair et sombre.
+- **Tests prévus** : vrai contenu et dimensions, alpha non trivial, provenance SHA-256 et Git blob, conservation des trois `assetId` et des chemins en catalogue, `venombre.meta.json` inchangé, icône inchangée, tests CI et CI distante. Vérification jeu/tactile par l'auteur distincte.
+- **GREEN** : uniquement après médias réels dans la branche, CI réussie, comparaison ciblée, checkpoint sur SHA final et publication fast-forward sur `global-assets` sans écraser des travaux concurrents.
+
+---
+
 ## 2026-10-23 — Maraileron, deux animations (ZIP auteur reçu)
 
 - Archive : `_incoming/CREATURE_AQUATIQUE_2_ANIMATIONS_NAGE_ATTAQUE.zip`, 6 196 877 octets, SHA256 `397e5435260bbb48f0c33591c1a2eb15c51942e4857a552e4e38e70ad018ea2a`, Git blob `fdb3d6219db341ad6a16259cbcc85110b7ae26ea` ; 6 frames nage + 12 attaque RGBA 512², validées par l'auteur.
