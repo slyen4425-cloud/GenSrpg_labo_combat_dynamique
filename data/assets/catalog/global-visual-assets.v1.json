@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 222,
+    "assets": 224,
     "icons": 81,
-    "sprites": 121,
+    "sprites": 123,
     "fx": 2,
     "portraits": 13,
     "backgrounds": 5,
-    "creatures": 40
+    "creatures": 42
   },
   "assets": [
     {
@@ -7414,6 +7414,86 @@
         "mime": "image/webp",
         "frameCount": 12,
         "frameMs": 100,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-maraileron-movement-opponent-12-v1",
+      "label": "Maraileron — nage ondulante vue de face / adversaire (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "maraileron",
+        "water",
+        "serpentine",
+        "movement",
+        "animated",
+        "opponent",
+        "face",
+        "swim",
+        "swimming"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / planches auteur validées 2026-10-24",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/maraileron/animations/movement/opponent/atlases/maraileron_movement_opponent_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 110,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-maraileron-attack-opponent-12-v1",
+      "label": "Maraileron — attaque vue de face / adversaire (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "maraileron",
+        "water",
+        "serpentine",
+        "attack",
+        "animated",
+        "opponent",
+        "face"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / planches auteur validées 2026-10-24",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/maraileron/animations/attack/opponent/atlases/maraileron_attack_opponent_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 110,
         "playbackMode": "once"
       },
       "compatibility": {

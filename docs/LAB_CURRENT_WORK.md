@@ -1,3 +1,15 @@
+## 2026-10-24 — Maraileron FACE/adversaire, nage + attaque (12 frames)
+
+- Source auteur approuvée : _incoming/MARAILERON_FACE_2_ANIMATIONS_NAGE_ATTAQUE.zip ; 10 481 378 octets ; SHA256 96e5c35a577b73bda926dedc29ee4cf16b565e474283e925fc6bc9aa8fc6aa30 ; Git blob 0af1f0ca910817f7a444edb0bc220ea7b682e62b ; CRC OK.
+- Base global-assets@2ac2d5ce48bdbfd2c490aec7cd2369b2ba29a8ea ; checkpoint checkpoint/global-assets-before-maraileron-face12-2026-10-24 ; branche work/global-assets-maraileron-face12-2026-10-24.
+- Autorité : Asset Library / catalogue unique. Deux IDs pack:capture:creature-maraileron-movement-opponent-12-v1 et pack:capture:creature-maraileron-attack-opponent-12-v1.
+- Fichiers : 24 PNG RGBA 512px originaux conservés octet pour octet, 2 atlas WebP 384px/frame, 6 previews originales, 2 manifestes, 2 planches source, README. Poses pixel-identiques aux planches approuvées ; aucune génération ou interpolation nouvelle.
+- Protégés : Maraileron PLAYER (6f+12f), runtime et fiche modèle, autres créatures, compétences, moteur, UI, main, gh-pages, GenSrpG et Exploration. Pas d'affectation automatique à un profil auteur.
+- Gate : médias réels, CI complète sur commit final, revue diff strict, checkpoint GREEN et fast-forward sous lease global-assets. Validation en jeu sur smartphone séparée.
+- Détail docs/LAB_MARAILERON_FACE12_2026-10-24.md.
+
+---
+
 ## 2026-10-24 — Venombre : remplacer les deux modèles face/dos (visuels validés)
 
 - **Objet** : remplacer UNIQUEMENT les vues existantes `venombre_opponent.webp` (face) et `venombre_player.webp` (dos), conformément aux deux générations approuvées (dos final avec queue au-dessus de la jambe), style Monster Capture épuré.

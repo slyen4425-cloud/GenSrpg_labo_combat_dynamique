@@ -1,0 +1,229 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "maraileron",
+  "action": "movement",
+  "view": "opponent",
+  "profile": "serpentine",
+  "assetId": "pack:capture:creature-maraileron-movement-opponent-12-v1",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 110,
+  "playbackMode": "loop",
+  "authorApproved": true,
+  "approvalStatus": "approved_for_ingame_trial",
+  "sourceArchive": "_incoming/MARAILERON_FACE_2_ANIMATIONS_NAGE_ATTAQUE.zip",
+  "sourceArchiveSha256": "96e5c35a577b73bda926dedc29ee4cf16b565e474283e925fc6bc9aa8fc6aa30",
+  "sourceSpriteSheet": "sources/MARAILERON_NAGE_12F_PLANCHE_EXTRAITE.png",
+  "sourceSpriteSheetSha256": "ad8a5dcb470704499c2ac70c3b3e481665680b900669c6d68a45ff8f8a7d3058",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/maraileron_movement_opponent_01.png",
+      "sha256": "fdc166e44dcf64b27b7c01c07e30fe930c1bcec82173d06dce5099ff6c360032",
+      "marginsLTRB": [
+        72,
+        108,
+        105,
+        119
+      ],
+      "sourceGridCell": [
+        0,
+        0
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/MOUVEMENT_NAGE_12_FRAMES/maraileron_face_nage_01.png"
+    },
+    {
+      "index": 1,
+      "file": "frames/maraileron_movement_opponent_02.png",
+      "sha256": "f18eb3708106ba72b39df05702615c63f220f1512ccaa4b41fa1e19b554494ad",
+      "marginsLTRB": [
+        77,
+        107,
+        93,
+        119
+      ],
+      "sourceGridCell": [
+        1,
+        0
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/MOUVEMENT_NAGE_12_FRAMES/maraileron_face_nage_02.png"
+    },
+    {
+      "index": 2,
+      "file": "frames/maraileron_movement_opponent_03.png",
+      "sha256": "58d3cc136ccc160c33a42ace399c4442aa591c95211041c7eead26bc2cb8ea78",
+      "marginsLTRB": [
+        77,
+        105,
+        80,
+        120
+      ],
+      "sourceGridCell": [
+        2,
+        0
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/MOUVEMENT_NAGE_12_FRAMES/maraileron_face_nage_03.png"
+    },
+    {
+      "index": 3,
+      "file": "frames/maraileron_movement_opponent_04.png",
+      "sha256": "587b4f22d17bce2a2a65afc60fbac2676363792064c57ca490b1d96a8cbf52ba",
+      "marginsLTRB": [
+        77,
+        117,
+        86,
+        129
+      ],
+      "sourceGridCell": [
+        3,
+        0
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/MOUVEMENT_NAGE_12_FRAMES/maraileron_face_nage_04.png"
+    },
+    {
+      "index": 4,
+      "file": "frames/maraileron_movement_opponent_05.png",
+      "sha256": "8c72e109c7262f2157b4d537aa45f69008a61e4e48b28fba9848a924106a8abc",
+      "marginsLTRB": [
+        77,
+        124,
+        51,
+        159
+      ],
+      "sourceGridCell": [
+        0,
+        1
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/MOUVEMENT_NAGE_12_FRAMES/maraileron_face_nage_05.png"
+    },
+    {
+      "index": 5,
+      "file": "frames/maraileron_movement_opponent_06.png",
+      "sha256": "15847b815243d457d6c574188fc31d412a3d6c8fbd68461c2988d7228485a69d",
+      "marginsLTRB": [
+        77,
+        115,
+        80,
+        144
+      ],
+      "sourceGridCell": [
+        1,
+        1
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/MOUVEMENT_NAGE_12_FRAMES/maraileron_face_nage_06.png"
+    },
+    {
+      "index": 6,
+      "file": "frames/maraileron_movement_opponent_07.png",
+      "sha256": "a130b209ea21ba43ba9c12798aaf2ee487525360eb807384ecc4140d32fee040",
+      "marginsLTRB": [
+        72,
+        92,
+        122,
+        153
+      ],
+      "sourceGridCell": [
+        2,
+        1
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/MOUVEMENT_NAGE_12_FRAMES/maraileron_face_nage_07.png"
+    },
+    {
+      "index": 7,
+      "file": "frames/maraileron_movement_opponent_08.png",
+      "sha256": "94275e05f151bbbc066cdf6c5e45d7b29eb397983b22c3778a8f72e0566ab900",
+      "marginsLTRB": [
+        77,
+        95,
+        112,
+        154
+      ],
+      "sourceGridCell": [
+        3,
+        1
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/MOUVEMENT_NAGE_12_FRAMES/maraileron_face_nage_08.png"
+    },
+    {
+      "index": 8,
+      "file": "frames/maraileron_movement_opponent_09.png",
+      "sha256": "2319d8b31d6972116aa01bd5929329b920da633c163f9f5935d7ffd54f017f42",
+      "marginsLTRB": [
+        77,
+        99,
+        109,
+        151
+      ],
+      "sourceGridCell": [
+        0,
+        2
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/MOUVEMENT_NAGE_12_FRAMES/maraileron_face_nage_09.png"
+    },
+    {
+      "index": 9,
+      "file": "frames/maraileron_movement_opponent_10.png",
+      "sha256": "0e8f4d41d12fe213c251d0a96b0bd0cf6a419580077d01e4a972f6cc88fde06d",
+      "marginsLTRB": [
+        77,
+        118,
+        101,
+        150
+      ],
+      "sourceGridCell": [
+        1,
+        2
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/MOUVEMENT_NAGE_12_FRAMES/maraileron_face_nage_10.png"
+    },
+    {
+      "index": 10,
+      "file": "frames/maraileron_movement_opponent_11.png",
+      "sha256": "d5e371c7ada8e0cbc91fc328fed7e6f5f61547128a3704093b1751c06556869a",
+      "marginsLTRB": [
+        77,
+        137,
+        90,
+        105
+      ],
+      "sourceGridCell": [
+        2,
+        2
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/MOUVEMENT_NAGE_12_FRAMES/maraileron_face_nage_11.png"
+    },
+    {
+      "index": 11,
+      "file": "frames/maraileron_movement_opponent_12.png",
+      "sha256": "3cf6400889bc95e6a5dd829953933398cd53335ed4904f2c142c8e67cb8a6a46",
+      "marginsLTRB": [
+        77,
+        141,
+        83,
+        97
+      ],
+      "sourceGridCell": [
+        3,
+        2
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/MOUVEMENT_NAGE_12_FRAMES/maraileron_face_nage_12.png"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/maraileron_movement_opponent_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "b2766fb63682b5c2407efd7995abda3153ca8e57edc3ee63c9d16992943d7170"
+  },
+  "preview": "previews/maraileron_movement_opponent_12_gif.gif",
+  "previews": {
+    "gif": "previews/maraileron_movement_opponent_12_gif.gif",
+    "webp": "previews/maraileron_movement_opponent_12_webp.webp",
+    "planche": "previews/maraileron_movement_opponent_12_planche.png"
+  }
+}

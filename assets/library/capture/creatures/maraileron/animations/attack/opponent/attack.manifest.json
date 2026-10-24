@@ -1,0 +1,229 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "maraileron",
+  "action": "attack",
+  "view": "opponent",
+  "profile": "serpentine",
+  "assetId": "pack:capture:creature-maraileron-attack-opponent-12-v1",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 110,
+  "playbackMode": "once",
+  "authorApproved": true,
+  "approvalStatus": "approved_for_ingame_trial",
+  "sourceArchive": "_incoming/MARAILERON_FACE_2_ANIMATIONS_NAGE_ATTAQUE.zip",
+  "sourceArchiveSha256": "96e5c35a577b73bda926dedc29ee4cf16b565e474283e925fc6bc9aa8fc6aa30",
+  "sourceSpriteSheet": "sources/MARAILERON_ATTAQUE_12F_PLANCHE_PREVIEW.png",
+  "sourceSpriteSheetSha256": "661b7e19eea49aad07a3141a9de7759bf8d0bc51471c35abccae18e850692df3",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/maraileron_attack_opponent_01.png",
+      "sha256": "e2574d907a428181cdad3e5a86978e6c6fd18d0273129faab021ea615f4782b0",
+      "marginsLTRB": [
+        77,
+        22,
+        126,
+        93
+      ],
+      "sourceGridCell": [
+        0,
+        0
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/ATTAQUE_12_FRAMES/maraileron_face_attaque_01.png"
+    },
+    {
+      "index": 1,
+      "file": "frames/maraileron_attack_opponent_02.png",
+      "sha256": "24fbfbb8a217f0ddeee9878a1a9bd2a7bcd6a5ab170f260d363b8da55b7da746",
+      "marginsLTRB": [
+        77,
+        39,
+        114,
+        129
+      ],
+      "sourceGridCell": [
+        1,
+        0
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/ATTAQUE_12_FRAMES/maraileron_face_attaque_02.png"
+    },
+    {
+      "index": 2,
+      "file": "frames/maraileron_attack_opponent_03.png",
+      "sha256": "f4a071e6209c2dfa8b6bbed8fcbe46b932792b000bc204e55884a25d5b3a649c",
+      "marginsLTRB": [
+        77,
+        87,
+        149,
+        57
+      ],
+      "sourceGridCell": [
+        2,
+        0
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/ATTAQUE_12_FRAMES/maraileron_face_attaque_03.png"
+    },
+    {
+      "index": 3,
+      "file": "frames/maraileron_attack_opponent_04.png",
+      "sha256": "d48edbd8d240c8ee5ae9a97554f9e4437a6e2141f16a5d27053555fcf9df6591",
+      "marginsLTRB": [
+        77,
+        117,
+        85,
+        11
+      ],
+      "sourceGridCell": [
+        3,
+        0
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/ATTAQUE_12_FRAMES/maraileron_face_attaque_04.png"
+    },
+    {
+      "index": 4,
+      "file": "frames/maraileron_attack_opponent_05.png",
+      "sha256": "ea2f5b521a063bb70d4c9b80eed6fb0532767399cb047e3f7bd46ded55335287",
+      "marginsLTRB": [
+        77,
+        60,
+        83,
+        152
+      ],
+      "sourceGridCell": [
+        0,
+        1
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/ATTAQUE_12_FRAMES/maraileron_face_attaque_05.png"
+    },
+    {
+      "index": 5,
+      "file": "frames/maraileron_attack_opponent_06.png",
+      "sha256": "0c7b59972fa67c0841af3b90242bb87f60c66b4ad89836d825ccec8af0012470",
+      "marginsLTRB": [
+        77,
+        48,
+        77,
+        156
+      ],
+      "sourceGridCell": [
+        1,
+        1
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/ATTAQUE_12_FRAMES/maraileron_face_attaque_06.png"
+    },
+    {
+      "index": 6,
+      "file": "frames/maraileron_attack_opponent_07.png",
+      "sha256": "56b3a52f2e001744743ef3b28b6e18c603525c0e4254bb2394aefa0773c1957d",
+      "marginsLTRB": [
+        77,
+        73,
+        68,
+        110
+      ],
+      "sourceGridCell": [
+        2,
+        1
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/ATTAQUE_12_FRAMES/maraileron_face_attaque_07.png"
+    },
+    {
+      "index": 7,
+      "file": "frames/maraileron_attack_opponent_08.png",
+      "sha256": "a48817174a1f79889628fc9594df6c5166796c90d524495981e4c61a5861653c",
+      "marginsLTRB": [
+        77,
+        69,
+        80,
+        154
+      ],
+      "sourceGridCell": [
+        3,
+        1
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/ATTAQUE_12_FRAMES/maraileron_face_attaque_08.png"
+    },
+    {
+      "index": 8,
+      "file": "frames/maraileron_attack_opponent_09.png",
+      "sha256": "85f2caa5381cee8f4ef47da9bd27cb09bbf53dd03f73350fed19dea00a4fc2a6",
+      "marginsLTRB": [
+        77,
+        83,
+        96,
+        82
+      ],
+      "sourceGridCell": [
+        0,
+        2
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/ATTAQUE_12_FRAMES/maraileron_face_attaque_09.png"
+    },
+    {
+      "index": 9,
+      "file": "frames/maraileron_attack_opponent_10.png",
+      "sha256": "17b3c513fadb1270b231ccfc45ea4ff4a0691a9aeba8b21b36b2c2722f11ed8a",
+      "marginsLTRB": [
+        77,
+        38,
+        115,
+        120
+      ],
+      "sourceGridCell": [
+        1,
+        2
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/ATTAQUE_12_FRAMES/maraileron_face_attaque_10.png"
+    },
+    {
+      "index": 10,
+      "file": "frames/maraileron_attack_opponent_11.png",
+      "sha256": "b53db789a08ba9d643aff46ee42d2437faa32eec41d9b4552f5c392aa5171622",
+      "marginsLTRB": [
+        77,
+        22,
+        114,
+        147
+      ],
+      "sourceGridCell": [
+        2,
+        2
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/ATTAQUE_12_FRAMES/maraileron_face_attaque_11.png"
+    },
+    {
+      "index": 11,
+      "file": "frames/maraileron_attack_opponent_12.png",
+      "sha256": "9c3d58e64d8ac22203becd871e706cdceb1876a4932d71817c0e80eb674006b7",
+      "marginsLTRB": [
+        77,
+        22,
+        127,
+        131
+      ],
+      "sourceGridCell": [
+        3,
+        2
+      ],
+      "zipPath": "MARAILERON_FACE_2_ANIMATIONS/ATTAQUE_12_FRAMES/maraileron_face_attaque_12.png"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/maraileron_attack_opponent_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "875850d7699430caf1bff81ff02f8786551f1185c8d544e1b6b3cc2fedb00233"
+  },
+  "preview": "previews/maraileron_attack_opponent_12_gif.gif",
+  "previews": {
+    "gif": "previews/maraileron_attack_opponent_12_gif.gif",
+    "webp": "previews/maraileron_attack_opponent_12_webp.webp",
+    "planche": "previews/maraileron_attack_opponent_12_planche.png"
+  }
+}
