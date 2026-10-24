@@ -1,3 +1,13 @@
+## 2026-10-24 — Freclairions : export auteur V10 (validation en cours)
+- Fichier transmis : `gensrpg-capture-creature-crea_foudrillon.json`, 5992 octets UTF-8 SHA256 `b6dc6a595d1ed1ab965eee8a0dbdd86b3d172258601fb1320e016b492c6e8fc3`. ID stable `crea_foudrillon`, nom auteur `Freclairions`.
+- Base `gh-pages@e3632b5a7e24145064703bf0f870d71ff6659df8`, START `checkpoint/lab-start-freclairions-v10-author-2026-10-24`, branche `work/lab-freclairions-v10-author-2026-10-24`.
+- Diagnostic : Freclairions est déjà enregistré une seule fois dans les Showcase, mais en version présentation V3. Le nouvel export V10 ajoute les sprites de mouvement et attaque DOS, leur échelle, une position joueur y=-20, `shadowOffset.y=30`, trois valeurs de stats supplémentaires à zéro ; les réglages de capacités, 5 slots, stats de combat et sockets sont préservés. Aucun mouvement/attaque FACE n'est défini dans l'export ; le catalogue global contient uniquement les deux atlas DOS de la guêpe cybernétique. Le correctif générique des attaques aériennes du PR #95 ne crée pas les visuels FACE absents.
+- Autorité : remplacer par ID stable `data/capture/showcase/crea_foudrillon.capture-creature-transfer-v1.json` sans créer de doublon ; conserver l'export exact dans `data/capture/source-exports/gensrpg-capture-creature-crea_foudrillon-2026-10-24.json` comme provenance non active.
+- Périmètre : remplacement du seul preset Freclairions, source archive, test unique d'import/aller-retour/raccord animation/absence FACE, mise à jour du hash sentinelle historique, doc de lot et présent journal. Moteur, UI, autres créatures, atlas, sons, autres catalogues, `main` et dépôt central exclus.
+- Validation obligatoire : import Capture V10, données conservées, catalogue avec un seul ID, catalogage des 2 atlas DOS (12 images), vrai adaptateur vers joueur, fallback statique adversaire, tests historiques, CI 5/5 jobs, checkpoint GREEN SHA exact puis PR et fusion `gh-pages` ; validation visuelle Android de l'auteur distincte.
+
+---
+
 ## 2026-10-24 — Attaques aériennes : séquences de créature génériques mouvement / attaque (GREEN technique)
 - Retour auteur : l'animation configurée d'une nouvelle créature ne semble pas s'exécuter pendant une attaque aérienne ; le précédent lot Dracendre ne doit pas nécessiter de correction par créature.
 - Base exacte : gh-pages@7c42fd24e8322fc2c68c0fffebaecfb46f128264 ; checkpoint START checkpoint/lab-start-aerial-attack-appearance-all-creatures-2026-10-24 ; branche work/lab-aerial-attack-appearance-all-creatures-2026-10-24.
