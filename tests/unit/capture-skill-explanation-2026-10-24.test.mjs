@@ -43,7 +43,7 @@ test("Sacrifice Kitsune: group 3 overlapping zones, preserve all effects and KO"
 });
 test("Nid de frelon: reserves, poison ticks and 20-stack KO retained",()=>{
   const s=sentences(explain("Nid_frelon"));
-  assert.match(s,/5 charges de venin static.*ennemis en réserve/);
+  assert.match(s,/5 charges de venin static.*y compris ceux en réserve/);
   assert.match(s,/5 secondes.*2 dégâts d'Électricité/);
   assert.match(s,/À 20 charges.*K.O./);
 });
@@ -53,7 +53,7 @@ test("Surcharge: multi-buff aggregation, triggered damage with accurate duration
   assert.match(s,/Réduit le temps d'approche de 50 %/);
   assert.match(s,/vitesse de recharge des compétences de 100 %/);
   assert.match(s,/régénération d'énergie de 50 %/);
-  assert.match(s,/Quand la créature inflige des dégâts/);
+  assert.match(s,/quand la créature inflige des dégâts/);
   assert.match(s,/10 dégâts/);
   assert.doesNotMatch(s,/tags techniques|projectileClash|Déroulement/);
 });
