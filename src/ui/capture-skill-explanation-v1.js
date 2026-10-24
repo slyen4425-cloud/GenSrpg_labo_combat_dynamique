@@ -22,6 +22,7 @@ const element=k=>elNames[k]??k??"";
 const elementOf=k=>/^[aeéèêiouy]/i.test(element(k))?"d'"+element(k):"de "+element(k);
 const stat=k=>statNames[k]??(elNames[k]?"l\'affinité "+elNames[k]:(k?"la caractéristique "+String(k).replace(/_/g," "):"la caractéristique"));
 const duration=ms=>{const n=ms/1000;return num(n)+" "+(n===1?"seconde":"secondes");};
+const lowerSentence=x=>lowerSentence(x).replace(/k\.o\b/gi,"K.O.");
 const frequency=ms=>ms===1000?"chaque seconde":"toutes les "+duration(ms);
 const words=(arr)=>arr.length<=1?(arr[0]??""):arr.length===2?
   arr.join(" et "):arr.slice(0,-1).join(", ")+" et "+arr[arr.length-1];
@@ -78,7 +79,7 @@ function statusStory(s){
   const tick=s.tickIntervalMs?frequency(s.tickIntervalMs):"à chaque fin d'action";
   let line;
   switch(s.kind){
-    case "damage_over_time":line="Inflige "+num(s.amount)+" dégâts de "+element(s.channel)+" "+tick;break;
+    case "damage_over_time":line="Inflige "+num(s.amount)+" dégâts "+elementOf(s.channel)+" "+tick;break;
     case "heal_over_time":line="Rend "+num(s.amount)+" PV "+tick;break;
     case "shield":line="Accorde un bouclier de "+num(s.amount)+" points";break;
     case "damage_reflection":
@@ -109,30 +110,30 @@ function statusStory(s){
     const evt=s.onEvent?.event??"damage_dealt";
     return [finish("Pendant "+duration(s.durationMs)+", quand la créature "+
       (events[evt]??"agit")+", "+
-      descriptions(trigger.effects).map(x=>x.replace(/^[A-Z]/,c=>c.toLowerCase()).replace(/\.$/,"")).join(" et "))];
+      descriptions(trigger.effects).map(x=>lowerSentence(x)).join(" et "))];
   }
   const result=[finish(line+" "+end)];
   if(s.periodic){
     const p=s.periodic;
     result.push(finish(frequency(p.intervalMs).replace(/^t/,"T").replace(/^c/,"C")+", "+
-      (p.kind==="damage"?"inflige "+num(p.amount)+" dégâts de "+element(p.channel):
+      (p.kind==="damage"?"inflige "+num(p.amount)+" dégâts "+elementOf(p.channel):
         "rend "+num(p.amount)+" PV")));
   }
   if(s.onEvent||s.onDamageDealt){
     const t=s.onEvent??s.onDamageDealt;
     const when=s.onEvent?.event??"damage_dealt";
     result.push(finish("Quand la créature "+(events[when]??"agit")+", "+
-      descriptions(t.effects).map(x=>x.replace(/^[A-Z]/,c=>c.toLowerCase()).replace(/\.$/,"")).join(" et ")));
+      descriptions(t.effects).map(x=>lowerSentence(x)).join(" et ")));
   }
   if(s.onStackThreshold){
     const t=s.onStackThreshold;
     result.push(finish("À "+num(t.count)+" charges, "+
-      descriptions(t.effects).map(x=>x.replace(/^[A-Z]/,c=>c.toLowerCase()).replace(/\.$/,"")).join(" et ")+
+      descriptions(t.effects).map(x=>lowerSentence(x)).join(" et ")+
       (t.consume==="reset"?", puis les charges sont remises à zéro":"")));
   }
   if(s.onStackAdded?.effects?.length){
     result.push(finish("À chaque charge gagnée, "+
-      descriptions(s.onStackAdded.effects).map(x=>x.toLowerCase().replace(/\.$/,"")).join(" et ")));
+      descriptions(s.onStackAdded.effects).map(x=>lowerSentence(x)).join(" et ")));
   }
   return result;
 }
@@ -172,18 +173,18 @@ function effectSentence(e){
       if(m.periodic){
         const p=m.periodic;
         lines.push(finish(frequency(p.intervalMs).replace(/^t/,"T").replace(/^c/,"C")+", ce marqueur "+
-          (p.kind==="damage"?"inflige "+num(p.amount)+" dégâts de "+element(p.channel):
+          (p.kind==="damage"?"inflige "+num(p.amount)+" dégâts "+elementOf(p.channel):
             "soigne "+num(p.amount)+" PV")));
       }
       if(m.onStackThreshold){
         const t=m.onStackThreshold;
         lines.push(finish("À "+num(t.count)+" charges, "+
-          descriptions(t.effects).map(x=>x.toLowerCase().replace(/\.$/,"")).join(" et ")+
+          descriptions(t.effects).map(x=>lowerSentence(x)).join(" et ")+
           (t.consume==="reset"?", puis les charges sont remises à zéro":"")));
       }
       if(m.onStackAdded?.effects?.length){
         lines.push(finish("À chaque charge ajoutée, "+
-          descriptions(m.onStackAdded.effects).map(x=>x.toLowerCase().replace(/\.$/,"")).join(" et ")));
+          descriptions(m.onStackAdded.effects).map(x=>lowerSentence(x)).join(" et ")));
       }
       return lines;
     }
@@ -193,7 +194,7 @@ function effectSentence(e){
         (e.perCharge?" ; les effets augmentent avec les charges consommées":"")),
       ...descriptions(e.effects)];
     case "scheduled_effect":return [finish("Après "+duration(e.trigger.delayMs)+", "+
-      descriptions(e.effects).map(x=>x.toLowerCase().replace(/\.$/,"")).join(" et "))];
+      descriptions(e.effects).map(x=>lowerSentence(x)).join(" et "))];
     case "persistent_zone":return groupZones([e]);
     default:return [finish("Effet non encore décrit : "+e.kind)];
   }
@@ -347,7 +348,7 @@ export function describeCaptureSkillV1(input) {
     }else{
       const held=descriptions(hold.effects);
       if(held.length)phrases.push(finish("Au corps à corps, reste accroché à la cible et "+
-        held.map(x=>x.replace(/\.$/,"").replace(/^[A-Z]/,c=>c.toLowerCase())).join(" et ")+
+        held.map(x=>lowerSentence(x)).join(" et ")+
         " "+frequency(hold.tickIntervalMs)+
         (hold.maxDurationMs>0?" pendant "+duration(hold.maxDurationMs):"")));
     }
