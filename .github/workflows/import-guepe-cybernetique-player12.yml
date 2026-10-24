@@ -1,0 +1,43 @@
+name: Import cleaned cybernetic wasp PLAYER sprites
+on:
+  push:
+    branches:
+      - work/global-assets-guepe-cybernetique-player12-2026-10-24
+    paths:
+      - scripts/import_guepe_cybernetique_player12.py
+      - scripts/guepe-cybernetique-player12.test.template.mjs
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    if: github.ref == 'refs/heads/work/global-assets-guepe-cybernetique-player12-2026-10-24'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/global-assets-guepe-cybernetique-player12-2026-10-24
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Image decoder
+        run: pip install Pillow==11.3.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Import exactly approved cleaned sprites from original ZIP
+        run: python3 scripts/import_guepe_cybernetique_player12.py
+      - name: Validate real media and complete laboratory CI
+        run: npm run ci
+      - name: Commit physical media to work branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/library/capture/creatures/guepe_cybernetique/animations/
+          git add data/assets/catalog/global-visual-assets.v1.json
+          git add docs/LAB_CURRENT_WORK.md
+          git add tests/unit/guepe-cybernetique-player12-assets.test.mjs
+          git diff --cached --check
+          git commit -m 'assets(capture): importer guepe cybernetique joueur vol attaque 12f nettoyees'
+          git push origin HEAD:work/global-assets-guepe-cybernetique-player12-2026-10-24
