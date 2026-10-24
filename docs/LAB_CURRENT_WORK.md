@@ -1,3 +1,14 @@
+## 2026-10-24 — Attaques aériennes : séquences de créature génériques mouvement / attaque (en chantier)
+- Retour auteur : l'animation configurée d'une nouvelle créature ne semble pas s'exécuter pendant une attaque aérienne ; le précédent lot Dracendre ne doit pas nécessiter de correction par créature.
+- Base exacte : gh-pages@7c42fd24e8322fc2c68c0fffebaecfb46f128264 ; checkpoint START checkpoint/lab-start-aerial-attack-appearance-all-creatures-2026-10-24 ; branche work/lab-aerial-attack-appearance-all-creatures-2026-10-24.
+- Diagnostic : le correctif du 23/10 chargeait seulement visual.movement ou movementBack pendant tout le plan aerial ; le chemin presentRelease réservait explicitement l'animation attack/rangedAttack aux projectile/beam/area sans approche. Un sprite d'attaque face/dos pourtant enregistré n'était donc jamais joué lors du passage aérien, quelle que soit la créature.
+- Propriétaire : Demo UI orchestrera uniquement la sélection d'apparence par phase du plan de l'Animation Core (envol/plongée/retour) ; DomCreatureMovementVisual existant conserve un seul sprite actif, masque de collision et annulation. Aucune deuxième boucle ou moteur. Règles Combat et Animation Core, trajectoire, ombre, FX, sons, médias, fiches auteur, GenSrpG principal et main sont protégés.
+- Périmètre autorisé : src/ui/demo-app.js, tests/unit/capture-aerial-attack-appearance-all-creatures-2026-10-24.test.mjs, docs/LAB_AERIAL_ATTACK_APPEARANCE_ALL_CREATURES_2026-10-24.md, présent journal.
+- Tests : Dracendre et Maraileron avec deux visuels par vue ; créature générique avec seulement déplacement, seulement attaque, aucun sprite ; ground/teleport/burrow inchangés ; vraie séquence de phase aérienne, annulation/retour et 1v1/2v2 via CI cinq jobs. Validation artistique smartphone par l'auteur séparée.
+- Statut initial : bug d'orchestration identifié ; correction non encore publiée. Checkpoint GREEN strictement après CI et tests de chemin réel.
+
+---
+
 ## 2026-10-24 — Jet acide (Venombre) : intégration de l'export auteur (validation CI)
 - Demande : importer `gensrpg-capture-skill-cap_poison_atk_3.json` sans modifier aucune valeur ni créer de doublon.
 - Base gh-pages@f5c3c3eef363ad6c6f943328b36ee9de6e9f13be, START `checkpoint/lab-start-jet-acide-2026-10-24`, travail `work/lab-jet-acide-2026-10-24`.
