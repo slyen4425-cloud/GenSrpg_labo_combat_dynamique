@@ -436,6 +436,9 @@ export function createCombatResolutionPresenter({
           // duration: use a 1ms visual-only envelope, never mutate action.
           travelMs: Math.max(1, Number(action.travelMs) || 0),
           holdOnContact: Boolean(action.skill?.contactHold),
+          burrowTerrainSprites: approachMode === "burrow"
+            ? fx?.burrowTerrainForSkill?.(skillId,actorSlot,targetSlot) ?? null
+            : null,
           targetSlot,
           onFootfall: footfallToken ? () => playFootfallAudio({
             actorSlot, targetSlot, token: footfallToken, approachMode
