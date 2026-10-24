@@ -14,8 +14,8 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 233,
-    "icons": 81,
+    "assets": 238,
+    "icons": 86,
     "sprites": 132,
     "fx": 2,
     "portraits": 13,
@@ -7844,6 +7844,166 @@
         "frameCount": 12,
         "frameMs": 100,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-crachat-acide-01",
+      "label": "Crachat acide",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "acid",
+        "poison",
+        "spit",
+        "projectile"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (user-requested Monster Capture poison skill icons)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_crachat_acide_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-tempete-acide-01",
+      "label": "Tempête acide",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "acid",
+        "poison",
+        "storm",
+        "aoe"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (user-requested Monster Capture poison skill icons)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_tempete_acide_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-morsure-venimeuse-01",
+      "label": "Morsure venimeuse",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "bite",
+        "poison",
+        "venom",
+        "melee"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (user-requested Monster Capture poison skill icons)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_morsure_venimeuse_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-croc-de-venin-01",
+      "label": "Croc de venin",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "fang",
+        "venom",
+        "slash",
+        "attack"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (user-requested Monster Capture poison skill icons)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_croc_de_venin_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-poison-corrosif-01",
+      "label": "Poison corrosif",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "poison",
+        "corrosive",
+        "debuff",
+        "acid"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (user-requested Monster Capture poison skill icons)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_poison_corrosif_01.webp",
+        "mime": "image/webp"
       },
       "compatibility": {
         "uses": [

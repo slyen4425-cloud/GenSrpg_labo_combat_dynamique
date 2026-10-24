@@ -1,0 +1,73 @@
+{
+  "schema": "gensrpg-capture-poison-skill-icons-v1",
+  "date": "2026-10-24",
+  "sourcePack": "icons_poison_monster_capture_5.zip",
+  "sourceArchiveSha256": "716898c701e6d6f08b779f467d40b9a1bf003ac3703379a039b1fad6822b2600",
+  "userRequestedImport": true,
+  "style": "Monster Capture / fantasy cartoon golden framed poison green and purple",
+  "sourceDimensions": [
+    512,
+    512
+  ],
+  "runtimeDimensions": [
+    128,
+    128
+  ],
+  "format": "WebP lossy RGB (opaque)",
+  "sourceAvailability": "Original PNG masters and preview held in conversation ZIP, library contains genuine optimized runtime WebP files",
+  "branch": "work/global-assets-five-poison-icons-2026-10-24",
+  "owner": "global-assets",
+  "license": "project-internal",
+  "assets": [
+    {
+      "assetId": "pack:capture:icon-skill-crachat-acide-01",
+      "label": "Crachat acide",
+      "source": "sources/icon_skill_crachat_acide_01.png",
+      "sourceSha256": "295b95acffff16e123062bbfa0747267a32cd6cfc35699a57c19b33c30f32387",
+      "derivedFile": "capture/icons/skills/icon_skill_crachat_acide_01.webp",
+      "derivedSha256": "0296fc896083bc1bb8163ae102f131dda8e010324131c5010f23e14cf039c12f",
+      "gitBlobSHA": "26fbebaecfa93c6d0e3cb9acd807a30ae3a64c6d",
+      "bytes": 9356
+    },
+    {
+      "assetId": "pack:capture:icon-skill-tempete-acide-01",
+      "label": "Tempête acide",
+      "source": "sources/icon_skill_tempete_acide_01.png",
+      "sourceSha256": "c1ad3fbbc2120fdbe33cb7fc6f9e2d2f0147eba9ace22f73602c077494abaf5e",
+      "derivedFile": "capture/icons/skills/icon_skill_tempete_acide_01.webp",
+      "derivedSha256": "c469d1f36daab6b3c7ad9e0acc692f6fd1f0980d64a8442897348c0aeb27c6a3",
+      "gitBlobSHA": "103e5244734bf52a363cc444c716e9af0b5f46a3",
+      "bytes": 9986
+    },
+    {
+      "assetId": "pack:capture:icon-skill-morsure-venimeuse-01",
+      "label": "Morsure venimeuse",
+      "source": "sources/icon_skill_morsure_venimeuse_01.png",
+      "sourceSha256": "dcebab1051e4119fb64a36f7f5974ed22f28691ddadfa17c15e60b53648f26b5",
+      "derivedFile": "capture/icons/skills/icon_skill_morsure_venimeuse_01.webp",
+      "derivedSha256": "da731618898576d89f6fa4fe7b0494ac2ccc7e8fa7dbb737c8b8db060e4b1bf9",
+      "gitBlobSHA": "84994d953a4c38aa322eae1673b12c20432a205d",
+      "bytes": 9010
+    },
+    {
+      "assetId": "pack:capture:icon-skill-croc-de-venin-01",
+      "label": "Croc de venin",
+      "source": "sources/icon_skill_croc_de_venin_01.png",
+      "sourceSha256": "28eb67c6a0acce2275dfd0c781954dd548f3180f63d9f21edea32d301bd4eeda",
+      "derivedFile": "capture/icons/skills/icon_skill_croc_de_venin_01.webp",
+      "derivedSha256": "79b843b98e8191d5ad909a09436645cf94534e4d30b449ddfbbb07b60d6cb61d",
+      "gitBlobSHA": "e202f61f08cc95c85c43861d9122442a81b424fd",
+      "bytes": 9018
+    },
+    {
+      "assetId": "pack:capture:icon-skill-poison-corrosif-01",
+      "label": "Poison corrosif",
+      "source": "sources/icon_skill_poison_corrosif_01.png",
+      "sourceSha256": "11db92c71911b5df901fb531225752756d216407ef099585f2e433353a7e5768",
+      "derivedFile": "capture/icons/skills/icon_skill_poison_corrosif_01.webp",
+      "derivedSha256": "5c2f6392e0d03ed2708900c61991a745ab2d1b2f4fde523f57ab18cad5e2b502",
+      "gitBlobSHA": "464480a10416feebd46fbfe012ce120540c77a62",
+      "bytes": 9020
+    }
+  ]
+}
