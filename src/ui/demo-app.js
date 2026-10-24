@@ -46,6 +46,18 @@ export function creatureRangedAppearanceForViewV1(meta, view) {
   throw new RangeError("unknown creature view");
 }
 
+// Generic aerial presentation policy: only the view/phase decides which
+// author-configured creature sprite is shown. No creature-ID special case.
+export function creatureAerialAppearanceForPhaseV1(meta, view, phase) {
+  if (phase === "aerial-arc-impact") {
+    return creatureRangedAppearanceForViewV1(meta, view);
+  }
+  if (phase === "aerial-arc-apex" || phase === "aerial-home") {
+    return creatureMovementAppearanceForViewV1(meta, view);
+  }
+  return null;
+}
+
 const DATA_URLS = Object.freeze({
   profiles: Object.freeze({
     serpentine: new URL(
@@ -821,13 +833,20 @@ export async function mountCombatDemo({
     const approachAppearance = creatureMovementAppearanceForApproachV1(
       slot.meta, slot.view, approachMode
     );
-    const movementAppearance = approachAppearance
+    let activeAppearance = approachAppearance
       ? slot.playMovementAppearance(
           approachAppearance,
           approachMode === "aerial" ? planDurationMs : travelMs,
           targetCenterX >= actorCenterX ? 1 : -1
         )
       : null;
+    // This is the same sprite/collision owner as locomotion, not a second
+    // animation system. During a flight, the authored attack pose is shown
+    // for the dive; outside that phase the movement pose remains active.
+    const aerialAttackAppearance = approachMode === "aerial"
+      ? creatureAerialAppearanceForPhaseV1(slot.meta, slot.view, "aerial-arc-impact")
+      : null;
+    const appearanceDirection = targetCenterX >= actorCenterX ? 1 : -1;
     const handle = slot.renderer.play(plan);
     // Burrow FX follows the same visual travelMs/geometry as Animation Core.
     // It never owns collisions, gameplay presence or impact timing.
@@ -932,7 +951,7 @@ export async function mountCombatDemo({
 
     let phaseAtMs = 0;
 
-    if (typeof onPhase === "function") {
+    if (typeof onPhase === "function" || aerialAttackAppearance?.url) {
       for (const segment of plan.segments) {
         const payload = Object.freeze({
           label: segment.label,
@@ -940,18 +959,36 @@ export async function mountCombatDemo({
           atMs: phaseAtMs
         });
 
+        // Reuse the existing AnimationPlan phase scheduler and the single
+        // creature-appearance owner. No independent timer or gameplay clock.
+        const presentPhase = () => {
+          if (approachMode === "aerial" && aerialAttackAppearance?.url &&
+              ["aerial-arc-impact", "aerial-home"].includes(payload.label)) {
+            const phaseAppearance = creatureAerialAppearanceForPhaseV1(
+              slot.meta, slot.view, payload.label
+            );
+            activeAppearance?.cancel?.();
+            activeAppearance = phaseAppearance?.url
+              ? slot.playMovementAppearance(
+                  payload.label === "aerial-arc-impact"
+                    ? { ...phaseAppearance, playbackMode: "stretch" }
+                    : phaseAppearance,
+                  payload.phaseDurationMs,
+                  appearanceDirection
+                )
+              : null;
+          }
+          if (typeof onPhase === "function") {
+            try { onPhase(payload); } catch {}
+          }
+        };
+
         if (phaseAtMs === 0) {
-          try {
-            onPhase(payload);
-          } catch {}
+          presentPhase();
         } else {
           const timerId = globalThis.setTimeout(() => {
-            if (disposed || !slot.visible) {
-              return;
-            }
-            try {
-              onPhase(payload);
-            } catch {}
+            if (disposed || !slot.visible) return;
+            presentPhase();
           }, phaseAtMs);
           phaseTimers.push(timerId);
         }
@@ -981,7 +1018,7 @@ export async function mountCombatDemo({
         if (activeApproachBySlot.get(slotKey) === approachRecord) {
           activeApproachBySlot.delete(slotKey);
         }
-        movementAppearance?.cancel?.();
+        activeAppearance?.cancel?.();
         if (activeBurrowTerrainFxBySlot.get(slotKey) === burrowTerrainFx) {
           cancelBurrowTerrainFxFor(slotKey);
         }
