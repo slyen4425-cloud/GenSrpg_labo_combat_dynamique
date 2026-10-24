@@ -3,71 +3,96 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {captureBestiaryCardsV1} from "../../src/ui/capture-bestiary-cards-v1.js";
 
-const asset = (id,file) => ({id,assetType:"sprite",mediaType:"image",resource:{file}});
-const imageAssets = {assets:[
-  asset("face","capture/creatures/test/runtime/front.webp"),
-  asset("back","capture/creatures/test/runtime/back.webp"),
+const asset=(id,file)=>({id,assetType:"sprite",mediaType:"image",resource:{file}});
+const imageAssets={assets:[
+  asset("front","capture/creatures/test/runtime/front.webp"),
+  asset("rear","capture/creatures/test/runtime/back.webp"),
   {...asset("icon","capture/creatures/test/runtime/icon.webp"),assetType:"portrait"}
 ]};
-const example = {
+const slots=[
+  {id:"slot-1",skillId:"s1"},
+  {id:"slot-2",skillId:"native"},
+  {id:"slot-3",skillId:"unknown"},
+  {id:"slot-4",skillId:null},
+  {id:"slot-ultimate",skillId:null}
+];
+const example={
   draft:{
     id:"crea_test",displayName:"Créature Test",description:"Présentation.",
     level:2,sourceStats:{force:10,agility:8},elements:["poison"],
     resistances:[{kind:"element:earth",value:-50},{kind:"element:water",value:0}],
-    skillIds:["s1","s-unknown"],capture:{captureRate:36,capturable:true},
-    presentation:{visual:{front:{assetId:"face"},back:{assetId:"back"},icon:{assetId:"icon"}}}
+    // The 20 historical skills must NEVER flow to the equipped Bestiary view.
+    skillIds:["s1","native","unknown",...Array.from({length:17},(_,n)=>"learned-"+n)],
+    capture:{captureRate:36,capturable:true},
+    presentation:{visual:{front:{assetId:"front"},back:{assetId:"rear"},icon:{assetId:"icon"}}}
   },
   statValues:{values:{health:165,speed:15}},
-  loadout:{slots:[{id:"slot-1",skillId:"s1"}]}
+  loadout:{schema:"capture-active-skill-loadout-v1",creatureId:"crea_test",slots}
 };
-const cards = (creatures=[example],assets=imageAssets) =>
+const cards=(creatures=[example],assets=imageAssets)=>
   captureBestiaryCardsV1({creatureTransfers:creatures,assetCatalog:assets,
+    nativeSkills:[{definition:{id:"native",name:"Compétence native",element:"fire"}}],
     skillTransfers:[{draft:{description:"Compétence documentée.",requiredLevel:1,
       definition:{id:"s1",name:"Morsure",element:"poison"}}}],
     statRegistry:{stats:[{id:"health",label:"Santé / PV"},{id:"speed",label:"Vitesse"}]}
   });
-test("fiche terminée : image FACE uniquement et données d'auteur fidèles", () => {
-  const [card] = cards();
-  assert.equal(card.portrait.assetId,"face");
+test("face uniquement, aucune caractéristique héritée, 5 slots selon loadout",()=>{
+  const [card]=cards();
+  assert.equal(card.portrait.assetId,"front");
   assert.equal(card.icon.assetId,"icon");
   assert.equal("back" in card,false);
-  assert.equal(card.name,"Créature Test");
-  assert.deepEqual(card.elements,["poison"]);
-  assert.deepEqual(card.attributes.map(a=>a.value),[10,8]);
-  assert.deepEqual(card.measures.map(s=>s.label),["Santé / PV","Vitesse"]);
+  assert.equal("attributes" in card,false);
+  assert.deepEqual(card.measures.map(x=>x.label),["Santé / PV","Vitesse"]);
   assert.deepEqual(card.resistances,[{element:"earth",amount:-50}]);
+  assert.equal(card.skills.length,5);
+  assert.deepEqual(card.skills.map(x=>x.slot),slots.map(x=>x.id));
+  assert.deepEqual(card.skills.map(x=>x.state),[
+    "ready","ready","unpublished","empty","empty"]);
   assert.equal(card.skills[0].name,"Morsure");
-  assert.equal(card.skills[0].slot,"slot-1");
-  assert.equal(card.unavailableSkillCount,1);
+  assert.equal(card.skills[1].name,"Compétence native");
+  assert.equal(card.skills[2].name,undefined);
+  assert.equal(card.skills[4].name,undefined);
+  assert.equal(card.skills.some(x=>String(x.name).includes("learned")),false);
   assert.equal(card.captureRate,36);
   assert.ok(Object.isFrozen(card));
 });
-test("jamais afficher une créature sans ensemble visuel publié", () => {
-  for(const missing of ["face","back","icon"]) {
-    const assets={assets:imageAssets.assets.filter(a=>a.id!==missing)};
-    assert.equal(cards([example],assets).length,0,missing);
+test("a skill linked but not equipped must never replace an empty slot",()=>{
+  const onlyOne={...example,draft:{...example.draft,skillIds:["s1","native"]},
+    loadout:{...example.loadout,slots:slots.map(s=>({id:s.id,skillId:s.id==="slot-1"?"s1":null}))}};
+  const [card]=cards([onlyOne]);
+  assert.deepEqual(card.skills.map(s=>s.state),["ready","empty","empty","empty","empty"]);
+});
+test("creature with unmatched loadout identity rejects data rather than masking",()=>{
+  const invalid={...example,loadout:{...example.loadout,creatureId:"other"}};
+  assert.throws(()=>cards([invalid]),/loadout creatureId differs/);
+});
+test("published asset readiness : front, back, icon all required",()=>{
+  for(const missing of ["front","rear","icon"]){
+    const published={assets:imageAssets.assets.filter(a=>a.id!==missing)};
+    assert.equal(cards([example],published).length,0,missing);
   }
   assert.equal(cards([{draft:{...example.draft,presentation:null}}]).length,0);
-  assert.equal(cards([{draft:{...example.draft,displayName:""}}]).length,0);
-  assert.equal(cards([example],{assets:[...imageAssets.assets,{id:"fake",assetType:"sprite",mediaType:"image",resource:{file:"https://external.test/x.webp"}}]}).length,1);
 });
-test("source mise à jour : ajout au même manifeste automatiquement visible, IDs non dupliqués", () => {
-  const second={...example,draft:{...example.draft,id:"crea_2",displayName:"Aurore"}};
-  const output=cards([example,second,example]);
-  assert.deepEqual(output.map(v=>v.name),["Aurore","Créature Test"]);
+test("same showcase manifest can grow without a second creature registry",()=>{
+  const second={...example,draft:{...example.draft,id:"crea_2",displayName:"Aurore"},
+    loadout:{...example.loadout,creatureId:"crea_2"}};
+  assert.deepEqual(cards([example,second,example]).map(x=>x.name),
+    ["Aurore","Créature Test"]);
 });
-test("sentinelle UI : navigation Bestiaire et consultation sans modèle dos", () => {
-  const fromRoot = path => readFileSync(new URL("../../"+path,import.meta.url),"utf8");
-  const page=fromRoot("examples/dom-demo/bestiary.html");
-  const script=fromRoot("examples/dom-demo/bestiary.js");
-  const editor=fromRoot("examples/dom-demo/capture-editor-v2.html");
-  assert.match(page,/Bestiaire/);
+test("HTML: no redundant Force table; gallery opens one presentation route",()=>{
+  const file=path=>readFileSync(new URL("../../"+path,import.meta.url),"utf8");
+  const page=file("examples/dom-demo/bestiary.html");
+  const app=file("examples/dom-demo/bestiary.js");
+  const model=file("src/ui/capture-bestiary-cards-v1.js");
+  const editor=file("examples/dom-demo/capture-editor-v2.html");
+  assert.match(page,/data-bestiary-return/);
   assert.match(page,/data-bestiary-portrait/);
+  assert.match(page,/Compétences équipées/);
+  assert.doesNotMatch(page,/data-bestiary-attributes|bestiary-attributes/);
+  assert.doesNotMatch(model,/sourceStats|draft.skillIds/);
+  assert.doesNotMatch(app,/historicalAbilities|capture-used-ability-catalog/);
+  assert.match(app,/history.pushState/);
+  assert.match(app,/popstate/);
+  assert.match(app,/nativeSkills/);
   assert.match(editor,/href="\.\/bestiary\.html"/);
-  assert.match(script,/CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1/);
-  assert.match(script,/GLOBAL_VISUAL_LIBRARY/);
-  assert.doesNotMatch(page,/data-bestiary-back/);
-  assert.doesNotMatch(script,/visual\.back/);
-  assert.match(script,/captureBestiaryCardsV1/);
-  assert.match(page,/name="viewport"/);
 });

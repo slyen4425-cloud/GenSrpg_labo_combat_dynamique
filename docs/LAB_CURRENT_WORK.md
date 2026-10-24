@@ -1,3 +1,13 @@
+## 2026-10-24 — Bestiaire V2 : navigation en fiche, nettoyage de la source des compétences (en validation)
+- Diagnostic confirmé : V1 rendait l'ensemble draft.skillIds, jusqu'à 20 liées (ex Dracendre), en lieu des cinq emplacements d'équipement transfer.loadout.slots. Les « caractéristiques » Force/Endurance dérivaient de draft.sourceStats, hors du tableau statValues du jeu.
+- Base gh-pages fafb6b9a39602a386998cab4138e452f3aaba9ef ; START checkpoint/lab-start-bestiary-fix-v2-2026-10-24 ; branche work/lab-bestiary-fix-v2-2026-10-24.
+- Fix : projection Bestiaire désormais sur contrat unique normalizeCaptureActiveSkillLoadoutV1, 4 standards + ultimate ; compétences depuis Showcase + catalogue natif (mêmes autorités que l'éditeur), plus aucune substitution historique ou affichage de capacités non équipées. Vide / introuvable explicitement indiqués ; sauvegardes intactes.
+- L'icône ouvre une fiche via URL hash avec retour galerie, support navigation précédent smartphone. Portrait face seulement. Suppression physique du tableau legacy de caractéristiques et de son extraction.
+- Périmètre autorisé : uniquement Bestiaire (.html/.js/.css et src/ui/capture-bestiary-cards-v1.js), tests, docs. Aucun changement moteur, éditeur, assets, principal GenSrpG.
+- Rapport complet : docs/LAB_BESTIAIRE_FIX_V2_2026-10-24.md. GREEN conditionné à validation tests/CI et checkpoint de fin.
+
+---
+
 ## 2026-10-24 — Bestiaire Capture : fiches face seule, données auteur existantes (chantier)
 - Référence : docs/LAB_BESTIAIRE_CAPTURE_2026-10-24.md. Base gh-pages@812ade5548216c94e2367ca149400f3c85e5454b. Checkpoint START checkpoint/lab-start-bestiary-creature-cards-2026-10-24 ; branche work/lab-bestiary-creature-cards-2026-10-24.
 - Autorités : transferts Capture Showcase et catalogue média global-assets existants ; modèle de consultation pur ; UI sans duplication de propriété.

@@ -1,9 +1,6 @@
-// Presentation-only projection of existing Capture records. This module never
-// decides a creature's production readiness; it checks published references.
-const ATTRIBUTE_LABELS = Object.freeze({
-  force:"Force", agility:"Agilité", intelligence:"Intelligence",
-  spirit:"Esprit", endurance:"Endurance", initiative:"Initiative"
-});
+import {normalizeCaptureActiveSkillLoadoutV1} from "../contracts/capture-active-skill-loadout-v1.js";
+
+// The existing Capture loadout owns equipment; the Bestiary is read-only.
 const ELEMENT_LABELS = Object.freeze({
   fire:"Feu", water:"Eau", earth:"Terre", air:"Air",
   electric:"Électricité", light:"Lumière", shadow:"Ombre",
@@ -35,11 +32,6 @@ function readyVisual(assetMap, binding) {
   if (!validPublishedImage(asset)) return null;
   return Object.freeze({assetId:id, file:asset.resource.file});
 }
-function skillIdList(draft) {
-  return [...new Set((Array.isArray(draft.skillIds) ? draft.skillIds : [])
-    .filter(id => typeof id === "string" && id.trim()))];
-}
-
 /**
  * Input: the EXISTING Showcase transfer records + global visual asset catalog.
  * Output: immutable view models. No shadow data, gameplay state, or saves.
@@ -51,20 +43,21 @@ export function captureBestiaryCardsV1({
   skillTransfers = [],
   assetCatalog = {assets:[]},
   statRegistry = {stats:[]},
-  historicalAbilities = []
+  nativeSkills = []
 } = {}) {
   const assets = new Map((Array.isArray(assetCatalog?.assets) ? assetCatalog.assets : [])
     .filter(asset => asset && typeof asset.id === "string")
     .map(asset => [asset.id, asset]));
   const skillsById = new Map();
-  for (const entry of historicalAbilities) {
-    if (typeof entry?.id === "string" && typeof entry?.name === "string") {
-      skillsById.set(entry.id, {
-        id:entry.id, name:entry.name, description:entry.desc ?? "",
-        element:entry.element || null, requiredLevel:entry.requiredLevel ?? null,
-        icon:null
-      });
-    }
+  // Native catalog then authored Showcase: same precedence as the editor.
+  for (const entry of nativeSkills) {
+    const definition = entry?.definition;
+    if (typeof definition?.id !== "string" ||
+        typeof definition?.name !== "string") continue;
+    skillsById.set(definition.id, {
+      name:definition.name, description:"", element:definition.element ?? null,
+      requiredLevel:null, icon:null
+    });
   }
   for (const transfer of skillTransfers) {
     const draft = transfer?.draft;
@@ -73,7 +66,7 @@ export function captureBestiaryCardsV1({
         typeof definition.name !== "string") continue;
     const icon = readyVisual(assets, draft?.presentation?.visual?.icon);
     skillsById.set(definition.id, {
-      id:definition.id, name:definition.name,
+      name:definition.name,
       description: typeof draft.description === "string" ? draft.description : "",
       element:definition.element || null,
       requiredLevel: statNumber(draft.requiredLevel),
@@ -96,9 +89,6 @@ export function captureBestiaryCardsV1({
     const icon = readyVisual(assets, visual?.icon);
     if (!portrait || !backReady || !icon) continue;
     seen.add(id);
-    const attributes = Object.entries(ATTRIBUTE_LABELS).map(([key,label]) => ({
-      key,label,value:statNumber(draft?.sourceStats?.[key])
-    })).filter(x => x.value !== null);
     const measures = Object.entries(transfer?.statValues?.values ?? {})
       .filter(([,value]) => statNumber(value) !== null)
       .map(([key,value]) => ({key,label:labelsById.get(key) ?? bestiaryElementLabelV1(key),value}));
@@ -110,16 +100,19 @@ export function captureBestiaryCardsV1({
           ? item.kind.slice("element:".length) : item.kind,
         amount:item.value
       }));
-    const equipped = new Map((Array.isArray(transfer?.loadout?.slots) ?
-      transfer.loadout.slots : []).filter(slot => typeof slot?.skillId === "string")
-      .map(slot => [slot.skillId,slot.id]));
-    const knownSkills = [];
-    let unavailableSkillCount = 0;
-    for (const skillId of skillIdList(draft)) {
-      const skill = skillsById.get(skillId);
-      if (!skill) {unavailableSkillCount += 1;continue;}
-      knownSkills.push(Object.freeze({...skill, slot:equipped.get(skillId) ?? null}));
+    // Canonical five slot loadout, including an unassigned ultimate.
+    const loadout = normalizeCaptureActiveSkillLoadoutV1(transfer.loadout);
+    if (loadout.creatureId !== id) {
+      throw new RangeError("Bestiary loadout creatureId differs from draft.id: "+id);
     }
+    const slots = loadout.slots.map(slot => {
+      const definition = slot.skillId === null ? null : skillsById.get(slot.skillId);
+      return Object.freeze({
+        slot:slot.id,
+        state:slot.skillId === null ? "empty" : definition ? "ready" : "unpublished",
+        ...(definition ?? {})
+      });
+    });
     const evolution = draft?.capture?.evolution;
     cards.push(Object.freeze({
       id, name:draft.displayName.trim(),
@@ -128,11 +121,9 @@ export function captureBestiaryCardsV1({
       elements:Object.freeze((Array.isArray(draft.elements) ? draft.elements : [])
         .filter(v => typeof v === "string" && v.trim())),
       portrait, icon,
-      attributes:Object.freeze(attributes.map(Object.freeze)),
       measures:Object.freeze(measures.map(Object.freeze)),
       resistances:Object.freeze(resistances.map(Object.freeze)),
-      skills:Object.freeze(knownSkills),
-      unavailableSkillCount,
+      skills:Object.freeze(slots),
       evolution: evolution?.condition === "level" &&
         Number.isFinite(evolution.level) ?
           Object.freeze({level:evolution.level,targetId:evolution.targetId || null}) : null,

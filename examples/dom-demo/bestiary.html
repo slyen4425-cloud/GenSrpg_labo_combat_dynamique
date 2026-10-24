@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="./bestiary.css">
 </head>
 <body>
-  <main class="bestiary" data-bestiary>
+  <main class="bestiary" data-bestiary data-bestiary-view="catalog">
     <nav class="topbar" aria-label="Navigation Capture">
       <a class="back-link" href="./capture-editor-v2.html">← Éditeur Capture</a>
       <span>GenSrpG · Monster Capture</span>
@@ -32,7 +32,8 @@
         </label>
         <div class="creature-list" data-bestiary-list aria-label="Fiches disponibles"></div>
       </aside>
-      <article class="profile" data-bestiary-profile aria-label="Fiche de la créature">
+      <article class="profile" data-bestiary-profile aria-label="Fiche de la créature" hidden>
+        <button type="button" class="return-to-gallery" data-bestiary-return>← Retour au Bestiaire</button>
         <div class="profile-head">
           <div>
             <p class="eyebrow" data-bestiary-caption>Créature</p>
@@ -44,11 +45,7 @@
         <p class="description" data-bestiary-description></p>
         <div class="facts" data-bestiary-facts></div>
         <div class="information-grid">
-          <section class="info-panel" aria-labelledby="bestiary-attributes">
-            <h3 id="bestiary-attributes">Caractéristiques</h3>
-            <div class="values-grid" data-bestiary-attributes></div>
-          </section>
-          <section class="info-panel" aria-labelledby="bestiary-statistics">
+          <section class="info-panel full-width" aria-labelledby="bestiary-statistics">
             <h3 id="bestiary-statistics">Statistiques</h3>
             <div class="values-grid" data-bestiary-measures></div>
           </section>
@@ -57,7 +54,7 @@
             <div class="resistance-list" data-bestiary-resistances></div>
           </section>
           <section class="info-panel full-width" aria-labelledby="bestiary-skills">
-            <h3 id="bestiary-skills">Compétences</h3>
+            <h3 id="bestiary-skills">Compétences équipées</h3>
             <div class="skill-list" data-bestiary-skills></div>
             <p class="note" data-bestiary-skills-note></p>
           </section>
