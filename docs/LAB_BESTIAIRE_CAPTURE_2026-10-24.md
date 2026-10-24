@@ -14,7 +14,7 @@ Onglet de consultation, pas une interface de création. Une grande illustration 
 - L'image front correspond à `presentation.visual.front.assetId`, pas à une déduction depuis un nom ou à l'asset dos.
 
 ## Périmètre
-Autorisé : `src/ui/capture-bestiary-cards-v1.js`, `examples/dom-demo/bestiary.html`, `examples/dom-demo/bestiary.js`, `examples/dom-demo/bestiary.css`, ajout d'une entrée de navigation dans `examples/dom-demo/capture-editor-v2.html`, tests dédiés, ce document et journal `LAB_CURRENT_WORK.md`.
+Autorisé : `src/ui/capture-bestiary-cards-v1.js`, `examples/dom-demo/bestiary.html`, `examples/dom-demo/bestiary.js`, `examples/dom-demo/bestiary.css`, ajout d'une entrée de navigation dans `examples/dom-demo/capture-editor-v2.html`, tests dédiés (unitaire + navigateur réel), `.github/workflows/ci.yml` (ajout d'une étape), ce document et journal `LAB_CURRENT_WORK.md`.
 
 Protégé : `main`, `global-assets`, moteur de combat, profils/ombres, stats et sauvegardes auteur, bibliothèques d'assets, registre de compétences, `Zombicide-40k`, styles de l'éditeur hors navigation.
 
@@ -24,4 +24,5 @@ Protégé : `main`, `global-assets`, moteur de combat, profils/ombres, stats et 
 - Source unique, pas de catalogue bestiaire parallèle ni faux noms/valeurs.
 - Chargement asynchrone, erreur explicite de ressource, filtre élément, recherche, navigation smartphone.
 - Mise à jour d'un preset/manifest visible au rechargement ; page autonome pouvant être montée plus tard dans le menu du jeu.
+- Test Chromium de la vraie page et chargement du transfert Venombre publié, avec seul catalogue média distant injecté en fixture, sans détourner le code de l'application.
 - Lancement des tests unitaires et des jobs CI ; checkpoint GREEN après réussite seulement.
