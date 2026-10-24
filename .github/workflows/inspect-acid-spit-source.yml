@@ -38,3 +38,15 @@ jobs:
                       elif b[:3]==b'GIF':shape='GIF'
                       print('FILE',repr(name),len(b),shape,flush=True)
           PY
+      - name: Inspect source manifests
+        run: |
+          python - <<'PY'
+          import json,zipfile
+          from pathlib import Path
+          for p in sorted(Path('_incoming/crachat-acide').glob('*.zip')):
+              with zipfile.ZipFile(p) as z:
+                  m=[n for n in z.namelist() if n.endswith('/manifest.json')]
+                  assert len(m)==1
+                  obj=json.loads(z.read(m[0]).decode('utf-8'))
+                  print('MANIFEST',p.name,json.dumps(obj,ensure_ascii=False,sort_keys=True),flush=True)
+          PY
