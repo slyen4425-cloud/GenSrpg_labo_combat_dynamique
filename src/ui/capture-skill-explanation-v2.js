@@ -1,0 +1,279 @@
+import {normalizeSkillDefinition} from "../contracts/skill-definition.js";
+
+// Player-facing projection of the one authoritative SkillDefinition.
+// No manually maintained descriptions; no engine timings or ranges.
+// Nested effects are interpreted recursively, with no gameplay simulation.
+const elNames=Object.freeze({fire:"Feu",water:"Eau",earth:"Terre",air:"Air",electric:"Électricité",
+  light:"Lumière",shadow:"Ombre",poison:"Poison",nature:"Nature",steel:"Acier",acier:"Acier",
+  ice:"Glace",spirit:"Esprit",physical:"Physique"});
+const statNames=Object.freeze({speed:"Vitesse",defense:"Défense",attack:"Attaque",
+  hp:"PV",health:"PV",initiative:"Initiative",agility:"Agilité",
+  force:"Force",endurance:"Endurance",intelligence:"Intelligence",
+  spirit:"Esprit",energy:"Énergie"});
+const scopes=Object.freeze({self:"la créature",target:"la cible",
+  all_enemies:"tous les ennemis",all_allies:"tous les alliés",
+  all_except_self:"toutes les autres créatures",
+  all_enemy_reserves:"les ennemis en réserve",all_ally_reserves:"les alliés en réserve",
+  all_active:"toutes les créatures sur le terrain"});
+const events=Object.freeze({damage_dealt:"inflige des dégâts",damage_taken:"subit des dégâts",
+  movement:"se déplace",evaded:"esquive une attaque"});
+const num=n=>String(Math.round(Number(n)*100)/100).replace(".",",");
+const element=k=>elNames[k]??k??"";
+const stat=k=>statNames[k]??elNames[k]??(k?String(k).replace(/_/g," "):"statistique");
+const duration=ms=>{const n=ms/1000;return num(n)+" "+(n===1?"seconde":"secondes");};
+const words=(arr)=>arr.length<=1?(arr[0]??""):arr.length===2?
+  arr.join(" et "):arr.slice(0,-1).join(", ")+" et "+arr[arr.length-1];
+const subject=key=>scopes[key]??"la cible";
+const actor=key=>key==="self"?"la créature":subject(key);
+const onTarget=key=>key==="self"?"":key==="target"?" à la cible":" à "+subject(key);
+const forTarget=key=>key==="self"?"":key==="target"?" chez la cible":" chez "+subject(key);
+const period=s=>s.durationModel==="permanent"?"de façon permanente":
+  s.durationModel==="owner_action_end"?"jusqu'à la fin de sa prochaine action":
+  s.durationMs!=null?"pendant "+duration(s.durationMs):
+  s.durationActions!=null?"pendant "+num(s.durationActions)+" actions":"";
+const finish=s=>s? s.replace(/\s+/g," ").trim().replace(/[. ]*$/,"")+".":"";
+const plus=(value)=>value>=0?"Augmente":"Réduit";
+const modifier=(noun,value,unit)=>{
+  const v=Number(value);
+  if(v===0)return null;
+  return {positive:v>0,text:noun+" de "+num(Math.abs(v))+" "+unit};
+};
+function simpleChange(s){
+  if(s.kind==="stat_modifier"){
+    const unit=s.modifierMode==="percent"?"%":"point"+(Math.abs(s.deltaPoints)===1?"":"s");
+    return modifier(stat(s.statId),(s.modifierMode==="percent"?s.percent:s.deltaPoints),unit);
+  }
+  if(s.kind==="outgoing_damage_modifier")return modifier("les dégâts infligés",s.modifierPct,"%");
+  if(s.kind==="energy_regen_modifier")return modifier("la régénération d'énergie",s.modifierPct,"%");
+  if(s.kind==="skill_cooldown_rate_modifier")return modifier("la vitesse de recharge des compétences",s.modifierPct,"%");
+  if(s.kind==="approach_time_modifier")return modifier("le temps d'approche",s.modifierPct,"%");
+  return null;
+}
+function groupChangeSentence(effects,indices){
+  const first=effects[indices[0]],st=first.status,scope=first.targetScope;
+  const pos=[],neg=[];
+  for(const i of indices){
+    const x=effects[i].status,m=simpleChange(x);
+    if(!m)continue;
+    // Reducing approach time is beneficial, but remains a reduction.
+    (m.positive?pos:neg).push(m.text+
+      (x.activationCondition==="moving"?" lors des déplacements":""));
+  }
+  // Changes of approach time use the stored sign, not invented movement speed.
+  const parts=[];
+  if(pos.length)parts.push("Augmente "+words(pos));
+  if(neg.length)parts.push((parts.length?"mais réduit ":"Réduit ")+words(neg));
+  return finish(parts.join(", ")+forTarget(scope)+" "+period(st));
+}
+function durationKey(s){
+  return [s.durationModel,s.durationMs??"",s.durationActions??""].join(":");
+}
+function statusStory(s){
+  const end=period(s);
+  const tick=s.tickIntervalMs?"toutes les "+duration(s.tickIntervalMs):"à chaque fin d'action";
+  let line;
+  switch(s.kind){
+    case "damage_over_time":line="Inflige "+num(s.amount)+" dégâts de "+element(s.channel)+" "+tick;break;
+    case "heal_over_time":line="Rend "+num(s.amount)+" PV "+tick;break;
+    case "shield":line="Accorde un bouclier de "+num(s.amount)+" points";break;
+    case "damage_reflection":
+      line="Renvoie "+num(s.percent)+" % des dégâts reçus";
+      if(s.incomingKinds?.length && s.incomingKinds.length<7)
+        line+=" pour les attaques "+words(s.incomingKinds.map(kind=>kind==="contact"?"au corps à corps":
+          kind==="beam"?"par rayon":kind==="projectile"?"par projectile":kind));
+      if(s.contactDamage>0)line+=" et inflige "+num(s.contactDamage)+" dégâts au contact";
+      break;
+    case "projectile_mirror":line="Renvoie les projectiles reçus";break;
+    case "auto_dodge":line="Esquive automatiquement les attaques";break;
+    case "immunity":line=s.intangible?"Devient immatérielle et résiste aux dégâts et aux états négatifs":
+      "Devient immunisée contre "+words((s.domains??[]).map(x=>x==="damage"?"les dégâts":"les états négatifs"));break;
+    case "immobilize":line="Immobilise la cible";break;
+    case "silence":line="Empêche la cible d'utiliser certaines capacités";break;
+    case "stun":line="Étourdit la cible";break;
+    case "taunt":line="Provoque la cible";break;
+    case "stack_counter":line="Accumule des charges"+(s.maxStacks>1?" (maximum "+num(s.maxStacks)+")":"");break;
+    case "triggered_buff":line="Déclenche un effet sous certaines conditions";break;
+    default:{
+      const change=simpleChange(s);
+      if(change)return finish((change.positive?"Augmente ":"Réduit ")+change.text+" "+end);
+      line="Applique un effet (« "+(s.label??s.kind)+" »)";
+    }
+  }
+  const result=[finish(line+" "+end)];
+  if(s.periodic){
+    const p=s.periodic;
+    result.push(finish("Chaque "+duration(p.intervalMs)+", "+
+      (p.kind==="damage"?"inflige "+num(p.amount)+" dégâts de "+element(p.channel):
+        "rend "+num(p.amount)+" PV")));
+  }
+  if(s.onEvent||s.onDamageDealt){
+    const t=s.onEvent??s.onDamageDealt;
+    const when=s.onEvent?.event??"damage_dealt";
+    result.push(finish("Quand la créature "+(events[when]??"agit")+", "+
+      descriptions(t.effects).map(x=>x.replace(/^[A-Z]/,c=>c.toLowerCase()).replace(/\.$/,"")).join(" et ")));
+  }
+  if(s.onStackThreshold){
+    const t=s.onStackThreshold;
+    result.push(finish("À "+num(t.count)+" charges, "+
+      descriptions(t.effects).map(x=>x.replace(/^[A-Z]/,c=>c.toLowerCase()).replace(/\.$/,"")).join(" et ")+
+      (t.consume==="reset"?", puis les charges sont remises à zéro":"")));
+  }
+  if(s.onStackAdded?.effects?.length){
+    result.push(finish("À chaque charge gagnée, "+
+      descriptions(s.onStackAdded.effects).map(x=>x.toLowerCase().replace(/\.$/,"")).join(" et ")));
+  }
+  return result;
+}
+function statusSentence(effect){
+  const result=statusStory(effect.status);
+  if(effect.targetScope==="self")return result;
+  // Present targets only when they differ from the default self-effect.
+  return result.map((line,i)=>i===0?
+    line.replace(/\.$/,"")+" "+(effect.targetScope==="target"?"sur la cible":"sur "+subject(effect.targetScope))+".":line);
+}
+function penetrates(e){
+  const clauses=[];
+  if(e.ignoreResistancePct>0)clauses.push(e.ignoreResistancePct===100?
+    "ignore la résistance":"ignore "+num(e.ignoreResistancePct)+" % de la résistance");
+  if(e.ignoreDamageReductionPct>0)clauses.push(e.ignoreDamageReductionPct===100?
+    "ignore la réduction des dégâts":"ignore "+num(e.ignoreDamageReductionPct)+" % de la réduction des dégâts");
+  return clauses;
+}
+function effectSentence(e){
+  switch(e.kind){
+    case "damage":return [finish("Inflige "+num(e.amount)+" dégâts"+(e.channel?" de "+element(e.channel):"")+
+      onTarget(e.targetScope)+(penetrates(e).length?" et "+words(penetrates(e)):""))];
+    case "heal":return [finish("Rend "+num(e.amount)+" PV"+onTarget(e.targetScope))];
+    case "energy_restore":return [finish("Rend "+num(e.amount)+" points d'énergie"+onTarget(e.targetScope))];
+    case "energy_drain":return [finish("Retire "+num(e.amount)+" points d'énergie"+onTarget(e.targetScope))];
+    case "life_steal":return [finish("Récupère "+num(e.percent)+" % des dégâts infligés sous forme de PV"+
+      (e.maxHeal!=null?" (maximum "+num(e.maxHeal)+" PV)":""))];
+    case "knockout":return [finish("Met "+subject(e.targetScope)+" K.O.")];
+    case "apply_status":return statusSentence(e);
+    case "cleanse":return [finish("Retire les effets négatifs"+onTarget(e.targetScope))];
+    case "dispel":return [finish("Retire les bonus"+onTarget(e.targetScope))];
+    case "apply_marker":{
+      const m=e.marker;
+      const lines=[finish("Ajoute "+num(e.charges)+" charge"+(e.charges>1?"s":"")+" de "+m.name+
+        onTarget(e.targetScope)+(m.maxStacks>1?" (maximum "+num(m.maxStacks)+")":"")+
+        (m.permanent?" sans limite de durée":m.durationMs?" pendant "+duration(m.durationMs):""))];
+      if(m.periodic){
+        const p=m.periodic;
+        lines.push(finish("Chaque "+duration(p.intervalMs)+", ce marqueur "+
+          (p.kind==="damage"?"inflige "+num(p.amount)+" dégâts de "+element(p.channel):
+            "soigne "+num(p.amount)+" PV")));
+      }
+      if(m.onStackThreshold){
+        const t=m.onStackThreshold;
+        lines.push(finish("À "+num(t.count)+" charges, "+
+          descriptions(t.effects).map(x=>x.toLowerCase().replace(/\.$/,"")).join(" et ")+
+          (t.consume==="reset?", puis les charges sont remises à zéro":"")));
+      }
+      if(m.onStackAdded?.effects?.length){
+        lines.push(finish("À chaque charge ajoutée, "+
+          descriptions(m.onStackAdded.effects).map(x=>x.toLowerCase().replace(/\.$/,"")).join(" et ")));
+      }
+      return lines;
+    }
+    case "consume_marker":return [
+      finish("Consomme "+(e.count==="all"?"les charges":num(e.count)+" charges")+" de "+e.markerId+
+        onTarget(e.targetScope)+(e.minimum>1?" (au moins "+num(e.minimum)+")":"")+
+        (e.perCharge?" ; les effets augmentent avec les charges consommées":"")),
+      ...descriptions(e.effects)];
+    case "scheduled_effect":return [finish("Après "+duration(e.trigger.delayMs)+", "+
+      descriptions(e.effects).map(x=>x.toLowerCase().replace(/\.$/,"")).join(" et "))];
+    case "persistent_zone":{
+      const periodic=e.tickEffect?.kind==="damage" && e.damageTrigger!=="entry_only"?
+        " toutes les "+duration(e.tickIntervalMs):"";
+      const result=effectSentence(e.tickEffect);
+      let summary="Crée une zone qui "+result[0].replace(/\.$/,"").replace(/^[A-Z]/,x=>x.toLowerCase())+
+        periodic+" pendant "+duration(e.durationMs);
+      if(e.damageTrigger==="entry_only")summary+=" (à l'entrée dans la zone)";
+      if(e.statusBehavior==="while_inside")summary+=" tant que les créatures restent à l'intérieur";
+      if(e.statusBehavior==="on_enter")summary+=" à leur entrée dans la zone";
+      if(e.persistAfterRecall)summary+=" ; la zone reste active après un rappel";
+      return [finish(summary),...result.slice(1)];
+    }
+    default:return [finish("Effet non encore décrit : "+e.kind)];
+  }
+}
+function descriptions(effects){
+  const list=effects??[], used=new Set(),out=[];
+  for(let i=0;i<list.length;i++){
+    if(used.has(i))continue;
+    const e=list[i];
+    if(e.kind==="apply_status" && simpleChange(e.status)){
+      const same=[];
+      for(let j=i;j<list.length;j++){
+        const y=list[j];
+        if(y.kind==="apply_status" && simpleChange(y.status) &&
+           y.targetScope===e.targetScope && durationKey(y.status)===durationKey(e.status)){
+          same.push(j);used.add(j);
+        }
+      }
+      out.push(groupChangeSentence(list,same));
+    }else{
+      out.push(...effectSentence(e));
+    }
+  }
+  return out.filter(Boolean);
+}
+function conditions(d){
+  const dict={
+    combat_elapsed_ms:v=>"au moins "+duration(v)+" écoulées depuis le début du combat",
+    damage_dealt:v=>"avoir infligé "+num(v)+" dégâts",
+    damage_taken:v=>"avoir subi "+num(v)+" dégâts",
+    hp_at_or_below_pct:v=>"être à "+num(v)+" % de PV ou moins",
+    allies_defeated:v=>"avoir perdu "+num(v)+" alliés",
+    enemies_defeated:v=>"avoir vaincu "+num(v)+" ennemis",
+    kills_by_self:v=>"avoir mis "+num(v)+" ennemis K.O."
+  };
+  const clauses=d.activationRequirements.conditions.map(x=>dict[x.type]?.(x.threshold)??"remplir la condition « "+x.type+" »");
+  if(clauses.length===0&&!d.markerCost)return [];
+  const notes=[];
+  if(clauses.length)notes.push(finish("Pour l'utiliser, il faut "+clauses.join(
+    d.activationRequirements.mode==="any"?" ou ":" et ")));
+  if(d.markerCost)notes.push(finish("Consomme "+num(d.markerCost.count)+" charges de "+
+    d.markerCost.markerId+" "+(d.markerCost.source==="target"?"sur la cible":"sur la créature")));
+  return notes;
+}
+function specialRules(d){
+  const list=[];
+  if(d.hitsIntangible)list.push("Peut toucher une créature immatérielle.");
+  if(d.dodgeable===false)list.push("Cette attaque ne peut pas être esquivée.");
+  if(d.reaction.reflectForms.length)list.push(finish("Renvoie les attaques "+
+    words(d.reaction.reflectForms)));
+  if(d.reaction.blockForms.length)list.push(finish("Bloque les attaques "+
+    words(d.reaction.blockForms)));
+  if(d.reaction.immuneElements.length)list.push(finish("Protège contre "+
+    words(d.reaction.immuneElements.map(element))));
+  if(d.reaction.evadeForms.length)list.push(finish("Esquive les attaques "+
+    words(d.reaction.evadeForms)));
+  if(d.reaction.counterForms.length)list.push(finish("Contre les attaques "+
+    words(d.reaction.counterForms)));
+  if(d.evasion?.incomingForms?.length)list.push(finish("Permet d'esquiver "+
+    words(d.evasion.incomingForms)));
+  return list;
+}
+export function describeCaptureSkillV1(input) {
+  const d=normalizeSkillDefinition(input);
+  const phrases=[];
+  if(d.effect.damage>0)phrases.push(finish("Inflige "+num(d.effect.damage)+" dégâts"));
+  if(d.effect.heal>0)phrases.push(finish("Rend "+num(d.effect.heal)+" PV"));
+  if(d.effect.stunMs>0)phrases.push(finish("Étourdit pendant "+duration(d.effect.stunMs)));
+  if(d.effect.interruptsPreparation)phrases.push("Interrompt l'action en préparation.");
+  phrases.push(...descriptions(d.effects));
+  if(d.contactHold){
+    const hold=d.contactHold;
+    const held=descriptions(hold.effects);
+    if(held.length)phrases.push(finish("Au corps à corps, reste accroché à la cible et "+
+      held.map(x=>x.replace(/\.$/,"").replace(/^[A-Z]/,c=>c.toLowerCase())).join(" et ")+
+      " toutes les "+duration(hold.tickIntervalMs)+
+      (hold.maxDurationMs>0?" pendant "+duration(hold.maxDurationMs):"")));
+  }
+  phrases.push(...specialRules(d),...conditions(d));
+  if(d.maxUsesPerCombat!=null)phrases.push(finish("Utilisable "+
+    (d.maxUsesPerCombat===1?"une fois":num(d.maxUsesPerCombat)+" fois")+" par combat"));
+  if(!phrases.length)phrases.push("Aucun effet de combat défini.");
+  return Object.freeze({sentences:Object.freeze(phrases.map(String))});
+}
