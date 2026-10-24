@@ -1,0 +1,59 @@
+{
+  "id": "pack:capture:sprite-crachat-acide-impact-01",
+  "label": "Éclaboussure acide à l’impact",
+  "assetType": "sprite",
+  "mediaType": "image",
+  "category": "skill",
+  "element": "poison",
+  "frameCount": 20,
+  "frameSize": [
+    512,
+    512
+  ],
+  "atlasFrameSize": [
+    256,
+    256
+  ],
+  "frameMs": 65,
+  "playbackMode": "once",
+  "frameFiles": [
+    "frames/gensrpg_crachat_acide_impact_01.png",
+    "frames/gensrpg_crachat_acide_impact_02.png",
+    "frames/gensrpg_crachat_acide_impact_03.png",
+    "frames/gensrpg_crachat_acide_impact_04.png",
+    "frames/gensrpg_crachat_acide_impact_05.png",
+    "frames/gensrpg_crachat_acide_impact_06.png",
+    "frames/gensrpg_crachat_acide_impact_07.png",
+    "frames/gensrpg_crachat_acide_impact_08.png",
+    "frames/gensrpg_crachat_acide_impact_09.png",
+    "frames/gensrpg_crachat_acide_impact_10.png",
+    "frames/gensrpg_crachat_acide_impact_11.png",
+    "frames/gensrpg_crachat_acide_impact_12.png",
+    "frames/gensrpg_crachat_acide_impact_13.png",
+    "frames/gensrpg_crachat_acide_impact_14.png",
+    "frames/gensrpg_crachat_acide_impact_15.png",
+    "frames/gensrpg_crachat_acide_impact_16.png",
+    "frames/gensrpg_crachat_acide_impact_17.png",
+    "frames/gensrpg_crachat_acide_impact_18.png",
+    "frames/gensrpg_crachat_acide_impact_19.png",
+    "frames/gensrpg_crachat_acide_impact_20.png"
+  ],
+  "atlasFile": "gensrpg_crachat_acide_impact_atlas.webp",
+  "sourceSheet": "PLANCHE_SOURCE.png",
+  "tags": [
+    "capture",
+    "skill",
+    "acid",
+    "poison",
+    "slime",
+    "impact",
+    "animated"
+  ],
+  "compatibility": {
+    "uses": [
+      "combat",
+      "capture",
+      "editor"
+    ]
+  }
+}

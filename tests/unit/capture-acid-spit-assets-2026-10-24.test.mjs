@@ -1,0 +1,61 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {readFileSync, existsSync} from "node:fs";
+import {createHash} from "node:crypto";
+import {resolve, dirname} from "node:path";
+import {fileURLToPath} from "node:url";
+const root=resolve(dirname(fileURLToPath(import.meta.url)),"../..");
+const base=resolve(root,"assets/library/capture/sprites/skills/acid_spit");
+const cat=JSON.parse(readFileSync(resolve(root,"data/assets/catalog/global-visual-assets.v1.json")));
+const manifest=JSON.parse(readFileSync(resolve(base,"sprite_skill_crachat_acide_sequences_01.json")));
+const provenance=JSON.parse(readFileSync(resolve(base,"provenance.json")));
+const definitions=[["cast","release",70,"once"],["projectile","travel",60,"loop"],["impact","impact",65,"once"],["aura","skill",85,"loop"]];
+const sha=b=>createHash("sha256").update(b).digest("hex");
+test("real 80 acid-spit PNG and four atlas files are wired by unique asset IDs",()=>{
+  assert.equal(cat.storage.branch,"global-assets");
+  assert.equal(cat.counts.assets,cat.assets.length);
+  assert.equal(cat.counts.sprites,cat.assets.filter(x=>x.assetType==="sprite").length);
+  assert.equal(new Set(cat.assets.map(x=>x.id)).size,cat.assets.length);
+  assert.deepEqual(Object.keys(manifest.sequences).sort(),definitions.map(x=>x[0]).sort());
+  for(const [role,category,ms,mode] of definitions){
+    const id="pack:capture:sprite-crachat-acide-"+role+"-01";
+    const results=cat.assets.filter(x=>x.id===id);
+    assert.equal(results.length,1,id);
+    const a=results[0];
+    const seq=manifest.sequences[role], prov=provenance[role];
+    assert.equal(seq.id,id);
+    assert.equal(a.category,category);
+    assert.equal(a.resource.frameCount,20);
+    assert.equal(a.resource.frameMs,ms);
+    assert.equal(a.resource.playbackMode,mode);
+    assert.equal(seq.frames.length,20);
+    assert.equal(seq.atlas.frameWidth,256);
+    assert.equal(seq.atlas.frameHeight,256);
+    assert.ok(a.compatibility.uses.includes("combat"));
+    assert.ok(a.compatibility.uses.includes("editor"));
+    assert.equal(a.resource.file,"capture/sprites/skills/acid_spit/"+seq.atlas.file);
+    const atlas=readFileSync(resolve(root,cat.storage.libraryRoot,a.resource.file));
+    assert.equal(atlas.toString("ascii",0,4),"RIFF");
+    assert.equal(atlas.toString("ascii",8,12),"WEBP");
+    assert.equal(sha(atlas),prov.atlasSha256);
+    assert.ok(prov.originalArchiveSha256.match(/^[a-f0-9]{64}$/));
+    for(let i=1;i<=20;i++){
+      const frameRel=role+"/frames/gensrpg_crachat_acide_"+role+"_"+String(i).padStart(2,"0")+".png";
+      assert.equal(seq.frames[i-1],frameRel);
+      const b=readFileSync(resolve(base,frameRel));
+      assert.equal(b.subarray(0,8).toString("hex"),"89504e470d0a1a0a");
+      assert.equal(b.readUInt32BE(16),512);
+      assert.equal(b.readUInt32BE(20),512);
+      assert.equal(b[25],6);
+      assert.equal(sha(b),prov.frameSha256[i-1]);
+    }
+    const authorManifest=JSON.parse(readFileSync(resolve(base,role,"manifest.json")));
+    assert.equal(authorManifest.id,id);
+    assert.equal(authorManifest.frameCount,20);
+    assert.equal(authorManifest.frameMs,ms);
+    assert.equal(authorManifest.playbackMode,mode);
+    assert.equal(authorManifest.atlasFrameSize[0],256);
+    assert.equal(authorManifest.atlasFrameSize[1],256);
+    assert.ok(existsSync(resolve(base,role,authorManifest.sourceSheet)));
+  }
+});

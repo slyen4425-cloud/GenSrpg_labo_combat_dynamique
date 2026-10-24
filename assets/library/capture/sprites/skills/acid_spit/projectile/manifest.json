@@ -1,0 +1,59 @@
+{
+  "id": "pack:capture:sprite-crachat-acide-projectile-01",
+  "label": "Projectile vert acide visqueux avec traînée",
+  "assetType": "sprite",
+  "mediaType": "image",
+  "category": "skill",
+  "element": "poison",
+  "frameCount": 20,
+  "frameSize": [
+    512,
+    512
+  ],
+  "atlasFrameSize": [
+    256,
+    256
+  ],
+  "frameMs": 60,
+  "playbackMode": "loop",
+  "frameFiles": [
+    "frames/gensrpg_crachat_acide_projectile_01.png",
+    "frames/gensrpg_crachat_acide_projectile_02.png",
+    "frames/gensrpg_crachat_acide_projectile_03.png",
+    "frames/gensrpg_crachat_acide_projectile_04.png",
+    "frames/gensrpg_crachat_acide_projectile_05.png",
+    "frames/gensrpg_crachat_acide_projectile_06.png",
+    "frames/gensrpg_crachat_acide_projectile_07.png",
+    "frames/gensrpg_crachat_acide_projectile_08.png",
+    "frames/gensrpg_crachat_acide_projectile_09.png",
+    "frames/gensrpg_crachat_acide_projectile_10.png",
+    "frames/gensrpg_crachat_acide_projectile_11.png",
+    "frames/gensrpg_crachat_acide_projectile_12.png",
+    "frames/gensrpg_crachat_acide_projectile_13.png",
+    "frames/gensrpg_crachat_acide_projectile_14.png",
+    "frames/gensrpg_crachat_acide_projectile_15.png",
+    "frames/gensrpg_crachat_acide_projectile_16.png",
+    "frames/gensrpg_crachat_acide_projectile_17.png",
+    "frames/gensrpg_crachat_acide_projectile_18.png",
+    "frames/gensrpg_crachat_acide_projectile_19.png",
+    "frames/gensrpg_crachat_acide_projectile_20.png"
+  ],
+  "atlasFile": "gensrpg_crachat_acide_projectile_atlas.webp",
+  "sourceSheet": "PLANCHE_SOURCE.png",
+  "tags": [
+    "capture",
+    "skill",
+    "acid",
+    "poison",
+    "slime",
+    "projectile",
+    "animated"
+  ],
+  "compatibility": {
+    "uses": [
+      "combat",
+      "capture",
+      "editor"
+    ]
+  }
+}

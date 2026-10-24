@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 227,
+    "assets": 231,
     "icons": 81,
-    "sprites": 126,
+    "sprites": 130,
     "fx": 2,
     "portraits": 13,
     "backgrounds": 5,
@@ -7609,6 +7609,157 @@
         "frameCount": 20,
         "frameMs": 70,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-crachat-acide-cast-01",
+      "label": "Chargement visqueux du crachat acide",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "capture",
+        "skill",
+        "acid",
+        "poison",
+        "slime",
+        "cast",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/acid_spit/cast/gensrpg_crachat_acide_cast_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 70,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-crachat-acide-projectile-01",
+      "label": "Projectile vert acide visqueux avec traînée",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "capture",
+        "skill",
+        "acid",
+        "poison",
+        "slime",
+        "projectile",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/acid_spit/projectile/gensrpg_crachat_acide_projectile_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 60,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-crachat-acide-impact-01",
+      "label": "Éclaboussure acide à l’impact",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "capture",
+        "skill",
+        "acid",
+        "poison",
+        "slime",
+        "impact",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/acid_spit/impact/gensrpg_crachat_acide_impact_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 65,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-crachat-acide-aura-01",
+      "label": "Coulure visqueuse verte pour malus acide",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "acid",
+        "poison",
+        "slime",
+        "aura",
+        "animated",
+        "debuff",
+        "negative",
+        "status"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/acid_spit/aura/gensrpg_crachat_acide_aura_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 20,
+        "frameMs": 85,
+        "playbackMode": "loop"
       },
       "compatibility": {
         "uses": [

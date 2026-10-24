@@ -1,0 +1,59 @@
+{
+  "id": "pack:capture:sprite-crachat-acide-aura-01",
+  "label": "Coulure visqueuse verte pour malus acide",
+  "assetType": "sprite",
+  "mediaType": "image",
+  "category": "skill",
+  "element": "poison",
+  "frameCount": 20,
+  "frameSize": [
+    512,
+    512
+  ],
+  "atlasFrameSize": [
+    256,
+    256
+  ],
+  "frameMs": 85,
+  "playbackMode": "loop",
+  "frameFiles": [
+    "frames/gensrpg_crachat_acide_aura_01.png",
+    "frames/gensrpg_crachat_acide_aura_02.png",
+    "frames/gensrpg_crachat_acide_aura_03.png",
+    "frames/gensrpg_crachat_acide_aura_04.png",
+    "frames/gensrpg_crachat_acide_aura_05.png",
+    "frames/gensrpg_crachat_acide_aura_06.png",
+    "frames/gensrpg_crachat_acide_aura_07.png",
+    "frames/gensrpg_crachat_acide_aura_08.png",
+    "frames/gensrpg_crachat_acide_aura_09.png",
+    "frames/gensrpg_crachat_acide_aura_10.png",
+    "frames/gensrpg_crachat_acide_aura_11.png",
+    "frames/gensrpg_crachat_acide_aura_12.png",
+    "frames/gensrpg_crachat_acide_aura_13.png",
+    "frames/gensrpg_crachat_acide_aura_14.png",
+    "frames/gensrpg_crachat_acide_aura_15.png",
+    "frames/gensrpg_crachat_acide_aura_16.png",
+    "frames/gensrpg_crachat_acide_aura_17.png",
+    "frames/gensrpg_crachat_acide_aura_18.png",
+    "frames/gensrpg_crachat_acide_aura_19.png",
+    "frames/gensrpg_crachat_acide_aura_20.png"
+  ],
+  "atlasFile": "gensrpg_crachat_acide_aura_atlas.webp",
+  "sourceSheet": "PLANCHE_SOURCE.png",
+  "tags": [
+    "capture",
+    "skill",
+    "acid",
+    "poison",
+    "slime",
+    "aura",
+    "animated"
+  ],
+  "compatibility": {
+    "uses": [
+      "combat",
+      "capture",
+      "editor"
+    ]
+  }
+}

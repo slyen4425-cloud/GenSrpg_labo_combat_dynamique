@@ -1,0 +1,157 @@
+{
+  "id": "pack:capture:acid-spit-vfx-v1",
+  "frame_size": [
+    512,
+    512
+  ],
+  "sequences": {
+    "cast": {
+      "id": "pack:capture:sprite-crachat-acide-cast-01",
+      "label": "Chargement visqueux du crachat acide",
+      "frame_count": 20,
+      "frame_ms": 70,
+      "loop": false,
+      "playback_mode": "once",
+      "frames": [
+        "cast/frames/gensrpg_crachat_acide_cast_01.png",
+        "cast/frames/gensrpg_crachat_acide_cast_02.png",
+        "cast/frames/gensrpg_crachat_acide_cast_03.png",
+        "cast/frames/gensrpg_crachat_acide_cast_04.png",
+        "cast/frames/gensrpg_crachat_acide_cast_05.png",
+        "cast/frames/gensrpg_crachat_acide_cast_06.png",
+        "cast/frames/gensrpg_crachat_acide_cast_07.png",
+        "cast/frames/gensrpg_crachat_acide_cast_08.png",
+        "cast/frames/gensrpg_crachat_acide_cast_09.png",
+        "cast/frames/gensrpg_crachat_acide_cast_10.png",
+        "cast/frames/gensrpg_crachat_acide_cast_11.png",
+        "cast/frames/gensrpg_crachat_acide_cast_12.png",
+        "cast/frames/gensrpg_crachat_acide_cast_13.png",
+        "cast/frames/gensrpg_crachat_acide_cast_14.png",
+        "cast/frames/gensrpg_crachat_acide_cast_15.png",
+        "cast/frames/gensrpg_crachat_acide_cast_16.png",
+        "cast/frames/gensrpg_crachat_acide_cast_17.png",
+        "cast/frames/gensrpg_crachat_acide_cast_18.png",
+        "cast/frames/gensrpg_crachat_acide_cast_19.png",
+        "cast/frames/gensrpg_crachat_acide_cast_20.png"
+      ],
+      "atlas": {
+        "file": "cast/gensrpg_crachat_acide_cast_atlas.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 256,
+        "frameHeight": 256
+      }
+    },
+    "projectile": {
+      "id": "pack:capture:sprite-crachat-acide-projectile-01",
+      "label": "Projectile vert acide visqueux avec traînée",
+      "frame_count": 20,
+      "frame_ms": 60,
+      "loop": true,
+      "playback_mode": "loop",
+      "frames": [
+        "projectile/frames/gensrpg_crachat_acide_projectile_01.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_02.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_03.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_04.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_05.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_06.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_07.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_08.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_09.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_10.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_11.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_12.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_13.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_14.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_15.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_16.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_17.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_18.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_19.png",
+        "projectile/frames/gensrpg_crachat_acide_projectile_20.png"
+      ],
+      "atlas": {
+        "file": "projectile/gensrpg_crachat_acide_projectile_atlas.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 256,
+        "frameHeight": 256
+      }
+    },
+    "impact": {
+      "id": "pack:capture:sprite-crachat-acide-impact-01",
+      "label": "Éclaboussure acide à l’impact",
+      "frame_count": 20,
+      "frame_ms": 65,
+      "loop": false,
+      "playback_mode": "once",
+      "frames": [
+        "impact/frames/gensrpg_crachat_acide_impact_01.png",
+        "impact/frames/gensrpg_crachat_acide_impact_02.png",
+        "impact/frames/gensrpg_crachat_acide_impact_03.png",
+        "impact/frames/gensrpg_crachat_acide_impact_04.png",
+        "impact/frames/gensrpg_crachat_acide_impact_05.png",
+        "impact/frames/gensrpg_crachat_acide_impact_06.png",
+        "impact/frames/gensrpg_crachat_acide_impact_07.png",
+        "impact/frames/gensrpg_crachat_acide_impact_08.png",
+        "impact/frames/gensrpg_crachat_acide_impact_09.png",
+        "impact/frames/gensrpg_crachat_acide_impact_10.png",
+        "impact/frames/gensrpg_crachat_acide_impact_11.png",
+        "impact/frames/gensrpg_crachat_acide_impact_12.png",
+        "impact/frames/gensrpg_crachat_acide_impact_13.png",
+        "impact/frames/gensrpg_crachat_acide_impact_14.png",
+        "impact/frames/gensrpg_crachat_acide_impact_15.png",
+        "impact/frames/gensrpg_crachat_acide_impact_16.png",
+        "impact/frames/gensrpg_crachat_acide_impact_17.png",
+        "impact/frames/gensrpg_crachat_acide_impact_18.png",
+        "impact/frames/gensrpg_crachat_acide_impact_19.png",
+        "impact/frames/gensrpg_crachat_acide_impact_20.png"
+      ],
+      "atlas": {
+        "file": "impact/gensrpg_crachat_acide_impact_atlas.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 256,
+        "frameHeight": 256
+      }
+    },
+    "aura": {
+      "id": "pack:capture:sprite-crachat-acide-aura-01",
+      "label": "Coulure visqueuse verte pour malus acide",
+      "frame_count": 20,
+      "frame_ms": 85,
+      "loop": true,
+      "playback_mode": "loop",
+      "frames": [
+        "aura/frames/gensrpg_crachat_acide_aura_01.png",
+        "aura/frames/gensrpg_crachat_acide_aura_02.png",
+        "aura/frames/gensrpg_crachat_acide_aura_03.png",
+        "aura/frames/gensrpg_crachat_acide_aura_04.png",
+        "aura/frames/gensrpg_crachat_acide_aura_05.png",
+        "aura/frames/gensrpg_crachat_acide_aura_06.png",
+        "aura/frames/gensrpg_crachat_acide_aura_07.png",
+        "aura/frames/gensrpg_crachat_acide_aura_08.png",
+        "aura/frames/gensrpg_crachat_acide_aura_09.png",
+        "aura/frames/gensrpg_crachat_acide_aura_10.png",
+        "aura/frames/gensrpg_crachat_acide_aura_11.png",
+        "aura/frames/gensrpg_crachat_acide_aura_12.png",
+        "aura/frames/gensrpg_crachat_acide_aura_13.png",
+        "aura/frames/gensrpg_crachat_acide_aura_14.png",
+        "aura/frames/gensrpg_crachat_acide_aura_15.png",
+        "aura/frames/gensrpg_crachat_acide_aura_16.png",
+        "aura/frames/gensrpg_crachat_acide_aura_17.png",
+        "aura/frames/gensrpg_crachat_acide_aura_18.png",
+        "aura/frames/gensrpg_crachat_acide_aura_19.png",
+        "aura/frames/gensrpg_crachat_acide_aura_20.png"
+      ],
+      "atlas": {
+        "file": "aura/gensrpg_crachat_acide_aura_atlas.webp",
+        "format": "sprite-strip",
+        "frameCount": 20,
+        "frameWidth": 256,
+        "frameHeight": 256
+      }
+    }
+  }
+}
