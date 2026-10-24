@@ -50,7 +50,7 @@ test("Nid de frelon: reserves, poison ticks and 20-stack KO retained",()=>{
 test("Surcharge: multi-buff aggregation, triggered damage with accurate duration",()=>{
   const view=explain("cap_electric_special_2");
   const s=sentences(view);
-  assert.match(s,/Réduit le temps d'approche de 50 %/);
+  assert.match(s,/réduit le temps d'approche de 50 %/);
   assert.match(s,/vitesse de recharge des compétences de 100 %/);
   assert.match(s,/régénération d'énergie de 50 %/);
   assert.match(s,/quand la créature inflige des dégâts/);
