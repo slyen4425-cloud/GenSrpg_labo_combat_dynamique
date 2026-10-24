@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {describeCaptureSkillV1} from "../../src/ui/capture-skill-explanation-v1.js";
+import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 
 const readSkill=id=>JSON.parse(readFileSync(
   new URL("../../data/capture/showcase/"+id+".capture-skill-transfer-v1.json",import.meta.url),
@@ -66,4 +67,14 @@ test("Bestiary entry description is generated; handwritten note not reintroduced
   assert.match(app,/skill\.explanation\.sections/);
   assert.match(css,/\.stat\{/);
   assert.match(css,/\.skill__icon/);
+});
+
+test("every active Showcase skill can produce a grounded description",()=>{
+  for(const path of CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1){
+    const entry=JSON.parse(readFileSync(new URL("../../"+path,import.meta.url),"utf8"));
+    const view=describeCaptureSkillV1(entry.draft.definition);
+    assert.equal(view.sections[0].title,"Effets",path);
+    assert.ok(view.sections[0].lines.length>=1,path);
+    assert.ok(Object.isFrozen(view),path);
+  }
 });
