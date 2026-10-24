@@ -12,8 +12,8 @@ test("Vent arrière: one natural sentence, 4 actual modifiers and common duratio
   const view=explain("lib_tailwind");
   assert.equal(view.sentences.length,1);
   const s=sentences(view);
-  assert.match(s,/Augmente.*Vitesse de 30 points.*vitesse de recharge des compétences de 150 %.*régénération d'énergie de 100 %/);
-  assert.match(s,/mais réduit la Défense de 100 points pendant 15 secondes/);
+  assert.match(s,/Augmente.*vitesse de 30 points.*vitesse de recharge des compétences de 150 %.*régénération d'énergie de 100 %/);
+  assert.match(s,/mais réduit la défense de 100 points pendant 15 secondes/);
   assert.doesNotMatch(s,/dégâts infligés|Déroulement|Portée|Préparation/);
 });
 test("Vague incendiaire: concise impact, DoT, no internals",()=>{
@@ -28,7 +28,7 @@ test("Sangsue: keep contact hold, damage, healing and natural timing",()=>{
   const s=sentences(explain("sangsue"));
   assert.match(s,/Au corps à corps, reste accroché/);
   assert.match(s,/6 dégâts de Nature/);
-  assert.match(s,/100 % des dégâts infligés sous forme de PV/);
+  assert.match(s,/100 % de ces dégâts sous forme de PV/);
   assert.match(s,/chaque seconde/);
 });
 test("Sacrifice Kitsune: group 3 overlapping zones, preserve all effects and KO",()=>{
@@ -44,7 +44,7 @@ test("Sacrifice Kitsune: group 3 overlapping zones, preserve all effects and KO"
 test("Nid de frelon: reserves, poison ticks and 20-stack KO retained",()=>{
   const s=sentences(explain("Nid_frelon"));
   assert.match(s,/5 charges de venin static.*ennemis en réserve/);
-  assert.match(s,/5 secondes.*2 dégâts de Électricité/);
+  assert.match(s,/5 secondes.*2 dégâts d'Électricité/);
   assert.match(s,/À 20 charges.*K.O./);
 });
 test("Surcharge: multi-buff aggregation, triggered damage with accurate duration",()=>{
