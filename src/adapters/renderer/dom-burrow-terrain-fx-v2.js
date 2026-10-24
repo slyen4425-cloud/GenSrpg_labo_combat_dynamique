@@ -71,7 +71,17 @@ export function playDomBurrowTerrainFxV2({arena,from,to,travelMs,sprites=null}) 
       node.style.backgroundColor="transparent";
       const count=Math.max(1,Number(visual.frameCount)||20);
       const frameDuration=Math.max(1,Number(visual.frameMs)||70);
-      const spriteDuration=Math.max(1,Math.min(durationMs,count*frameDuration));
+      // The ground-opening sprite must remain perceptible when an authored
+      // attack uses a very short dive phase. It may overlap the hidden
+      // traversal but always finishes before emergence; gameplay timing and
+      // the creature's underground presence remain unchanged.
+      const availableMs = stage === "start"
+        ? Math.max(1,fx.emergeAtMs)
+        : Math.max(1,durationMs);
+      const spriteDuration=Math.max(1,Math.min(
+        availableMs,
+        Math.max(stage === "start" ? durationMs : 1,count*frameDuration)
+      ));
       applySpriteVisual(node,{
         ...visual,
         playbackMode:stage==="travel"?"loop":"stretch"
@@ -91,7 +101,7 @@ export function playDomBurrowTerrainFxV2({arena,from,to,travelMs,sprites=null}) 
           {opacity:1,transform:"scale(1)",offset:.18},
           {opacity:1,transform:"scale(1.03)",offset:.77},
           {opacity:0,transform:"scale(1.08)"}
-        ],durationMs,atMs);
+        ],spriteDuration,atMs);
       }
     }
     spriteStage("start",fx.from,0,Math.max(1,fx.phases.diveMs));
