@@ -17,7 +17,11 @@ test("Soin lumineux preserves the exact creator export in source archive and cha
     "395adeb9b56af9a1b518a99e3f746fbcaa2f7199b239b702347b5415e9fb01cf");
   const raw = await readFile(file);
   const currentAuthor = await readFile(new URL("../../data/capture/source-exports/gensrpg-capture-skill-cap_light_special_1-2026-10-18.json", import.meta.url));
-  assert.deepEqual(raw,currentAuthor,"current Soin lumineux must remain byte-exact to latest author export");
+  const revised = await readFile(new URL("../../data/capture/source-exports/gensrpg-capture-skill-cap_light_special_1-2026-10-24-author-revision.json",import.meta.url));
+  assert.deepEqual(raw,revised,"current Soin lumineux must match the explicit author change");
+  const oldRevision=importCaptureTransferJsonV1(currentAuthor.toString("utf8")).value.draft.definition;
+  assert.deepEqual(oldRevision.effects.map(({kind})=>kind),["heal","consume_marker"],
+    "October 18 creator export remains archived, unmodified");
   const transfer = importCaptureTransferJsonV1(raw.toString("utf8"));
   assert.equal(transfer.kind, "skill");
   const draft = transfer.value.draft;
@@ -28,12 +32,10 @@ test("Soin lumineux preserves the exact creator export in source archive and cha
   assert.equal(draft.definition.form, "self");
   assert.equal(draft.definition.energyCost, 5);
   assert.equal(draft.definition.cooldownMs, 30000);
-  assert.deepEqual(draft.definition.effects.map(({kind}) => kind), ["heal", "consume_marker"]);
+  assert.deepEqual(draft.definition.effects.map(({kind}) => kind), ["heal", "cleanse"]);
   assert.equal(draft.definition.effects[0].amount, 35);
-  assert.equal(draft.definition.effects[1].markerId, "*");
-  assert.equal(draft.definition.effects[1].count, "all");
-  assert.equal(draft.definition.effects[1].minimum, 1);
-  assert.equal(draft.definition.effects[1].effects[0].amount,10);
+  assert.deepEqual(draft.definition.effects[1].statusTags,[],
+    "native cleanse must remove all detrimental states and markers");
   assert.equal(draft.presentation.visual.impact.assetId,
     "pack:capture:sprite-status-healing-aura-01");
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(item => item === path).length, 1);
