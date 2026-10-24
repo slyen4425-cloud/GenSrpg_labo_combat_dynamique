@@ -32,14 +32,14 @@ test("RED: Soin lumineux author skill keeps its effects but cannot target enemie
   assert.deepEqual(skill.targetRelations,["ally","self"]);
   assert.deepEqual(skill.targetLocations,["active","reserve"]);
   assert.equal(skill.category,"heal");
-  assert.deepEqual(skill.effects.map(effect=>effect.kind),["heal","consume_marker"]);
+  assert.deepEqual(skill.effects.map(effect=>effect.kind),["heal","cleanse"]);
   assert.equal(skill.effects[0].amount,35);
   assert.deepEqual([skill.energyCost,skill.preparationMs,skill.cooldownMs],[5,500,30000]);
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(path=>path===skillPath).length,1);
   assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(draft)).value.draft,draft);
 });
 
-test("RED: editor derives ally and self for healing + marker cleansing, without reopening enemy",async () => {
+test("RED: editor derives ally and self for healing + full cleanse, without reopening enemy",async () => {
   const draft=await loadSkill();
   assert.deepEqual(humanSkillTargetRelationsFromTacticalEffectsV1(
     draft.definition.effects,{form:draft.definition.form}

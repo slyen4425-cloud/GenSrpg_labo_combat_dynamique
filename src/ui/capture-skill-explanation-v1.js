@@ -163,7 +163,11 @@ function effectSentence(e){
       (e.maxHeal!=null?" (maximum "+num(e.maxHeal)+" PV)":""))];
     case "knockout":return [finish("Met "+subject(e.targetScope)+" K.O.")];
     case "apply_status":return statusSentence(e);
-    case "cleanse":return [finish("Retire les effets négatifs"+onTarget(e.targetScope))];
+    case "cleanse":return [finish(e.statusTags.length===0?
+      (e.targetScope==="target"?"Supprime tous les effets et marqueurs négatifs de la cible":
+        e.targetScope==="self"?"Supprime tous les effets et marqueurs négatifs de la créature":
+        "Supprime tous les effets et marqueurs négatifs"+onTarget(e.targetScope)):
+      "Supprime les effets négatifs sélectionnés"+onTarget(e.targetScope))];
     case "dispel":return [finish("Retire les bonus"+onTarget(e.targetScope))];
     case "apply_marker":{
       const m=e.marker;
@@ -243,7 +247,18 @@ function descriptions(effects){
   for(let i=0;i<list.length;i++){
     if(used.has(i))continue;
     const e=list[i];
-    if(e.kind==="persistent_zone"){
+    if(e.kind==="heal" && list[i+1]?.kind==="cleanse" &&
+       list[i+1].targetScope===e.targetScope && list[i+1].statusTags?.length===0 &&
+       !used.has(i+1)){
+      // One gameplay sentence, but never misrepresent a tag-filtered cleanse
+      // or an effect that targets a different recipient.
+      used.add(i+1);
+      const subject=e.targetScope==="target"?"à la cible":onTarget(e.targetScope);
+      const clause=e.targetScope==="target"?
+        "et supprime tous ses effets et marqueurs négatifs":
+        "et supprime tous les effets et marqueurs négatifs"+onTarget(e.targetScope);
+      out.push(finish("Rend "+num(e.amount)+" PV "+subject+" "+clause));
+    }else if(e.kind==="persistent_zone"){
       const same=[];
       for(let j=i;j<list.length;j++){
         const x=list[j];

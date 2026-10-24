@@ -50,7 +50,9 @@ test("RED: three author skill IDs remain unique and author parameters are preser
  const heal=(await read(paths[1])).draft;
  assert.equal(heal.definition.cooldownMs,30000);
  assert.deepEqual(heal.definition.targetRelations,["ally","self"]);
- assert.equal(heal.definition.effects[1].effects[0].amount,10);
+ assert.deepEqual(heal.definition.effects.map(x=>x.kind),["heal","cleanse"]);
+ assert.deepEqual(heal.definition.effects[1].statusTags,[],
+   "Lumilo now cleanses every negative status, including detrimental markers");
  const ray=(await read(paths[2])).draft;
  assert.equal(ray.definition.effects[0].amount,14);
  assert.equal(ray.definition.projectileClash.power,1);
