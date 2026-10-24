@@ -186,17 +186,11 @@ function renderProfile(){
     details.id=detailId;
     details.hidden=true;
     if(skill.explanation){
-      details.append(element("p","skill__intro",skill.explanation.heading));
-      const meta=element("div","skill__meta");
-      for(const entry of skill.explanation.meta)meta.append(element("span",null,entry));
-      details.append(meta);
-      for(const section of skill.explanation.sections){
-        const part=element("section","skill__section");
-        part.append(element("h4",null,section.title));
-        for(const line of section.lines)part.append(element("p",null,line));
-        details.append(part);
-      }
-    }else details.append(element("p",null,"Définition de compétence indisponible."));
+      const prose=element("div","skill__prose");
+      for(const sentence of skill.explanation.sentences)
+        prose.append(element("p",null,sentence));
+      details.append(prose);
+    }else details.append(element("p",null,"Description de compétence indisponible."));
     toggle.addEventListener("click",()=>{
       const shouldOpen=details.hidden;
       for(const open of elements.skills.querySelectorAll(".skill__details"))open.hidden=true;
