@@ -1,4 +1,5 @@
 import {normalizeCaptureActiveSkillLoadoutV1} from "../contracts/capture-active-skill-loadout-v1.js";
+import {captureStatEffectSummaryV1} from "./capture-stat-effect-summary-v1.js";
 
 // The existing Capture loadout owns equipment; the Bestiary is read-only.
 const ELEMENT_LABELS = Object.freeze({
@@ -73,8 +74,8 @@ export function captureBestiaryCardsV1({
       icon
     });
   }
-  const labelsById = new Map((Array.isArray(statRegistry?.stats) ? statRegistry.stats : [])
-    .filter(x => typeof x?.id === "string").map(x => [x.id, x.label || x.id]));
+  const definitionsById = new Map((Array.isArray(statRegistry?.stats) ? statRegistry.stats : [])
+    .filter(x => typeof x?.id === "string").map(x => [x.id, x]));
   const cards = [];
   const seen = new Set();
   for (const transfer of creatureTransfers) {
@@ -91,7 +92,15 @@ export function captureBestiaryCardsV1({
     seen.add(id);
     const measures = Object.entries(transfer?.statValues?.values ?? {})
       .filter(([,value]) => statNumber(value) !== null)
-      .map(([key,value]) => ({key,label:labelsById.get(key) ?? bestiaryElementLabelV1(key),value}));
+      .map(([key,value]) => {
+        const definition = definitionsById.get(key);
+        return Object.freeze({
+          key, label:definition?.label ?? bestiaryElementLabelV1(key), value,
+          ...(definition ? {
+            effectSummary:captureStatEffectSummaryV1({definition,value})
+          } : {})
+        });
+      });
     const resistances = (Array.isArray(draft.resistances) ? draft.resistances : [])
       .filter(item => typeof item?.kind === "string" &&
         statNumber(item.value) !== null && item.value !== 0)
