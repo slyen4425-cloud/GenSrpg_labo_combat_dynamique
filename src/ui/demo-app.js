@@ -23,6 +23,7 @@ import {
 } from "../adapters/renderer/dom-creature-dodge-fx-v1.js";
 import { planLocomotionCueFx } from "../core/fx/locomotion-fx-plan.js";
 import { playDomBurrowTerrainFxV2 } from "../adapters/renderer/dom-burrow-terrain-fx-v2.js";
+import {defaultBurrowSpritesV1} from "../assets/burrow-terrain-builtins-v1.js";
 import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
 
 // Pure presentation choice: slot "player" sees the creature's back,
@@ -713,7 +714,8 @@ export async function mountCombatDemo({
       onPhase = null,
       onContact = null,
       onFootfall = null,
-      holdOnContact = false
+      holdOnContact = false,
+      burrowTerrainSprites = null
     } = {}
   ) {
     if (disposed) {
@@ -842,7 +844,8 @@ export async function mountCombatDemo({
           arena,
           from: toGround(actorRect),
           to: toGround(targetRect),
-          travelMs
+          travelMs,
+          sprites: burrowTerrainSprites ?? defaultBurrowSpritesV1()
         });
         activeBurrowTerrainFxBySlot.set(slotKey,burrowTerrainFx);
       } catch (error) {
