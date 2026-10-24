@@ -168,7 +168,7 @@ function effectSentence(e){
         const t=m.onStackThreshold;
         lines.push(finish("À "+num(t.count)+" charges, "+
           descriptions(t.effects).map(x=>x.toLowerCase().replace(/\.$/,"")).join(" et ")+
-          (t.consume==="reset", puis les charges sont remises à zéro":"")));
+          (t.consume==="reset"?", puis les charges sont remises à zéro":"")));
       }
       if(m.onStackAdded?.effects?.length){
         lines.push(finish("À chaque charge ajoutée, "+
