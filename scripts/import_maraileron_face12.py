@@ -138,7 +138,7 @@ def main():
                 "compatibility":{"uses":["combat","capture","editor"]}})
         assert set(z.namelist())==expected,("Missing or unexpected source files",set(z.namelist())^expected)
         planned[BASE/"sources"/"maraileron_face12_readme.txt"]=z.read(ROOT+"README.txt")
-    assert len(planned)==35,len(planned)
+    assert len(planned)==37,len(planned)
     assert all(not p.exists() for p in planned),"Target asset already exists"
     for p,b in planned.items():
         p.parent.mkdir(parents=True,exist_ok=True)
