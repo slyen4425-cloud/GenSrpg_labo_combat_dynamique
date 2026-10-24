@@ -1,3 +1,14 @@
+## 2026-10-24 — Lot de 5 icônes acides et venimeuses — intégration labo Combat
+
+- **Demande auteur** : publier Crachat acide, Tempête acide, Morsure venimeuse, Croc de venin, Poison corrosif selon le visuel Monster Capture généré, puis les raccorder au sélecteur d'icônes du labo Combat sans modifier les capacités enregistrées.
+- **Propriétaire** : bibliothèque unique `global-assets`; base `de162f32ee44e4a615b0df2d00c7df91cd1174a5`, checkpoint `checkpoint/global-assets-before-five-poison-icons-2026-10-24`, branche `work/global-assets-five-poison-icons-2026-10-24`.
+- **Source réelle** : `icons_poison_monster_capture_5.zip` dans la conversation, SHA256 `716898c701e6d6f08b779f467d40b9a1bf003ac3703379a039b1fad6822b2600`; 5 PNG 512² + 5 WebP RGB 128², cinq illustrations différenciées et inspectées.
+- **Périmètre autorisé** : cinq nouveaux `assets/library/capture/icons/skills/icon_skill_*.webp`, cinq nouvelles entrées catalogue `data/assets/catalog/global-visual-assets.v1.json`, manifeste de provenance, sentinelle, documentation de lot et ce suivi. **Protégés** : toute autre image, moteur, UI, fiches `configuredSkills` et `configuredCreatures`, `main`, `gh-pages`, `Zombicide-40k`, exploration.
+- **Raccordement** : l'éditeur `gh-pages` charge déjà à chaud le catalogue `global-assets` ; la sélection `data-skill-icon` consomme les `assetId` dont `assetType:icon` et `compatibility.uses:editor`. On vérifie les 5 médias, ces cinq références dans le catalogue et le chemin UI sans ajout de règle de jeu, sans remplacement de réglage auteur et sans auto-affectation implicite.
+- **Gates** : vraies images présentes et cohérentes (SHA256, Git blob, dimensions, RIFF/VP8), cinq IDs uniques, catalogue cohérent, CI GitHub au commit final, revue du diff, checkpoint technique GREEN, publication fast-forward sur `global-assets`. Essai manuel en jeu/mobile distinct.
+
+---
+
 ## 2026-10-24 — Guêpe cybernétique PLAYER : vol + attaque (12f nettoyées)
 
 - Source réelle : global-assets/_incoming/GUEPE_CYBERNETIQUE_MOUVEMENT_ATTAQUE_12F_NETTOYES.zip ; 13 036 446 octets ; SHA256 3912ff41f69f0e999ee47abf834030e19f2a991ec30ede72cad26156515f4923 ; Git blob ef16670bf80892dbb550125d4709b5beb23562b1 ; CRC OK. Nettoyage des artefacts lumineux à gauche déjà validé par l'auteur. Aucune nouvelle génération ou retouche.
