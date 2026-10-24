@@ -99,10 +99,24 @@ test("Jet acide replaces one historical native ID in configuredSkills without to
   assert.equal(creature.loadout.slots.find(x=>x.id==="slot-2").skillId,id);
 });
 test("Jet acide: real CombatSession deals Poison damage and applies 15s defense debuff",()=>{
+  // A real Capture combatant carries the registry's defense projection.
+  // The old test-only fighter omitted this, triggering unsupported_status_stat.
+  const defenseRule=JSON.parse(root("data/capture/monster-capture-stat-registry.v1.json"))
+    .stats.find(x=>x.id==="defense");
+  assert.ok(defenseRule);
   const fighter=id=>({
     id,maxHp:100,initialHp:100,maxEnergy:50,initialEnergy:50,
     energyChargeAmount:0,energyChargeIntervalMs:2000,
-    movementEnergyPerStep:0,chargeTimeModifierPct:0
+    movementEnergyPerStep:0,chargeTimeModifierPct:0,
+    statValuesById:{defense:10},
+    statEffectRulesById:{defense:{
+      damageChannel:defenseRule.damageChannel,
+      resistanceChannel:defenseRule.resistanceChannel,
+      damagePctPerPoint:defenseRule.damagePctPerPoint,
+      resistancePctPerPoint:defenseRule.resistancePctPerPoint,
+      chargeTimeReductionPctPerPoint:defenseRule.chargeTimeReductionPctPerPoint,
+      damageReductionPctPerPoint:defenseRule.damageReductionPctPerPoint
+    }}
   });
   const session=createCombatSession({fighters:[fighter("player"),fighter("enemy")]});
   const result=session.useSkill({actorId:"player",targetId:"enemy",skill});
@@ -119,6 +133,6 @@ test("Bestiaire reads actual Jet acide mechanics without an invented icon",()=>{
   assert.match(sentences,/16 dégâts de Poison/);
   assert.match(sentences,/ignore 50 % de la résistance/);
   assert.match(sentences,/ignore 50 % de la réduction des dégâts/);
-  assert.match(sentences,/réduit la défense de 250 points.*15 secondes/);
+  assert.match(sentences,/Réduit la défense de 250 points.*15 secondes/);
   assert.doesNotMatch(sentences,/Attaque Poison de puissance 5|Portée|Préparation|Trajet/);
 });
