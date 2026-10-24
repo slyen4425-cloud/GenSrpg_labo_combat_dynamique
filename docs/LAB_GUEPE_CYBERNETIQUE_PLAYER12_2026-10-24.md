@@ -9,3 +9,11 @@ Exploitation des fichiers PNG **octet pour octet**, sans interpolation ni refont
 Périmètre de sécurité : base \`global-assets@dd45ec7848aed0aa60136cd064eaa905f4cddd95\` (CI 40128651363 SUCCESS), checkpoint départ \`checkpoint/global-assets-before-guepe-cybernetique-player12-2026-10-24\`, branche \`work/global-assets-guepe-cybernetique-player12-2026-10-24\`. Aucune modification des modèles runtime, des autres créatures, du gameplay, de l'UI, de \`main\`, \`gh-pages\` ou de GenSrpG. Catalogue accessible dans l'éditeur quand le catalogue distant est chargé ; **pas d'affectation automatique** dans la fiche de la guêpe, ni de validation mobile présumée.
 
 Validation exigée: importeur GH Actions et \`npm run ci\`, CI sur le SHA réel incluant les médias, contrôle diff, checkpoint GREEN exact, fast-forward sous lease vers \`global-assets\`, puis contrôle CI après publication. Preview artistique en jeu par l'auteur.
+
+## Import réel et validation
+
+- Import automatisé GitHub Actions run `40129096598` : **SUCCESS** après correction ciblée d'un test d'opacité trop strict (trois poses RGBA ont un maximum alpha de 253/254 au lieu de 255, sans défaut de rendu). Premier run `40128975882` rouge pour cette seule assertion ; aucun média n'avait été committé. Le correctif n'a modifié aucun pixel.
+- Les 35 médias physiques ont été ajoutés par le commit `29084f58a3d16cae5077b05f8243a6020f497978` : 24 PNG RGBA 512×512 octet pour octet issus du ZIP, 2 strips WebP 4608×384, 6 previews GIF/WebP/planche et 3 manifestes. Hash original ZIP et 24 empreintes PNG vérifiés ; 12 frames distinctes par séquence, marges alpha minimales 75 px (mouvement) et 75 px (attaque).
+- Catalogue work : **233 assets, 132 sprites, 44 créatures** ; deux nouveaux IDs uniques résolvent les vrais atlas en `view=player`. Le `npm run ci` de l'importeur est passé avant le commit média.
+- Diff work vs base : **42 fichiers** strictement dans le périmètre, dont 40 nouveaux et 2 modifiés (catalogue + journal). Aucun changement de runtime guêpe, d'une autre créature, du moteur ni de la fiche auteur.
+- Reste avant publication : CI séparée du SHA **final incluant médias et documentation**, checkpoint GREEN et fast-forward `global-assets` sous lease. La validation mobile en jeu reste distincte.
