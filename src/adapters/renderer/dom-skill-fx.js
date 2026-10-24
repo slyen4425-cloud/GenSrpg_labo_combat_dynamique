@@ -3338,6 +3338,9 @@ export function createDomSkillFxRenderer({
 
   return Object.freeze({
     play,
+    burrowTerrainForSkill(skillId,sourceView,targetView) {
+      return presentationForSkill(skillId,{sourceView,targetView,fxType:"burrow"})?.burrowTerrain ?? null;
+    },
     syncPersistentZones,
     sampleZoneSpatialContext,
     cancelProjectileFor,
