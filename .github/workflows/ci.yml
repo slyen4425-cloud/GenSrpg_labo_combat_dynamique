@@ -25,6 +25,8 @@ jobs:
         run: node tests/browser/capture-creature-library-smoke.mjs
       - name: Real Chromium 2.5D arena shadow and flying light projection
         run: node tests/browser/shadow-light-real-render-smoke.mjs
+      - name: Real Chromium Capture Bestiaire (front only)
+        run: node tests/browser/capture-bestiary-smoke.mjs
 
   firestorm-zone-growth-browser:
     runs-on: ubuntu-latest
