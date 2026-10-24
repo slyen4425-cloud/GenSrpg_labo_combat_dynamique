@@ -126,17 +126,17 @@
       },
       "viewOverrides": {
         "player": {
-          "displayScale": 1.6,
+          "displayScale": 1.4,
           "position": {
             "x": 0,
-            "y": 40
+            "y": 10
           }
         },
         "opponent": {
-          "displayScale": 1,
+          "displayScale": 0.8,
           "position": {
             "x": 0,
-            "y": 0
+            "y": 40
           }
         }
       },
@@ -199,19 +199,19 @@
     "slots": [
       {
         "id": "slot-1",
-        "skillId": "cap_poison_atk_1"
-      },
-      {
-        "id": "slot-2",
         "skillId": "cap_poison_atk_2"
       },
       {
-        "id": "slot-3",
+        "id": "slot-2",
         "skillId": "cap_poison_atk_3"
       },
       {
+        "id": "slot-3",
+        "skillId": "cap_poison_special_2"
+      },
+      {
         "id": "slot-4",
-        "skillId": "cap_poison_atk_4"
+        "skillId": "cap_poison_atk_6"
       },
       {
         "id": "slot-ultimate",
