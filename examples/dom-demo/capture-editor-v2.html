@@ -1493,6 +1493,44 @@
             <option value="teleport">Téléportation</option>
           </select>
         </label>
+        <fieldset class="editor-choice-group" data-burrow-stage-fields hidden>
+          <legend>Attaque souterraine — sprites du terrain</legend>
+          <p class="note">Ces trois animations suivent automatiquement l’enfouissement, le trajet sous terre et l’émergence. Les dimensions et décalages sont visuels uniquement.</p>
+          <div class="editor-choice-group">
+            <h3>Départ — creusement</h3>
+            <p class="note">Animation au moment où la créature s’enfonce</p>
+            <label>Sprite <select data-burrow-start-asset><option value="">Aucun</option><option value="burrow:start" selected>Départ — creusement · 20 frames</option></select></label>
+            <div class="timing-grid">
+              <label>Taille × <input type="number" min="0.25" max="5" step="0.05" value="1" data-burrow-start-scale></label>
+              <label>Décalage X (px) <input type="number" min="-400" max="400" value="0" data-burrow-start-x></label>
+              <label>Décalage Y (px) <input type="number" min="-400" max="400" value="0" data-burrow-start-y></label>
+              <label>Vitesse (ms/frame) <input type="number" min="20" max="500" step="1" value="70" data-burrow-start-frame-ms></label>
+            </div>
+          </div>
+          <div class="editor-choice-group">
+            <h3>Trajet — sillon</h3>
+            <p class="note">Animation mobile qui suit le déplacement souterrain</p>
+            <label>Sprite <select data-burrow-travel-asset><option value="">Aucun</option><option value="burrow:travel" selected>Trajet — sillon · 20 frames</option></select></label>
+            <div class="timing-grid">
+              <label>Taille × <input type="number" min="0.25" max="5" step="0.05" value="1" data-burrow-travel-scale></label>
+              <label>Décalage X (px) <input type="number" min="-400" max="400" value="0" data-burrow-travel-x></label>
+              <label>Décalage Y (px) <input type="number" min="-400" max="400" value="0" data-burrow-travel-y></label>
+              <label>Vitesse (ms/frame) <input type="number" min="20" max="500" step="1" value="60" data-burrow-travel-frame-ms></label>
+            </div>
+          </div>
+          <div class="editor-choice-group">
+            <h3>Arrivée — émergence</h3>
+            <p class="note">Animation à la sortie du sol</p>
+            <label>Sprite <select data-burrow-impact-asset><option value="">Aucun</option><option value="burrow:impact" selected>Arrivée — émergence · 20 frames</option></select></label>
+            <div class="timing-grid">
+              <label>Taille × <input type="number" min="0.25" max="5" step="0.05" value="1" data-burrow-impact-scale></label>
+              <label>Décalage X (px) <input type="number" min="-400" max="400" value="0" data-burrow-impact-x></label>
+              <label>Décalage Y (px) <input type="number" min="-400" max="400" value="0" data-burrow-impact-y></label>
+              <label>Vitesse (ms/frame) <input type="number" min="20" max="500" step="1" value="70" data-burrow-impact-frame-ms></label>
+            </div>
+          </div>
+        </fieldset>
+
 
         <fieldset class="editor-choice-group skill-movement-choices">
           <legend>Présences que cette capacité peut toucher</legend>
