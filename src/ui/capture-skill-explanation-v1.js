@@ -308,9 +308,38 @@ function conditions(d){
     d.markerCost.markerId+" "+(d.markerCost.source==="target"?"sur la cible":"sur la créature")));
   return notes;
 }
+// Exceptional reach only: the standard surface target is never a tooltip
+// by itself. The explicit list is owned by SkillDefinition/Combat Rules;
+// intangible immunity penetration is a separate, orthogonal flag.
+function exceptionalReachSentence(d){
+  const configured=Array.isArray(d.hitPresenceStates);
+  const flight=configured && d.hitPresenceStates.includes("airborne");
+  const underground=configured && d.hitPresenceStates.includes("underground");
+  const intangible=d.hitsIntangible===true;
+  if(!flight && !underground && !intangible)return null;
+
+  const uncommon=[
+    ...(flight?["en vol"]:[]),
+    ...(underground?["sous terre"]:[])
+  ];
+  const surfaceAllowed=!configured || d.hitPresenceStates.includes("surface");
+  if(uncommon.length===0) {
+    return "Peut aussi toucher les créatures immatérielles.";
+  }
+  const targets=words(uncommon);
+  if(surfaceAllowed) {
+    return "Peut aussi toucher les créatures "+targets+
+      (intangible?", même immatérielles.":".");
+  }
+  // Some authored attacks deliberately omit surface from hitPresenceStates;
+  // avoid falsely claiming that they can also hit ordinary ground targets.
+  return "Peut toucher les créatures "+targets+
+    (intangible?", même immatérielles":"")+", mais pas celles au sol.";
+}
 function specialRules(d){
   const list=[];
-  if(d.hitsIntangible)list.push("Peut toucher une créature immatérielle.");
+  const exceptionalReach=exceptionalReachSentence(d);
+  if(exceptionalReach)list.push(exceptionalReach);
   if(d.dodgeable===false)list.push("Cette attaque ne peut pas être esquivée.");
   if(d.reaction.reflectForms.length)list.push(finish("Renvoie les attaques "+
     words(d.reaction.reflectForms)));
