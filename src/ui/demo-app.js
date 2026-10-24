@@ -22,6 +22,7 @@ import {
   playDomCreatureDodgeFxV1
 } from "../adapters/renderer/dom-creature-dodge-fx-v1.js";
 import { planLocomotionCueFx } from "../core/fx/locomotion-fx-plan.js";
+import { playDomBurrowTerrainFxV2 } from "../adapters/renderer/dom-burrow-terrain-fx-v2.js";
 import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
 
 // Pure presentation choice: slot "player" sees the creature's back,
@@ -330,6 +331,13 @@ export async function mountCombatDemo({
 
   const activeApproachBySlot = new Map();
   const activeDodgeFxBySlot = new Map();
+  const activeBurrowTerrainFxBySlot = new Map();
+
+  function cancelBurrowTerrainFxFor(slotKey) {
+    const handle = activeBurrowTerrainFxBySlot.get(slotKey);
+    activeBurrowTerrainFxBySlot.delete(slotKey);
+    handle?.cancel();
+  }
 
   function slotOf(slotKey) {
     const slot = slots[slotKey];
@@ -819,6 +827,29 @@ export async function mountCombatDemo({
         )
       : null;
     const handle = slot.renderer.play(plan);
+    // Burrow FX follows the same visual travelMs/geometry as Animation Core.
+    // It never owns collisions, gameplay presence or impact timing.
+    cancelBurrowTerrainFxFor(slotKey);
+    let burrowTerrainFx = null;
+    if (approachMode === "burrow") {
+      const toGround = (rect) => ({
+        x: rect.left - arenaRect.left + rect.width / 2,
+        y: Math.max(8,Math.min(arenaRect.height - 8,
+          rect.bottom - arenaRect.top - Math.min(25,rect.height * .12)))
+      });
+      try {
+        burrowTerrainFx = playDomBurrowTerrainFxV2({
+          arena,
+          from: toGround(actorRect),
+          to: toGround(targetRect),
+          travelMs
+        });
+        activeBurrowTerrainFxBySlot.set(slotKey,burrowTerrainFx);
+      } catch (error) {
+        // A missing animation API may suppress decoration, never combat.
+        console.warn("Burrow terrain FX unavailable",error);
+      }
+    }
     // Flight/gliding/teleport have no footfalls: one travel sound at takeoff.
     if (onFootfall && !(plan.cues ?? []).some(cue => cue.type === "footfall")) {
       try { onFootfall({ type: "movement", atMs: 0, intensity: 1 }); } catch {}
@@ -948,6 +979,9 @@ export async function mountCombatDemo({
           activeApproachBySlot.delete(slotKey);
         }
         movementAppearance?.cancel?.();
+        if (activeBurrowTerrainFxBySlot.get(slotKey) === burrowTerrainFx) {
+          cancelBurrowTerrainFxFor(slotKey);
+        }
         slot.setApproachActive(false);
         for (const timerId of phaseTimers) {
           globalThis.clearTimeout(timerId);
@@ -966,6 +1000,7 @@ export async function mountCombatDemo({
       activeApproachBySlot.get(slotKey) ?? null;
     activeApproach?.contactWatcher?.cancel();
     activeApproachBySlot.delete(slotKey);
+    cancelBurrowTerrainFxFor(slotKey);
     cancelDodgeAppearanceFx(slotKey);
     slot.setApproachActive(false);
     slot.cancelMovementAppearance();
@@ -991,6 +1026,7 @@ export async function mountCombatDemo({
 
     const slot = slotOf(slotKey);
     cancelDodgeAppearanceFx(slotKey);
+    cancelBurrowTerrainFxFor(slotKey);
     slot.setCreature(meta, displayName);
     slot.setVisible(true);
     startIdleFor(slotKey);
@@ -1007,6 +1043,7 @@ export async function mountCombatDemo({
     const slot = slotOf(slotKey);
     if (!visible) {
       cancelDodgeAppearanceFx(slotKey);
+      cancelBurrowTerrainFxFor(slotKey);
     }
     slot.setVisible(Boolean(visible));
     if (slot.visible) {
@@ -1093,6 +1130,9 @@ export async function mountCombatDemo({
       lightControls?.removeEventListener?.("input", onLightControlInput);
       lightControls?.removeEventListener?.("change", onLightControlInput);
       activeApproachBySlot.clear();
+      for (const key of activeBurrowTerrainFxBySlot.keys()) {
+        cancelBurrowTerrainFxFor(key);
+      }
       for (
         const handle of
         activeDodgeFxBySlot.values()
