@@ -15,7 +15,9 @@ const media=(data,file,assetType="sprite")=>({
 const catalog={assets:[
   media(visual.front,"capture/creatures/venombre/runtime/venombre_opponent.webp"),
   media(visual.back,"capture/creatures/venombre/runtime/venombre_player.webp"),
-  media(visual.icon,"capture/creatures/venombre/runtime/venombre_icon.webp","portrait")
+  media(visual.icon,"capture/creatures/venombre/runtime/venombre_icon.webp","portrait"),
+  {id:"pack:capture:icon-skill-toxine-01",assetType:"icon",mediaType:"image",
+    resource:{file:"capture/icons/skills/icon_skill_toxine_01.webp"}}
 ]};
 const probe=[
   "<script>",
@@ -47,6 +49,17 @@ const probe=[
   "      if(!frontSeen)throw Error('front-only image missing');",
   "      if(document.querySelector('[data-bestiary]').dataset.bestiaryView!=='detail')throw Error('gallery did not open a page');",
   "      if(document.querySelectorAll('[data-bestiary-skills] .skill').length!==5)throw Error('equipped five-slot loadout not rendered');",
+  "      const skillButtons=[...document.querySelectorAll('[data-bestiary-skills] .skill__toggle[aria-expanded]')];",
+  "      const venomButton=skillButtons.find(button=>button.textContent.includes('Morsure venimeuse'));",
+  "      if(!venomButton||!venomButton.querySelector('img.skill__icon'))throw Error('published skill icon not displayed');",
+  "      if(venomButton.querySelector('img.skill__icon').src.includes('data:'))throw Error('fake icon used');",
+  "      venomButton.click();",
+  "      if(venomButton.getAttribute('aria-expanded')!=='true')throw Error('skill details did not open');",
+  "      const explained=venomButton.nextElementSibling;",
+  "      if(explained.hidden||!explained.textContent.includes('15 dégâts Poison')||!explained.textContent.includes('5 dégâts Physique toutes les 5 s'))throw Error('real skill mechanics not explained');",
+  "      if(explained.textContent.includes('Morsure venimeuse injecte'))throw Error('handwritten note leaked');",
+  "      venomButton.click();",
+  "      if(!explained.hidden)throw Error('skill detail did not close');",
   "      const notes=[...document.querySelectorAll('[data-bestiary-measures] .stat__effect')].map(node=>node.textContent);",
   "      if(notes.length<2||!notes.some(v=>v.includes('1 point = +1 PV max')))throw Error('editor-format stat effect missing');",
   "      if(!notes.some(v=>v.includes('temps de charge')))throw Error('charge stat effect missing');",
@@ -59,7 +72,7 @@ const probe=[
   "      if(document.querySelector('[data-bestiary-count]').textContent!=='0 / 1')throw Error('search not connected');",
   "      input.value='venombre';input.dispatchEvent(new Event('input',{bubbles:true}));",
   "      if(document.querySelectorAll('.creature-choice').length!==1)throw Error('search reset failed');",
-  "      document.body.dataset.bestiarySmoke='pass:real-transfer:detail-route:5-equipped-slots:no-legacy-stats';",
+  "      document.body.dataset.bestiarySmoke='pass:real-transfer:icon:generated-explanation:click:stat-tiles';",
   "    }catch(error){document.body.dataset.bestiarySmoke='error:'+error.message;}",
   "    observer.disconnect();",
   "  },1700);",

@@ -1,5 +1,6 @@
 import {normalizeCaptureActiveSkillLoadoutV1} from "../contracts/capture-active-skill-loadout-v1.js";
 import {captureStatEffectSummaryV1} from "./capture-stat-effect-summary-v1.js";
+import {describeCaptureSkillV1} from "./capture-skill-explanation-v1.js";
 
 // The existing Capture loadout owns equipment; the Bestiary is read-only.
 const ELEMENT_LABELS = Object.freeze({
@@ -13,10 +14,11 @@ export function bestiaryElementLabelV1(key) {
   if (typeof key !== "string" || !key.trim()) return "Non précisé";
   return ELEMENT_LABELS[key] ?? key.charAt(0).toLocaleUpperCase("fr") + key.slice(1);
 }
-function validPublishedImage(asset) {
+function validPublishedImage(asset, role) {
+  const allowedTypes = role === "icon" ? ["icon","portrait"] : ["sprite","portrait"];
   return Boolean(
     asset && asset.mediaType === "image" &&
-    (asset.assetType === "sprite" || asset.assetType === "portrait") &&
+    allowedTypes.includes(asset.assetType) &&
     typeof asset.resource?.file === "string" &&
     /^(capture|core)\/[\w./-]+\.(png|webp|jpg|jpeg)$/i.test(asset.resource.file) &&
     !asset.resource.file.includes("../") &&
@@ -26,11 +28,11 @@ function validPublishedImage(asset) {
 function statNumber(value) {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
-function readyVisual(assetMap, binding) {
+function readyVisual(assetMap, binding, role = "portrait") {
   const id = binding?.assetId;
   if (typeof id !== "string" || !id) return null;
   const asset = assetMap.get(id);
-  if (!validPublishedImage(asset)) return null;
+  if (!validPublishedImage(asset, role)) return null;
   return Object.freeze({assetId:id, file:asset.resource.file});
 }
 /**
@@ -56,8 +58,9 @@ export function captureBestiaryCardsV1({
     if (typeof definition?.id !== "string" ||
         typeof definition?.name !== "string") continue;
     skillsById.set(definition.id, {
-      name:definition.name, description:"", element:definition.element ?? null,
-      requiredLevel:null, icon:null
+      name:definition.name, element:definition.element ?? null,
+      requiredLevel:null, icon:null,
+      explanation:describeCaptureSkillV1(definition)
     });
   }
   for (const transfer of skillTransfers) {
@@ -65,13 +68,13 @@ export function captureBestiaryCardsV1({
     const definition = draft?.definition;
     if (!definition || typeof definition.id !== "string" ||
         typeof definition.name !== "string") continue;
-    const icon = readyVisual(assets, draft?.presentation?.visual?.icon);
+    const icon = readyVisual(assets, draft?.presentation?.visual?.icon, "icon");
     skillsById.set(definition.id, {
       name:definition.name,
-      description: typeof draft.description === "string" ? draft.description : "",
       element:definition.element || null,
       requiredLevel: statNumber(draft.requiredLevel),
-      icon
+      icon,
+      explanation:describeCaptureSkillV1(definition)
     });
   }
   const definitionsById = new Map((Array.isArray(statRegistry?.stats) ? statRegistry.stats : [])
@@ -87,7 +90,7 @@ export function captureBestiaryCardsV1({
     const portrait = readyVisual(assets, visual?.front);
     // Readiness checks all three authored views, never displays the back.
     const backReady = Boolean(readyVisual(assets, visual?.back));
-    const icon = readyVisual(assets, visual?.icon);
+    const icon = readyVisual(assets, visual?.icon, "icon");
     if (!portrait || !backReady || !icon) continue;
     seen.add(id);
     const measures = Object.entries(transfer?.statValues?.values ?? {})
