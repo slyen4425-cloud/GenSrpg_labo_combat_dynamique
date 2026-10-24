@@ -1,3 +1,12 @@
+## 2026-10-24 — Bestiaire Capture : fiches face seule, données auteur existantes (chantier)
+- Référence : docs/LAB_BESTIAIRE_CAPTURE_2026-10-24.md. Base gh-pages@812ade5548216c94e2367ca149400f3c85e5454b. Checkpoint START checkpoint/lab-start-bestiary-creature-cards-2026-10-24 ; branche work/lab-bestiary-creature-cards-2026-10-24.
+- Autorités : transferts Capture Showcase et catalogue média global-assets existants ; modèle de consultation pur ; UI sans duplication de propriété.
+- Autorisés : src/ui/capture-bestiary-cards-v1.js, examples/dom-demo/bestiary.{html,css,js}, seul lien navigation dans capture-editor-v2.html, tests dédiés, documentation.
+- Protégés : combats, stats, ombres, assets, capacités, main, global-assets, GenSrpG principal. Face uniquement à l'écran ; autres visuels seulement vérifiés pour qualifier une fiche terminée.
+- Tests prévus : complétude, résolution d'assets enregistrés, compétences non inventées, navigation, filtre, présence UI, CI avant GREEN.
+
+---
+
 ## 2026-10-23 — Apparence : décalage manuel X/Y d'ombre propre à la créature (validation Venombre en attente)
 - Retour auteur : Venombre bipède mais silhouette à queue plus basse ; l'ombre peut être attachée au mauvais endroit malgré le calcul de contact alpha unifié. L'auteur refuse le rendu précédent et demande une option manuelle X/Y dans Apparence, conservant l'automatisme normal.
 - Source : gh-pages@4d149a92ee368f97e737a68e9a125c3422c49c3a (contient le correctif shadow-ground-anchor du 23/10). Départ checkpoint/lab-start-creature-shadow-offset-2026-10-23 et branche work/lab-creature-shadow-offset-2026-10-23.
