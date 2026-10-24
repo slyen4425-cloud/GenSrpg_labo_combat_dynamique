@@ -1,3 +1,15 @@
+## 2026-10-24 — Lumilo / Soin lumineux : soin + purification de tous les effets négatifs (validation CI)
+- Demande auteur explicite : la compétence doit supprimer tous les effets et marqueurs négatifs sur la créature soignée, pas consommer l'ensemble des marqueurs. Description courte et fidèle dans le Bestiaire.
+- Base gh-pages@d18c1d3134d087a83124817f2d25f262ec6eb183 ; START checkpoint/lab-start-lumilo-cleanse-2026-10-24 ; branche work/lab-lumilo-cleanse-2026-10-24.
+- Diagnostic : source du 18 octobre Soin lumineux contient 35 PV + consume_marker('*', all), retirant aussi les marqueurs positifs/neutres et infligeant 10 dégâts. Le type SkillEffectV1 'cleanse' existe déjà dans Combat Rules et supprime les statuts dont polarité est detrimental, y compris marqueurs de même polarité. Une liste statusTags vide signifie tous.
+- Correction : conserve le soin 35 PV, remplace uniquement l'effet consume_marker par cleanse(targetScope=target,statusTags=[]). N'ajoute aucun moteur. Pas de nouveau mécanisme global. Exports d'auteur historiques du 17/18 octobre préservés ; nouveau snapshot révision autorisée conservé dans source-exports. Identité, loadout, stats, coût, cooldown, présentation et audio inchangés.
+- Texte généré Bestiaire : « Rend 35 PV à la cible et supprime tous ses effets et marqueurs négatifs. » Autres cleanse filtrés ne promettent pas 'tous'.
+- Tests sentinelles : vrai CombatSession appliquant malus/bonus, marqueurs négatifs, positifs et neutres avant de lancer Soin lumineux ; soin exact, seuls effets négatifs retirés, zéro dommage collatéral et fonctionnement sans marqueur. Sentinelles source/éditeur/roster mises à jour.
+- Périmètre : preset cap_light_special_1, nouvelle archive, formatteur Bestiaire, tests et documentation. Combat Rules, autres presets, éditeur, assets, projet GenSrpG principal protégés. Référence docs/LAB_LUMILO_CLEANSE_ALL_NEGATIVE_2026-10-24.md.
+- Jalon : CI complète 5 jobs, checkpoint GREEN SHA exact puis fusion gh-pages ; vérification visuelle smartphone auteur séparée.
+
+---
+
 ## 2026-10-24 — Bestiaire : cas particuliers cibles volantes/souterraines/immatérielles (validation CI)
 - Demande : mentionner un avantage tactique de ciblage rare, sans réintroduire le jargon ou les détails techniques.
 - BASE gh-pages@ad3ca998492c690ae9b111a29474432e64910f93 ; START checkpoint/lab-start-bestiary-special-targets-2026-10-24 ; branche work/lab-bestiary-special-targets-2026-10-24.
