@@ -1,3 +1,15 @@
+## 2026-10-24 — Jet acide (Venombre) : intégration de l'export auteur (validation CI)
+- Demande : importer `gensrpg-capture-skill-cap_poison_atk_3.json` sans modifier aucune valeur ni créer de doublon.
+- Base gh-pages@f5c3c3eef363ad6c6f943328b36ee9de6e9f13be, START `checkpoint/lab-start-jet-acide-2026-10-24`, travail `work/lab-jet-acide-2026-10-24`.
+- Diagnostic : l'ID `cap_poison_atk_3` figurait au catalogue natif historique mais pas parmi les transferts Showcase. Venombre l'équipe déjà en slot-2. La nouvelle version remplace l'entrée configurée par ID stable lors de l'hydratation ; native historique conservée pour migration.
+- Propriétaire : `data/capture/showcase/cap_poison_atk_3.capture-skill-transfer-v1.json` et inscription unique au manifeste `src/catalogs/capture-showcase-skill-presets-v1.js`. Archive octet pour octet `data/capture/source-exports/cap_poison_atk_3.author-export-2026-10-24.json`, SHA256 `b6c003a3a8a8fa898a4f5c8836e93269b511368c875ddebd0eac403ed68f6d2a`.
+- Effets exportés : dégâts 16 Poison, ignore 50 % résistance et 50 % réduction de dégâts ; -250 Défense pendant 15 s ; 4 énergie, recharge 30 s, statut visuel `status-2` référencé sans remplacement de visuel. `visual={}` et `audio={}` conservés (aucune icône inventée).
+- Périmètre : transfert / archive / catalogue / sentinelles intégration / docs, sans modification moteur, contrat, éditeur, stats, visuels, loadout ni dépôt principal. Le visuel `pack:capture:sprite-status-curse-01` est référencé, sa disponibilité runtime dépend de la bibliothèque globale.
+- Tests sentinelles : fichier strict et archive, données essentielles, remplacement d'un ID natif dans configuredSkills / rechargement du catalogue, vrai CombatSession, description Bestiaire, emplacement Venombre. CI 5 jobs requise, checkpoint GREEN sur SHA exact, fusion gh-pages seulement après validation.
+- Documentation : `docs/LAB_JET_ACIDE_AUTHOR_IMPORT_2026-10-24.md`.
+
+---
+
 ## 2026-10-24 — Maraileron : intégrer l'export de configuration nage/attaque (en validation)
 - Base gh-pages@de130b41ad46d6eb6981d9560f47fec95544412e, checkpoint START checkpoint/lab-start-maraileron-author-2026-10-24, branche work/lab-maraileron-author-2026-10-24.
 - Propriétaire unique data/capture/showcase/crea_maraileron.capture-creature-transfer-v1.json ; export source original conservé dans data/capture/source-exports/gensrpg-capture-creature-crea_maraileron-2026-10-24.json.
