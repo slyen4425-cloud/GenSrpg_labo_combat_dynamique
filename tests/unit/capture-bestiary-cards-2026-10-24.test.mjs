@@ -53,7 +53,7 @@ test("face uniquement, aucune caractéristique héritée, 5 slots selon loadout"
     "ready","ready","unpublished","empty","empty"]);
   assert.equal(card.skills[0].name,"Morsure");
   assert.equal(card.skills[0].icon.assetId,"skill_icon");
-  assert.match(card.skills[0].explanation.sections[0].lines.join(" "),/12 dégâts Poison/);
+  assert.match(card.skills[0].explanation.sentences.join(" "),/12 dégâts de Poison/);
   assert.equal(card.skills[1].name,"Compétence native");
   assert.equal(card.skills[2].name,undefined);
   assert.equal(card.skills[4].name,undefined);
