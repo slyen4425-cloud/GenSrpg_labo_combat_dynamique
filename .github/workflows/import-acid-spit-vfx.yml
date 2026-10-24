@@ -1,0 +1,36 @@
+name: Import four original acid spit Capture animations
+on:
+  push:
+    branches:
+      - work/global-assets-acid-spit-fx-2026-10-24
+    paths:
+      - scripts/import_acid_spit_vfx.py
+      - .github/workflows/import-acid-spit-vfx.yml
+permissions:
+  contents: write
+concurrency:
+  group: acid-spit-fx-import-2026-10-24
+  cancel-in-progress: false
+jobs:
+  verify-and-import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'Pillow>=10,<13'
+      - name: Verify CRC SHA PNG alpha and author atlas then import all four ZIPs
+        run: python scripts/import_acid_spit_vfx.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Full CI including actual 80-frame sentinel
+        run: npm run ci
+      - name: Commit only validated Capture media on work branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- _incoming/crachat-acide assets/library/capture/sprites/skills/acid_spit data/assets/catalog/global-visual-assets.v1.json tests/unit/capture-acid-spit-assets-2026-10-24.test.mjs
+          git commit -m 'assets(capture): import original Crachat acide cast projectile impact and aura'
+          git push origin HEAD:work/global-assets-acid-spit-fx-2026-10-24
