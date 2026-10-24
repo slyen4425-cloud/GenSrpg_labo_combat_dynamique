@@ -1,3 +1,13 @@
+## 2026-10-24 — Bestiaire : descriptions d'effets sous chaque statistique (en test)
+- Demande : sous chaque valeur dans la fiche Bestiaire, même explication d'effets que l'éditeur Capture, en petits caractères discrets et lisibles.
+- Base : gh-pages a422762cb7593344e5c60adbfdaca2fdfea151f2 ; START checkpoint/lab-start-bestiary-stat-effects-2026-10-24 ; travail work/lab-bestiary-stat-effects-2026-10-24.
+- Refactor soustractif : extrait le seul humanStatEffectSummaryV1 de capture-editor-human-v2.js vers src/ui/capture-stat-effect-summary-v1.js ; import en alias dans l'éditeur. Le Bestiaire utilise directement le même code, les mêmes définitions de stat et le projet combat existant. Aucun second formatage ou calcul.
+- Vue : légende sous stat, style discret, lisible mobile ; inconnu non inventé ; tests unitaires + Chromium ; aucun changement auteur ou gameplay.
+- Périmètre et tests : docs/LAB_BESTIAIRE_STAT_EFFECTS_2026-10-24.md.
+- Fin attendue : CI 5 jobs, GREEN et fusion gh-pages ; validation auteur smartphone séparée.
+
+---
+
 ## 2026-10-24 — Bestiaire V2 : navigation en fiche, nettoyage de la source des compétences (en validation)
 - Diagnostic confirmé : V1 rendait l'ensemble draft.skillIds, jusqu'à 20 liées (ex Dracendre), en lieu des cinq emplacements d'équipement transfer.loadout.slots. Les « caractéristiques » Force/Endurance dérivaient de draft.sourceStats, hors du tableau statValues du jeu.
 - Base gh-pages fafb6b9a39602a386998cab4138e452f3aaba9ef ; START checkpoint/lab-start-bestiary-fix-v2-2026-10-24 ; branche work/lab-bestiary-fix-v2-2026-10-24.
