@@ -1,6 +1,5 @@
 import {CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1 as CREATURE_FILES} from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
 import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 as SKILL_FILES} from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
-import {CAPTURE_USED_ABILITY_CATALOG_V2} from "../../src/catalogs/capture-used-ability-catalog-v2.js";
 import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js";
 import {captureBestiaryCardsV1,bestiaryElementLabelV1} from "../../src/ui/capture-bestiary-cards-v1.js";
 
@@ -11,7 +10,7 @@ const elements={
   count:el("count"),list:el("list"),search:el("search"),element:el("element"),
   profile:el("profile"),name:el("name"),caption:el("caption"),
   elements:el("elements"),portrait:el("portrait"),description:el("description"),
-  facts:el("facts"),attributes:el("attributes"),measures:el("measures"),
+  facts:el("facts"),measures:el("measures"),return:el("return"),
   resistances:el("resistances"),skills:el("skills"),skillsNote:el("skills-note"),
   status:el("status")
 };
@@ -68,12 +67,29 @@ function filteredCards(){
       card.elements.some(v=>bestiaryElementLabelV1(v).toLocaleLowerCase("fr").includes(query)))
   );
 }
-function pickCard(id){
-  selectedId=id;
-  if(window.location.hash.slice(1)!==encodeURIComponent(id))
-    history.replaceState(null,"","#"+encodeURIComponent(id));
+// The URL is the only navigation authority. One route = one focused creature page.
+function routeId(){
+  try{return decodeURIComponent(window.location.hash.slice(1));}
+  catch{return "";}
+}
+function renderRoute(){
+  const card=cards.find(c=>c.id===routeId());
+  selectedId=card?.id??null;
+  root.dataset.bestiaryView=card?"detail":"catalog";
+  if(card)renderProfile();
+  else elements.profile.hidden=true;
   renderList();
-  renderProfile();
+}
+function pickCard(id){
+  if(!cards.some(card=>card.id===id))return;
+  if(routeId()!==id)history.pushState(null,"","#"+encodeURIComponent(id));
+  renderRoute();
+  window.scrollTo({top:0,behavior:"instant"});
+}
+function backToCatalog(){
+  history.pushState(null,"",window.location.pathname+window.location.search);
+  renderRoute();
+  window.scrollTo({top:0,behavior:"instant"});
 }
 function renderList(){
   const displayed=filteredCards();
@@ -118,7 +134,6 @@ function renderProfile(){
   if(card.capturable&&card.captureRate!==null)facts.push("Taux de capture : "+card.captureRate+" %");
   if(card.evolution)facts.push("Évolution au niveau "+card.evolution.level);
   elements.facts.replaceChildren(...facts.map(text=>element("span",null,text)));
-  renderValues(elements.attributes,card.attributes);
   // Keep the measured registry's own labels and values; do not invent missing stats.
   renderValues(elements.measures,card.measures);
   elements.resistances.replaceChildren(...(card.resistances.length?
@@ -129,49 +144,58 @@ function renderProfile(){
         element("strong",null,(item.amount>0?"+":"")+item.amount+" %"));
       return tag;
     }):[element("p","empty","Aucune résistance ou faiblesse particulière renseignée.")]));
-  elements.skills.replaceChildren(...(card.skills.length?card.skills.map(skill=>{
+  const slotLabel=(slot)=>slot==="slot-ultimate"?"Ultime":
+    "Compétence "+slot.slice("slot-".length);
+  elements.skills.replaceChildren(...card.skills.map(skill=>{
     const item=element("div","skill");
-    if(skill.icon)item.append(picture(skill.icon,skill.name+" — icône"));
+    item.dataset.state=skill.state;
+    if(skill.state==="ready" && skill.icon)
+      item.append(picture(skill.icon,skill.name+" — icône"));
     const content=element("div");
-    content.append(element("strong",null,skill.name));
-    const sub=[skill.element?bestiaryElementLabelV1(skill.element):null,
-      skill.slot==="slot-ultimate"?"Ultime":skill.slot?"Équipée":null,
-      skill.requiredLevel!=null?"Niv. "+skill.requiredLevel:null].filter(Boolean).join(" · ");
-    if(sub)content.append(element("small",null,sub));
-    if(skill.description)content.append(element("p",null,skill.description));
+    content.append(element("small",null,slotLabel(skill.slot)));
+    if(skill.state==="empty"){
+      content.append(element("strong",null,"Emplacement libre"));
+    }else if(skill.state==="unpublished"){
+      content.append(element("strong",null,"Compétence non publiée"));
+    }else{
+      content.append(element("strong",null,skill.name));
+      const sub=[skill.element?bestiaryElementLabelV1(skill.element):null,
+        skill.requiredLevel!=null?"Niv. "+skill.requiredLevel:null]
+        .filter(Boolean).join(" · ");
+      if(sub)content.append(element("small",null,sub));
+      if(skill.description)content.append(element("p",null,skill.description));
+    }
     item.append(content);
     return item;
-  }):[element("p","empty","Compétences non encore documentées.")]));
-  elements.skillsNote.textContent=card.unavailableSkillCount>0?
-    card.unavailableSkillCount+" compétence(s) encore absente(s) du catalogue publié ; aucun nom ni effet inventé.":"";
+  }));
+  const missing=card.skills.filter(skill=>skill.state==="unpublished").length;
+  elements.skillsNote.textContent=missing>0?
+    missing+" compétence(s) équipée(s) dont la définition n'est pas encore publiée.":"";
 }
 async function start(){
   try{
-    const [assetCatalog,statRegistry,creatures,skills]=await Promise.all([
+    const [assetCatalog,statRegistry,creatures,skills,nativeCatalog]=await Promise.all([
       fetchJson(new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl)),
       fetchJson(publishedPath("data/capture/monster-capture-stat-registry.v1.json")),
       loadCollection(CREATURE_FILES),
-      loadCollection(SKILL_FILES)
+      loadCollection(SKILL_FILES),
+      fetchJson(publishedPath("data/combat/skills/catalog.v1.json"))
     ]);
     cards=captureBestiaryCardsV1({
       creatureTransfers:creatures.entries,skillTransfers:skills.entries,
       assetCatalog,statRegistry,
-      historicalAbilities:CAPTURE_USED_ABILITY_CATALOG_V2.abilities
+      nativeSkills:nativeCatalog.entries ?? []
     });
     populateElementChoices();
-    const target=decodeURIComponent(window.location.hash.slice(1));
-    selectedId=cards.find(card=>card.id===target)?.id??cards[0]?.id??null;
-    if(!selectedId){
-      elements.profile.hidden=true;
+    renderRoute();
+    if(!cards.length){
       setStatus("Aucune créature finalisée publiée avec ses médias.",false);
     }else{
-      renderProfile();
       const errors=creatures.failures+skills.failures;
       setStatus(errors? "Catalogue partiellement chargé : "+errors+
         " fichier(s) indisponible(s), données non inventées.":
         cards.length+" créatures finalisées · données publiées",errors>0);
     }
-    renderList();
   }catch(error){
     elements.profile.hidden=true;
     elements.count.textContent="Indisponible";
@@ -180,8 +204,7 @@ async function start(){
 }
 elements.search.addEventListener("input",renderList);
 elements.element.addEventListener("change",renderList);
-window.addEventListener("hashchange",()=>{
-  const hash=decodeURIComponent(window.location.hash.slice(1));
-  if(cards.some(card=>card.id===hash)){selectedId=hash;renderList();renderProfile();}
-});
+elements.return.addEventListener("click",backToCatalog);
+window.addEventListener("hashchange",renderRoute);
+window.addEventListener("popstate",renderRoute);
 start();
