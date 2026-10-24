@@ -109,7 +109,12 @@ function renderList(){
 function renderValues(host,values){
   host.replaceChildren(...(values.length?values.map(value=>{
     const stat=element("div","stat");
-    stat.append(element("span",null,value.label),element("strong",null,value.value));
+    const line=element("div","stat__line");
+    line.append(element("span",null,value.label),element("strong",null,value.value));
+    stat.append(line);
+    if(value.effectSummary){
+      stat.append(element("small","stat__effect",value.effectSummary));
+    }
     return stat;
   }):[element("p","empty","Aucune valeur renseignée.")]));
 }
