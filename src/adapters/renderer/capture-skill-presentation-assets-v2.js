@@ -1,6 +1,7 @@
 import {
   normalizeSkillPresentationBinding
 } from "../../contracts/skill-presentation-binding.js";
+import {builtInBurrowSpriteAssetV1} from "../../assets/burrow-terrain-builtins-v1.js";
 
 function requiredFunction(value, field) {
   if (typeof value !== "function") {
@@ -369,7 +370,21 @@ export function createCaptureSkillPresentationAssetsV2({
         view
       );
 
+    const burrowTerrain = binding.version === 13
+      ? Object.freeze(Object.fromEntries(["start","travel","impact"].map(stage=>{
+          const slot=visual.burrowTerrain?.[stage] ?? null;
+          if(!slot)return [stage,null];
+          const media=builtInBurrowSpriteAssetV1(slot.assetId) ?? resolveAsset(slot.assetId);
+          if(!media)throw new RangeError("unknown burrow sprite asset: "+slot.assetId);
+          return [stage,Object.freeze({
+            ...media,assetId:slot.assetId,
+            scale:slot.scale,offsetX:slot.offsetX,offsetY:slot.offsetY,
+            frameMs:slot.frameMs,
+            playbackMode:stage==="travel"?"loop":"once"
+          })];
+        }))) : null;
     return Object.freeze({
+      burrowTerrain,
       icon: resolvedIcon(
         resolveAsset,
         visual.icon
