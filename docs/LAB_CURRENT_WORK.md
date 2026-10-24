@@ -2,7 +2,7 @@
 
 - Propriétaire : catalogue unique `global-assets` ; branche `work/global-assets-acid-spit-fx-2026-10-24`.
 - Base : `global-assets@19d68f29dbd9c36456fdddbd352db20d171056a0`, source de réception `86a7d513092a25952348a8ebdd8fab5f7109518d`, checkpoint `checkpoint/global-assets-before-acid-spit-import-2026-10-24`.
-- Périmètre, protections, outils et gates : `docs/LAB_ACID_SPIT_VFX_2026-10-24.md`. Publication et vérification runtime à confirmer ; aucun GREEN annoncé avant CI réelle.
+- Périmètre, protections, outils et gates : `docs/LAB_ACID_SPIT_VFX_2026-10-24.md`. 4 ZIP vérifiés intégralement, 80 PNG RGBA originaux 512² et 4 atlas originaux WebP 5120×256 importés au commit `1cabb4b6fd976b539b482195f2254cf5dd189ff9`. CI d'import GitHub `40128186934` SUCCESS (y compris la sentinelle réelle). Catalogue 227→231 et sprites 126→130, quatre IDs source. Publication `global-assets` après test final, checkpoint et fast-forward ; vérification visuelle mobile par l'auteur séparée.
 
 ---
 
