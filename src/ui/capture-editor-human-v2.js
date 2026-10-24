@@ -29,6 +29,7 @@ import {
 import {
   normalizeCaptureCreatureEditorDraftV3
 } from "../contracts/capture-creature-editor-draft-v3.js";
+import {burrowEditorFieldsFromVisualV1,readBurrowStageFieldsV1,writeBurrowStageFieldsV1,burrowBindingFromFieldsV1,updateBurrowStageVisibilityV1} from "./capture-burrow-stage-fields-v1.js";
 import {
   normalizeCaptureSkillEditorDraftV1
 } from "../contracts/capture-skill-editor-draft-v1.js";
@@ -1917,13 +1918,17 @@ function presentationForSkill(fields) {
     { loop: true }
   );
 
+  const burrowTerrain = fields.approachMode === "burrow"
+    ? burrowBindingFromFieldsV1(presentation)
+    : null;
   const hasVisual =
     iconAssetId !== null ||
     cast !== null ||
     beamStart !== null ||
     travel !== null ||
     impact !== null ||
-    persistentZone !== null;
+    persistentZone !== null ||
+    burrowTerrain !== null;
   const hasAudio =
     castAudio !== null ||
     travelAudio !== null ||
@@ -1958,6 +1963,9 @@ function presentationForSkill(fields) {
   if (persistentZone !== null) {
     visual.aura = persistentZone;
   }
+  if (burrowTerrain !== null) {
+    visual.burrowTerrain = burrowTerrain;
+  }
 
   const audio = {};
   if (castAudio !== null) {
@@ -1973,15 +1981,8 @@ function presentationForSkill(fields) {
     audio.aura = auraAudio;
   }
 
-  return {
-    id:
-      "skill:" +
-      requiredText(
-        fields.id,
-        "ID capacité"
-      ),
-    version:
-      (travel?.farScaleRatio != null || travel?.arrivalLayer != null)
+  const baseVersion =
+    (travel?.farScaleRatio != null || travel?.arrivalLayer != null)
         ? 12
         : (travel?.frameSpeedMultiplier != null || travel?.perspectiveAmount != null)
           ? 11
@@ -2010,7 +2011,17 @@ function presentationForSkill(fields) {
                   ? 4
                   : hasStatusVisuals
                     ? 3
-                    : 2,
+                    : 2;
+
+  return {
+    id:
+      "skill:" +
+      requiredText(
+        fields.id,
+        "ID capacité"
+      ),
+    version: burrowTerrain !== null ? 13 : baseVersion,
+    ...(burrowTerrain !== null ? {baseVersion} : {}),
     subjectType: "skill",
     subjectId: requiredText(
       fields.id,
@@ -2730,6 +2741,7 @@ export function humanSkillEditorFieldsFromDraftV1(
       bindingVersion:
         presentation.version ?? null,
       ...skillSpriteControlFieldsFromVisualsV1(visual),
+      ...burrowEditorFieldsFromVisualV1(visual),
       statusVisuals:
         presentation.statusVisuals ?? {},
       iconAssetId:
@@ -3629,6 +3641,7 @@ function writeSkillDraftFields(
     );
 
   writeSkillSpriteControlsV1(root, fields.presentation);
+  writeBurrowStageFieldsV1(root, fields.presentation);
   writeSkillFeedbackControlsV1(
     root,
     fields.presentation
@@ -9219,6 +9232,7 @@ function readSkillFields(root) {
       ),
     presentation: {
       ...readSkillSpriteControlsV1(root),
+      ...readBurrowStageFieldsV1(root),
       iconAssetId: selectedValue(
         root,
         "[data-skill-icon]"
@@ -10299,6 +10313,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   const contextualHelp = mountCaptureContextualHelpV1({
     root, listen, getStatRegistry: () => statRegistry
   });
+  listen(one(root,"[data-skill-approach]"),"change",()=>updateBurrowStageVisibilityV1(root));
+  updateBurrowStageVisibilityV1(root);
   const beamStageLayout = mountCaptureBeamStageLayoutV1(root);
   listen(one(root, "[data-skill-form]"), "change", () => beamStageLayout.sync());
 
