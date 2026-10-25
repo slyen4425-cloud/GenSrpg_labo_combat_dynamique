@@ -14,6 +14,7 @@ import {
 } from "./tactical-effect-targeting-v1.js";
 import { applyStatusEffectV1, validateStatusEffectForTargetV1 } from "./status-effect-runtime-v1.js";
 import { isStatusEffectRuntimeInstanceActiveV1 } from "./status-effect-instance-v1.js";
+import { markerStatusDefinitionV1 } from "../../contracts/capture-marker-v1.js";
 
 const DISTANCE_ORDER = Object.freeze([
   "short",
@@ -312,6 +313,37 @@ function updateZoneStatusOccupancyV1({
     for (const [targetActorId, atMs] of entrants) {
       result = applyZoneStatusV1({
         state:result,zone,targetActorId,atMs,whileInside:false
+      });
+    }
+  }
+  return updateZoneOccupancyV1(result, zone.id, current);
+}
+
+// Marker entries reuse the native Status Effect Runtime and its stack/threshold
+// authority. The zone owns only entry occupancy: no parallel marker registry
+// and no periodic reapplication while an enemy remains in the ellipse.
+function updateZoneMarkerOccupancyV1({
+  state, zone, endMs, battleFormat, zoneSpatialContext, entryEvents
+}) {
+  const current = zone.expiresAtMs > endMs
+    ? affectedIdsForZone({state,zone,battleFormat,atMs:endMs,zoneSpatialContext})
+    : [];
+  const previous = zone.occupiedActorIds ?? [];
+  const entrants = new Map();
+  for (const event of entryEvents) {
+    if (event.type === "entry") entrants.set(event.targetActorId, event.atMs);
+  }
+  for (const id of current) {
+    if (!previous.includes(id) && !entrants.has(id)) entrants.set(id,endMs);
+  }
+  const definition = markerStatusDefinitionV1(zone.tickEffect.marker);
+  let result = state;
+  for (const [targetActorId, atMs] of entrants) {
+    for (let count = 0; count < zone.tickEffect.charges; count += 1) {
+      result = applyStatusEffectV1({
+        state:result, targetActorId, sourceActorId:zone.sourceActorId,
+        sourceSkillId:zone.skillId, status:definition, atMs,
+        hitsIntangible:zone.hitsIntangible === true
       });
     }
   }
@@ -774,8 +806,8 @@ export function applyPersistentZoneEffectsV1({
       ...(effect.damageTrigger ? {damageTrigger:effect.damageTrigger} : {}),
       ...(effect.persistAfterRecall !== undefined
         ? {persistAfterRecall: effect.persistAfterRecall} : {}),
-      ...(effect.tickEffect.kind === "apply_status"
-        ? { statusBehavior: effect.statusBehavior,
+      ...(effect.tickEffect.kind === "apply_status" || effect.tickEffect.kind === "apply_marker"
+        ? { ...(effect.tickEffect.kind === "apply_status" ? {statusBehavior: effect.statusBehavior} : {}),
             occupiedActorIds: existing?.occupiedActorIds ?? Object.freeze([]) }
         : {}),
       appliedAtMs: atMs,
@@ -853,6 +885,13 @@ export function advancePersistentZonesV1({
 
     if (zone.tickEffect.kind === "apply_status") {
       nextState = updateZoneStatusOccupancyV1({
+        state:nextState,zone,endMs,battleFormat,zoneSpatialContext,
+        entryEvents:events
+      });
+      continue;
+    }
+    if (zone.tickEffect.kind === "apply_marker") {
+      nextState = updateZoneMarkerOccupancyV1({
         state:nextState,zone,endMs,battleFormat,zoneSpatialContext,
         entryEvents:events
       });
