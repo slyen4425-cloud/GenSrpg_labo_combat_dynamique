@@ -18,14 +18,17 @@ const read=path=>readFileSync(new URL("../../"+path,import.meta.url),"utf8");
 const id="cap_poison_atk_6";
 const active="data/capture/showcase/cap_poison_atk_6.capture-skill-transfer-v1.json";
 const archive="data/capture/source-exports/gensrpg-capture-skill-cap_poison_atk_6-2026-10-25.json";
+const newest="data/capture/source-exports/cap_poison_atk_6.author-export-2026-10-25-v2.json";
 const source=()=>read(active);
 const loaded=()=>importCaptureTransferJsonV1(source()).value.draft;
 
 test("Tempête de venin: source author file archived without mutation; one active ID",()=>{
-  assert.equal(source(),read(archive),"exact author provenance must stay byte-identical");
-  assert.equal(Buffer.byteLength(source(),"utf8"),3520);
+  assert.equal(createHash("sha256").update(read(archive)).digest("hex"),
+    "75cfad7bebef9d6d6bf14e0d32a1d6b8d67d41861cfc5c0d0832b04fe732ae60","old archive intact");
+  assert.equal(source(),read(newest),"newest author export is the single active owner");
+  assert.equal(Buffer.byteLength(source(),"utf8"),3615);
   assert.equal(createHash("sha256").update(source()).digest("hex"),
-    "75cfad7bebef9d6d6bf14e0d32a1d6b8d67d41861cfc5c0d0832b04fe732ae60");
+    "9941f0e30069fbb3acd39a826987dda52a62bc61ef197706f9ba299225a0f76f");
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===active).length,1);
   assert.equal(new Set(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1).size,CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length);
   assert.equal(loaded().id,id);
@@ -57,6 +60,7 @@ test("Tempête de venin: unchanged editor roundtrip, author parameters, effects 
   assert.equal(effect.effects[1].channel,"poison");
   assert.equal(draft.presentation.visual.impact.assetId,"pack:capture:sprite-crachat-acide-impact-01");
   assert.equal(draft.presentation.visual.impact.opacity,0.8);
+  assert.equal(draft.presentation.visual.icon.assetId,"pack:capture:icon-skill-poison-corrosif-01");
 });
 
 test("Tempête de venin: canonical editor configuredSkills imports exactly one replacement or addition",()=>{
