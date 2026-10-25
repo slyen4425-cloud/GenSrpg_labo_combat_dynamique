@@ -1,0 +1,167 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "guepe_cybernetique",
+  "action": "movement",
+  "view": "opponent",
+  "assetId": "pack:capture:creature-guepe-cybernetique-movement-opponent-12-v1",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 100,
+  "playbackMode": "loop",
+  "authorApproved": true,
+  "approvalStatus": "approved_for_ingame_trial",
+  "sourceArchive": "_incoming/GUEPE_CYBERNETIQUE_FACE_MOUVEMENT_ATTAQUE_12F_NETTOYES.zip",
+  "sourceArchiveSha256": "082eb38273f46f306fef3076bfac287985a3bc38d057e00c8e5e51a04a48b4fa",
+  "cleanup": "left detached glows removed by author-approved source",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/guepe_cybernetique_movement_opponent_01.png",
+      "sha256": "66d423531e2ae5467aab88ebf378edc10069d9f5327b585eb3572c188c181240",
+      "marginsLTRB": [
+        90,
+        91,
+        75,
+        75
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/guepe_cybernetique_movement_opponent_02.png",
+      "sha256": "4411a52997e8ba59fe1f79d33d180819a585acb513f0284754a17c2c8507a58a",
+      "marginsLTRB": [
+        128,
+        91,
+        75,
+        75
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/guepe_cybernetique_movement_opponent_03.png",
+      "sha256": "038e6c527cf8be083953551fc05cc3051459cbc49867e2163f9bdd900e7d8a82",
+      "marginsLTRB": [
+        117,
+        89,
+        75,
+        75
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/guepe_cybernetique_movement_opponent_04.png",
+      "sha256": "8ddd420181c39bfdf16e3c03b2ddbb306713949821814d67d3cbda5183def7a1",
+      "marginsLTRB": [
+        96,
+        98,
+        84,
+        75
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/guepe_cybernetique_movement_opponent_05.png",
+      "sha256": "779041e936d8391783cbf8090c5dfbe959d768ef06def59cc8808852cea2fe50",
+      "marginsLTRB": [
+        100,
+        117,
+        75,
+        83
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/guepe_cybernetique_movement_opponent_06.png",
+      "sha256": "a0f05382a611d3073928ce1e9b0f078ea176df95061a6ba07d7f6ca7875189c4",
+      "marginsLTRB": [
+        123,
+        124,
+        75,
+        82
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/guepe_cybernetique_movement_opponent_07.png",
+      "sha256": "c22c9db0bdf8e3dff3abc9297f8a924ed985903ccd54c17ffec0b05c9731bfee",
+      "marginsLTRB": [
+        138,
+        137,
+        75,
+        83
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/guepe_cybernetique_movement_opponent_08.png",
+      "sha256": "40450837d9c595173f2553437d81e0f4e3537930c2ddfa61e242f6dc31338efe",
+      "marginsLTRB": [
+        115,
+        128,
+        89,
+        83
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/guepe_cybernetique_movement_opponent_09.png",
+      "sha256": "389b872db2c891d2433c5cd02474993d9693173e2aef348bd5211f2a7f9a7241",
+      "marginsLTRB": [
+        109,
+        116,
+        75,
+        106
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/guepe_cybernetique_movement_opponent_10.png",
+      "sha256": "02efedfd1399f6a14a64477fed926c36fe28b66f4b2094057de0965fb8647a66",
+      "marginsLTRB": [
+        134,
+        112,
+        75,
+        108
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/guepe_cybernetique_movement_opponent_11.png",
+      "sha256": "dad39065a873d3a1c4dafd463780af2a1421b8594f470e3d26de212d718d8ba6",
+      "marginsLTRB": [
+        116,
+        103,
+        75,
+        107
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/guepe_cybernetique_movement_opponent_12.png",
+      "sha256": "0db3c735146185e33b95bd7c7c687c035f8759ff7c22dedab5d7a002e1c30c8c",
+      "marginsLTRB": [
+        90,
+        98,
+        91,
+        99
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/guepe_cybernetique_movement_opponent_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "fd2475921b95de4b1e443422506adc9e863b3ca25ff395240a6d4cd16acc1022"
+  },
+  "previews": {
+    "gif": "previews/guepe_cybernetique_movement_opponent_12_gif.gif",
+    "webp": "previews/guepe_cybernetique_movement_opponent_12_webp.webp",
+    "planche": "previews/guepe_cybernetique_movement_opponent_12_planche.png"
+  },
+  "preview": "previews/guepe_cybernetique_movement_opponent_12_gif.gif"
+}

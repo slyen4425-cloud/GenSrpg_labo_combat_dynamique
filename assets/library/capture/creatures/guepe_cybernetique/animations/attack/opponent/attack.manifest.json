@@ -1,0 +1,167 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "guepe_cybernetique",
+  "action": "attack",
+  "view": "opponent",
+  "assetId": "pack:capture:creature-guepe-cybernetique-attack-opponent-12-v1",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 100,
+  "playbackMode": "once",
+  "authorApproved": true,
+  "approvalStatus": "approved_for_ingame_trial",
+  "sourceArchive": "_incoming/GUEPE_CYBERNETIQUE_FACE_MOUVEMENT_ATTAQUE_12F_NETTOYES.zip",
+  "sourceArchiveSha256": "082eb38273f46f306fef3076bfac287985a3bc38d057e00c8e5e51a04a48b4fa",
+  "cleanup": "left detached glows removed by author-approved source",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/guepe_cybernetique_attack_opponent_01.png",
+      "sha256": "f521776c0698b77c51397d83eca005f09180e9656574bd4e33199c79f3658282",
+      "marginsLTRB": [
+        96,
+        115,
+        100,
+        92
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/guepe_cybernetique_attack_opponent_02.png",
+      "sha256": "4aead4207c52b4a32254e266eb0e0d64974651641dd988bf896d57cbb97e2515",
+      "marginsLTRB": [
+        96,
+        104,
+        75,
+        89
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/guepe_cybernetique_attack_opponent_03.png",
+      "sha256": "e84c4f53b73b5da6acc313087797236b1672b056e8036379adeaa7018671b2e9",
+      "marginsLTRB": [
+        98,
+        91,
+        91,
+        83
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/guepe_cybernetique_attack_opponent_04.png",
+      "sha256": "e37c067447ccafc4d505e230f59f739d5f6f7e9bf4f027e052bafc9dae85a772",
+      "marginsLTRB": [
+        85,
+        94,
+        87,
+        83
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/guepe_cybernetique_attack_opponent_05.png",
+      "sha256": "82f7bacd4b76b98bcb2d97b10d5efba59467657c3e3c93cf59978f755fc31237",
+      "marginsLTRB": [
+        87,
+        86,
+        81,
+        123
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/guepe_cybernetique_attack_opponent_06.png",
+      "sha256": "3824908acd0cdac214e7745221b99b4c6538961df6ccfe4f80f064eb9cc13cdf",
+      "marginsLTRB": [
+        90,
+        87,
+        78,
+        122
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/guepe_cybernetique_attack_opponent_07.png",
+      "sha256": "451ba29a7c6cdec11ae41e0ade850884af996780d1b744428ac8d573055d61ca",
+      "marginsLTRB": [
+        75,
+        94,
+        75,
+        99
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/guepe_cybernetique_attack_opponent_08.png",
+      "sha256": "430c0d612a36df1b6b070e53d13be3aa7b01e590b51c637ce1e45e0a5512500b",
+      "marginsLTRB": [
+        75,
+        86,
+        84,
+        105
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/guepe_cybernetique_attack_opponent_09.png",
+      "sha256": "c2a8961a032d919d792f83f1e91ed4e4454c297c2a7c97939dd289f5aabb4fab",
+      "marginsLTRB": [
+        94,
+        75,
+        75,
+        158
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/guepe_cybernetique_attack_opponent_10.png",
+      "sha256": "6906db0fbd660a2205569225334fa5bcabed453ef08ae0a76afdd1f96411b3a2",
+      "marginsLTRB": [
+        132,
+        75,
+        80,
+        135
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/guepe_cybernetique_attack_opponent_11.png",
+      "sha256": "eb91f379704cf4d943828ac366badc34aede984067c269da0edcf5bd1adbdf11",
+      "marginsLTRB": [
+        105,
+        88,
+        89,
+        125
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/guepe_cybernetique_attack_opponent_12.png",
+      "sha256": "2a8f52ffd85e8de143b09547bb1a8a60ba0bb59db9fcbf9736eddc28dab8f41d",
+      "marginsLTRB": [
+        89,
+        90,
+        106,
+        119
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/guepe_cybernetique_attack_opponent_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "fb914f05a7bdb46a6dc53c8a3f76b11a866287057ac2b402fda440163c76e1d3"
+  },
+  "previews": {
+    "gif": "previews/guepe_cybernetique_attack_opponent_12_gif.gif",
+    "webp": "previews/guepe_cybernetique_attack_opponent_12_webp.webp",
+    "planche": "previews/guepe_cybernetique_attack_opponent_12_planche.png"
+  },
+  "preview": "previews/guepe_cybernetique_attack_opponent_12_gif.gif"
+}

@@ -1,3 +1,14 @@
+## 2026-10-25 — Guêpe cybernétique FACE : nage/vol et attaque, 12 frames nettoyées
+
+- Source : \`_incoming/GUEPE_CYBERNETIQUE_FACE_MOUVEMENT_ATTAQUE_12F_NETTOYES.zip\`, taille 11948531, SHA256 082eb38273f46f306fef3076bfac287985a3bc38d057e00c8e5e51a04a48b4fa, Git blob c86cd66adedbed199b73d93c9c909eab4556a24c.
+- Owner : catalogue unique global-assets ; base d269ac78012feb9f22f5e30abf2b06ba83877d45 ; checkpoint checkpoint/global-assets-before-guepe-face12-2026-10-25 ; branche work/global-assets-guepe-face12-2026-10-25.
+- Portée : deux animations Guêpe cybernétique en vue opponent (3/4 face). 24 PNG RGBA 512×512 réels (octets validés par le manifeste auteur), 2 atlas WebP, 6 aperçus et 3 manifestes. Catalogue +2 IDs de sprites, sans modifier les modèles runtime ni les animations player déjà GREEN.
+- Protégés : autres créatures, sprites déjà validés, profils, UI, moteur, données auteur, main, gh-pages et GenSrpG. Aucune auto-affectation d'animation à la fiche.
+- Gates : import des vrais fichiers, sentinelle SHA/marges/dimensions/transparence, CI finale, revue diff, checkpoint GREEN et fast-forward global-assets ; essai Android distinct.
+- Rapport : docs/LAB_GUEPE_FACE12_2026-10-25.md.
+
+---
+
 ## 2026-10-24 — Lot de 5 icônes acides et venimeuses — intégration labo Combat
 
 - **Demande auteur** : publier Crachat acide, Tempête acide, Morsure venimeuse, Croc de venin, Poison corrosif selon le visuel Monster Capture généré, puis les raccorder au sélecteur d'icônes du labo Combat sans modifier les capacités enregistrées.
