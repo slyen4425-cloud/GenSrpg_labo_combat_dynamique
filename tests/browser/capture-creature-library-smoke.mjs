@@ -197,6 +197,69 @@ const server = createServer(async (req, res) => {
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
 
+    // Regression on the actual author creature: only DOS has a sprite.
+    // Test the real editor selector, save, reload and export, not a mock form.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url,"http://localhost").searchParams.has("verify-sprite-mode-back-only")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+        document.addEventListener("DOMContentLoaded",()=>{
+          let attempts=0;
+          const timer=setInterval(async()=>{
+            const get=s=>document.querySelector(s);
+            const lib=get("[data-creature-library-select]");
+            if(!get("[data-creature-library-state]")?.textContent?.includes("3 modèles vitrine chargés") ||
+               !lib?.querySelector('option[value="crea_foudrillon"]')){
+              if(++attempts>95){clearInterval(timer);document.body.dataset.creatureSpriteModeProbe="timeout:showcase"; }
+              return;
+            }
+            clearInterval(timer);
+            try {
+              const change=(node,value)=>{
+                if(!node)throw Error("missing control");
+                node.value=String(value);node.dispatchEvent(new Event("change",{bubbles:true}));
+              };
+              const mode=get("[data-creature-movement-mode]");
+              const attack=get("[data-creature-ranged-attack-mode]");
+              const front=get("[data-creature-movement-visual]");
+              const back=get("[data-creature-movement-back-visual]");
+              change(lib,"crea_foudrillon");
+              if(get("[data-creature-name]").value!=="Freclairions")throw Error("wrong creature");
+              if(front.value!=="" || !back.value.includes("guepe-cybernetique-movement-player"))
+                throw Error("back-only author bindings not loaded");
+              if(mode.value!=="sprite")throw Error("saved sprite read as "+mode.value);
+              if(attack.value!=="sprite")throw Error("saved DOS attack read as "+attack.value);
+              // Confirm editing also persists when only the DOS slot exists.
+              change(mode,"static");
+              get("[data-creature-update]").click();
+              if(get("[data-editor-status]").dataset.tone==="error")throw Error("static save failed");
+              change(lib,"crea_mossback");change(lib,"crea_foudrillon");
+              if(mode.value!=="static")throw Error("static edit not reloaded");
+              change(mode,"sprite");
+              get("[data-creature-update]").click();
+              if(get("[data-editor-status]").dataset.tone==="error")throw Error("sprite save failed");
+              change(lib,"crea_mossback");change(lib,"crea_foudrillon");
+              if(mode.value!=="sprite"||attack.value!=="sprite"||front.value!=="")
+                throw Error("sprite mode reverted after save/reload");
+              let blob=null;const native=URL.createObjectURL;
+              try{
+                URL.createObjectURL=value=>{blob=value;return native.call(URL,value);};
+                get("[data-export-current-creature]").click();
+              }finally{URL.createObjectURL=native;}
+              const exported=blob?JSON.parse(await blob.text()):null;
+              const v=exported?.draft?.presentation?.visual;
+              if(v?.movement!==undefined || v.movementBack?.mode!=="sprite" ||
+                 v.rangedAttack!==undefined || v.rangedAttackBack?.mode!=="sprite" ||
+                 v.movementBack.assetId!=="pack:capture:creature-guepe-cybernetique-movement-player-12-v1")
+                throw Error("export overwrote DOS sprite");
+              document.body.dataset.creatureSpriteModeProbe="ok:back-only:sprite:save:reload:export";
+            }catch(error){document.body.dataset.creatureSpriteModeProbe="fail:"+String(error.message??error).slice(0,180);}
+          },100);
+        });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
+
     // Soundtrack UI: exercise the real tab and saved silent scene with no uploaded media.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-soundtrack-authoring")) {
@@ -1627,6 +1690,13 @@ try {
     throw Error("Real creature movement FACE/DOS editor roundtrip failed: "+movementProbe+
       " JS="+(movementDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
   console.log("Loup movement FACE/DOS: native catalog menus, save, reload and author export verified in Chromium");
+  const backOnlyDom=await dumpDom(url+"?verify-sprite-mode-back-only=1");
+  assertCreatures(backOnlyDom,"Freclairions back-only sprite real Chrome");
+  const backOnlyProbe=backOnlyDom.match(/data-creature-sprite-mode-probe="([^"]+)"/)?.[1]??"missing";
+  if(backOnlyProbe!=="ok:back-only:sprite:save:reload:export")
+    throw Error("Real Freclairions movement/attack sprite mode lost: "+backOnlyProbe+
+      " JS="+(backOnlyDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
+  console.log("Freclairions DOS-only: sprite settings loaded, switch static -> sprite, saved, reselected and exported without rotation");
   const liveSolarDom=await dumpDom(url+"?verify-solar-live-cast=1", ["--virtual-time-budget=30000"]);
   const liveSolar=liveSolarDom.match(/data-solar-live-cast-probe="([^"]*)"/)?.[1]??"missing";
   if(liveSolar!=="ok:solar:next-skill:unfrozen")
