@@ -99,7 +99,65 @@
       "version": 3,
       "subjectType": "skill",
       "subjectId": "cap_poison_atk_3",
-      "visual": {},
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-morsure-venimeuse-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-crachat-acide-cast-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.75,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-crachat-acide-projectile-01",
+          "displayScale": 1.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-crachat-acide-impact-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        }
+      },
       "audio": {},
       "statusVisuals": {
         "status-2": {
@@ -109,9 +167,9 @@
           "tintColor": "#9b59d0",
           "tintOpacity": 0.35,
           "sprite": {
-            "assetId": "pack:capture:sprite-status-curse-01",
+            "assetId": "pack:capture:sprite-crachat-acide-aura-01",
             "displayScale": 1,
-            "opacity": 0.25
+            "opacity": 0.35
           }
         }
       }
