@@ -18,7 +18,7 @@ const spatial=(zone,pos)=>({visibleZones:{
  zones:[{zoneId:zone.id,sourceActorId:zone.sourceActorId,radius:zone.radius,bounds:bounds(0,0,100,100)}],
  actors:Object.entries(pos).map(([actorId,xy])=>({actorId,bounds:bounds(...xy)}))}});
 const cast=()=>{
- const session=createCombatSession({distance:"short",battleFormat:format,
+ const session=createCombatSession({distance:"long",battleFormat:format,
  fighters:Object.keys(teams).map(f)});
  const skill=normalizeSkillDefinition({id:"poison-cloud",name:"Nuage toxique",category:"buff_debuff",
   form:"aura",element:"poison",approachMode:"none",energyCost:0,preparationMs:2000,travelMs:0,
@@ -51,7 +51,9 @@ test("Editor normalizes native two-marker zone with fixed radius, 20s duration, 
  assert.equal(effect.radiusGrowthSteps,0);
  assert.deepEqual(effect.tickEffect,normalizeSkillEffectV1(zoneEffect.tickEffect));
  const editor=readFileSync(new URL("../../src/ui/capture-editor-human-v2.js",import.meta.url),"utf8");
- assert.match(editor,/skillZoneMarkerPick/);
+ assert.match(editor,/captureMarkerZoneSelectV1/);
+ const sharedPicker=readFileSync(new URL("../../src/ui/capture-marker-effect-fields-v1.js",import.meta.url),"utf8");
+ assert.match(sharedPicker,/skillZoneMarkerPick/);
  assert.match(editor,/skillZoneMarkerCharges/);
  assert.match(editor,/Ajouter des marqueurs à l’entrée/);
 });
