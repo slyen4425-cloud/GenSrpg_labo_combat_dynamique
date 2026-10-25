@@ -1497,6 +1497,80 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
+    // Real authoring path: existing shared marker library -> native area ->
+    // save, switch skill, reload and export using the actual editor controls.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-zone-marker-entry")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+      document.addEventListener("DOMContentLoaded",()=>{
+        const old=URL.createObjectURL.bind(URL);
+        URL.createObjectURL=blob=>{
+          if(blob.type.includes("json"))blob.text().then(content=>{
+            try{
+              const draft=JSON.parse(content).draft;
+              const zone=draft.definition.effects.find(e=>e.kind==="persistent_zone"&&e.zoneId==="browser-marker-zone");
+              const ok=zone?.tickEffect?.kind==="apply_marker" &&
+                zone.tickEffect.marker.id==="peste" && zone.tickEffect.charges===2 &&
+                zone.targetScope==="all_enemies" && zone.durationMs===20000 &&
+                zone.radiusGrowthSteps===0 && zone.reactivation==="refresh" &&
+                draft.definition.preparationMs===2000 && draft.definition.cooldownMs===45000;
+              document.body.dataset.zoneMarkerProbe=ok?"ok:2:peste:20000:2000:45000:fixed":"fail:export:"+JSON.stringify(zone);
+            }catch(e){document.body.dataset.zoneMarkerProbe="fail:json:"+e.message;}
+          });
+          return old(blob);
+        };
+        let attempts=0;
+        const timer=setInterval(()=>{
+          const library=document.querySelector("[data-skill-library-select]");
+          const status=document.querySelector("[data-creature-library-state]")?.textContent??"";
+          if(!status.includes("3 modèles vitrine chargés") ||
+              !library?.querySelector('option[value="lib_aqua_heal"]')){
+            if(++attempts>85){clearInterval(timer);document.body.dataset.zoneMarkerProbe="fail:timeout";}
+            return;
+          }
+          clearInterval(timer);
+          try{
+            const set=(host,selector,value)=>{
+              const el=host.querySelector(selector);
+              if(!el)throw Error("missing "+selector);
+              el.value=String(value);
+              el.dispatchEvent(new Event("change",{bubbles:true}));
+              if(el.value!==String(value))throw Error("option unavailable "+selector+"="+value);
+              return el;
+            };
+            set(document,"[data-skill-library-select]","lib_aqua_heal");
+            set(document,"[data-skill-preparation]",2000);
+            set(document,"[data-skill-cooldown]",45000);
+            document.querySelector("[data-skill-effect-add]").click();
+            const row=[...document.querySelectorAll("[data-skill-effect-row]")].at(-1);
+            set(row,"[data-skill-effect-kind]","persistent_zone");
+            set(row,"[data-skill-effect-scope]","all_enemies");
+            set(row,"[data-skill-zone-id]","browser-marker-zone");
+            set(row,"[data-skill-zone-duration-seconds]",20);
+            set(row,"[data-skill-zone-reactivation]","refresh");
+            set(row,"[data-skill-zone-radius-growth-steps]",0);
+            set(row,"[data-skill-zone-effect-kind]","apply_marker");
+            const panel=row.querySelector('[data-skill-zone-effect-config-kind="apply_marker"]');
+            if(!panel || panel.hidden)throw Error("marker panel hidden");
+            set(row,"[data-skill-zone-marker-pick]","peste");
+            set(row,"[data-skill-zone-marker-charges]",2);
+            document.querySelector("[data-skill-update]").click();
+            set(document,"[data-skill-library-select]","lib_light_bolt");
+            set(document,"[data-skill-library-select]","lib_aqua_heal");
+            const restored=[...document.querySelectorAll("[data-skill-effect-row]")]
+              .find(x=>x.querySelector("[data-skill-zone-id]")?.value==="browser-marker-zone");
+            if(!restored || restored.querySelector("[data-skill-zone-effect-kind]").value!=="apply_marker" ||
+               restored.querySelector("[data-skill-zone-marker-pick]").value!=="peste" ||
+               Number(restored.querySelector("[data-skill-zone-marker-charges]").value)!==2)
+              throw Error("saved shared marker zone did not reload");
+            document.querySelector("[data-export-current-skill]").click();
+          }catch(e){document.body.dataset.zoneMarkerProbe="fail:ui:"+e.message;}
+        },200);
+      });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
     // A real Chrome probe for the creator's per-creature guard controls.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-creature-reaction")) {
@@ -1820,6 +1894,12 @@ try {
   if(zoneStatusProbe!=="ok:mist:25:poison:4")
     throw Error("Real UI zone buff/poison save/export failed: "+zoneStatusProbe);
   console.log("Native area status authoring: defense while inside, poison on entry, original skill preserved");
+  const zoneMarkerDom=await dumpDom(url+"?verify-zone-marker-entry=1");
+  assertCreatures(zoneMarkerDom,"Zone marker native authoring real browser");
+  const zoneMarkerProbe=zoneMarkerDom.match(/data-zone-marker-probe="([^"]+)"/)?.[1]??"missing";
+  if(zoneMarkerProbe!=="ok:2:peste:20000:2000:45000:fixed")
+    throw Error("Zone marker author save/reload/export failed: "+zoneMarkerProbe);
+  console.log("Zone marker browser: real Peste marker, two stacks on entry, 20s, 2s cast, 45s cooldown, fixed radius");
   const rayonDom = await dumpDom(url + "?verify-three-phase-rayon=1");
   assertCreatures(rayonDom, "rayon three-phase browser bootstrap");
   if (!/data-fx-order-probe="icon,form,trajectory:visible"/.test(rayonDom)) {
