@@ -16,19 +16,22 @@ const root=path=>readFileSync(new URL("../../"+path,import.meta.url),"utf8");
 const active="data/capture/showcase/cap_poison_atk_3.capture-skill-transfer-v1.json";
 const original="data/capture/source-exports/cap_poison_atk_3.author-export-2026-10-24.json";
 const refreshed="data/capture/source-exports/cap_poison_atk_3.author-export-2026-10-25.json";
+const newest="data/capture/source-exports/cap_poison_atk_3.author-export-2026-10-25-v2.json";
 const exported=JSON.parse(root(active));
 const authored=exported.draft;
 const skill=authored.definition;
 const id="cap_poison_atk_3";
 
-test("Jet acide: 24 Oct archive preserved, 25 Oct author export becomes single live owner",()=>{
+test("Jet acide: previous author exports are preserved and latest export is unique active owner",()=>{
   assert.equal(createHash("sha256").update(root(original)).digest("hex"),
     "b6c003a3a8a8fa898a4f5c8836e93269b511368c875ddebd0eac403ed68f6d2a");
-  assert.equal(root(active),root(refreshed),"live owner must be exact author's newest file");
-  assert.notEqual(root(active),root(original),"prior provenance is archive-only");
-  assert.equal(Buffer.byteLength(root(active),"utf8"),4651);
-  assert.equal(createHash("sha256").update(root(active)).digest("hex"),
+  assert.equal(createHash("sha256").update(root(refreshed)).digest("hex"),
     "b029cb91c199e1578f2903eb01642cbe1f94f545adcb79883a80a6b39a827061");
+  assert.equal(root(active),root(newest),"live owner must be exact author's newest file");
+  assert.notEqual(root(active),root(original),"prior provenance is archive-only");
+  assert.equal(Buffer.byteLength(root(active),"utf8"),4654);
+  assert.equal(createHash("sha256").update(root(active)).digest("hex"),
+    "d997dd64f63bf185f6f989dba52642ca6e65e5abcdff96cbf0bf57a8ed89461d");
   assert.equal(authored.id,id);
   assert.equal(skill.id,id);
   assert.equal(authored.presentation.subjectId,id);
@@ -65,7 +68,10 @@ test("Jet acide: preserves EVERY configured gameplay/visual parameter",()=>{
   assert.equal(visuals.icon.assetId,"pack:capture:icon-skill-morsure-venimeuse-01");
   assert.equal(visuals.cast.assetId,"pack:capture:sprite-crachat-acide-cast-01");
   assert.equal(visuals.cast.anchor,"mouth");
-  assert.equal(visuals.cast.opacity,0.75);
+  assert.equal(visuals.cast.opacity,0.5);
+  assert.equal(visuals.cast.displayScale,0.7);
+  assert.equal(visuals.cast.offsetX,40);
+  assert.equal(visuals.cast.offsetY,15);
   assert.equal(visuals.cast.playbackMode,"loop");
   assert.equal(visuals.travel.assetId,"pack:capture:sprite-crachat-acide-projectile-01");
   assert.equal(visuals.travel.displayScale,1.5);

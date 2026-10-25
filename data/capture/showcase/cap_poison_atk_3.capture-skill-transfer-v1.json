@@ -105,17 +105,17 @@
         },
         "cast": {
           "assetId": "pack:capture:sprite-crachat-acide-cast-01",
-          "displayScale": 1,
+          "displayScale": 0.7,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "source",
           "anchor": "mouth",
-          "offsetX": 0,
-          "offsetY": 0,
+          "offsetX": 40,
+          "offsetY": 15,
           "trigger": "preparation-start",
           "playbackMode": "loop",
           "rotationDeg": 0,
-          "opacity": 0.75,
+          "opacity": 0.5,
           "layerByView": {
             "player": "front",
             "opponent": "front"
