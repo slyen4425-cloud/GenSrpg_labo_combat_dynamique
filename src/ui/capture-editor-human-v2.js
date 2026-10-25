@@ -1,7 +1,7 @@
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js";
-import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js";
+import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js";
 import { normalizeCaptureMarkerLibraryV1 } from "../contracts/capture-marker-v1.js";
-import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1 } from "./capture-marker-effect-fields-v1.js";
+import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1, captureMarkerZoneSelectV1 } from "./capture-marker-effect-fields-v1.js";
 import { captureEditorElementChannelChoicesV1, captureEditorGeneratedStatIdV1 } from "./capture-editor-element-channel-select-v1.js";
 import {
   mountCaptureBeamStageLayoutV1,
@@ -617,10 +617,12 @@ export function buildHumanTacticalSkillEffectsV1(
           ? {kind:"apply_status",targetScope,
               status:humanTacticalStatusToContractV1(tickEffect.status,
                 {defaultDamageChannel})}
-          : {kind:"damage",targetScope:tickEffect.targetScope ?? targetScope,
-              amount:finiteNumber(tickEffect.amount ?? effect.tickDamage ?? 0,
-                "Dégâts par tick de zone"),
-              channel:optionalText(tickEffect.channel ?? effect.channel)}
+          : tickEffect.kind === "apply_marker"
+            ? normalizeSkillEffectV1({...tickEffect,targetScope})
+            : {kind:"damage",targetScope:tickEffect.targetScope ?? targetScope,
+                amount:finiteNumber(tickEffect.amount ?? effect.tickDamage ?? 0,
+                  "Dégâts par tick de zone"),
+                channel:optionalText(tickEffect.channel ?? effect.channel)}
       });
     }
 
@@ -6408,7 +6410,22 @@ function appendHumanSkillEffectV1(
   zoneEffectKind.dataset.skillZoneEffectKind = "true";
   createOption(zoneEffectKind, "damage", "Dégâts périodiques");
   createOption(zoneEffectKind, "apply_status", "Bonus / Malus / Statut");
+  createOption(zoneEffectKind, "apply_marker", "Ajouter des marqueurs à l’entrée");
 
+  const zoneMarkerPick=captureMarkerZoneSelectV1(root,effect?.tickEffect?.marker??null);
+  const zoneMarkerCharges=tacticalNumberInputV1("skillZoneMarkerCharges",
+    effect?.tickEffect?.charges??2,{min:1,max:99,step:"1"});
+  const zoneMarkerBox=document.createElement("div");
+  zoneMarkerBox.className="skill-status-config__grid";
+  zoneMarkerBox.dataset.skillZoneEffectConfigKind="apply_marker";
+  zoneMarkerBox.append(
+    tacticalFieldV1("Marqueur à poser à chaque entrée",zoneMarkerPick),
+    tacticalFieldV1("Nombre de marqueurs par entrée",zoneMarkerCharges)
+  );
+  const zoneMarkerNote=document.createElement("small");
+  zoneMarkerNote.className="note";
+  zoneMarkerNote.textContent="Le marqueur conserve sa durée propre après sortie de la zone. Une nouvelle entrée en ajoute autant. Configure Poison dans la bibliothèque des marqueurs.";
+  zoneMarkerBox.append(zoneMarkerNote);
   const zoneStatusBehavior = document.createElement("select");
   zoneStatusBehavior.dataset.skillZoneStatusBehavior = "true";
   createOption(zoneStatusBehavior, "while_inside", "Actif uniquement dans la zone");
@@ -6572,9 +6589,9 @@ function appendHumanSkillEffectV1(
     document.createElement("small");
   zoneNote.className = "note";
   zoneNote.textContent =
-    "Toute réactivation renouvelle la durée et peut éventuellement agrandir le rayon. La zone contient directement son effet : inutile d’ajouter un buff indépendant. Les champs des dégâts ou du statut apparaissent selon « Effet appliqué ». Le mode « Dans la zone » retire le statut à la sortie ; « À l’entrée » laisse sa durée normale après sortie. La persistance après rappel n’est disponible que pour les zones à statut.";
+    "La zone suit sa créature tant qu’elle est active. « Garder la même taille » et une croissance de 0 empêchent l’agrandissement. L'effet Marqueurs ne se déclenche qu’à chaque entrée réelle, jamais en continu. Les marqueurs suivent leur propre durée après sortie. La persistance après rappel reste réservée aux zones à statut.";
 
-  zoneBox.append(zoneGrid,zoneDamageBox,zoneStatusConfig,zoneNote);
+  zoneBox.append(zoneGrid,zoneDamageBox,zoneStatusConfig,zoneMarkerBox,zoneNote);
 
   config.append(
     amountField,
@@ -6741,6 +6758,11 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
         ...(zoneEffectKind==="apply_status"?{
           statusBehavior:row.querySelector("[data-skill-zone-status-behavior]").value,
           tickEffect:{kind:"apply_status",targetScope,status:zs}
+        }:{}),
+        ...(zoneEffectKind==="apply_marker"?{
+          tickEffect:{kind:"apply_marker",targetScope,
+            marker:captureMarkerDefinitionV1(root,row.querySelector("[data-skill-zone-marker-pick]").value),
+            charges:Number(row.querySelector("[data-skill-zone-marker-charges]").value)}
         }:{}),
         zoneId: row.querySelector(
           "[data-skill-zone-id]"
