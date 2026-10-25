@@ -4,6 +4,7 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/cap_poison_atk_2.capture-skill-transfer-v1.json",
     "data/capture/showcase/cap_poison_atk_3.capture-skill-transfer-v1.json",
     "data/capture/showcase/cap_poison_atk_6.capture-skill-transfer-v1.json",
+    "data/capture/showcase/cap_poison_atk_7.capture-skill-transfer-v1.json",
     "data/capture/showcase/cap_poison_special_2.capture-skill-transfer-v1.json",
     "data/capture/showcase/cap_fire_atk_6.capture-skill-transfer-v1.json",
     "data/capture/showcase/cap_fire_atk_7.capture-skill-transfer-v1.json",
