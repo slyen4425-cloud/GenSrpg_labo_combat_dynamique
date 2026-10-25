@@ -105,6 +105,9 @@
       "subjectType": "skill",
       "subjectId": "cap_poison_atk_6",
       "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-poison-corrosif-01"
+        },
         "impact": {
           "assetId": "pack:capture:sprite-crachat-acide-impact-01",
           "displayScale": 1,
