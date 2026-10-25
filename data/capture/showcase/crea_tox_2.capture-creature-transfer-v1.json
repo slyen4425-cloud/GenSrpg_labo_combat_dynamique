@@ -215,7 +215,7 @@
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "cap_poison_atk_7"
       }
     ]
   }
