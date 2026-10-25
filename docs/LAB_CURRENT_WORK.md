@@ -1,3 +1,13 @@
+## 2026-10-25 — Persistance du mode Sprite animé avec animation DOS uniquement (EN COURS)
+- Retour auteur : choisir « Sprite animé » revient à « Boule roulante » après réouverture d’une créature. Reproduction depuis l'export Freclairions V10 réel : `visual.movementBack.mode="sprite"`, `visual.movement` absent.
+- Base : `gh-pages@cef8defdc23b8684d8b2f826f0e13aebebc61e8f` ; START : `checkpoint/lab-start-creature-sprite-mode-roundtrip-2026-10-25` ; lot : `work/lab-creature-sprite-mode-roundtrip-2026-10-25`.
+- Cause racine : `writeCreatureRecordFields` lit uniquement les réglages de `visual.movement` (FACE), puis applique `"roll"` si ce slot manque, sans inspecter le slot DOS. Un réenregistrement réinjecte ce défaut dans `movementBack` via `buildHumanCreatureDraftV3`. Même asymétrie dans les paramètres d'attaque DOS. L'export source est juste, l'hydratation du catalogue et le moteur aérien ne sont pas responsables.
+- Solution autorisée : la projection UI existante lit les réglages génériques depuis le slot FACE s'il existe, sinon depuis DOS ; aucune autre autorité et aucun changement des fiches auteur. Conserver les comportements sans sprite, FACE seul et FACE+DOS. Protéger mécanismes Combat, Animation, assets, audio et autres dépôts.
+- Fichiers du lot : `src/ui/capture-editor-human-v2.js` (seule correction production), `tests/unit/capture-creature-animation-mode-roundtrip-2026-10-25.test.mjs`, `tests/browser/capture-creature-library-smoke.mjs` (vrai chargement/sauvegarde/rechargement), présent journal et document de lot.
+- Validation : tests RED/GREEN pour Freclairions V10, modèle générique DOS seul, attaque DOS, absence et deux vues ; navigation réelle en Chromium sur l'éditeur, édition, sauvegarde, changement de créature et export vérifiés ; CI complète foundation + 4 navigateurs, checkpoint GREEN SHA exact, PR puis déploiement `gh-pages`. Validation tactile réelle reste à l'auteur.
+
+---
+
 ## 2026-10-24 — Freclairions : export auteur V10 (GREEN technique)
 - Fichier transmis : `gensrpg-capture-creature-crea_foudrillon.json`, 5992 octets UTF-8 SHA256 `b6dc6a595d1ed1ab965eee8a0dbdd86b3d172258601fb1320e016b492c6e8fc3`. ID stable `crea_foudrillon`, nom auteur `Freclairions`.
 - Base `gh-pages@e3632b5a7e24145064703bf0f870d71ff6659df8`, START `checkpoint/lab-start-freclairions-v10-author-2026-10-24`, branche `work/lab-freclairions-v10-author-2026-10-24`.
