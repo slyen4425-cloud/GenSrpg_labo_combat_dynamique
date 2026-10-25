@@ -31,6 +31,12 @@ test("published Venombre keeps immutable 24 Oct provenance and uses the exact ne
   assert.ok(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.includes(active));
 });
 
+test("Venombre 25 Oct export changes only author-selected ultimate vs 24 Oct archive",()=>{
+  const historical=parse(archived);
+  assert.deepEqual({...latest,loadout:historical.loadout},historical);
+  assert.equal(latest.loadout.slots.at(-1).skillId,"cap_poison_atk_7");
+});
+
 test("author's 4 exact positions and five loadout slots are preserved",()=>{
   assert.deepEqual(latest.draft.presentation.viewOverrides,{
     player:{displayScale:1.4,position:{x:0,y:10}},
