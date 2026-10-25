@@ -24,4 +24,4 @@
 - Aucun changement au moteur, à l'éditeur, aux autres créatures, aux catalogues, aux banques de sprites, à `main` ni à GenSrpG central.
 
 ## Bilan technique
-- En attente du verdict CI et du checkpoint GREEN sur la révision exacte du lot.
+- Code et intégration : CI GitHub Actions run `40154764036` au SHA `17e0c10278dfab5ed09cf7611027320bb4ef77d1`, 5/5 jobs SUCCESS dont suite complète en navigateur et fondation 2302 tests PASS / 0 FAIL. Les cas RED précédents (archive manquante et code ancien) sont devenus GREEN après remplacement de la fiche. Publier uniquement après verdict sur la dernière révision documentaire et checkpoint GREEN exact.
