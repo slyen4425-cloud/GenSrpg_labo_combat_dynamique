@@ -1,0 +1,82 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "ailevent",
+  "action": "movement",
+  "view": "player",
+  "frameCount": 10,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 100,
+  "playbackMode": "loop",
+  "sourceArchive": "AILEVENT_DOS_2_ANIMATIONS_PLUS_MODELE_JOUEUR.zip",
+  "sourceArchiveSha256": "5a72b3644c8bc99ffe7f00c39f51551398824ca0d2651f9f6d7bea4f4cd25ee8",
+  "sourceModelSha256": "ab45843596adba23fd2b20a8383deb938ae7baed254e3205c853f761f7af9324",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/ailevent_movement_player_01.png",
+      "sha256": "6e9432f32ffafb9d88f7a8d55c2818beb0698db7df940d1a65cefac96b841816"
+    },
+    {
+      "index": 1,
+      "file": "frames/ailevent_movement_player_02.png",
+      "sha256": "e0aa156be79c66c2c87150145f5bdbd67bfc4d981deb83677409536ad9fd47bf"
+    },
+    {
+      "index": 2,
+      "file": "frames/ailevent_movement_player_03.png",
+      "sha256": "8eec0367cb17f12467567e7690d2d52a260685a229be087d008e20c63462a6ac"
+    },
+    {
+      "index": 3,
+      "file": "frames/ailevent_movement_player_04.png",
+      "sha256": "8e771b9f099da330a501bd8bce13bb040cf230f85482928682ca0f19ede95dcc"
+    },
+    {
+      "index": 4,
+      "file": "frames/ailevent_movement_player_05.png",
+      "sha256": "5123827928020b7a60f4f03bf64ebec3bcbb8f1a44d07600ef88a0fc02476a93"
+    },
+    {
+      "index": 5,
+      "file": "frames/ailevent_movement_player_06.png",
+      "sha256": "07a2cbb93b4094c70129c62bb7bd9488037e794a6e535927e82c60a4b2ee9b2d"
+    },
+    {
+      "index": 6,
+      "file": "frames/ailevent_movement_player_07.png",
+      "sha256": "109affe31f00f8a08e5cb4a013e92ee41f0a41a4b96dc132b14473bb2960ce5d"
+    },
+    {
+      "index": 7,
+      "file": "frames/ailevent_movement_player_08.png",
+      "sha256": "ba621e973d8615120e0f0cf78fef63faddbb0b17e782d33d99c0e651dc0aed16"
+    },
+    {
+      "index": 8,
+      "file": "frames/ailevent_movement_player_09.png",
+      "sha256": "ff6bacbef14ab8ef3530394eec3b7b7ceef96e84c5addf52c1fe17e4907af1a2"
+    },
+    {
+      "index": 9,
+      "file": "frames/ailevent_movement_player_10.png",
+      "sha256": "4a6da363187b52d38d0ba2110d8e64eb27e9ca146ab47e06cc75c6639cbb443d"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/ailevent_movement_player_10_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 10,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "6d494ef9740ec0f0b84495146cc5820be8ec7364ec730172bf15b0b1aa0d37a9"
+  },
+  "previews": {
+    "gif": "previews/ailevent_movement_player_10_gif.gif",
+    "webp": "previews/ailevent_movement_player_10_webp.webp",
+    "planche": "previews/ailevent_movement_player_10_planche.png"
+  },
+  "preview": "previews/ailevent_movement_player_10_gif.gif"
+}

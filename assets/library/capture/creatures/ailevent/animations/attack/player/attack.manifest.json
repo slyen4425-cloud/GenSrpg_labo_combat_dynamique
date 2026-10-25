@@ -1,0 +1,92 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "ailevent",
+  "action": "attack",
+  "view": "player",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 100,
+  "playbackMode": "once",
+  "sourceArchive": "AILEVENT_DOS_2_ANIMATIONS_PLUS_MODELE_JOUEUR.zip",
+  "sourceArchiveSha256": "5a72b3644c8bc99ffe7f00c39f51551398824ca0d2651f9f6d7bea4f4cd25ee8",
+  "sourceModelSha256": "ab45843596adba23fd2b20a8383deb938ae7baed254e3205c853f761f7af9324",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/ailevent_attack_player_01.png",
+      "sha256": "8326cd7f6f5b0d43d2e167f0e801be841addf6e35fe9f8e5fc1be734c79dac74"
+    },
+    {
+      "index": 1,
+      "file": "frames/ailevent_attack_player_02.png",
+      "sha256": "09398258e4de6cb463196a91e2376ea61f24403abb096bcfa4bc36fc73ea1c83"
+    },
+    {
+      "index": 2,
+      "file": "frames/ailevent_attack_player_03.png",
+      "sha256": "5ca297d5668a2fef0eeb8f606d99d97d10e89f3a70dcb6720f56e8f09cbd6e3e"
+    },
+    {
+      "index": 3,
+      "file": "frames/ailevent_attack_player_04.png",
+      "sha256": "d833eeb7e4bda8a4bc11aec2f6048d9e4c0c51f51a3c568d7a86412f25dd7471"
+    },
+    {
+      "index": 4,
+      "file": "frames/ailevent_attack_player_05.png",
+      "sha256": "a1f840791352f3aff423d109c78259366937b03df8733b0e0f3e0b93269cc173"
+    },
+    {
+      "index": 5,
+      "file": "frames/ailevent_attack_player_06.png",
+      "sha256": "7ca14c2bd2909b6eef4e02636f1cce34afe7228413ac6bfc675ffe88acfdf72e"
+    },
+    {
+      "index": 6,
+      "file": "frames/ailevent_attack_player_07.png",
+      "sha256": "ab2f85b668252436b40cb1d8cd98ce2155799924de41d5f7173e5538beb23fd8"
+    },
+    {
+      "index": 7,
+      "file": "frames/ailevent_attack_player_08.png",
+      "sha256": "abdd7e29aed4a3249d530e74701a3f945f07e212f55d55e5bc73b2a492614c7a"
+    },
+    {
+      "index": 8,
+      "file": "frames/ailevent_attack_player_09.png",
+      "sha256": "2d26bdd101e4239b44b3aff433dcafc41dd8db6c3d6ccf45ba394109648f6f87"
+    },
+    {
+      "index": 9,
+      "file": "frames/ailevent_attack_player_10.png",
+      "sha256": "41619a24b7570c75835a707fa832c4a9f96aa89e6c0521a73fbc5064b1721b53"
+    },
+    {
+      "index": 10,
+      "file": "frames/ailevent_attack_player_11.png",
+      "sha256": "1d119cc8f8a8e57736c9684251048bbf5c8422d59e8c3763d36646c363248fea"
+    },
+    {
+      "index": 11,
+      "file": "frames/ailevent_attack_player_12.png",
+      "sha256": "9761f42d4917c53a110ca0b3095741e7510e7bab0096a8477fe9e35e09731cdd"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/ailevent_attack_player_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "b98f9e2c2f0a12f4088768cd539ca5dab4c37b2f67c3d43f19bcf6db75adb25c"
+  },
+  "previews": {
+    "gif": "previews/ailevent_attack_player_12_gif.gif",
+    "webp": "previews/ailevent_attack_player_12_webp.webp",
+    "planche": "previews/ailevent_attack_player_12_planche.png"
+  },
+  "preview": "previews/ailevent_attack_player_12_gif.gif"
+}

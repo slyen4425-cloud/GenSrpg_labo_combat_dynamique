@@ -1,3 +1,12 @@
+## 2026-10-25 — Ailevent joueur dos (10f vol / 12f attaque, remplacement image joueur)
+
+- Source : _incoming/AILEVENT_DOS_2_ANIMATIONS_PLUS_MODELE_JOUEUR.zip ; SHA256 5a72b3644c8bc99ffe7f00c39f51551398824ca0d2651f9f6d7bea4f4cd25ee8 ; Git blob aa635e35374b685fa6d8bc2e507317e6779f0af7.
+- Base : global-assets@6b3162ec087c3e2b46f03cdb7fc905ee7c24e13a ; checkpoint/global-assets-before-ailevent-dos-2026-10-25 ; work/global-assets-ailevent-dos-2026-10-25.
+- 22 PNG RGBA 512px, deux atlas WebP, previews d'origine, deux manifestes, source modèle PNG identique à l'image validée, nouveau runtime player WebP. Deux IDs catalogue.
+- Protégés : opponent/icon, autres créatures, animations déjà validées, moteurs, UI, données auteur, main, gh-pages. Validation mobile distincte.
+
+---
+
 ## 2026-10-25 — Guêpe cybernétique FACE : nage/vol et attaque, 12 frames nettoyées
 
 - Source : \`_incoming/GUEPE_CYBERNETIQUE_FACE_MOUVEMENT_ATTAQUE_12F_NETTOYES.zip\`, taille 11948531, SHA256 082eb38273f46f306fef3076bfac287985a3bc38d057e00c8e5e51a04a48b4fa, Git blob c86cd66adedbed199b73d93c9c909eab4556a24c.
