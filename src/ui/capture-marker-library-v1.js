@@ -427,7 +427,7 @@ function refresh(root,newMarkerId=null){
   if(!state)return;
   const items=[...state.markers.values()].sort((a,b)=>a.name.localeCompare(b.name,"fr"));
   fill(find(root,"marker-library-select"),items,"Nouveau marqueur");
-  for(const select of root.querySelectorAll("[data-skill-marker-pick]")){
+  for(const select of root.querySelectorAll("[data-skill-marker-pick], [data-skill-zone-marker-pick]")){
     const before=select.value;
     fill(select,items,"Choisir un marqueur");
     // Only fill an empty author selector after the first successful save.
