@@ -4066,6 +4066,14 @@ function replaceCreatureSockets(
   syncCreatureSocketMarkers(root, sockets);
 }
 
+// Shared editor controls describe the existing primary appearance: FACE if
+// present, otherwise DOS. Never synthesize "roll" for a back-only sprite.
+export function captureCreatureEditorVisualSlotForSettingsV1(visual, role) {
+  if (role === "movement") return visual?.movement ?? visual?.movementBack ?? null;
+  if (role === "attack") return visual?.rangedAttack ?? visual?.rangedAttackBack ?? null;
+  throw new RangeError("Unknown creature animation appearance role: " + role);
+}
+
 function writeCreatureRecordFields(
   root,
   record,
@@ -4075,6 +4083,8 @@ function writeCreatureRecordFields(
   const draft = record.draft;
   const loadout = record.loadout;
   const presentation = draft.presentation;
+  const movementEditorSlot = captureCreatureEditorVisualSlotForSettingsV1(presentation?.visual, "movement");
+  const attackEditorSlot = captureCreatureEditorVisualSlotForSettingsV1(presentation?.visual, "attack");
   one(root, "[data-creature-custom-views]").checked = Boolean(
     presentation?.viewOverrides && Object.keys(presentation.viewOverrides).length
   );
@@ -4152,28 +4162,28 @@ function writeCreatureRecordFields(
     ],
     ["[data-creature-movement-visual]", presentation?.visual?.movement?.assetId ?? ""],
     ["[data-creature-movement-back-visual]", presentation?.visual?.movementBack?.assetId ?? ""],
-    ["[data-creature-movement-mode]", presentation?.visual?.movement?.mode ?? "roll"],
-    ["[data-creature-movement-scale]", presentation?.visual?.movement?.displayScale ?? 1],
-    ["[data-creature-movement-player-scale]", presentation?.visual?.movementScaleByView?.player ?? presentation?.visual?.movement?.displayScale ?? 1],
-    ["[data-creature-movement-opponent-scale]", presentation?.visual?.movementScaleByView?.opponent ?? presentation?.visual?.movement?.displayScale ?? 1],
+    ["[data-creature-movement-mode]", movementEditorSlot?.mode ?? "roll"],
+    ["[data-creature-movement-scale]", movementEditorSlot?.displayScale ?? 1],
+    ["[data-creature-movement-player-scale]", presentation?.visual?.movementScaleByView?.player ?? movementEditorSlot?.displayScale ?? 1],
+    ["[data-creature-movement-opponent-scale]", presentation?.visual?.movementScaleByView?.opponent ?? movementEditorSlot?.displayScale ?? 1],
     ["[data-creature-movement-frame-ms]", presentation?.visual?.movementPlayback?.frameMs ?? 0],
     ["[data-creature-movement-playback]", presentation?.visual?.movementPlayback?.mode ?? "loop"],
-    ["[data-creature-movement-turns]", presentation?.visual?.movement?.rotationTurns ?? 3],
-    ["[data-creature-movement-frames]", presentation?.visual?.movement?.frameCount ?? 1],
-    ["[data-creature-movement-transition]", presentation?.visual?.movement?.transitionMs ?? 80],
+    ["[data-creature-movement-turns]", movementEditorSlot?.rotationTurns ?? 3],
+    ["[data-creature-movement-frames]", movementEditorSlot?.frameCount ?? 1],
+    ["[data-creature-movement-transition]", movementEditorSlot?.transitionMs ?? 80],
     ["[data-creature-ranged-attack-visual]", presentation?.visual?.rangedAttack?.assetId ?? ""],
     ["[data-creature-ranged-attack-back-visual]", presentation?.visual?.rangedAttackBack?.assetId ?? ""],
     ["[data-creature-ranged-front-offset-x]", presentation?.visual?.rangedAttackPlacement?.front?.x ?? 0],
     ["[data-creature-ranged-front-offset-y]", presentation?.visual?.rangedAttackPlacement?.front?.y ?? 0],
     ["[data-creature-ranged-back-offset-x]", presentation?.visual?.rangedAttackPlacement?.back?.x ?? 0],
     ["[data-creature-ranged-back-offset-y]", presentation?.visual?.rangedAttackPlacement?.back?.y ?? 0],
-    ["[data-creature-ranged-attack-mode]", presentation?.visual?.rangedAttack?.mode ?? "sprite"],
-    ["[data-creature-ranged-attack-scale]", presentation?.visual?.rangedAttack?.displayScale ?? 1],
-    ["[data-creature-ranged-attack-player-scale]", presentation?.visual?.rangedAttackScaleByView?.player ?? presentation?.visual?.rangedAttackBack?.displayScale ?? presentation?.visual?.rangedAttack?.displayScale ?? 1],
-    ["[data-creature-ranged-attack-opponent-scale]", presentation?.visual?.rangedAttackScaleByView?.opponent ?? presentation?.visual?.rangedAttack?.displayScale ?? presentation?.visual?.rangedAttackBack?.displayScale ?? 1],
-    ["[data-creature-ranged-attack-turns]", presentation?.visual?.rangedAttack?.rotationTurns ?? 0],
-    ["[data-creature-ranged-attack-frames]", presentation?.visual?.rangedAttack?.frameCount ?? 1],
-    ["[data-creature-ranged-attack-transition]", presentation?.visual?.rangedAttack?.transitionMs ?? 80],
+    ["[data-creature-ranged-attack-mode]", attackEditorSlot?.mode ?? "sprite"],
+    ["[data-creature-ranged-attack-scale]", attackEditorSlot?.displayScale ?? 1],
+    ["[data-creature-ranged-attack-player-scale]", presentation?.visual?.rangedAttackScaleByView?.player ?? attackEditorSlot?.displayScale ?? 1],
+    ["[data-creature-ranged-attack-opponent-scale]", presentation?.visual?.rangedAttackScaleByView?.opponent ?? attackEditorSlot?.displayScale ?? 1],
+    ["[data-creature-ranged-attack-turns]", attackEditorSlot?.rotationTurns ?? 0],
+    ["[data-creature-ranged-attack-frames]", attackEditorSlot?.frameCount ?? 1],
+    ["[data-creature-ranged-attack-transition]", attackEditorSlot?.transitionMs ?? 80],
     [
       "[data-creature-audio-attack]",
       creatureAudioAssetId(
