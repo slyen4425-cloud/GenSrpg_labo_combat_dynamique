@@ -13,8 +13,9 @@ function numberField(name,value,min=0){
 }
 function read(root,key){return root.querySelector("[data-"+key+"]");}
 // Reuse the exact shared marker-library choices inside area effects as well.
-export function captureMarkerZoneSelectV1(root,value){
-  const select=markerSelect(root,value);
+export function captureMarkerZoneSelectV1(root,marker){
+  if(marker && typeof marker==="object")captureMarkerRegisterFromSkillV1(root,marker);
+  const select=markerSelect(root,marker?.id??marker??null);
   delete select.dataset.skillMarkerPick;
   select.dataset.skillZoneMarkerPick="true";
   return select;
