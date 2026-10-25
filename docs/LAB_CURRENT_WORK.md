@@ -1,3 +1,14 @@
+## 2026-10-25 — Jet acide : réglages auteur et quatre animations acides (lot en cours)
+- Demande : intégrer le fichier utilisateur `gensrpg-capture-skill-cap_poison_atk_3(1).json` (4651 octets UTF-8, SHA256 `b029cb91c199e1578f2903eb01642cbe1f94f545adcb79883a80a6b39a827061`), capacité `cap_poison_atk_3`, sans doublon ni modification volontaire.
+- Base officielle `gh-pages@d55280a9b97bec1ea8b729ecff376d46ce7cdf59` ; START `checkpoint/lab-start-jet-acide-visual-refresh-2026-10-25` ; branche `work/lab-jet-acide-visual-refresh-2026-10-25`.
+- Diagnostic : autorité déjà unique `data/capture/showcase/cap_poison_atk_3.capture-skill-transfer-v1.json`; le nouvel export ajoute icône Morsure venimeuse, sprite cast Crachat acide, projectile, impact, et aura de `status-2`. Les cinq assets existent physiquement et sont référencés dans le catalogue `global-assets`. La mécanique demeure identique (16 Poison, ignore 50 % résistances et réduction, -250 Défense/15 s, 4 énergie, 30 s recharge). Ne pas modifier les champs auteur, y compris texte descriptif historique et icône choisie.
+- Propriétaire : remplacement par ID stable dans le seul preset Showcase actif ; conserver archive 2026-10-24 inerte et archiver ce nouvel export exact dans `data/capture/source-exports/cap_poison_atk_3.author-export-2026-10-25.json`. Aucun changement du manifeste, du moteur ou des assets.
+- Périmètre : fichier actif, nouvelle archive, test sentinelle intégration existant mis à jour pour vérifier provenance ancienne/nouvelle et nouveaux visuels, présent journal et document de lot ; ni autre compétence, ni créature, ni dépôt central, ni main.
+- Tests : égalité octet de l'export et de l'archive nouvelle, import Capture réel, un seul ID actif, disponibilité assets, préservation combat/états/5 paramètres d'effets visuels, intégration Venombre et CombatSession, tests fondation et 4 suites Chromium, checkpoint GREEN sur SHA exact, PR vers gh-pages puis publication. Validation visuelle smartphone par l'auteur distincte.
+- Statut : à valider sur CI avant GREEN.
+
+---
+
 ## 2026-10-25 — Persistance du mode Sprite animé avec animation DOS uniquement (GREEN technique)
 - Retour auteur : choisir « Sprite animé » revient à « Boule roulante » après réouverture d’une créature. Reproduction depuis l'export Freclairions V10 réel : `visual.movementBack.mode="sprite"`, `visual.movement` absent.
 - Base : `gh-pages@cef8defdc23b8684d8b2f826f0e13aebebc61e8f` ; START : `checkpoint/lab-start-creature-sprite-mode-roundtrip-2026-10-25` ; lot : `work/lab-creature-sprite-mode-roundtrip-2026-10-25`.
