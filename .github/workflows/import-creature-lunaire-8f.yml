@@ -1,0 +1,36 @@
+name: Import approved lunar creature 8f animations
+on:
+  push:
+    branches:
+      - work/global-assets-creature-lunaire-8f-2026-10-25
+    paths:
+      - .github/workflows/import-creature-lunaire-8f.yml
+      - scripts/import_creature_lunaire_8f.py
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    if: github.ref == 'refs/heads/work/global-assets-creature-lunaire-8f-2026-10-25'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/global-assets-creature-lunaire-8f-2026-10-25
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install Pillow==11.3.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: python scripts/import_creature_lunaire_8f.py
+      - run: npm run ci
+      - name: Commit approved media
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/library/capture/creatures/creature_lunaire data/assets/catalog/global-visual-assets.v1.json docs/LAB_CURRENT_WORK.md
+          git diff --cached --check
+          git commit -m 'assets: import lunar creature movement and attack 8 frames'
+          git push origin HEAD:work/global-assets-creature-lunaire-8f-2026-10-25
