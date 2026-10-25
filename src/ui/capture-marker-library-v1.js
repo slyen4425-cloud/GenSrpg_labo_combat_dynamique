@@ -427,7 +427,7 @@ function refresh(root,newMarkerId=null){
   if(!state)return;
   const items=[...state.markers.values()].sort((a,b)=>a.name.localeCompare(b.name,"fr"));
   fill(find(root,"marker-library-select"),items,"Nouveau marqueur");
-  for(const select of root.querySelectorAll("[data-skill-marker-pick]")){
+  for(const select of root.querySelectorAll("[data-skill-marker-pick], [data-skill-zone-marker-pick]")){
     const before=select.value;
     fill(select,items,"Choisir un marqueur");
     // Only fill an empty author selector after the first successful save.
@@ -531,10 +531,13 @@ function propagateMarker(root,definition){
   // Normalize drafts through their existing authoritative contract.
   const updates=[];
   for(const [id,draft] of state.configuredSkills){
-    if(!draft?.definition?.effects?.some(x=>x.kind==="apply_marker"&&x.marker.id===definition.id))continue;
+    const appliesMarker=effect=>effect.kind==="apply_marker"&&effect.marker.id===definition.id;
+    const areaUsesMarker=effect=>effect.kind==="persistent_zone"&&appliesMarker(effect.tickEffect??{});
+    if(!draft?.definition?.effects?.some(effect=>appliesMarker(effect)||areaUsesMarker(effect)))continue;
     const effects=draft.definition.effects.map(effect=>
-      effect.kind==="apply_marker"&&effect.marker.id===definition.id
-        ? {...effect,marker:definition}:effect);
+      appliesMarker(effect) ? {...effect,marker:definition}
+        : areaUsesMarker(effect) ? {...effect,tickEffect:{...effect.tickEffect,marker:definition}}
+        : effect);
     updates.push([id,normalizeCaptureSkillEditorDraftV1({
       ...draft,definition:{...draft.definition,effects}
     })]);
@@ -550,6 +553,8 @@ export function mountCaptureMarkerLibraryV1({root,listen,configuredSkills,getSta
     for(const draft of configuredSkills.values()){
       for(const effect of draft?.definition?.effects??[]){
         if(effect.kind==="apply_marker")captureMarkerRegisterFromSkillV1(root,effect.marker);
+        if(effect.kind==="persistent_zone"&&effect.tickEffect?.kind==="apply_marker")
+          captureMarkerRegisterFromSkillV1(root,effect.tickEffect.marker);
       }
     }
   }
