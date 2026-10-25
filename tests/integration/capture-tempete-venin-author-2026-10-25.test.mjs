@@ -34,6 +34,13 @@ test("Tempête de venin: source author file archived without mutation; one activ
   assert.equal(loaded().id,id);
 });
 
+test("Tempête de venin 25 Oct V2 changes only the author icon, never gameplay",()=>{
+  const current=JSON.parse(source()),previous=JSON.parse(read(archive));
+  assert.deepEqual({...current,draft:{...current.draft,presentation:{
+    ...current.draft.presentation,visual:previous.draft.presentation.visual
+  }}},previous);
+});
+
 test("Tempête de venin: unchanged editor roundtrip, author parameters, effects and impact",()=>{
   const raw=JSON.parse(source()).draft;
   const draft=loaded();
