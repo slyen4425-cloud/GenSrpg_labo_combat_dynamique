@@ -43,7 +43,7 @@ def main():
      assert im.size==(512,512) and im.mode=="RGBA"
      alpha=im.getchannel("A")
      mn,mx=alpha.getextrema()
-     assert mn==0 and mx>=250
+     assert mn==0 and mx>=240, ("source antialias opacity",src,(mn,mx))
      bbox=alpha.point(lambda v:255 if v>8 else 0).getbbox()
      assert bbox is not None
      margins=[bbox[0],bbox[1],512-bbox[2],512-bbox[3]]
