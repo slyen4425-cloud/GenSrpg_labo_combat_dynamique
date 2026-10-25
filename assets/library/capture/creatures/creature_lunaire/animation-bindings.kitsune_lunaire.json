@@ -1,0 +1,32 @@
+{
+  "schema": "capture-creature-animation-bindings-v1",
+  "creatureId": "kitsune_lunaire",
+  "presentationId": "creature:kitsune_lunaire",
+  "profileId": "quadruped",
+  "bindings": {
+    "opponent": {
+      "movement": {
+        "assetId": "pack:capture:creature-lunaire-movement-opponent-8-v1",
+        "frameCount": 8,
+        "frameMs": 110,
+        "playbackMode": "loop"
+      },
+      "rangedAttack": {
+        "assetId": "pack:capture:creature-lunaire-attack-opponent-8-v1",
+        "frameCount": 8,
+        "frameMs": 110,
+        "playbackMode": "once"
+      }
+    },
+    "player": {
+      "movement": null,
+      "rangedAttack": null
+    }
+  },
+  "notes": [
+    "La vue opponent correspond au modèle face; la vue player correspond au modèle dos.",
+    "La course dos n'est pas importée dans la bibliothèque à ce checkpoint.",
+    "Ne pas activer un assetId de dos inexistant; ne pas remplacer les visuels fixes existants.",
+    "Les bindings sont préparatoires; activation runtime après publication des assets dans gh-pages et synchronisation avec la fiche auteur kitsune_lunaire."
+  ]
+}
