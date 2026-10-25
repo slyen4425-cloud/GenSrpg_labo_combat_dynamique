@@ -5,7 +5,7 @@
 - Autorité : `data/capture/showcase/cap_poison_atk_6.capture-skill-transfer-v1.json` (une seule entrée ajoutée au manifeste) ; archive provenance octet pour octet `data/capture/source-exports/gensrpg-capture-skill-cap_poison_atk_6-2026-10-25.json` inerte.
 - Fichiers autorisés : transfert, archive, manifeste `src/catalogs/capture-showcase-skill-presets-v1.js`, nouvelle sentinelle `tests/integration/capture-tempete-venin-author-2026-10-25.test.mjs`, document de lot et présent journal. Moteur, contrats, UI, catalogues de ressources, autres capacités et créatures, main et GenSrpG central protégés.
 - Validation : import+export du véritable fichier (portabilité), authenticité source et archive, catalogage strict de l'ID, chemin de `configuredSkills`, sémantique réelle consommation des marqueurs, asset impact présent dans `global-assets`, CI cinq jobs dont les navigateurs, checkpoint GREEN SHA exact, revue PR puis publication Pages. Test visuel Android par auteur distinct.
-- Statut : développement et validation en cours.
+- Validation technique prépublication : CI run `40216132023` sur SHA `45496031af2b4d8361488247c7dffde57f7f8686` SUCCESS, 5 jobs sur 5 ; Foundation 2313 PASS / 0 FAIL. La sentinelle couvre transfert et archive octet exact, unique ID dans manifeste, import/export, configuredSkills et vrai propriétaire de consommation de marqueurs de deux types (3 charges → 15 dégâts Poison et Stun 2000 ms) sans effet à zéro charge. Les modifications sont limitées aux six fichiers déclarés ; l'asset impact WebP est déjà dans `global-assets`. Attendre CI au SHA définitif de ce journal pour GREEN exact, checkpoint et PR, puis Pages. Vérification Android auteur distincte.
 
 ---
 
