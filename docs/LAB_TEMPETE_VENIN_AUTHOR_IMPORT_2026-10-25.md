@@ -18,3 +18,8 @@
 - Sentinelle : `tests/integration/capture-tempete-venin-author-2026-10-25.test.mjs`, contrôle fichier actif et archive SHA exact, unicité du registre, portabilité import/export, chargement depuis `configuredSkills`, consommation de 3 marqueurs natifs de plusieurs types, 15 dégâts Poison, étourdissement 2 s, aucun effet sans marqueur.
 - Foundation, 4 suites Chromium, checkpoint GREEN sur SHA exact, PR/fusion `gh-pages`, déploiement GitHub Pages avant de déclarer GREEN technique.
 - Test artistique/interaction sur Android par l'auteur distinct.
+
+## Validation de référence
+- GitHub Actions Laboratory CI run `40216132023` au commit `45496031af2b4d8361488247c7dffde57f7f8686` : les cinq jobs ont terminé en `success`. Fondation : **2313 PASS / 0 FAIL**.
+- La sentinelle vérifie import/export de la vraie fiche et trois marqueurs de deux familles consommés comme une seule attaque infligeant 15 dégâts Poison, avec Stun 2000 ms ; sans marqueurs, aucune consommation ni dégâts.
+- La compilation/documentation au SHA final, le checkpoint GREEN et le PR restent requis avant publication ; la validation visuelle Android reste distincte.
