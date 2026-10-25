@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 242,
+    "assets": 244,
     "icons": 86,
-    "sprites": 136,
+    "sprites": 138,
     "fx": 2,
     "portraits": 13,
     "backgrounds": 5,
-    "creatures": 48
+    "creatures": 50
   },
   "assets": [
     {
@@ -8159,6 +8159,84 @@
       },
       "resource": {
         "file": "capture/creatures/ailevent/animations/attack/player/atlases/ailevent_attack_player_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 100,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-ailevent-movement-opponent-12-v1",
+      "label": "Ailevent — vol vue adversaire / face (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "ailevent",
+        "air",
+        "flying",
+        "animated",
+        "opponent",
+        "face",
+        "movement"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / preview approuvée 2026-10-25",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/ailevent/animations/movement/opponent/atlases/ailevent_movement_opponent_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 100,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-ailevent-attack-opponent-12-v1",
+      "label": "Ailevent — attaque vue adversaire / face (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "ailevent",
+        "air",
+        "flying",
+        "animated",
+        "opponent",
+        "face",
+        "attack"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / preview approuvée 2026-10-25",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/ailevent/animations/attack/opponent/atlases/ailevent_attack_opponent_12_atlas.webp",
         "format": "sprite-strip",
         "mime": "image/webp",
         "frameCount": 12,

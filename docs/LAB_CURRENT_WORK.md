@@ -1,3 +1,13 @@
+## 2026-10-25 — Ailevent adversaire face : 12f vol + 12f attaque
+
+- Source originale déposée : _incoming/AILEVENT_FACE_2_ANIMATIONS_VALIDEE.zip ; SHA256 dde8c1bab4d8a2b0812e5593a7c268d0b0ae2c4f8ec5e5bccbb9179c4bdabca5 ; blob GitHub 2ecfa7695a5fc3bcdb9163187cd73f914045ef78.
+- Précision : le ZIP contient seulement deux planches et les GIF/WebP animés (pas de PNG individuels). Les 24 PNG ont donc été extraits des WebP animés approuvés, **sans prétendre reconstituer les pixels des illustrations sources**.
+- Catalogue unique global-assets ; base aad3a3b5fa71edad546f53fb9918b263fb1b2280 ; checkpoint checkpoint/global-assets-before-ailevent-face-2026-10-25 ; work/global-assets-ailevent-face-2026-10-25.
+- Deux animations view=opponent ; 24 PNG RGBA 512px, 2 strips WebP, previews GIF/WebP/planche, manifestes. Runtime opponent/player, animations dos, autres créatures, moteur et UI protégés. Aucun auto-raccord de la fiche auteur.
+- Gates : SHA ZIP, contrôle 12 frames alpha/marges, CI finale sur vrais médias, revue diff, checkpoint GREEN, fast-forward global-assets ; test mobile distinct.
+
+---
+
 ## 2026-10-25 — Ailevent joueur dos (10f vol / 12f attaque, remplacement image joueur)
 
 - Source : _incoming/AILEVENT_DOS_2_ANIMATIONS_PLUS_MODELE_JOUEUR.zip ; SHA256 5a72b3644c8bc99ffe7f00c39f51551398824ca0d2651f9f6d7bea4f4cd25ee8 ; Git blob aa635e35374b685fa6d8bc2e507317e6779f0af7.

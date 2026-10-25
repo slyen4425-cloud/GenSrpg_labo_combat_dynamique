@@ -1,0 +1,92 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "ailevent",
+  "view": "opponent",
+  "action": "attack",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 100,
+  "playbackMode": "once",
+  "sourceArchive": "_incoming/AILEVENT_FACE_2_ANIMATIONS_VALIDEE.zip",
+  "sourceArchiveSha256": "dde8c1bab4d8a2b0812e5593a7c268d0b0ae2c4f8ec5e5bccbb9179c4bdabca5",
+  "extractionSource": "approved animated WebP previews (lossy, 512x512); PNGs preserve decoded frames, not original illustration pixels",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/ailevent_attack_opponent_01.png",
+      "sha256": "34e1b70c8f4a4c8cbe0991cf719e23f9a5b4f0005db6d4c5812b7dfeb3baffd4"
+    },
+    {
+      "index": 1,
+      "file": "frames/ailevent_attack_opponent_02.png",
+      "sha256": "889976a2cfc96725830600c40617349a006550831a4887bda874d07976cf122b"
+    },
+    {
+      "index": 2,
+      "file": "frames/ailevent_attack_opponent_03.png",
+      "sha256": "0bf7de0f67ad17cb40647c7a719b63b95d28df9f49fab43b29a25f7df6ec7d51"
+    },
+    {
+      "index": 3,
+      "file": "frames/ailevent_attack_opponent_04.png",
+      "sha256": "b082746d1a5fa63a858c818386bf343d0c1ef5f59f3b6c1b857d4348fe9b7f23"
+    },
+    {
+      "index": 4,
+      "file": "frames/ailevent_attack_opponent_05.png",
+      "sha256": "b9aa21dc1973fe39bb621f4c9b2a053ef626cbacb11d7138249d0fc76fba571b"
+    },
+    {
+      "index": 5,
+      "file": "frames/ailevent_attack_opponent_06.png",
+      "sha256": "a8f654b1c92679219f17eaa0d860d50a01a76ec4c1c8a53872b6c679137eb11a"
+    },
+    {
+      "index": 6,
+      "file": "frames/ailevent_attack_opponent_07.png",
+      "sha256": "8ccdf0b9b74f566df531d205536af78ac0ef21114f4b90a1bd176e96c1e8639c"
+    },
+    {
+      "index": 7,
+      "file": "frames/ailevent_attack_opponent_08.png",
+      "sha256": "c82dc573e9d83123b95655920882525f337a81b561d7c95e9280bc244ee1bbdb"
+    },
+    {
+      "index": 8,
+      "file": "frames/ailevent_attack_opponent_09.png",
+      "sha256": "dce1a3be4edab4b3eb688fca00a90182c45a62568fd72dd258790179dfccd0e0"
+    },
+    {
+      "index": 9,
+      "file": "frames/ailevent_attack_opponent_10.png",
+      "sha256": "36fa33b1784ab090d40b79c48f87dfae15ce40c961e12688c7f18e3404720442"
+    },
+    {
+      "index": 10,
+      "file": "frames/ailevent_attack_opponent_11.png",
+      "sha256": "b198651946177b160a2b1fbf1308dca94a1d592aa940a8c5c55e06c5ee6d7aa8"
+    },
+    {
+      "index": 11,
+      "file": "frames/ailevent_attack_opponent_12.png",
+      "sha256": "70d80fc5d0a5e46039979fff4f58efc7e305eb32441e23e1dc9b296d43ed6e47"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/ailevent_attack_opponent_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 384,
+    "frameHeight": 384,
+    "sha256": "7631d9664b68d238a81d888afd1eb3c85ffc18d846ff2b84297d40ac53fd3f06"
+  },
+  "preview": "previews/ailevent_attack_opponent_12_gif.gif",
+  "previews": {
+    "gif": "previews/ailevent_attack_opponent_12_gif.gif",
+    "webp": "previews/ailevent_attack_opponent_12_webp.webp",
+    "planche": "previews/ailevent_attack_opponent_12_planche.png"
+  }
+}
