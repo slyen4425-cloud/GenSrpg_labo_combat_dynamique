@@ -5,7 +5,7 @@
 - Propriétaire : remplacement par ID stable dans le seul preset Showcase actif ; conserver archive 2026-10-24 inerte et archiver ce nouvel export exact dans `data/capture/source-exports/cap_poison_atk_3.author-export-2026-10-25.json`. Aucun changement du manifeste, du moteur ou des assets.
 - Périmètre : fichier actif, nouvelle archive, test sentinelle intégration existant mis à jour pour vérifier provenance ancienne/nouvelle et nouveaux visuels, présent journal et document de lot ; ni autre compétence, ni créature, ni dépôt central, ni main.
 - Tests : égalité octet de l'export et de l'archive nouvelle, import Capture réel, un seul ID actif, disponibilité assets, préservation combat/états/5 paramètres d'effets visuels, intégration Venombre et CombatSession, tests fondation et 4 suites Chromium, checkpoint GREEN sur SHA exact, PR vers gh-pages puis publication. Validation visuelle smartphone par l'auteur distincte.
-- Statut : à valider sur CI avant GREEN.
+- Validation du lot : GitHub Actions `40154764036` au SHA documentaire `17e0c10278dfab5ed09cf7611027320bb4ef77d1` SUCCESS, 5/5 jobs verts (fondation + 4 suites Chromium), 2302 PASS / 0 FAIL, vrai chargement de l'export exact, remplacement par ID stable, sauvegarde des valeurs de présentation et CombatSession réels ; les échecs RED précédents correspondent aux phases intermédiaires tests seuls et archive sans preset. Archives de 2026-10-24 et de 2026-10-25 préservées. Le code produit est limité au preset actif et l'export auteur ne change aucune mécanique. CI requise sur le SHA final de ce journal avant création du checkpoint GREEN, revue et publication.
 
 ---
 
