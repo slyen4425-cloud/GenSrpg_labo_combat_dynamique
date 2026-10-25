@@ -22,7 +22,7 @@ test("Venombre is registered exactly once and its authored profile is corrected 
   assert.equal(statValues.values.poison,20);
   assert.equal(statValues.values.esprit,27);
   assert.deepEqual(loadout.slots.map(x=>x.skillId),
-    ["cap_poison_atk_2","cap_poison_atk_3","cap_poison_special_2","cap_poison_atk_6",null]);
+    ["cap_poison_atk_2","cap_poison_atk_3","cap_poison_special_2","cap_poison_atk_6","cap_poison_atk_7"]);
 });
 
 test("Ailevent retains its source and gains only deliberate author presentation and loadout changes", () => {
