@@ -502,8 +502,8 @@ export function normalizeSkillEffectV1(input) {
       );
     }
 
-    if (!["damage", "apply_status"].includes(output.tickEffect.kind)) {
-      throw new RangeError("persistent_zone tickEffect must be damage or apply_status");
+    if (!["damage", "apply_status", "apply_marker"].includes(output.tickEffect.kind)) {
+      throw new RangeError("persistent_zone tickEffect must be damage, apply_status or apply_marker");
     }
     if (value.damageTrigger !== undefined) {
       if (output.tickEffect.kind !== "damage" || !["entry_only", "entry_and_tick"].includes(value.damageTrigger)) {
