@@ -73,7 +73,7 @@ test("Tempête de venin: canonical editor configuredSkills imports exactly one r
     currentDatabase:buildCaptureEditorDatabaseV1({statRegistry,progressionRules,configuredCreatures,configuredSkills}),
     transfer,mode:"replace"
   });
-  assert.equal(plan.action,existing?"replace-skill":"add-skill");
+  assert.equal(plan.action,existing?"replace-skill":"insert-skill");
   applyCaptureTransferPlanToEditorStateV1({plan,configuredCreatures,configuredSkills,statRegistry,progressionRules});
   assert.equal(configuredSkills.size,before+(existing?0:1));
   assert.deepEqual(configuredSkills.get(id),loaded());
