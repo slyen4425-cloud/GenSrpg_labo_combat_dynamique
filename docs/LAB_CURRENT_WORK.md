@@ -1,3 +1,14 @@
+## 2026-10-25 — Zone suiveuse : poser des marqueurs à l'entrée (lot en cours)
+- Demande auteur : zone autour de la créature, 20 s, ajoute deux marqueurs Poison quand un ennemi entre, préparation 2000 ms, recharge 45000 ms, rayon fixe sans croissance. Aucun nouveau preset de capacité créé sans nom/ID fourni. Le marqueur Poison exact n'existe pas encore parmi les trois définitions publiées (venin-static, eclat-spirituel, peste) ; l'éditeur doit permettre de choisir une entrée réelle de la bibliothèque ou d'en créer une.
+- Base exacte `gh-pages@45de90e31c661fca6c7efea2246bb85ab6ec14d1`, checkpoint START `checkpoint/lab-start-zone-markers-on-entry-2026-10-25`, branche `work/lab-zone-markers-on-entry-2026-10-25`.
+- Diagnostic : le moteur de zone suit déjà le sourceActorId et observe les entrées réelles, l'éditeur propose durée/réactivation sans croissance, le contrat tickEffect n'autorise que damage/apply_status et exclut apply_marker. Les marqueurs sont des status stack_counter natifs ; aucun moteur de marqueurs bis autorisé.
+- Propriétaires autorisés : contrat `src/contracts/skill-effect-v1.js`, propriétaire zone `src/core/combat/persistent-zone-runtime-v1.js`, UI commune `src/ui/capture-editor-human-v2.js`, réutilisation du sélecteur dans `src/ui/capture-marker-effect-fields-v1.js`, tests unitaires du vrai trajet, documentation du lot et présent journal. Combats non liés, rendus visuels existants, autres capacités/créatures, assets, main et projet GenSrpG protégés.
+- Attendu : une entrée réelle (et une nouvelle entrée après une sortie) applique exactement N stacks natifs, sans tick continu et sans annuler les stacks à la sortie ; cibles alliées/ennemies filtrées par targetScope ; immunités, marqueurs maxStacks et durée restent natifs ; sortie/expiration/rappel ne suppriment pas les marqueurs déjà posés ; compatibilité des zones de dégâts/statuts historiques.
+- Tests : validation contrat, rendu formulaire + relecture d'export, création zone depuis une compétence avec 2000/45000 ms, 20 s et croissance 0, session combat avec entrée/sortie/rentrée, cas deux adversaires et allié, immunité négative, non-régression, CI 5/5, GREEN sur SHA exact et PR/publication; validation Android réelle auteur séparée.
+- Statut : tests et implémentation à exécuter avant publication.
+
+---
+
 ## 2026-10-25 — Jet acide : réglages auteur et quatre animations acides (lot en cours)
 - Demande : intégrer le fichier utilisateur `gensrpg-capture-skill-cap_poison_atk_3(1).json` (4651 octets UTF-8, SHA256 `b029cb91c199e1578f2903eb01642cbe1f94f545adcb79883a80a6b39a827061`), capacité `cap_poison_atk_3`, sans doublon ni modification volontaire.
 - Base officielle `gh-pages@d55280a9b97bec1ea8b729ecff376d46ce7cdf59` ; START `checkpoint/lab-start-jet-acide-visual-refresh-2026-10-25` ; branche `work/lab-jet-acide-visual-refresh-2026-10-25`.
