@@ -15,15 +15,20 @@ import {describeCaptureSkillV1} from "../../src/ui/capture-skill-explanation-v1.
 const root=path=>readFileSync(new URL("../../"+path,import.meta.url),"utf8");
 const active="data/capture/showcase/cap_poison_atk_3.capture-skill-transfer-v1.json";
 const original="data/capture/source-exports/cap_poison_atk_3.author-export-2026-10-24.json";
+const refreshed="data/capture/source-exports/cap_poison_atk_3.author-export-2026-10-25.json";
 const exported=JSON.parse(root(active));
 const authored=exported.draft;
 const skill=authored.definition;
 const id="cap_poison_atk_3";
 
-test("Jet acide: exact 24 Oct author export stored once and matches byte-for-byte",()=>{
-  assert.equal(root(active),root(original));
-  assert.equal(createHash("sha256").update(root(active)).digest("hex"),
+test("Jet acide: 24 Oct archive preserved, 25 Oct author export becomes single live owner",()=>{
+  assert.equal(createHash("sha256").update(root(original)).digest("hex"),
     "b6c003a3a8a8fa898a4f5c8836e93269b511368c875ddebd0eac403ed68f6d2a");
+  assert.equal(root(active),root(refreshed),"live owner must be exact author's newest file");
+  assert.notEqual(root(active),root(original),"prior provenance is archive-only");
+  assert.equal(Buffer.byteLength(root(active),"utf8"),4651);
+  assert.equal(createHash("sha256").update(root(active)).digest("hex"),
+    "b029cb91c199e1578f2903eb01642cbe1f94f545adcb79883a80a6b39a827061");
   assert.equal(authored.id,id);
   assert.equal(skill.id,id);
   assert.equal(authored.presentation.subjectId,id);
@@ -54,13 +59,26 @@ test("Jet acide: preserves EVERY configured gameplay/visual parameter",()=>{
       statId:"defense",modifierMode:"points",deltaPoints:-250
     }
   });
-  assert.deepEqual(authored.presentation.visual,{});
+  assert.deepEqual(authored.definition,JSON.parse(root(original)).draft.definition,"mechanics are author-identical to prior release");
+  const visuals=authored.presentation.visual;
+  assert.deepEqual(Object.keys(visuals).sort(),["cast","icon","impact","travel"]);
+  assert.equal(visuals.icon.assetId,"pack:capture:icon-skill-morsure-venimeuse-01");
+  assert.equal(visuals.cast.assetId,"pack:capture:sprite-crachat-acide-cast-01");
+  assert.equal(visuals.cast.anchor,"mouth");
+  assert.equal(visuals.cast.opacity,0.75);
+  assert.equal(visuals.cast.playbackMode,"loop");
+  assert.equal(visuals.travel.assetId,"pack:capture:sprite-crachat-acide-projectile-01");
+  assert.equal(visuals.travel.displayScale,1.5);
+  assert.equal(visuals.travel.attachment,"trajectory");
+  assert.equal(visuals.impact.assetId,"pack:capture:sprite-crachat-acide-impact-01");
+  assert.equal(visuals.impact.playbackMode,"once");
+  assert.equal(visuals.impact.trigger,"impact");
   assert.deepEqual(authored.presentation.audio,{});
   assert.equal(authored.presentation.version,3);
   assert.deepEqual(authored.presentation.statusVisuals["status-2"],{
     mode:"sprite",tintBlinkEnabled:false,tintBlinkPeriodMs:600,
     tintColor:"#9b59d0",tintOpacity:0.35,
-    sprite:{assetId:"pack:capture:sprite-status-curse-01",displayScale:1,opacity:0.25}
+    sprite:{assetId:"pack:capture:sprite-crachat-acide-aura-01",displayScale:1,opacity:0.35}
   });
 });
 test("Jet acide replaces one historical native ID in configuredSkills without touching Venombre slots",()=>{
@@ -76,6 +94,7 @@ test("Jet acide replaces one historical native ID in configuredSkills without to
   const transfer=importCaptureTransferJsonV1(root(active));
   assert.equal(transfer.kind,"skill");
   assert.equal(transfer.value.draft.id,id);
+  assert.deepEqual(transfer.value.draft.presentation,authored.presentation,"importer preserves all FX settings");
   const plan=planCaptureTransferImportV1({
     currentDatabase:buildCaptureEditorDatabaseV1({
       statRegistry,progressionRules,configuredCreatures,configuredSkills
