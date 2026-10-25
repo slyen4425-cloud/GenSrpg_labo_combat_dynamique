@@ -1,3 +1,14 @@
+## 2026-10-25 — Créature lunaire : course et attaque 8f, vue adversaire
+
+- Source validée : _incoming/CREATURE_LUNAIRE_COURSE_ATTAQUE_8F_GITHUB.zip ; SHA256 f2f9bd65379081ddcb594935023235dfecc2db4b73f832747a1e9882cb594e61.
+- Branche : work/global-assets-creature-lunaire-8f-2026-10-25 ; base checkpoint/global-assets-ailevent-dos-green-2026-10-25.
+- 16 PNG RGBA 512px conservés, deux atlas WebP sans perte, deux previews originales, deux manifestes et deux IDs de catalogue.
+- Protégés : autres créatures, runtime modèles, réglages auteur, moteur, UI, main et gh-pages.
+- Aucune affectation automatique à une fiche de créature : l'identifiant métier définitif reste à confirmer.
+- CI et revue finale requises avant publication global-assets.
+
+---
+
 ## 2026-10-25 — Ailevent joueur dos (10f vol / 12f attaque, remplacement image joueur)
 
 - Source : _incoming/AILEVENT_DOS_2_ANIMATIONS_PLUS_MODELE_JOUEUR.zip ; SHA256 5a72b3644c8bc99ffe7f00c39f51551398824ca0d2651f9f6d7bea4f4cd25ee8 ; Git blob aa635e35374b685fa6d8bc2e507317e6779f0af7.
