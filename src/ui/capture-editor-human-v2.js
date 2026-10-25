@@ -6589,7 +6589,7 @@ function appendHumanSkillEffectV1(
     document.createElement("small");
   zoneNote.className = "note";
   zoneNote.textContent =
-    "La zone suit sa créature tant qu’elle est active. « Garder la même taille » et une croissance de 0 empêchent l’agrandissement. L'effet Marqueurs ne se déclenche qu’à chaque entrée réelle, jamais en continu. Les marqueurs suivent leur propre durée après sortie. La persistance après rappel reste réservée aux zones à statut.";
+    "Toute réactivation renouvelle la durée et peut éventuellement agrandir le rayon. La zone contient directement son effet : inutile d’ajouter un buff indépendant. Les champs des dégâts ou du statut apparaissent selon « Effet appliqué ». Le mode « Dans la zone » retire le statut à la sortie ; « À l’entrée » laisse sa durée normale après sortie. La persistance après rappel n’est disponible que pour les zones à statut. La zone suit sa créature : pour une zone fixe en taille, choisir « Garder la même taille » et croissance 0. Le mode « Marqueurs » pose des charges uniquement à l’entrée réelle et conserve la durée propre des marqueurs après la sortie.";
 
   zoneBox.append(zoneGrid,zoneDamageBox,zoneStatusConfig,zoneMarkerBox,zoneNote);
 
