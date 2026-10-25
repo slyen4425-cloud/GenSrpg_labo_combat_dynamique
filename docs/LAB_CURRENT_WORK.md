@@ -1,10 +1,11 @@
-## 2026-10-25 — Persistance du mode Sprite animé avec animation DOS uniquement (EN COURS)
+## 2026-10-25 — Persistance du mode Sprite animé avec animation DOS uniquement (GREEN technique)
 - Retour auteur : choisir « Sprite animé » revient à « Boule roulante » après réouverture d’une créature. Reproduction depuis l'export Freclairions V10 réel : `visual.movementBack.mode="sprite"`, `visual.movement` absent.
 - Base : `gh-pages@cef8defdc23b8684d8b2f826f0e13aebebc61e8f` ; START : `checkpoint/lab-start-creature-sprite-mode-roundtrip-2026-10-25` ; lot : `work/lab-creature-sprite-mode-roundtrip-2026-10-25`.
 - Cause racine : `writeCreatureRecordFields` lit uniquement les réglages de `visual.movement` (FACE), puis applique `"roll"` si ce slot manque, sans inspecter le slot DOS. Un réenregistrement réinjecte ce défaut dans `movementBack` via `buildHumanCreatureDraftV3`. Même asymétrie dans les paramètres d'attaque DOS. L'export source est juste, l'hydratation du catalogue et le moteur aérien ne sont pas responsables.
 - Solution autorisée : la projection UI existante lit les réglages génériques depuis le slot FACE s'il existe, sinon depuis DOS ; aucune autre autorité et aucun changement des fiches auteur. Conserver les comportements sans sprite, FACE seul et FACE+DOS. Protéger mécanismes Combat, Animation, assets, audio et autres dépôts.
 - Fichiers du lot : `src/ui/capture-editor-human-v2.js` (seule correction production), `tests/unit/capture-creature-animation-mode-roundtrip-2026-10-25.test.mjs`, `tests/browser/capture-creature-library-smoke.mjs` (vrai chargement/sauvegarde/rechargement), présent journal et document de lot.
 - Validation : tests RED/GREEN pour Freclairions V10, modèle générique DOS seul, attaque DOS, absence et deux vues ; navigation réelle en Chromium sur l'éditeur, édition, sauvegarde, changement de créature et export vérifiés ; CI complète foundation + 4 navigateurs, checkpoint GREEN SHA exact, PR puis déploiement `gh-pages`. Validation tactile réelle reste à l'auteur.
+- Tests GREEN au SHA code + tests + doc `e3e68a27fbe5d0d38316f4a51fafa99b1ca164c0` : GitHub Actions run `40153431446`, cinq jobs SUCCESS, 2302/2302 Foundation PASS (0 fail), vrai Chromium de l’éditeur a chargé Freclairions, vérifié le mode sprite, sauvegardé static puis sprite, réouvert et exporté sans mode roll. PR #97 en révision ; fichier auteur V10 inchangé. La CI du présent journal final doit être verte à son SHA exact avant checkpoint et publication.
 
 ---
 
