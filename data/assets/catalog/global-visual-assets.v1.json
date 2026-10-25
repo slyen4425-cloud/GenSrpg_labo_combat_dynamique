@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 242,
+    "assets": 245,
     "icons": 86,
-    "sprites": 136,
+    "sprites": 139,
     "fx": 2,
     "portraits": 13,
     "backgrounds": 5,
-    "creatures": 48
+    "creatures": 51
   },
   "assets": [
     {
@@ -8164,6 +8164,114 @@
         "frameCount": 12,
         "frameMs": 100,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-lunaire-movement-opponent-8-v1",
+      "label": "Créature lunaire movement opponent 8f",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "lunaire",
+        "animated",
+        "opponent",
+        "movement"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_lunaire/animations/movement/opponent/atlases/creature_lunaire_movement_opponent_8_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 110,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-lunaire-attack-opponent-8-v1",
+      "label": "Créature lunaire attack opponent 8f",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "lunaire",
+        "animated",
+        "opponent",
+        "attack"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_lunaire/animations/attack/opponent/atlases/creature_lunaire_attack_opponent_8_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 110,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-lunaire-movement-player-8-v1",
+      "label": "Créature lunaire movement player 8f",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "lunaire",
+        "animated",
+        "player",
+        "movement"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_lunaire/animations/movement/player/atlases/creature_lunaire_movement_player_8_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 110,
+        "playbackMode": "loop"
       },
       "compatibility": {
         "uses": [

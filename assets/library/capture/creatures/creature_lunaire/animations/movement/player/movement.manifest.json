@@ -1,0 +1,65 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "creature_lunaire",
+  "action": "movement",
+  "view": "player",
+  "frameCount": 8,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 110,
+  "playbackMode": "loop",
+  "sourceArchive": "CREATURE_LUNAIRE_FACE_2_ANIMATIONS_ET_COURSE_DOS_8F.zip",
+  "sourceArchiveSha256": "4abbdc9d71dc720a238885c51066e69bf81a846b920c706f2a750b48364dd8fd",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/creature_lunaire_movement_player_01.png",
+      "sha256": "1106603e7c22734328cf8db5fb15a802a5ea75aa0570442f9391d9e7cd18553e"
+    },
+    {
+      "index": 1,
+      "file": "frames/creature_lunaire_movement_player_02.png",
+      "sha256": "7b23f7826c662afa215b38f4559ca77be76b8963bce38b1e76726c7983f41674"
+    },
+    {
+      "index": 2,
+      "file": "frames/creature_lunaire_movement_player_03.png",
+      "sha256": "6aa11ff64ca870847836dc57ccf182219c98ac3e75788b217447db6b67d31971"
+    },
+    {
+      "index": 3,
+      "file": "frames/creature_lunaire_movement_player_04.png",
+      "sha256": "ca783c35bc5ed7624b6446935bee9d5ed5d415671bf03411606cb16b72a6e4f5"
+    },
+    {
+      "index": 4,
+      "file": "frames/creature_lunaire_movement_player_05.png",
+      "sha256": "448b7d260d38acf2727d3e9e098eb1ca62a35157878dd29ed6972ad33b96074b"
+    },
+    {
+      "index": 5,
+      "file": "frames/creature_lunaire_movement_player_06.png",
+      "sha256": "ac40b94e825af99f9df7fa19d80d2499881f5ac498b691fee2c896c8090fa1d1"
+    },
+    {
+      "index": 6,
+      "file": "frames/creature_lunaire_movement_player_07.png",
+      "sha256": "f02fabac31ee97f95261c39d25badd7edf3fe2bb503c89a652c6fae27cb26f31"
+    },
+    {
+      "index": 7,
+      "file": "frames/creature_lunaire_movement_player_08.png",
+      "sha256": "ae8d72095df8f6be94bf75f33e5ed3fe6303b0b7f9562b1688247cf75d0b1e0c"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/creature_lunaire_movement_player_8_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 8,
+    "frameWidth": 512,
+    "frameHeight": 512
+  },
+  "preview": "previews/creature_lunaire_movement_player_8_preview.webp"
+}
