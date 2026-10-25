@@ -1,0 +1,35 @@
+name: Import Ailevent player animations and model
+on:
+  push:
+    branches:
+      - work/global-assets-ailevent-dos-2026-10-25
+    paths:
+      - scripts/import_ailevent_player.py
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    if: github.ref == 'refs/heads/work/global-assets-ailevent-dos-2026-10-25'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/global-assets-ailevent-dos-2026-10-25
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install Pillow==11.3.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: python scripts/import_ailevent_player.py
+      - run: npm run ci
+      - name: Commit real media
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/library/capture/creatures/ailevent data/assets/catalog/global-visual-assets.v1.json docs/LAB_CURRENT_WORK.md tests/unit/ailevent-player12-assets.test.mjs
+          git diff --cached --check
+          git commit -m 'assets: Ailevent joueur modele et deux animations validees'
+          git push origin HEAD:work/global-assets-ailevent-dos-2026-10-25
