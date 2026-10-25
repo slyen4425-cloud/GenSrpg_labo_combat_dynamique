@@ -1,3 +1,9 @@
 Ailevent FACE - 2026-10-25
 
 Import des animations approuvées vues opponent sans modification des sprites déjà validés. ZIP _incoming/AILEVENT_FACE_2_ANIMATIONS_VALIDEE.zip ; 8500736 octets, SHA256 dde8c1bab4d8a2b0812e5593a7c268d0b0ae2c4f8ec5e5bccbb9179c4bdabca5. Le ZIP ne contient que les planches et les GIF/WebP animés, donc l'import extrait les 24 PNG RGBA des WebP animés avec perte, sans inventer de transparence/détails non présents. 12f movement loop, 12f attack once, 100ms, deux strips WebP et six previews. Modèle joueur/dos et adversaire fixe et autres créatures intouchés. Branche work/global-assets-ailevent-face-2026-10-25, checkpoint de départ checkpoint/global-assets-before-ailevent-face-2026-10-25 depuis aad3a3b5fa71edad546f53fb9918b263fb1b2280. Contrôles CI au SHA final, diff, checkpoint GREEN et publication fast-forward. Essai manuel mobile distinct.
+
+## Vérification import
+
+- Workflow import GitHub Actions 40228944329 : SUCCESS. Médias committés dans 01dd35f7972ebd0b547ddcebc2e4301bd7e7e23f.
+- Fichiers physiques : 24 PNG décodés des deux WebP animés approuvés, 2 atlas WebP, 6 previews GIF/WebP/planche, 2 manifestes. Le modèle fixe opponent et le modèle player ne sont pas modifiés ; les animations player 10f/12f précédentes restent protégées.
+- Tests intégrés : présence de la source, hashes, 12 frames 512 RGBA par animation, atlas et catalogage. Publication exclusivement après CI GREEN au commit final et revue du diff.
