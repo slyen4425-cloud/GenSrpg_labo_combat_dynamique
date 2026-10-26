@@ -2,7 +2,7 @@
   "action": "movement",
   "view": "opponent",
   "frameCount": 8,
-  "sourceZip": "creature_violette_attaque_course_8frames.zip",
-  "sourceSha256": "784abb25e6d6ce3ca4156524a7622479acf267acffa680fe5322c9afe72a212e",
+  "sourceZip": "venombre_oposent_move.zip",
+  "sourceSha256": "e52ad064c4f549fa88eaa14140d7f594ada58a0edea87bc07a8744e30bd50234",
   "atlas": "capture/creatures/venombre/animations/movement/opponent/atlases/venombre_movement_face_atlas.webp"
 }
