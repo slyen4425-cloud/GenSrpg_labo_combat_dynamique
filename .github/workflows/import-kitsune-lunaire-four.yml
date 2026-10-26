@@ -1,0 +1,34 @@
+name: Import and bind four Kitsune animations
+on:
+  push:
+    branches: [work/kitsune-lunaire-3animations-raccord-2026-10-26]
+    paths: [.github/workflows/import-kitsune-lunaire-four.yml, scripts/import_kitsune_lunaire_back_attack_and_bind.py]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    if: github.ref == 'refs/heads/work/kitsune-lunaire-3animations-raccord-2026-10-26'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: git fetch origin main gh-pages
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install Pillow==11.3.0
+      - run: python scripts/import_kitsune_lunaire_back_attack_and_bind.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run ci
+      - name: Commit imported assets and author mapping
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/library/capture/creatures/creature_lunaire data/assets/catalog/global-visual-assets.v1.json data/capture/showcase/kitsune_lunaire.capture-creature-transfer-v1.json
+          git diff --cached --check
+          git commit -m 'capture: import back attack and bind four Kitsune lunar animations'
+          git push origin HEAD:work/kitsune-lunaire-3animations-raccord-2026-10-26
