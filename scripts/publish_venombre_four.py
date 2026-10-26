@@ -18,7 +18,12 @@ for archive,action,view,prefix in sources:
   for i in range(1,9):
    n=f"{prefix}{i:02d}.png"
    im=Image.open(io.BytesIO(z.read(n))).convert("RGBA")
-   assert im.size==(512,512),(n,im.size)
+   if im.size!=(512,512):
+    assert im.width<=1024 and im.height<=1024,(n,im.size)
+    im.thumbnail((448,448),Image.Resampling.LANCZOS)
+    canvas=Image.new("RGBA",(512,512),(0,0,0,0))
+    canvas.alpha_composite(im,((512-im.width)//2,(512-im.height)//2))
+    im=canvas
    assert im.getextrema()[3][0]==0,(n,"no transparent pixels")
    frames.append(im)
   folder=base/action/view
