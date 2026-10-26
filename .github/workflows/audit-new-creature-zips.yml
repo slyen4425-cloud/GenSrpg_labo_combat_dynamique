@@ -2,7 +2,7 @@ name: Audit new creature animation archives
 on:
   push:
     branches: [global-assets]
-    paths: ['.github/workflows/audit-new-creature-zips.yml']
+    paths: ['.github/workflows/audit-new-creature-zips.yml', 'scripts/audit_new_creature_zips.py']
   workflow_dispatch:
 permissions:
   contents: write
