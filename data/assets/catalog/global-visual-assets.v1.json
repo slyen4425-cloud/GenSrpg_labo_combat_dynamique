@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 252,
+    "assets": 254,
     "icons": 86,
-    "sprites": 146,
+    "sprites": 148,
     "fx": 2,
     "portraits": 13,
     "backgrounds": 5,
@@ -8530,6 +8530,78 @@
         "frameCount": 8,
         "frameMs": 125,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:scorpion-attack-opponent-8-v1",
+      "label": "Scorpion — Attaque face (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "scorpion",
+        "animated",
+        "opponent",
+        "attack"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/scorpion/animations/attack/opponent/atlases/scorpion_attack_opponent_8_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 130,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:scorpion-movement-opponent-8-v1",
+      "label": "Scorpion — Course face (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "scorpion",
+        "animated",
+        "opponent",
+        "movement"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/scorpion/animations/movement/opponent/atlases/scorpion_movement_opponent_8_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 130,
+        "playbackMode": "loop"
       },
       "compatibility": {
         "uses": [
