@@ -1,0 +1,8 @@
+{
+  "action": "attack",
+  "view": "player",
+  "frameCount": 8,
+  "sourceZip": "CREATURE_VIOLETTE_DOS_COURSE_ATTAQUE_8F_VALIDEES.zip",
+  "sourceSha256": "e5f77e7e1bb6d90814b3bbe54fbf81c9f540a645dd3f2e6d5732a1188e6a817e",
+  "atlas": "capture/creatures/venombre/animations/attack/player/atlases/venombre_attack_player_8_atlas.webp"
+}

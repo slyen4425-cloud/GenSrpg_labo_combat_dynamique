@@ -1,0 +1,26 @@
+[
+  {
+    "assetId": "pack:capture:venombre-attack-opponent-8-v1",
+    "frames": 8,
+    "atlas": "capture/creatures/venombre/animations/attack/opponent/atlases/venombre_attack_face_atlas.webp",
+    "source": "creature_violette_attaque_course_8frames.zip"
+  },
+  {
+    "assetId": "pack:capture:venombre-movement-opponent-8-v1",
+    "frames": 8,
+    "atlas": "capture/creatures/venombre/animations/movement/opponent/atlases/venombre_movement_face_atlas.webp",
+    "source": "creature_violette_attaque_course_8frames.zip"
+  },
+  {
+    "assetId": "pack:capture:venombre-attack-player-8-v1",
+    "frames": 8,
+    "atlas": "capture/creatures/venombre/animations/attack/player/atlases/venombre_attack_player_8_atlas.webp",
+    "source": "CREATURE_VIOLETTE_DOS_COURSE_ATTAQUE_8F_VALIDEES.zip"
+  },
+  {
+    "assetId": "pack:capture:venombre-movement-player-8-v1",
+    "frames": 8,
+    "atlas": "capture/creatures/venombre/animations/movement/player/atlases/venombre_movement_player_8_atlas.webp",
+    "source": "CREATURE_VIOLETTE_DOS_COURSE_ATTAQUE_8F_VALIDEES.zip"
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "action": "attack",
+  "view": "opponent",
+  "frameCount": 8,
+  "sourceZip": "creature_violette_attaque_course_8frames.zip",
+  "sourceSha256": "784abb25e6d6ce3ca4156524a7622479acf267acffa680fe5322c9afe72a212e",
+  "atlas": "capture/creatures/venombre/animations/attack/opponent/atlases/venombre_attack_face_atlas.webp"
+}
