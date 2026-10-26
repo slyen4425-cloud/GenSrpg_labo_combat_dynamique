@@ -2,27 +2,13 @@ from pathlib import Path
 from PIL import Image
 import zipfile,io,json,hashlib
 base=Path("assets/library/capture/creatures/venombre/animations")
-with zipfile.ZipFile("venombre_joueur_attaque_move.zip") as z:
- readme=z.read("README.txt").decode("utf-8-sig",errors="replace").lower()
- print("PLAYER ZIP README:",readme)
- import re
- # Require source README to explicitly identify animation 1/2, never guess
- mapping={}
- for i in (1,2):
-  hits=[line for line in readme.splitlines() if re.search(r"animation[_\\s-]*"+str(i)+r"\\b",line)]
-  actions=set()
-  for line in hits:
-   if any(w in line for w in ("attaque","attack")):actions.add("attack")
-   if any(w in line for w in ("course","movement","déplacement","deplacement")):actions.add("movement")
-  assert len(actions)==1,("ambiguous player animation",i,hits)
-  mapping[actions.pop()]=i
- assert set(mapping)=={"attack","movement"},mapping
 sources=[
- ("venombre_joueur_attaque_move.zip","attack","player",f"animation_{mapping['attack']}_validee/frame_"),
- ("venombre_joueur_attaque_move.zip","movement","player",f"animation_{mapping['movement']}_validee/frame_"),
+ ("venombre_joueur_attaque_move.zip","attack","player","animation_1_validee/frame_"),
  ("venombre_oposent_move.zip","movement","opponent","course/course_"),
  ("venombre_opposenr_attaque.zip","attack","opponent","attaque_"),
 ]
+# The player archive README calls BOTH sequences attacks; do not mislabel either as movement.
+
 cat=json.loads(Path("data/assets/catalog/global-visual-assets.v1.json").read_text())
 results=[]
 for archive,action,view,prefix in sources:
@@ -64,5 +50,5 @@ for archive,action,view,prefix in sources:
   manifest.write_text(json.dumps({"action":action,"view":view,"frameCount":8,"sourceZip":archive,"sourceSha256":hashlib.sha256(Path(archive).read_bytes()).hexdigest(),"atlas":relative},indent=2)+"\n")
   results.append({"assetId":asset_id,"frames":8,"atlas":relative,"source":archive})
 Path("VENOMBRE_DELIVERY_AUDIT.json").write_text(json.dumps(results,indent=2)+"\n")
-assert len(results)==4
-print("SUCCESS: all four source animations normalized, atlas paths match canonical catalog")
+assert len(results)==3
+print("SUCCESS: three confirmed source animations normalized, atlas paths match canonical catalog")
