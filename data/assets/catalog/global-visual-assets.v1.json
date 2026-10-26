@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 245,
+    "assets": 246,
     "icons": 86,
-    "sprites": 139,
+    "sprites": 140,
     "fx": 2,
     "portraits": 13,
     "backgrounds": 5,
-    "creatures": 51
+    "creatures": 52
   },
   "assets": [
     {
@@ -8272,6 +8272,42 @@
         "frameCount": 8,
         "frameMs": 110,
         "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-lunaire-attack-player-7-v1",
+      "label": "Kitsune Lunaire attaque dos 7f",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "lunaire",
+        "animated",
+        "player",
+        "attack"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_lunaire/animations/attack/player/atlases/creature_lunaire_attack_player_7_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 7,
+        "frameMs": 110,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [
