@@ -2,11 +2,26 @@ from pathlib import Path
 from PIL import Image
 import zipfile,io,json,hashlib
 base=Path("assets/library/capture/creatures/venombre/animations")
+with zipfile.ZipFile("venombre_joueur_attaque_move.zip") as z:
+ readme=z.read("README.txt").decode("utf-8-sig",errors="replace").lower()
+ print("PLAYER ZIP README:",readme)
+ import re
+ # Require source README to explicitly identify animation 1/2, never guess
+ mapping={}
+ for i in (1,2):
+  hits=[line for line in readme.splitlines() if re.search(r"animation[_\\s-]*"+str(i)+r"\\b",line)]
+  actions=set()
+  for line in hits:
+   if any(w in line for w in ("attaque","attack")):actions.add("attack")
+   if any(w in line for w in ("course","movement","déplacement","deplacement")):actions.add("movement")
+  assert len(actions)==1,("ambiguous player animation",i,hits)
+  mapping[actions.pop()]=i
+ assert set(mapping)=={"attack","movement"},mapping
 sources=[
- ("creature_violette_attaque_course_8frames.zip","attack","opponent","animations/attack/frames/creature_violette_attack_face_"),
- ("creature_violette_attaque_course_8frames.zip","movement","opponent","animations/movement/frames/creature_violette_movement_face_"),
- ("CREATURE_VIOLETTE_DOS_COURSE_ATTAQUE_8F_VALIDEES.zip","attack","player","attaque/frames/attaque_dos_"),
- ("CREATURE_VIOLETTE_DOS_COURSE_ATTAQUE_8F_VALIDEES.zip","movement","player","course/frames/course_dos_"),
+ ("venombre_joueur_attaque_move.zip","attack","player",f"animation_{mapping['attack']}_validee/frame_"),
+ ("venombre_joueur_attaque_move.zip","movement","player",f"animation_{mapping['movement']}_validee/frame_"),
+ ("venombre_oposent_move.zip","movement","opponent","course/course_"),
+ ("venombre_opposenr_attaque.zip","attack","opponent","attaque_"),
 ]
 cat=json.loads(Path("data/assets/catalog/global-visual-assets.v1.json").read_text())
 results=[]
