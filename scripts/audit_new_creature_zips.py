@@ -1,6 +1,6 @@
 from pathlib import Path
 import zipfile,json
-names=["CREATURE_VIOLETTE_DOS_COURSE_ATTAQUE_8F_VALIDEES.zip","creature_violette_attaque_course_8frames.zip","monster_capture_attaque_venin_sans_effet.zip","scorpion_2_animations_validees_8_frames.zip","scorpion_course_corrigee_8_frames_depot.zip"]
+names=["venombre_joueur_attaque_move.zip","venombre_oposent_move.zip","venombre_opposenr_attaque.zip","CREATURE_VIOLETTE_DOS_COURSE_ATTAQUE_8F_VALIDEES.zip","creature_violette_attaque_course_8frames.zip","monster_capture_attaque_venin_sans_effet.zip","scorpion_2_animations_validees_8_frames.zip","scorpion_course_corrigee_8_frames_depot.zip"]
 out=[]
 for name in names:
  p=Path(name)
