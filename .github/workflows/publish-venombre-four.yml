@@ -1,4 +1,4 @@
-name: Publish Venombre animations
+name: Publish Venombre animations (verified sources)
 on:
   push:
     branches: [global-assets]
