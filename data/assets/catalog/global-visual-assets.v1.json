@@ -8612,42 +8612,6 @@
       }
     },
     {
-      "id": "pack:capture:venombre-movement-player-8-v1",
-      "label": "Venombre — Course dos (8 frames)",
-      "assetType": "sprite",
-      "mediaType": "image",
-      "category": "creature",
-      "tags": [
-        "capture",
-        "creature",
-        "venombre",
-        "animated",
-        "player",
-        "movement"
-      ],
-      "source": {
-        "scope": "pack",
-        "packId": "capture",
-        "author": "GenSrpG",
-        "license": "project-internal"
-      },
-      "resource": {
-        "file": "capture/creatures/venombre/animations/movement/player/atlases/venombre_movement_player_8_atlas.webp",
-        "format": "sprite-strip",
-        "mime": "image/webp",
-        "frameCount": 8,
-        "frameMs": 125,
-        "playbackMode": "loop"
-      },
-      "compatibility": {
-        "uses": [
-          "combat",
-          "capture",
-          "editor"
-        ]
-      }
-    },
-    {
       "id": "pack:capture:venombre-attack-player-8-v1",
       "label": "Venombre — Attaque dos (8 frames)",
       "assetType": "sprite",
