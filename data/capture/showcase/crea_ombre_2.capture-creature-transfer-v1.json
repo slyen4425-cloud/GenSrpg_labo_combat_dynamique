@@ -116,7 +116,7 @@
     ],
     "presentation": {
       "id": "creature:crea_ombre_2",
-      "version": 3,
+      "version": 9,
       "subjectType": "creature",
       "subjectId": "crea_ombre_2",
       "profileId": "biped",
@@ -161,6 +161,50 @@
           "durationMs": 700,
           "offsetX": 0,
           "offsetY": 0
+        },
+        "movement": {
+          "assetId": "pack:capture:creature-violette-movement-opponent-8-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 3,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttack": {
+          "assetId": "pack:capture:creature-violette-attack-opponent-8-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttackBack": {
+          "assetId": "pack:capture:creature-violette-attack-player-8-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "movementScaleByView": {
+          "player": 1.4,
+          "opponent": 1.4
+        },
+        "rangedAttackScaleByView": {
+          "player": 1.4,
+          "opponent": 1.4
+        },
+        "movementPlayback": {
+          "frameMs": 0,
+          "mode": "loop"
+        },
+        "movementBack": {
+          "assetId": "pack:capture:creature-violette-movement-player-8-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 3,
+          "frameCount": 1,
+          "transitionMs": 80
         }
       },
       "sockets": [
