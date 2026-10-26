@@ -1,7 +1,0 @@
-{
-  "action": "movement",
-  "view": "player",
-  "frames": 8,
-  "source": "scorpion_course_corrigee_8_frames_depot.zip",
-  "sha256": "e52ad064c4f549fa88eaa14140d7f594ada58a0edea87bc07a8744e30bd50234"
-}
