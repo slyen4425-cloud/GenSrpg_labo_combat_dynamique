@@ -2,6 +2,6 @@
   "action": "movement",
   "view": "opponent",
   "frames": 8,
-  "source": "scorpion_2_animations_validees_8_frames.zip",
-  "sha256": "fd2fdc0e3c1c051046b79043f9be49467cac2888da864c7ac07b6b6ad08f9f24"
+  "source": "scorpion_course_corrigee_8_frames_depot.zip",
+  "sha256": "e52ad064c4f549fa88eaa14140d7f594ada58a0edea87bc07a8744e30bd50234"
 }
