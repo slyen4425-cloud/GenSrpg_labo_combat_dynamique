@@ -13,16 +13,6 @@ def main():
   assert not dest.exists(),f"Refusing overwrite {path}"
   dest.parent.mkdir(parents=True,exist_ok=True)
   dest.write_bytes(show(path))
- catpath=R/"data/assets/catalog/global-visual-assets.v1.json"
- cat=json.loads(catpath.read_text())
- source=json.loads(show("data/assets/catalog/global-visual-assets.v1.json"))
- ids={a["id"] for a in cat["assets"]}
- entries=[a for a in source["assets"] if a["id"].startswith("pack:capture:creature-lunaire-")]
- assert len(entries)==4,len(entries)
- assert not any(a["id"] in ids for a in entries)
- cat["assets"].extend(entries)
- for k in ("assets","sprites","creatures"):cat["counts"][k]+=4
- catpath.write_text(json.dumps(cat,ensure_ascii=False,indent=2)+"\n")
  source_showcase=json.loads(show("data/capture/showcase/kitsune_lunaire.capture-creature-transfer-v1.json"))
  target=R/"data/capture/showcase/kitsune_lunaire.capture-creature-transfer-v1.json"
  live=json.loads(target.read_text())
