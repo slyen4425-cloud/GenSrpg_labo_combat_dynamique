@@ -2,7 +2,7 @@ name: Publish Venombre animations
 on:
   push:
     branches: [global-assets]
-    paths: ['.github/workflows/publish-venombre-four.yml']
+    paths: ['.github/workflows/publish-venombre-four.yml', 'scripts/publish_venombre_four.py']
   workflow_dispatch:
 permissions:
   contents: write
