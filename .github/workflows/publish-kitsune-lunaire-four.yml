@@ -1,0 +1,29 @@
+name: Safely publish four Kitsune lunar animations
+on:
+  push:
+    branches: [work/kitsune-lunaire-publish-from-gh-pages-2026-10-26]
+    paths: [.github/workflows/publish-kitsune-lunaire-four.yml, scripts/publish_kitsune_lunaire_4_to_ghpages.py]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: git fetch origin work/kitsune-lunaire-3animations-raccord-2026-10-26
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: python scripts/publish_kitsune_lunaire_4_to_ghpages.py
+      - run: npm run ci
+      - name: Commit four animations only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/library/capture/creatures/creature_lunaire/animations
+          git diff --cached --check
+          git commit -m 'capture: connect four lunar animations on published laboratory baseline'
+          git push origin HEAD:work/kitsune-lunaire-publish-from-gh-pages-2026-10-26
