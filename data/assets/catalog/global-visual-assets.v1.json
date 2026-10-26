@@ -8360,8 +8360,8 @@
       }
     },
     {
-      "id": "pack:capture:creature-lunaire-attack-player-7-v1",
-      "label": "Kitsune Lunaire — Attaque dos (7 frames)",
+      "id": "pack:capture:creature-lunaire-attack-player-8-v1",
+      "label": "Kitsune Lunaire — Attaque dos (8 frames)",
       "assetType": "sprite",
       "mediaType": "image",
       "category": "creature",
@@ -8380,10 +8380,10 @@
         "license": "project-internal"
       },
       "resource": {
-        "file": "capture/creatures/creature_lunaire/animations/attack/player/atlases/creature_lunaire_attack_player_7_atlas.webp",
+        "file": "capture/creatures/creature_lunaire/animations/attack/player/atlases/creature_lunaire_attack_player_8_atlas.webp",
         "format": "sprite-strip",
         "mime": "image/webp",
-        "frameCount": 7,
+        "frameCount": 8,
         "frameMs": 110,
         "playbackMode": "once"
       },
