@@ -1,0 +1,25 @@
+name: Publish Venombre animations
+on:
+  push:
+    branches: [global-assets]
+    paths: ['.github/workflows/publish-venombre-four.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: global-assets
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install Pillow
+      - run: python scripts/publish_venombre_four.py
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@users.noreply.github.com
+          git add assets/library/capture/creatures/venombre/animations VENOMBRE_DELIVERY_AUDIT.json
+          git diff --cached --quiet || (git commit -m 'Publish Venombre animations' && git push)
