@@ -195,7 +195,10 @@
       "electric": 0,
       "light": 0,
       "shadow": 15,
-      "poison": 0
+      "poison": 0,
+      "acier": 0,
+      "nature": 0,
+      "esprit": 0
     }
   },
   "loadout": {
@@ -220,7 +223,7 @@
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "cap_shadow_atk_5"
       }
     ]
   }
