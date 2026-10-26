@@ -15,6 +15,7 @@
       "name": "Boule de feu",
       "category": "offensive",
       "form": "projectile",
+      "projectileTargeting": "direct",
       "loadoutSlot": "standard",
       "element": "fire",
       "approachMode": "none",
@@ -40,6 +41,7 @@
         "surface"
       ],
       "dodgeable": true,
+      "hitsIntangible": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": []
@@ -71,7 +73,9 @@
           "kind": "damage",
           "targetScope": "target",
           "amount": 25,
-          "channel": "fire"
+          "channel": "fire",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
         }
       ]
     },
@@ -93,7 +97,6 @@
           "anchor": "mouth",
           "offsetX": 30,
           "offsetY": 0,
-          "offsetMode": "mirror_x",
           "trigger": "preparation-start",
           "playbackMode": "loop",
           "rotationDeg": 0,
@@ -101,7 +104,8 @@
           "layerByView": {
             "player": "behind",
             "opponent": "front"
-          }
+          },
+          "offsetMode": "mirror_x"
         },
         "travel": {
           "assetId": "pack:capture:sprite-fireball-travel-01",
@@ -119,7 +123,8 @@
           "layerByView": {
             "player": "behind",
             "opponent": "front"
-          }
+          },
+          "offsetMode": "same"
         },
         "impact": {
           "assetId": "pack:capture:sprite-fireball-2-impact-01",
@@ -137,7 +142,8 @@
           "layerByView": {
             "player": "front",
             "opponent": "front"
-          }
+          },
+          "offsetMode": "same"
         }
       },
       "audio": {
