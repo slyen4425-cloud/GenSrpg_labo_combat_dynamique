@@ -1,4 +1,4 @@
-name: Publish Venombre animations (normalized frames)
+name: Publish Venombre animations (four sequences)
 on:
   push:
     branches: [global-assets]
