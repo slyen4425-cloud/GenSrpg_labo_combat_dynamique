@@ -125,15 +125,18 @@ export function createBattleActorAiController({
   const tacticSeed = textSeed(normalizedActorId) ^ (Number(profile?.seed) || 0);
   const allies = Object.freeze(allyIds.filter(id => typeof id === "string" && id !== normalizedActorId));
 
-  // Ally-benefit self-sacrifice is only worthwhile with a surviving teammate at critical HP.
+  // Do not select a self-sacrifice unless a teammate can benefit and HP is critical.
   function allowAllySacrifice(state, actor, skill) {
     const effects = Array.isArray(skill.effects) ? skill.effects : [];
-    const selfKnockout = effects.some(effect => effect.kind === "knockout" && effect.targetScope === "self");
-    const allyBenefit = effects.some(effect =>
-      ["all_allies", "all_except_self", "all_ally_reserves", "target"].includes(effect.targetScope) &&
-      ["apply_status", "apply_marker", "heal", "energy_restore", "persistent_zone"].includes(effect.kind)
+    const namedSacrifice = /sacrific/i.test(String(skill.id ?? "") + " " + String(skill.name ?? ""));
+    const selfKnockout = effects.some(effect =>
+      effect.kind === "knockout" && (effect.targetScope === "self" || effect.targetScope === "all_active")
     );
-    if (!selfKnockout || !allyBenefit) return true;
+    const lethalSelfDamage = effects.some(effect =>
+      effect.kind === "damage" && effect.targetScope === "self" &&
+      Number(effect.amount) >= Number(actor.hp)
+    );
+    if (!namedSacrifice && !selfKnockout && !lethalSelfDamage) return true;
     const hp = Number(actor.hp), maxHp = Number(actor.maxHp);
     if (!(maxHp > 0) || hp / maxHp > 0.25) return false;
     return allies.some(id => Number(state.fighters[id]?.hp) > 0);
