@@ -1,0 +1,27 @@
+name: Publish creature violet attack and run
+on:
+  push:
+    branches: [global-assets]
+    paths:
+      - '.github/workflows/publish-creature-violette.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: global-assets
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Import validated frames and update canonical catalog
+        run: python scripts/import_creature_violette.py
+      - name: Commit imported media and catalog
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/library/capture/creatures/creature_violette/ data/assets/catalog/global-visual-assets.v1.json
+          git diff --cached --quiet || (git commit -m "assets: publish approved violet creature attack and run" && git push)
