@@ -15,9 +15,15 @@ def main():
   for i,p in enumerate(paths,1):
    data=z.read(p)
    with Image.open(io.BytesIO(data)) as im:
-    assert im.size==(512,512) and im.mode=="RGBA",(p,im.size,im.mode)
+    assert im.mode=="RGBA",(p,im.size,im.mode)
     assert im.getchannel("A").getextrema()[0]==0
-    images.append(im.copy())
+    # Preserve full silhouette and aspect ratio: fit source to a centered 512px RGBA canvas.
+    fitted=im.copy()
+    fitted.thumbnail((480,480),Image.Resampling.LANCZOS)
+    canvas=Image.new("RGBA",(512,512),(0,0,0,0))
+    canvas.alpha_composite(fitted,((512-fitted.width)//2,(512-fitted.height)//2))
+    images.append(canvas)
+    buf=io.BytesIO();canvas.save(buf,"PNG");data=buf.getvalue()
    dest=base/"frames"/f"creature_lunaire_attack_player_{i:02d}.png"
    dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data)
   atlas=Image.new("RGBA",(7*512,512))
@@ -28,7 +34,7 @@ def main():
   with Image.open(io.BytesIO(preview)) as p:assert p.n_frames==7,p.n_frames
   prev=base/"previews/creature_lunaire_attack_player_7_preview.webp"
   prev.parent.mkdir(parents=True,exist_ok=True);prev.write_bytes(preview)
-  manifest={"schema":"capture-creature-animation-v1","creatureId":"creature_lunaire","action":"attack","view":"player","frameCount":7,"frameSize":[512,512],"frameMs":110,"playbackMode":"once","sourceArchive":"monster_capture_attaque_7_frames.zip","sourceArchiveSha256":sha(raw),"frames":[{"index":i-1,"file":f"frames/creature_lunaire_attack_player_{i:02d}.png","sha256":sha(z.read(paths[i-1]))} for i in range(1,8)],"atlas":{"file":"atlases/"+atlaspath.name,"format":"sprite-strip","frameCount":7,"frameWidth":512,"frameHeight":512},"preview":"previews/"+prev.name}
+  manifest={"schema":"capture-creature-animation-v1","creatureId":"creature_lunaire","action":"attack","view":"player","frameCount":7,"frameSize":[512,512],"frameMs":110,"playbackMode":"once","sourceArchive":"monster_capture_attaque_7_frames.zip","sourceArchiveSha256":sha(raw),"frames":[{"index":i-1,"file":f"frames/creature_lunaire_attack_player_{i:02d}.png","sha256":sha((base/"frames"/f"creature_lunaire_attack_player_{i:02d}.png").read_bytes())} for i in range(1,8)],"atlas":{"file":"atlases/"+atlaspath.name,"format":"sprite-strip","frameCount":7,"frameWidth":512,"frameHeight":512},"preview":"previews/"+prev.name}
   (base/"attack.manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n")
   catpath=R/"data/assets/catalog/global-visual-assets.v1.json"
   cat=json.loads(catpath.read_text())
