@@ -799,3 +799,15 @@ Règles bloquantes :
 6. format des icônes confirmé auprès de l'autorité réelle des médias (sources de production vs exports HUD), sans nouveau propriétaire d'asset.
 
 Cette règle complète les sections 6, 14, 33 et 34 et ne change aucune mécanique de combat.
+
+
+## 37. Livraison coordonnée multi-branches et reprise inter-fils (26 octobre 2026)
+
+La procédure opérationnelle obligatoire est [LAB_DELIVERY_WORKFLOW_V1.md](LAB_DELIVERY_WORKFLOW_V1.md). Elle complète les §§ 14–18, 26–28, 32 et 34 sans affaiblir les contrôles GREEN.
+
+- `gh-pages` est la version exécutée du laboratoire ; `global-assets` est le propriétaire du catalogue et des médias ; `work/<lot>` est la branche temporaire. Ne jamais confondre `main` avec l'éditeur publié.
+- Une demande utilisateur est un **lot de livraison de bout en bout**, même si plusieurs branches doivent être mises à jour.
+- Pour un média : source réelle, fichiers, manifeste, catalogue canonique sur `global-assets`, résolution dans l'éditeur `gh-pages`, test navigateur du sélecteur et preview sont **tous obligatoires** avant de déclarer le raccordement terminé.
+- Avant toute publication, relire les SHAs distants pour éviter d'écraser les travaux d'autres fils ; tenir `LAB_CURRENT_WORK.md` à jour pour une reprise indépendante de la conversation.
+- Ne pas demander à l'utilisateur de répéter des dépôts déjà accessibles ni publier un rapport d'achèvement sur la seule présence de fichiers.
+- Toute CI rouge reste rouge : un test ciblé réussi ne permet pas d'annoncer GREEN à la place de la suite requise.
