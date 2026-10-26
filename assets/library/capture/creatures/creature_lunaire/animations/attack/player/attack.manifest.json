@@ -3,58 +3,63 @@
   "creatureId": "creature_lunaire",
   "action": "attack",
   "view": "player",
-  "frameCount": 7,
+  "frameCount": 8,
   "frameSize": [
     512,
     512
   ],
   "frameMs": 110,
   "playbackMode": "once",
-  "sourceArchive": "monster_capture_attaque_7_frames.zip",
-  "sourceArchiveSha256": "0f7c8dd2de5b809b27f20e432c6b05b2f0ae6cff625926a2c45c15cc926d4ae2",
+  "sourceArchive": "monster_capture_2_attaques_validees.zip",
+  "sourceArchiveSha256": "30065f416567696184a310563ab117c3f587e0a93010dc076730d073c1ebf665",
   "frames": [
     {
       "index": 0,
       "file": "frames/creature_lunaire_attack_player_01.png",
-      "sha256": "7e3d7cb3e1f91ed49a7370784d83c488b599599cc0a95580b5a0ec7ff5e6424b"
+      "sha256": "dca258031e662c917089133538a9cff911e27806657f4d8a113b4a5ca9df9049"
     },
     {
       "index": 1,
       "file": "frames/creature_lunaire_attack_player_02.png",
-      "sha256": "75d078356431abb782e9c6eaf55906bd7de9e5055005ea0b7a7d1f315b864432"
+      "sha256": "e7868ea67ef393265dae46f124f116d7f9f651d40d2aeea146342969fb24c752"
     },
     {
       "index": 2,
       "file": "frames/creature_lunaire_attack_player_03.png",
-      "sha256": "4838bd4f54d1f8e497c23c6026f85b3443b9324c668edbff8e99d0f2352843eb"
+      "sha256": "c0ca1552a879efe2693073e45327d3746cb9f81096cf912a5fc2cac7bead62d4"
     },
     {
       "index": 3,
       "file": "frames/creature_lunaire_attack_player_04.png",
-      "sha256": "4dff3c1f43a1a6fc5d820e770993df205b254170bef3873775a56bb0c67d2bab"
+      "sha256": "72148fdd32d2838c17b4b6ca095165a212e99c97d9e6a74d8384d7542d07ae05"
     },
     {
       "index": 4,
       "file": "frames/creature_lunaire_attack_player_05.png",
-      "sha256": "b52fbfd67d5417530a48c140133ce3b3e083b27685fefc7e151946edb67eba1c"
+      "sha256": "b372eae0c0f3b21b9fdc649825ee8324e16b96c4fb9b4c0753ef2676463bb34f"
     },
     {
       "index": 5,
       "file": "frames/creature_lunaire_attack_player_06.png",
-      "sha256": "99f30844ff6912f0cedfba427c7e93e44d43dadf59368e20b4bf6620a532a9fa"
+      "sha256": "fa25e7adaf6b1732db521fbbdf9ea5f786cb63be35ed373bf65a10b626e6d750"
     },
     {
       "index": 6,
       "file": "frames/creature_lunaire_attack_player_07.png",
-      "sha256": "a04ca936a4a4f414544d0254eec8ac336b2fdb78f2842861addf0cdffb5d4895"
+      "sha256": "c9b3922aecbea1533648078353b4fc6d7a226fc1605e225724a31ffb3e2562ae"
+    },
+    {
+      "index": 7,
+      "file": "frames/creature_lunaire_attack_player_08.png",
+      "sha256": "cb6a21c3a2b8e60824a7c84a5e5ab684a6c4570834f3a6f92c9011ebd162474c"
     }
   ],
   "atlas": {
-    "file": "atlases/creature_lunaire_attack_player_7_atlas.webp",
+    "file": "atlases/creature_lunaire_attack_player_8_atlas.webp",
     "format": "sprite-strip",
-    "frameCount": 7,
+    "frameCount": 8,
     "frameWidth": 512,
     "frameHeight": 512
   },
-  "preview": "previews/creature_lunaire_attack_player_7_preview.webp"
+  "preview": "previews/creature_lunaire_attack_player_8_preview.webp"
 }
