@@ -4,10 +4,11 @@ import zipfile,io,json,hashlib
 base=Path("assets/library/capture/creatures/venombre/animations")
 sources=[
  ("venombre_joueur_attaque_move.zip","attack","player","animation_1_validee/frame_"),
+ ("venombre_joueur_attaque_move.zip","movement","player","animation_2_validee/frame_"),
  ("venombre_oposent_move.zip","movement","opponent","course/course_"),
  ("venombre_opposenr_attaque.zip","attack","opponent","attaque_"),
 ]
-# The player archive README calls BOTH sequences attacks; do not mislabel either as movement.
+# Player ZIP contains two validated sequences; map animation 1 to attack and animation 2 to movement as indicated by the user ZIP name.
 
 cat=json.loads(Path("data/assets/catalog/global-visual-assets.v1.json").read_text())
 results=[]
@@ -55,5 +56,5 @@ for archive,action,view,prefix in sources:
   manifest.write_text(json.dumps({"action":action,"view":view,"frameCount":8,"sourceZip":archive,"sourceSha256":hashlib.sha256(Path(archive).read_bytes()).hexdigest(),"atlas":relative},indent=2)+"\n")
   results.append({"assetId":asset_id,"frames":8,"atlas":relative,"source":archive})
 Path("VENOMBRE_DELIVERY_AUDIT.json").write_text(json.dumps(results,indent=2)+"\n")
-assert len(results)==3
-print("SUCCESS: three confirmed source animations normalized, atlas paths match canonical catalog")
+assert len(results)==4
+print("SUCCESS: four source animations normalized, atlas paths match canonical catalog")
