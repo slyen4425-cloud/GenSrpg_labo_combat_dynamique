@@ -1,0 +1,23 @@
+name: Inspect lunar back attack archive
+on:
+  push:
+    branches: [work/kitsune-lunaire-3animations-raccord-2026-10-26]
+    paths: [.github/workflows/inspect-kitsune-back-attack.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: |
+          git fetch origin main
+          git show origin/main:monster_capture_attaque_7_frames.zip > /tmp/attack.zip
+          python - <<'PY'
+          import zipfile,io,json
+          z=zipfile.ZipFile('/tmp/attack.zip')
+          print('ARCHIVE_FILES',json.dumps([(i.filename,i.file_size) for i in z.infolist()]))
+          print('ARCHIVE_VALID',z.testzip())
+          PY
