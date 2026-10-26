@@ -36,7 +36,15 @@ with zipfile.ZipFile(ARCHIVE) as z:
         for i,name in enumerate(names,1):
             data=z.read(name)
             img=Image.open(io.BytesIO(data)).convert("RGBA")
-            assert img.size==(512,512), f"Unexpected frame size {name}: {img.size}"
+            assert img.width > 0 and img.height > 0
+            ratio=min(512/img.width,512/img.height)
+            resized=img.resize((round(img.width*ratio),round(img.height*ratio)),Image.Resampling.LANCZOS)
+            normalized=Image.new("RGBA",(512,512),(0,0,0,0))
+            normalized.paste(resized,((512-resized.width)//2,(512-resized.height)//2))
+            img=normalized
+            output=io.BytesIO()
+            img.save(output,format="PNG")
+            data=output.getvalue()
             target=f"creature_lunaire_attack_{view}_{i:02}.png"
             (dest/"frames"/target).write_bytes(data)
             images.append(img)
