@@ -6,6 +6,12 @@
     "source": "venombre_joueur_attaque_move.zip"
   },
   {
+    "assetId": "pack:capture:venombre-movement-player-8-v1",
+    "frames": 8,
+    "atlas": "capture/creatures/venombre/animations/movement/player/atlases/venombre_movement_player_8_atlas.webp",
+    "source": "venombre_joueur_attaque_move.zip"
+  },
+  {
     "assetId": "pack:capture:venombre-movement-opponent-8-v1",
     "frames": 8,
     "atlas": "capture/creatures/venombre/animations/movement/opponent/atlases/venombre_movement_face_atlas.webp",

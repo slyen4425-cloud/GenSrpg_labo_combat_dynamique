@@ -2,7 +2,7 @@
   "action": "movement",
   "view": "player",
   "frameCount": 8,
-  "sourceZip": "CREATURE_VIOLETTE_DOS_COURSE_ATTAQUE_8F_VALIDEES.zip",
-  "sourceSha256": "e5f77e7e1bb6d90814b3bbe54fbf81c9f540a645dd3f2e6d5732a1188e6a817e",
+  "sourceZip": "venombre_joueur_attaque_move.zip",
+  "sourceSha256": "fd2fdc0e3c1c051046b79043f9be49467cac2888da864c7ac07b6b6ad08f9f24",
   "atlas": "capture/creatures/venombre/animations/movement/player/atlases/venombre_movement_player_8_atlas.webp"
 }
