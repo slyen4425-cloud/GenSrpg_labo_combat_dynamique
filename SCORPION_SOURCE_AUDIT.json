@@ -1,0 +1,110 @@
+[
+  {
+    "archive": "CREATURE_VIOLETTE_DOS_COURSE_ATTAQUE_8F_VALIDEES.zip",
+    "file_count": 19,
+    "files": [
+      "course/preview_course_dos_8f.webp",
+      "course/frames/course_dos_01.png",
+      "course/frames/course_dos_02.png",
+      "course/frames/course_dos_03.png",
+      "course/frames/course_dos_04.png",
+      "course/frames/course_dos_05.png",
+      "course/frames/course_dos_06.png",
+      "course/frames/course_dos_07.png",
+      "course/frames/course_dos_08.png",
+      "attaque/preview_attaque_dos_8f.webp",
+      "attaque/frames/attaque_dos_01.png",
+      "attaque/frames/attaque_dos_02.png",
+      "attaque/frames/attaque_dos_03.png",
+      "attaque/frames/attaque_dos_04.png",
+      "attaque/frames/attaque_dos_05.png",
+      "attaque/frames/attaque_dos_06.png",
+      "attaque/frames/attaque_dos_07.png",
+      "attaque/frames/attaque_dos_08.png",
+      "manifest.json"
+    ]
+  },
+  {
+    "archive": "creature_violette_attaque_course_8frames.zip",
+    "file_count": 21,
+    "files": [
+      "animations/attack/frames/creature_violette_attack_face_01.png",
+      "animations/attack/frames/creature_violette_attack_face_02.png",
+      "animations/attack/frames/creature_violette_attack_face_03.png",
+      "animations/attack/frames/creature_violette_attack_face_04.png",
+      "animations/attack/frames/creature_violette_attack_face_05.png",
+      "animations/attack/frames/creature_violette_attack_face_06.png",
+      "animations/attack/frames/creature_violette_attack_face_07.png",
+      "animations/attack/frames/creature_violette_attack_face_08.png",
+      "animations/attack/creature_violette_attack_face_atlas.webp",
+      "animations/attack/preview_animated.webp",
+      "animations/movement/frames/creature_violette_movement_face_01.png",
+      "animations/movement/frames/creature_violette_movement_face_02.png",
+      "animations/movement/frames/creature_violette_movement_face_03.png",
+      "animations/movement/frames/creature_violette_movement_face_04.png",
+      "animations/movement/frames/creature_violette_movement_face_05.png",
+      "animations/movement/frames/creature_violette_movement_face_06.png",
+      "animations/movement/frames/creature_violette_movement_face_07.png",
+      "animations/movement/frames/creature_violette_movement_face_08.png",
+      "animations/movement/creature_violette_movement_face_atlas.webp",
+      "animations/movement/preview_animated.webp",
+      "manifest.json"
+    ]
+  },
+  {
+    "archive": "monster_capture_attaque_venin_sans_effet.zip",
+    "file_count": 9,
+    "files": [
+      "attaque_01.png",
+      "attaque_02.png",
+      "attaque_03.png",
+      "attaque_04.png",
+      "attaque_05.png",
+      "attaque_06.png",
+      "attaque_07.png",
+      "attaque_08.png",
+      "attaque_preview.webp"
+    ]
+  },
+  {
+    "archive": "scorpion_2_animations_validees_8_frames.zip",
+    "file_count": 19,
+    "files": [
+      "animation_1_validee/preview.webp",
+      "animation_1_validee/frame_01.png",
+      "animation_1_validee/frame_02.png",
+      "animation_1_validee/frame_03.png",
+      "animation_1_validee/frame_04.png",
+      "animation_1_validee/frame_05.png",
+      "animation_1_validee/frame_06.png",
+      "animation_1_validee/frame_07.png",
+      "animation_1_validee/frame_08.png",
+      "animation_2_validee/preview.webp",
+      "animation_2_validee/frame_01.png",
+      "animation_2_validee/frame_02.png",
+      "animation_2_validee/frame_03.png",
+      "animation_2_validee/frame_04.png",
+      "animation_2_validee/frame_05.png",
+      "animation_2_validee/frame_06.png",
+      "animation_2_validee/frame_07.png",
+      "animation_2_validee/frame_08.png",
+      "README.txt"
+    ]
+  },
+  {
+    "archive": "scorpion_course_corrigee_8_frames_depot.zip",
+    "file_count": 10,
+    "files": [
+      "course/course_01.png",
+      "course/course_02.png",
+      "course/course_03.png",
+      "course/course_04.png",
+      "course/course_05.png",
+      "course/course_06.png",
+      "course/course_07.png",
+      "course/course_08.png",
+      "course/preview_course_corrigee.webp",
+      "README.txt"
+    ]
+  }
+]
