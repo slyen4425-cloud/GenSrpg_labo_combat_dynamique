@@ -1,0 +1,65 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "creature_lunaire",
+  "action": "movement",
+  "view": "opponent",
+  "frameCount": 8,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 110,
+  "playbackMode": "loop",
+  "sourceArchive": "CREATURE_LUNAIRE_FACE_2_ANIMATIONS_ET_COURSE_DOS_8F.zip",
+  "sourceArchiveSha256": "4abbdc9d71dc720a238885c51066e69bf81a846b920c706f2a750b48364dd8fd",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/creature_lunaire_movement_opponent_01.png",
+      "sha256": "2bcbe2f40915d6cdffdafd036a6204a4a81a3b113d570b638b0110f95ff4890f"
+    },
+    {
+      "index": 1,
+      "file": "frames/creature_lunaire_movement_opponent_02.png",
+      "sha256": "4685d19592242e8732dbf33defa74979e1ebdc8201b34ea750c81825104ccdbc"
+    },
+    {
+      "index": 2,
+      "file": "frames/creature_lunaire_movement_opponent_03.png",
+      "sha256": "d77bdff0339956b97ff207bc3743e417c5c5cfe742564261906b30a15227326d"
+    },
+    {
+      "index": 3,
+      "file": "frames/creature_lunaire_movement_opponent_04.png",
+      "sha256": "24109db4da1623e25fa6d0cb67ad0355860a1986a7e55a0813e63079283be16a"
+    },
+    {
+      "index": 4,
+      "file": "frames/creature_lunaire_movement_opponent_05.png",
+      "sha256": "ea047c091a9bbd326cc6b145355e3d3b47e4e92bd82626a986620d3e8ebedd1a"
+    },
+    {
+      "index": 5,
+      "file": "frames/creature_lunaire_movement_opponent_06.png",
+      "sha256": "8d9266bd93ed0e8ac1429975614e45375426736768f750908d07ea13625a105d"
+    },
+    {
+      "index": 6,
+      "file": "frames/creature_lunaire_movement_opponent_07.png",
+      "sha256": "abd9d04c584d05f4e64a910dd23fceb5a27f1e8fd276effb6a8d04b6ecb362dc"
+    },
+    {
+      "index": 7,
+      "file": "frames/creature_lunaire_movement_opponent_08.png",
+      "sha256": "4220b422a8d2214d8ad365d673f4980d99b140ad5a8074e3d780fde37cc69ba4"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/creature_lunaire_movement_opponent_8_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 8,
+    "frameWidth": 512,
+    "frameHeight": 512
+  },
+  "preview": "previews/creature_lunaire_movement_opponent_8_preview.webp"
+}

@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 244,
+    "assets": 248,
     "icons": 86,
-    "sprites": 138,
+    "sprites": 142,
     "fx": 2,
     "portraits": 13,
     "backgrounds": 5,
-    "creatures": 50
+    "creatures": 54
   },
   "assets": [
     {
@@ -8241,6 +8241,150 @@
         "mime": "image/webp",
         "frameCount": 12,
         "frameMs": 100,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-lunaire-movement-opponent-8-v1",
+      "label": "Kitsune Lunaire — Course face (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "lunaire",
+        "animated",
+        "opponent",
+        "movement"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_lunaire/animations/movement/opponent/atlases/creature_lunaire_movement_opponent_8_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 110,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-lunaire-attack-opponent-8-v1",
+      "label": "Kitsune Lunaire — Attaque face (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "lunaire",
+        "animated",
+        "opponent",
+        "attack"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_lunaire/animations/attack/opponent/atlases/creature_lunaire_attack_opponent_8_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 110,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-lunaire-movement-player-8-v1",
+      "label": "Kitsune Lunaire — Course dos (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "lunaire",
+        "animated",
+        "player",
+        "movement"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_lunaire/animations/movement/player/atlases/creature_lunaire_movement_player_8_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameMs": 110,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-lunaire-attack-player-7-v1",
+      "label": "Kitsune Lunaire — Attaque dos (7 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "lunaire",
+        "animated",
+        "player",
+        "attack"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_lunaire/animations/attack/player/atlases/creature_lunaire_attack_player_7_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 7,
+        "frameMs": 110,
         "playbackMode": "once"
       },
       "compatibility": {
