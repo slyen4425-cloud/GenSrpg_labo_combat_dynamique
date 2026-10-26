@@ -125,6 +125,20 @@ export function createBattleActorAiController({
   const tacticSeed = textSeed(normalizedActorId) ^ (Number(profile?.seed) || 0);
   const allies = Object.freeze(allyIds.filter(id => typeof id === "string" && id !== normalizedActorId));
 
+  // Ally-benefit self-sacrifice is only worthwhile with a surviving teammate at critical HP.
+  function allowAllySacrifice(state, actor, skill) {
+    const effects = Array.isArray(skill.effects) ? skill.effects : [];
+    const selfKnockout = effects.some(effect => effect.kind === "knockout" && effect.targetScope === "self");
+    const allyBenefit = effects.some(effect =>
+      ["all_allies", "all_except_self", "all_ally_reserves", "target"].includes(effect.targetScope) &&
+      ["apply_status", "apply_marker", "heal", "energy_restore", "persistent_zone"].includes(effect.kind)
+    );
+    if (!selfKnockout || !allyBenefit) return true;
+    const hp = Number(actor.hp), maxHp = Number(actor.maxHp);
+    if (!(maxHp > 0) || hp / maxHp > 0.25) return false;
+    return allies.some(id => Number(state.fighters[id]?.hp) > 0);
+  }
+
   function candidateTargetIds(skill) {
     const relations = Array.isArray(skill.targetRelations) ? skill.targetRelations : null;
     if (!relations) return targets;
@@ -141,6 +155,7 @@ export function createBattleActorAiController({
     let waiting = null;
     for (let index = 0; index < skills.length; index++) {
       const skill = skills[index];
+      if (!allowAllySacrifice(state, actor, skill)) continue;
       const goal = reinforcementGoal(state, actor, skill);
       for (const targetId of candidateTargetIds(skill)) {
         const target = state.fighters[targetId];
@@ -297,6 +312,7 @@ export function createBattleActorAiController({
         - (right.candidateIndex - skillIndex + skills.length) % skills.length);
 
     for (const { skill, candidateIndex, goal } of candidates) {
+      if (!allowAllySacrifice(state, actor, skill)) continue;
       const preview = session.previewSkill({
         actorId: normalizedActorId,
         targetId,
