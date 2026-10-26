@@ -1,0 +1,7 @@
+{
+  "view": "player",
+  "action": "attack",
+  "frameCount": 8,
+  "sourceArchive": "CREATURE_VIOLETTE_DOS_COURSE_ATTAQUE_8F_VALIDEES.zip",
+  "sha256": "e5f77e7e1bb6d90814b3bbe54fbf81c9f540a645dd3f2e6d5732a1188e6a817e"
+}
