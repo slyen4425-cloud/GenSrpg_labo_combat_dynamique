@@ -1,5 +1,61 @@
 [
   {
+    "archive": "venombre_joueur_attaque_move.zip",
+    "file_count": 19,
+    "files": [
+      "animation_1_validee/preview.webp",
+      "animation_1_validee/frame_01.png",
+      "animation_1_validee/frame_02.png",
+      "animation_1_validee/frame_03.png",
+      "animation_1_validee/frame_04.png",
+      "animation_1_validee/frame_05.png",
+      "animation_1_validee/frame_06.png",
+      "animation_1_validee/frame_07.png",
+      "animation_1_validee/frame_08.png",
+      "animation_2_validee/preview.webp",
+      "animation_2_validee/frame_01.png",
+      "animation_2_validee/frame_02.png",
+      "animation_2_validee/frame_03.png",
+      "animation_2_validee/frame_04.png",
+      "animation_2_validee/frame_05.png",
+      "animation_2_validee/frame_06.png",
+      "animation_2_validee/frame_07.png",
+      "animation_2_validee/frame_08.png",
+      "README.txt"
+    ]
+  },
+  {
+    "archive": "venombre_oposent_move.zip",
+    "file_count": 10,
+    "files": [
+      "course/course_01.png",
+      "course/course_02.png",
+      "course/course_03.png",
+      "course/course_04.png",
+      "course/course_05.png",
+      "course/course_06.png",
+      "course/course_07.png",
+      "course/course_08.png",
+      "course/preview_course_corrigee.webp",
+      "README.txt"
+    ]
+  },
+  {
+    "archive": "venombre_opposenr_attaque.zip",
+    "file_count": 9,
+    "files": [
+      "attaque_01.png",
+      "attaque_02.png",
+      "attaque_03.png",
+      "attaque_04.png",
+      "attaque_05.png",
+      "attaque_06.png",
+      "attaque_07.png",
+      "attaque_08.png",
+      "attaque_preview.webp"
+    ]
+  },
+  {
     "archive": "CREATURE_VIOLETTE_DOS_COURSE_ATTAQUE_8F_VALIDEES.zip",
     "file_count": 19,
     "files": [
