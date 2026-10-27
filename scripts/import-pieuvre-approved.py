@@ -10,7 +10,7 @@ with zipfile.ZipFile(src) as z:
     assert set(z.namelist())==set(names.values())|{"manifest.json"}
     for name in names.values():
         data=z.read(name)
-        assert data[:8]==b"\\x89PNG\\r\n\\x1a\n".decode("unicode_escape").encode("latin1")
+        assert data[:8]==bytes.fromhex("89504e470d0a1a0a")
         w,h,depth,color=struct.unpack(">IIBB",data[16:26])
         assert (w,h)==(512,512) and color==6,(name,w,h,color)
         (dst/name).write_bytes(data)
