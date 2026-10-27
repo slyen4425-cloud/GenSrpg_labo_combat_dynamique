@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 257,
+    "assets": 260,
     "icons": 86,
-    "sprites": 150,
+    "sprites": 152,
     "fx": 2,
-    "portraits": 14,
+    "portraits": 15,
     "backgrounds": 5,
-    "creatures": 55
+    "creatures": 56
   },
   "assets": [
     {
@@ -8763,6 +8763,96 @@
       },
       "resource": {
         "file": "capture/creatures/plante_carnivore/runtime/plante_carnivore_icon.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-gorille-des-glaces-opponent-01",
+      "label": "Gorille des glaces — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "gorille-des-glaces",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/gorille_des_glaces/runtime/gorille_des_glaces_face.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-gorille-des-glaces-player-01",
+      "label": "Gorille des glaces — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "gorille-des-glaces",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/gorille_des_glaces/runtime/gorille_des_glaces_dos.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-gorille-des-glaces-icon-01",
+      "label": "Gorille des glaces — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "gorille-des-glaces",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/gorille_des_glaces/runtime/gorille_des_glaces_icon.png",
         "mime": "image/png"
       },
       "compatibility": {

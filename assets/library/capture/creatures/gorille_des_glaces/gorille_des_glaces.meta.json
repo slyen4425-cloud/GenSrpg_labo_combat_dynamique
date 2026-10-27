@@ -1,0 +1,45 @@
+{
+  "id": "gorille_des_glaces",
+  "name": "Gorille des glaces",
+  "profile": "gorilla",
+  "views": {
+    "player": "runtime/gorille_des_glaces_dos.png",
+    "opponent": "runtime/gorille_des_glaces_face.png",
+    "icon": "runtime/gorille_des_glaces_icon.png"
+  },
+  "runtimePreview": {
+    "player": "runtime/gorille_des_glaces_dos.png",
+    "opponent": "runtime/gorille_des_glaces_face.png",
+    "icon": "runtime/gorille_des_glaces_icon.png"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [
+      512,
+      512
+    ],
+    "icon": [
+      512,
+      512
+    ]
+  },
+  "transformOrigin": {
+    "x": "50%",
+    "y": "88%"
+  },
+  "assetIds": {
+    "player": "pack:capture:creature-gorille-des-glaces-player-01",
+    "opponent": "pack:capture:creature-gorille-des-glaces-opponent-01",
+    "icon": "pack:capture:creature-gorille-des-glaces-icon-01"
+  },
+  "source": {
+    "scope": "pack",
+    "packId": "capture",
+    "library": "global-assets"
+  },
+  "visualRevision": "user-approved-2026-10-27",
+  "notes": "Modèles face, dos, icône issus des blobs Git approuvés, sans modification des pixels."
+}
