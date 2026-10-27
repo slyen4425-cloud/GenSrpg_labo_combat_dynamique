@@ -68,7 +68,7 @@ test("five user files are intact, archived, unique in the canonical showcase reg
   const catalog=f.kind==="creature"?creatureCatalog:skillCatalog;
   assert.equal(catalog.filter(p=>p===showcase(f)).length,1,f.id+" active exactly once");
   const raw=await read(showcase(f));
-  assert.equal(await read(source(f)),await read(source(f)),f.id+" archive remains readable");
+  assert.ok((await read(source(f))).length>0,f.id+" historical archive must remain present");
   assert.equal(createHash("sha256").update(await read(source(f))).digest("hex"),f.sha);
   const t=await unpack(f);
   assert.equal(t.kind,f.kind);
