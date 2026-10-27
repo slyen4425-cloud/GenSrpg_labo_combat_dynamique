@@ -1,0 +1,194 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "lib_gust",
+    "description": "Attaque d’air à distance.",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "lib_gust",
+      "name": "Rafale",
+      "category": "offensive",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "air",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 800,
+      "travelMs": 700,
+      "recoveryMs": 0,
+      "cooldownMs": 8000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 2
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 4,
+          "channel": "air",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 100
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:lib_gust",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "lib_gust",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-rafale-01"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-air-wind-bolt-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-air-wind-impact-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.5,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:tower-ccc16d37",
+          "volume": 1,
+          "loop": false
+        },
+        "travel": {
+          "assetId": "gensrpg:sound:tower-6dbf268f",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:tower-d4a4ecd5",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": {
+          "color": "#ffffff",
+          "strength": 1,
+          "radiusPx": 48
+        },
+        "impactFlash": null,
+        "cameraShake": {
+          "amplitudePx": 9,
+          "durationMs": 140
+        },
+        "projectileTrail": {
+          "color": "#ffffff",
+          "count": 10,
+          "lengthPx": 72,
+          "sizePx": 9,
+          "opacity": 0.95,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 18,
+          "spreadPx": 96,
+          "sizePx": 11,
+          "durationMs": 460,
+          "opacity": 1
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 8,
+          "spreadPx": 60,
+          "sizePx": 34,
+          "risePx": 54,
+          "durationMs": 920,
+          "opacity": 0.5
+        },
+        "castBurst": {
+          "color": "#ffffff",
+          "count": 10,
+          "spreadPx": 62,
+          "sizePx": 9,
+          "risePx": 44,
+          "durationMs": 700,
+          "opacity": 0.95
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,213 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "Tempete_metallique",
+    "description": "Envoie une pluie de metal qui fait saigner la ciblen",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "Tempete_metallique",
+      "name": "Tempête métallique",
+      "category": "offensive",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "steel",
+      "approachMode": "none",
+      "energyCost": 4,
+      "preparationMs": 950,
+      "travelMs": 700,
+      "recoveryMs": 0,
+      "cooldownMs": 45000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 2
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 15,
+          "channel": null,
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-2",
+            "kind": "damage_over_time",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 16000,
+            "stacking": "stack",
+            "maxStacks": 5,
+            "tags": [],
+            "amount": 6,
+            "channel": "steel",
+            "damageMode": "combat",
+            "tickIntervalMs": 2000
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:Tempete_metallique",
+      "version": 12,
+      "subjectType": "skill",
+      "subjectId": "Tempete_metallique",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-lame-acier-01"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-steel-wing-projectile-01",
+          "displayScale": 1.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "trajectoryMode": "linear",
+          "frameSpeedMultiplier": 1,
+          "perspectiveAmount": 0,
+          "farScaleRatio": 0.5,
+          "arrivalLayer": "front"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-steel-wing-impact-01",
+          "displayScale": 1.2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.75,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {
+        "travel": {
+          "assetId": "gensrpg:sound:genrpg-pack2-963199e0",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:tower-d4a4ecd5",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": {
+          "color": "#ffffff",
+          "strength": 0.35,
+          "radiusPx": 12
+        },
+        "impactFlash": null,
+        "cameraShake": {
+          "amplitudePx": 2,
+          "durationMs": 140
+        },
+        "projectileTrail": {
+          "color": "#ffffff",
+          "count": 3,
+          "lengthPx": 28,
+          "sizePx": 4,
+          "opacity": 0.45,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 5,
+          "spreadPx": 36,
+          "sizePx": 5,
+          "durationMs": 260,
+          "opacity": 0.55
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 2,
+          "spreadPx": 28,
+          "sizePx": 20,
+          "risePx": 26,
+          "durationMs": 560,
+          "opacity": 0.24
+        },
+        "castBurst": {
+          "color": "#ffffff",
+          "count": 3,
+          "spreadPx": 28,
+          "sizePx": 5,
+          "risePx": 20,
+          "durationMs": 420,
+          "opacity": 0.45
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_poison_atk_3",
+    "description": "Attaque Poison de puissance 5. Disponible au niveau 10.",
+    "requiredLevel": 5,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_poison_atk_3",
+      "name": "Jet acide",
+      "category": "offensive",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "poison",
+      "approachMode": "none",
+      "energyCost": 4,
+      "preparationMs": 658,
+      "travelMs": 800,
+      "recoveryMs": 0,
+      "cooldownMs": 30000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 16,
+          "channel": "poison",
+          "ignoreResistancePct": 50,
+          "ignoreDamageReductionPct": 50
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-2",
+            "kind": "stat_modifier",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 15000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "statId": "defense",
+            "modifierMode": "points",
+            "deltaPoints": -250
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_poison_atk_3",
+      "version": 3,
+      "subjectType": "skill",
+      "subjectId": "cap_poison_atk_3",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-morsure-venimeuse-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-crachat-acide-cast-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.75,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-crachat-acide-projectile-01",
+          "displayScale": 1.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-crachat-acide-impact-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        }
+      },
+      "audio": {},
+      "statusVisuals": {
+        "status-2": {
+          "mode": "sprite",
+          "tintBlinkEnabled": false,
+          "tintBlinkPeriodMs": 600,
+          "tintColor": "#9b59d0",
+          "tintOpacity": 0.35,
+          "sprite": {
+            "assetId": "pack:capture:sprite-crachat-acide-aura-01",
+            "displayScale": 1,
+            "opacity": 0.35
+          }
+        }
+      }
+    }
+  }
+}

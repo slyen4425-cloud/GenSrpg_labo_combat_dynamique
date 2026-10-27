@@ -1,0 +1,210 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_poison_atk_7",
+    "description": "Attaque Poison de puissance 10. Disponible au niveau 46.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_poison_atk_7",
+      "name": "Fléau primordial",
+      "category": "offensive",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "ultimate",
+      "element": "poison",
+      "approachMode": "none",
+      "energyCost": 8,
+      "preparationMs": 1500,
+      "travelMs": 900,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 2
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "poison",
+            "name": "Poison",
+            "polarity": "detrimental",
+            "durationMs": 25000,
+            "maxStacks": 30,
+            "iconAssetId": "pack:capture:icon-skill-poison-01",
+            "periodic": {
+              "kind": "damage",
+              "amount": 5,
+              "intervalMs": 5000,
+              "damageMode": "combat",
+              "channel": "physical"
+            }
+          },
+          "charges": 6
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_poison_atk_7",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "cap_poison_atk_7",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-tempete-acide-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-crachat-acide-impact-01",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-crachat-acide-projectile-01",
+          "displayScale": 3,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-crachat-acide-aura-01",
+          "displayScale": 3,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.6,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": {
+          "color": "#ffffff",
+          "strength": 0.85,
+          "radiusPx": 32
+        },
+        "impactFlash": null,
+        "cameraShake": {
+          "amplitudePx": 9,
+          "durationMs": 140
+        },
+        "projectileTrail": {
+          "color": "#ffffff",
+          "count": 7,
+          "lengthPx": 56,
+          "sizePx": 7,
+          "opacity": 0.8,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 12,
+          "spreadPx": 72,
+          "sizePx": 9,
+          "durationMs": 380,
+          "opacity": 0.9
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 6,
+          "spreadPx": 58,
+          "sizePx": 36,
+          "risePx": 56,
+          "durationMs": 1250,
+          "opacity": 0.64
+        },
+        "castBurst": {
+          "color": "#ffffff",
+          "count": 7,
+          "spreadPx": 48,
+          "sizePx": 7,
+          "risePx": 34,
+          "durationMs": 580,
+          "opacity": 0.8
+        }
+      }
+    }
+  }
+}

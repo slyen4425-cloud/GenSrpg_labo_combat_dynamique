@@ -1,0 +1,104 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "teleport-strike",
+    "description": "Capacité native du laboratoire.",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "teleport-strike",
+      "name": "Frappe téléportée",
+      "category": "offensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": null,
+      "approachMode": "teleport",
+      "energyCost": 3,
+      "preparationMs": 500,
+      "travelMs": 120,
+      "recoveryMs": 0,
+      "cooldownMs": 20000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 16,
+          "channel": null,
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:teleport-strike",
+      "version": 2,
+      "subjectType": "skill",
+      "subjectId": "teleport-strike",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-teleport-strike-01"
+        }
+      },
+      "audio": {
+        "travel": {
+          "assetId": "gensrpg:sound:tower-6dbf268f",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:effect-df32b429",
+          "volume": 1,
+          "loop": false
+        }
+      }
+    }
+  }
+}

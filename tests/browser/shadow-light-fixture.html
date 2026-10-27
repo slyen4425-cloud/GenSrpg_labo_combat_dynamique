@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>Vérification ombre / lumière</title><link rel="stylesheet" href="../../examples/dom-demo/demo.css"></head>
+<body><main class="game" data-combat-demo><section class="arena" data-combat-arena>
+<details class="shadow-light-console" data-shadow-light-controls><summary>☀ Lumière / ombres</summary><div class="shadow-light-console__panel">
+<select data-shadow-light-mode><option value="silhouette" selected>Silhouette</option><option value="contact">Contact</option><option value="soft">Douce</option></select>
+<input data-shadow-light-azimuth value="50" type="range" min="0" max="360">
+<input data-shadow-light-elevation value="48" type="range" min="15" max="85">
+<input data-shadow-light-softness value="50" type="range" min="0" max="100">
+<input data-shadow-light-intensity value="60" type="range" min="0" max="100">
+<input data-shadow-light-flight-height value="38" type="range" min="0" max="120">
+</div></details>
+<article class="fighter fighter--player" data-demo-slot="player" data-demo-view="player" data-demo-creature="grounded">
+<span class="visually-hidden" data-demo-label>Grounded</span><span data-demo-shadow class="fighter__shadow"></span>
+<div data-demo-motion class="fighter__motion"><img data-demo-image class="fighter__image" alt=""></div></article>
+<article class="fighter fighter--opponent" data-demo-slot="opponent" data-demo-view="opponent" data-demo-creature="airborne">
+<span class="visually-hidden" data-demo-label>Airborne</span><span data-demo-shadow class="fighter__shadow"></span>
+<div data-demo-motion class="fighter__motion"><img data-demo-image class="fighter__image" alt=""></div></article>
+</section></main>
+<script type="module">
+import { mountCombatDemo } from "../../src/ui/demo-app.js";
+import { mountCaptureCombatPreviewV1 } from "../../src/ui/capture-combat-preview-v1.js";
+const query = selector => document.querySelector(selector);
+const fail = message => { document.body.dataset.shadowProbe = "fail:" + message; };
+try {
+  const profiles = await Promise.all(["biped", "flying"].map(async id => {
+    const response = await fetch("../../data/profiles/" + id + ".profile.json");
+    if (!response.ok) throw Error("profile missing: " + id);
+    return response.json();
+  }));
+  const image = "data:image/svg+xml," + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">' +
+    '<path fill="#324453" d="M9 48Q10 14 50 22Q82 28 79 68L68 70 66 85 57 85 54 67 29 69 26 89 17 87 18 66Z"/></svg>'
+  );
+  const meta = (id, profile) => ({
+    id, name: id, profile, assetBaseUrl: location.origin + "/",
+    views: { player: image, opponent: image },
+    runtimePreview: { player: image, opponent: image },
+    displayScale: { player: id === "grounded" ? 1.7 : 1, opponent: id === "airborne" ? 0.95 : 1 }
+  });
+  const visualSource = { profiles, creatureMetas: [meta("grounded", "biped"), meta("airborne", "flying")] };
+  const demo = await mountCombatDemo({
+    root: query("[data-combat-demo]"),
+    nativeVisualSource: visualSource
+  });
+  const player = query('[data-demo-slot="player"]');
+  const flying = query('[data-demo-slot="opponent"]');
+  const controls = query("[data-shadow-light-controls]");
+  let attempts = 0;
+  const timer = setInterval(async () => {
+    try {
+      if (++attempts > 120) throw Error("shadow image never reached its accepted mask");
+      const a = player.querySelector("[data-demo-shadow]");
+      const b = flying.querySelector("[data-demo-shadow]");
+      if (!a || !b) throw Error("missing shadow");
+      if (a.style.visibility !== "visible" || b.style.visibility !== "visible") return;
+      if (a.dataset.shadowMode !== "silhouette" || b.dataset.shadowMode !== "silhouette") throw Error("silhouette mode missing");
+      // The existing flying idle WAAPI owner must animate BOTH tracks with
+      // identical phase timing: body floats 8 px, ground shadow only ~1.4 px.
+      const flyingMotion = flying.querySelector("[data-demo-motion]");
+      const bodyIdle = flyingMotion.getAnimations().find(anim =>
+        anim.effect?.getKeyframes()?.length >= 3);
+      const groundIdle = b.getAnimations().find(anim =>
+        anim.effect?.getKeyframes()?.length >= 3);
+      if (!bodyIdle || !groundIdle) throw Error("flight idle is not using the two existing WAAPI tracks");
+      const bodyFrames = bodyIdle.effect.getKeyframes();
+      const groundFrames = groundIdle.effect.getKeyframes();
+      if (bodyFrames.length !== groundFrames.length ||
+          bodyIdle.effect.getTiming().duration !== groundIdle.effect.getTiming().duration) {
+        throw Error("flight idle shadow is out of phase with body");
+      }
+      const verticalOf = frame => Number(String(frame.transform)
+        .match(/translate3d\([^,]+, (-?[\d.]+)px, 0(?:px)?\)/)?.[1]);
+      const scaleOf = frame => Number(String(frame.transform)
+        .match(/scale\(([-\d.]+)\)/)?.[1]);
+      const bodyRise = verticalOf(bodyFrames[1]) - verticalOf(bodyFrames[0]);
+      const shadowRise = verticalOf(groundFrames[1]) - verticalOf(groundFrames[0]);
+      if (!(bodyRise < -7.5 && shadowRise < -0.7 && shadowRise > -2 &&
+            scaleOf(groundFrames[1]) < scaleOf(groundFrames[0]))) {
+        throw Error("flight idle shadow does not follow hovering subtly");
+      }
+      if (groundFrames.at(-1).transform !== groundFrames[0].transform) {
+        throw Error("flight idle shadow did not return exactly to ground base");
+      }
+      const mask = player.style.getPropertyValue("--shadow-light-mask");
+      if (!mask.startsWith('url("data:image/svg+xml,')) throw Error("no accepted alpha silhouette URL");
+      const pseudo = getComputedStyle(a, "::before");
+      if (pseudo.content === "none" || !String(pseudo.maskImage || pseudo.webkitMaskImage).includes("data:image/svg+xml")) {
+        throw Error("silhouette missing from painted CSS pseudo-element");
+      }
+      const originX = Number.parseFloat(player.style.getPropertyValue("--shadow-light-foot-x"));
+      const originY = Number.parseFloat(player.style.getPropertyValue("--shadow-light-foot-y"));
+      if (!(originX > 0 && originX < 100 && originY > 0 && originY <= 100)) {
+        throw Error("ground contact pivot missing from accepted alpha mask");
+      }
+      if (player.style.getPropertyValue("--creature-shadow-bottom") !== "0.00%") {
+        throw Error("projected silhouette must share the full sprite frame origin");
+      }
+      // Real rendered projection: translation components must remain zero.
+      // This catches the displaced paws in the user's scaled Scarabacier view.
+      const pseudoMatrix = new DOMMatrixReadOnly(pseudo.transform);
+      if (Math.abs(pseudoMatrix.e) > 0.3 || Math.abs(pseudoMatrix.f) > 0.3) {
+        throw Error("projected caster translates the paw contact: " + pseudo.transform);
+      }
+      const actorImageRect = player.querySelector("[data-demo-image]").getBoundingClientRect();
+      const shadowRect = a.getBoundingClientRect();
+      const footImageX = actorImageRect.left + actorImageRect.width * originX / 100;
+      const footImageY = actorImageRect.top + actorImageRect.height * originY / 100;
+      const footShadowX = shadowRect.left + shadowRect.width * originX / 100;
+      const footShadowY = shadowRect.top + shadowRect.height * originY / 100;
+      if (Math.abs(footImageX - footShadowX) > 2 || Math.abs(footImageY - footShadowY) > 2) {
+        throw Error("scaled 1.7 player: visible actor and shadow foot coordinate diverge " +
+          JSON.stringify({footImageX,footImageY,footShadowX,footShadowY,
+          imageRect:actorImageRect.toJSON(),shadowRect:shadowRect.toJSON(),
+          motionRect:player.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON(),
+          fighterRect:player.getBoundingClientRect().toJSON(),
+          dimensions:{shadowWidth:a.clientWidth,shadowHeight:a.clientHeight,
+            motionHeight:player.querySelector("[data-demo-motion]").clientHeight,
+            fighterHeight:player.clientHeight,
+            motionOffsetTop:player.querySelector("[data-demo-motion]").offsetTop,
+            shadowOffsetTop:a.offsetTop,
+            fighterPadding:getComputedStyle(player).padding,
+            motionTransform:getComputedStyle(player.querySelector("[data-demo-motion]")).transform,
+            shadowTransform:getComputedStyle(a).transform,
+            motionInlineTransform:player.querySelector("[data-demo-motion]").style.transform,
+            shadowInlineTransform:a.style.transform,
+            motionOrigin:getComputedStyle(player.querySelector("[data-demo-motion]")).transformOrigin,
+            shadowOrigin:getComputedStyle(a).transformOrigin,
+            motionAnimation:player.querySelector("[data-demo-motion]").getAnimations().length,
+            shadowAnimation:a.getAnimations().length}}));
+      }
+      const pivotPx = String(pseudo.transformOrigin).split(" ").map(Number.parseFloat);
+      if (Math.abs(pivotPx[0] - a.clientWidth * originX / 100) > 1.5 ||
+          Math.abs(pivotPx[1] - a.clientHeight * originY / 100) > 1.5) {
+        throw Error("painted silhouette is not pivoted on the model's alpha contact");
+      }
+      const groundX = Number.parseFloat(player.style.getPropertyValue("--shadow-light-cast-x"));
+      const airX = Number.parseFloat(flying.style.getPropertyValue("--shadow-light-cast-x"));
+      if (!(airX > groundX)) throw Error("flying shadow must project further than grounded shadow");
+      const direction = controls.querySelector("[data-shadow-light-azimuth]");
+      direction.value = "270";
+      direction.dispatchEvent(new Event("input", { bubbles: true }));
+      if (!(Number.parseFloat(player.style.getPropertyValue("--shadow-light-cast-x")) < 0)) throw Error("live lighting direction failed");
+      const reversedMatrix = new DOMMatrixReadOnly(getComputedStyle(a, "::before").transform);
+      if (!(pseudoMatrix.c < 0 && reversedMatrix.c > 0)) {
+        throw Error("head cast shear should reverse with light, keeping the paw pivot");
+      }
+      if (Math.abs(reversedMatrix.e) > 0.3 || Math.abs(reversedMatrix.f) > 0.3)
+        throw Error("reversed light must not translate the paw pivot");
+      const mode = controls.querySelector("[data-shadow-light-mode]");
+      mode.value = "contact";
+      mode.dispatchEvent(new Event("change", { bubbles: true }));
+      if (a.dataset.shadowMode !== "contact" || b.dataset.shadowMode !== "contact") throw Error("old contact shadow not switchable");
+      mode.value = "silhouette";
+      mode.dispatchEvent(new Event("change", { bubbles: true }));
+      if (a.dataset.shadowMode !== "silhouette") throw Error("silhouette restoration failed");
+      clearInterval(timer);
+      // One real collision in Chromium: pause the existing body+shadow WAAPI
+      // tracks at contact, then return them together without a second owner.
+      let touchCount = 0;
+      const originalOpponentLeft = flying.style.left;
+      const originalOpponentTop = flying.style.top;
+      const originalOpponentTransition = flying.style.transition;
+      // This fixture previously tested a distant flying model. For the
+      // contact-hold case, place its accepted alpha mask in the real player's
+      // vicinity, with no delayed CSS-position transition.
+      flying.style.transition = "none";
+      flying.style.left = getComputedStyle(player).left;
+      flying.style.top = getComputedStyle(player).top;
+      // Force geometry before the existing contact watcher samples it.
+      void flying.offsetWidth;
+      const contactPromise = demo.playApproachFor("player", "ground", {
+        travelMs: 850, targetSlot: "opponent", holdOnContact: true,
+        onContact() { touchCount += 1; return { outcome: "contact_held" }; }
+      });
+      const startedWaitingAt = performance.now();
+      let nearestDistance=Infinity;
+      let sourceSnapshotCount=0;
+      let targetSnapshotCount=0;
+      while (touchCount === 0 && performance.now() - startedWaitingAt < 2300) {
+        const src=demo.getCollisionModelFor("player");
+        const dst=demo.getCollisionModelFor("opponent");
+        const s=src?.visibleRect?.(), d=dst?.visibleRect?.();
+        if(src?.snapshot?.()) sourceSnapshotCount++;
+        if(dst?.snapshot?.()) targetSnapshotCount++;
+        if(s&&d)nearestDistance=Math.min(nearestDistance,Math.hypot(
+         (s.left+s.width/2)-(d.left+d.width/2),
+         (s.top+s.height/2)-(d.top+d.height/2)
+        ));
+        await new Promise(resolve => setTimeout(resolve, 35));
+      }
+      if (touchCount !== 1) throw Error("real contact count="+touchCount+" closest="+nearestDistance+" sourceSnapshots="+sourceSnapshotCount+" targetSnapshots="+targetSnapshotCount+" actor="+JSON.stringify(player.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON())+" target="+JSON.stringify(flying.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON()));
+      const bodyTracks = player.querySelector("[data-demo-motion]").getAnimations();
+      const shadowTracks = a.getAnimations();
+      if (!bodyTracks.some(x => x.playState === "paused") ||
+          !shadowTracks.some(x => x.playState === "paused")) {
+        throw Error("both WAAPI tracks must be paused while attached");
+      }
+      if (!demo.releaseHeldApproachFor("player")) throw Error("native return was not started");
+      // Headless virtual JS time keeps moving while freshly resumed WAAPI
+      // effects can remain pending after a pause. Validate their real Chrome
+      // keyframes, then finish these same renderer-owned tracks explicitly.
+      const returnBody = player.querySelector("[data-demo-motion]").getAnimations();
+      const returnShadow = a.getAnimations();
+      if (returnBody.length !== 1 || returnShadow.length !== 1)
+        throw Error("held return must own exactly one body and one shadow track");
+      const rb = returnBody[0].effect.getKeyframes();
+      const rs = returnShadow[0].effect.getKeyframes();
+      if (rb.length !== 2 || rs.length !== 2 ||
+          returnBody[0].effect.getTiming().iterations !== 1 ||
+          returnShadow[0].effect.getTiming().iterations !== 1 ||
+          !String(rb[1].transform).includes("translate3d(") ||
+          !String(rs[1].transform).includes("translate3d(")) {
+        throw Error("native return must interpolate frozen body and shadow to their resting bases");
+      }
+      returnBody[0].finish();
+      returnShadow[0].finish();
+      const result = await Promise.race([
+        contactPromise,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(Error("held return did not settle after real WAAPI finish")), 350))
+      ]);
+      if (result?.status !== "finished") throw Error("attached approach did not return naturally");
+      if (demo.releaseHeldApproachFor("player")) throw Error("double release must be ignored");
+      flying.style.left = originalOpponentLeft;
+      flying.style.top = originalOpponentTop;
+      flying.style.transition = originalOpponentTransition;
+      demo.dispose();
+      // Capture editor: no floating lighting panel during the battle. Mount
+      // the real Capture->visuals handoff with editor-supplied scene settings.
+      controls.remove();
+      const reloaded = await mountCaptureCombatPreviewV1({
+        root: query("[data-combat-demo]"),
+        nativeCombatSource: {},
+        nativeVisualSource: visualSource,
+        arenaLight: {
+          mode: "contact", azimuthDeg: 270, elevationDeg: 58,
+          softness: 0.2, intensity: 0.7, flightHeightPx: 74
+        },
+        mountCombat: async () => ({ dispose() {} })
+      });
+      await new Promise(resolve => setTimeout(resolve, 180));
+      if (a.style.visibility !== "visible" || b.style.visibility !== "visible" ||
+          a.dataset.shadowMode !== "contact" || b.dataset.shadowMode !== "contact") {
+        reloaded.dispose();
+        throw Error("Capture Combat settings were not mounted without console");
+      }
+      const castA = Number.parseFloat(player.style.getPropertyValue("--shadow-light-cast-x"));
+      const castB = Number.parseFloat(flying.style.getPropertyValue("--shadow-light-cast-x"));
+      if (!(castA < 0 && castB < castA)) {
+        reloaded.dispose();
+        throw Error("Capture editor azimuth or flying projection ignored");
+      }
+      reloaded.dispose();
+      document.body.dataset.shadowProbe = "ok:silhouette:flight:direction:contact:restore:editor";
+    } catch (error) {
+      clearInterval(timer);
+      fail(error.message);
+    }
+  }, 60);
+} catch (error) {
+  fail(error.message);
+}
+</script>
+</body></html>

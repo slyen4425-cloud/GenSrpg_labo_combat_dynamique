@@ -1,0 +1,121 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "Onde Spirituel",
+    "description": "Miroir spirituel",
+    "requiredLevel": 5,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "Onde Spirituel",
+      "name": "Onde Spirituel",
+      "category": "defensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "spirit",
+      "approachMode": "none",
+      "energyCost": 2,
+      "preparationMs": 200,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 8000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "ally",
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-1",
+            "kind": "projectile_mirror",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 2000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": []
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:Onde Spirituel",
+      "version": 3,
+      "subjectType": "skill",
+      "subjectId": "Onde Spirituel",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-miroir-magique-01"
+        }
+      },
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:genrpg-pack2-cc66c3dd",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {
+        "status-1": {
+          "mode": "sprite",
+          "tintBlinkEnabled": false,
+          "tintBlinkPeriodMs": 600,
+          "tintColor": "#9b59d0",
+          "tintOpacity": 0.35,
+          "sprite": {
+            "playbackMode": "hold-last",
+            "assetId": "pack:capture:sprite-kitsune-lunaire-spirit-shield-01",
+            "displayScale": 2.7,
+            "opacity": 0.4
+          }
+        }
+      }
+    }
+  }
+}

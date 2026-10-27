@@ -1,0 +1,274 @@
+{
+  "schema": "capture-creature-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-creature-editor-draft-v3",
+    "id": "crea_ombre_2",
+    "displayName": "Noctigriffe",
+    "description": "Noctigriffe, créature de type shadow.",
+    "level": 1,
+    "sourceStats": {
+      "force": 23,
+      "agility": 26,
+      "intelligence": 0,
+      "spirit": 27,
+      "endurance": 23,
+      "initiative": 28
+    },
+    "elements": [
+      "shadow"
+    ],
+    "resistances": [
+      {
+        "kind": "element:fire",
+        "value": 0
+      },
+      {
+        "kind": "element:water",
+        "value": 0
+      },
+      {
+        "kind": "element:earth",
+        "value": 0
+      },
+      {
+        "kind": "element:air",
+        "value": 0
+      },
+      {
+        "kind": "element:electric",
+        "value": 0
+      },
+      {
+        "kind": "element:light",
+        "value": -50
+      },
+      {
+        "kind": "element:shadow",
+        "value": 35
+      },
+      {
+        "kind": "element:nature",
+        "value": 0
+      },
+      {
+        "kind": "element:ice",
+        "value": 0
+      },
+      {
+        "kind": "element:poison",
+        "value": 0
+      },
+      {
+        "kind": "element:steel",
+        "value": 0
+      },
+      {
+        "kind": "element:psy",
+        "value": 0
+      },
+      {
+        "kind": "element:spirit",
+        "value": 0
+      }
+    ],
+    "capture": {
+      "capturable": true,
+      "captureRate": 36,
+      "spawnChance": 10,
+      "spawnTags": [
+        "shadow"
+      ],
+      "evolution": {
+        "condition": "level",
+        "level": 37,
+        "targetId": "crea_ombre_3"
+      }
+    },
+    "combat": {
+      "maxHp": 100,
+      "maxEnergy": 0,
+      "initialEnergy": 0,
+      "energyChargeAmount": 0,
+      "energyChargeIntervalMs": 0,
+      "movementEnergyPerStep": 0,
+      "chargeTimeModifierPct": 0,
+      "approachTimeModifierPct": 0,
+      "reaction": {
+        "type": "dodge",
+        "maxCharges": 3,
+        "rechargeMs": 15000,
+        "activeWindowMs": 400,
+        "damageReductionPct": 50
+      }
+    },
+    "skillIds": [
+      "cap_shadow_atk_1",
+      "cap_shadow_atk_2",
+      "cap_shadow_atk_3",
+      "cap_shadow_atk_4",
+      "cap_shadow_atk_5",
+      "cap_shadow_atk_6",
+      "cap_shadow_atk_7",
+      "cap_shadow_special_1",
+      "cap_shadow_special_2",
+      "lib_lifesteal_strike"
+    ],
+    "presentation": {
+      "id": "creature:crea_ombre_2",
+      "version": 9,
+      "subjectType": "creature",
+      "subjectId": "crea_ombre_2",
+      "profileId": "biped",
+      "displayScale": 1,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 0.6,
+          "position": {
+            "x": 0,
+            "y": 40
+          }
+        }
+      },
+      "transformOrigin": {
+        "x": "50%",
+        "y": "50%"
+      },
+      "visual": {
+        "front": {
+          "assetId": "pack:capture:creature-chat-mystique-opponent-01"
+        },
+        "back": {
+          "assetId": "pack:capture:creature-chat-mystique-player-01"
+        },
+        "icon": {
+          "assetId": "pack:capture:creature-chat-mystique-icon-01"
+        },
+        "dodge": {
+          "assetId": "pack:capture:sprite-ash-smoke-status-aura-01",
+          "displayScale": 1.5,
+          "durationMs": 700,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "movement": {
+          "assetId": "pack:capture:creature-violette-movement-opponent-8-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 3,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttack": {
+          "assetId": "pack:capture:creature-violette-attack-opponent-8-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttackBack": {
+          "assetId": "pack:capture:creature-violette-attack-player-8-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "movementScaleByView": {
+          "player": 1.4,
+          "opponent": 1.4
+        },
+        "rangedAttackScaleByView": {
+          "player": 1.4,
+          "opponent": 1.4
+        },
+        "movementPlayback": {
+          "frameMs": 0,
+          "mode": "loop"
+        },
+        "movementBack": {
+          "assetId": "pack:capture:creature-violette-movement-player-8-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 3,
+          "frameCount": 1,
+          "transitionMs": 80
+        }
+      },
+      "sockets": [
+        {
+          "id": "mouth",
+          "label": "Bouche",
+          "front": {
+            "x": 0.2979381553294072,
+            "y": 0.5940972963968912
+          },
+          "back": {
+            "x": 0.7371133682172085,
+            "y": 0.522482713063558
+          }
+        }
+      ],
+      "audio": {}
+    }
+  },
+  "statValues": {
+    "schema": "capture-creature-stat-values-v1",
+    "creatureId": "crea_ombre_2",
+    "values": {
+      "health": 100,
+      "speed": 20,
+      "physical": 0,
+      "defense": 0,
+      "fire": 0,
+      "water": 0,
+      "earth": 0,
+      "air": 0,
+      "electric": 0,
+      "light": 0,
+      "shadow": 15,
+      "poison": 0,
+      "acier": 0,
+      "nature": 0,
+      "esprit": 0
+    }
+  },
+  "loadout": {
+    "schema": "capture-active-skill-loadout-v1",
+    "creatureId": "crea_ombre_2",
+    "slots": [
+      {
+        "id": "slot-1",
+        "skillId": "cap_shadow_atk_1"
+      },
+      {
+        "id": "slot-2",
+        "skillId": "lib_lifesteal_strike"
+      },
+      {
+        "id": "slot-3",
+        "skillId": "cap_shadow_atk_3"
+      },
+      {
+        "id": "slot-4",
+        "skillId": "cap_shadow_atk_4"
+      },
+      {
+        "id": "slot-ultimate",
+        "skillId": "cap_shadow_atk_5"
+      }
+    ]
+  }
+}

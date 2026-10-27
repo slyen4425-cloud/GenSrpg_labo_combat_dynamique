@@ -1,0 +1,31 @@
+{
+  "schema": "capture-author-refresh-manifest-v1",
+  "originalFilename": "gensrpg-capture-database-v1.json",
+  "originalSha256": "5c81d6d1c0712f1614f63f5d4936b92e8c0a3afb32852d15d146592cc0cd6865",
+  "originalSkillCount": 123,
+  "originalCreatureCount": 104,
+  "authorChangedSkillIds": [
+    "cap_fire_atk_6",
+    "cap_fire_atk_7",
+    "fleche_spirituel",
+    "Sacrifice_kitsune"
+  ],
+  "authorChangedCreatureIds": [
+    "crea_dracendre",
+    "kitsune_lunaire"
+  ],
+  "originalSacrificeKitsuneTargetRelations": [
+    "ally",
+    "self"
+  ],
+  "publishedFingerprints": {
+    "cap_fire_atk_6": "013e6594",
+    "cap_fire_atk_7": "ec5ebd51",
+    "fleche_spirituel": "27570b78",
+    "Sacrifice_kitsune": "9735ab4f",
+    "crea_dracendre": "113ae8e4",
+    "kitsune_lunaire": "058777e2"
+  },
+  "hashMethod": "FNV1a sorted JSON UTF16 code units",
+  "preservationNote": "Source original SHA256 and original Sacrifice target are preserved. 4 skills and 2 creatures have material changes; 18 schema-normalization-only exports were left unchanged on GitHub."
+}

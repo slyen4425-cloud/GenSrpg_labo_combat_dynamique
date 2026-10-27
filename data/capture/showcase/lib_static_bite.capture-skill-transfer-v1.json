@@ -1,0 +1,163 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "lib_static_bite",
+    "description": "Morsure électrique.",
+    "requiredLevel": 5,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "lib_static_bite",
+      "name": "Crocs statiques",
+      "category": "offensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "electric",
+      "approachMode": "ground",
+      "energyCost": 3,
+      "preparationMs": 600,
+      "travelMs": 600,
+      "recoveryMs": 0,
+      "cooldownMs": 6000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 8,
+          "channel": "electric",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-2",
+            "kind": "stack_counter",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 10000,
+            "stacking": "stack",
+            "maxStacks": 3,
+            "tags": [],
+            "onStackThreshold": {
+              "count": 3,
+              "consume": "reset",
+              "effects": [
+                {
+                  "kind": "apply_status",
+                  "targetScope": "target",
+                  "status": {
+                    "id": "stack-result",
+                    "kind": "stun",
+                    "polarity": "detrimental",
+                    "durationModel": "time_ms",
+                    "durationMs": 3000,
+                    "stacking": "replace",
+                    "maxStacks": 1,
+                    "tags": []
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:lib_static_bite",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "lib_static_bite",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-croc-electrique-01"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-electric-01",
+          "displayScale": 2.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "stretch",
+          "durationMs": 650,
+          "rotationDeg": 0,
+          "opacity": 0.8,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-af938ec6",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenSrpG — charges et statuts</title>
+<link rel="stylesheet" href="./demo.css">
+<style>
+body.sprite-review{margin:0;padding:24px;background:#0b1420;color:#eef5fc;font:15px/1.5 system-ui,sans-serif}
+main{max-width:1080px;margin:auto}h1{margin:0;font-size:28px}h2{margin:0;font-size:20px}p{margin:8px 0 16px}
+.review-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:18px 0}
+.sprite-review button,.sprite-review select,.sprite-review a{font:inherit;border:1px solid #4b6680;border-radius:8px;padding:8px 12px;background:#20354c;color:#f4f8fd}
+.sprite-review button:disabled{opacity:.5}.review-card{margin:16px 0;padding:16px;border:1px solid #324a62;border-radius:12px;background:#122034}
+.review-head{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.review-stage{position:relative;height:220px;margin:12px 0;border:1px solid #40556b;border-radius:10px;overflow:hidden;background:#17283b}
+.review-anchor{position:absolute;left:50%;top:50%;width:1px;height:1px}
+.review-motion{position:absolute;left:50%;top:50%;width:220px;height:220px;transform:translate(-50%,-50%)}
+.review-poster{display:block;width:100%;height:100%;object-fit:contain}
+.review-frames{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px}.review-frame{margin:0;background:#17283b;border-radius:6px;overflow:hidden}
+.review-frame img{display:block;width:100%;aspect-ratio:1;object-fit:contain}.review-frame figcaption{font-size:12px;text-align:center;padding-bottom:4px}
+.review-light .review-stage,.review-light .review-frame{background:#f0f2ed}.review-light .review-frame figcaption{color:#3d5167}
+.review-note{color:#b8cbe0}.review-error{color:#ffb9b0}.review-card[hidden]{display:none}
+@media(max-width:600px){body.sprite-review{padding:12px}.review-card{padding:10px}.review-frames{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+</head>
+<body class="sprite-review"><main>
+<h1>Charges, auras et statuts</h1>
+<p class="review-note">Cinq charges et sept effets de statut. Chaque animation comporte huit phases transparentes.</p>
+<div class="review-controls">
+<button id="play-all" disabled>Jouer les douze</button><button id="stop-all" disabled>Arrêter</button>
+<label>Fond <select id="background"><option value="dark">Sombre</option><option value="light">Clair</option></select></label>
+<label>Afficher <select id="category"><option value="all">Tout</option><option value="casts">Charges</option><option value="statuses">Auras et statuts</option></select></label>
+<a href="./capture-editor-v2.html">Ouvrir l’éditeur</a>
+</div>
+<p id="ready" role="status">Chargement des animations…</p><div id="cards"></div>
+<p class="review-note">Les charges se jouent une fois. Les statuts restent animés jusqu’à leur arrêt ; en combat, leur durée suit celle du statut configuré.</p>
+</main>
+<script type="module">
+import { createDomSkillFxRenderer } from "../../src/adapters/renderer/dom-skill-fx.js";
+import { createDomStatusFxRenderer } from "../../src/adapters/renderer/dom-status-fx.js";
+import { demoPresentationAssets } from "./demo-assets.js";
+import { GLOBAL_VISUAL_LIBRARY, globalVisualAssetUrl } from "../../src/assets/global-visual-library.js";
+const players=[], loads=[], ready=document.getElementById("ready"), cards=document.getElementById("cards");
+function loadImage(url, width, height){
+ return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>image.naturalWidth===width&&image.naturalHeight===height?resolve(image):reject(new Error("Dimensions d’image incorrectes"));image.onerror=()=>reject(new Error("Image indisponible"));image.src=url;});
+}
+async function json(url){const response=await fetch(url,{cache:"no-store"});if(!response.ok)throw new Error("Animations indisponibles");return response.json();}
+try{
+ const [catalog,castSheet,statusSheet]=await Promise.all([
+   json(GLOBAL_VISUAL_LIBRARY.catalogUrl),json(globalVisualAssetUrl("capture/sprites/source/cast_charge_extraction_v1.json")),
+   json(globalVisualAssetUrl("capture/sprites/source/status_aura_extraction_v1.json"))]);
+ for(const [familyKind,sheet] of [["casts",castSheet],["statuses",statusSheet]]){
+  for(const family of sheet.families){
+   const definition=catalog.assets.find(a=>a.id===family.assetId), visual=demoPresentationAssets.asset(family.assetId);
+   if(!definition||!visual?.url||visual.frameCount!==8)throw new Error("Animation native indisponible");
+   const card=document.createElement("section");card.className="review-card";card.dataset.family=family.name;card.dataset.category=familyKind;card.dataset.assetId=family.assetId;
+   card.innerHTML='<div class="review-head"><h2></h2><button disabled>Jouer</button></div><div class="review-stage"><span class="review-anchor"></span><div class="review-motion"><img class="review-poster"></div></div><div class="review-frames"></div>';
+   card.querySelector("h2").textContent=family.label;cards.append(card);
+   const stage=card.querySelector(".review-stage"),anchor=card.querySelector(".review-anchor"),motion=card.querySelector(".review-motion"),poster=card.querySelector(".review-poster"),button=card.querySelector("button");
+   const frameUrl=frame=>globalVisualAssetUrl(frame.file.replace(/^assets\/library\//,""));
+   poster.src=frameUrl(family.frames[3]);poster.alt=family.label+" — phase 4";
+   for(const [index,frame] of family.frames.entries()){
+    const figure=document.createElement("figure"),image=document.createElement("img"),caption=document.createElement("figcaption");figure.className="review-frame";image.src=frameUrl(frame);image.alt=family.label+" — phase "+(index+1);caption.textContent=String(index+1).padStart(2,"0");figure.append(image,caption);card.querySelector(".review-frames").append(figure);loads.push(loadImage(image.src,256,256));
+   }
+   loads.push(loadImage(visual.url,2048,256).then(image=>{card.dataset.atlasWidth=image.naturalWidth;card.dataset.atlasHeight=image.naturalHeight;}));
+   const skillFx=familyKind==="casts"?createDomSkillFxRenderer({arena:stage,anchors:{source:anchor},presentationForSkill:()=>({cast:{...visual,displayScale:2.8}})}):null;
+   const statusFx=familyKind==="statuses"?createDomStatusFxRenderer({targetFor:()=>({motion,image:poster}),statusPresentationFor:()=>({mode:"sprite",sprite:{...visual,displayScale:1,opacity:1}})}):null;
+   const player={card,playing:false,play(){
+    if(familyKind==="statuses"){
+     statusFx.sync({fighters:{preview:{statusEffects:[{definition:{id:family.assetId,polarity:"neutral"}}]}}});this.playing=true;poster.style.visibility="hidden";button.textContent="Arrêter";card.dataset.playback="looping";return;
+    }
+    skillFx.cancelAll();poster.style.visibility="hidden";button.disabled=true;card.dataset.playback="playing";
+    const handle=skillFx.play({type:"cast",skillId:family.assetId,fromSlot:"source",durationMs:480});
+    handle.finished.then(()=>{poster.style.visibility="visible";button.disabled=false;card.dataset.playback="finished";}).catch(error=>{ready.textContent=error.message;card.dataset.playback="error";});
+   },stop(){skillFx?.cancelAll();statusFx?.sync({fighters:{preview:{statusEffects:[]}}});this.playing=false;poster.style.visibility="visible";button.textContent="Jouer";button.disabled=false;card.dataset.playback="stopped";},dispose(){skillFx?.dispose();statusFx?.dispose();}};
+   button.addEventListener("click",()=>player.playing?player.stop():player.play());players.push(player);
+  }
+ }
+ if(players.length!==12)throw new Error("Douze animations attendues");
+ await Promise.all(loads);
+ ready.textContent="12 atlas et 96 phases prêts";document.body.dataset.previewReady="true";
+ document.querySelectorAll("button").forEach(button=>button.disabled=false);
+}catch(error){ready.textContent=error.message;ready.className="review-error";document.body.dataset.previewReady="error";}
+document.getElementById("play-all").addEventListener("click",()=>players.forEach(p=>p.play()));
+document.getElementById("stop-all").addEventListener("click",()=>players.forEach(p=>p.stop()));
+document.getElementById("background").addEventListener("change",event=>document.body.classList.toggle("review-light",event.target.value==="light"));
+document.getElementById("category").addEventListener("change",event=>players.forEach(p=>p.card.hidden=event.target.value!=="all"&&p.card.dataset.category!==event.target.value));
+window.addEventListener("pagehide",()=>players.forEach(p=>p.dispose()));
+</script></body></html>

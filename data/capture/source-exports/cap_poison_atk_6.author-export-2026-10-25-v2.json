@@ -1,0 +1,144 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_poison_atk_6",
+    "description": "Attaque Poison de puissance 8. Disponible au niveau 34.",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_poison_atk_6",
+      "name": "Tempête de venin",
+      "category": "offensive",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "poison",
+      "approachMode": "none",
+      "energyCost": 0,
+      "preparationMs": 2000,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 60000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "consume_marker",
+          "targetScope": "target",
+          "markerId": "*",
+          "count": "all",
+          "minimum": 1,
+          "perCharge": true,
+          "effects": [
+            {
+              "kind": "apply_status",
+              "targetScope": "target",
+              "status": {
+                "id": "stun-marqueur",
+                "kind": "stun",
+                "polarity": "detrimental",
+                "durationModel": "time_ms",
+                "durationMs": 2000,
+                "stacking": "replace",
+                "maxStacks": 1,
+                "tags": []
+              }
+            },
+            {
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 5,
+              "channel": "poison"
+            }
+          ]
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_poison_atk_6",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "cap_poison_atk_6",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-poison-corrosif-01"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-crachat-acide-impact-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.8,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}

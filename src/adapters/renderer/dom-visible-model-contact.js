@@ -1,0 +1,1156 @@
+const OPAQUE_ALPHA_THRESHOLD = 0;
+const maskCache = new Map();
+
+function finiteNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
+function pointFromRect(rect) {
+  if (!rect) {
+    return null;
+  }
+  const left = finiteNumber(rect.left);
+  const top = finiteNumber(rect.top);
+  const width = finiteNumber(rect.width);
+  const height = finiteNumber(rect.height);
+  if (
+    left === null ||
+    top === null ||
+    width === null ||
+    height === null
+  ) {
+    return null;
+  }
+  return Object.freeze({
+    x: left + width / 2,
+    y: top + height / 2
+  });
+}
+
+function validPoint(point) {
+  return Boolean(
+    point &&
+      Number.isFinite(Number(point.x)) &&
+      Number.isFinite(Number(point.y))
+  );
+}
+
+function validMask(mask) {
+  return Boolean(
+    mask &&
+      Number.isInteger(mask.width) &&
+      mask.width > 0 &&
+      Number.isInteger(mask.height) &&
+      mask.height > 0 &&
+      mask.opaque instanceof Uint8Array &&
+      mask.opaque.length === mask.width * mask.height
+  );
+}
+
+export function opaqueMaskFromRgba({
+  width,
+  height,
+  data
+}) {
+  const normalizedWidth = Number(width);
+  const normalizedHeight = Number(height);
+
+  if (
+    !Number.isInteger(normalizedWidth) ||
+    normalizedWidth <= 0 ||
+    !Number.isInteger(normalizedHeight) ||
+    normalizedHeight <= 0
+  ) {
+    throw new RangeError(
+      "opaque mask width/height must be positive integers"
+    );
+  }
+
+  if (
+    !data ||
+    typeof data.length !== "number" ||
+    data.length !== normalizedWidth * normalizedHeight * 4
+  ) {
+    throw new RangeError(
+      "RGBA data length must match width * height * 4"
+    );
+  }
+
+  const opaque = new Uint8Array(
+    normalizedWidth * normalizedHeight
+  );
+
+  for (let index = 0; index < opaque.length; index += 1) {
+    opaque[index] =
+      Number(data[index * 4 + 3]) >
+      OPAQUE_ALPHA_THRESHOLD
+        ? 1
+        : 0;
+  }
+
+  return Object.freeze({
+    width: normalizedWidth,
+    height: normalizedHeight,
+    opaque
+  });
+}
+
+export function screenPointToModelUnit(frame, point) {
+  if (
+    !frame ||
+    !validPoint(frame.origin) ||
+    !validPoint(frame.axisX) ||
+    !validPoint(frame.axisY) ||
+    !validPoint(point)
+  ) {
+    return null;
+  }
+
+  const originX = Number(frame.origin.x);
+  const originY = Number(frame.origin.y);
+  const xAxisX = Number(frame.axisX.x) - originX;
+  const xAxisY = Number(frame.axisX.y) - originY;
+  const yAxisX = Number(frame.axisY.x) - originX;
+  const yAxisY = Number(frame.axisY.y) - originY;
+  const determinant =
+    xAxisX * yAxisY - xAxisY * yAxisX;
+
+  if (Math.abs(determinant) < 1e-9) {
+    return null;
+  }
+
+  const pointX = Number(point.x) - originX;
+  const pointY = Number(point.y) - originY;
+
+  return Object.freeze({
+    u:
+      (pointX * yAxisY - pointY * yAxisX) /
+      determinant,
+    v:
+      (xAxisX * pointY - xAxisY * pointX) /
+      determinant
+  });
+}
+
+function clipUnitSegment(start, end) {
+  let minimum = 0;
+  let maximum = 1;
+  const dx = end.u - start.u;
+  const dy = end.v - start.v;
+
+  const clip = (p, q) => {
+    if (Math.abs(p) < 1e-12) {
+      return q >= 0;
+    }
+    const ratio = q / p;
+    if (p < 0) {
+      if (ratio > maximum) {
+        return false;
+      }
+      minimum = Math.max(minimum, ratio);
+    } else {
+      if (ratio < minimum) {
+        return false;
+      }
+      maximum = Math.min(maximum, ratio);
+    }
+    return minimum <= maximum;
+  };
+
+  if (
+    !clip(-dx, start.u) ||
+    !clip(dx, 1 - start.u) ||
+    !clip(-dy, start.v) ||
+    !clip(dy, 1 - start.v)
+  ) {
+    return null;
+  }
+
+  return Object.freeze({
+    start: Object.freeze({
+      u: start.u + dx * minimum,
+      v: start.v + dy * minimum
+    }),
+    end: Object.freeze({
+      u: start.u + dx * maximum,
+      v: start.v + dy * maximum
+    })
+  });
+}
+
+function opaqueAt(mask, unitPoint) {
+  if (
+    !validMask(mask) ||
+    !unitPoint ||
+    !Number.isFinite(unitPoint.u) ||
+    !Number.isFinite(unitPoint.v) ||
+    unitPoint.u < 0 ||
+    unitPoint.u > 1 ||
+    unitPoint.v < 0 ||
+    unitPoint.v > 1
+  ) {
+    return false;
+  }
+
+  const x = Math.min(
+    mask.width - 1,
+    Math.max(0, Math.floor(unitPoint.u * mask.width))
+  );
+  const y = Math.min(
+    mask.height - 1,
+    Math.max(0, Math.floor(unitPoint.v * mask.height))
+  );
+
+  return mask.opaque[y * mask.width + x] === 1;
+}
+
+const boundarySampleCache = new WeakMap();
+const opaqueBoundsCache = new WeakMap();
+
+function opaqueUnitBounds(mask) {
+  if (!validMask(mask)) {
+    return null;
+  }
+
+  const cached = opaqueBoundsCache.get(mask);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  let minX = mask.width;
+  let minY = mask.height;
+  let maxX = -1;
+  let maxY = -1;
+
+  for (let y = 0; y < mask.height; y += 1) {
+    for (let x = 0; x < mask.width; x += 1) {
+      if (mask.opaque[y * mask.width + x] !== 1) {
+        continue;
+      }
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+    }
+  }
+
+  if (maxX < minX || maxY < minY) {
+    opaqueBoundsCache.set(mask, null);
+    return null;
+  }
+
+  const bounds = Object.freeze({
+    left: minX / mask.width,
+    top: minY / mask.height,
+    right: (maxX + 1) / mask.width,
+    bottom: (maxY + 1) / mask.height
+  });
+  opaqueBoundsCache.set(mask, bounds);
+  return bounds;
+}
+
+function modelUnitToScreen(frame, unitPoint) {
+  if (
+    !frame ||
+    !validPoint(frame.origin) ||
+    !validPoint(frame.axisX) ||
+    !validPoint(frame.axisY) ||
+    !unitPoint ||
+    !Number.isFinite(Number(unitPoint.u)) ||
+    !Number.isFinite(Number(unitPoint.v))
+  ) {
+    return null;
+  }
+
+  const u = Number(unitPoint.u);
+  const v = Number(unitPoint.v);
+  const originX = Number(frame.origin.x);
+  const originY = Number(frame.origin.y);
+
+  return Object.freeze({
+    x:
+      originX +
+      (Number(frame.axisX.x) - originX) * u +
+      (Number(frame.axisY.x) - originX) * v,
+    y:
+      originY +
+      (Number(frame.axisX.y) - originY) * u +
+      (Number(frame.axisY.y) - originY) * v
+  });
+}
+
+// The same alpha mask used by physical contact chooses a real opaque pixel
+// for a resting projectile's visual aim. Cache only local mask coordinates;
+// transforms, author scale and movement are applied from the live frame.
+const opaqueAimUnitCache = new WeakMap();
+
+export function visibleModelOpaqueAimPoint(frame) {
+  if (!frame || !validMask(frame.mask)) return null;
+  const mask = frame.mask;
+  let unit = opaqueAimUnitCache.get(mask);
+  if (unit === undefined) {
+    const bounds = opaqueUnitBounds(mask);
+    if (!bounds) {
+      opaqueAimUnitCache.set(mask, null);
+      return null;
+    }
+    const midpointU = (bounds.left + bounds.right) / 2;
+    const midpointV = (bounds.top + bounds.bottom) / 2;
+    let bestDistance = Infinity;
+    unit = null;
+    for (let y = 0; y < mask.height; y += 1) {
+      for (let x = 0; x < mask.width; x += 1) {
+        if (mask.opaque[y * mask.width + x] !== 1) continue;
+        const u = (x + 0.5) / mask.width;
+        const v = (y + 0.5) / mask.height;
+        const distance = (u - midpointU) ** 2 + (v - midpointV) ** 2;
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          unit = Object.freeze({ u, v });
+        }
+      }
+    }
+    opaqueAimUnitCache.set(mask, unit);
+  }
+  return unit ? modelUnitToScreen(frame, unit) : null;
+}
+
+export function visibleModelOpaqueRect(frame) {
+  if (!frame || !validMask(frame.mask)) {
+    return null;
+  }
+
+  const unitBounds = opaqueUnitBounds(frame.mask);
+  if (!unitBounds) {
+    return null;
+  }
+
+  const corners = [
+    { u: unitBounds.left, v: unitBounds.top },
+    { u: unitBounds.right, v: unitBounds.top },
+    { u: unitBounds.left, v: unitBounds.bottom },
+    { u: unitBounds.right, v: unitBounds.bottom }
+  ]
+    .map((point) => modelUnitToScreen(frame, point))
+    .filter(Boolean);
+
+  if (corners.length !== 4) {
+    return null;
+  }
+
+  const xs = corners.map((point) => Number(point.x));
+  const ys = corners.map((point) => Number(point.y));
+  const left = Math.min(...xs);
+  const right = Math.max(...xs);
+  const top = Math.min(...ys);
+  const bottom = Math.max(...ys);
+
+  return Object.freeze({
+    left,
+    top,
+    width: right - left,
+    height: bottom - top,
+    right,
+    bottom
+  });
+}
+
+function boundarySamples(mask) {
+  if (!validMask(mask)) {
+    return Object.freeze([]);
+  }
+
+  const cached = boundarySampleCache.get(mask);
+  if (cached) {
+    return cached;
+  }
+
+  const samples = [];
+  const isOpaque = (x, y) =>
+    x >= 0 &&
+    y >= 0 &&
+    x < mask.width &&
+    y < mask.height &&
+    mask.opaque[y * mask.width + x] === 1;
+
+  for (let y = 0; y < mask.height; y += 1) {
+    for (let x = 0; x < mask.width; x += 1) {
+      if (!isOpaque(x, y)) {
+        continue;
+      }
+
+      const boundary =
+        !isOpaque(x - 1, y) ||
+        !isOpaque(x + 1, y) ||
+        !isOpaque(x, y - 1) ||
+        !isOpaque(x, y + 1);
+
+      if (!boundary) {
+        continue;
+      }
+
+      samples.push(
+        Object.freeze({
+          u: (x + 0.5) / mask.width,
+          v: (y + 0.5) / mask.height
+        })
+      );
+    }
+  }
+
+  const frozen = Object.freeze(samples);
+  boundarySampleCache.set(mask, frozen);
+  return frozen;
+}
+
+function frameBounds(frame) {
+  if (
+    !frame ||
+    !validPoint(frame.origin) ||
+    !validPoint(frame.axisX) ||
+    !validPoint(frame.axisY)
+  ) {
+    return null;
+  }
+
+  const opposite = {
+    x:
+      Number(frame.axisX.x) +
+      Number(frame.axisY.x) -
+      Number(frame.origin.x),
+    y:
+      Number(frame.axisX.y) +
+      Number(frame.axisY.y) -
+      Number(frame.origin.y)
+  };
+  const points = [
+    frame.origin,
+    frame.axisX,
+    frame.axisY,
+    opposite
+  ];
+  const xs = points.map((point) => Number(point.x));
+  const ys = points.map((point) => Number(point.y));
+
+  return Object.freeze({
+    left: Math.min(...xs),
+    right: Math.max(...xs),
+    top: Math.min(...ys),
+    bottom: Math.max(...ys)
+  });
+}
+
+function boundsOverlap(left, right) {
+  return Boolean(
+    left &&
+      right &&
+      left.left <= right.right &&
+      left.right >= right.left &&
+      left.top <= right.bottom &&
+      left.bottom >= right.top
+  );
+}
+
+function modelBoundaryHitsTarget(source, target) {
+  if (
+    !source ||
+    !target ||
+    !validMask(source.mask) ||
+    !validMask(target.mask)
+  ) {
+    return false;
+  }
+
+  for (const sample of boundarySamples(source.mask)) {
+    const screen = modelUnitToScreen(source, sample);
+    if (!screen) {
+      continue;
+    }
+    const targetUnit =
+      screenPointToModelUnit(target, screen);
+    if (opaqueAt(target.mask, targetUnit)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function visibleModelsOverlap(left, right) {
+  if (
+    !left ||
+    !right ||
+    !validMask(left.mask) ||
+    !validMask(right.mask)
+  ) {
+    return false;
+  }
+
+  if (
+    !boundsOverlap(
+      frameBounds(left),
+      frameBounds(right)
+    )
+  ) {
+    return false;
+  }
+
+  return (
+    modelBoundaryHitsTarget(left, right) ||
+    modelBoundaryHitsTarget(right, left)
+  );
+}
+
+function sweptBoundaryHitsTarget({
+  sourcePrevious,
+  source,
+  targetPrevious,
+  target
+}) {
+  if (
+    !sourcePrevious ||
+    !source ||
+    !targetPrevious ||
+    !target ||
+    !validMask(source.mask) ||
+    !validMask(target.mask)
+  ) {
+    return false;
+  }
+
+  for (const sample of boundarySamples(source.mask)) {
+    const previousPoint =
+      modelUnitToScreen(sourcePrevious, sample);
+    const point =
+      modelUnitToScreen(source, sample);
+
+    if (
+      sweptPointHitsOpaqueMask({
+        mask: target.mask,
+        previousPoint,
+        point,
+        previousFrame: targetPrevious,
+        frame: target
+      })
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function sweptVisibleModelsOverlap({
+  previousLeft,
+  left,
+  previousRight,
+  right,
+  continuous = true
+}) {
+  if (!left || !right) {
+    return false;
+  }
+
+  if (visibleModelsOverlap(left, right)) {
+    return true;
+  }
+
+  if (
+    continuous !== true ||
+    !previousLeft ||
+    !previousRight
+  ) {
+    return false;
+  }
+
+  if (visibleModelsOverlap(previousLeft, previousRight)) {
+    return true;
+  }
+
+  return (
+    sweptBoundaryHitsTarget({
+      sourcePrevious: previousLeft,
+      source: left,
+      targetPrevious: previousRight,
+      target: right
+    }) ||
+    sweptBoundaryHitsTarget({
+      sourcePrevious: previousRight,
+      source: right,
+      targetPrevious: previousLeft,
+      target: left
+    })
+  );
+}
+
+/**
+ * Entry point into the ellipse fitted to the live STATUS SPRITE'S rendered
+ * bounds, not the creature's opaque model. The rect is sampled from the
+ * existing status FX DOM node after authored scale / offsets / view changes.
+ * The two endpoints are measured in each frame's local surface coordinates:
+ * this also catches high-speed shots and a shield moving between frames.
+ *
+ * This is a conservative visible ellipse approximation for spherical barrier
+ * artwork, not a claim to reproduce arbitrary transparent image pixel masks.
+ * Runtime/status own whether this surface actually reflects a projectile.
+ */
+export function sweptPointHitsSpriteEllipseV1({
+  previousPoint, point, previousRect, rect
+}) {
+  const validRect = r => r &&
+    [r.left,r.top,r.width,r.height].every(v => Number.isFinite(Number(v))) &&
+    Number(r.width) > 0 && Number(r.height) > 0;
+  const validScreenPoint = p => p &&
+    Number.isFinite(Number(p.x)) && Number.isFinite(Number(p.y));
+  if (!validScreenPoint(previousPoint) || !validScreenPoint(point) ||
+      !validRect(rect)) return null;
+  const before = validRect(previousRect) ? previousRect : rect;
+  const coordinates = (p,r) => ({
+    x: (Number(p.x) - Number(r.left) - Number(r.width)/2) / (Number(r.width)/2),
+    y: (Number(p.y) - Number(r.top) - Number(r.height)/2) / (Number(r.height)/2)
+  });
+  const a = coordinates(previousPoint,before);
+  const z = coordinates(point,rect);
+  const startDistance = a.x*a.x + a.y*a.y;
+  // A projectile already inside a shield has not ENTERED its outer surface.
+  if (startDistance <= 1) return null;
+  const dx = z.x-a.x, dy = z.y-a.y;
+  const quadraticA = dx*dx+dy*dy;
+  if (quadraticA < 1e-12) return null;
+  const quadraticB = 2*(a.x*dx+a.y*dy);
+  const quadraticC = startDistance-1;
+  const delta = quadraticB*quadraticB-4*quadraticA*quadraticC;
+  if (delta < 0) return null;
+  const entry = (-quadraticB-Math.sqrt(Math.max(0,delta)))/(2*quadraticA);
+  if (entry < 0 || entry > 1) return null;
+  return Object.freeze({
+    x: Number(previousPoint.x)+(Number(point.x)-Number(previousPoint.x))*entry,
+    y: Number(previousPoint.y)+(Number(point.y)-Number(previousPoint.y))*entry
+  });
+}
+
+export function sweptPointHitsOpaqueMask({
+  mask,
+  previousPoint,
+  point,
+  previousFrame,
+  frame
+}) {
+  if (!validMask(mask) || !validPoint(point) || !frame) {
+    return false;
+  }
+
+  const currentLocal =
+    screenPointToModelUnit(frame, point);
+  if (!currentLocal) {
+    return false;
+  }
+
+  const previousLocal =
+    previousPoint && previousFrame
+      ? screenPointToModelUnit(
+          previousFrame,
+          previousPoint
+        )
+      : currentLocal;
+
+  if (!previousLocal) {
+    return opaqueAt(mask, currentLocal);
+  }
+
+  const clipped =
+    clipUnitSegment(previousLocal, currentLocal);
+  if (!clipped) {
+    return false;
+  }
+
+  const deltaU = clipped.end.u - clipped.start.u;
+  const deltaV = clipped.end.v - clipped.start.v;
+  const pixelTravel = Math.max(
+    Math.abs(deltaU) * mask.width,
+    Math.abs(deltaV) * mask.height
+  );
+  const steps = Math.max(
+    1,
+    Math.ceil(pixelTravel * 2)
+  );
+
+  for (let step = 0; step <= steps; step += 1) {
+    const progress = step / steps;
+    if (
+      opaqueAt(mask, {
+        u: clipped.start.u + deltaU * progress,
+        v: clipped.start.v + deltaV * progress
+      })
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function marker(documentRef, role) {
+  const node = documentRef.createElement("span");
+  node.dataset.visibleModelAxis = role;
+  node.setAttribute?.("aria-hidden", "true");
+  Object.assign(node.style, {
+    position: "absolute",
+    width: "0px",
+    height: "0px",
+    pointerEvents: "none",
+    opacity: "0"
+  });
+  return node;
+}
+
+function imageCacheKey(image) {
+  return String(
+    image?.currentSrc ||
+    image?.src ||
+    ""
+  );
+}
+
+function sourceContentBox({
+  sourceWidth,
+  sourceHeight,
+  hostWidth,
+  hostHeight
+}) {
+  if (
+    sourceWidth <= 0 ||
+    sourceHeight <= 0 ||
+    hostWidth <= 0 ||
+    hostHeight <= 0
+  ) {
+    return null;
+  }
+
+  const scale = Math.min(
+    hostWidth / sourceWidth,
+    hostHeight / sourceHeight
+  );
+  const width = sourceWidth * scale;
+  const height = sourceHeight * scale;
+
+  return Object.freeze({
+    left: (hostWidth - width) / 2,
+    top: (hostHeight - height) / 2,
+    width,
+    height
+  });
+}
+
+function defaultRequestFrame(callback) {
+  return typeof globalThis.requestAnimationFrame === "function"
+    ? globalThis.requestAnimationFrame(callback)
+    : null;
+}
+
+function defaultCancelFrame(frameId) {
+  if (
+    frameId !== null &&
+    frameId !== undefined &&
+    typeof globalThis.cancelAnimationFrame === "function"
+  ) {
+    globalThis.cancelAnimationFrame(frameId);
+  }
+}
+
+export function watchVisibleModelContact({
+  sourceModel,
+  targetModel,
+  continuous = true,
+  onContact,
+  requestFrame = defaultRequestFrame,
+  cancelFrame = defaultCancelFrame
+}) {
+  if (
+    !sourceModel ||
+    typeof sourceModel.snapshot !== "function" ||
+    !targetModel ||
+    typeof targetModel.snapshot !== "function"
+  ) {
+    throw new TypeError(
+      "sourceModel and targetModel must provide snapshot()"
+    );
+  }
+  if (typeof onContact !== "function") {
+    throw new TypeError("onContact must be a function");
+  }
+  if (
+    typeof requestFrame !== "function" ||
+    typeof cancelFrame !== "function"
+  ) {
+    throw new TypeError(
+      "requestFrame and cancelFrame must be functions"
+    );
+  }
+
+  let active = true;
+  let frameId = null;
+  let previousSource = sourceModel.snapshot();
+  let previousTarget = targetModel.snapshot();
+
+  const schedule = () => {
+    if (!active) {
+      return;
+    }
+    frameId = requestFrame(check);
+  };
+
+  const check = () => {
+    if (!active) {
+      return;
+    }
+
+    frameId = null;
+
+    const source = sourceModel.snapshot();
+    const target = targetModel.snapshot();
+
+    const contacted =
+      source !== null &&
+      target !== null &&
+      sweptVisibleModelsOverlap({
+        previousLeft: previousSource,
+        left: source,
+        previousRight: previousTarget,
+        right: target,
+        continuous
+      });
+
+    previousSource = source;
+    previousTarget = target;
+
+    if (contacted) {
+      active = false;
+      onContact();
+      return;
+    }
+
+    schedule();
+  };
+
+  schedule();
+
+  return Object.freeze({
+    cancel() {
+      if (!active) {
+        return false;
+      }
+      active = false;
+      if (frameId !== null && frameId !== undefined) {
+        cancelFrame(frameId);
+      }
+      frameId = null;
+      return true;
+    },
+    get active() {
+      return active;
+    }
+  });
+}
+
+export function createDomVisibleModelCollisionModel({
+  motion,
+  image
+}) {
+  if (
+    !motion ||
+    typeof motion.append !== "function"
+  ) {
+    throw new TypeError(
+      "motion must be a DOM-like element"
+    );
+  }
+  if (
+    !image ||
+    !image.ownerDocument ||
+    typeof image.ownerDocument.createElement !== "function"
+  ) {
+    throw new TypeError(
+      "image must provide ownerDocument"
+    );
+  }
+
+  const documentRef = image.ownerDocument;
+  const originMarker = marker(documentRef, "origin");
+  const xMarker = marker(documentRef, "x");
+  const yMarker = marker(documentRef, "y");
+  motion.append(originMarker);
+  motion.append(xMarker);
+  motion.append(yMarker);
+
+  let mask = null;
+  let naturalWidth = 0;
+  let naturalHeight = 0;
+  let displayScale = 1;
+  let disposed = false;
+
+  function clear() {
+    mask = null;
+    naturalWidth = 0;
+    naturalHeight = 0;
+  }
+
+  function refreshFromImage() {
+    if (disposed) {
+      return false;
+    }
+
+    const width = Number(image.naturalWidth);
+    const height = Number(image.naturalHeight);
+    if (
+      !Number.isInteger(width) ||
+      width <= 0 ||
+      !Number.isInteger(height) ||
+      height <= 0
+    ) {
+      clear();
+      return false;
+    }
+
+    const key = imageCacheKey(image);
+    const cached = key ? maskCache.get(key) : null;
+    if (
+      cached &&
+      cached.width === width &&
+      cached.height === height
+    ) {
+      mask = cached;
+      naturalWidth = width;
+      naturalHeight = height;
+      return true;
+    }
+
+    const canvas = documentRef.createElement("canvas");
+    if (
+      !canvas ||
+      typeof canvas.getContext !== "function"
+    ) {
+      clear();
+      return false;
+    }
+
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d", {
+      willReadFrequently: true
+    });
+    if (
+      !context ||
+      typeof context.drawImage !== "function" ||
+      typeof context.getImageData !== "function"
+    ) {
+      clear();
+      return false;
+    }
+
+    try {
+      context.clearRect?.(0, 0, width, height);
+      context.drawImage(image, 0, 0, width, height);
+      const imageData =
+        context.getImageData(0, 0, width, height);
+      const nextMask = opaqueMaskFromRgba({
+        width,
+        height,
+        data: imageData.data
+      });
+      mask = nextMask;
+      naturalWidth = width;
+      naturalHeight = height;
+      if (key) {
+        maskCache.set(key, nextMask);
+      }
+      return true;
+    } catch {
+      clear();
+      return false;
+    }
+  }
+
+  function updateMarkers() {
+    const hostWidth =
+      Number(motion.clientWidth) ||
+      Number(motion.offsetWidth) ||
+      Number(motion.getBoundingClientRect?.().width) ||
+      0;
+    const hostHeight =
+      Number(motion.clientHeight) ||
+      Number(motion.offsetHeight) ||
+      Number(motion.getBoundingClientRect?.().height) ||
+      0;
+
+    const box = sourceContentBox({
+      sourceWidth: naturalWidth,
+      sourceHeight: naturalHeight,
+      hostWidth,
+      hostHeight
+    });
+    if (!box) {
+      return false;
+    }
+
+    const width = box.width * displayScale;
+    const height = box.height * displayScale;
+    const left = box.left + (box.width - width) / 2;
+    const top = box.top + (box.height - height) / 2;
+    originMarker.style.left = left + "px";
+    originMarker.style.top = top + "px";
+    xMarker.style.left = left + width + "px";
+    xMarker.style.top = top + "px";
+    yMarker.style.left = left + "px";
+    yMarker.style.top = top + height + "px";
+    return true;
+  }
+
+  function snapshot() {
+    if (
+      disposed ||
+      !mask ||
+      !updateMarkers()
+    ) {
+      return null;
+    }
+
+    const origin = pointFromRect(
+      originMarker.getBoundingClientRect?.()
+    );
+    const axisX = pointFromRect(
+      xMarker.getBoundingClientRect?.()
+    );
+    const axisY = pointFromRect(
+      yMarker.getBoundingClientRect?.()
+    );
+
+    if (!origin || !axisX || !axisY) {
+      return null;
+    }
+
+    return Object.freeze({
+      mask,
+      origin,
+      axisX,
+      axisY
+    });
+  }
+
+  return Object.freeze({
+    clear,
+    refreshFromImage,
+    // Read the collision owner's existing opaque silhouette even while the
+    // preview has no measurable DOM geometry (e.g. an initially hidden arena).
+    // Contact's snapshot() still requires actual screen-space marker positions.
+    get opaqueMask() {
+      return mask;
+    },
+    setPresentationScale(scale = 1) {
+      if (!Number.isFinite(scale) || scale <= 0) throw new RangeError("collision scale must be positive");
+      displayScale = scale;
+    },
+    snapshot,
+    visibleRect() {
+      return visibleModelOpaqueRect(snapshot());
+    },
+    get ready() {
+      return mask !== null;
+    },
+    dispose() {
+      if (disposed) {
+        return;
+      }
+      disposed = true;
+      clear();
+      originMarker.remove?.();
+      xMarker.remove?.();
+      yMarker.remove?.();
+    }
+  });
+}
+
+/**
+ * A growing spherical shockwave touches the ACTUAL moving alpha boundary.
+ * Test the swept radius [previous outer edge, current outer edge] (with
+ * authored ring thickness), so a fast animation cannot tunnel through a
+ * thin limb between animation frames. Positions are screen-space points
+ * transformed by the same frame as all other visible-model collisions.
+ * The sparse boundary sample cap keeps mobile CPU bounded.
+ */
+export function sweptExpandingWaveHitsOpaqueMaskV1({
+  center, previousRadiusPx, radiusPx, thicknessPx,
+  previousFrame = null, frame
+}) {
+  if (!validPoint(center) || !frame || !validMask(frame.mask)) return false;
+  const previous = Number(previousRadiusPx);
+  const current = Number(radiusPx);
+  const thickness = Number(thicknessPx);
+  if (![previous,current,thickness].every(Number.isFinite) ||
+      previous < 0 || current < previous || thickness < 0) return false;
+  const boundary = boundarySamples(frame.mask);
+  const stride = Math.max(1, Math.floor(boundary.length / 128));
+  const inner = Math.max(0, previous - thickness);
+  for (let i = 0; i < boundary.length; i += stride) {
+    const point = modelUnitToScreen(frame, boundary[i]);
+    if (!point) continue;
+    const prevPoint = previousFrame
+      ? modelUnitToScreen(previousFrame, boundary[i]) : point;
+    if (!prevPoint) continue;
+    const nowDistance = Math.hypot(point.x - center.x, point.y - center.y);
+    const prevDistance = Math.hypot(prevPoint.x - center.x, prevPoint.y - center.y);
+    if (Math.min(nowDistance,prevDistance) <= current &&
+        Math.max(nowDistance,prevDistance) >= inner) return true;
+  }
+  return false;
+}
+
+
+/**
+ * One real, moving projectile point crosses a growing spherical wave shell.
+ * The quadratic solves |P0 + t(P1-P0) - C| = R0 + t(R1-R0)
+ * for the SAME t in [0,1]; a purely spatial midpoint is not a hit.
+ * The visible ring's authored thickness also counts as a contact at a
+ * snapshot, but cannot generate phantom contacts when lanes do not meet.
+ */
+export function sweptExpandingWaveMeetsProjectileV1({
+  center,
+  previousRadiusPx,
+  radiusPx,
+  thicknessPx,
+  previousPoint,
+  point
+}) {
+  if (!validPoint(center) || !validPoint(previousPoint) || !validPoint(point)) {
+    return false;
+  }
+  const r0 = Number(previousRadiusPx);
+  const r1 = Number(radiusPx);
+  const thickness = Number(thicknessPx);
+  if (![r0,r1,thickness].every(Number.isFinite) ||
+      r0 < 0 || r1 < r0 || thickness < 0) return false;
+  const x0 = Number(previousPoint.x) - Number(center.x);
+  const y0 = Number(previousPoint.y) - Number(center.y);
+  const vx = Number(point.x) - Number(previousPoint.x);
+  const vy = Number(point.y) - Number(previousPoint.y);
+  const dr = r1-r0;
+  const distance0 = Math.hypot(x0,y0);
+  const distance1 = Math.hypot(x0+vx,y0+vy);
+  if ((distance0 >= Math.max(0,r0-thickness) && distance0 <= r0) ||
+      (distance1 >= Math.max(0,r1-thickness) && distance1 <= r1)) return true;
+  const a = vx*vx+vy*vy-dr*dr;
+  const b = 2*(x0*vx+y0*vy-r0*dr);
+  const c = x0*x0+y0*y0-r0*r0;
+  const roots = [];
+  if (Math.abs(a) < 1e-8) {
+    if (Math.abs(b) > 1e-8) roots.push(-c/b);
+  } else {
+    const discriminant = b*b-4*a*c;
+    if (discriminant >= 0) {
+      const root = Math.sqrt(discriminant);
+      roots.push((-b-root)/(2*a),(-b+root)/(2*a));
+    }
+  }
+  return roots.some(t => t >= 0 && t <= 1 && r0+t*dr >= 0);
+}

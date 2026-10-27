@@ -1,0 +1,604 @@
+import {
+  projectStatusStatEffectsV1
+} from "../../core/combat/status-effect-projection-v1.js";
+import { isCaptureMarkerStatusV1 } from "../../contracts/capture-marker-v1.js";
+
+const POLARITY_LABELS = Object.freeze({
+  beneficial: "Buff",
+  detrimental: "Debuff",
+  neutral: "Statut"
+});
+
+const CHANNEL_LABELS = Object.freeze({
+  fire: "Feu",
+  water: "Eau",
+  earth: "Terre",
+  air: "Air",
+  electric: "Électricité",
+  electricity: "Électricité",
+  light: "Lumière",
+  shadow: "Ombre",
+  physical: "Physique",
+  poison: "Poison"
+});
+
+function finiteNumber(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number)
+    ? number
+    : fallback;
+}
+
+function compactNumber(value) {
+  const number = finiteNumber(value);
+  const rounded = Math.round(number * 100) / 100;
+  return Number.isInteger(rounded)
+    ? String(rounded)
+    : String(rounded);
+}
+
+function secondsLabel(ms) {
+  const seconds =
+    Math.max(0, finiteNumber(ms)) / 1000;
+  const rounded =
+    Math.round(seconds * 10) / 10;
+  return (
+    compactNumber(rounded) +
+    " s"
+  );
+}
+
+function humanIdentifier(value) {
+  const text = String(value ?? "")
+    .trim()
+    .replace(/[_-]+/g, " ");
+  if (!text) {
+    return "Statut";
+  }
+  return (
+    text.charAt(0).toUpperCase() +
+    text.slice(1)
+  );
+}
+
+function channelLabel(channel) {
+  const id = String(channel ?? "").trim();
+  return CHANNEL_LABELS[id] ??
+    humanIdentifier(id);
+}
+
+function signedNumber(value, suffix = "") {
+  const number = finiteNumber(value);
+  const sign = number > 0 ? "+" : "";
+  return (
+    sign +
+    compactNumber(number) +
+    suffix
+  );
+}
+
+function channelDamageLabel(channel) {
+  switch (String(channel ?? "").trim()) {
+    case "physical":
+      return "Dégâts physiques";
+    case "fire":
+      return "Dégâts de Feu";
+    case "water":
+      return "Dégâts d’Eau";
+    case "earth":
+      return "Dégâts de Terre";
+    case "air":
+      return "Dégâts d’Air";
+    case "electric":
+    case "electricity":
+      return "Dégâts électriques";
+    case "light":
+      return "Dégâts de Lumière";
+    case "shadow":
+      return "Dégâts d’Ombre";
+    case "poison":
+      return "Dégâts de Poison";
+    default:
+      return "Dégâts " + channelLabel(channel);
+  }
+}
+
+function channelResistanceLabel(channel) {
+  switch (String(channel ?? "").trim()) {
+    case "physical":
+      return "Résistance physique";
+    case "fire":
+      return "Résistance au Feu";
+    case "water":
+      return "Résistance à l’Eau";
+    case "earth":
+      return "Résistance à la Terre";
+    case "air":
+      return "Résistance à l’Air";
+    case "electric":
+    case "electricity":
+      return "Résistance à l’Électricité";
+    case "light":
+      return "Résistance à la Lumière";
+    case "shadow":
+      return "Résistance à l’Ombre";
+    case "poison":
+      return "Résistance au Poison";
+    default:
+      return "Résistance " + channelLabel(channel);
+  }
+}
+
+function variationLine(label, value, {
+  positiveWord = "augmentés",
+  negativeWord = "réduits"
+} = {}) {
+  const number = finiteNumber(value);
+  if (number === 0) {
+    return null;
+  }
+  return (
+    label +
+    " " +
+    (number > 0 ? positiveWord : negativeWord) +
+    " de " +
+    compactNumber(Math.abs(number)) +
+    " %"
+  );
+}
+
+function semanticStatModifierLines({
+  definition,
+  instance,
+  fighter,
+  elapsedMs
+}) {
+  const statId = String(definition.statId ?? "").trim();
+  if (
+    !fighter ||
+    typeof fighter !== "object" ||
+    !statId ||
+    !fighter.statEffectRulesById?.[statId]
+  ) {
+    return null;
+  }
+
+  const effects = projectStatusStatEffectsV1({
+    fighter: {
+      ...fighter,
+      statusEffects: [instance]
+    },
+    atMs: elapsedMs
+  });
+  const lines = [];
+
+  for (
+    const [channel, value] of
+    Object.entries(effects.damagePctByChannel)
+  ) {
+    const line = variationLine(
+      channelDamageLabel(channel),
+      value
+    );
+    if (line) {
+      lines.push(line);
+    }
+  }
+
+  for (
+    const [channel, value] of
+    Object.entries(effects.resistancePctByChannel)
+  ) {
+    const line = variationLine(
+      channelResistanceLabel(channel),
+      value,
+      {
+        positiveWord: "augmentée",
+        negativeWord: "réduite"
+      }
+    );
+    if (line) {
+      lines.push(line);
+    }
+  }
+
+  if (effects.chargeTimeReductionPct !== 0) {
+    lines.push(
+      variationLine(
+        "Temps de préparation",
+        effects.chargeTimeReductionPct,
+        {
+          positiveWord: "réduit",
+          negativeWord: "augmenté"
+        }
+      )
+    );
+  }
+
+  if (effects.outgoingDamagePct !== 0) {
+    lines.push(
+      variationLine(
+        "Dégâts infligés (tous types)",
+        effects.outgoingDamagePct
+      )
+    );
+  }
+
+  if (effects.damageReductionPct !== 0) {
+    lines.push(
+      variationLine(
+        "Dégâts reçus",
+        effects.damageReductionPct,
+        {
+          positiveWord: "réduits",
+          negativeWord: "augmentés"
+        }
+      )
+    );
+  }
+
+  return Object.freeze(lines);
+}
+
+function effectLinesFor(
+  definition,
+  instance,
+  fighter,
+  elapsedMs
+) {
+  switch (definition.kind) {
+    case "outgoing_damage_modifier": {
+      const modifierPct =
+        finiteNumber(definition.modifierPct) *
+        Math.max(1, finiteNumber(instance.stacks, 1));
+      return Object.freeze([
+        variationLine(
+          "Dégâts infligés (tous types)",
+          modifierPct
+        ) ?? "Dégâts infligés (tous types) inchangés"
+      ]);
+    }
+
+    case "approach_time_modifier":
+      return Object.freeze([
+        variationLine("Temps de trajet de la créature", definition.modifierPct * instance.stacks,
+          { positiveWord: "augmenté", negativeWord: "réduit" }) ?? "Temps de trajet inchangé"
+      ]);
+    case "energy_regen_modifier": {
+      const modifierPct =
+        finiteNumber(definition.modifierPct) *
+        Math.max(1, finiteNumber(instance.stacks, 1));
+      return Object.freeze([
+        modifierPct <= -100
+          ? "Régénération d’énergie suspendue (0 énergie par tick)"
+          : variationLine(
+              "Énergie récupérée par tick",
+              modifierPct,
+              {
+                positiveWord: "augmentée",
+                negativeWord: "réduite"
+              }
+            ) ?? "Énergie récupérée par tick inchangée"
+      ]);
+    }
+
+    case "skill_cooldown_rate_modifier": {
+      const modifierPct =
+        finiteNumber(definition.modifierPct) *
+        Math.max(1, finiteNumber(instance.stacks, 1));
+      return Object.freeze([
+        modifierPct <= -100
+          ? "Recharge des compétences en pause"
+          : variationLine(
+              "Vitesse de recharge des compétences",
+              modifierPct,
+              {
+                positiveWord: "augmentée",
+                negativeWord: "réduite"
+              }
+            ) ?? "Vitesse de recharge des compétences inchangée"
+      ]);
+    }
+
+    case "stack_counter": {
+      if (!isCaptureMarkerStatusV1(instance)) return Object.freeze([]);
+      const lines = [];
+      const periodic = definition.periodic;
+      if (periodic) {
+        const stacks = Math.max(1, finiteNumber(instance.stacks, 1));
+        const amount = finiteNumber(periodic.amount);
+        const baseLabel = periodic.kind === "damage"
+          ? compactNumber(amount) + " dégâts " + channelLabel(periodic.channel) +
+            (periodic.damageMode === "combat" ? " de base" : "")
+          : compactNumber(amount) + " PV soignés";
+        lines.push(baseLabel + " par charge toutes les " +
+          secondsLabel(periodic.intervalMs) + " (" +
+          compactNumber(amount * stacks) + " pour " + compactNumber(stacks) +
+          (stacks > 1 ? " charges" : " charge") +
+          (periodic.damageMode === "combat" ? ", avant défenses" : "") + ")");
+        if (instance.nextTickAtMs != null &&
+            Number.isFinite(Number(instance.nextTickAtMs))) {
+          lines.push("Prochain effet dans " +
+            secondsLabel(Math.max(0, instance.nextTickAtMs - elapsedMs)));
+        }
+      }
+      if (definition.onStackThreshold != null) {
+        const threshold = definition.onStackThreshold;
+        const effects = threshold.effects ?? [];
+        const trigger = effects.some(e => e.kind === "knockout")
+          ? "KO"
+          : effects.map(e => e.kind).join(", ") || "effet configuré";
+        lines.push("À " + threshold.count + " charges : " + trigger +
+          (threshold.consume === "reset" ? " (charges réinitialisées)" : ""));
+      }
+      return Object.freeze(lines);
+    }
+
+    case "damage_over_time":
+      return Object.freeze([
+        compactNumber(definition.amount) +
+          " dégâts " +
+          channelLabel(definition.channel) +
+          " toutes les " +
+          secondsLabel(definition.tickIntervalMs)
+      ]);
+
+    case "heal_over_time":
+      return Object.freeze([
+        compactNumber(definition.amount) +
+          " PV toutes les " +
+          secondsLabel(definition.tickIntervalMs)
+      ]);
+
+    case "stat_modifier": {
+      const conditionSuffix = definition.activationCondition === "moving"
+        ? " (uniquement pendant le déplacement)"
+        : "";
+      const semanticLines =
+        semanticStatModifierLines({
+          definition,
+          instance,
+          fighter,
+          elapsedMs
+        });
+      if (
+        semanticLines &&
+        semanticLines.length > 0
+      ) {
+        return Object.freeze(semanticLines.map(line => line + conditionSuffix));
+      }
+
+      const stat =
+        humanIdentifier(definition.statId);
+      if (definition.modifierMode === "percent") {
+        return Object.freeze([
+          stat +
+            " " +
+            signedNumber(
+              definition.percent,
+              " %"
+            ) + conditionSuffix
+        ]);
+      }
+      return Object.freeze([
+        stat +
+          " " +
+          signedNumber(
+            definition.deltaPoints,
+            " pt"
+          ) + conditionSuffix
+      ]);
+    }
+
+    case "damage_reflection":
+      return Object.freeze([
+        compactNumber(definition.percent * instance.stacks) +
+          " % des dégâts subis renvoyés à l’attaquant"
+      ]);
+
+    case "shield":
+      return Object.freeze([
+        "Bouclier : " +
+          compactNumber(
+            instance.shieldRemaining ??
+              definition.amount *
+                Math.max(
+                  1,
+                  finiteNumber(instance.stacks, 1)
+                )
+          )
+      ]);
+
+    case "triggered_buff": {
+      const trigger = definition.onEvent ??
+        (definition.onDamageDealt
+          ? {event:"damage_dealt",effects:definition.onDamageDealt.effects}
+          : null);
+      const descriptions = {
+        damage_dealt: "Après les dégâts réellement infligés",
+        damage_taken: "Après les dégâts réellement subis",
+        movement: "Après un déplacement tactique réussi",
+        evaded: "Après avoir effectivement esquivé une attaque"
+      };
+      return Object.freeze([
+        (descriptions[trigger?.event] ?? "Après l'événement configuré") +
+        " : déclenche " + (trigger?.effects.length ?? 0) +
+        " effet(s) configuré(s). Soi = porteur ; cible = autre acteur, " +
+        "ou le porteur si déplacement. Pas de déclenchement récursif."
+      ]);
+    }
+
+    case "auto_dodge":
+      return Object.freeze([
+        "Esquive automatiquement les attaques ciblées esquivables pendant la durée du buff, sans consommer de charge d’Esquive."
+      ]);
+
+    case "immobilize":
+      return Object.freeze([
+        "Déplacement et approches impossibles ; approche en cours arrêtée. Attaques stationnaires possibles."
+      ]);
+
+    case "silence":
+      return Object.freeze([
+        "Projectiles, rayons et zones à distance bloqués ; contact et capacités sur soi autorisés."
+      ]);
+
+    case "stun":
+      return Object.freeze([
+        "Impossible d’agir"
+      ]);
+
+    case "taunt":
+      return Object.freeze([
+        "Cible offensive imposée par la source"
+      ]);
+
+    default:
+      return Object.freeze([]);
+  }
+}
+
+function remainingLabelFor(
+  definition,
+  instance,
+  elapsedMs
+) {
+  if (definition.durationModel === "permanent") return "Permanent";
+  if (
+    definition.durationModel ===
+    "owner_action_end"
+  ) {
+    const actions = Math.max(
+      0,
+      finiteNumber(
+        instance.remainingActionEnds
+      )
+    );
+    return (
+      compactNumber(actions) +
+      (actions > 1 ? " actions" : " action")
+    );
+  }
+
+  const remaining =
+    finiteNumber(instance.expiresAtMs) -
+    finiteNumber(elapsedMs);
+  return secondsLabel(remaining);
+}
+
+export function projectStatusEffectInfoV1({
+  instance,
+  elapsedMs = 0,
+  sourceSkill = null,
+  fighter = null
+}) {
+  if (
+    !instance ||
+    typeof instance !== "object" ||
+    !instance.definition ||
+    typeof instance.definition !== "object"
+  ) {
+    throw new TypeError(
+      "instance must be an active StatusEffectRuntimeInstanceV1"
+    );
+  }
+
+  const definition = instance.definition;
+  const statusId = String(
+    definition.id ?? ""
+  ).trim();
+  if (!statusId) {
+    throw new TypeError(
+      "instance.definition.id must be a non-empty string"
+    );
+  }
+
+  const sourceSkillId =
+    typeof instance.sourceSkillId === "string" &&
+    instance.sourceSkillId.trim() !== ""
+      ? instance.sourceSkillId.trim()
+      : null;
+
+  const sourceSkillName =
+    typeof sourceSkill?.name === "string" &&
+    sourceSkill.name.trim() !== ""
+      ? sourceSkill.name.trim()
+      : sourceSkillId;
+
+  const stacks = Math.max(
+    1,
+    Math.floor(
+      finiteNumber(instance.stacks, 1)
+    )
+  );
+  const maxStacks = Math.max(
+    1,
+    Math.floor(
+      finiteNumber(definition.maxStacks, 1)
+    )
+  );
+
+  return Object.freeze({
+    statusId,
+    statusName:
+      definition.label ?? (definition.kind === "outgoing_damage_modifier"
+        ? "Dégâts infligés"
+        : definition.kind === "energy_regen_modifier"
+        ? "Régénération d’énergie"
+        : definition.kind === "skill_cooldown_rate_modifier"
+          ? "Recharge des compétences"
+          : humanIdentifier(statusId)),
+    sourceSkillId,
+    sourceSkillName,
+    typeLabel:
+      isCaptureMarkerStatusV1(instance) ? "Marqueur"
+        : POLARITY_LABELS[definition.polarity] ?? "Statut",
+    remainingLabel: remainingLabelFor(
+      definition,
+      instance,
+      elapsedMs
+    ),
+    stacksLabel:
+      maxStacks > 1 || stacks > 1
+        ? stacks + " / " + maxStacks
+        : null,
+    effectLines: effectLinesFor(
+      definition,
+      instance,
+      fighter,
+      elapsedMs
+    )
+  });
+}
+
+export function statusEffectInfoTextV1(info) {
+  if (!info || typeof info !== "object") {
+    throw new TypeError(
+      "info must be a projected status info object"
+    );
+  }
+
+  const lines = [
+    (info.typeLabel === "Marqueur" ? "Marqueur : " : "Statut : ") + info.statusName,
+    info.typeLabel
+  ];
+
+  if (info.sourceSkillName) {
+    lines.push(
+      "Origine : " + info.sourceSkillName
+    );
+  }
+  if (info.remainingLabel) {
+    lines.push(
+      "Durée : " + info.remainingLabel
+    );
+  }
+  if (info.stacksLabel) {
+    lines.push(
+      "Stacks : " + info.stacksLabel
+    );
+  }
+
+  lines.push(...(info.effectLines ?? []));
+  return lines.join("\n");
+}

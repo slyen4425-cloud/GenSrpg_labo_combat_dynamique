@@ -1,0 +1,138 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_air_atk_7",
+    "description": "Attaque Air de puissance",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_air_atk_7",
+      "name": "Ouragan",
+      "category": "offensive",
+      "form": "projectile",
+      "projectileTargeting": "fixed_point",
+      "loadoutSlot": "ultimate",
+      "element": "air",
+      "approachMode": "none",
+      "energyCost": 10,
+      "preparationMs": 4000,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active",
+        "reserve"
+      ],
+      "hitPresenceStates": [
+        "surface",
+        "airborne"
+      ],
+      "dodgeable": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "all_enemy_reserves",
+          "amount": 50,
+          "channel": "air",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        },
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 50,
+          "channel": null,
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_air_atk_7",
+      "version": 11,
+      "subjectType": "skill",
+      "subjectId": "cap_air_atk_7",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-lightning-strike-01"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-air-wind-bolt-01",
+          "displayScale": 3,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "trajectoryMode": "skyfall",
+          "fallHeightPx": 800,
+          "fallOffsetXPx": 0,
+          "frameSpeedMultiplier": 3,
+          "perspectiveAmount": 0
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}

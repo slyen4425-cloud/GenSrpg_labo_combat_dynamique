@@ -117,7 +117,76 @@ Aucune autorité sur le moteur.
 
 ### `src/assets/`
 
-Validation et normalisation des assets entrants.
+Domaine Asset Input.
+
+Responsabilités :
+
+- validation des fichiers médias entrants ;
+- normalisation des sources utilisables ;
+- création / révocation des Object URLs lorsque nécessaire ;
+- futurs chargeurs image / audio ;
+- aucune autorité gameplay.
+
+Le module image existant reste la première implémentation.
+
+La future bibliothèque d'assets est séparée en concepts :
+
+- `AssetDefinition` : métadonnées d'un asset logique ;
+- `AssetCatalog` : index / lookup / filtres ;
+- `AssetPack` : groupe versionné d'assets ;
+- `AssetBinding` : liaison présentation -> `assetId` ;
+- `Storage Adapter` : persistance ou récupération des octets.
+
+Référence détaillée :
+
+`docs/LAB_ASSET_LIBRARY.md`
+
+Le catalogue ne doit jamais devenir propriétaire du stockage ni des règles de combat.
+
+### Contexte visuel d'arène / biome
+
+L'arène visible est une donnée de présentation distincte des règles de combat.
+
+Principe cible :
+
+```
+Zone / lieu du jeu
+      |
+      v
+Arena Context
+(biome / thème)
+      |
+      v
+Arena Definition
+      |
+      +---- background asset
+      +---- overlays / foreground futurs
+      +---- ambience future
+      |
+      v
+Render Adapter
+```
+
+Exemples de contextes futurs :
+
+- forêt ;
+- caverne ;
+- neige ;
+- désert ;
+- ville ;
+- science-fiction.
+
+Règles d'architecture :
+
+- Combat Rules ne connaît jamais le nom ni l'image de l'arène ;
+- la zone ou le monde appelant fournit un identifiant de contexte visuel / biome ;
+- un binding de présentation résout ce contexte vers une `ArenaDefinition` ;
+- les images d'arène utilisent la bibliothèque d'assets, typiquement `assetType: background` ;
+- une arène absente utilise un fallback visuel sûr et ne bloque jamais le combat ;
+- changer d'arène ne modifie ni dégâts, portée, vitesse, énergie ou résultat d'une capacité ;
+- si des effets de terrain gameplay sont ajoutés un jour, ils auront leur propre donnée Combat Rules et ne seront jamais déduits du décor affiché.
+
+Le premier lot d'arène devra commencer par un fond statique data-driven avant d'ajouter overlays, météo ou animations.
 
 ## 4. État
 
@@ -177,6 +246,26 @@ Exemple conceptuel :
 
 Les valeurs seront ajustées par tests visuels, pas figées aujourd'hui comme spécification définitive.
 
+### Perspective caméra des approches spatiales
+
+La profondeur visuelle appartient à Animation Core et aux Creature Profiles, pas aux règles de combat.
+
+Pour toute approche qui déplace réellement un combattant vers la position de l'autre (`ground`, `aerial`, `teleport`) :
+
+- la géométrie réelle fournit `targetTranslateY` et `arenaHeight` ;
+- un déplacement vers le bas de l'arène représente un rapprochement de la caméra joueur et augmente l'échelle ;
+- un déplacement vers le haut / la profondeur représente un éloignement de la caméra joueur et réduit l'échelle ;
+- le calcul est partagé entre les approches, sans condition codée sur `player` ou `opponent` ;
+- les bornes et l'intensité proviennent d'un preset unique `specialMoves.perspective` du profil ;
+- le retour à la position stable restaure toujours l'échelle de base ;
+- cette perspective n'influence jamais portée, dégâts, esquive ou timestamp d'impact.
+
+Invariant de lecture :
+
+`joueur -> adversaire = rétrécissement`
+
+`adversaire -> joueur = grossissement`
+
 ## 8. FX
 
 Le FX Core reçoit des intentions telles que :
@@ -189,6 +278,275 @@ Le FX Core reçoit des intentions telles que :
 - glow.
 
 Il ne décide pas si une attaque touche ou combien de dégâts elle inflige.
+
+### Géométrie projectile classique
+
+Pour le projectile générique du laboratoire :
+
+- la source visuelle utilise l'anchor transitoire du lanceur afin qu'un projectile parte bien de sa position réellement affichée ;
+- sa trajectoire nominale reste dirigée vers le slot spatial stable de la cible : il ne devient pas silencieusement un projectile `tracking / homing` ;
+- `travelMs` définit le trajet nominal jusqu'à ce slot, mais un contact réel avec le modèle mobile de la cible peut terminer ce trajet plus tôt ;
+- la zone de contact cible n'est **jamais** le rectangle du conteneur `.fighter__motion` ni le rectangle complet du fichier image : le Visual Controller dérive automatiquement un masque opaque depuis les pixels du sprite réellement chargé ;
+- le masque reste une donnée de présentation calculée, non éditable et non métier : aucune hitbox par créature ou compétence n'est codée en dur ;
+- trois repères DOM invisibles sont enfants du même nœud `data-demo-motion` que le sprite ; leurs positions permettent de reconstruire l'espace local du sprite après les vraies translation, scale, rotation, transform-origin et projection de distance appliquées par le navigateur ;
+- le projectile utilise comme point de contact son noyau de trajectoire, c'est-à-dire le centre du shell déjà aligné sur `coreAnchor` ; la traînée, les marges transparentes et le shell carré ne deviennent pas une hitbox ;
+- pendant que le projectile FX est actif, le capteur projette le noyau projectile dans l'espace local du sprite cible et teste le masque opaque ; un balayage continu frame précédente -> frame courante empêche le tunneling même si cible et projectile bougent simultanément ;
+- cette géométrie est un **capteur**, jamais une autorité de résolution : elle émet uniquement `{ actorId, targetId, skillId }` et ne supprime pas elle-même le projectile, n'applique aucun dégât et ne choisit aucun résultat ;
+- le balayage continu ne crée pas une seconde horloge : il utilise uniquement les observations successives du `requestAnimationFrame` déjà borné à la durée de vie du projectile, et s'arrête immédiatement après le premier signal ;
+- le signal est transmis au `Combat Runtime`, qui traite d'abord tout événement sémantique déjà dû (release, clash ou impact nominal), puis vérifie que l'action est encore active, relâchée, de forme `projectile` et destinée à la cible signalée ;
+- si le contact est accepté, le Runtime devient l'unique propriétaire de l'impact effectif : il réduit `impactAtMs` et `travelMs` de cette occurrence à l'instant de contact observé, sans modifier la définition source de la compétence ;
+- `Combat Session / Action Resolver` appliquent alors normalement le résultat et les dégâts sur cette action effective ; le renderer ne reçoit qu'ensuite `onResolved` ;
+- le Presenter retire le projectile actif puis déclenche l'impact dans le même flux synchrone de présentation, ce qui garantit **disparition projectile -> impact immédiat** ;
+- un projectile déjà résolu, clashé, interrompu, destiné à une autre cible, non relâché ou non projectile ne peut pas être résolu par ce signal ;
+- un impact sémantique `hit` est rendu à la position visuelle courante de la cible ;
+- un résultat `evaded` conserve son feedback sur le point stable où l'impact aurait dû se produire ;
+- le suivi de contact n'utilise pas de boucle permanente : un seul `requestAnimationFrame` chaîné existe uniquement pendant la vie du projectile FX, s'arrête après le premier contact signalé et est annulé au nettoyage/dispose.
+
+Chaîne autoritaire :
+
+`Projectile FX -> capteur géométrique DOM -> Combat Runtime.reportProjectileContact() -> Combat Session / Action Resolver -> onResolved -> Presenter -> suppression projectile -> impact`.
+
+Une future famille de projectiles `tracking / homing / anti-air` pourra avoir une stratégie de ciblage distincte et data-driven. Elle ne doit pas être simulée en réutilisant silencieusement l'anchor animé comme comportement par défaut.
+
+### Contact visible universel — projectile et attaques mobiles
+
+Le contact visuel n'est plus une spécialité du projectile. Le Combat Runtime expose une seule frontière sémantique : `reportActionContact()`.
+
+Cette frontière accepte uniquement :
+- une compétence `form:"projectile"` ;
+- une compétence `form:"contact"` dont `approachMode` est `ground`, `aerial` ou `teleport`.
+
+Elle refuse les formes qui ne possèdent pas de contact visuel autoritaire (`contact + none`, zone, beam, etc.). Elle vérifie également l'identité de compétence lorsqu'un `skillId` est fourni, afin qu'un signal retardé provenant d'une ancienne animation ne puisse jamais résoudre une nouvelle action.
+
+Chaîne autoritaire commune :
+
+`capteur visuel -> Combat Runtime.reportActionContact() -> Combat Session / Action Resolver -> onResolved -> Presenter`.
+
+Il n'existe donc pas une autorité projectile et une autorité contact séparées.
+
+#### Attaques où la créature se déplace
+
+Pour `ground` et `aerial` :
+- le Visual Controller utilise les deux `collisionModel` opaques déjà dérivés des sprites réellement affichés ;
+- un watcher `requestAnimationFrame` existe uniquement pendant l'approche active ;
+- le contact modèle↔modèle est testé sur les pixels opaques, avec les transformations écran réelles des deux combattants ;
+- un balayage continu entre deux frames utilise le mouvement relatif des deux modèles afin d'éviter le tunneling ;
+- le watcher s'arrête au premier contact ou à la fin/annulation de l'approche.
+
+Pour `teleport` :
+- le même watcher et les mêmes modèles sont utilisés ;
+- le balayage spatial entre deux frames est volontairement désactivé ;
+- seul un chevauchement réellement affiché après repositionnement peut signaler le contact ;
+- une téléportation ne crée donc jamais une fausse collision le long d'un trajet invisible.
+
+Le Visual Controller ne décide ni dégâts, ni esquive, ni blocage, ni résultat. Il signale seulement le premier contact visible. Le Runtime traite d'abord les événements sémantiques déjà dus puis, si le signal est encore valide, avance l'`impactAtMs` effectif de cette occurrence et appelle l'unique `processResolution()`.
+
+Les projectiles et les attaques mobiles partagent ainsi :
+- la même géométrie visuelle de cible ;
+- la même horloge Runtime ;
+- la même API d'acceptation de contact ;
+- la même chaîne Session / Resolver / Presenter.
+
+Aucune compétence n'est reconnue par son ID ou son nom dans ce mécanisme.
+
+
+### Feedback local d'impact raté
+
+Un résultat sémantique `evaded` peut produire un feedback FX local `miss`.
+
+Chaîne :
+
+`Combat Rules -> outcome evaded -> Combat Resolution Presenter -> FX intent miss -> FX Renderer`
+
+Le feedback :
+
+- est positionné sur l'anchor stable de la cible, c'est-à-dire l'endroit où l'impact aurait dû se produire ;
+- affiche un libellé purement visuel (`RATÉ` dans la démo FR) ;
+- n'influence jamais PV, dégâts, hit ou esquive ;
+- disparaît après sa propre animation et ne crée aucun état gameplay.
+
+## 8.1 Format de combat configurable — futur 1v1 / 2v2 coop
+
+Le laboratoire ne doit pas figer tous les combats en 2v2. Le format reste une donnée du combat / scénario.
+
+Formats visés :
+
+- `1v1` classique : un combattant actif par camp ;
+- `2v2 coop` : deux combattants actifs par camp, chacun avec son propre contrôleur ;
+- le second contrôleur allié peut être un autre humain ou une IA ;
+- un joueur humain ne contrôle jamais directement les capacités de la créature alliée ;
+- aucun booléen global `is2v2` ne doit être dispersé dans l'UI.
+
+Concept cible :
+
+```json
+{
+  "id": "coop-2v2",
+  "activeSlotsByTeam": {
+    "player": 2,
+    "opponent": 2
+  },
+  "controllers": [
+    { "actorId": "player-a", "controllerId": "human-local" },
+    { "actorId": "player-b", "controllerId": "human-remote-or-ai" },
+    { "actorId": "opponent-a", "controllerId": "ai-a" },
+    { "actorId": "opponent-b", "controllerId": "ai-b" }
+  ]
+}
+```
+
+Un duel classique utilise le même principe avec un seul acteur actif par équipe.
+
+Architecture recommandée :
+
+```
+BattleFormatDefinition
+        |
+        +---- active slots par équipe
+        +---- controllerId par actorId
+        |
+        v
+Roster Session
+  membres actifs + état persistant
+        |
+        v
+Combat Session / Runtime
+  actorId / targetId dynamiques
+        |
+        v
+Local Player View
+  barre de capacités filtrée par controllerId
+        |
+        v
+Target Selection
+  cible valide selon la compétence
+```
+
+### Lisibilité de l'interface 2v2
+
+Chaque joueur voit dans son écran :
+
+- sa propre créature avec son HUD complet et sa barre de capacités ;
+- la créature alliée avec un HUD plus léger : nom, PV, état / action en cours ;
+- les adversaires avec les informations nécessaires au combat, sans dupliquer les capacités ;
+- une seule barre de capacités : **celle de la créature contrôlée localement**.
+
+Cette règle évite de doubler l'interface des capacités sur smartphone.
+
+La créature alliée ne doit pas apparaître comme une deuxième créature contrôlable localement, même si elle est pilotée par une IA. Son `controllerId` reste distinct.
+
+### Sélection de cible par clic
+
+Toute créature visible peut devenir une cible potentielle par interaction directe sur son modèle ou sa zone de statut.
+
+La validité de la cible reste décidée par la définition de compétence, jamais par l'UI.
+
+Exemples de relations de cible futures :
+
+- `enemy` : attaque ou malus sur adversaire ;
+- `ally` : soin, protection, renforcement ;
+- `self` : compétence personnelle ;
+- `any` : cas spéciaux explicitement autorisés.
+
+Chaîne cible :
+
+```
+clic acteur visible
+      |
+      v
+Target Selection UI
+      |
+      v
+SkillDefinition / Target Rule
+      |
+      +---- valide -> targetId sélectionné
+      |
+      +---- invalide -> feedback visuel, aucune résolution
+```
+
+L'UI doit distinguer clairement :
+
+- acteur local contrôlé ;
+- allié ;
+- adversaire ;
+- cible actuellement sélectionnée ;
+- cible invalide pour la capacité choisie.
+
+Le soin / bouclier / buff d'un allié devient alors naturel : le joueur choisit une capacité compatible puis clique l'allié, ou sélectionne d'abord l'allié selon le flux UX retenu.
+
+### Invariants d'architecture
+
+- ne pas dupliquer les contrôleurs `player/opponent` pour fabriquer artificiellement quatre combattants ;
+- les identifiants d'acteurs et de cibles restent génériques ;
+- le nombre d'actifs appartient à `BattleFormatDefinition` / scénario ;
+- le roster doit conserver PV / énergie / KO de chaque membre indépendamment ;
+- Combat Runtime reste indexé par `actorId`, compatible avec plusieurs actions concurrentes ;
+- les capacités affichées dépendent du `controllerId` local, pas du nombre de créatures visibles ;
+- le format du combat n'est jamais déduit du nombre d'icônes affichées ;
+- un vrai chantier 2v2 devra généraliser explicitement les zones qui supposent encore un seul actif par équipe.
+
+### Prototype laboratoire 2v2 — état 2026-09-27
+
+Le laboratoire possède désormais un premier client 2v2 dédié qui exerce le même Combat Session / Runtime / Animation Core que le 1v1.
+
+Éléments implémentés :
+
+- `BattleFormatDefinition` décrit quatre acteurs, leurs équipes et leur `controllerId` ;
+- le contrôleur visuel découvre les slots déclarés dans le DOM au lieu de figer deux acteurs ;
+- le presenter reçoit la cible explicite afin qu'une attaque d'approche se dirige vers le bon acteur ;
+- un contrôleur IA générique peut piloter un acteur sans dépendre du DOM ;
+- la vue locale n'affiche qu'une seule barre de capacités pour `localActorId` ;
+- l'allié et les adversaires n'exposent que leur état compact (nom, PV, action) ;
+- la cible se choisit par interaction directe avec la créature ou sa carte ;
+- `SkillDefinition.targetRelations` déclare les relations autorisées ; la valeur par défaut est `enemy` ;
+- le helper Combat `targeting.js` distingue `self / ally / enemy` avant le démarrage d'une action depuis cette UI.
+
+Limites assumées de cette première preview :
+
+- le second allié est piloté par IA ; le transport réseau / second client humain n'est pas encore raccordé ;
+- les quatre compétences de test actuelles sont offensives, donc une cible alliée peut être sélectionnée mais aucune de ces compétences ne peut être lancée dessus ;
+- soin / protection / buff allié seront testés ultérieurement avec des compétences déclarant `targetRelations: ["ally"]` ou `["ally", "self"]` ;
+- le système de réserve / rappel 1v1 n'est pas dupliqué dans la page 2v2 de laboratoire.
+
+### Futur raccord éditeur — rythme, timing visuel et cooldown
+
+Les retours de test mobile montrent que le rythme global peut devenir trop élevé, notamment avec certaines attaques d'approche aérien / téléportation et l'absence actuelle de cooldown entre deux utilisations d'une même capacité.
+
+Ces réglages devront être **éditables par compétence / profil** lors du raccord GenSrpG, sans être codés en dur dans l'UI.
+
+Séparation attendue :
+
+- **timing gameplay** : préparation, temps de trajet, récupération, cooldown ;
+- **timing visuel** : vitesse des segments d'animation / approche / retour ;
+- **politique IA** : temps minimal avant nouvelle décision ;
+- **UI** : affiche l'état de cooldown mais ne décide jamais de sa disponibilité.
+
+Concept cible de compétence :
+
+```json
+{
+  "preparationMs": 900,
+  "travelMs": 650,
+  "recoveryMs": 450,
+  "cooldownMs": 2800,
+  "visualTiming": {
+    "approachScale": 1.15,
+    "returnScale": 1.1
+  }
+}
+```
+
+Invariants :
+
+- un cooldown futur appartient au Core / SkillDefinition, pas au CSS ni à un bouton désactivé localement ;
+- la disponibilité d'une capacité doit être calculée depuis l'état de combat autoritaire ;
+- ralentir une animation visuelle ne doit pas modifier implicitement les dégâts ;
+- si timing visuel et timing gameplay doivent être synchronisés, ce lien doit être explicite et testable ;
+- le laboratoire ne doit pas introduire maintenant un cooldown de fortune uniquement pour ralentir la démo.
+
+---
+
+
 
 ## 9. Frontière future GenSrpG
 
@@ -216,6 +574,7 @@ docs/
   LAB_CHARTE.md
   LAB_ROADMAP.md
   LAB_ARCHITECTURE.md
+  LAB_ASSET_LIBRARY.md
   LAB_CURRENT_WORK.md
   LAB_CHECKPOINT_POLICY.md
 
@@ -235,6 +594,14 @@ assets/
     creatures/
     arenas/
     effects/
+  library/              # cible future, non créée par le lot architecture
+    core/
+
+data/
+  assets/               # cible future
+    catalog/
+    packs/
+    bindings/
 
 tests/
   unit/
@@ -257,3 +624,2665 @@ Le premier prototype doit privilégier :
 - testabilité.
 
 Un framework ou moteur externe ne sera ajouté que s'il résout un besoin démontré.
+
+
+## 12. Combat Rules Lab
+
+Le prototype de règles de combat est un domaine séparé du moteur visuel.
+
+Chaîne autorisée :
+
+```
+Data Combat
+   |
+   v
+Skill Contract
+   |
+   v
+Combat Rules (distance / énergie / action resolver)
+   |
+   +----> résultat sémantique + chronologie
+   |
+   v
+Demo UI / futur adaptateur
+   |
+   v
+CombatVisualEvent
+   |
+   v
+Animation Core -> Render Adapter
+```
+
+### Propriétaires
+
+- contrat de compétence : `src/contracts/skill-definition.js` ;
+- distance relative : `src/core/combat/distance.js` ;
+- énergie et état de combat : `src/core/combat/combat-state.js` ;
+- résultat d'une action : `src/core/combat/action-resolver.js` ;
+- données configurables : `data/combat/`.
+
+### Frontières
+
+Le Combat Rules Lab :
+
+- ne dépend pas du DOM ;
+- ne dépend pas du Render Adapter ;
+- ne dépend pas de GenSrpG ;
+- ne modifie pas directement une animation ;
+- produit des résultats et événements sémantiques.
+
+L'Animation Core :
+
+- ne calcule ni énergie, ni portée, ni immunité, ni blocage, ni renvoi, ni contre ;
+- ne décide jamais si une compétence réussit.
+
+La Demo UI :
+
+- ne calcule ni coût, ni résultat ;
+- demande une résolution au Combat Rules Lab ;
+- affiche l'état retourné et déclenche uniquement la présentation visuelle correspondante.
+
+
+## 12. Sous-système Combat Rules
+
+Le prototype de combat temps réel est un client du moteur visuel, pas une extension de l'Animation Core.
+
+```
+Combat Data
+    |
+    v
+Skill Contract
+    |
+    v
+Combat Session ---- Distance / Energy State
+    |
+    v
+Action Resolver
+    |
+    v
+Semantic Resolution / Timeline
+    |
+    v
+Combat Resolution Presenter
+    |                    |
+    v                    v
+Animation Events       FX Plan
+    |                    |
+    v                    v
+Actor Renderer         FX Renderer
+```
+
+### Propriétaires
+
+`src/contracts/skill-definition.js`
+
+- catégorie fonctionnelle ;
+- forme d'action ;
+- élément ;
+- coût énergie ;
+- préparation ;
+- trajet ;
+- récupération ;
+- portée ;
+- règles de blocage, renvoi, immunité et contre.
+
+`src/core/combat/distance.js`
+
+- bandes `short / medium / long` ;
+- nombre de paliers ;
+- coût de déplacement ;
+- validation de portée.
+
+`src/core/combat/combat-state.js`
+
+- snapshot immutable de distance et énergie.
+
+`src/core/combat/combat-session.js`
+
+- propriétaire unique de l'état courant du test ;
+- preview sans effet de bord ;
+- commit des mouvements/actions ;
+- régénération explicite ;
+- reset.
+
+`src/core/combat/action-resolver.js`
+
+- décide uniquement du résultat sémantique ;
+- produit une timeline relative ;
+- ne rend rien.
+
+`src/adapters/renderer/combat-resolution-presenter.js`
+
+- transforme une résolution déjà décidée en intentions visuelles ;
+- peut annuler une animation lors d'un contre ;
+- ne recalcule aucune règle.
+
+`src/core/fx/skill-fx-plan.js` + `src/adapters/renderer/dom-skill-fx.js`
+
+- plan et rendu du projectile générique de test ;
+- aucune autorité gameplay.
+
+### Distance V1
+
+La distance est relative et possède trois bandes :
+
+`short <-> medium <-> long`
+
+Un changement coûte :
+
+`nombre de paliers × coût de déplacement de la créature`
+
+La même réserve d'énergie alimente déplacement et capacités.
+
+### Compétence V1
+
+La classification est multidimensionnelle.
+
+Exemple :
+
+`Boule de feu = offensive + projectile + fire`
+
+Une réaction peut donc cibler indépendamment :
+
+- la forme : `reflect projectile` ;
+- l'élément : `immune fire` ;
+- la forme pour un contre : `counter contact`.
+
+Aucune catégorie d'affichage ne remplace ces propriétés techniques.
+
+### Temps V1
+
+La résolution distingue :
+
+- préparation ;
+- release ;
+- trajet ;
+- impact ;
+- récupération ;
+- préparation d'une réaction.
+
+Une réaction n'est applicable que si elle devient prête avant l'impact.
+
+Un contre qui devient prêt avant le release peut annuler la compétence avant son départ.
+
+
+### Runtime temps réel V2
+
+Le sous-système Combat Rules distingue désormais l'état, le calcul et l'horloge :
+
+```
+Combat Data
+    |
+    v
+Combat State <---- Combat Timing
+    |
+    v
+Combat Session
+    |
+    v
+Combat Runtime
+    |
+    +---- progression de charge
+    +---- ticks énergie
+    +---- fenêtre de réaction
+    +---- release / résolution
+    |
+    v
+Combat Resolution Presenter
+    |
+    +---- Animation
+    +---- FX
+```
+
+Propriétaires :
+
+- `combat-state.js` : snapshot énergie/temps/effets ;
+- `combat-timing.js` : formules pures de tick et charge ;
+- `combat-session.js` : mutation contrôlée du snapshot ;
+- `combat-runtime.js` : horloge active et au plus une action en cours par acteur ;
+- `dom-distance-presenter.js` : déplacement visuel d'un seul combattant ;
+- Demo UI : affichage des progressions fournies par le runtime.
+
+Un timer de match optionnel pourra être ajouté plus tard au Combat Runtime ou à un service de temps voisin, jamais dans les boutons UI.
+
+#### Concurrence d'actions V9
+
+Le temps réel n'est plus modélisé par une action globale unique.
+
+`Combat Runtime` possède une collection d'actions indexées par `actorId` avec les invariants suivants :
+
+- un acteur ne possède jamais plus d'une action active ;
+- deux acteurs différents peuvent agir simultanément ;
+- toutes les actions utilisent la même horloge Runtime ;
+- chaque action conserve son propre `startedAtClockMs`, release, impact et réaction ;
+- les releases / impacts arrivés dans un même tick sont triés par timestamp absolu puis ordre déterministe ;
+- `Combat Session.completeAction()` reçoit toujours l'état courant au moment réel de l'impact, donc une seconde résolution ne réapplique jamais un ancien snapshot ;
+- `hasActiveActionFor(actorId)` est l'autorité de disponibilité locale ;
+- `hasActiveAction` signifie seulement « au moins une action existe » et ne doit plus verrouiller toutes les compétences du combat.
+
+Règle initiale :
+
+- un Hit normal n'interrompt pas automatiquement l'action concurrente ;
+- un effet explicitement interruptif reste propriétaire de l'interruption ;
+- un KO annule les actions encore actives du slot KO ainsi que les actions encore ciblées sur ce slot avant remplacement roster, afin qu'aucune action de l'ancien membre ne puisse affecter le nouveau.
+
+La Demo UI peut donc autoriser une compétence joueur pendant une compétence adverse, mais elle ne crée ni horloge, ni résolution, ni ordre d'impact.
+
+
+#### Clash de projectiles concurrents V9
+
+Le clash de deux projectiles est une règle Combat Rules, jamais une déduction du DOM.
+
+Configuration dans `SkillDefinition` :
+
+```js
+projectileClash: {
+  mode: "none" | "mutual_cancel",
+  group: "identifiant-propre",
+  interactsWith: ["groupes-compatibles"]
+}
+```
+
+Règles du premier jalon :
+
+- `none` est le comportement par défaut ;
+- `mutual_cancel` nécessite `form = "projectile"` et un `group` non vide ;
+- `interactsWith` est data-driven ; lorsqu'il est omis sur un `mutual_cancel`, il vaut par défaut le propre `group` afin de préserver le comportement historique ;
+- deux projectiles ne peuvent s'annuler que si les deux déclarent `mutual_cancel`, acceptent réciproquement le groupe adverse et se ciblent mutuellement ;
+- Combat Rules calcule le temps de rencontre à partir des vrais timestamps de release et des vrais `travelMs` ;
+- Combat Runtime insère ce clash dans la même horloge que releases et impacts ;
+- le clash produit deux résolutions sémantiques `clashed` sans événement `hit` ni dégâts et transporte le `progress` de rencontre ;
+- Presenter / FX arrêtent uniquement les projectiles déjà déclarés `clashed` ;
+- un seul `clash-impact` de présentation est produit pour la paire ; sa position est interpolée depuis le `progress` sémantique et les ancres visuelles existantes ;
+- les résultats défensifs `blocked`, `reflected` et `immune` peuvent produire un impact de présentation au point de contact sans changer le résultat gameplay ;
+- la géométrie DOM ne décide jamais si un clash gameplay existe.
+
+Un futur mode `pierce`, priorité de projectile ou autre comportement devra être ajouté au contrat de données avant toute implémentation moteur.
+
+
+
+### PV / HP dans Combat State
+
+Les PV appartiennent au domaine Combat Rules.
+
+`Combat State` porte :
+
+- `hp` ;
+- `maxHp`.
+
+La Demo UI ne stocke ni ne calcule les PV. Elle affiche uniquement le snapshot courant.
+
+Les dégâts de base sont désormais appliqués par `Action Resolver` à partir de `skill.effect.damage` lorsqu'un résultat sémantique est `hit` ou `reflected`.
+
+Règles :
+
+- `hit` retire les dégâts à la cible ;
+- `reflected` retire les dégâts à l'attaquant ;
+- `blocked`, `immune` et `countered` ne retirent pas de PV dans le socle V2 ;
+- `Combat Session.completeSkill()` commit le nouvel état HP lors d'une résolution live ;
+- Presenter / Animation / FX / UI n'ont aucune autorité sur les dégâts.
+
+
+### Impact, approche et esquive V3
+
+Le moteur distingue désormais cinq moments :
+
+`préparation -> release -> trajet/approche -> impact -> récupération`
+
+Autorité :
+
+- `Combat Runtime` détermine quand l'action atteint `impactAtMs` ;
+- `Action Resolver` applique les dégâts uniquement lors de la résolution à l'impact ;
+- Presenter / Animation / FX illustrent le résultat mais ne peuvent ni avancer ni retarder les dégâts.
+
+Invariant permanent :
+
+**aucun PV ne change au clic, pendant la charge ou au release tant qu'aucun impact n'a eu lieu.**
+
+Exemples :
+
+- projectile : le release lance le projectile, l'impact applique les dégâts ;
+- contact au sol : l'impact correspond au moment où l'attaquant atteint la cible ;
+- aérien : l'impact correspond à la fin de l'approche aérienne ;
+- téléportation : l'impact correspond à la réapparition/connexion avec la cible.
+
+La compétence sépare :
+
+- `form` : nature de ce qui touche (`contact`, `projectile`, etc.) ;
+- `approachMode` : manière d'atteindre la cible (`none`, `ground`, `aerial`, `teleport`).
+
+Cette séparation permet à deux attaques `contact` d'avoir des fenêtres d'esquive très différentes sans inventer deux moteurs.
+
+Les réactions peuvent déclarer :
+
+- `evadeForms` ;
+- `evadeApproaches`.
+
+Une esquive n'est valide que si sa préparation est terminée au plus tard avant l'impact.
+
+#### Esquive par mobilité concurrente V9
+
+Une compétence offensive mobile peut elle-même créer une fenêtre d'esquive, sans passer par une réaction séparée.
+
+Configuration dans `SkillDefinition` :
+
+```js
+evasion: {
+  window: "travel",
+  incomingForms: ["contact", "projectile"]
+}
+```
+
+Responsabilités :
+
+- SkillDefinition / data : déclare la fenêtre et les formes entrantes évitées ;
+- Combat Runtime : fournit uniquement l'action concurrente de la cible et son temps relatif au timestamp exact de l'impact entrant ;
+- Action Resolver : décide si cette configuration produit `evaded` ;
+- Presenter : affiche le résultat déjà décidé ;
+- Animation / FX : n'ont aucune autorité sur l'esquive.
+
+Fenêtre `travel` :
+
+- avant `releaseAtMs` : la cible reste touchable ;
+- de `releaseAtMs` à `impactAtMs` inclus : la cible peut être hors cible pour les formes configurées ;
+- après résolution de l'action mobile : cette esquive cesse ;
+- le retour purement visuel après impact ne prolonge pas la règle gameplay.
+
+Exemple :
+
+`Griffe en approche -> cible lance Téléportation -> impact Griffe pendant travel Téléportation -> evaded -> 0 PV retiré`.
+
+
+
+### Commandes tactiques et interruption V3
+
+Objet, Rappel et Invocation ne sont pas des compétences.
+
+Chaîne :
+
+```
+CombatCommand Data
+    |
+    v
+CombatCommandDefinition
+    |
+    v
+Command Resolver
+    |
+    v
+Combat Session
+    |
+    v
+Combat Runtime
+    |
+    +---- charge
+    +---- release/completion
+    +---- interruption avant release
+```
+
+Propriétaires :
+
+- `combat-command-definition.js` : type, coût, préparation, récupération, interruptibilité et effet déclaratif ;
+- `command-resolver.js` : validation énergie, construction de l'action et completion ;
+- `combat-runtime.js` : progression temporelle et interruption de l'action active ;
+- Demo UI : affichage et déclenchement seulement.
+
+Types V3 :
+
+- `item` ;
+- `recall` ;
+- `summon`.
+
+Le prototype Item peut appliquer un soin à completion.
+
+Rappel et Invocation produisent des événements sémantiques. Le vrai changement de roster/asset n'est pas simulé par l'UI de ce lot et devra appartenir à un futur propriétaire de roster.
+
+#### Stun
+
+Une compétence peut déclarer :
+
+- `effect.interruptsPreparation = true` ;
+- `effect.stunMs`.
+
+Action Resolver émet `charge-interrupt` uniquement lorsque l'attaque aboutit à un `hit`, au même timestamp que l'impact.
+
+Combat Runtime accepte cette intention d'interruption uniquement si :
+
+- la cible est l'acteur de l'action active ;
+- l'action est déclarée interruptible ;
+- l'impact arrive avant `releaseAtMs`.
+
+Le Stun ne décide jamais lui-même du rendu et ne peut pas annuler rétroactivement une action déjà release.
+
+
+### Roster 2v2 V4
+
+Le combat conserve deux slots engagés stables :
+
+- `player` ;
+- `opponent`.
+
+Les espèces et membres d'équipe sont gérés séparément par `Roster Session`.
+
+```
+Roster Data
+   |
+   v
+Roster Session
+   |                       Combat Runtime
+   |                             |
+Recall/Summon command complete <-+
+   |
+   +---- save active member snapshot
+   +---- replace Combat Session slot
+   +---- update active/reserve member ids
+   |
+   v
+Visual Controller.setCreatureFor(slot)
+```
+
+Invariants :
+
+- chaque membre possède son propre snapshot PV/énergie ;
+- le slot combat est remplaçable mais garde son identifiant `player/opponent` ;
+- l'UI sélectionne un membre de réserve mais ne copie jamais elle-même ses stats ;
+- le contrôleur visuel ne connaît ni énergie ni règles de roster ;
+- l'adversaire peut posséder une réserve sans devenir contrôlable par le joueur.
+
+
+### KO automatique et mouvements spéciaux V5
+
+Le KO d'un combattant actif n'est pas un simple changement visuel.
+
+Chaîne :
+
+```
+Action Resolver -> HP = 0
+    |
+    v
+Combat Resolution Presenter
+    |
+    +---- Hit
+    +---- KO
+    |
+    v
+Roster Session.replaceKnockedOut()
+    |
+    +---- sauvegarde snapshot du membre KO
+    +---- choisit un membre vivant de réserve
+    +---- remplace le slot Combat Session
+    |
+    v
+Visual Controller.setCreatureFor()
+```
+
+L'UI ne décide donc pas quel monstre remplace le KO. Elle ne fait que déclencher le raccord après la fin réelle de la présentation Hit -> KO.
+
+#### Téléportation / attaque aérienne
+
+Ces mouvements sont des événements visuels spécialisés :
+
+- `teleport-attack` ;
+- `aerial-attack`.
+
+Ils ne modifient ni portée, ni dégâts, ni timestamp d'impact.
+
+Le `Visual Controller` calcule uniquement l'écart géométrique DOM entre acteur et cible, puis transmet :
+
+- `targetTranslateX` ;
+- `targetTranslateY` ;
+- `travelMs`.
+
+L'Animation Core transforme ces données en séquence.
+
+Téléportation :
+
+`disparition origine -> apparition cible à impact -> disparition cible -> retour origine`
+
+Aérien :
+
+`montée -> disparition/reposition haute -> piqué jusqu'à impact -> retour origine`
+
+Invariant :
+
+**les dégâts restent appliqués par Combat Rules à `impactAtMs`, même si l'animation visuelle continue ensuite pour revenir à sa position stable.**
+
+
+### Approche corps à corps et charge lisible V6
+
+Les attaques de contact au sol utilisent désormais le même principe temporel que les projectiles et mouvements spéciaux.
+
+`SkillDefinition.travelMs` est l'autorité unique sur le temps `release -> impact`.
+
+Exemples :
+
+- Griffe : `travelMs = 1500` ;
+- une compétence Sprint peut utiliser `travelMs = 900` ;
+- une variante très rapide peut utiliser `travelMs = 500`.
+
+Chaîne :
+
+`préparation -> release -> déplacement au sol pendant travelMs -> impact/dégâts -> retour visuel`
+
+Le mouvement de retour n'a aucune influence sur les dégâts.
+
+Le Visual Controller mesure la position réelle de la cible et l'Animation Core consomme cet offset avec le `travelMs` déjà décidé par Combat Rules.
+
+#### Aérien
+
+Le Visual Controller transmet également une translation verticale suffisante pour sortir complètement l'acteur du haut de l'arène.
+
+L'Animation Core choisit la montée la plus haute entre :
+
+- le preset morphologique ;
+- la sortie réelle de l'arène calculée depuis la géométrie DOM.
+
+L'impact reste aligné exactement sur `travelMs`.
+
+#### KO
+
+Une animation KO ne redémarre plus automatiquement un idle du combattant vaincu.
+
+Le KO se termine par une disparition complète, puis le Roster Session prend la main pour remplacer le slot ou déclarer l'équipe vaincue.
+
+La détection KO utilise directement l'événement sémantique `hit.hpAfter <= 0`.
+
+#### Barre de charge
+
+Le Combat Runtime expose :
+
+- `actionName` ;
+- `preparationMs` ;
+- `remainingPreparationMs` ;
+- `chargeProgress`.
+
+L'UI ne possède aucune horloge locale. Elle affiche ces valeurs uniquement.
+
+
+## 13. Capture Stats / Progression Architecture V1
+
+Ce jalon introduit les propriétaires de données génériques nécessaires à la refonte Monster Capture sans modifier le Combat Runtime ni le Human Editor.
+
+### Registre de statistiques
+
+Propriétaire : `src/contracts/capture-stat-registry-v1.js`.
+
+Le registre définit des statistiques extensibles par données. Une définition peut porter :
+
+- `id` ;
+- `label` ;
+- `damageChannel` optionnel ;
+- `resistanceChannel` optionnel ;
+- `damagePerPoint` ;
+- `resistancePerPoint`.
+
+Aucun identifiant de statistique personnalisée n'est codé en dur dans le contrat. Les joueurs pourront donc ajouter ultérieurement leurs propres statistiques par un raccord d'édition dédié.
+
+Le registre standard Monster Capture est : `data/capture/monster-capture-stat-registry.v1.json`.
+
+Invariant : **HP n'appartient pas au registre extensible**. Les PV restent propriété de la créature et du Combat State. Le registre ne doit jamais devenir une seconde source de vérité des PV.
+
+### Valeurs de statistiques d'une créature
+
+Propriétaire : `src/contracts/capture-creature-stat-values-v1.js`.
+
+Ce contrat associe un `creatureId` à des valeurs numériques dont les IDs doivent exister dans le registre sélectionné. La définition d'une statistique et sa valeur chez une créature restent donc séparées.
+
+L'adaptateur de compatibilité historique est : `src/adapters/input/capture/monster-capture-stat-values-v1.js`.
+
+Il projette explicitement les anciennes données vers les IDs standard sans modifier le catalogue historique et sans déduire une résistance depuis un type ou une autre donnée implicite.
+
+### Progression des slots actifs
+
+Propriétaire : `src/contracts/capture-progression-rules-v1.js`.
+
+La politique générale possède :
+
+- `maxActiveSkills` ;
+- `slotUnlockSchedule[{ level, slots }]`.
+
+Le preset Monster Capture est : `data/capture/monster-capture-progression-rules.v1.json`.
+
+Cette politique répond uniquement à « combien de slots actifs sont disponibles à ce niveau ? ».
+
+Le niveau requis d'une capacité reste propriété de `CaptureSkillEditorDraftV1.requiredLevel`. Ces deux notions ne doivent jamais être fusionnées.
+
+### Évolution
+
+Le mécanisme existant `capture.evolution { condition, level, targetId }` reste l'unique propriétaire du lien d'évolution d'une créature. Aucun second contrat d'évolution n'est créé dans ce jalon.
+
+### Frontières du jalon
+
+Ce jalon ne branche pas encore les coefficients de statistiques sur la résolution des dégâts/résistances. Il ne modifie ni `Action Resolver`, ni `Combat Runtime`, ni Animation/FX/Renderer.
+
+Le Human Editor n'est pas encore raccordé à ces nouveaux propriétaires. Ce raccord appartient à un micro-lot UI séparé avec RED dédié et validation smartphone.
+
+
+### Raccord Human Editor — Stats / Progression / Évolution V1
+
+Le Human Editor consomme maintenant les propriétaires validés sans devenir propriétaire des règles métier :
+
+- le registre de stats est chargé depuis `monster-capture-stat-registry.v1.json`, normalisé par `CaptureStatRegistryV1`, puis édité uniquement comme draft de session ;
+- les valeurs d'une créature passent par `CaptureCreatureStatValuesV1` et sont conservées dans le record d'édition de session, séparément de `CaptureCreatureEditorDraftV3.sourceStats` ;
+- `sourceStats` reste uniquement une compatibilité historique invisible dans l'éditeur courant ;
+- la politique de slots est chargée depuis `monster-capture-progression-rules.v1.json` et calculée par `CaptureProgressionRulesV1` ;
+- le Human Editor conserve les quatre slots standards de `CaptureActiveSkillLoadoutV1` comme **plan de progression configurable à l'avance** et un cinquième `slot-ultimate` séparé ; aucune affectation future n'est supprimée ou refusée du simple fait du niveau courant ;
+- `CaptureSkillEditorDraftV1.requiredLevel` reste le propriétaire du niveau de déverrouillage d'une capacité et `CaptureProgressionRulesV1` reste le propriétaire du nombre de slots actifs ;
+- le snapshot Combat ne consomme pas directement le plan complet : `capture-planned-loadout-to-combat-v1.js` projette une copie temporaire en neutralisant uniquement les slots non débloqués et les capacités dont `requiredLevel` dépasse le niveau courant ;
+- la Database et les transferts créature continuent de transporter le loadout complet : aucune capacité future n'est perdue lors d'un export/import de données ;
+- l'évolution éditée écrit directement dans l'unique champ `capture.evolution { condition, level, targetId }`, avec cible par ID explicite ;
+- les anciennes résistances pourcentage restent visibles uniquement sous une zone de compatibilité clairement séparée des nouvelles stats à canaux ;
+- aucune persistance navigateur n'est introduite : le registre, la progression et les valeurs restent des drafts de session en attente du futur lot Export/Import.
+
+Le raccord des coefficients de stats aux dégâts/résistances du Combat Runtime reste hors scope et devra avoir son propre RED avant toute modification de l'Action Resolver.
+
+
+## 14. Capture Stat Effects V1
+
+Les effets numériques d'une statistique utilisent désormais des unités explicites en pourcentage.
+
+Propriétaire de la définition : `CaptureStatRegistryV1`.
+
+Champs actifs :
+
+- `damagePctPerPoint` : bonus de dégâts en pourcentage par point, appliqué au `damageChannel` explicite ;
+- `resistancePctPerPoint` : bonus de résistance en pourcentage par point, appliqué au `resistanceChannel` explicite ;
+- `chargeTimeReductionPctPerPoint` : réduction du temps de préparation/charge en pourcentage par point.
+
+Les anciens champs `damagePerPoint` et `resistancePerPoint` ne sont pas des alias : ils sont refusés afin d'éviter deux interprétations concurrentes.
+
+Propriétaire du calcul pur : `src/core/combat/capture-stat-effects-v1.js`.
+
+Le calcul prend le registre validé + `CaptureCreatureStatValuesV1` et produit uniquement des modificateurs :
+
+- `damagePctByChannel` ;
+- `resistancePctByChannel` ;
+- `chargeTimeReductionPct`.
+
+Le Human Editor consomme le même calcul pour expliquer le résultat mais ne possède aucune formule métier.
+
+Ce jalon ne modifie pas encore la résolution d'une attaque ni l'horloge du Combat Runtime. Le branchement gameplay réel appartient à un micro-lot séparé avec RED dédié.
+
+
+## 15. Capture Stat Runtime Effects V1
+
+Le registre de stats et les valeurs de créature restent les propriétaires des données configurables. Le runtime ne relit pas l'UI.
+
+Chaîne autoritaire :
+
+```
+CaptureStatRegistryV1 + CaptureCreatureStatValuesV1
+        |
+        v
+projectCaptureStatEffectsV1()
+        |
+        v
+Capture Editor Export V3
+creature.combat.statEffects   (snapshot dérivé)
+        |
+        v
+Capture creature -> Fighter adapter
+        |
+        v
+Combat State
+        |
+        v
+Action Resolver / Combat Timing
+```
+
+Le snapshot runtime ne devient pas une seconde source de vérité éditable. Il est recalculé depuis les propriétaires lors de l'export.
+
+Canal de dégâts :
+
+- si `SkillDefinition.element` est défini, son ID est le canal ;
+- sinon le canal est `physical` ;
+- aucune déduction par nom, tag d'UI ou type de créature.
+
+Ordre de calcul :
+
+`baseDamage * (1 + damageBonusPct / 100) * max(0, 1 - resistancePct / 100)`.
+
+Le résultat est stabilisé à deux décimales. Une résistance de 100 % ou davantage annule les dégâts du canal.
+
+Vitesse :
+
+- `chargeTimeReductionPct` issu des stats est converti par l'adapter en réduction du `chargeTimeModifierPct` permanent du fighter ;
+- les effets temporaires de charge continuent de s'ajouter via Combat Timing ;
+- le `skillSpeedMultiplier` reste une règle globale distincte, appliquée après la préparation propre au combattant ;
+- la stat Vitesse ne modifie ni trajet, ni récupération, ni horloge d'énergie.
+
+Les résistances historiques conservées dans les metadata de compatibilité ne sont pas additionnées implicitement aux résistances issues des stats.
+
+
+## 15. Skill Activation Requirements V1
+
+Les prérequis dynamiques d'une capacité appartiennent à `SkillDefinition.activationRequirements`.
+
+Ils sont distincts de `CaptureSkillEditorDraftV1.requiredLevel`, qui reste un verrou de progression/apprentissage.
+
+Structure :
+
+```js
+{
+  mode: "all" | "any",
+  conditions: [
+    {
+      type:
+        "combat_elapsed_ms" |
+        "damage_dealt" |
+        "damage_taken" |
+        "hp_at_or_below_pct",
+      threshold: Number
+    }
+  ]
+}
+```
+
+Propriétaires :
+
+- définition/validation : `SkillDefinition` ;
+- métriques runtime par combattant : `Combat State` ;
+- évaluation : `skill-activation-requirements-v1.js` ;
+- refus de démarrage : `Action Resolver`.
+
+Les métriques autoritaires V1 sont :
+
+- `damageDealtTotal` ;
+- `damageTakenTotal` ;
+- `elapsedMs` déjà existant ;
+- `hp/maxHp` déjà existants.
+
+Les dégâts comptés correspondent à la perte de PV réellement appliquée. L'overkill ne gonfle donc pas artificiellement les conditions.
+
+Une condition temporelle n'introduit aucune seconde horloge : elle lit uniquement `CombatState.elapsedMs`.
+
+Un refus pour conditions non remplies intervient avant dépense d'énergie et avant cooldown et expose un résultat déterministe `activation_requirements`.
+
+Le Human Editor futur ne calculera pas ces conditions : il éditera uniquement les données du contrat et projettera l'état renvoyé par le runtime.
+
+
+## 16. Skill Activation Requirements — Human Editor
+
+Le Human Editor expose `SkillDefinition.activationRequirements` sans devenir propriétaire de son évaluation.
+
+Responsabilités UI autorisées :
+
+- activer/désactiver l'édition des conditions ;
+- choisir `all` / `any` ;
+- ajouter/supprimer des conditions ;
+- convertir l'unité d'affichage du temps : secondes UI <-> millisecondes contrat ;
+- afficher des libellés et unités compréhensibles.
+
+Responsabilités interdites à l'UI :
+
+- lire les métriques runtime de dégâts ;
+- décider si une capacité est débloquée ;
+- posséder une horloge ;
+- appliquer énergie/cooldown ;
+- réimplémenter `evaluateSkillActivationRequirementsV1()`.
+
+Le chemin reste :
+
+`Human Editor -> SkillDraft -> SkillDefinition -> Combat Rules`.
+
+Le niveau requis pour apprendre/équiper reste une propriété distincte du `CaptureSkillEditorDraftV1` et n'est jamais fusionné avec les conditions d'activation runtime.
+
+
+## 17. Tactical Skill Effects / StatusEffect V1
+
+Les effets tactiques complexes sont séparés en deux niveaux.
+
+### SkillEffectV1
+
+Effet déclenché par la résolution d'une capacité :
+
+- `damage` ;
+- `heal` ;
+- `energy_restore` ;
+- `energy_drain` ;
+- `apply_status` ;
+- `cleanse` ;
+- `dispel`.
+
+Le scope de cible est explicite et ne doit jamais être déduit du nom de la compétence :
+
+- `target` ;
+- `self` ;
+- `all_enemies` ;
+- `all_allies` ;
+- `all_except_self`.
+
+### StatusEffectV1
+
+Effet persistant attaché plus tard au Combat State :
+
+- `stat_modifier` ;
+- `damage_over_time` ;
+- `heal_over_time` ;
+- `shield` ;
+- `immobilize` ;
+- `silence` ;
+- `stun` ;
+- `taunt`.
+
+Un statut porte une durée temps réel `durationMs`, une stratégie de stacking et une polarité.
+
+Les données historiques exprimées en anciens tours/durations ne sont jamais converties implicitement par le contrat. Leur migration appartient à un adaptateur dédié ultérieur.
+
+Ce jalon définit les contrats seulement. Aucun effet n'est déclaré actif en combat tant qu'un micro-lot Runtime dédié n'a pas validé le vrai chemin.
+
+
+## 18. Immediate Tactical Effects Runtime V1
+
+`SkillDefinition.effects` transporte les nouveaux `SkillEffectV1`.
+
+Le champ historique `effect` reste une couche de compatibilité tant que toutes les capacités natives n'ont pas été migrées ; un même type damage/heal ne peut pas avoir simultanément deux autorités actives.
+
+Le module `immediate-tactical-effects-v1.js` exécute uniquement :
+
+- heal ;
+- energy_restore ;
+- energy_drain ;
+
+sur les scopes `target` et `self`.
+
+L'exécution se produit au vrai impact du Skill dans Action Resolver. Aucun effet instantané n'est appliqué sur evade/block/immune/counter/reflected.
+
+Les scopes de zone et les statuts persistants sont refusés explicitement tant que leurs micro-lots dédiés ne sont pas GREEN.
+
+
+## 19. Area Targeting Runtime V1
+
+Les scopes multi-cibles de `SkillEffectV1` sont résolus depuis `BattleFormatDefinition`, jamais depuis le DOM ni depuis une copie d'équipes dans Combat State.
+
+Le module `tactical-effect-targeting-v1.js` produit les actorIds vivants selon le scope.
+
+Le calcul de dégâts est factorisé dans `combat-damage-v1.js` et partagé par les dégâts historiques et tactiques.
+
+CombatSession reçoit optionnellement le BattleFormat normalisé et le transmet à Action Resolver. La vue 2v2 utilise ce même objet déjà produit par la source native.
+
+
+## 20. StatusEffect Runtime V1
+
+Les statuts persistants sont désormais exécutés par le Combat Core.
+
+### État runtime
+
+Chaque fighter possède un tableau `statusEffects` d'instances normalisées contenant :
+
+- définition `StatusEffectV1` ;
+- source actor ;
+- appliedAtMs / expiresAtMs ;
+- stacks ;
+- nextTickAtMs pour DoT/HoT ;
+- shieldRemaining pour shield.
+
+L'horloge unique reste `CombatState.elapsedMs`.
+
+### Dégâts et boucliers
+
+`combat-damage-v1.js` calcule dégâts / bonus / résistance.
+
+`combat-damage-application-v1.js` applique ensuite les dégâts de manière unique :
+
+1. absorption des shields actifs ;
+2. perte de PV ;
+3. métriques damage dealt/taken.
+
+Dégâts directs et DoT utilisent ce même chemin.
+
+### Stat modifier
+
+Les coefficients de stats restent propriétaires de `CaptureStatRegistryV1`.
+
+L'export Capture transporte un snapshot `statEffectRulesById` vers le FighterConfig ; le Status Runtime ne contient aucune formule de stat codée en dur.
+
+### Contrôles
+
+- immobilize -> mouvement ;
+- silence -> skill start ;
+- stun -> mouvement + skill + commande ;
+- taunt -> réécriture déterministe de la cible offensive vers la source vivante.
+
+Tous les refus se produisent avant dépense de ressource.
+
+### Nettoyage / dissipation
+
+- cleanse : statuts detrimental ;
+- dispel : statuts beneficial ;
+- tags vides = tous les statuts de la polarité ;
+- tags renseignés = filtre explicite.
+
+### Stacking
+
+- replace : nouvelle instance ;
+- refresh : durée renouvelée ;
+- stack : incrément jusqu'à maxStacks + durée renouvelée.
+
+Aucun ancien champ legacy de durée/tour n'est interprété implicitement.
+
+
+## 21. Tactical Effects Editor UI V1
+
+Le Human Editor expose désormais `SkillDefinition.effects` sans posséder leur logique d'exécution.
+
+### Frontière
+
+- UI : saisie, conversion secondes/ms, construction des contrats ;
+- `SkillEffectV1` / `StatusEffectV1` : validation ;
+- Combat Core : exécution.
+
+Le Human Editor n'importe aucun module Runtime de statuts ou de dégâts.
+
+### Effets éditables
+
+`SkillEffectV1` :
+
+- damage ;
+- heal ;
+- energy_restore ;
+- energy_drain ;
+- apply_status ;
+- cleanse ;
+- dispel.
+
+Tous les scopes contractuels sont éditables.
+
+`StatusEffectV1` :
+
+- stat_modifier ;
+- damage_over_time ;
+- heal_over_time ;
+- shield ;
+- immobilize ;
+- silence ;
+- stun ;
+- taunt.
+
+### Temps
+
+L'utilisateur saisit les durées et ticks en secondes. L'UI convertit explicitement vers `durationMs` / `tickIntervalMs` au moment de construire le contrat.
+
+Aucune durée historique exprimée en tours n'est convertie ici.
+
+### Stats
+
+Un `stat_modifier` sélectionne un `statId` du `CaptureStatRegistryV1` courant. L'UI ne contient aucune formule de stat.
+
+### Compatibilité legacy
+
+Le champ historique `SkillDefinition.effect` demeure jusqu'à migration complète. `SkillDefinition.effects` ne le remplace pas silencieusement et la validation refuse les doubles autorités damage/heal.
+
+Les modèles historiques complexes ne deviennent pas automatiquement runtime-ready par la seule présence de cette UI : leur migration reste un lot séparé.
+
+
+## 22. Capture Complex Skills Migration V1
+
+Les 33 capacités Capture réellement utilisées mais absentes du catalogue portable simple sont projetées par un adaptateur pur :
+
+- `src/adapters/input/capture/capture-complex-skill-migration-v1.js`.
+
+### Source et complément
+
+La source reste `CaptureUsedAbilityCatalogV2` (103 capacités).
+
+Le complément complexe n'est pas maintenu manuellement : il est calculé comme les IDs de la source qui ne figurent pas dans `CapturePortableNativeSkillCatalogV1` (70 capacités). Cette relation garantit qu'une capacité ne peut pas exister simultanément dans les deux projections.
+
+### Sortie de migration
+
+Chaque entrée conserve :
+
+- l'ID historique ;
+- son index source ;
+- ses `legacyEffects` dans l'ordre historique ;
+- un état de migration ;
+- des blockers structurés ;
+- des `tacticalEffects` uniquement lorsque toute la capacité est démontrable.
+
+Une capacité bloquée expose `tacticalEffects: null`. Aucun sous-ensemble d'effets n'est publié comme s'il était runtime-ready.
+
+### Migrations déterministes
+
+Sept capacités sans statut persistant sont actuellement runtime-ready :
+
+- soins immédiats ;
+- auto-soins explicites ;
+- dégâts + auto-soin explicite ;
+- dégâts de zone portés par le token historique explicite `target:"zone"`.
+
+Le ciblage par défaut legacy utilisé ici vient du routage historique démontré, jamais du nom ou de la description de la capacité.
+
+### Durées legacy
+
+La source historique démontre que `duration` représente des tours / fins de tour :
+
+- statuts exécutés en `turn_end` ;
+- décrément de 1 à chaque fin de tour ;
+- DoT / HoT exprimés « par tour ».
+
+Le Runtime moderne utilise `CombatState.elapsedMs`, `durationMs` et, pour DoT/HoT, `tickIntervalMs`.
+
+L'adaptateur ne contient donc aucune conversion tours -> millisecondes. Les entrées concernées portent `requires-duration-policy` jusqu'à l'existence d'une politique explicite propriétaire de cette traduction.
+
+### Stats legacy
+
+Les alias Monster Capture restent propriétaires de `monster-capture-stat-values-v1.js`.
+
+Le resolver pur exporté depuis ce propriétaire reconnaît notamment :
+
+- `speed / initiative / agility / agilite -> speed` ;
+- `physical / power / force -> physical`.
+
+Il ne crée aucun mapping pour `defense` ou `armor`.
+
+Un second problème sémantique est conservé séparément : le moteur historique applique les buffs/debuffs comme modificateurs en pourcentage alors que `StatusEffectV1.stat_modifier` moderne exprime un `deltaPoints`.
+
+Ainsi :
+
+- alias de stat inconnu -> `requires-stat-mapping` ;
+- valeur legacy en pourcentage sans traduction démontrée vers `deltaPoints` -> `requires-stat-effect-policy`.
+
+Aucune valeur legacy n'est recopiée arbitrairement dans `deltaPoints`.
+
+### Frontières
+
+Ce jalon ne modifie pas :
+
+- Combat Runtime ;
+- Action Resolver ;
+- StatusEffect Runtime ;
+- Human Editor ;
+- Animation / FX / renderer ;
+- storage ;
+- network ;
+- production GenSrpG.
+
+Le Human Editor continuera d'utiliser sa Map `configuredSkills` unique. La consommation future de la projection complexe devra être un raccord dédié, pas une seconde bibliothèque concurrente.
+
+
+## 24. Capture Legacy Status Semantics V1
+
+La compatibilité des statuts historiques Capture ne convertit plus les anciens tours en millisecondes.
+
+### Durée owner-action-end
+
+La source historique démontre que les statuts étaient exécutés à la fin de l'action propre de leur porteur.
+
+`StatusEffectV1.durationModel` possède donc deux autorités explicites :
+
+- `time_ms` : runtime dynamique moderne, `durationMs` et éventuellement `tickIntervalMs` ;
+- `owner_action_end` : compatibilité historique, `durationActions`.
+
+Un statut `owner_action_end` :
+
+- ne dépend pas de `elapsedMs` pour expirer ;
+- ne ticke pas sur réaction ;
+- ne ticke pas sur simple avance du temps ;
+- ticke/décrémente à chaque fin d'action réussie de son porteur.
+
+### Modificateur de stat en pourcentage
+
+`StatusEffectV1.stat_modifier` possède :
+
+- `modifierMode:"points"` + `deltaPoints` ;
+- `modifierMode:"percent"` + `percent`.
+
+Le mode pourcentage calcule son delta à partir de la valeur de base `fighter.statValuesById[statId]`. Il ne transforme jamais un ancien pourcentage en faux nombre de points.
+
+### Défense
+
+La stat standard `defense` est ajoutée au registre Capture.
+
+Son effet est piloté par `damageReductionPctPerPoint`, distinct des résistances de canal.
+
+La formule canonique de dégâts applique :
+
+1. bonus dégâts du canal ;
+2. résistance du canal ;
+3. réduction globale de dégâts issue de Défense ;
+
+avec réduction globale bornée à 100 %.
+
+### Compatibilité legacy
+
+Les règles exactes démontrées depuis V16.142 sont propriétaires de l'adaptateur `capture-legacy-status-semantics-v1.js`.
+
+Les 33 capacités complexes de `CaptureComplexSkillMigrationV1` sont désormais entièrement traduisibles et exposent toutes `migrationState:"runtime-ready"`.
+
+
+## 25. Capture Complex Native Skill Catalog V1
+
+Les 103 capacités réellement utilisées par Monster Capture possèdent désormais toutes une représentation native.
+
+Composition :
+
+- 70 drafts issus de `CapturePortableNativeSkillCatalogV1` ;
+- 33 drafts issus de `CaptureComplexNativeSkillCatalogV1`.
+
+Les 33 complexes consomment uniquement les `tacticalEffects` déjà validés par `CaptureComplexSkillMigrationV1`.
+
+Le champ historique `effect.damage/heal` n'est jamais utilisé en parallèle pour ces 33, afin d'éviter deux autorités d'effet.
+
+Les formes manquantes du legacy sont transportées par une politique structurelle explicite (scope/catégorie), jamais par nom ou description.
+
+Le Human Editor hydrate les 103 drafts natifs dans `configuredSkills`; le catalogue historique de 103 modèles reste une bibliothèque de provenance/édition, pas une deuxième source de gameplay.
+
+## 26. Capture Defense Stat Editor UI V1
+
+Le Human Editor expose le coefficient canonique `CaptureStatRegistryV1.damageReductionPctPerPoint`.
+
+Responsabilités :
+
+- le contrat `CaptureStatRegistryV1` reste l'unique propriétaire du coefficient ;
+- `capture-stat-effects-v1.js` reste l'unique propriétaire du calcul du total ;
+- le Human Editor affiche uniquement les unités et transporte la valeur.
+
+Présentation :
+
+- résumé : `1 point = -X % dégâts reçus` ;
+- total courant : `N points = -Y % dégâts reçus` ;
+- le coefficient est éditable dans les définitions système et personnalisées ;
+- aucune formule de dégâts n'est dupliquée dans l'UI.
+
+Sur smartphone, chaque définition de stat s'empile sur une seule colonne.
+
+## 27. Capture Human Editor — autorité tactique réconciliée
+
+Le Human Editor ne possède plus de second chemin éditable pour les effets de compétence.
+
+Autorités :
+
+- dégâts / soins / ciblage : `SkillDefinition.effects / SkillEffectV1` ;
+- stun : `StatusEffectV1.stun` ;
+- conditions Ultime : `SkillDefinition.activationRequirements`.
+
+Compatibilité legacy :
+
+- `SkillDefinition.effect.damage/heal/stunMs/interruptsPreparation` peut rester dans le contrat pour des données historiques, mais le Human Editor moderne le neutralise lorsqu'il édite `effects` ;
+- `allowedDistances` est une projection de compatibilité complète non éditable dans Capture ;
+- `targetRelations` est dérivé des scopes tactiques et n'est plus saisi séparément.
+
+Les modèles historiques utilisent la même autorité `SkillEffectV1`. Un modèle n'écrase pas une liste d'effets tactiques déjà configurée.
+
+## 28. Projectile Power V1
+
+### Propriétaire
+
+La politique de collision de projectile appartient à `ProjectilePowerV1`.
+
+`SkillDefinition` compose cette donnée sous :
+
+```js
+projectileClash: {
+  power: Number >= 0
+}
+```
+
+Il n'existe plus de tags, groupes, familles ou règles orientées par type de projectile.
+
+### Résolution
+
+Le Core compare uniquement les puissances explicites :
+
+1. si l'un des deux projectiles possède `power = 0`, il n'y a pas de collision ;
+2. si les deux puissances sont positives et égales, les deux projectiles sont annulés ;
+3. si la puissance gauche est supérieure, le projectile droit est annulé et le gauche continue ;
+4. si la puissance droite est supérieure, le projectile gauche est annulé et le droit continue.
+
+Aucune règle n'est dérivée de l'élément, de l'identifiant, du nom ou de la description d'une capacité.
+
+### Runtime
+
+Le point de rencontre temporel reste calculé par `projectile-clash.js`.
+
+Lors d'une dominance, `CombatRuntime` ne recrée pas le projectile gagnant. Il conserve son record actuel dans `activeByActor`; seul le projectile perdant est retiré et reçoit la résolution de clash.
+
+Le gagnant poursuit donc le chemin normal jusqu'à `session.completeAction()`.
+
+### UI
+
+Le Human Editor expose uniquement :
+
+- **Puissance du projectile**.
+
+Aide utilisateur :
+
+- `0` = aucune collision ;
+- plus puissant = continue ;
+- égalité = annulation mutuelle.
+
+Le stun reste indépendant : `StatusEffectV1.stun` est son propriétaire unique.
+
+## 29. Capture Canonical Creature Catalog V1
+
+Le fichier `monster-capture-creatures.v1.json` reste une source historique de 110 enregistrements.
+
+Il n'est pas directement une bibliothèque de gameplay éditable, car huit anciennes entrées possèdent le même nom que des entrées Capture modernes.
+
+Le propriétaire de la projection jouable est :
+
+`capture-canonical-creature-catalog-v1.js`.
+
+Il déclare explicitement huit alias historiques vers les IDs modernes. Aucun nom de créature n'est utilisé comme règle de résolution.
+
+La projection :
+
+- conserve l'ordre de la source pour les entrées retenues ;
+- exclut les 8 IDs historiques alias ;
+- contient 102 IDs uniques ;
+- refuse tout nouveau doublon de nom non déclaré.
+
+Le Human Editor consomme cette projection avant la construction des drafts.
+
+Les bindings visuels ne maintiennent qu'un propriétaire canonique ; les anciens IDs passent par le même resolver d'alias.
+
+## 30. Capture Database V1 — Bundle Core
+
+`CaptureDatabaseV1` est le format portable de données éditables. Il est distinct de `CaptureCombatExportV1`, qui reste un snapshot d'exécution.
+
+Le bundle ne recopie pas les règles des contrats propriétaires. Son normalizer délègue à :
+
+- CaptureStatRegistryV1 ;
+- CaptureProgressionRulesV1 ;
+- CaptureCreatureEditorDraftV3 ;
+- CaptureCreatureStatValuesV1 ;
+- CaptureActiveSkillLoadoutV1 ;
+- CaptureSkillEditorDraftV1.
+
+Le bundle contient uniquement les sources canoniques éditables et leurs relations.
+
+Les assets restent des références logiques `assetId` transportées par les Presentation Bindings. Aucun binaire visuel ou audio n'est embarqué.
+
+Le transfert JSON est pur et indépendant du DOM, du stockage navigateur, du réseau et du Runtime.
+
+## 31. Capture Entity Transfer Packages V1
+
+Les fichiers unitaires sont des enveloppes de transport, pas de nouveaux propriétaires métier.
+
+### Créature
+
+`capture-creature-transfer-v1` compose exactement :
+
+- CaptureCreatureEditorDraftV3 ;
+- CaptureCreatureStatValuesV1 ;
+- CaptureActiveSkillLoadoutV1.
+
+Les capacités restent référencées par ID.
+
+### Capacité
+
+`capture-skill-transfer-v1` contient exactement un CaptureSkillEditorDraftV1.
+
+### Import
+
+L'adaptateur de transfert détecte `creature / skill / database` par schema.
+
+Un ancien ID créature déclaré dans le catalogue canonique est converti vers l'ID moderne avant validation et détection de conflit.
+
+La politique d'application est explicite :
+
+- reject ;
+- replace.
+
+Aucun merge champ par champ n'existe.
+
+## 31. Capture Human Editor — File Transfer UI V1
+
+Le Human Editor est le seul endroit où les APIs navigateur de fichier sont utilisées.
+
+### État
+
+La source de vérité de session reste :
+
+- `configuredCreatures` ;
+- `configuredSkills` ;
+- `statRegistry` ;
+- `progressionRules`.
+
+Les fichiers importés/exportés ne créent aucun stockage parallèle.
+
+### Composition base complète
+
+`capture-editor-file-transfer-v1.js` compose les Maps et propriétaires globaux vers `CaptureDatabaseV1`.
+
+Il ne connaît ni DOM, ni Blob, ni File, ni storage.
+
+### Export navigateur
+
+Le Human Editor :
+
+1. obtient un objet canonique ;
+2. délègue la sérialisation aux adapters Database/Entity Transfer ;
+3. crée un Blob JSON ;
+4. déclenche le téléchargement ;
+5. libère immédiatement l'ObjectURL.
+
+### Import navigateur
+
+Chaîne :
+
+`File.text -> Entity Transfer parser -> Import Planner -> Session helper -> Maps existantes`.
+
+Le Human Editor ne fusionne jamais les champs.
+
+- reject = conflit ;
+- replace = remplacement complet de l'entité ou de la database ;
+- noop = aucun changement.
+
+### Assets
+
+Les exports conservent uniquement les références `assetId` déjà propriétaires des Presentation Bindings.
+
+Les binaires image/sprite/audio restent dans la bibliothèque d'assets et feront l'objet des lots assets dédiés.
+
+
+## 32. Capture Arena Scale Perception V1
+
+La perception de grandeur d'une créature ne doit pas être corrigée en falsifiant son `displayScale`.
+
+### Responsabilités
+
+- `CreaturePresentationBindingV2.displayScale` reste l'unique taille configurée de la créature ;
+- Arena Presentation possède le cadrage/zoom du décor ;
+- Demo/Renderer CSS possède la composition spatiale statique de la scène ;
+- Animation Core conserve seul la perspective dynamique pendant les approches.
+
+### Composition frontale
+
+La scène utilise des ancres verticales centralisées plutôt que des valeurs dispersées :
+
+- 1v1 proche : `--arena-near-y` ;
+- 1v1 éloigné : `--arena-far-y` ;
+- 2v2 : quatre ancres `--arena-coop-*`.
+
+Le premier preset réduit l'écart vertical afin de donner une lecture plus frontale sans modifier positions, distances ou règles de gameplay.
+
+### Rapport décor / combattants
+
+Le binding de l'arène Ville n'agrandit plus le fond à 112 % de hauteur. Il utilise `auto 100%` afin que les éléments architecturaux apparaissent moins massifs par rapport aux créatures.
+
+### Contact au sol
+
+Chaque fighter reçoit une ombre elliptique de présentation via CSS. Elle suit naturellement le container et son scale, mais n'entre dans aucun calcul de collision, ciblage ou position gameplay.
+
+Aucun asset binaire, Runtime, FX Core ou règle de combat n'est modifié par ce jalon.
+
+
+## 33. Creature Motion Profiles V1
+
+Les mouvements morphologiques restent pilotés par les données et n'introduisent aucun second moteur de déplacement gameplay.
+
+### Contrat de locomotion
+
+Chaque profil live peut déclarer :
+
+```js
+locomotion: {
+  style,
+  durationMs,
+  phases: [
+    {
+      label,
+      at,
+      translateY,
+      rotateDeg,
+      scaleX,
+      scaleY,
+      easing
+    }
+  ],
+  contacts: [
+    { at, intensity }
+  ],
+  footfallFx?: {
+    cameraShake?: {
+      durationMs,
+      amplitudePx
+    }
+  }
+}
+```
+
+`style` reste descriptif. Le moteur ne branche pas ses règles sur l'ID du profil ou sur le nom de la créature : il consomme les phases et contacts explicites.
+
+### Idle et appuis
+
+`idle.transformOrigin` permet à Animation Core de déclarer un pivot spécifique à l'animation sans remplacer le `VisualActor.transformOrigin` permanent.
+
+- bipède, quadrupède et massif utilisent un pivot bas et aucune translation X/Y en idle ;
+- l'effet respiratoire / balancement est donc produit par rotation et déformation autour des appuis ;
+- serpentin/rampant conserve une translation verticale quasi nulle ;
+- drake/volant conserve une oscillation verticale lisible.
+
+Le Render Adapter applique le pivot de l'AnimationPlan uniquement pendant le plan. L'état acteur de base est restauré ensuite.
+
+### Événement `move`
+
+`CombatVisualEvent` expose désormais `move`.
+
+Animation Core :
+
+1. lit `profile.locomotion` ;
+2. transforme les phases normalisées en segments ;
+3. produit les durées ;
+4. produit éventuellement des cues temporels `footfall`.
+
+Animation Core ne produit aucun shake caméra.
+
+### Golem / Massif
+
+Le profil massif utilise quatre contacts de pas régulièrement répartis pendant un mouvement lourd.
+
+La chaîne est :
+
+`Combat result moved -> Visual Controller -> Animation Core move -> footfall cue -> FX Core -> Camera Render Adapter`.
+
+`locomotion-fx-plan.js` est l'unique traducteur du cue `footfall` vers un plan `camera-shake`.
+
+`dom-camera-fx.js` est l'adaptateur qui applique ce plan à l'arène. Combat Rules et Demo UI ne contiennent ni amplitude ni trajectoire de shake.
+
+### Approches d'attaque au sol
+
+Une approche `ground-attack` est un déplacement visuel et doit consommer le même `profile.locomotion` que l'événement générique `move`.
+
+Animation Core projette les phases morphologiques sur la trajectoire vers la cible :
+
+- rampant : interpolation au sol sans arc vertical ajouté ;
+- bipède : petit arc ;
+- quadrupède : arc plus ample ;
+- massif : pas lourds successifs.
+
+La somme des segments d'approche reste exactement égale à `travelMs`, et le dernier segment conserve le label contractuel `ground-approach-impact` ainsi que la position exacte de la cible.
+
+Les cues `footfall` produits pendant cette approche passent par la même chaîne `Animation Core -> FX Core -> Camera Render Adapter`. Aucun shake n'est décidé dans Combat Rules ou dans l'UI.
+
+Les modes `teleport-attack` et `aerial-attack` conservent leurs séquences dédiées et ne sont pas remplacés par la locomotion terrestre.
+
+### Déplacement spatial
+
+`dom-distance-presenter` reste propriétaire de l'application des ancres DOM issues du résultat métier de distance.
+
+Il reçoit seulement la durée calculée par le plan de locomotion afin que la transition spatiale et l'animation morphologique restent synchronisées.
+
+Les positions, coûts, distances et résultats `moved` restent entièrement propriétaires de Combat Rules / Combat Session.
+
+### Ombre de contact
+
+`CreaturePresentationBindingV2.displayScale -> VisualActor.scale` reste l'unique taille de créature.
+
+Le Visual Controller projette cette valeur en variable CSS `--creature-display-scale` uniquement pour la présentation de l'ombre.
+
+L'ombre :
+
+- est plus prononcée ;
+- suit le scale de la créature ;
+- continue de suivre naturellement `--distance-scale` via le container spatial ;
+- ne participe à aucune collision ni règle gameplay.
+
+### Profils V1
+
+- `biped` : idle ancré, petit bond ;
+- `quadruped` : idle ancré, bond plus ample ;
+- `serpentine` : idle au sol, glissement linéaire ;
+- `drake` : oscillation verticale / déplacement volant ;
+- `massive` : idle ancré, quatre arcs lourds réguliers avec un contact et un micro-shake FX à chaque retombée.
+
+### Hors périmètre
+
+Ce jalon ne remplace aucun asset d'arène.
+
+Les futures arènes avec caméra plus basse, plus profonde et moins plongeante seront raccordées dans un lot de présentation séparé.
+
+
+## 34. Skill Availability Refresh V1
+
+Le Combat Runtime ne possède aucune règle de cooldown ou de disponibilité.
+
+### Autorités
+
+- Combat State conserve les échéances et l'état des combattants ;
+- Action Resolver décide si `previewSkill()` est autorisé ou refusé ;
+- Combat Runtime ne fait que notifier les consommateurs lorsqu'un état sémantique observable change ;
+- Demo UI recalcule alors ses boutons via `previewSkill()`.
+
+### Signal runtime
+
+Le signal interne du Runtime ne doit pas se limiter à PV/énergie : un changement de statut ou d'état de disponibilité peut être pertinent sans modifier ces valeurs.
+
+Le Runtime compare donc la projection sémantique du fighter, en excluant seulement `energyChargeProgressMs`, progression interne qui change à chaque tick sans constituer à elle seule un changement de disponibilité visible.
+
+Aucune formule ou durée de cooldown n'est dupliquée dans le Runtime.
+
+
+## 35. Profil volant canonique
+
+L'identifiant morphologique canonique pour une créature volante est `flying`.
+
+- l'éditeur, les profils de preview et les catalogues de test utilisent `flying` ;
+- l'ancien identifiant `drake` n'est plus une source de profil ;
+- les anciennes métadonnées visuelles Capture encore publiées avec `profile:"drake"` sont converties explicitement en `flying` à la frontière `capture-creature-visual-binding-v1` ;
+- cette compatibilité ne dépend jamais du nom ou de l'espèce de la créature ;
+- aucun second profil `drake` n'est maintenu en parallèle.
+
+Le comportement de locomotion et d'idle reste piloté uniquement par `data/profiles/flying.profile.json`.
+
+
+## 36. Réconciliation volant / serpentin et arc aérien unique
+
+### Autorité des profils
+
+L'identifiant morphologique volant reste exclusivement `flying`.
+
+Il n'existe pas de seconde source `drake.profile.json`. La compatibilité des anciennes métadonnées `drake` reste confinée à la frontière Capture déjà documentée.
+
+Le déplacement `serpentine.locomotion` reste la locomotion linéaire au sol validée. Le réglage d'idle peut déclarer `swayMode:"alternate"` afin que l'Animation Core séquence :
+
+`droite -> centre -> gauche -> centre`.
+
+Le profil serpentin utilise un pivot bas, sans translation X/Y, de sorte que la base reste ancrée et que seule l'oscillation du haut du corps soit lisible.
+
+### Locomotion générique volante
+
+`flying.locomotion` reste data-driven et décrit un seul arc générique :
+
+`montée -> apex unique -> descente -> position stable`.
+
+Ces phases ne possèdent aucun `footfall`.
+
+### Présentation de l'ombre
+
+La représentation canonique est :
+
+```js
+presentation: {
+  shadow: {
+    bottomPct,
+    opacity
+  }
+}
+```
+
+Le Visual Controller projette ces valeurs vers :
+- `--creature-shadow-bottom` ;
+- `--creature-shadow-opacity`.
+
+Le CSS ne connaît aucun ID de profil et conserve ses valeurs par défaut si ces données sont absentes.
+
+La forme plate historique `presentation.shadowBottomPct` n'est pas une autorité parallèle.
+
+### Vrai chemin d'une approche aérienne de combat
+
+Pour une compétence `approachMode:"aerial"`, le chemin réel est :
+
+`Combat Resolution Presenter -> Visual Controller.playApproachFor() -> CombatVisualEvent("aerial-attack") -> Animation Core.planAnimation() -> Render Adapter`.
+
+Le plan d'approche aérienne n'utilise pas `profile.locomotion` comme trajectoire de combat.
+
+Animation Core produit désormais avant impact exactement :
+1. `aerial-arc-apex` ;
+2. `aerial-arc-impact`.
+
+Le premier segment progresse déjà horizontalement vers la cible tout en atteignant l'unique apex. Le second descend et poursuit la progression jusqu'aux coordonnées exactes de la cible.
+
+Il n'existe plus de phase `aerial-reposition` invisible entre montée et plongée.
+
+Invariants :
+- un seul apex ;
+- continuité spatiale départ -> apex -> cible ;
+- approche visible jusqu'à l'impact ;
+- somme des deux segments d'approche = `travelMs` ;
+- position au moment de l'impact = cible exacte ;
+- `aerial-home` reste une récupération post-impact et ne modifie pas le timestamp d'impact ;
+- aucune règle de dégâts, énergie, cooldown, portée ou ciblage n'est déplacée dans Animation Core.
+
+
+## 37. Fluidité de l'approche de contact volante
+
+Les capacités de contact ne portent pas la morphologie du déplacement. Une capacité telle que `Griffe` peut déclarer `approachMode:"ground"`, puis l'Animation Core consomme la locomotion du Creature Profile actif.
+
+Pour `flying`, l'arche d'approche peut conserver plusieurs points de forme afin de représenter visuellement montée, apex et descente. Ces points ne doivent cependant pas introduire de freinage intermédiaire : leurs intervalles utilisent un easing `linear` afin que la vitesse ne retombe pas à zéro à chaque frontière de phase.
+
+Invariants :
+- une seule autorité morphologique : `flying.locomotion` ;
+- aucune règle spécifique par capacité ;
+- progression horizontale monotone jusqu'à la cible ;
+- un seul apex ;
+- impact exactement aux coordonnées de la cible et à `travelMs` ;
+- aucune modification des dégâts, coûts, cooldowns, portée ou ciblage.
+
+
+## 38. Autorité canonique des arènes de combat
+
+Les fonds d'arène livrés au runtime appartiennent à la bibliothèque visuelle Core de la branche `global-assets`.
+
+Les cinq IDs canoniques actuels sont :
+- `core:arena-forest-01` ;
+- `core:arena-cave-01` ;
+- `core:arena-snow-01` ;
+- `core:arena-city-01` ;
+- `core:arena-lava-01`.
+
+Le binding de présentation `demoPresentationAssets.presentationForArena()` résout uniquement ces IDs Core. Les copies locales historiques de `city` et `lava` sous `assets/test/arenas/` ne constituent plus une autorité et sont retirées.
+
+Le remplacement d'un visuel d'arène conserve son assetId et son chemin canonique ; seule la révision de la bibliothèque visuelle est avancée pour invalider le cache client. Aucun changement d'image d'arène ne modifie Combat Rules, les profils morphologiques, les compétences, les positions ou les résultats métier.
+
+Pour le lot Arena Refresh V1, la révision runtime est `2026-09-30-v5-arena-refresh`.
+
+
+## 39. Présentation du cooldown sans seconde horloge
+
+Le cooldown d'une capacité reste possédé par `SkillDefinition.cooldownMs`, `Action Resolver` et `Combat State.skillCooldowns`.
+
+Le Runtime ne possède aucune règle de cooldown. Il expose seulement un callback générique `onClock(state)` déclenché par son tick existant afin que les clients de présentation puissent relire l'état courant sans créer leur propre timer.
+
+La preview Capture :
+- appelle `session.previewSkill()` ;
+- lit `remainingCooldownMs` lorsque l'outcome vaut `cooldown` ;
+- désactive le bouton via cette décision autoritaire ;
+- affiche `Recharge X.X s` ;
+- ne calcule jamais elle-même une échéance et ne possède aucun `setTimeout` de recharge.
+
+Le chemin reste donc : `SkillDefinition -> Action Resolver -> Combat State -> Session.previewSkill() -> UI`.
+
+
+## 39. Présentation visuelle du cooldown dans les icônes
+
+Le cooldown reste exclusivement autoritaire dans `SkillDefinition`, `Action Resolver` et `Combat State.skillCooldowns`. La couche UI ne possède ni échéance, ni timer, ni copie de l'état métier.
+
+La preview Capture lit `session.previewSkill().remainingCooldownMs` et le `cooldownMs` déjà présent sur la définition de compétence pour dériver uniquement un ratio de présentation : portion écoulée de la recharge.
+
+Le rafraîchissement provient du callback générique `Combat Runtime.onClock` déjà alimenté par le tick runtime existant. Aucun `setTimeout`, `setInterval`, `Date.now()` ou second ticker n'est autorisé pour le cooldown visuel.
+
+Le rendu peut combiner : désaturation de l'icône, recoloration progressive, overlay radial, aiguille et texte restant. Ces éléments sont purement visuels et n'altèrent jamais la disponibilité sémantique de la compétence.
+
+
+## 39. Résistances naturelles des créatures Capture
+
+Les affinités élémentaires naturelles appartiennent à la donnée créature, pas aux règles de combat globales.
+
+Contrat portable :
+- `creature.elements: string[]` décrit les types/éléments de la créature ;
+- `creature.resistances: [{ kind, value }]` porte les modificateurs naturels ;
+- un `kind` de forme `element:<channel>` est projeté par l'adaptateur Capture vers `FighterConfig.resistancePctByChannel[channel]` ;
+- une valeur positive représente une résistance ;
+- une valeur négative représente une faiblesse.
+
+Les résistances naturelles et celles dérivées des statistiques sont additionnées une seule fois dans l'adaptateur d'entrée. `computeCombatDamageV1()` reste générique et ne connaît ni type de créature ni table de matchup.
+
+Les valeurs importées de Monster Capture restent autoritaires et éditables. Aucune table automatique type -> faiblesse/résistance n'est inventée dans Combat Rules.
+
+Canaux exposés actuellement par l'éditeur Capture : `fire`, `water`, `earth`, `air`, `electric`, `light`, `shadow`, `nature`, `ice`, `poison`, `steel`, `psy`, `spirit`.
+
+Combat State accepte des valeurs signées uniquement pour `resistancePctByChannel`. Les bonus `damagePctByChannel` restent non négatifs.
+
+
+## 39. Sélection d’arène de preview Capture
+
+La sélection d'arène du test combat est une donnée de présentation de l'éditeur, jamais une règle de combat.
+
+Chaîne autoritaire :
+`UI onglet Combat -> CaptureBattleSetupEditorDraft.arenaId -> Capture export presentation.arenaId -> Native Visual Source.arenaId -> demoPresentationAssets.presentationForArena(arenaId)`.
+
+Règles :
+- `BattleFormatDefinition` ne contient pas l'arène ;
+- Combat Rules, Action Resolver et Combat State ignorent l'arène ;
+- aucune URL d'image n'est stockée dans le Battle Setup ;
+- la liste des choix UI est dérivée de `ARENA_BINDINGS` via `demoPresentationAssets.arenaOptions()` ;
+- aucun second catalogue d'arènes n'est introduit ;
+- aucune valeur de secours implicite n'est injectée par les contrats ;
+- l'éditeur fournit explicitement l'arène choisie lors de la validation de la preview.
+
+
+## 40. Santé / PV comme stat canonique Capture
+
+La Santé est une statistique Capture data-driven au même titre que les autres stats. L'éditeur ne possède plus de champs parallèles `PV max` / `PV au départ`.
+
+Chaîne autoritaire :
+`CaptureStatRegistry.maxHpPerPoint -> CaptureCreatureStatValues -> projectCaptureStatEffectsV1.maxHp -> Capture export combat.maxHp dérivé -> FighterConfig -> Combat State`.
+
+Règles :
+- la stat canonique est `health`, libellée `Santé / PV` dans le registre standard ;
+- le registre standard configure `maxHpPerPoint: 1`, soit 1 point de Santé = 1 PV max ;
+- `maxHpPerPoint` est une propriété générique de définition de stat : le moteur de projection ne contient aucun cas spécial `health` ;
+- `combat.maxHp` reste un champ technique requis par le runtime, mais l'éditeur Human ne l'édite plus directement ;
+- l'export V3 dérive `combat.maxHp` depuis la projection Santé lorsque le registre actif possède une règle PV ;
+- `initialHp` n'est plus une autorité de l'éditeur Human et est retiré de l'export V3 ; Combat State démarre naturellement à `maxHp` lorsqu'aucun PV initial explicite n'est fourni ;
+- l'import Monster Capture mappe le champ historique `hp` vers la valeur de stat `health` ;
+- les anciens registres personnalisés qui ne définissent aucune règle `maxHpPerPoint > 0` conservent leur `combat.maxHp` historique : l'absence de règle Santé ne vaut jamais `0 PV` implicitement ;
+- aucune dérivation depuis Endurance, niveau ou nom de créature n'est autorisée.
+
+Cette séparation permet à une future progression par points/niveaux d'augmenter la Santé via le même propriétaire de stats, sans introduire une seconde formule de PV.
+
+
+## 41. Capture Ultimate Slot V1
+
+Le loadout Capture distingue désormais deux responsabilités d'équipement sans modifier les règles métier de combat.
+
+### Autorité de la capacité
+
+`SkillDefinition.loadoutSlot` déclare le type d'emplacement autorisé :
+
+- `standard` — valeur par défaut, y compris pour toutes les anciennes capacités ;
+- `ultimate` — capacité réservée au slot Ultime.
+
+Cette propriété est indépendante de `activationRequirements`. Une capacité peut être conditionnelle sans être Ultime, et une Ultime peut ou non posséder des conditions d'activation.
+
+Aucune capacité historique n'est convertie implicitement en Ultime.
+
+### Autorité du loadout
+
+`CaptureActiveSkillLoadoutV1` possède cinq emplacements canoniques :
+
+- `slot-1` ;
+- `slot-2` ;
+- `slot-3` ;
+- `slot-4` ;
+- `slot-ultimate`.
+
+Pour compatibilité, un ancien loadout contenant exactement quatre slots est accepté à la frontière puis normalisé vers le format canonique avec `slot-ultimate: null`.
+
+Le helper `capture-loadout-skill-slot-v1.js` est l'unique validateur de la compatibilité entre le type de capacité et le type de slot :
+
+- une capacité `standard` ne peut pas être équipée dans `slot-ultimate` ;
+- une capacité `ultimate` ne peut pas être équipée dans les quatre slots standards.
+
+### Progression
+
+`CaptureProgressionRulesV1.maxActiveSkills` et `slotUnlockSchedule` continuent de gouverner exclusivement les quatre slots standards.
+
+Le slot Ultime :
+
+- ne consomme jamais un des quatre slots standards ;
+- n'est pas compté dans `maxActiveSkills` ;
+- reste configurable à l'avance ;
+- reste soumis à `CaptureSkillEditorDraftV1.requiredLevel` lors de la projection vers le combat.
+
+La projection autoritaire reste `capture-planned-loadout-to-combat-v1.js`.
+
+Exemple au niveau où seulement deux slots standards sont débloqués :
+
+`slot-1 + slot-2 + slot-ultimate` peuvent être projetés simultanément si les trois capacités satisfont leur niveau requis.
+
+### Human Editor
+
+L'éditeur présente :
+
+- quatre sélecteurs standards qui n'affichent que les capacités `standard` ;
+- un cinquième sélecteur `Ultime` qui n'affiche que les capacités `ultimate` ;
+- une case explicite « Capacité ultime — uniquement dans le slot Ultime » dans l'édition d'une capacité ;
+- une zone distincte « Conditions d'activation ».
+
+L'UI ne déduit jamais le statut Ultime du nom, des effets ou des conditions.
+
+### Chemin d'export
+
+Le chemin reste :
+
+`SkillDefinition.loadoutSlot -> CaptureActiveSkillLoadoutV1 -> validation de slot -> projection progression/niveau -> Capture Editor Export V3 -> creature.skillIds runtime`.
+
+Ni Combat Runtime ni Action Resolver ne possèdent la notion de « cinquième slot ». Ils reçoivent seulement la liste de capacités effectivement projetées pour le combattant.
+
+Les dégâts, résistances, énergie, cooldowns, ciblage, Animation Core, FX Core, profils de mouvement et arènes restent inchangés.
+
+
+## 42. Conditions d’activation expressives et zones persistantes V1
+
+### Conditions d’activation
+
+`SkillDefinition.activationRequirements` reste l’unique contrat de disponibilité conditionnelle d’une capacité.
+
+Types V1 pris en charge :
+- `combat_elapsed_ms` ;
+- `damage_dealt` ;
+- `damage_taken` ;
+- `hp_at_or_below_pct` ;
+- `allies_defeated` ;
+- `enemies_defeated` ;
+- `kills_by_self`.
+
+Les conditions sont combinées par `mode: all|any`.
+
+Autorités :
+- `Combat State.elapsedMs` possède le temps de combat ;
+- les compteurs dégâts restent dans le fighter Combat State ;
+- `fighter.knockoutsTotal` possède les KO crédités au combattant ;
+- les nombres d’alliés/ennemis KO sont dérivés du `BattleFormatDefinition` actif et des PV réels du Combat State ;
+- `skill-activation-requirements-v1.js` évalue les seuils ;
+- Human Editor ne fait que saisir et afficher les conditions.
+
+Un KO est crédité uniquement lors d’une transition réelle `hpBefore > 0 -> hpAfter === 0`, donc un overkill sur une cible déjà KO ne peut pas incrémenter le compteur une seconde fois.
+
+### Zone persistante
+
+`SkillEffectV1.kind = "persistent_zone"` décrit une zone de gameplay persistante.
+
+Contrat V1 :
+- `zoneId` ;
+- `targetScope` ;
+- `radius: short|medium|long` ;
+- `durationMs` ;
+- `tickIntervalMs` ;
+- `reactivation: refresh|reinforce` ;
+- `maxActivations` ;
+- `radiusGrowthSteps` ;
+- `tickEffect`.
+
+Le propriétaire runtime est `persistent-zone-runtime-v1.js`. Les instances actives vivent dans `CombatState.persistentZones`.
+
+La zone utilise exclusivement l’horloge `Combat State.elapsedMs`. Aucun timer UI, `setInterval`, `Date.now()` ou seconde horloge n’est autorisé.
+
+### Rayon gameplay V1
+
+Le combat ne possède pas encore de coordonnées gameplay individuelles par combattant. Le rayon V1 réutilise donc l’autorité spatiale réellement disponible : les bandes de distance `short -> medium -> long`.
+
+Une zone ennemie centrée sur le camp du lanceur touche une cible adverse uniquement si la distance de combat courante est comprise dans son rayon.
+
+Un renforcement peut faire évoluer le rayon par pas, par exemple :
+`short -> medium -> long`.
+
+Cette règle est volontairement distincte du rayon visuel CSS/FX. Aucun pixel de l’UI ne décide si une cible subit les dégâts.
+
+### Tick V1
+
+Le premier raccord runtime autorise un `tickEffect` de type `damage` uniquement.
+
+Les dégâts de tick passent par les propriétaires existants :
+`persistent-zone-runtime -> computeCombatDamageV1 -> applyCombatDamageV1 -> Combat State`.
+
+Ils bénéficient donc des résistances, bonus de dégâts, boucliers et comptage de KO existants sans seconde formule.
+
+Les zones de soin, énergie, statut, contrôle, déclenchement à l’entrée/sortie ou explosion à expiration constituent des extensions futures du même contrat ; elles ne doivent pas être simulées par l’UI ou des règles fondées sur le nom de la capacité.
+
+
+## 43. Présentation persistante des zones et clarté Human Editor V1
+
+### Frontière gameplay / présentation
+
+Le gameplay des zones persistantes reste exclusivement possédé par `CombatState.persistentZones` et `persistent-zone-runtime-v1.js`.
+
+La présentation ne crée aucune durée, aucun tick, aucun compteur d'activation et aucune horloge parallèle.
+
+Chaîne autorisée :
+
+`SkillEffectV1.persistent_zone -> CombatState.persistentZones -> Combat Runtime.onClock(state) -> DOM Skill FX.syncPersistentZones() -> Renderer`.
+
+Le callback `onClock` réutilise l'horloge runtime existante. Il n'ajoute ni `setInterval`, ni `setTimeout`, ni `Date.now()` spécifique aux zones.
+
+### Visuel persistant
+
+Le contrat `SkillPresentationBinding` possédait déjà le slot visuel générique `aura`. Ce slot reste l'autorité de présentation pour le visuel d'une zone persistante ; aucun second contrat visuel parallèle n'est créé.
+
+Le Human Editor projette les champs :
+- `zoneAssetId` ;
+- `zoneDisplayScale` ;
+
+vers `presentation.visual.aura` avec :
+- `attachment:"source"` ;
+- `playbackMode:"loop"` ;
+- couche `behind` pour les deux vues.
+
+L'adaptateur de présentation expose ce slot au renderer sous le nom de lecture `persistentZone`.
+
+Le renderer crée au maximum un nœud visuel par `persistentZone.id`, l'ancre sur le slot de combat stable du lanceur, met à jour son rayon visuel lors des renforcements et le retire dès que l'instance n'est plus présente dans `CombatState.persistentZones`.
+
+Le scale visuel Proche / Moyen / Loin est uniquement une projection de présentation. Il ne décide jamais de la portée gameplay.
+
+### Éditeur humain
+
+Pour une zone persistante :
+- `Intervalle entre les dégâts (secondes)` = temps entre deux applications ;
+- `Dégâts à chaque intervalle` = valeur appliquée à chaque tick ;
+- `Élément des dégâts` est un sélecteur ;
+- la valeur vide est présentée comme `Même élément que la capacité` et conserve le comportement runtime existant : élément de la capacité, puis `physical` uniquement si aucun élément n'existe.
+
+La première utilisation compte comme activation 1. En mode `reinforce`, les activations suivantes augmentent le rayon selon `radiusGrowthSteps` jusqu'à `maxActivations` et la bande `long`. Une réactivation au-delà du maximum conserve le rayon maximal et renouvelle la durée selon le propriétaire gameplay existant.
+
+
+## 44. État d’enregistrement des capacités et filtrage d’assets V1
+
+### Autorité unique du statut « modifié »
+
+`configuredSkills` est l’unique autorité des capacités enregistrées dans la session Human Editor.
+
+Le statut « capacité modifiée » n’est plus stocké dans un booléen `skillDirty` indépendant. Il est dérivé à la demande par `captureSkillDraftHasUnsavedChangesV1()` :
+
+`brouillon normalisé courant -> comparaison avec configuredSkills[id] -> modifié / propre`.
+
+Conséquences :
+- une nouvelle capacité absente de `configuredSkills` est modifiée ;
+- après un enregistrement réussi, le brouillon exact placé dans `configuredSkills` est immédiatement propre ;
+- toute modification réelle du formulaire reconstruit un brouillon différent et redevient modifiée ;
+- aucune suite de listeners `input/change` ne maintient un second état parallèle ;
+- la preview ne possède aucune compensation et continue d’appeler le chemin normal `editor.validate()`.
+
+Cette règle s’applique également aux gardes export/import et à l’hydratation initiale.
+
+### Filtrage du visuel persistant de zone
+
+Le rôle d’asset `zone` est filtré par `captureEditorAssetMatchesRoleV1()`.
+
+Un asset de zone doit :
+- être compatible `editor` ;
+- être une image ;
+- être de type `sprite` ou `fx` ;
+- ne pas appartenir à la catégorie `creature` ;
+- ne pas être un `portrait` ;
+- ne pas porter le tag `creature`.
+
+Le filtrage est sémantique et ne dépend d’aucun nom de créature ou d’asset.
+
+### Libellés de zone
+
+Le bloc `persistent_zone` possède explicitement :
+- `Intervalle entre les dégâts (secondes)` ;
+- `Dégâts à chaque intervalle` ;
+- `Élément des dégâts`.
+
+Les tests ciblent le bloc de zone lui-même afin d’éviter qu’un libellé identique situé dans un autre effet donne un faux GREEN.
+
+
+## 45. HUD cinq capacités et boucle visuelle de zone V1
+
+### HUD combat
+
+Le loadout Capture reste défini par son contrat existant : quatre slots standards et un slot Ultime.
+
+Le HUD ne crée aucune règle de disponibilité. Il projette simplement les cinq capacités sur une grille de cinq colonnes afin de conserver une seule ligne sur mobile.
+
+La taille des cases est réduite uniquement par présentation CSS. Aucun calcul de progression, cooldown, énergie ou activation n'est déplacé dans l'UI.
+
+### Renforcement gameplay de zone
+
+Le propriétaire gameplay reste `persistent-zone-runtime-v1.js`.
+
+Le chemin vérifié par test réel est :
+- activation 1 : rayon initial `short` ;
+- activation 2 avec `reinforce` + croissance 1 : `medium` ;
+- activation 3 : `long` ;
+- les activations supplémentaires restent bornées à `maxActivations` ;
+- les ticks continuent d'utiliser `tickEffect.amount` et le canal élémentaire configuré.
+
+Aucune correction gameplay n'a été nécessaire dans ce lot : le runtime existant était déjà correct.
+
+### Animation persistante
+
+`SkillPresentationBinding.visual.aura` reste l'unique définition visuelle de la zone.
+
+Le renderer `dom-skill-fx.js` respecte maintenant `playbackMode:"loop"` aussi pour les assets atlas basés sur `url + frameCount`, et pas seulement pour les séquences multi-fichiers `frames[]`.
+
+Un asset multi-frame peut donc boucler aussi longtemps que le nœud de zone existe. Le nœud reste le même pendant un renforcement ; seule sa projection de rayon/scale est mise à jour depuis `CombatState.persistentZones`.
+
+Une image réellement statique reste statique. Aucune animation artificielle, aucun timer secondaire et aucune seconde autorité de durée ne sont ajoutés.
+
+
+## 46. Synchronisation autoritaire du visuel de zone renforcée V1
+
+Le rendu d'une zone persistante est désormais projeté depuis un seul chemin d'état :
+
+`CombatState.persistentZones -> CombatRuntime.onState(state) -> renderState(state) -> fx.syncPersistentZones()`.
+
+`onClock` ne possède plus la synchronisation des zones persistantes.
+
+### Signal Runtime
+
+Le signal observable du `CombatRuntime` inclut maintenant `persistentZones` en plus de la distance et des fighters.
+
+Ainsi, une modification qui ne touche que la zone déclenche quand même `onState`, notamment :
+- création de zone ;
+- renforcement du rayon `short -> medium -> long` ;
+- changement d'activation ;
+- mise à jour de l'état temporel de zone ;
+- expiration/suppression.
+
+Le renderer conserve un seul nœud par `persistentZone.id` et met à jour son `transform/scale` depuis `zone.radius`. Il n'existe aucun état parallèle de rayon côté UI.
+
+Aucun timer, observer ou listener compensatoire n'a été ajouté.
+
+
+## 47. Sprite animé de zone de feu — asset canonique V2
+
+Le visuel de zone de feu persistant conserve l'identité stable :
+
+- assetId : `pack:capture:sprite-fire-zone-loop-01` ;
+- emplacement : `assets/library/capture/sprites/skills/fire_zone_loop/` ;
+- source artistique : sprite sheet 4 × 4, 16 poses, vue plus oblique ;
+- runtime : atlas horizontal WebP transparent de 16 frames ;
+- frame runtime : 96 × 96 ;
+- atlas : `atlases/sprite_skill_fire_zone_loop_01_atlas.webp` ;
+- manifest : `sprite_skill_fire_zone_loop_01_sequence.json` ;
+- cadence : 80 ms / frame ;
+- boucle : active.
+
+Les huit anciennes frames individuelles ont été retirées de la bibliothèque canonique afin d'éviter deux sources visuelles concurrentes pour le même assetId.
+
+### Autorités
+
+- le catalogue `global-visual-assets.v1.json` conserve l'identité stable et référence le manifest au format `sprite-atlas` ;
+- `demoPresentationAssets` résout cet assetId en `url + frameCount + frameMs + playbackMode` ;
+- `SkillPresentationBinding.visual.aura` reste propriétaire du choix de visuel ;
+- `CombatState.persistentZones` reste propriétaire de la durée et du rayon gameplay ;
+- le renderer utilise son chemin atlas existant par déplacement de `background-position`, sans permutation d'URL et sans horloge supplémentaire.
+
+Aucune règle gameplay ne dépend de l'assetId.
+
+### Publication et cache
+
+La bibliothèque stable `global-assets` est publiée au SHA `d73ad04dbc6c3f8de492b9a503653c4c6f2e753c`.
+La révision de `GLOBAL_VISUAL_LIBRARY` est `2026-10-01-v7-fire-zone-v2` afin que Chrome mobile ne réutilise pas l'ancien visuel.
+
+Le sélecteur de visuel persistant conserve exactement la même entrée « Zone de feu animée » ; les capacités déjà sauvegardées n'ont aucune migration à effectuer.
+
+## 48. Persistent Zone Visual UX V2
+
+### Animation multi-frame mobile
+
+Les séquences persistantes `frames[]` en `playbackMode:"loop"` ne dépendent plus d'une animation de `backgroundImage` entre plusieurs URL.
+
+Le renderer crée des calques image enfants dans **le même nœud FX autoritaire** et anime uniquement leur opacité avec Web Animations API. Les changements d'opacité sont fiables sur Chrome mobile et ne nécessitent :
+- aucun `setInterval` ;
+- aucun `setTimeout` de frame ;
+- aucune seconde horloge ;
+- aucun état de frame métier.
+
+La durée de boucle provient toujours de `frameMs × frameCount`. Le nœud reste possédé par `CombatState.persistentZones` et disparaît quand la zone n'existe plus.
+
+### Scale bi-axe
+
+`SkillPresentationBinding` accepte maintenant, en plus de `displayScale` :
+- `displayScaleX` ;
+- `displayScaleY`.
+
+Ces deux multiplicateurs sont purement visuels et ne modifient jamais le rayon gameplay.
+
+Pour une zone persistante, le renderer applique :
+`rayon visuel = radiusScale × displayScale × displayScaleX/Y`.
+
+Le Human Editor expose :
+- Scale global ;
+- Largeur du visuel ;
+- Hauteur du visuel ;
+avec une plage de 0.25 à 8.
+
+### Réactivation Human Editor
+
+Le contrat gameplay reste inchangé :
+- `refresh` ;
+- `reinforce`.
+
+Seul le wording utilisateur est simplifié :
+- `refresh` = **Garder la même taille** ;
+- `reinforce` = **Agrandir la zone**.
+
+Toute réactivation renouvelle déjà la durée selon le propriétaire gameplay existant. L'UI ne présente donc plus « Rafraîchir la durée » comme un choix distinct.
+
+
+## 48. Décalage visuel des zones persistantes
+
+Le positionnement fin d'une zone persistante réutilise les champs génériques existants du `SkillPresentationBinding` :
+
+- `offsetX` : décalage horizontal visuel en pixels CSS ;
+- `offsetY` : décalage vertical visuel en pixels CSS.
+
+Ces valeurs sont purement présentationnelles.
+
+Chaîne autoritaire :
+
+`SkillPresentationBinding.visual.aura.offsetX/Y -> Capture Presentation Assets -> DOM Skill FX -> ancre créature + offset visuel`.
+
+Le Human Editor expose deux champs dédiés pour la zone :
+- Décalage horizontal de la zone ;
+- Décalage vertical de la zone.
+
+La plage UI est -300 à +300 px avec un pas de 5 px et une valeur par défaut de 0.
+
+Ces offsets :
+- ne modifient jamais `CombatState.persistentZones` ;
+- ne modifient pas le rayon gameplay ;
+- ne modifient pas les dégâts, collisions ou cibles ;
+- n'ajoutent aucun état parallèle ;
+- n'ajoutent aucun timer, observer ou listener.
+
+Le scale global et les scales X/Y restent indépendants du positionnement.
+
+
+## 49. Limite d’utilisations d’une capacité par combat V1
+
+Une capacité peut désormais porter une limite canonique optionnelle :
+
+- `SkillDefinition.maxUsesPerCombat = null` : utilisation illimitée ;
+- entier strictement positif : nombre maximal d’activations acceptées sur le combat.
+
+Le champ absent est normalisé vers `null` afin de conserver la compatibilité des capacités historiques.
+
+### Autorité runtime
+
+Le compteur appartient à `CombatState.fighters[*].skillUseCounts`, indexé par `skillId`.
+
+Chaîne autoritaire :
+
+`SkillDefinition.maxUsesPerCombat -> CombatState.skillUseCounts -> Action Resolver -> activation acceptée ou rejet usage_limit`.
+
+Une utilisation est consommée au démarrage accepté de la capacité, au même point d’engagement que l’énergie et le cooldown. Une tentative rejetée ne consomme aucune utilisation.
+
+Cette règle s’applique aussi aux capacités de réaction via `resolveReaction()`. Elle n’est pas spéciale au slot Ultime : toute capacité peut utiliser la même propriété.
+
+Le rappel/réinvocation d’une créature conserve `skillUseCounts` dans le snapshot roster afin que la limite reste valable sur tout le combat. Un nouveau combat repart de la configuration initiale et donc de compteurs vides.
+
+### Human Editor et export
+
+Le Human Editor expose `Utilisations max par combat` :
+
+- `0` dans l’interface = **Illimité** ;
+- `1`, `2`, `3`, etc. = limite explicite.
+
+Le draft/export utilise uniquement la définition canonique :
+
+`UI -> buildHumanSkillDraftV1 -> SkillDefinition.maxUsesPerCombat -> export Capture JSON`.
+
+Dans le JSON exporté :
+- illimité = `"maxUsesPerCombat": null` ;
+- limite = entier positif.
+
+Aucun compteur parallèle côté UI, aucun timer, observer ou listener compensatoire n’est ajouté.
+
+
+## 50. Presets de capacités vitrine Capture V1
+
+Les capacités configurées dans le Human Editor et destinées à la vitrine Capture utilisent désormais le même principe durable que les presets créatures.
+
+### Source de vérité
+
+Le fichier `capture-skill-transfer-v1` exporté par l’éditeur reste la donnée canonique du preset.
+
+Chaîne :
+
+`data/capture/showcase/*.capture-skill-transfer-v1.json -> CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 -> importCaptureTransferJsonV1 -> applyCaptureTransferBatchToEditorStateV1 -> configuredSkills`.
+
+`configuredSkills` reste l’unique propriétaire actif. Aucun catalogue vitrine parallèle n’est consulté par le gameplay.
+
+### Remplacement d’une capacité historique
+
+Si l’identifiant stable existe déjà dans les catalogues historiques/native :
+
+- le preset vitrine conserve le même ID ;
+- le planner Transfer en mode `replace` produit `replace-skill` ;
+- la taille de la Map reste inchangée ;
+- toutes les créatures qui référencent cet ID continuent de pointer vers la capacité remplacée ;
+- aucun doublon ou alias n’est créé.
+
+### Ordre de démarrage
+
+Le Human Editor charge :
+
+1. catalogues de capacités laboratoire/native/historiques ;
+2. presets de capacités vitrine ;
+3. presets créatures vitrine.
+
+Cet ordre garantit qu’un preset créature peut référencer une capacité vitrine déjà présente dans `configuredSkills`.
+
+Les presets vitrine passent tous par les adaptateurs Transfer existants. Aucun merge champ par champ, fallback spécial ou branche par nom de capacité n’est autorisé.
+
+### Premier preset
+
+`cap_fire_atk_6` — **Tempête de flammes** — remplace sa définition historique par l’export utilisateur fourni.
+
+Seule modification explicitement demandée à l’export source : `maxUsesPerCombat: 1`.
+
+Les autres paramètres restent strictement ceux du fichier utilisateur, notamment le niveau requis, les conditions d’activation, la zone persistante, le visuel, l’audio, les offsets et les scales.
+
+
+## 51. Bibliothèque active des capacités dans le Human Editor V1
+
+Le sélecteur de capacités du Human Editor ne consulte plus le catalogue historique comme autorité de modification.
+
+### Autorité
+
+Chaîne active :
+
+`catalogues natifs / migrations / presets vitrine / imports -> configuredSkills -> sélecteur Capacités -> writeSkillDraftFields -> formulaire Human Editor`.
+
+`configuredSkills` est donc l'unique source des capacités réellement modifiables dans la session d'éditeur.
+
+Le catalogue historique et ses helpers peuvent rester disponibles comme données/adaptateurs de migration, mais ils ne doivent jamais réécrire une capacité déjà présente dans `configuredSkills`.
+
+### Sélection et rechargement
+
+Le sélecteur `[data-skill-library-select]` est reconstruit depuis les valeurs de `configuredSkills`.
+
+Une sélection recharge la fiche complète depuis le draft actif :
+- identité, description, niveau requis et slot standard/Ultime ;
+- catégorie, forme, élément et approche ;
+- coût énergie, préparation, trajet, récupération et cooldown ;
+- `maxUsesPerCombat` ;
+- conditions d'activation ;
+- effets tactiques ;
+- projectile clash ;
+- présentation : icône, cast, trajet, impact, zone persistante, scales, offsets, layers, socket et audio.
+
+Le mapping actif est assuré par `humanSkillEditorFieldsFromDraftV1()` puis `writeSkillDraftFields()`.
+
+Le round-trip `draft actif -> champs éditeur -> buildHumanSkillDraftV1()` est testé pour le preset vitrine `cap_fire_atk_6` afin d'empêcher le retour silencieux d'une ancienne définition.
+
+### Rafraîchissement
+
+Le sélecteur est rafraîchi lorsque `configuredSkills` change :
+- enregistrement d'une capacité ;
+- chargement initial de la Boule de feu configurée dans la page ;
+- hydratation des catalogues natifs / Capture ;
+- application des presets de capacités vitrine ;
+- import ou remplacement par le pipeline Transfer.
+
+Ainsi :
+- `fireball` reste accessible comme vraie capacité active ;
+- `cap_fire_atk_6` affiche la version vitrine remplacée et non son ancien template historique.
+
+Aucune copie de skill, aucun alias par nom et aucun état métier parallèle n'est ajouté.
+
+
+## Combat Feedback Readability V1 — projection visuelle sans autorité gameplay
+
+Le feedback de lisibilité de combat suit les mêmes frontières d'autorité que le reste du laboratoire.
+
+### Delta PV
+
+Le propriétaire des PV reste exclusivement le moteur de combat.
+
+Chaîne :
+
+`Combat Session / effets -> snapshot HP -> Combat Runtime -> combatHealthDeltaEventsV1() -> onHealthDelta -> DOM Skill FX`.
+
+`combatHealthDeltaEventsV1()` ne calcule jamais les dégâts : il compare deux snapshots autoritaires et publie seulement la variation de PV réellement appliquée.
+
+Conséquences :
+- dégâts directs, DoT, zones persistantes et futures sources de perte de PV passent par la même projection ;
+- aucune valeur de résistance, puissance ou formule de dégâts n'est dupliquée dans le renderer ;
+- le nombre flottant est une conséquence visuelle du delta réel.
+
+### Audio de trajet projectile
+
+`SkillPresentationBinding` possède déjà le slot audio `travel`.
+
+Le Presenter possède désormais le cycle de vie du son de trajet :
+- démarrage au release d'un projectile ;
+- lecture en boucle lorsque la capacité éditée utilise ce slot ;
+- arrêt à la résolution, au clash, à l'interruption ou à la destruction du Presenter.
+
+L'Audio Adapter ne décide jamais de la durée métier ni de l'impact.
+
+### Présentation persistante des statuts
+
+`StatusEffectV1` reste inchangé et ne contient aucun champ visuel.
+
+`SkillPresentationBindingV3` étend la présentation avec `statusVisuals`, indexé par identifiant de statut.
+
+Modes supportés :
+- `none` ;
+- `tint` ;
+- `sprite` ;
+- `both`.
+
+Le Render Adapter `dom-status-fx.js` synchronise les couches depuis `fighter.statusEffects` du snapshot autoritaire :
+- apparition lorsque le statut existe ;
+- maintien sans horloge visuelle parallèle ;
+- retrait lorsque le statut disparaît (expiration, cleanse, dispel ou autre cause métier).
+
+Un même `statusId` ne peut pas silencieusement recevoir deux présentations différentes dans la même source de présentation : un conflit est rejeté explicitement.
+
+Chaîne :
+
+`StatusEffect Runtime -> snapshot fighter.statusEffects -> statusPresentationFor(statusId) -> DOM Status FX`.
+
+Aucun timer global, observer global ou branchement par identifiant de capacité n'est ajouté.
+
+
+## Status Readability V2 — une seule projection depuis les statuts autoritaires
+
+Le rendu des buffs/debuffs repose exclusivement sur `fighter.statusEffects` dans le snapshot de combat.
+
+Chaîne :
+
+`StatusEffect Runtime -> fighter.statusEffects -> dom-status-fx.sync(state) -> modèle + HUD`.
+
+Le renderer `dom-status-fx.js` possède les trois projections visuelles d'un statut :
+- coloration du modèle ;
+- sprite persistant autour du modèle ;
+- icône HUD sous la barre de vie.
+
+Aucun état de statut, stack ou durée n'est recopié dans l'UI. Les icônes sont créées, mises à jour et retirées uniquement à partir du snapshot reçu à chaque render.
+
+### Coloration
+
+La couche de teinte conserve le masque alpha du sprite visible mais n'utilise plus `mix-blend-mode: color`.
+
+`tintOpacity` est désormais une intensité directe :
+- 0 = aucune teinte ;
+- 1 = superposition pleine de la couleur choisie sur la silhouette du modèle.
+
+Le renderer applique explicitement `mixBlendMode = "normal"`.
+
+### Icône HUD
+
+Pour chaque statut actif :
+- la polarité provient de `StatusEffectV1.polarity` ;
+- le nombre de stacks provient de l'instance runtime ;
+- si un sprite de présentation existe, il est réutilisé comme visuel d'icône ;
+- sinon un badge générique est utilisé : `+` pour beneficial, `−` pour detrimental, `•` pour neutral ;
+- la disparition du statut dans le snapshot retire immédiatement l'icône.
+
+Les hosts HUD sont fournis au même renderer dans les vrais chemins 1v1 et 2v2.
+
+Aucune horloge, aucun observer et aucun moteur de statut secondaire n'est introduit.
+
+
+## Functional Recovery V1 — action lifecycle
+
+`recoveryMs` est désormais une phase réelle du cycle de vie d'une action.
+
+Chaîne :
+
+`preparation -> travel/impact -> recovery -> idle`.
+
+Autorité :
+- `activeByActor` reste l'unique propriétaire du lifecycle ;
+- aucune map secondaire de récupération ;
+- aucun timer de récupération dédié ;
+- le tick existant du Combat Runtime traite aussi l'échéance de recovery.
+
+À l'impact :
+- la résolution gameplay est appliquée immédiatement par la Session/Resolver ;
+- dégâts, effets et événements sont donc visibles sans attendre la recovery ;
+- l'enregistrement de l'action passe ensuite en état `resolved/recovery` dans le même `activeByActor`.
+
+Pendant la recovery :
+- `startSkill/startCommand` refusent l'acteur avec `outcome: "recovering"` ;
+- `hasActiveActionFor(actorId)` reste vrai car l'acteur est occupé ;
+- `activeActionFor/activeAction/activeActions` n'exposent plus l'action résolue comme attaque encore en exécution ;
+- réactions, clashes et contacts visibles ignorent les records déjà résolus.
+
+À l'expiration :
+- le record est retiré de `activeByActor` ;
+- l'acteur redevient disponible.
+
+Cas particuliers :
+- `recoveryMs = 0` conserve une libération immédiate ;
+- un tick tardif dépassant déjà impact + recovery libère l'acteur dans le même passage ;
+- le KO de la cible ne supprime pas la recovery de l'attaquant déjà résolu ;
+- le KO/cancel/dispose de l'acteur lui-même peut retirer son record.
+
+Le cooldown reste une responsabilité distincte de la Session/état combat et n'est pas recalculé par le Runtime.
+
+
+## Persistent Zone Approach Radius V1 — portée spatiale sans dépendance renderer
+
+Les zones persistantes n'utilisent plus `state.distance` comme seule approximation spatiale dans le vrai chemin Combat Runtime.
+
+### Autorités
+
+- **Combat Runtime** : propriétaire du cycle de vie et du progrès de l'action active ;
+- **Combat Session** : raccord explicite, sans règle métier spatiale propre ;
+- **Persistent Zone Runtime** : propriétaire exclusif de la portée de zone et de l'application des dégâts.
+
+Chaîne :
+
+`Combat Runtime activeByActor -> zoneSpatialContext -> Combat Session.advanceMs() -> Persistent Zone Runtime -> Combat Damage`.
+
+Le contexte transmis est transitoire et dérivé du même record d'action déjà autoritaire. Aucun état parallèle d'approche n'est stocké.
+
+### Bandes d'approche V1
+
+Pour une action `approachMode: "ground"` visant le propriétaire de la zone :
+
+- rayon `long` : camp adverse inclus, même sans action ;
+- rayon `medium` : entrée au premier tiers du trajet ;
+- rayon `short` : entrée aux deux tiers du trajet.
+
+Le franchissement du seuil est traité comme une entrée réelle dans la zone et applique le tick de dégâts de la zone au moment du franchissement.
+
+Les ticks périodiques continuent ensuite à être gérés par le Persistent Zone Runtime.
+
+### Compatibilité
+
+Sans `zoneSpatialContext` explicite, le Persistent Zone Runtime conserve le fallback historique basé sur `state.distance`.
+
+Cela permet aux usages génériques/unitaires hors Combat Runtime de conserver leur contrat antérieur.
+
+### Invariants
+
+- aucune géométrie DOM ;
+- aucun `getBoundingClientRect()` ;
+- aucun calcul de dégâts dans le Runtime ;
+- aucun timer spatial dédié ;
+- aucun traitement par identifiant de capacité ;
+- croissance `short -> medium -> long` inchangée ;
+- renderer uniquement consommateur du snapshot.
+
+
+## Live Damage Feedback — présentation non bloquante
+
+Le feedback de dégâts visuel est une projection de `Combat Runtime.onHealthDelta`.
+
+Deux render adapters consomment la même projection :
+- `dom-skill-fx.js` : nombre flottant `-X`, ancré sur le modèle live ;
+- `dom-damage-feedback.js` : scintillement de l'image uniquement.
+
+Le scintillement ne modifie jamais le container de mouvement et ne possède aucun état gameplay.
+Il peut donc s'exécuter pendant une attaque ou une approche sans créer de seconde autorité d'animation de déplacement.
+
+
+## Status Source Skill Provenance V1 — icône HUD depuis l’instance active
+
+La provenance d’une capacité qui applique un statut est conservée sur l’instance runtime active, sans modifier `StatusEffectV1`.
+
+Chaîne autoritaire :
+
+`SkillDefinition.id -> applyImmediateTacticalEffectsV1 -> StatusEffectRuntimeInstanceV1.sourceSkillId -> fighter.statusEffects -> dom-status-fx`.
+
+`sourceSkillId` est une provenance de l’instance active, au même niveau que `sourceActorId`. Elle n’est ni une règle du statut, ni une présentation, ni un registre parallèle.
+
+Lors d’un `replace`, `refresh` ou `stack`, il reste une seule instance par `statusId`. Une réapplication met à jour la provenance avec la dernière application autoritaire ; aucun tableau de sources parallèle n’est créé.
+
+Pour l’icône HUD uniquement :
+1. le renderer résout `sourceSkillId` via le même `presentationForSkill()` canonique que les boutons/capacités ;
+2. si cette capacité fournit une icône, elle est utilisée ;
+3. sinon le renderer réutilise le sprite de présentation du statut ;
+4. sinon il conserve le badge générique de polarité.
+
+La teinte et le sprite persistant du modèle restent résolus par `statusPresentationFor(statusId)`. L’icône de la capacité source ne devient donc jamais une seconde définition du statut.
+
+Les clients 1v1 et 2v2 raccordent le même `dom-status-fx`. Aucun timer, observer, cache métier ou branchement par identifiant de capacité/statut n’est introduit.
+
+
+## Status Info Card V1 — projection tactile sans autorité parallèle
+
+La fiche tactile de statut est une projection pure des données déjà autoritaires.
+
+Chaîne :
+
+`CombatState.elapsedMs + fighter.statusEffects[] + sourceSkillId -> SkillDefinition -> status-effect-info-v1 -> dom-status-fx`.
+
+Règles :
+- aucune durée locale n’est stockée ;
+- aucune horloge UI n’existe ;
+- `remainingLabel` est recalculé uniquement pendant `dom-status-fx.sync(state)` depuis `expiresAtMs - state.elapsedMs` ou `remainingActionEnds` ;
+- stacks et max viennent de l’instance et de sa définition actives ;
+- DoT/HoT/stat modifier/shield/immobilize/silence/stun/taunt sont décrits depuis les champs du contrat `StatusEffectV1` ;
+- le nom de la capacité d’origine est résolu depuis le registre `SkillDefinition` déjà utilisé par le client ;
+- aucune description n’est stockée par `statusId` ou `skillId`.
+
+Le renderer garde une seule interaction locale de présentation : toucher l’icône crée/affiche sa fiche ; expiration ou cleanse supprime l’icône et la fiche avec le même record HUD.
+Il n’existe aucun observer global, timer global ou second état métier.
+
+## Persistent Zone Contact Clock Sync V1 — contact visible entre deux ticks
+
+Le Combat Runtime reste l'unique propriétaire de la conversion horloge réelle -> temps de CombatSession.
+
+Une frontière interne commune advanceSessionToClock(current) est utilisée par :
+- le tick périodique existant ;
+- reportActionContact() lorsqu'un contact visuel autoritaire arrive entre deux ticks.
+
+Ordre obligatoire lors d'un contact visible :
+1. avancer la CombatSession jusqu'au temps courant ;
+2. fournir le zoneSpatialContext pendant que l'approche ground non résolue existe encore ;
+3. laisser Persistent Zone Runtime détecter et appliquer toute entrée de rayon ;
+4. seulement ensuite traiter release/clash/impact et résoudre l'action au timestamp de contact accepté.
+
+Conséquence : une attaque de contact qui franchit une zone persistante ne peut plus perdre son événement d'entrée simplement parce que le signal de collision visuelle est arrivé avant le prochain tick planifié.
+
+Invariants :
+- les dégâts de zone restent exclusivement dans Persistent Zone Runtime / Combat Damage ;
+- le DOM et la géométrie visuelle ne calculent aucun dégât ;
+- aucun second timer, observer, cache ou état spatial n'est ajouté ;
+- reportActionContact() reste une frontière de synchronisation vers le Runtime, pas une autorité gameplay indépendante.
+
+
+## Presentation Feedback V1 — paramètres visuels indépendants du gameplay
+
+La lecture travel appartient au SkillPresentationBinding : once / loop / stretch. L’éditeur expose les trois modes ; un nouveau brouillon choisit stretch, un ancien mode explicite est conservé. Le renderer déjà propriétaire de la lecture utilise la durée native de vol pour stretch, sans remplacer travelMs, le contact ou les interruptions. Loop conserve la cadence source jusqu’au nettoyage natif.
+
+La durée visuelle optionnelle durationMs d’un slot FX est positive et finie. Pour l’impact, le renderer utilise la valeur explicite ou la durée de lecture réelle du sprite ; l’enveloppe suit cette même durée. Les sprites animés utilisent leur propre alpha et l’opacité du binding, les images statiques gardent le fade existant. Scale et offsets sont consommés sans limite silencieuse à 4. Le timing des dégâts reste celui du Runtime.
+
+CreaturePresentationBindingV2 garde displayScale/position comme defaults et accepte viewOverrides.player/opponent avec displayScale et/ou position {x,y}. Sans champ de vue, le default est hérité ; sans overrides, le contrat sérialisé antérieur reste identique. La fonction pure creaturePresentationForViewV2 sélectionne ces paramètres au même niveau de contrat. Les adaptateurs de capture et le VisualActor reçoivent la vue active, le Render Adapter consomme ses valeurs. Les métadonnées entrantes gardent la taille propre à chaque vue. Aucun décalage n’est converti en distance métier ni en hitbox métier ; la géométrie visuelle existante suit toujours le modèle réellement transformé.
+
+L’assemblage de l’export de preview partage uniquement les lignes de définition strictement identiques lorsque les deux camps sélectionnent la même créature, et conserve deux acteurs distincts. Les conflits d’ID restent rejetés par les contrats/Exporters existants. Aucun état canonique, moteur, timer ou stockage parallèle n’est créé.
+
+Référence : docs/LAB_PRESENTATION_FEEDBACK_V1.md ; validation artistique smartphone encore ouverte.
+
+Les overrides nouveaux de vue s’appliquent à la galerie de prévisualisation et au combat. Les surfaces de placement tactile des sockets conservent leur référentiel d’édition antérieur ; aucun offset de combat n’y est injecté. Les points normalisés et leur propriétaire ne changent pas.
+
+
+## 2026-10-04 — Ground projection in the canonical AnimationPlan
+Each segment carries neutral `ground: { translateX, translateY, scale }` alongside the unchanged body transform. AnimationCore is the sole owner of path/depth: locomotion ground Y excludes local hop/float, special aerial ground Y follows path progress rather than the apex, and perspective scale excludes body squash/rotation. Default lateral translation follows the body; local elevation never becomes ground depth.
+DOM timeline projects the body and ellipse with identical offsets, easing, opacity and duration. DomActorRenderer owns both WAAPI tracks, synchronizes their startTime after readiness, observes both completions, and cancels/restores both together. The ground ellipse remains the native fighter `::before`, with existing profile bottom/opacity and inherited distance scale. Final KO opacity is retained until cancellation/replacement; finite attacks restore the base position. No new timer, observer, gameplay state or collision geometry.
+
+
+## 2026-10-04 — Shared sprite playback for status FX
+DomStatusFxRenderer uses the existing applySpriteVisual exported by DomSkillFxRenderer. Status presence/refresh/expiry remains owned by Runtime; the renderer owns the node and its sprite lifecycle. Animated strips loop with eight visible intervals, sequence WAAPI tracks cancel on replacement/removal/dispose, and unchanged records preserve their node at refresh. Source skill icons keep HUD priority; a single middle frame is the fallback for a sprite asset. Catalog inputs and presentation bindings remain assetId based; no gameplay branches, extra reader, timer or observer are introduced. Source assets resolve exclusively from global-assets. Reference: docs/LAB_CAST_STATUS_SOURCE_ALPHA_V1.md.
+
+
+## 2026-10-04 — Réglages de sprites de capacité exposés dans Human Editor
+
+`capture-editor-sprite-controls-v1.js` traduit les champs UI pour cast/impact/aura et pour les sprites de statut V3, sans second owner. Les modes et placements des slots de présentation sont conservés par le vrai transfert JSON Capture. Les sprites de statut acceptent optionnellement playbackMode, offsets et layerByView ; les anciennes sauvegardes conservent leurs omissions et leurs défauts historiques.
+
+Le résolveur conserve les contrôles du statut et sa couche selon le porteur. La projection DOM suit la source pour cast/zone et la cible pour impact. Les contextes 1v1/2v2 et le proxy du preview conservent cette sémantique. Les durées visuelles des zones et statuts adaptés viennent de l’expiration Runtime depuis la première activation ; les refresh modifient la durée du playback existant. Aucune horloge ou registry concurrente. Les statuts mesurés en actions n’inventent pas de durée gameplay en ms : playback natif et retrait par Runtime.
+
+Les assets autoritaires et les trajectoires/contact/ombres ne changent pas. Validation : état `d8a1105604e00032573c9ace63f0f4c8cfb5368c`, CI 966/966, parcours natif desktop et capture de l’éditeur ; détail dans `LAB_UNIFIED_SPRITE_CONTROLS_V1.md`.
+
+## 2026-10-04 — Combat de test durable du Human Editor
+
+`capture-editor-combat-test-v1.js` possède uniquement l’assemblage UI du scénario. Il lit configuredCreatures et configuredSkills, conserve les IDs de définition et attribue des IDs distincts à chaque occurrence actor/member. Les contrats Battle Setup et exporters Capture V3 possèdent la validation et l’export. Deux équipes de 1–6 membres donnent 1v1 ou 2v2 avec réserves réparties alternativement entre les actifs.
+
+Les brouillons valides de capacité/créature sont préparés dans une transaction synchrone des deux maps autoritaires. Aucun rendu/await entre staging et export complet ; échec = restauration des références précédentes. La mise à jour d’une capacité n’équipe pas de slot ni ne déplace son ID. L’hydratation expose ready ; les champs propres à une capacité remplacée par un preset sont rechargés depuis configuredSkills si elle était auparavant propre. Une vraie modification utilisateur n’est pas écrasée.
+
+`capture-combat-roster-controller-v1.js` projette createRosterSession dans le client Capture générique. Roster Session possède actif/réserve, HP/énergie/cooldowns/snapshots et remplacement KO. Le panneau consulte previewCommand puis démarre les définitions de commande existantes via Combat Runtime ; aucune règle/timing locale. Runtime/Session conservent leurs clocks et règles. skillIdsByCreature est une projection readonly de l’export canonique : la barre locale et les contrôleurs IA relisent les IDs de l’actif aux mutations du roster.
+
+Le Native Visual Adapter résout également les présentations de tous les membres de réserve. Lorsqu’une fiche possède presentationId null, le renderer reçoit un repère SVG explicitement « SANS IMAGE » : placeholder de rendu sans mutation de fiche ou média global. Toute référence explicitement renseignée mais corrompue reste refusée. Les changements d’actif utilisent les visual controllers existants et annulent les présentations en cours. Les callbacks KO respectent dispose ; le panneau et les listeners de skills sont nettoyés avec la preview.
+
+La page désactive Tester pendant le lancement. Son finally relit session.previewActive : un export refusé permet une correction et une relance ; un combat lancé attend le retour natif à l’éditeur. Aucun nouveau flag d’autorité pour ce mode.
+
+Le footer reste fixed sur les formats mobiles, avec espace réservé et scroll-padding. `editor-mobile-review.html` contient uniquement une iframe de la page native à dimensions sélectionnables, sans moteur ou bibliothèque. Code final `0ec42fd2d2b006c939c29a8bdb61e11a26ec97d7`, CI 989/989 ; détail et limites de validation : `docs/LAB_EDITOR_COMBAT_TEST_V1.md`.
+
+
+## 2026-10-04 — Remplacement natif, renforcement IA et statut de trajet v1
+
+La demande utilisateur révise explicitement le verrou global V9 pour la commande switch du test Capture. Une action par acteur reste la règle du Combat Runtime ; UI ne bloque pas switch du seul fait qu’un autre acteur agit, et ne gèle pas les autres IA pendant ce rappel.
+
+switch est une CombatCommandDefinition de coût 0, préparation fixe 1000 ms, récupération 0, effect.rosterMemberId. Capture Roster Controller lie le memberId depuis la preview Roster, puis le panneau transmet la commande liée au Runtime. Le memberId de command-complete fait autorité, même si la sélection UI change ensuite. Roster Session valide et remplace le membre atomiquement, sans état actif null. L’ancien reste ciblable pendant le délai ; les actions adverses continuent sur le slot et touchent le membre présent au contact.
+
+Combat Runtime applique l’événement charge-interrupt au vrai impact du stun et annule les actions du slot KO après un tick de statut/zone. Une relève annule sa commande interrompue et conserve le chemin KO natif.
+
+Roster Session sauvegarde aussi statusEffects, damageDealtTotal, damageTakenTotal et knockoutsTotal. Status Runtime.resumeStatusEffectsV1 conserve les instances encore actives, supprime celles expirées et repositionne seulement les prochains ticks futurs, sans rejouer les ticks manqués en réserve. Session.replaceFighter(..., { clearSourceZones: true }) demande au Persistent Zone Runtime de terminer les zones du membre sortant ; aucune zone adverse n’est supprimée.
+
+Decision Controller lit les persistentZones natives (sourceActorId, skillId, zoneId, activations, radius, expiresAtMs). Une zone reinforce avec croissance positive et activations disponibles reçoit priorité via previewSkill légale. Avant sa première activation, budget d’ouverture = coût × activations restantes, plafonné à l’énergie max ; pas de simulation de dépense dans UI. Entre renforcements, le contrôleur attend cooldown/énergie au lieu de dépenser cette réserve dans une autre attaque. Les conditions d’activation, cooldowns, usages et refus restent propriétaires des règles natives. Au plafond, la variété ordinaire reprend. Aucun ID de créature/capacité spécial et aucun timer de décision supplémentaire.
+
+StatusEffectV1.approach_time_modifier porte modifierPct signé. Combat Timing.effectiveApproachTimingMs additionne les statuts actifs × stacks pour ground/aerial : base × max(0, 1 + pct/100), puis multiplicateur global natif. Action Resolver fixe action.travelMs et impactAtMs au démarrage ; Runtime, Presenter, fenêtre d’évasion et entrée en zone lisent cette même action. Une expiration en plein trajet ne recalcule pas l’action commencée. Préparation/récupération/cooldown et projectile/beam/teleport/none ne sont pas modifiés.
+
+UI propose ce statut dans les effets de capacité, avec pourcentage, durée, polarité et stacking ; exporter/importer conservent le champ natif. Les fiches de statut affichent le pourcentage réel avec stacks. Rapport et preuve : docs/LAB_COMBAT_TACTICS_SWITCH_TRAVEL_V1.md.
+
+
+## 2026-10-04 — Entrée de zone au contact, remplacement et rappel éditable
+
+- Combat Runtime valide le contact avant de transmettre un événement spatial sémantique de contact au Persistent Zone Runtime. Ce dernier applique l'entrée manquée avant le seuil temporel, même sans avance d'horloge ; pas de double entrée si le seuil natif a déjà été franchi. HP, cible, équipe, expiration et dégâts restent dans les autorités natives.
+- Resolution Presenter possède uniquement les continuations visuelles : une séquence annulée, remplacée ou disposée ne lance plus de K.O. différé. Le client 2v2 ne détecte les K.O. autonomes que sur le signal onState du Runtime ; les résolutions hit fournissent la promesse terminale existante au Roster.
+- recallPreparationMs est une option validée des contrats BattleSetup et CombatExport. ExporterV2, AdapterStackV1 et client natif la relaient vers CombatCommandDefinition existant ; recall/switch prennent cette préparation, summon conserve 0 ms. Défaut canonique 2000 ms, gratuit. Les temps de créature ne modifient pas cette commande du dresseur.
+- DOM Skill FX présente la perte de HP déjà calculée : ancre mobile haute, bornage arène, couche au-dessus du HUD et maintien opaque. Aucune règle de dégâts n'est déplacée dans le renderer.
+- Preuves et limites : LAB_ZONE_KO_FEEDBACK_V1_REPORT.md ; CI 37211319259, 1017 PASS. Validation smartphone utilisateur attendue.
+
+## 2026-10-04 — Présence visible au repos et transitions de roster v1
+La reproduction du retour utilisateur montre qu'une Tempête de flammes courte ou moyenne peut couvrir visuellement une cible immobile tandis que le mode approach-bands-v1 la considère hors zone. Le tick Runtime tournait ; une attaque n'était pas un rafraîchissement requis mais changeait la relation spatiale. Les anciennes bandes restent le fallback des scénarios sans géométrie rendue.
+
+Le contrat pur persistent-zone-spatial-v1 transporte les rectangles finis de zones (zoneId, sourceActorId, radius) et de modèles (actorId). Sur l'horloge existante, Combat Runtime appelle readZoneSpatialContext avec son snapshot courant et normalise l'échantillon. DomSkillFxRenderer.sampleZoneSpatialContext reprojette les zones du même snapshot autour des motion anchors puis mesure les noeuds existants ; il ne produit aucun verdict de présence, aucune perte de HP et n'installe aucun timer ni observer. Le source anchor suit le déplacement réel du modèle. Rayon, scale X/Y et offsets du binding définissent ensemble l'ellipse affichée et sa présence visible ; cette révision concerne l'emprise des zones, sans convertir les offsets de créature en distance métier.
+
+Persistent Zone Runtime décide la présence par intersection ellipse/rectangle du modèle, sous le ciblage et les équipes natifs, puis applique les dégâts avec Combat Damage/Application à ses intervalles et jusqu'à son expiration. Le signal ne vaut que pour la même instance, source et rayon ; absent, le fallback existant reste actif. Quand une relation est mesurée, les anciens événements d'entrée fondés seulement sur le trajet ou un contact ne s'ajoutent pas aux ticks : ils ne doivent pas produire un coup hors de l'ellipse ni doubler une application. La lecture visuelle n'est pas un alpha-test pixel par pixel : la frontière de présence est l'ellipse du sprite et le rectangle transformé du modèle. Le Runtime demeure l'unique autorité temporelle ; un échantillon ne reconstruit pas la trajectoire historique après une longue suspension de l'onglet.
+
+CombatVisualEvent accepte recall et le planner existant implémente enter. Animation Core prend la durée recall de l'action command et les paramètres de forme/arrivée du preset central roster-transition-profile-v1, avec override optionnel du profil de créature. Le rappel est lumineux puis se contracte, garde une opacité positive jusqu'à la frontière et tient sa pose terminale. Enter reste visible et retourne à la pose normale ; les mêmes segments pilotent la projection de l'ombre.
+
+Resolution Presenter traduit préparation recall/switch et arrivée summoned/switched/ko_replaced vers les contrôleurs visuels existants. Interruption, remplacement et dispose annulent la présentation détenue et restaurent corps/ombre via le renderer unique. La fin visuelle n'est jamais attendue pour la commande ou le remplacement du roster : rappel gratuit, 2000 ms par défaut éditables, puis remplacement atomique. Aucun état actif intermédiaire vide, nouveau timer de commande, son externe ou sprite d'asset n'est ajouté.
+
+Le canal recall détenu par Resolution Presenter est prioritaire sur une animation hit non létale : la perte de HP et ses FX restent natifs et visibles, sans remplacer la contraction en cours. Un hit létal libère cette priorité et conserve la séquence K.O. puis remplacement atomique. Sentinelle RED puis GREEN dans zone-idle-recall-fx-v1, source 794b80d3deecac4705faf5c9d581f130074d5c0c ; rapport LAB_ZONE_IDLE_RECALL_FX_V1_REPORT.md.
+
+
+## 2026-10-04 — Rythme de référence Capture
+
+CAPTURE_COMBAT_REFERENCE_SPEED_V1 = 0.5 dans le contrat Capture Battle Setup désigne le rythme utilisateur validé. captureCombatPaceToSkillSpeedV1 convertit uniquement le facteur affiché à la lecture du champ humain : 1× → natif 0.5, 2× → natif 1, 4× → natif 2. Les nouveaux Scenario Builders utilisent la même constante par défaut. Le champ exporté skillSpeedMultiplier garde ses unités historiques ; les normalizers legacy et tout appel explicite restent inchangés.
+
+Combat Session / Combat Timing possèdent toujours baseMs / skillSpeedMultiplier, appliqué une seule fois à préparation/trajet/récupération et préparation de réaction. Aucune multiplication supplémentaire dans le Runtime, Presenter ou Renderer. Cooldowns, ticks de zone/statut/énergie et commandes du dresseur conservent leur horloge et durées. Les définitions/presets de capacité ne sont pas réécrits.
+
+
+## Extension — Combat expressif / présence, esquive, réserve et effets différés
+
+L'architecture détaillée de l'extension demandée le 2026-10-06 est définie dans :
+
+`docs/LAB_COMBAT_EXPRESSIVENESS_ARCHITECTURE_V1.md`
+
+Principes obligatoires :
+
+- présence de combat sémantique indépendante du renderer ;
+- surface / airborne / underground comme données de Combat Rules ;
+- portée contre ces présences déclarée par la compétence, sans condition par nom ;
+- esquive via le système de réactions existant ;
+- immunité via Status Runtime et une décision de protection commune aux dégâts/statuts ;
+- effets différés avancés par l'horloge Combat Runtime existante ;
+- réserve toujours possédée par Roster Session ;
+- vitesse gameplay d'approche séparée du Creature Profile morphologique.
+
+
+## Capture smartphone — orientation de gameplay
+
+Décision produit 2026-10-06 :
+
+`docs/LAB_CAPTURE_LANDSCAPE_PRODUCT_DECISION_V1.md`
+
+Pour Monster Capture, le gameplay smartphone a désormais pour orientation de référence le paysage, en Exploration comme en Combat.
+
+Contraintes architecture :
+- orientation = shell/UI, jamais Combat Rules ;
+- scène combat = 16:9 stable ;
+- Fullscreen/Orientation APIs restent des optimisations avec fallback explicite ;
+- les scales auteur ne sont pas réécrits pour adapter un viewport ;
+- tout ajustement de placement acteur passe par le propriétaire de layout/slot, jamais par les FX ou la collision ;
+- l'Exploration applique le même contrat produit dans son dépôt sans dépendance runtime avec le laboratoire combat.
+
+
+## 2026-10-10 — Audio de déplacement des attaques contact : cues locomotion partagés
+
+Le slot existant `SkillPresentationBinding.audio.travel` est l'unique entrée auteur pour les sons du trajet. Son interprétation dépend du type de déplacement :
+
+- **projectile / rayon** : le `CombatResolutionPresenter` conserve sa lecture continue existante avec l'option de boucle du Binding et son arrêt à la résolution / au clash ;
+- **attaque de forme `contact` avec approche** : le Presenter demande au `Visual Controller.playApproachFor()` un callback `onFootfall` ; l'Animation Core conserve seul les `plan.cues(type="footfall")` basés sur les contacts des `profile.locomotion`, et le scheduler existant `schedulePlanCues()` les redistribue en même temps que les FX caméra ;
+- **sans contacts** (volant, glissement, téléportation, creusement) : un seul signal `movement` au début de l'approche, sans inventer de faux pieds ni modifier la morphologie ;
+- **chaque signal** : `DomCombatAudio.play(type="travel",loop=false)` crée une lecture one-shot du même `assetId` ; la boucle des projectiles n'est jamais écrasée par ce paramètre contextuel ;
+- **interruption / rappel / dispose** : le Presenter invalide la génération de callbacks de l'approche et arrête les handles en cours ; à l'impact normal, les one-shots déjà démarrés finissent naturellement mais aucun nouveau cue retardataire ne s'enclenche.
+
+Le son d'impact reste propriétaire du canal `audio.impact` et du résultat sémantique. Les noms de compétence, d'espèce ou de profil ne sont jamais utilisés pour choisir le nombre de lectures. Aucun timer audio indépendant, nouvelle bibliothèque, contrôle éditorial dupliqué ni calcul de durée gameplay.
+
+
+## 2026-10-10 — Audio des pas : la créature est propriétaire, pas la capacité
+
+Le slot optionnel `CreaturePresentationBinding.audio.movement` est l'unique source du bruit d'appui de la créature. Le Human Editor le lit et l'exporte depuis `configuredCreatures`. La projection visuelle native garde `binding.audio` dans la meta de la créature actuellement montée sur le slot. `getCreatureAudioFor(actorSlot)` et `DomCombatAudio.presentationForCreature(actorSlot)` consomment cette seule fiche. Le `CombatResolutionPresenter` convertit les cues `footfall` existants en `audio.play({type:"movement",actorSlot,loop:false})` exclusivement lors des attaques contact ; profils sans contact: une lecture au départ.
+
+Cela **remplace explicitement** l'ancien routage du même cue vers `SkillPresentationBinding.audio.travel` en attaque contact. Le slot capacité `audio.travel` reste strictement propriétaire des projectiles/rayons, sans fallback pour une créature non configurée. Ni plan de mouvement ni règles de gameplay n'ont été modifiés. Référence détaillée : `docs/LAB_CREATURE_OWNED_MOVEMENT_AUDIO_V1.md`.
+
+
+## 2026-10-10 — Status sprite « play once, hold last »
+
+Le visuel de statut `SkillPresentationBindingV3.statusVisuals[statusId].sprite.playbackMode` accepte désormais `hold-last` en plus de `once/loop/stretch`. Ce mode de présentation, proposé uniquement dans « Animation du statut » du Human Editor, joue les frames à vitesse native une seule fois et maintient la dernière frame visible. Le même `applySpriteVisual` gère le sprite atlas par CSS `steps` + `fill:forwards` et les images séparées `frames[]` par tracks WAAPI d'opacité en un passage, sans interpolation de `backgroundImage`. `DomStatusFxRenderer` conserve le même nœud durant les refresh puis le supprime lorsque `statusEffects` ne contient plus ce statut. Aucune durée, effet, tick ni condition gameplay ne migre depuis Combat Runtime. Référence : `docs/LAB_STATUS_SPRITE_HOLD_LAST_V1.md`.

@@ -1,0 +1,40 @@
+{
+  "teams": {
+    "player": {
+      "slotId": "player",
+      "activeMemberId": "player-marai",
+      "members": [
+        {
+          "id": "player-marai",
+          "creatureId": "maraileron",
+          "displayName": "Marai",
+          "fighterConfigId": "maraileron"
+        },
+        {
+          "id": "player-drakon",
+          "creatureId": "braisombre",
+          "displayName": "Drakon",
+          "fighterConfigId": "braisombre"
+        }
+      ]
+    },
+    "opponent": {
+      "slotId": "opponent",
+      "activeMemberId": "opponent-drakon",
+      "members": [
+        {
+          "id": "opponent-drakon",
+          "creatureId": "braisombre",
+          "displayName": "Drakon",
+          "fighterConfigId": "braisombre"
+        },
+        {
+          "id": "opponent-marai",
+          "creatureId": "maraileron",
+          "displayName": "Marai",
+          "fighterConfigId": "maraileron"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,385 @@
+const EPSILON_MS = 1e-7;
+
+function finiteNumber(
+  value,
+  field
+) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) {
+    throw new RangeError(
+      field +
+        " must be a finite number"
+    );
+  }
+  return number;
+}
+
+function projectilePower(action) {
+  if (
+    action?.actionType !== "skill" ||
+    !["projectile", "beam"].includes(action.skill?.form)
+  ) {
+    return 0;
+  }
+
+  // An expanding ring is not a projectile travelling between opposing
+  // points. The old ballistic midpoint clash would be a fictitious impact.
+  if (action.skill?.projectileTargeting === "expanding_wave") {
+    return 0;
+  }
+
+  const power = Number(
+    action.skill?.projectileClash?.power ??
+      0
+  );
+
+  if (
+    !Number.isFinite(power) ||
+    power <= 0
+  ) {
+    return 0;
+  }
+
+  return power;
+}
+
+function clashOutcome(
+  leftPower,
+  rightPower
+) {
+  if (leftPower > rightPower) {
+    return "left_survives";
+  }
+  if (rightPower > leftPower) {
+    return "right_survives";
+  }
+  return "mutual_cancel";
+}
+
+export function projectileClashCandidate({
+  leftAction,
+  leftStartedAtClockMs,
+  rightAction,
+  rightStartedAtClockMs
+}) {
+  const leftPower =
+    projectilePower(leftAction);
+  const rightPower =
+    projectilePower(rightAction);
+
+  if (
+    leftPower <= 0 ||
+    rightPower <= 0
+  ) {
+    return null;
+  }
+
+  if (
+    leftAction.actorId !==
+      rightAction.targetId ||
+    rightAction.actorId !==
+      leftAction.targetId
+  ) {
+    return null;
+  }
+
+  const leftTravelMs = finiteNumber(
+    leftAction.travelMs,
+    "leftAction.travelMs"
+  );
+  const rightTravelMs = finiteNumber(
+    rightAction.travelMs,
+    "rightAction.travelMs"
+  );
+
+  if (
+    leftTravelMs <= 0 ||
+    rightTravelMs <= 0
+  ) {
+    return null;
+  }
+
+  const leftStart = finiteNumber(
+    leftStartedAtClockMs,
+    "leftStartedAtClockMs"
+  );
+  const rightStart = finiteNumber(
+    rightStartedAtClockMs,
+    "rightStartedAtClockMs"
+  );
+
+  const leftRelease =
+    leftStart +
+    finiteNumber(
+      leftAction.releaseAtMs,
+      "leftAction.releaseAtMs"
+    );
+  const rightRelease =
+    rightStart +
+    finiteNumber(
+      rightAction.releaseAtMs,
+      "rightAction.releaseAtMs"
+    );
+  const leftImpact =
+    leftStart +
+    finiteNumber(
+      leftAction.impactAtMs,
+      "leftAction.impactAtMs"
+    );
+  const rightImpact =
+    rightStart +
+    finiteNumber(
+      rightAction.impactAtMs,
+      "rightAction.impactAtMs"
+    );
+
+  // The original moving-projectile intersection stays exact. A beam is a
+  // continuous line occupying the whole lane during its native travel window:
+  // it meets the opposing moving shot at the first instant both are active,
+  // or another opposing beam at the lane midpoint.
+  const leftIsBeam = leftAction.skill?.form === "beam";
+  const rightIsBeam = rightAction.skill?.form === "beam";
+  const sharedTravelStart = Math.max(leftRelease, rightRelease);
+  const sharedTravelEnd = Math.min(leftImpact, rightImpact);
+  const atClockMs = leftIsBeam || rightIsBeam
+    ? sharedTravelStart
+    : (
+        rightTravelMs * leftRelease +
+        leftTravelMs * rightRelease +
+        leftTravelMs * rightTravelMs
+      ) / (leftTravelMs + rightTravelMs);
+
+  if (
+    atClockMs < sharedTravelStart - EPSILON_MS ||
+    atClockMs > sharedTravelEnd + EPSILON_MS
+  ) {
+    return null;
+  }
+
+  const progressAt = (release, duration) => Math.min(
+    1, Math.max(0, (atClockMs - release) / duration)
+  );
+  const leftProgress = leftIsBeam
+    ? (rightIsBeam ? 0.5 : 1 - progressAt(rightRelease, rightTravelMs))
+    : progressAt(leftRelease, leftTravelMs);
+  const rightProgress = rightIsBeam
+    ? (leftIsBeam ? 0.5 : 1 - progressAt(leftRelease, leftTravelMs))
+    : progressAt(rightRelease, rightTravelMs);
+
+  if (Math.abs(leftProgress + rightProgress - 1) > 1e-6) {
+    return null;
+  }
+
+  return Object.freeze({
+    atClockMs,
+    leftPower,
+    rightPower,
+    outcome:
+      clashOutcome(
+        leftPower,
+        rightPower
+      ),
+    leftProgress,
+    rightProgress
+  });
+}
+
+
+/**
+ * A visual wave/projectile intersection is observed by the existing
+ * renderer. Runtime validates the actors/timing; this pure contract only
+ * compares the native authored power, never applies damage itself.
+ * Ordinary ballistic clashes continue through projectileClashCandidate().
+ */
+export function projectileClashAtVisualContactV1({
+  leftAction,
+  rightAction,
+  atClockMs,
+  leftProgress = 0,
+  rightProgress = 0
+}) {
+  const isWave = action =>
+    action?.skill?.form === "projectile" &&
+    action?.skill?.projectileTargeting === "expanding_wave";
+  const isBallistic = action =>
+    action?.skill?.form === "projectile" &&
+    action?.skill?.projectileTargeting !== "expanding_wave";
+  if (!((isWave(leftAction) && isBallistic(rightAction)) ||
+        (isWave(rightAction) && isBallistic(leftAction)))) return null;
+  if (leftAction.actorId !== rightAction.targetId ||
+      leftAction.targetId !== rightAction.actorId) return null;
+  const power = action => {
+    const n = Number(action.skill?.projectileClash?.power ?? 0);
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  };
+  const leftPower = power(leftAction);
+  const rightPower = power(rightAction);
+  const clock = Number(atClockMs);
+  if (leftPower <= 0 || rightPower <= 0 ||
+      !Number.isFinite(clock) || clock < 0) return null;
+  return Object.freeze({
+    atClockMs: clock,
+    leftPower,
+    rightPower,
+    outcome: clashOutcome(leftPower,rightPower),
+    leftProgress: Math.max(0,Math.min(1,Number(leftProgress)||0)),
+    rightProgress: Math.max(0,Math.min(1,Number(rightProgress)||0))
+  });
+}
+
+function cancelledResolution({
+  state,
+  action,
+  otherAction,
+  startedAtClockMs,
+  candidate,
+  side
+}) {
+  const isLeft =
+    side === "left";
+  const ownPower =
+    isLeft
+      ? candidate.leftPower
+      : candidate.rightPower;
+  const otherPower =
+    isLeft
+      ? candidate.rightPower
+      : candidate.leftPower;
+  const progress =
+    isLeft
+      ? candidate.leftProgress
+      : candidate.rightProgress;
+  const atMs =
+    Math.max(
+      0,
+      candidate.atClockMs -
+        startedAtClockMs
+    );
+
+  const survivorActorId =
+    candidate.outcome ===
+    "left_survives"
+      ? (
+          isLeft
+            ? action.actorId
+            : otherAction.actorId
+        )
+      : candidate.outcome ===
+        "right_survives"
+        ? (
+            isLeft
+              ? otherAction.actorId
+              : action.actorId
+          )
+        : null;
+
+  return Object.freeze({
+    ok: true,
+    actionType: "skill",
+    actorId: action.actorId,
+    targetId: action.targetId,
+    skillId: action.actionId,
+    outcome: "clashed",
+    state,
+    clash: Object.freeze({
+      ownPower,
+      otherPower,
+      clashOutcome:
+        candidate.outcome,
+      survivorActorId,
+      otherActorId:
+        otherAction.actorId,
+      otherSkillId:
+        otherAction.actionId,
+      progress
+    }),
+    events: Object.freeze([
+      Object.freeze({
+        type:
+          "projectile-clash",
+        atMs,
+        actorId:
+          action.actorId,
+        targetId:
+          action.targetId,
+        skillId:
+          action.actionId,
+        otherActorId:
+          otherAction.actorId,
+        otherSkillId:
+          otherAction.actionId,
+        ownPower,
+        otherPower,
+        clashOutcome:
+          candidate.outcome,
+        survivorActorId,
+        progress
+      }),
+      Object.freeze({
+        type:
+          "skill-cancelled",
+        atMs,
+        actorId:
+          action.actorId,
+        targetId:
+          action.targetId,
+        skillId:
+          action.actionId,
+        reason:
+          "projectile_clash"
+      })
+    ])
+  });
+}
+
+export function resolveProjectileClash({
+  state,
+  leftAction,
+  leftStartedAtClockMs,
+  rightAction,
+  rightStartedAtClockMs,
+  candidate
+}) {
+  if (!candidate) {
+    return null;
+  }
+
+  const cancelLeft =
+    candidate.outcome !==
+    "left_survives";
+  const cancelRight =
+    candidate.outcome !==
+    "right_survives";
+
+  return Object.freeze({
+    outcome: candidate.outcome,
+    left:
+      cancelLeft
+        ? cancelledResolution({
+            state,
+            action:
+              leftAction,
+            otherAction:
+              rightAction,
+            startedAtClockMs:
+              leftStartedAtClockMs,
+            candidate,
+            side: "left"
+          })
+        : null,
+    right:
+      cancelRight
+        ? cancelledResolution({
+            state,
+            action:
+              rightAction,
+            otherAction:
+              leftAction,
+            startedAtClockMs:
+              rightStartedAtClockMs,
+            candidate,
+            side: "right"
+          })
+        : null
+  });
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "capture-markers-v1",
+  "markers": [
+    {
+      "id": "venin-static",
+      "name": "venin static",
+      "polarity": "detrimental",
+      "permanent": true,
+      "maxStacks": 20,
+      "iconAssetId": "pack:capture:icon-skill-toxine-01",
+      "periodic": {
+        "kind": "damage",
+        "amount": 2,
+        "intervalMs": 5000,
+        "damageMode": "combat",
+        "channel": "electric"
+      },
+      "onStackThreshold": {
+        "count": 20,
+        "consume": "reset",
+        "effects": [
+          {
+            "kind": "knockout",
+            "targetScope": "target"
+          }
+        ]
+      }
+    },
+    {
+      "id": "eclat-spirituel",
+      "name": "Éclat spirituel",
+      "polarity": "detrimental",
+      "durationMs": 20000,
+      "maxStacks": 3,
+      "iconAssetId": "pack:capture:icon-skill-fleche-spirituelle-01",
+      "onStackAdded": {
+        "effects": [
+          {
+            "kind": "apply_status",
+            "targetScope": "target",
+            "status": {
+              "id": "marker-effect-charge-eclat-spirituel-0",
+              "kind": "approach_time_modifier",
+              "polarity": "detrimental",
+              "durationModel": "time_ms",
+              "durationMs": 20000,
+              "stacking": "stack",
+              "maxStacks": 3,
+              "tags": [],
+              "modifierPct": 10
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "peste",
+      "name": "Peste",
+      "polarity": "detrimental",
+      "permanent": true,
+      "maxStacks": 20,
+      "iconAssetId": "pack:capture:icon-skill-toxine-01",
+      "periodic": {
+        "kind": "damage",
+        "amount": 15,
+        "intervalMs": 30000,
+        "damageMode": "combat",
+        "channel": "shadow"
+      }
+    }
+  ]
+}

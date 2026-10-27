@@ -1,0 +1,151 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_poison_special_2",
+    "description": "Technique Poison utilitaire. Disponible au niveau 28.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_poison_special_2",
+      "name": "Brouillard toxique",
+      "category": "buff_debuff",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "poison",
+      "approachMode": "none",
+      "energyCost": 0,
+      "preparationMs": 1500,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 45000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "persistent_zone",
+          "targetScope": "target",
+          "zoneId": "zone-1",
+          "radius": "short",
+          "durationMs": 10000,
+          "tickIntervalMs": 1000,
+          "reactivation": "refresh",
+          "maxActivations": 1,
+          "radiusGrowthSteps": 0,
+          "tickEffect": {
+            "kind": "apply_marker",
+            "targetScope": "target",
+            "marker": {
+              "id": "poison",
+              "name": "Poison",
+              "polarity": "detrimental",
+              "durationMs": 25000,
+              "maxStacks": 30,
+              "iconAssetId": "pack:capture:icon-skill-poison-01",
+              "periodic": {
+                "kind": "damage",
+                "amount": 5,
+                "intervalMs": 5000,
+                "damageMode": "combat",
+                "channel": "physical"
+              }
+            },
+            "charges": 2
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_poison_special_2",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "cap_poison_special_2",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-poison-cloud-01"
+        },
+        "aura": {
+          "assetId": "pack:capture:sprite-crachat-acide-cast-01",
+          "displayScale": 1.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.4,
+          "layerByView": {
+            "player": "behind",
+            "opponent": "behind"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {
+        "aura": {
+          "assetId": "gensrpg:sound:tower-ccc16d37",
+          "volume": 1,
+          "loop": true
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}

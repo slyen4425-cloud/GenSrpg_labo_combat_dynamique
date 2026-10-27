@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GenSrpG — Test import / ombres / audio V1</title>
+  <meta name="robots" content="noindex">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #0f1115;
+      color: #f3f5f7;
+      font: 16px/1.45 system-ui, sans-serif;
+    }
+    main {
+      width: min(720px, calc(100vw - 32px));
+      padding: 24px;
+      border: 1px solid #343943;
+      border-radius: 14px;
+      background: #171a20;
+    }
+    a {
+      color: #9fd0ff;
+    }
+    code {
+      background: #0c0e12;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Test GenSrpG — imports / ombres / audio</h1>
+    <p>Ce fichier est un lanceur de validation uniquement. Il ne contient aucune copie de l'éditeur et redirige vers <code>capture-editor-v2.html</code>, qui reste l'unique autorité UI.</p>
+    <ol>
+      <li>Importer un PNG/WebP/JPEG personnel dans <strong>Apparence → Importer un visuel personnel</strong>, puis l'utiliser dans le combat de test.</li>
+      <li>Vérifier que l'ombre est proportionnée au modèle et suit le monstre pendant l'attaque et le retour.</li>
+      <li>Dans une capacité, tester les nouveaux sons <strong>Cast / Projectile / Impact / Zone-Aura</strong> et leur bouton <strong>Écouter</strong>.</li>
+      <li>Pour une zone persistante, vérifier que le son boucle tant que la zone existe puis s'arrête avec elle.</li>
+    </ol>
+    <p><strong>Hors lot :</strong> le rendu du projectile <em>Boule de feu 2</em> reste à auditer séparément. Ne pas l'utiliser comme critère de validation de ce fichier.</p>
+    <p><a id="open-editor" href="./capture-editor-v2.html?validation=creator-shadow-audio-v1">Ouvrir l'éditeur canonique</a></p>
+    <p>Redirection automatique dans <span id="count">2</span> secondes…</p>
+  </main>
+  <script>
+    const target = "./capture-editor-v2.html?validation=creator-shadow-audio-v1";
+    let remaining = 2;
+    const count = document.getElementById("count");
+    const timer = setInterval(() => {
+      remaining -= 1;
+      count.textContent = String(Math.max(remaining, 0));
+      if (remaining <= 0) {
+        clearInterval(timer);
+        location.replace(target);
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,2531 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>GenSrpG Lab — Éditeur Capture</title>
+  <link rel="stylesheet" href="./demo.css?v=fire-zone-ring-20261016">
+  <link rel="stylesheet" href="./capture-editor-v2.css">
+  <style>
+    [data-creature-view-settings][hidden] { display: none; }
+    .editor-tabs a.bestiary-link {
+      display: grid; gap: .08rem; align-content: center;
+      min-height: 3.6rem; padding: .58rem .65rem; border-radius: .65rem;
+      border: 1px solid rgba(133, 211, 225, .4);
+      background: rgba(23, 60, 73, .8); color: #ebfcff;
+      text-decoration: none; text-align: left;
+    }
+    .editor-tabs a.bestiary-link:hover,
+    .editor-tabs a.bestiary-link:focus-visible {
+      background: rgba(35, 94, 110, .95);
+      outline: 1px solid #a4e6f2;
+    }
+
+  </style>
+</head>
+<body>
+  <main class="editor-shell" data-capture-editor-human>
+    <header class="editor-header">
+      <div>
+        <p class="eyebrow">GenSrpG · Capture</p>
+        <h1>Éditeur de combat</h1>
+        <p class="subtitle">Configure une créature, les règles du combat et ses capacités sans manipuler les données techniques.</p>
+      </div>
+      <div class="header-state">
+        <span class="state-dot"></span>
+        <span data-editor-summary>Configuration en cours</span>
+      </div>
+    </header>
+
+    <nav class="editor-tabs" aria-label="Sections de l'éditeur">
+      <button type="button" data-editor-tab="creature" data-active="true">
+        <span>Créature</span>
+        <small>Visuels · sockets · stats</small>
+      </button>
+      <button type="button" data-editor-tab="combat">
+        <span>Combat</span>
+        <small>Énergie · format · équipe</small>
+      </button>
+      <button type="button" data-editor-tab="skills">
+        <span>Capacités</span>
+        <small>Effets · timing · FX</small>
+      </button>
+      <button type="button" data-editor-tab="music">
+        <span>Musiques</span>
+        <small>Bandes-son · ambiances</small>
+      </button>
+      <a class="bestiary-link" href="./bestiary.html" aria-label="Ouvrir le Bestiaire Capture">
+        <span>Bestiaire</span>
+        <small>Fiches · créatures prêtes</small>
+      </a>
+    </nav>
+
+    <section class="card transfer-card" aria-label="Import et export Capture">
+      <div class="card-title">
+        <span class="step">↕</span>
+        <div>
+          <h2>Import / Export</h2>
+          <p>Exporte une créature, une capacité ou toute la base Capture. Les fichiers JSON contiennent les données configurées et les références d’assets, pas les images ou sons binaires.</p>
+        </div>
+      </div>
+
+      <div class="skill-save-actions">
+        <button type="button" class="secondary-action" data-export-current-creature>
+          Exporter cette créature
+        </button>
+        <button type="button" class="secondary-action" data-export-current-skill>
+          Exporter cette capacité
+        </button>
+        <button type="button" class="primary-action" data-export-database>
+          Exporter toute la base
+        </button>
+      </div>
+
+      <div class="grid two">
+        <label>Importer un fichier JSON
+          <input type="file" accept=".json,application/json" data-import-capture-json>
+        </label>
+        <label class="switch-line">
+          <input type="checkbox" data-import-replace-existing>
+          <span>Remplacer explicitement les IDs existants</span>
+        </label>
+      </div>
+
+      <p class="note" data-transfer-state data-tone="info">
+        Par défaut, un import refuse d’écraser un ID existant différent.
+      </p>
+    </section>
+
+    <section class="editor-panel" data-editor-panel="music" hidden>
+      <article class="card" data-soundtrack-editor>
+        <div class="card-title">
+          <span class="step">♫</span>
+          <div>
+            <h2>Musiques et ambiances du jeu</h2>
+            <p>Chaque jeu possède ses propres choix. La bibliothèque peut réunir les sons de l'application, les sons personnels et ceux du projet. Ce panneau produit seulement la configuration JSON, sans copier ni publier de média.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <label>Identifiant du jeu
+            <input data-soundtrack-project-id value="capture-demo" autocomplete="off" spellcheck="false" aria-label="Identifiant du jeu">
+          </label>
+          <div>
+            <button type="button" class="secondary-action" data-soundtrack-new-project>Nouveau jeu avec cet identifiant</button>
+          </div>
+        </div>
+        <div class="grid two">
+          <label>Contexte sonore
+            <input data-soundtrack-scene-id value="capture:combat:normal" list="soundtrack-scene-suggestions" autocomplete="off" spellcheck="false">
+            <datalist id="soundtrack-scene-suggestions">
+              <option value="capture:combat:normal">Combat standard</option>
+              <option value="capture:combat:boss">Combat de boss</option>
+              <option value="capture:combat:victory">Victoire</option>
+              <option value="capture:combat:defeat">Défaite</option>
+            </datalist>
+          </label>
+          <label>Canal sonore
+            <select data-soundtrack-channel>
+              <option value="music">Musique</option>
+              <option value="ambience">Ambiance continue</option>
+            </select>
+          </label>
+        </div>
+        <div class="grid two">
+          <label>Choisir une piste de la bibliothèque
+            <select data-soundtrack-asset-id aria-label="Piste audio"></select>
+          </label>
+          <div>
+            <button type="button" class="secondary-action" data-soundtrack-add>Ajouter à la liste</button>
+          </div>
+        </div>
+        <p class="note">Les pistes peuvent être communes à tous les modes, mais leurs paramètres sont enregistrés séparément par jeu et par contexte. Les effets de compétences restent gérés dans leurs sections actuelles.</p>
+        <h3>Liste de lecture</h3>
+        <ol data-soundtrack-track-list></ol>
+        <div class="grid two">
+          <label>Ordre des pistes
+            <select data-soundtrack-order>
+              <option value="sequence">À la suite</option>
+              <option value="shuffle">Aléatoire (sans répétition immédiate)</option>
+            </select>
+          </label>
+          <label>Fondu de transition (secondes)
+            <input data-soundtrack-fade type="number" min="0" max="10" step="0.1" value="0.7">
+          </label>
+          <label>Volume du canal (0-100 %)
+            <input data-soundtrack-volume type="range" min="0" max="100" step="1" value="75">
+          </label>
+          <label class="switch-line">
+            <input data-soundtrack-repeat type="checkbox" checked>
+            <span>Rejouer les pistes en boucle</span>
+          </label>
+        </div>
+        <div class="skill-save-actions">
+          <button type="button" class="primary-action" data-soundtrack-save>Enregistrer ce contexte</button>
+          <button type="button" class="secondary-action" data-soundtrack-export>Exporter la bande-son JSON</button>
+        </div>
+        <div class="grid two">
+          <label>Charger un catalogue sonore (JSON)
+            <input type="file" accept=".json,application/json" data-soundtrack-catalog-file>
+          </label>
+          <label>Réimporter la bande-son d'un jeu (JSON)
+            <input type="file" accept=".json,application/json" data-soundtrack-project-file>
+          </label>
+        </div>
+        <div class="creator-audio-import">
+          <h3>Musiques Battle disponibles pour tous les joueurs</h3>
+          <p class="note">Les six pistes Battle sont intégrées au lecteur de combat pour tous, sans chargement manuel et sans bouton de téléchargement. Les originaux restent dans l'archive privée ; le jeu diffuse uniquement des copies optimisées. Comme pour tout son reçu par un navigateur, une copie technique reste possible. L'import local ci-dessous est facultatif et destiné aux essais. Exploration sera raccordée séparément.</p>
+          <label>Remplacer temporairement les MP3 pour un essai personnel (facultatif)
+            <input type="file" multiple accept=".mp3,audio/mpeg" data-soundtrack-local-files>
+          </label>
+          <p class="note" data-soundtrack-local-status role="status">Playlist partagée disponible par défaut. Aucun fichier local requis.</p>
+        </div>
+        <p class="note" data-soundtrack-status data-tone="info" role="status">Catalogue et playlist Battle activés pour tous : lance un combat pour écouter, sans importer de fichiers.</p>
+      </article>
+    </section>
+
+    <section class="editor-panel" data-editor-panel="creature">
+      <article class="card hero-card">
+        <div class="card-title">
+          <span class="step">0</span>
+          <div>
+            <h2>Bibliothèque de créatures</h2>
+            <p>Choisis une créature existante ou prépare une nouvelle identité.</p>
+          </div>
+        </div>
+
+        <label>Créature à modifier
+          <select data-creature-library-select>
+            <option value="">Aucune créature enregistrée</option>
+          </select>
+        </label>
+        <p class="note" data-creature-library-state data-tone="info">
+          La bibliothèque est conservée uniquement pendant cette session du laboratoire.
+        </p>
+        <div class="skill-save-actions">
+          <button type="button" class="secondary-action" data-creature-new>
+            Nouvelle créature
+          </button>
+          <button type="button" class="primary-action" data-creature-create>
+            Enregistrer comme nouvelle
+          </button>
+          <button type="button" class="secondary-action" data-creature-update>
+            Mettre à jour la créature existante
+          </button>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card-title">
+          <span class="step">1</span>
+          <div>
+            <h2>Identité</h2>
+            <p>Informations générales de la créature.</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <label>Nom
+            <input data-creature-name value="Loup volcanique">
+          </label>
+          <label>Niveau
+            <input data-creature-level type="number" min="1" value="1">
+          </label>
+        </div>
+        <label class="technical-field">Identifiant
+          <input data-creature-id value="crea-loup">
+        </label>
+        <label>Description
+          <textarea data-creature-description rows="2">Créature volcanique rapide.</textarea>
+        </label>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">2</span>
+          <div>
+            <h2>Apparence</h2>
+            <p>Face, dos, icône et posture de combat.</p>
+          </div>
+        </div>
+
+        <details class="creature-appearance-group" data-creature-appearance-group="views" open>
+          <summary><strong>1. Visuels de la créature</strong><small>Face · dos · icône</small></summary>
+          <div class="creature-appearance-group__body">
+        <div class="asset-trio">
+          <div class="asset-card">
+            <div class="preview-box">
+              <img data-preview-front alt="">
+              <span>Face</span>
+            </div>
+            <label>Image face
+              <select data-creature-front-select data-asset-role="creature" data-required-asset="true">
+                <option value="pack:capture:creature-loup-volcanique-opponent-01">Loup volcanique — face</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="asset-card">
+            <div class="preview-box">
+              <img data-preview-back alt="">
+              <span>Dos</span>
+            </div>
+            <label>Image dos
+              <select data-creature-back-select data-asset-role="creature">
+                <option value="">Aucun</option>
+                <option value="pack:capture:creature-loup-volcanique-player-01" selected>Loup volcanique — dos</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="asset-card">
+            <div class="preview-box preview-box--icon">
+              <img data-preview-icon alt="">
+              <span>Icône</span>
+            </div>
+            <label>Icône
+              <select data-creature-icon-select data-asset-role="creature">
+                <option value="">Aucune</option>
+                <option value="pack:capture:creature-loup-volcanique-icon-01" selected>Loup volcanique — icône</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+          </div>
+        </details>
+
+        <details class="creature-appearance-group" data-creature-appearance-group="defense">
+          <summary><strong>2. Réactions défensives</strong><small>Esquive · défense · apparence</small></summary>
+          <div class="creature-appearance-group__body">
+        <fieldset data-creature-defensive-reaction>
+          <legend>Réaction défensive de cette créature</legend>
+          <div class="grid two">
+            <label>Réaction
+              <select data-creature-reaction-type>
+                <option value="legacy">Ancienne règle globale (compatibilité)</option>
+                <option value="dodge">Esquive — évite l’attaque</option>
+                <option value="defense">Défense — réduit les dégâts</option>
+                <option value="none">Aucune réaction</option>
+              </select>
+            </label>
+            <label>Icône du bouton en combat — bibliothèque complète
+              <select data-creature-reaction-icon data-asset-role="icon">
+                <option value="">Icône par défaut selon le type</option>
+              </select>
+              <small>Toutes les icônes GenSrpG, plus tes icônes importées.</small>
+            </label>
+            <div class="preview-box preview-box--icon" aria-label="Aperçu de l’icône de réaction">
+              <img data-preview-reaction-icon alt="Aperçu du bouton" data-empty="true">
+              <span>Icône du bouton</span>
+            </div>
+            <label>Charges
+              <input type="number" min="1" max="99" step="1" value="2" data-creature-reaction-charges>
+            </label>
+            <label>Recharge (secondes)
+              <input type="number" min="0" step="0.1" value="30" data-creature-reaction-recharge>
+            </label>
+            <label>Fenêtre active (secondes)
+              <input type="number" min="0.05" step="0.05" value="0.25" data-creature-reaction-window>
+            </label>
+            <label data-creature-reaction-defense-field>Réduction de dégâts en Défense (%)
+              <input type="number" min="0" max="100" step="1" value="50" data-creature-reaction-reduction>
+            </label>
+          </div>
+          <p class="note">Les charges, la recharge et le mode appartiennent à cette créature. Le moteur conserve ses règles de combat et ses timings. Les anciens exports peuvent garder la règle globale.</p>
+        </fieldset>
+        <div class="grid two">
+          <label>Effet visuel d’esquive / défense
+            <select data-creature-dodge-fx data-asset-role="dodge">
+              <option value="">Aucun</option>
+            </select>
+          </label>
+          <label>Taille de l’effet
+            <input
+              type="number"
+              min="0.25"
+              max="8"
+              step="0.05"
+              value="1"
+              data-creature-dodge-scale
+            >
+          </label>
+          <label>Durée du sprite de réaction (ms)
+            <input type="number" min="50" max="10000" step="50" value="700" data-creature-dodge-duration>
+          </label>
+          <label>Décalage X
+            <input
+              type="number"
+              step="1"
+              value="0"
+              data-creature-dodge-offset-x
+            >
+          </label>
+          <label>Décalage Y
+            <input
+              type="number"
+              step="1"
+              value="0"
+              data-creature-dodge-offset-y
+            >
+          </label>
+        </div>
+        <p class="note">
+          Cet effet appartient à la créature. En Esquive elle disparaît temporairement ; en Défense elle reste visible. Même sélection de sprite et mêmes réglages, sans changement automatique selon l’élément.
+        </p>
+
+          </div>
+        </details>
+
+        <details class="creature-appearance-group" data-creature-appearance-group="animations" open>
+          <summary><strong>3. Animations</strong><small>Déplacement · attaques à distance</small></summary>
+          <div class="creature-appearance-group__body">
+        <section class="creature-animation-chapter" aria-label="Réglages déplacement">
+        <h3 class="creature-animation-title">DÉPLACEMENT <small>forme · taille · lecture</small></h3>
+        <fieldset data-creature-movement-appearance>
+          <legend>Animation de déplacement (propre à la créature)</legend>
+          <div class="grid two">
+            <label>Sprite de déplacement — FACE (adversaire)
+              <select data-creature-movement-visual data-asset-role="movement"><option value="">Apparence normale</option></select>
+            </label>
+            <label>Sprite de déplacement — DOS (joueur)
+              <select data-creature-movement-back-visual data-asset-role="movement"><option value="">Même sprite que la face (si défini)</option></select>
+            </label>
+            <label>Mode d'animation
+              <select data-creature-movement-mode>
+                <option value="roll">Boule roulante (rotation)</option>
+                <option value="sprite">Sprite animé (sans rotation)</option>
+                <option value="static">Image alternative fixe</option>
+              </select>
+            </label>
+            <label hidden>Taille de base (compatibilité)
+              <input type="number" min="0.1" max="8" step="0.05" value="1" data-creature-movement-scale>
+            </label>
+            <label>Taille DÉPLACEMENT — joueur / dos
+              <input type="number" min="0.1" max="8" step="0.05" value="1" data-creature-movement-player-scale>
+            </label>
+            <label>Taille DÉPLACEMENT — adversaire / face
+              <input type="number" min="0.1" max="8" step="0.05" value="1" data-creature-movement-opponent-scale>
+            </label>
+            <label>Vitesse du sprite : millisecondes par frame (0 = auto)
+              <input type="number" min="0" max="500" step="10" value="0" data-creature-movement-frame-ms>
+            </label>
+            <label>Lecture du sprite de déplacement
+              <select data-creature-movement-playback>
+                <option value="loop">Boucle pendant le mouvement</option>
+                <option value="once">Une seule lecture</option>
+                <option value="hold-last">Une lecture, rester sur la dernière frame</option>
+              </select>
+            </label>
+            <label>Tours pendant le trajet
+              <input type="number" min="0" max="20" step="0.5" value="3" data-creature-movement-turns>
+            </label>
+            <label>Nombre de frames horizontales (1 pour une image)
+              <input type="number" min="1" max="120" step="1" value="1" data-creature-movement-frames>
+            </label>
+            <label>Transition (ms)
+              <input type="number" min="0" max="350" step="10" value="80" data-creature-movement-transition>
+            </label>
+          </div>
+          <p class="note">Choisis les animations face et dos séparément. Si DOS est vide, le joueur réutilise la FACE pour garder la compatibilité des anciennes créatures. Les deux menus utilisent uniquement les animations de déplacement déjà présentes dans la bibliothèque.</p>
+          <p class="note">S'applique à l'approche au sol, sans modifier la vitesse ni les dégâts. Le visuel normal revient automatiquement après l'approche ou son interruption. Le sprite peut être une bande horizontale ou une image fixe.</p>
+          <p class="note">La vitesse de lecture change seulement les frames, jamais la vitesse réelle. Sur une image fixe ou une boule à une frame, ce réglage n'a aucun effet.</p>
+          <p class="note">Ce sélecteur propose uniquement les animations de déplacement (et les modèles fixes compatibles), jamais les projectiles, casts ou impacts de capacité.</p>
+        </fieldset>
+        </section>
+        <section class="creature-animation-chapter creature-animation-chapter--attack" aria-label="Réglages attaque">
+        <h3 class="creature-animation-title">ATTAQUE À DISTANCE <small>face · dos · alignement</small></h3>
+        <fieldset data-creature-ranged-attack-appearance>
+          <legend>Animation de la créature — attaque à distance</legend>
+          <div class="grid two">
+            <label>Sprite d'attaque — FACE (adversaire)
+              <select data-creature-ranged-attack-visual data-asset-role="attack"><option value="">Animation normale de combat</option></select>
+            </label>
+            <label>Sprite d'attaque — DOS (joueur)
+              <select data-creature-ranged-attack-back-visual data-asset-role="attack"><option value="">Même sprite que la face (si défini)</option></select>
+            </label>
+            <label>Position FACE — horizontal X (px)
+              <input type="number" min="-400" max="400" step="1" value="0" data-creature-ranged-front-offset-x>
+            </label>
+            <label>Position FACE — vertical Y (px)
+              <input type="number" min="-400" max="400" step="1" value="0" data-creature-ranged-front-offset-y>
+            </label>
+            <label>Position DOS — horizontal X (px)
+              <input type="number" min="-400" max="400" step="1" value="0" data-creature-ranged-back-offset-x>
+            </label>
+            <label>Position DOS — vertical Y (px)
+              <input type="number" min="-400" max="400" step="1" value="0" data-creature-ranged-back-offset-y>
+            </label>
+            <label>Type de visuel
+              <select data-creature-ranged-attack-mode>
+                <option value="sprite">Sprite animé (bande horizontale)</option>
+                <option value="static">Image fixe (pose de tir)</option>
+                <option value="roll">Image roulante / rotation</option>
+              </select>
+            </label>
+            <label hidden>Taille de base (compatibilité)
+              <input type="number" min="0.1" max="8" step="0.05" value="1" data-creature-ranged-attack-scale>
+            </label>
+            <label>Taille ATTAQUE — joueur / dos
+              <input type="number" min="0.1" max="8" step="0.05" value="1" data-creature-ranged-attack-player-scale>
+            </label>
+            <label>Taille ATTAQUE — adversaire / face
+              <input type="number" min="0.1" max="8" step="0.05" value="1" data-creature-ranged-attack-opponent-scale>
+            </label>
+            <label>Nombre de frames (1 pour image fixe)
+              <input type="number" min="1" max="120" step="1" value="1" data-creature-ranged-attack-frames>
+            </label>
+            <label>Tours complets si rotation
+              <input type="number" min="0" max="20" step="0.5" value="0" data-creature-ranged-attack-turns>
+            </label>
+            <label>Transition (ms)
+              <input type="number" min="0" max="350" step="10" value="80" data-creature-ranged-attack-transition>
+            </label>
+          </div>
+          <p class="note">Deux sprites indépendants : FACE pour l'adversaire et DOS pour le joueur. Les décalages X/Y corrigent seulement l'alignement de l'image pendant l'attaque (X négatif = gauche, positif = droite ; Y négatif = haut, positif = bas). Pour un sprite joueur trop à droite, essaie X DOS = -20 puis ajuste ; la position du combattant et ses collisions restent inchangées. Les réglages de durée et d'animation restent communs aux deux. Sans sprite DOS, les anciennes créatures reprennent leur sprite FACE comme avant. Lors du tir d’un projectile, rayon ou attaque de zone à distance, la créature revient à sa pose normale après l'animation ; cast, projectile, impact et contact de mêlée restent inchangés. Pour importer les images, ouvre « Bibliothèque de visuels » et choisis l’usage « Animation de créature ».</p>
+        </fieldset>
+        </section>
+
+          </div>
+        </details>
+
+        <details class="creature-appearance-group" data-creature-appearance-group="imports">
+          <summary><strong>4. Bibliothèque de visuels</strong><small>Importer et choisir mes sprites</small></summary>
+          <div class="creature-appearance-group__body">
+        <div class="creator-visual-import" data-creator-visual-importer data-creature-visual-importer>
+          <h3>Mes visuels / Importer</h3>
+          <p class="note">PNG, WebP ou JPEG. L’asset est ajouté à la bibliothèque de cette session avec un ID user:… puis utilisable dans les listes Créature / Cast / Projectile / Impact / Zone / Statut / Esquive / Animation. La persistance projet sera un lot séparé.</p>
+          <div class="grid three">
+            <label>Usage
+              <select data-creator-visual-role>
+                <option value="creature">Créature / face / dos / icône</option>
+                <option value="icon">Icône de capacité</option>
+                <option value="cast">Cast / préparation</option>
+                <option value="travel">Projectile / trajet</option>
+                <option value="impact">Impact</option>
+                <option value="zone">Zone / aura</option>
+                <option value="status">Statut</option>
+                <option value="dodge">Esquive / disparition</option>
+                <option value="movement">Animation de déplacement de créature</option>
+                <option value="attack">Animation d’attaque de créature</option>
+              </select>
+            </label>
+            <label>Nom
+              <input type="text" placeholder="Mon sprite" data-creator-visual-label>
+            </label>
+            <label>Fichier
+              <input type="file" accept="image/png,image/webp,image/jpeg" data-creator-visual-file>
+            </label>
+          </div>
+          <button type="button" data-creator-visual-import>Importer dans la session</button>
+          <p class="note" data-creator-visual-state data-tone="info">Aucun visuel personnel importé.</p>
+        </div>
+
+          </div>
+        </details>
+
+        <details class="creature-appearance-group" data-creature-appearance-group="position">
+          <summary><strong>5. Posture et perspective</strong><small>Style · vitesse · taille · placement</small></summary>
+          <div class="creature-appearance-group__body">
+        <label>Style de position
+          <select data-creature-profile>
+            <option value="biped">Bipède</option>
+            <option value="quadruped" selected>Quadrupède</option>
+            <option value="serpentine">Serpent / rampant</option>
+            <option value="flying">Volant</option>
+            <option value="massive">Massif / golem</option>
+          </select>
+        </label>
+
+        <div class="grid two">
+          <label>Tempo de déplacement
+            <select data-creature-mobility-preset>
+              <option value="very-fast">Très rapide</option>
+              <option value="fast">Rapide</option>
+              <option value="normal" selected>Normal</option>
+              <option value="slow">Lent</option>
+              <option value="very-slow">Très lent</option>
+              <option value="custom">Personnalisé</option>
+            </select>
+          </label>
+          <label>Variation du temps d’approche (%)
+            <input
+              type="number"
+              step="1"
+              value="0"
+              data-creature-approach-time-modifier
+            >
+          </label>
+        </div>
+        <p class="note">
+          Ce réglage est indépendant du profil Bipède / Quadrupède / Volant. Négatif = plus rapide, positif = plus lent. Il agit sur les déplacements au sol, aériens et souterrains sans modifier le temps auteur de la capacité.
+        </p>
+
+        <label>Taille en combat <strong data-creature-scale-value>1.00×</strong>
+          <input
+            data-creature-display-scale
+            type="number"
+            min="0.25"
+            step="0.05"
+            value="1"
+          >
+        </label>
+        <label class="check"><input type="checkbox" data-creature-custom-views>Personnaliser la taille et le placement par vue</label>
+        <div class="grid two" data-creature-view-settings hidden>
+          <label>Taille — joueur (dos)<input type="number" min="0.25" step="0.05" value="1" data-creature-player-scale></label>
+          <label>Taille — adversaire (face)<input type="number" min="0.25" step="0.05" value="1" data-creature-opponent-scale></label>
+          <label>Décalage X — joueur (px)<input type="number" step="5" value="0" data-creature-player-x></label>
+          <label>Décalage X — adversaire (px)<input type="number" step="5" value="0" data-creature-opponent-x></label>
+          <label>Décalage Y — joueur (px)<input type="number" step="5" value="0" data-creature-player-y></label>
+          <label>Décalage Y — adversaire (px)<input type="number" step="5" value="0" data-creature-opponent-y></label>
+        </div>
+        <p class="note">Sans personnalisation, les deux vues utilisent la taille commune. Les réglages par vue ajustent les images face/dos ; la perspective des déplacements reste automatique.</p>
+        <fieldset data-creature-shadow-adjustment>
+          <legend>Position de l'ombre — ajustement manuel facultatif</legend>
+          <p class="note">Par défaut 0 / 0 : placement automatique. Pour une queue plus basse que les pattes, décale uniquement l’ombre sans déplacer la créature ni modifier les collisions. X positif = droite ; Y positif = bas. Unité : % du cadre de l'image, commun aux vues face/dos.</p>
+          <div class="grid two">
+            <label>Ombre — décalage X (%)
+              <input data-creature-shadow-offset-x type="number" step="1" min="-40" max="40" value="0">
+            </label>
+            <label>Ombre — décalage Y (%)
+              <input data-creature-shadow-offset-y type="number" step="1" min="-40" max="40" value="0">
+            </label>
+          </div>
+        </fieldset>
+          </div>
+        </details>
+
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">3</span>
+          <div>
+            <h2>Point de départ des projectiles</h2>
+            <p>Choisis une zone puis touche directement l'image face ou dos.</p>
+          </div>
+        </div>
+
+        <label>Point à placer
+          <select data-socket-kind>
+            <option value="mouth">Bouche</option>
+            <option value="head">Tête</option>
+            <option value="right-hand">Main / patte droite</option>
+            <option value="left-hand">Main / patte gauche</option>
+            <option value="tail">Queue</option>
+            <option value="center">Centre</option>
+          </select>
+        </label>
+
+        <div class="socket-grid">
+          <button class="socket-surface" type="button" data-socket-surface data-socket-view="front">
+            <img data-socket-front-preview alt="">
+            <span>Toucher pour placer · FACE</span>
+          </button>
+          <button class="socket-surface" type="button" data-socket-surface data-socket-view="back">
+            <img data-socket-back-preview alt="">
+            <span>Toucher pour placer · DOS</span>
+          </button>
+        </div>
+      </article>
+
+
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">4</span>
+          <div>
+            <h2>Sons de la créature</h2>
+            <p>Les listes utilisent uniquement les sons présents dans le catalogue actif.</p>
+          </div>
+        </div>
+
+        <div class="grid three">
+          <label>Attaque
+            <select data-creature-audio-attack data-private-audio data-audio-roles="release,voice"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
+          <label>Pas / déplacement (attaque contact)
+            <select data-creature-audio-movement data-private-audio data-audio-roles="movement"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
+          <label>Mode du son de déplacement
+            <select data-creature-audio-movement-mode>
+              <option value="once">Une lecture par appui / début de vol</option>
+              <option value="repeat">Répéter — pause entre deux lectures</option>
+              <option value="loop">Boucle continue pendant le vol</option>
+            </select>
+          </label>
+          <label>Pause entre répétitions (ms)
+            <input type="number" data-creature-audio-movement-interval min="100" max="5000" step="50" value="400"/>
+          </label>
+          <label>Touché
+            <select data-creature-audio-hit data-private-audio data-audio-roles="impact"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
+          <label>KO / mort
+            <select data-creature-audio-ko data-private-audio data-audio-roles="death"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
+          <label>Esquive — son lors de l'activation réussie
+            <select data-creature-audio-dodge data-private-audio data-audio-roles="dodge,movement"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
+          <label>Défense — son lors de l'activation réussie
+            <select data-creature-audio-defense data-private-audio data-audio-roles="defense,impact"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
+        </div>
+        <div class="creator-audio-import" data-creator-audio-importer>
+          <h3>Importer un son personnel</h3>
+          <p class="note">Import temporaire de session. Le projet conserve uniquement l’assetId ; le fichier audio n’est jamais copié dans les données gameplay.</p>
+          <div class="grid three">
+            <label>Utiliser comme
+              <select data-creator-audio-role>
+                <option value="release">Attaque / déclenchement</option>
+                <option value="voice">Voix créature</option>
+                <option value="impact">Touché / impact</option>
+                <option value="death">KO / mort</option>
+                <option value="movement">Pas / déplacement</option>
+                <option value="dodge">Esquive</option>
+                <option value="defense">Défense</option>
+              </select>
+            </label>
+            <label>Nom
+              <input type="text" placeholder="Mon son" data-creator-audio-label>
+            </label>
+            <label>Fichier
+              <input type="file" accept="audio/mpeg,audio/wav,audio/x-wav,audio/ogg,.mp3,.wav,.ogg" data-creator-audio-file>
+            </label>
+          </div>
+          <button type="button" class="primary-action" data-creator-audio-import>Importer mon son</button>
+          <p class="note" data-creator-audio-state data-tone="info">Aucun son personnel importé dans cette session.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">6</span>
+          <div>
+            <h2>Éléments & Capture</h2>
+            <p>Types, capture et anciennes résistances conservées pour compatibilité.</p>
+          </div>
+        </div>
+
+        <div class="chip-grid">
+          <label class="check-chip"><input type="checkbox" data-element value="fire" checked><span>Feu</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="water"><span>Eau</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="earth"><span>Terre</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="air"><span>Air</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="electric"><span>Électricité</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="light"><span>Lumière</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="shadow"><span>Ombre</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="nature"><span>Nature</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="ice"><span>Glace</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="poison"><span>Poison</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="steel"><span>Acier</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="psy"><span>Psy</span></label>
+          <label class="check-chip"><input type="checkbox" data-element value="spirit"><span>Esprit</span></label>
+        </div>
+
+        <details>
+          <summary>Résistances & faiblesses naturelles</summary>
+          <p class="note">Valeur positive = résistance ; valeur négative = faiblesse. Ces modificateurs sont appliqués au canal élémentaire en combat et s’ajoutent aux bonus provenant des statistiques.</p>
+          <div class="grid three resistance-grid">
+            <label>Rés. Feu %<input type="number" data-resistance="fire" value="35"></label>
+            <label>Rés. Eau %<input type="number" data-resistance="water" value="-50"></label>
+            <label>Rés. Terre %<input type="number" data-resistance="earth" value="0"></label>
+            <label>Rés. Air %<input type="number" data-resistance="air" value="0"></label>
+            <label>Rés. Électricité %<input type="number" data-resistance="electric" value="0"></label>
+            <label>Rés. Lumière %<input type="number" data-resistance="light" value="0"></label>
+            <label>Rés. Ombre %<input type="number" data-resistance="shadow" value="0"></label>
+            <label>Rés. Nature %<input type="number" data-resistance="nature" value="0"></label>
+            <label>Rés. Glace %<input type="number" data-resistance="ice" value="0"></label>
+            <label>Rés. Poison %<input type="number" data-resistance="poison" value="0"></label>
+            <label>Rés. Acier %<input type="number" data-resistance="steel" value="0"></label>
+            <label>Rés. Psy %<input type="number" data-resistance="psy" value="0"></label>
+            <label>Rés. Esprit %<input type="number" data-resistance="spirit" value="0"></label>
+          </div>
+        </details>
+
+        <div class="grid three">
+          <label class="switch-line"><input type="checkbox" data-capturable checked><span>Capturable</span></label>
+          <label>Taux de capture %<input type="number" min="0" max="100" data-capture-rate value="40"></label>
+          <label>Chance d'apparition %<input type="number" min="0" max="100" data-spawn-chance value="20"></label>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">7</span>
+          <div>
+            <h2>Stats Monster Capture</h2>
+            <p>Chaque stat indique clairement ce que donne 1 point et le bonus total actuel. Santé / PV utilise le même système de points que les autres stats.</p>
+          </div>
+        </div>
+
+        <details class="editor-context-help" data-context-help="stats">
+          <summary aria-label="Informations sur les statistiques">ⓘ Comprendre les statistiques</summary>
+          <p class="note" data-context-stat-summary>Les valeurs de vos statistiques seront expliquées ici.</p>
+          <p class="note">Les coefficients sont propres à votre jeu. Vous pouvez modifier, ajouter ou retirer n’importe quelle statistique dans « Configurer le système de stats ». La Défense générale protège contre tous les types de dégâts, en plus des résistances propres aux éléments.</p>
+        </details>
+        <div class="stat-values-grid" data-stat-values-host>
+          <p class="note">Chargement du registre de stats…</p>
+        </div>
+
+        <details data-global-editor-control>
+          <summary>Configurer le système de stats</summary>
+          <p class="note">Réglage explicite : 1 point peut donner des PV max, X % dégâts, Y % résistance, Z % de réduction du temps de charge et/ou W % de réduction globale des dégâts reçus. Les identifiants existants restent stables.</p>
+          <div class="stat-registry-list" data-stat-registry-host></div>
+          <button type="button" class="secondary-action" data-stat-registry-apply>
+            Appliquer les modifications du registre
+          </button>
+
+          <div class="stat-custom-builder">
+            <h3>Ajouter une stat personnalisée</h3>
+            <div class="grid two">
+              <input type="hidden" data-stat-custom-id aria-hidden="true">
+              <label>Nom affiché<input data-stat-custom-label placeholder="ex. Givre"></label>
+              <label>Canal dégâts<select data-stat-custom-damage-channel data-element-channel-choice="true" data-element-channel-custom-builder="true"><option value="">Aucun canal</option></select></label>
+              <label>Canal résistance<select data-stat-custom-resistance-channel data-element-channel-choice="true" data-element-channel-custom-builder="true"><option value="">Aucun canal</option></select></label>
+              <label>Dégâts % / point<input type="number" min="0" step="0.05" value="1" data-stat-custom-damage-pct-per-point></label>
+              <label>Résistance % / point<input type="number" min="0" step="0.05" value="1" data-stat-custom-resistance-pct-per-point></label>
+              <label>Réduction temps de charge % / point<input type="number" min="0" step="0.05" value="0" data-stat-custom-charge-pct-per-point></label>
+              <label>Réduction globale dégâts reçus % / point<input type="number" min="0" step="0.05" value="0" data-stat-custom-damage-reduction-pct-per-point></label>
+              <label>PV max / point<input type="number" min="0" step="0.1" value="0" data-stat-custom-max-hp-per-point></label>
+            </div>
+            <button type="button" class="primary-action" data-stat-custom-add>
+              Ajouter la stat
+            </button>
+          </div>
+        </details>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">8</span>
+          <div>
+            <h2>Évolution</h2>
+            <p>Lien explicite par identifiant vers une autre créature du catalogue.</p>
+          </div>
+        </div>
+        <label class="switch-line">
+          <input type="checkbox" data-evolution-enabled>
+          <span>Cette créature évolue</span>
+        </label>
+        <div class="grid two">
+          <label>Créature cible
+            <select data-evolution-target disabled>
+              <option value="">Choisir une créature cible</option>
+            </select>
+          </label>
+          <label>Niveau d’évolution
+            <input type="number" min="1" value="10" data-evolution-level disabled>
+          </label>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">9</span>
+          <div>
+            <h2>Capacités équipées</h2>
+            <p data-loadout-policy-summary>Chargement de la politique de progression…</p>
+            <p class="note">Les quatre capacités standards se débloquent aux niveaux 1, 5, 10 et 15. Le cinquième palier, niveau 20, ouvre le slot Ultime. Tu peux tout préparer à l’avance sans perdre les compétences encore verrouillées.</p>
+          </div>
+        </div>
+        <div class="loadout-grid">
+          <label>Slot 1<select data-loadout-slot data-loadout-slot-type="standard"><option value="">Vide</option></select></label>
+          <label>Slot 2<select data-loadout-slot data-loadout-slot-type="standard"><option value="">Vide</option></select></label>
+          <label>Slot 3<select data-loadout-slot data-loadout-slot-type="standard"><option value="">Vide</option></select></label>
+          <label>Slot 4<select data-loadout-slot data-loadout-slot-type="standard"><option value="">Vide</option></select></label>
+          <label class="loadout-ultimate">Ultime<select data-loadout-slot data-loadout-slot-type="ultimate"><option value="">Aucune ultime</option></select></label>
+        </div>
+      </article>
+    </section>
+
+    <section class="editor-panel" data-editor-panel="combat" hidden>
+      <article class="card hero-card">
+        <div class="card-title">
+          <span class="step">1</span>
+          <div>
+            <h2>Règles d'énergie du combat</h2>
+            <p>Ces valeurs s’appliquent à la session de combat et restent inchangées quand tu changes de créature.</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <label>Énergie max<input type="number" min="0" data-max-energy value="12"></label>
+          <label>Énergie au départ<input type="number" min="0" data-initial-energy value="2"></label>
+          <label>Énergie récupérée<input type="number" min="0" data-energy-charge-amount value="1"></label>
+          <label>Récupération toutes les (ms)<input type="number" min="0" data-energy-charge-interval value="1800"></label>
+          <label>Coût d'un déplacement<input type="number" min="0" data-movement-energy value="2"></label>
+          <label>Vitesse de charge %<input type="number" data-charge-time-modifier value="0"></label>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">2</span>
+          <div>
+            <h2>Progression des capacités</h2>
+            <p>Règle générale : combien de slots actifs sont disponibles selon le niveau. Le niveau requis reste propre à chaque capacité.</p>
+          </div>
+        </div>
+
+        <div data-global-editor-control>
+          <label>Maximum de capacités actives
+            <input type="number" min="1" max="5" value="5" data-progression-max-active>
+          </label>
+          <div class="progression-schedule" data-progression-schedule-host>
+            <p class="note">Chargement de la progression…</p>
+          </div>
+          <div class="skill-save-actions">
+            <button type="button" class="secondary-action" data-progression-add-step>
+              Ajouter un palier
+            </button>
+            <button type="button" class="primary-action" data-progression-apply>
+              Appliquer la progression
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">3</span>
+          <div>
+            <h2>Équipes du test</h2>
+            <p>Choisis les monstres de chaque camp dans ta bibliothèque. Une même créature peut participer plusieurs fois.</p>
+          </div>
+        </div>
+        <label>Niveau des créatures en combat de test uniquement
+          <input type="number" min="1" max="100" step="1" value="20" data-test-creature-level>
+        </label>
+        <p class="note">Par défaut, toutes les créatures du test (alliées, adverses et réserves) sont temporairement au niveau 20 pour essayer les compétences. Les fiches sauvegardées et le démarrage du jeu conservent leur propre niveau (1 pour une nouvelle créature).</p>
+        <div class="grid two test-teams">
+        <fieldset class="test-team"><legend>Ton équipe</legend>
+          <label>Monstres dans ton équipe<select data-test-local-team-size><option value="1">1 monstre</option><option value="2">2 monstres</option><option value="3">3 monstres</option><option value="4">4 monstres</option><option value="5">5 monstres</option><option value="6">6 monstres</option></select></label>
+          <div class="test-team__current" data-test-team-member data-test-team="local" data-test-team-index="0"><span>1. Créature en cours</span><strong data-test-current-creature>Créature en cours d’édition</strong></div>
+          <label data-test-team-member data-test-team="local" data-test-team-index="1" hidden>2. Monstre allié<select data-test-local-creature></select></label>
+          <label data-test-team-member data-test-team="local" data-test-team-index="2" hidden>3. Monstre allié<select data-test-local-creature></select></label>
+          <label data-test-team-member data-test-team="local" data-test-team-index="3" hidden>4. Monstre allié<select data-test-local-creature></select></label>
+          <label data-test-team-member data-test-team="local" data-test-team-index="4" hidden>5. Monstre allié<select data-test-local-creature></select></label>
+          <label data-test-team-member data-test-team="local" data-test-team-index="5" hidden>6. Monstre allié<select data-test-local-creature></select></label>
+        </fieldset>
+        <fieldset class="test-team"><legend>Équipe adverse</legend>
+          <label>Monstres dans l’équipe adverse<select data-test-opponent-team-size><option value="1">1 monstre</option><option value="2">2 monstres</option><option value="3">3 monstres</option><option value="4">4 monstres</option><option value="5">5 monstres</option><option value="6">6 monstres</option></select></label>
+          <label data-test-team-member data-test-team="opponent" data-test-team-index="0">1. Monstre adverse<select data-test-opponent-creature></select></label>
+          <label data-test-team-member data-test-team="opponent" data-test-team-index="1" hidden>2. Monstre adverse<select data-test-opponent-creature></select></label>
+          <label data-test-team-member data-test-team="opponent" data-test-team-index="2" hidden>3. Monstre adverse<select data-test-opponent-creature></select></label>
+          <label data-test-team-member data-test-team="opponent" data-test-team-index="3" hidden>4. Monstre adverse<select data-test-opponent-creature></select></label>
+          <label data-test-team-member data-test-team="opponent" data-test-team-index="4" hidden>5. Monstre adverse<select data-test-opponent-creature></select></label>
+          <label data-test-team-member data-test-team="opponent" data-test-team-index="5" hidden>6. Monstre adverse<select data-test-opponent-creature></select></label>
+        </fieldset>
+        </div>
+        <p class="note">Le premier monstre de ton équipe suit la créature que tu modifies. Les autres choix restent indépendants.</p>
+        <label>Arène du test
+          <select data-test-arena></select>
+        </label>
+        <p class="note">Ce choix modifie uniquement le décor de la preview. Il ne change aucune règle de combat.</p>
+        <label>Créatures actives par équipe
+          <select data-active-per-team>
+            <option value="1" selected>1 contre 1</option>
+            <option value="2">2 contre 2</option>
+          </select>
+        </label>
+        <label>Contrôle du deuxième allié (2 contre 2)
+          <select data-test-ally-control-mode disabled>
+            <option value="ai" selected>IA alliée (mode actuel)</option>
+            <option value="solo">Solo : je contrôle mes deux créatures</option>
+          </select>
+        </label>
+        <p class="note">En solo 2v2, touche une créature alliée pour passer instantanément sa barre de capacités, son énergie, son esquive et son Rappel au premier plan. Le mode IA reste disponible. Deux joueurs humains distincts : futur chantier.</p>
+        <p class="note">Les autres monstres restent en réserve : ils peuvent être invoqués ou remplacer un monstre KO. En 2 contre 2, les réserves sont réparties entre les deux actifs.</p>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">4</span>
+          <div>
+            <h2>Options de jeu</h2>
+            <p>Règles globales de la session de combat. Elles ne modifient pas les fiches des créatures ou des capacités.</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <label>Vitesse globale des attaques
+            <input
+              type="number"
+              min="0.5"
+              max="4"
+              step="0.05"
+              value="1"
+              data-combat-skill-speed
+            >
+          </label>
+          <label>Durée du rappel (secondes)
+            <input type="number" min="0" step="0.1" value="2" data-recall-seconds>
+          </label>
+          <label>Attente entre changements volontaires (secondes)
+            <input type="number" min="0" step="1" value="45" data-game-recall-cooldown-seconds>
+          </label>
+        </div>
+        <p class="note">1× est le rythme de référence. Le rappel reste gratuit et prend 2 secondes par défaut. Après un changement volontaire, le prochain est bloqué pendant 45 secondes par défaut (0 = sans délai). Une relève après KO est toujours immédiate et ne subit pas ce verrou.</p>
+
+        <fieldset class="game-option-group">
+          <legend>Esquive — anciennes créatures sans réglage individuel</legend>
+          <label class="switch-line">
+            <input type="checkbox" data-game-dodge-enabled checked>
+            <span>Esquive par défaut pour les créatures anciennes non configurées</span>
+          </label>
+          <div class="grid three">
+            <label>Nombre de charges
+              <input type="number" min="1" step="1" value="2" data-game-dodge-charges>
+            </label>
+            <label>Recharge d’une charge (secondes)
+              <input type="number" min="0" step="0.1" value="30" data-game-dodge-recharge-seconds>
+            </label>
+            <label>Durée active (secondes)
+              <input type="number" min="0.05" step="0.05" value="0.25" data-game-dodge-active-seconds>
+            </label>
+          </div>
+          <p class="note">Compatibilité : ces réglages ne s’appliquent qu’aux anciennes fiches dont la réaction individuelle est encore sur « Ancienne règle globale ». Pour toute nouvelle créature, configure Esquive ou Défense dans son onglet Créature, à côté du sprite. Une activation consomme une charge ; les attaques non esquivables traversent l’Esquive.</p>
+        </fieldset>
+      </article>
+
+      <article class="card" data-combat-light-settings>
+        <div class="card-title">
+          <span class="step">5</span>
+          <div>
+            <h2>Éclairage et ombres de l'arène</h2>
+            <p>Une seule lumière commune à tous les combattants, au sol comme en vol.</p>
+          </div>
+        </div>
+        <div class="grid two" data-shadow-light-controls>
+          <label>Type d’ombre
+            <select data-shadow-light-mode>
+              <option value="silhouette" selected>Silhouette projetée</option>
+              <option value="soft">Ombre douce (ellipse)</option>
+              <option value="contact">Ombre de contact (ancienne)</option>
+            </select>
+          </label>
+          <label>Direction de la lumière
+            <input data-shadow-light-azimuth type="range" min="0" max="360" step="5" value="50">
+          </label>
+          <label>Hauteur de la lumière
+            <input data-shadow-light-elevation type="range" min="15" max="85" step="5" value="48">
+          </label>
+          <label>Douceur de l’ombre
+            <input data-shadow-light-softness type="range" min="0" max="100" step="5" value="50">
+          </label>
+          <label>Intensité de l’ombre
+            <input data-shadow-light-intensity type="range" min="0" max="100" step="5" value="60">
+          </label>
+          <label>Hauteur de vol simulée
+            <input data-shadow-light-flight-height type="range" min="0" max="120" step="5" value="38">
+          </label>
+        </div>
+        <p class="note">Réglages de la prévisualisation : choisis les valeurs puis lance « Tester en combat ». Ils restent disponibles quand tu reviens dans cet onglet, sans modifier les créatures ni les sauvegardes. La persistance des options d'arène sera traitée après validation du rendu.</p>
+      </article>
+    </section>
+
+    <section class="editor-panel" data-editor-panel="skills" hidden>
+      <article class="card" data-marker-authoring>
+        <div class="card-title">
+          <span class="step">◆</span>
+          <div><h2>Bibliothèque de marqueurs</h2>
+            <p>Crée un marqueur une fois, puis utilise-le dans plusieurs capacités. Un marqueur peut être sans effet, ou déclencher un effet lorsqu'il atteint son seuil. Les buffs/debuffs existants restent séparés.</p>
+          </div>
+        </div>
+        <label>Marqueurs enregistrés
+          <select data-marker-library-select><option value="">Nouveau marqueur</option></select>
+        </label>
+        <div class="grid two">
+          <label>Nom du marqueur
+            <input data-marker-name type="text" placeholder="Exemple : Venin" autocomplete="off">
+          </label>
+          <label>Identifiant technique (créé automatiquement)
+            <input data-marker-id type="text" placeholder="Créé depuis le nom" autocomplete="off" spellcheck="false" readonly>
+          </label>
+          <label>Nature
+            <select data-marker-polarity>
+              <option value="neutral">Neutre</option>
+              <option value="detrimental">Négatif (immunités aux malus respectées)</option>
+              <option value="beneficial">Bénéfique</option>
+            </select>
+          </label>
+          <label class="switch-line"><input data-marker-permanent type="checkbox">
+            <span>Durée illimitée — jusqu'au retrait ou à la consommation</span>
+          </label>
+          <label>Durée des charges (secondes) — si temporaires
+            <input data-marker-duration type="number" min="0.1" step="0.5" value="10">
+          </label>
+          <label>Maximum de charges
+            <input data-marker-max type="number" min="1" step="1" value="10">
+          </label>
+          <label>Icône du marqueur (bibliothèque GenSrpG)
+            <select data-marker-icon><option value="">Aucune icône personnalisée</option></select>
+            <small class="note">Le choix est exporté ; le HUD de combat utilise encore son losange de marqueur.</small>
+          </label>
+        </div>
+        <p class="note">Un marqueur permanent ne perd pas ses charges avec le temps. S'il produit des dégâts/soins périodiques, ceux-ci continuent selon l'horloge combat tant qu'il est présent. La case illimitée désactive le champ de durée en secondes.</p>
+        <p class="note">Pour créer un marqueur, saisis seulement son nom puis touche « Enregistrer le marqueur ».  L'identifiant est créé automatiquement (sans accents ni espaces) et reste stable pour toutes les capacités. Les éléments et icônes se choisissent dans les listes existantes : aucun identifiant à recopier. Pour modifier un marqueur existant, sélectionne-le dans la liste ci-dessus.</p>
+        <details class="skill-activation-config" data-marker-charge-card>
+          <summary>Effet individuel — dès la première charge (facultatif)</summary>
+          <label class="switch-line"><input type="checkbox" data-marker-charge-enabled>
+            <span>Déclencher un ou plusieurs effets pour chaque nouvelle charge, sans attendre un seuil</span>
+          </label>
+          <div data-marker-charge-fields hidden>
+            <div class="grid two">
+              <label>Effet par charge
+                <select data-marker-charge-effect>
+                <option value="damage">Dégâts immédiats</option>
+                <option value="heal">Soin</option>
+                <option value="energy_restore">Récupérer de l'énergie</option>
+                <option value="energy_drain">Drainer de l'énergie</option>
+                <option value="stun">Étourdir (durée en secondes)</option>
+                <option value="slow_movement">Ralentir déplacement / approche (%)</option>
+                <option value="boost_movement">Accélérer déplacement / approche (%)</option>
+                <option value="slow_cooldown">Ralentir recharge des capacités (%)</option>
+                <option value="boost_cooldown">Accélérer recharge des capacités (%)</option>
+                <option value="slow_energy">Réduire régénération d'énergie (%)</option>
+                <option value="boost_energy">Augmenter régénération d'énergie (%)</option>
+                <option value="reduce_damage">Réduire les dégâts infligés (%)</option>
+                <option value="boost_damage">Augmenter les dégâts infligés (%)</option>
+                <option value="reduce_stat">Réduire une caractéristique (points ou %)</option>
+                <option value="increase_stat">Augmenter une caractéristique (points ou %)</option>
+                <option value="silence">Silence (durée réglable)</option>
+                <option value="immobilize">Immobilisation (durée réglable)</option>
+                <option value="preserve">Statut importé conservé sans modification</option>
+                <option value="knockout">K.O. via le moteur natif (immunités respectées)</option>
+              </select>
+              </label>
+              <label>Valeur (points ou %)
+                <input data-marker-charge-amount type="number" min="0" step="any" value="10">
+              </label>
+              <label data-marker-charge-channel-setting>Élément des dégâts
+                <select data-marker-charge-channel data-marker-channel-choice data-marker-optional="true" data-marker-optional-label="Canal par défaut du moteur"><option value="">Canal par défaut du moteur</option></select>
+              </label>
+              <label data-marker-charge-duration-setting>Durée de l'effet (secondes)
+                <input data-marker-charge-status-duration type="number" min="0.1" step="0.5" value="5">
+              </label>
+              <label data-marker-charge-stat-setting>Caractéristique
+                <select data-marker-charge-stat data-marker-stat-choice><option value="">Choisir une caractéristique</option></select>
+              </label>
+              <label data-marker-charge-stat-mode-setting>Variation de caractéristique
+                <select data-marker-charge-stat-mode>
+                  <option value="points">Points</option>
+                  <option value="percent">Pourcentage de la base</option>
+                </select>
+              </label>
+            </div>
+            <div class="skill-status-config__grid" data-marker-charge-extra-host></div>
+            <button type="button" class="secondary-action" data-marker-charge-add-effect>+ Ajouter un autre effet par charge</button>
+            <p class="note">Dès la première charge et à chaque charge réellement ajoutée : dégâts, soins, énergie, caractéristiques, déplacement, recharge, puissance, silence, immobilisation ou étourdissement. Les statuts ont leur durée propre ; consommer les charges ne supprime pas un statut déjà appliqué. Fonctionne indépendamment des effets périodiques et des seuils.</p>
+          </div>
+        </details>
+        <details class="skill-activation-config" data-marker-periodic-card>
+          <summary>Effet périodique par charge (facultatif)</summary>
+          <label class="switch-line"><input type="checkbox" data-marker-periodic-enabled>
+            <span>Activer un effet répété sur le porteur</span>
+          </label>
+          <div class="grid two" data-marker-periodic-fields hidden>
+            <label>Effet
+              <select data-marker-periodic-kind>
+                <option value="damage">Dégâts par charge</option>
+                <option value="heal">Soin par charge</option>
+              </select>
+            </label>
+            <label>Valeur par charge
+              <input data-marker-periodic-amount type="number" min="0.1" step="0.1" value="5">
+            </label>
+            <label>Toutes les (secondes)
+              <input data-marker-periodic-seconds type="number" min="0.1" step="0.5" value="5">
+            </label>
+            <label data-marker-periodic-damage-setting>Calcul des dégâts
+              <select data-marker-periodic-mode>
+                <option value="fixed">Valeur fixe (bouclier et immunité actifs)</option>
+                <option value="combat">Calcul combat (résistances comprises)</option>
+              </select>
+            </label>
+            <label data-marker-periodic-channel-setting>Élément si calcul combat
+              <select data-marker-periodic-channel data-marker-channel-choice><option value="physical">Physique</option></select>
+            </label>
+          </div>
+          <p class="note">Exemple Venin : 3 charges × 5 dégâts = 15 dégâts toutes les 5 s, tant que le marqueur est actif. Les dégâts utilisent l'horloge et les protections du combat, même après un changement de capacité.</p>
+        </details>
+        <label class="switch-line"><input type="checkbox" data-marker-threshold-enabled>
+          <span>Déclencher un effet automatiquement à un nombre de charges</span></label>
+        <div data-marker-threshold-fields hidden>
+          <div class="grid two">
+            <label>Seuil de charges
+              <input data-marker-threshold-count type="number" min="1" step="1" value="10">
+            </label>
+            <label>Après le seuil
+              <select data-marker-threshold-consume>
+                <option value="reset">Consommer les charges et recommencer à 0</option>
+                <option value="keep">Conserver les charges (une seule activation)</option>
+              </select>
+            </label>
+            <label>Effet au seuil
+              <select data-marker-threshold-effect>
+                <option value="damage">Dégâts</option>
+                <option value="heal">Soin</option>
+                <option value="energy_restore">Récupérer de l'énergie</option>
+                <option value="energy_drain">Drainer de l'énergie</option>
+                <option value="stun">Étourdir (durée en secondes)</option>
+                <option value="slow_movement">Ralentir déplacement / approche (%)</option>
+                <option value="boost_movement">Accélérer déplacement / approche (%)</option>
+                <option value="slow_cooldown">Ralentir recharge des capacités (%)</option>
+                <option value="boost_cooldown">Accélérer recharge des capacités (%)</option>
+                <option value="slow_energy">Réduire régénération d'énergie (%)</option>
+                <option value="boost_energy">Augmenter régénération d'énergie (%)</option>
+                <option value="reduce_damage">Réduire les dégâts infligés (%)</option>
+                <option value="boost_damage">Augmenter les dégâts infligés (%)</option>
+                <option value="reduce_stat">Réduire une caractéristique (points ou %)</option>
+                <option value="increase_stat">Augmenter une caractéristique (points ou %)</option>
+                <option value="silence">Silence (durée réglable)</option>
+                <option value="immobilize">Immobilisation (durée réglable)</option>
+                <option value="preserve">Statut importé conservé sans modification</option>
+                <option value="knockout">K.O. via le moteur natif (immunités respectées)</option>
+              </select>
+            </label>
+            <label>Valeur de l'effet
+              <input data-marker-threshold-amount type="number" min="0" step="1" value="10">
+            </label>
+            <label>Élément des dégâts au seuil (facultatif)
+              <select data-marker-threshold-channel data-marker-channel-choice data-marker-optional="true" data-marker-optional-label="Canal par défaut du moteur"><option value="">Canal par défaut du moteur</option></select>
+            </label>
+            <label data-marker-threshold-status-duration-setting>Durée du statut appliqué (secondes)
+              <input data-marker-threshold-status-duration type="number" min="0.1" step="0.5" value="5">
+            </label>
+            <label data-marker-threshold-stat-setting>Caractéristique à modifier
+              <select data-marker-threshold-stat data-marker-stat-choice><option value="">Choisir une caractéristique</option></select>
+            </label>
+            <label data-marker-threshold-stat-mode-setting>Mode du malus de caractéristique
+              <select data-marker-threshold-stat-mode><option value="points">Points</option><option value="percent">Pourcentage de la statistique de base</option></select>
+            </label>
+          </div>
+          <label class="switch-line"><input type="checkbox" data-marker-threshold-repeat>
+            <span>Répéter l'effet à chaque nouvelle charge après le seuil (cumul possible ; nécessite « Conserver les charges »)</span>
+          </label>
+          <div class="skill-status-config__grid" data-marker-threshold-extra-host></div>
+          <button type="button" class="secondary-action" data-marker-threshold-add-effect>+ Ajouter un autre effet (buff ou malus)</button>
+          <small class="note">Tu peux combiner plusieurs effets au même seuil : caractéristiques, déplacement, recharge, énergie, puissance, immobilisation, silence, soins ou dégâts. Les ralentissements sont appliqués par le moteur de combat, pas par l'animation.</small>
+        </div>
+        <p class="note">Les charges partagent une seule durée, rafraîchie à chaque ajout. Le K.O. utilise le moteur natif de dégâts et de crédit des K.O. : les boucliers sont absorbés et l'immunité aux dégâts protège. Les marqueurs peuvent cumuler des effets individuels dès la première charge, des dégâts/soins périodiques et des effets au seuil. Chaque statut appliqué conserve sa propre durée.</p>
+        <div class="skill-save-actions">
+          <button type="button" class="secondary-action" data-marker-new>Nouveau</button>
+          <button type="button" class="primary-action" data-marker-save>Enregistrer le marqueur</button>
+          <button type="button" class="secondary-action" data-marker-export>Exporter la bibliothèque JSON</button>
+          <small class="note">L’export rassemble les marqueurs enregistrés, ceux des capacités configurées et celui de la capacité en cours de modification. Un conflit ou une liste vide est signalé avant téléchargement.</small>
+          <label>Importer des marqueurs JSON
+            <input type="file" accept=".json,application/json" data-marker-import>
+          </label>
+        </div>
+        <p class="note" data-marker-library-state data-tone="info">Aucun marqueur enregistré. Un marqueur n'est ni une nouvelle mécanique de dégâts ni un statut converti automatiquement.</p>
+      </article>
+      <article class="card">
+        <div class="card-title">
+          <span class="step">1</span>
+          <div>
+            <h2>Bibliothèque Capture</h2>
+            <p>103 capacités réellement utilisées par les créatures Capture. Un modèle préremplit seulement les données réellement connues.</p>
+          </div>
+        </div>
+
+        <label>Modèle de départ (optionnel)
+          <select data-skill-library-select>
+            <option value="">Aucun modèle — partir de zéro</option>
+          </select>
+        </label>
+        <p class="note" data-skill-library-state data-tone="info">
+          Un modèle remplit les champs mais ne modifie aucune capacité tant que tu ne choisis pas une action ci-dessous.
+        </p>
+        <div class="skill-save-actions">
+          <button type="button" class="secondary-action" data-skill-new>
+            Nouvelle capacité
+          </button>
+          <button type="button" class="primary-action" data-skill-create>
+            Enregistrer comme nouvelle
+          </button>
+          <button type="button" class="secondary-action" data-skill-update>
+            Mettre à jour la capacité existante
+          </button>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">2</span>
+          <div>
+            <h2>Capacité</h2>
+            <p>Type, énergie, niveau requis et élément. Les effets et leur ciblage se configurent dans une seule zone dédiée.</p>
+          </div>
+        </div>
+
+        <details class="editor-context-help" data-context-help="skill">
+          <summary aria-label="Explication de la capacité configurée">ⓘ Que fait cette capacité ?</summary>
+          <p class="note" data-context-skill-summary>Lecture des effets configurés…</p>
+        </details>
+        <div class="grid two">
+          <label>Nom<input data-skill-name value="Boule de feu"></label>
+          <label class="technical-field">Identifiant<input data-skill-id value="fireball"></label>
+        </div>
+        <label>Description<textarea data-skill-description rows="2">Projectile de feu.</textarea></label>
+
+        <div class="grid two">
+          <label>Type
+            <select data-skill-category>
+              <option value="offensive" selected>Attaque</option>
+              <option value="defensive">Protection</option>
+              <option value="heal">Soin</option>
+              <option value="buff_debuff">Buff / Debuff</option>
+              <option value="counter">Contre</option>
+            </select>
+          </label>
+          <label>Élément
+            <select data-skill-element>
+              <option value="">Aucun</option>
+              <option value="fire" selected>Feu</option>
+              <option value="water">Eau</option>
+              <option value="earth">Terre</option>
+              <option value="air">Air</option>
+              <option value="electric">Électricité</option>
+              <option value="light">Lumière</option>
+              <option value="shadow">Ombre</option>
+              <option value="nature">Nature</option>
+              <option value="ice">Glace</option>
+              <option value="poison">Poison</option>
+              <option value="steel">Acier</option>
+              <option value="psy">Psy</option>
+              <option value="spirit">Esprit</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid two">
+          <label>Coût énergie<input type="number" min="0" data-skill-energy-cost value="3"></label>
+          <label>Niveau de déverrouillage<input type="number" min="1" data-skill-required-level value="1"></label>
+        </div>
+        <details class="editor-context-help"><summary>ⓘ Niveau, énergie et ultime</summary>
+          <p class="note">Énergie : coût à payer pour lancer la capacité. Niveau : niveau minimum. Ultime : emplacement spécial. Ces règles sont indépendantes ; la disponibilité dépend aussi des slots, conditions et utilisations restantes.</p>
+        </details>
+        <label class="switch-line">
+          <input type="checkbox" data-skill-ultimate>
+          <span>Capacité ultime — uniquement dans le slot Ultime</span>
+        </label>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">3</span>
+          <div>
+            <h2>Conditions d’activation</h2>
+            <p>Optionnel : verrouille cette capacité jusqu’à ce que des conditions de combat soient remplies. Ce réglage est indépendant du statut Ultime et du niveau requis.</p>
+          </div>
+        </div>
+
+        <label class="switch-line">
+          <input type="checkbox" data-skill-activation-enabled>
+          <span>Activer des conditions d’activation</span>
+        </label>
+
+        <details class="editor-context-help"><summary>ⓘ Quand la capacité devient-elle utilisable ?</summary>
+          <p class="note">Le niveau et les conditions de combat sont indépendants. « Toutes » demande chaque condition ; « Au moins une » suffit avec une seule. Sans conditions supplémentaires, les règles normales de la capacité restent actives.</p>
+        </details>
+        <div class="skill-activation-config" data-skill-activation-config hidden>
+          <label>Comment débloquer la capacité ?
+            <select data-skill-activation-mode>
+              <option value="all" selected>Toutes les conditions</option>
+              <option value="any">Au moins une condition</option>
+            </select>
+          </label>
+
+          <p class="note">
+            Exemple : une ultime peut demander 30 secondes de combat ET 2 ennemis KO, ou se débloquer dès qu’un allié tombe. Les conditions peuvent combiner temps, dégâts, PV, alliés KO, ennemis KO et KO réalisés par le lanceur.
+          </p>
+
+          <div class="skill-activation-conditions" data-skill-activation-conditions-host></div>
+
+          <button type="button" class="secondary-action" data-skill-activation-add>
+            Ajouter une condition
+          </button>
+
+          <div class="activation-condition-help" aria-label="Types de conditions disponibles">
+            <span>Temps de combat écoulé</span>
+            <span>Dégâts infligés</span>
+            <span>Dégâts subis</span>
+            <span>PV ≤ X %</span>
+            <span>Alliés KO</span>
+            <span>Ennemis KO</span>
+            <span>KO réalisés par le lanceur</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-marker-cost-card>
+        <div class="card-title">
+          <span class="step">3bis</span>
+          <div>
+            <h2>Coût en marqueurs</h2>
+            <p>La capacité nécessite et consomme ces charges dès son lancement, avant le temps de préparation. Sans assez de charges, elle est refusée sans coûter d'énergie.</p>
+          </div>
+        </div>
+        <label class="switch-line"><input type="checkbox" data-skill-marker-cost-enabled>
+          <span>Exiger des marqueurs pour activer cette capacité</span>
+        </label>
+        <div class="grid two" data-skill-marker-cost-fields hidden>
+          <label>Marqueur nécessaire
+            <select data-skill-marker-cost-id><option value="">Choisir un marqueur</option></select>
+          </label>
+          <label>Où prélever les charges ?
+            <select data-skill-marker-cost-source>
+              <option value="self">Sur le lanceur</option>
+              <option value="target">Sur la cible</option>
+            </select>
+          </label>
+          <label>Nombre de charges consommées
+            <input data-skill-marker-cost-count type="number" min="1" max="99" step="1" value="3">
+          </label>
+        </div>
+        <p class="note">Exemple : exige 3 Venin sur la cible, consomme ces 3 charges dès le début de l'action, puis lance normalement les dégâts, soins et autres effets configurés dans la capacité. Ne pas ajouter un second effet « Consommer » pour payer deux fois.</p>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">4</span>
+          <div>
+            <h2>Effets tactiques</h2>
+            <p>Ajoute les effets réellement exécutés par le moteur : zone, soin, énergie, buff/debuff et contrôles.</p>
+          </div>
+        </div>
+
+        <details class="editor-context-help"><summary>ⓘ Cibles, dégâts, buffs et zones</summary>
+          <p class="note">Les dégâts sont des valeurs de base : Défense et résistances les modifient avant de retirer des PV. Une zone persistante peut toucher plusieurs ennemis régulièrement. Un soin rend des PV et un statut dure un temps précis. Ouvrez « Que fait cette capacité ? » pour lire vos réglages.</p>
+        </details>
+        <div class="skill-effects-list" data-skill-effects-host></div>
+
+        <button type="button" class="secondary-action" data-skill-effect-add>
+          Ajouter un effet
+        </button>
+
+        <section class="skill-contact-hold" data-skill-contact-hold aria-label="Maintien au contact">
+          <h3>Sangsue / Maintien au contact</h3>
+          <label><input type="checkbox" data-skill-contact-hold-enabled>
+            Rester au corps à corps après l'impact et appliquer des effets régulièrement
+          </label>
+          <p class="note">Nécessite la forme « Contact » et le déplacement « Sol ». La créature reste accrochée jusqu'à sa première perte réelle de PV, à sa mise K.O. ou à la durée maximale. La cible peut continuer à attaquer.</p>
+          <div data-skill-contact-hold-settings hidden>
+            <div class="grid two">
+              <label>Intervalle entre les effets (ms)
+                <input type="number" data-skill-contact-hold-interval min="100" max="60000" step="100" value="1000">
+              </label>
+              <label>Durée maximale (ms, 0 = jusqu'aux dégâts)
+                <input type="number" data-skill-contact-hold-duration min="0" max="120000" step="100" value="0">
+              </label>
+            </div>
+            <p class="note">Les effets ci-dessous sont répétés à chaque pulsation pendant le contact. Ils sont indépendants des effets immédiats de la capacité ci-dessus.</p>
+            <div class="skill-effects-list" data-skill-contact-hold-effects-host></div>
+            <button type="button" class="secondary-action" data-skill-contact-hold-effect-add>
+              Ajouter un effet répété
+            </button>
+            <p class="note">Les effets périodiques utilisent le moteur de combat existant (dégâts, drain, soins, statuts…). Les zones persistantes et les programmations différées ne peuvent pas être imbriquées ici.</p>
+          </div>
+        </section>
+
+        <p class="note">
+          Chaque effet possède sa propre portée. Les durées de statut sont réglées en secondes ici puis converties vers le contrat gameplay.
+        </p>
+
+        <div class="tactical-effect-help" aria-label="Effets tactiques disponibles">
+          <span>Dégâts de zone</span>
+          <span>Soin</span>
+          <span>Gain d’énergie</span>
+          <span>Drain d’énergie</span>
+          <span>Buff / Debuff</span>
+          <span>Dégâts périodiques</span>
+          <span>Soin périodique</span>
+          <span>Bouclier</span>
+          <span>Immobilisation</span>
+          <span>Silence</span>
+          <span>Stun</span>
+          <span>Provocation</span>
+          <span>Nettoyage</span>
+          <span>Dissipation</span>
+          <span>Immunité dégâts / états négatifs</span>
+          <span>Effet différé après délai</span>
+          <span>Zone persistante évolutive</span>
+        </div>
+
+        <template data-skill-expressiveness-prototypes>
+          <label class="check">
+            <input type="checkbox" value="damage" data-skill-status-immunity-domain>
+            Immunité aux dégâts
+          </label>
+          <label class="check">
+            <input type="checkbox" value="negative_status" data-skill-status-immunity-domain>
+            Immunité aux états négatifs
+          </label>
+          <label>Délai avant déclenchement (secondes)
+            <input type="number" min="0" step="0.1" value="1" data-skill-scheduled-delay-seconds>
+          </label>
+        </template>
+
+        <p class="note">
+          Une zone persistante peut durer plusieurs secondes, infliger des dégâts à intervalles réguliers et être renforcée par plusieurs réactivations. Son rayon gameplay utilise les distances Proche → Moyen → Loin ; chaque renforcement peut augmenter ce rayon jusqu’au maximum configuré.
+        </p>
+      </article>
+
+
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">5</span>
+          <div>
+            <h2>Mouvement</h2>
+            <p>Comment la créature se déplace pendant la capacité. Le ciblage appartient uniquement aux effets tactiques.</p>
+          </div>
+        </div>
+
+        <details class="editor-context-help"><summary>ⓘ Déplacement, présence et esquive</summary>
+          <p class="note">Le déplacement décrit l’approche du lanceur, pas ses dégâts. Les présences Surface/Aérien/Souterrain limitent les cibles atteignables uniquement si ce filtre est activé. L’esquive dépend aussi des règles du combat.</p>
+        </details>
+        <label>Déplacement de la créature
+          <select data-skill-approach>
+            <option value="none" selected>Aucun déplacement</option>
+            <option value="ground">Approche au sol</option>
+            <option value="aerial">Attaque aérienne</option>
+            <option value="burrow">Attaque souterraine</option>
+            <option value="teleport">Téléportation</option>
+          </select>
+        </label>
+        <fieldset class="editor-choice-group" data-burrow-stage-fields hidden>
+          <legend>Attaque souterraine — sprites du terrain</legend>
+          <p class="note">Ces trois animations suivent automatiquement l’enfouissement, le trajet sous terre et l’émergence. Les dimensions et décalages sont visuels uniquement.</p>
+          <div class="editor-choice-group">
+            <h3>Départ — creusement</h3>
+            <p class="note">Animation au moment où la créature s’enfonce</p>
+            <label>Sprite <select data-burrow-start-asset><option value="">Aucun</option><option value="burrow:start" selected>Départ — creusement · 20 frames</option></select></label>
+            <div class="timing-grid">
+              <label>Taille × <input type="number" min="0.25" max="5" step="0.05" value="1" data-burrow-start-scale></label>
+              <label>Décalage X (px) <input type="number" min="-400" max="400" value="0" data-burrow-start-x></label>
+              <label>Décalage Y (px) <input type="number" min="-400" max="400" value="0" data-burrow-start-y></label>
+              <label>Vitesse (ms/frame) <input type="number" min="20" max="500" step="1" value="70" data-burrow-start-frame-ms></label>
+            </div>
+          </div>
+          <div class="editor-choice-group">
+            <h3>Trajet — sillon</h3>
+            <p class="note">Animation mobile qui suit le déplacement souterrain</p>
+            <label>Sprite <select data-burrow-travel-asset><option value="">Aucun</option><option value="burrow:travel" selected>Trajet — sillon · 20 frames</option></select></label>
+            <div class="timing-grid">
+              <label>Taille × <input type="number" min="0.25" max="5" step="0.05" value="1" data-burrow-travel-scale></label>
+              <label>Décalage X (px) <input type="number" min="-400" max="400" value="0" data-burrow-travel-x></label>
+              <label>Décalage Y (px) <input type="number" min="-400" max="400" value="0" data-burrow-travel-y></label>
+              <label>Vitesse (ms/frame) <input type="number" min="20" max="500" step="1" value="60" data-burrow-travel-frame-ms></label>
+            </div>
+          </div>
+          <div class="editor-choice-group">
+            <h3>Arrivée — émergence</h3>
+            <p class="note">Animation à la sortie du sol</p>
+            <label>Sprite <select data-burrow-impact-asset><option value="">Aucun</option><option value="burrow:impact" selected>Arrivée — émergence · 20 frames</option></select></label>
+            <div class="timing-grid">
+              <label>Taille × <input type="number" min="0.25" max="5" step="0.05" value="1" data-burrow-impact-scale></label>
+              <label>Décalage X (px) <input type="number" min="-400" max="400" value="0" data-burrow-impact-x></label>
+              <label>Décalage Y (px) <input type="number" min="-400" max="400" value="0" data-burrow-impact-y></label>
+              <label>Vitesse (ms/frame) <input type="number" min="20" max="500" step="1" value="70" data-burrow-impact-frame-ms></label>
+            </div>
+          </div>
+        </fieldset>
+
+
+        <fieldset class="editor-choice-group skill-movement-choices">
+          <legend>Présences que cette capacité peut toucher</legend>
+          <label class="switch-line">
+            <input type="checkbox" data-skill-hit-presence-enabled>
+            <span>Définir explicitement les présences atteignables</span>
+          </label>
+          <label class="check"><input type="checkbox" value="surface" data-skill-hit-presence checked>Surface</label>
+          <label class="check"><input type="checkbox" value="airborne" data-skill-hit-presence>Aérien</label>
+          <label class="check"><input type="checkbox" value="underground" data-skill-hit-presence>Souterrain</label>
+          <p class="note">Désactivé = comportement historique inchangé. Activé : Tornade peut viser Surface + Aérien ; Tremblement de terre Surface + Souterrain.</p>
+        </fieldset>
+
+        <fieldset class="editor-choice-group skill-movement-choices">
+          <legend>Cibles disponibles</legend>
+          <label class="check"><input type="checkbox" value="active" data-skill-location-scope checked>Créature active</label>
+          <label class="check"><input type="checkbox" value="reserve" data-skill-location-scope>Créature en réserve</label>
+        </fieldset>
+
+        <label class="switch-line">
+          <input type="checkbox" data-skill-dodgeable checked>
+          <span>Cette capacité peut être esquivée</span>
+        </label>
+        <label class="switch-line">
+          <input type="checkbox" data-skill-hits-intangible>
+          <span>Cette capacité peut toucher une créature immatérielle</span>
+        </label>
+        <p class="note">Option explicite : traverse seulement Immatériel, jamais une immunité ordinaire indépendante. S’applique aussi aux malus et dégâts des effets de cette capacité.</p>
+
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">6</span>
+          <div>
+            <h2>Timing</h2>
+            <p>Temps gameplay réels, utilisés par le moteur.</p>
+          </div>
+        </div>
+
+        <details class="editor-context-help"><summary>ⓘ Comprendre les temps de la capacité</summary>
+          <p class="note">Préparation : avant la résolution. Trajet : durée vers la cible. Récupération : délai avant de refaire une action. Cooldown : délai avant de réutiliser cette capacité précise. 1000 ms = 1 seconde.</p>
+        </details>
+        <div class="timing-grid">
+          <label>Préparation (ms)<input type="number" min="0" data-skill-preparation value="900"></label>
+          <label>Vers la cible (ms)<input type="number" min="0" data-skill-travel-time value="650"></label>
+          <label>Récupération après impact (ms)<input type="number" min="0" data-skill-recovery value="450"></label>
+          <label>Recharge / cooldown (ms)<input type="number" min="0" data-skill-cooldown value="2800"></label>
+          <label>Utilisations max par combat
+            <input type="number" min="0" step="1" data-skill-max-uses-per-combat value="0">
+          </label>
+        </div>
+        <p class="note">
+          Récupération = délai après l’impact pendant lequel la créature ne peut pas lancer une nouvelle action. Cooldown = délai avant de pouvoir réutiliser cette capacité précise ; d’autres capacités peuvent rester disponibles après la récupération.
+        </p>
+        <p class="note">
+          0 = Illimité. Mets 1 pour une Ultime utilisable une seule fois, ou 2, 3, etc. La limite s’applique au combat complet.
+        </p>
+
+
+        <div class="projectile-clash-config">
+          <h3>Collision entre projectiles et rayons</h3>
+          <label>Puissance de collision (projectile / rayon)
+            <input type="number" min="0" step="0.1" data-skill-projectile-power value="1">
+          </label>
+          <p class="note">
+            <strong>Puissance de collision :</strong> 0 = hors système de clash : l’attaque ne participe pas aux collisions. Minimum actif = 1. Les projectiles et les rayons se rencontrent pendant leur phase de tir. 1 contre 1 = puissance égale, les deux attaques sont annulées. 2 contre 1 = la puissance 2 survit et continue son attaque. La puissance de collision est indépendante des dégâts ; l’élément n’intervient pas dans cette règle. Les autres formes de capacité restent hors système.
+          </p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">7</span>
+          <div>
+            <h2>Effets visuels</h2>
+            <p>Icône, forme de la capacité et trajectoire éventuelle d'abord ; puis choix des animations et de leurs réglages.</p>
+          </div>
+        </div>
+
+        <section class="fx-first-choices" data-skill-fx-first-choices aria-label="Premiers choix des effets visuels">
+          <div class="fx-first-choices__step">
+            <h3>1. Choisir l'icône</h3>
+            <div class="grid two">
+              <label>Icône
+                <select data-skill-icon data-asset-role="icon"><option value="">Aucune</option><option value="core:icon-skill-fireball-01" selected>Boule de feu</option></select>
+              </label>
+            </div>
+          </div>
+          <div class="fx-first-choices__step">
+            <h3>2. Choisir la forme et le type de projectile</h3>
+            <div class="grid two">
+              <label>Forme de la capacité
+                <select data-skill-form>
+                  <option value="contact">Contact</option>
+                  <option value="projectile" selected>Projectile</option>
+                  <option value="beam">Rayon</option>
+                  <option value="area">Zone</option>
+                  <option value="self">Sur soi</option>
+                  <option value="aura">Aura</option>
+                </select>
+              </label>
+              <label>Trajectoire (pour les projectiles)
+                <select data-skill-trajectory-mode>
+                  <option value="linear" selected>Lanceur → cible (classique)</option>
+                  <option value="skyfall">Chute du ciel (vers la cible)</option>
+                  <option value="expanding_wave">Onde sphérique expansive (depuis la créature)</option>
+                </select>
+              </label>
+            </div>
+            <p class="note">Projectile classique, Rayon continu, Zone, Contact… ce choix garde exactement ses règles de combat actuelles. Pour un projectile, précise si le trajet est direct, tombe du ciel ou s'étend en onde. Les réglages d'animation sont ensuite disponibles ci-dessous.</p>
+          </div>
+        </section>
+
+        <details class="editor-context-help"><summary>ⓘ À quoi servent les effets visuels ?</summary>
+          <p class="note">Cast = animation de lancement ; Trajet = projectile ou corps du rayon ; Impact = effet à l’arrivée ; Zone = animation persistante. Échelle, décalage, opacité et calques ne changent jamais les valeurs de dégâts dans le moteur.</p>
+        </details>
+        <section class="fx-unified-flow" data-skill-fx-unified-flow aria-label="Parcours simplifié des effets visuels">
+          <p class="note">Choisis un style ou une intensité rapidement. Pour choisir précisément les sprites et positions Cast / Projectile / Impact, utilise ensuite la section « Personnaliser les animations ».</p>
+        <div class="fx-flow-step" data-skill-fx-starter>
+          <h3>3. Choisir un style visuel (facultatif)</h3>
+          <p class="note">Choisis une base visuelle (feu, eau, soin…). Pour une capacité existante, tes sprites, sons et ancrages restent conservés. Pour une nouvelle capacité vide, le style peut également ajouter un cast, un trajet et un impact.</p>
+          <div class="grid two">
+            <label>Style de départ
+              <select data-skill-fx-starter-profile disabled>
+                <option value="">Chargement des profils FX…</option>
+              </select>
+            </label>
+            <div class="skill-save-actions">
+              <button type="button" class="primary-action" data-skill-fx-starter-apply disabled>
+                Appliquer ce style
+              </button>
+            </div>
+          </div>
+          <p class="note" data-skill-fx-starter-state data-tone="info">
+            Les médias restent référencés par assetId ; tes imports personnels utilisent ensuite exactement les mêmes champs.
+          </p>
+        </div>
+
+        <div class="fx-flow-step fx-quick-card" data-skill-fx-quick>
+          <h3>4. Choisir l'intensité</h3>
+          <p class="note">Après le style, ajuste en un clic la lueur, la traînée, la fumée et la secousse. Choisir une intensité affiche un aperçu, sans rien appliquer avant ton clic.</p>
+          <div class="grid two">
+            <label>Je veux un effet…
+              <select data-skill-fx-quick-profile>
+                <option value="current" selected>Conserver mes réglages actuels</option>
+                <option value="discreet">Discret — léger et lisible</option>
+                <option value="balanced">Équilibré — conseillé</option>
+                <option value="spectacular">Spectaculaire — puissant</option>
+              </select>
+            </label>
+            <div class="skill-save-actions">
+              <button type="button" class="primary-action" data-skill-fx-quick-apply disabled>Appliquer cette intensité</button>
+            </div>
+          </div>
+          <div class="fx-quick-preview" data-skill-fx-quick-preview data-level="current" aria-hidden="true">
+            <span class="fx-quick-preview__trail"></span>
+            <span class="fx-quick-preview__core"></span>
+            <span class="fx-quick-preview__smoke"></span>
+          </div>
+          <p class="note" data-skill-fx-quick-state data-tone="info">Aperçu indicatif : choisir une intensité ne remplace jamais ta configuration. Appuie sur Appliquer, puis sur Tester le combat pour voir le véritable rendu.</p>
+          <p class="note" data-skill-fx-quick-context data-tone="info">Selon la trajectoire du projectile, les effets ne s'affichent pas au même endroit.</p>
+          <p class="note" data-skill-fx-quick-warning data-tone="info" aria-live="polite">Tes réglages enregistrés sont conservés.</p>
+          <p class="note">Pour aller plus loin, ouvre « Personnaliser les animations » puis, si nécessaire, les détails Glow et fumée. Les valeurs fines restent repliées.</p>
+        </div>
+        <details class="fx-flow-personalize" data-skill-fx-personalize>
+          <summary>5. Personnaliser — Glow et particules (facultatif)</summary>
+          <p class="note">Facultatif : adapte indépendamment la lumière et les particules. Ces réglages remplacent uniquement les valeurs concernées, sans modifier le style, les sprites ou les sons.</p>
+          <div class="grid two">
+            <label>Présence du glow
+              <select data-skill-fx-glow-preset>
+                <option value="discreet">Discret</option>
+                <option value="visible" selected>Visible</option>
+                <option value="intense">Intense</option>
+                <option value="very-intense">Très intense</option>
+                <option value="custom">Personnalisé</option>
+              </select>
+            </label>
+            <p class="note" data-skill-fx-glow-preset-state data-tone="info">
+              Visible — lueur bien perceptible, conseillée pour la plupart des capacités.
+            </p>
+            <label>Présence des particules / fumée
+              <select data-skill-fx-particle-preset>
+                <option value="none">Aucune</option>
+                <option value="discreet">Discrète</option>
+                <option value="visible" selected>Visible</option>
+                <option value="intense">Intense</option>
+                <option value="very-intense">Très intense</option>
+                <option value="custom">Personnalisée</option>
+              </select>
+            </label>
+            <p class="note" data-skill-fx-particle-preset-state data-tone="info">
+              Visible — Cast, traînée, impact et fumée perceptibles sans surcharger l’écran.
+            </p>
+          </div>
+          <p class="note">Les contrôles fins (taille, ancrage, fumée, positions, sons et sprites) se trouvent plus bas dans « Réglages avancés ». Tes réglages restent enregistrables et exportables comme avant.</p>
+        </details>
+        </section>
+
+
+        <section class="beam-visual-editor" data-skill-beam-stage-editor data-beam-active="false">
+        <div class="beam-visual-editor__heading">
+          <h3>Rayon continu — 3 phases</h3>
+          <p>Un clic prépare les 3 phases : départ / charge à la bouche, corps continu et impact. Ensuite, choisis tes propres sprites, tailles et sons ci-dessous. Le même modèle reste accessible même si la capacité est actuellement de style Projectile.</p>
+        </div>
+        <p class="note">Pour un rayon personnalisé sans modèle Eau, choisis simplement « Rayon » à l'étape 2 : les trois phases apparaîtront ici. Dans les deux cas, les dégâts, l'énergie et le cooldown sont inchangés.</p>
+        <div data-skill-beam-pack>
+          <button type="button" class="primary-action" data-skill-beam-pack-apply disabled>
+            Appliquer le modèle de rayon d’eau
+          </button>
+          <button type="button" class="secondary-action" data-skill-beam-pack-undo disabled>Annuler le modèle — retrouver mes réglages</button>
+          <p class="note" data-skill-beam-pack-state data-tone="info">Chargement des visuels du rayon…</p>
+        </div>
+        <p class="note" data-beam-four-stage-help>Le bouton prépare automatiquement le rayon complet et active le style Rayon ; tu peux ensuite choisir chaque asset. Ou choisis « Rayon » à l'étape 2 pour partir de tes réglages existants.</p>
+        <div class="grid two">
+          <fieldset class="editor-choice-group" data-beam-stage="start" hidden>
+            <legend>1 — Charge à la bouche et départ</legend>
+            <p class="note">Le départ du rayon sert aussi de charge pendant la préparation, au même point de sortie (bouche, main…). Un cast différent reste un réglage manuel optionnel.</p>
+            <div class="grid two" data-beam-stage-fields="start"></div>
+          </fieldset>
+          <fieldset class="editor-choice-group" data-beam-stage="body" hidden>
+            <legend>2 — Corps continu du rayon</legend>
+            <p class="note">Il s’étire automatiquement de la source jusqu’à la cible, sans projectile qui se déplace. Le son du corps peut tourner pendant le tir, puis s’arrête au contact.</p>
+            <div class="grid two" data-beam-stage-fields="body"></div>
+          </fieldset>
+          <fieldset class="editor-choice-group" data-beam-stage="impact" hidden>
+            <legend>3 — Extrémité cible et impact</legend>
+            <p class="note">L’extrémité suit la cible pendant le tir ; l’animation d’impact se joue aux dégâts réels.</p>
+            <div class="grid two" data-beam-stage-fields="impact"></div>
+          </fieldset>
+        </div>
+        <p class="note">Les échelles restent personnalisables. Sauvegarde ensuite avec « Mettre à jour la capacité existante ». Un changement de style ou de pack ne remplace jamais silencieusement la version enregistrée.</p>
+        </section>
+
+        <div class="creator-visual-import" data-creator-visual-importer data-skill-visual-importer>
+          <h3>Mes assets — Mes sprites / Importer un sprite</h3>
+          <p class="note">Dans chaque liste Icône, Cast, Projectile, Impact, Zone ou Statut, « Bibliothèque GenSrpG » contient les visuels fournis avec GenSrpG et « Mes assets » contient tes imports. Le style visuel de l’étape 1 est une base prête à l’emploi : ce n’est pas une deuxième bibliothèque.</p>
+          <p class="note">Ajoute ton propre PNG, WebP ou JPEG directement à la bibliothèque de cette session. Après import, le sprite reçoit un assetId personnel et apparaît dans la liste correspondante en utilisant exactement le même binding et le même rendu que les assets GenSrpG.</p>
+          <div class="grid three">
+            <label>Utiliser comme
+              <select data-creator-visual-role>
+                <option value="icon">Icône de capacité</option>
+                <option value="cast" selected>Cast / préparation</option>
+                <option value="travel">Projectile / trajet</option>
+                <option value="impact">Impact</option>
+                <option value="zone">Zone / aura</option>
+                <option value="status">Statut</option>
+              </select>
+            </label>
+            <label>Nom
+              <input type="text" placeholder="Mon sprite" data-creator-visual-label>
+            </label>
+            <label>Fichier
+              <input type="file" accept="image/png,image/webp,image/jpeg" data-creator-visual-file>
+            </label>
+          </div>
+          <button type="button" class="primary-action" data-creator-visual-import>Importer mon sprite</button>
+          <p class="note" data-creator-visual-state data-tone="info">Aucun sprite personnel importé dans cette session.</p>
+        </div>
+
+        <details class="skill-fx-authoring" data-skill-fx-advanced open>
+          <summary>
+            <span>Personnaliser les animations — Cast, Projectile, Impact, Zone</span>
+            <small>Sprites · Taille · Placement — ouvrir ou replier</small>
+          </summary>
+          <p class="note">Les animations et leurs positions se règlent ici, indépendamment des préréglages rapides. Les détails Glow, traînée et fumée restent repliés plus bas.</p>
+
+        <div class="grid two">
+          <label>Point de sortie de cette capacité
+            <select data-skill-socket>
+              <option value="">Centre par défaut</option>
+            </select>
+          </label>
+          <p class="note">Les coordonnées sont définies uniquement dans l’onglet Créature. Ici, la capacité ne fait que référencer un point existant.</p>
+          <h3 class="skill-fx-stage-heading">CAST</h3>
+          <label>Effet de cast
+            <select data-skill-cast-fx data-asset-role="cast"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-cast-01" selected>Boule de feu — cast</option></select>
+          </label>
+          <label>Scale cast
+            <input type="number" min="0.25" max="8" step="0.05" value="1.60" data-skill-cast-scale>
+          </label>
+          <label>Opacité du cast (%) — 100 = opaque, 0 = invisible
+            <input type="number" min="0" max="100" step="5" value="100" data-skill-cast-opacity-pct>
+          </label>
+          <label>Animation du cast
+            <select data-skill-cast-playback>
+              <option value="once">Lire une fois à la vitesse du sprite</option>
+              <option value="loop">Boucler pendant la préparation</option>
+              <option value="stretch">Adapter à la durée de préparation</option>
+            </select>
+          </label>
+          <label>Décalage horizontal du cast (px)
+            <input type="number" step="5" value="0" data-skill-cast-offset-x>
+          </label>
+          <label>Décalage vertical du cast — joueur (px)
+            <input type="number" step="5" value="0" data-skill-cast-offset-y>
+          </label>
+          <label>Cast — côté adversaire
+            <select data-skill-cast-offset-mode>
+              <option value="mirror_x" selected>Miroir horizontal automatique</option>
+              <option value="same">Même décalage des deux côtés</option>
+              <option value="custom">Réglage séparé</option>
+            </select>
+          </label>
+          <label>Cast — décalage horizontal adversaire (px)
+            <input type="number" step="5" value="0" data-skill-cast-opponent-offset-x>
+          </label>
+          <label>Cast — décalage vertical adversaire (px)
+            <input type="number" step="5" value="0" data-skill-cast-opponent-offset-y>
+          </label>
+          <p class="note">Les décalages X/Y sont réglés côté joueur. « Miroir horizontal automatique » inverse X côté adversaire et conserve Y. « Réglage séparé » utilise les deux valeurs adversaire ci-dessus. Les particules de Cast et le glow restent attachés au même repère.</p>
+          <p class="note">Cast, impact, zone et statut peuvent utiliser tous les sprites d’effets : aura, charge, impact… Le projectile garde sa liste dédiée. Le cast reste affiché pendant la préparation.</p>
+          <label>Départ du rayon (lié au lanceur)
+            <select data-skill-beam-start-fx data-asset-role="cast"><option value="">Aucun</option></select>
+          </label>
+          <label>Taille du départ du rayon
+            <input type="number" min="0.25" max="8" step="0.05" value="1" data-skill-beam-start-scale>
+          </label>
+          <p class="note">Disponible pour Style « Rayon ». Ce sprite reste connecté au point de sortie et suit automatiquement le corps du rayon. L'impact garde son animation au contact de la cible.</p>
+          <h3 class="skill-fx-stage-heading">PROJECTILE / RAYON</h3>
+          <label>Projectile / trajet
+            <select data-skill-travel-fx data-asset-role="travel"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-travel-01" selected>Boule de feu — projectile</option></select>
+          </label>
+          <label>Scale projectile
+            <input type="number" min="0.25" step="0.05" value="1.90" data-skill-travel-scale>
+          </label>
+          <label>Animation du projectile
+            <select data-skill-travel-playback>
+              <option value="stretch" selected>Adapter à la durée du trajet</option>
+              <option value="loop">Boucler pendant le trajet</option>
+              <option value="once">Lire une fois à la vitesse du sprite</option>
+            </select>
+          </label>
+          <label>Vitesse de boucle du sprite — 1× normal, 2× plus rapide, jusqu’à 4×
+            <input type="number" min="0.25" max="4" step="0.25" value="1" data-skill-travel-frame-speed>
+          </label>
+          <label>Perspective — taille du projectile côté éloigné (ratio) : 1 = même taille, 0.25 = quatre fois plus petit au loin
+            <input type="number" min="0.15" max="1" step="0.05" value="1" data-skill-travel-far-scale>
+          </label>
+          <details data-skill-legacy-perspective>
+            <summary>Perspective historique (compatibilité)</summary>
+            <label>Ancienne perspective (0–0.5), utilisée seulement si le ratio ci-dessus reste à 1
+              <input type="number" min="0" max="0.5" step="0.05" value="0" data-skill-travel-perspective>
+            </label>
+            <p class="note">Conservé pour ouvrir et réexporter les anciennes compétences V11 sans altérer leurs valeurs. Pour les nouvelles capacités, utilise simplement le ratio de taille ci-dessus.</p>
+          </details>
+          <label>Projectile à l’arrivée — calque devant / derrière la créature ciblée
+            <select data-skill-travel-arrival-layer>
+              <option value="same" selected>Conserver le calque du départ (historique)</option>
+              <option value="front">Passer devant la cible avant l’impact</option>
+              <option value="behind">Passer derrière la cible avant l’impact</option>
+            </select>
+          </label>
+          <p class="note">Le ratio de taille est le seul réglage conseillé pour créer la profondeur : à 0.25, la tornade est quatre fois plus petite au fond de l’arène. Il remplace automatiquement l’ancienne perspective si sa valeur est inférieure à 1. Le calque d’arrivée change pendant le même déplacement, sans nouveau délai ni contact artificiel. Pour la tornade : départ derrière le lanceur, arrivée devant l’adversaire. Les effets ne concernent pas Chute du ciel ni Rayon.</p>
+          <p class="note">Pour Tornade : choisis « Boucler pendant le trajet », puis augmente « Vitesse de boucle » à 2× ou 3×. Cela accélère les images, sans accélérer le projectile. Réglage conseillé : ratio 0.25 pour une tornade, ou 1 sans effet de profondeur (si l'ancienne perspective est à 0).</p>
+          <p class="note">Adapter répartit les phases sur tout le trajet. Boucler répète l’animation jusqu’au contact. La vitesse de déplacement se règle dans « Vers la cible ».</p>
+          <fieldset class="editor-choice-group" data-skill-skyfall-settings>
+            <legend>Réglages des trajectoires spéciales</legend>
+            <label>Hauteur de départ — chute du ciel (px)
+              <input type="number" min="1" max="1400" step="10" value="400" data-skill-fall-height>
+            </label>
+            <label>Décalage horizontal du départ (px)
+              <input type="number" min="-700" max="700" step="10" value="0" data-skill-fall-offset-x>
+            </label>
+            <fieldset class="editor-choice-group" data-skill-wave-settings>
+              <legend>Onde expansive — collision sur le rayon visible</legend>
+              <label>Rayon initial (% largeur de l'arène)
+                <input type="number" min="1" max="60" step="1" value="3" data-skill-wave-start-radius>
+              </label>
+              <label>Rayon final (% largeur de l'arène)
+                <input type="number" min="2" max="150" step="1" value="65" data-skill-wave-end-radius>
+              </label>
+              <label>Épaisseur de l'anneau (% largeur de l'arène)
+                <input type="number" min="0.5" max="150" step="0.5" value="6" data-skill-wave-thickness>
+              </label>
+              <label>Opacité de l’onde (%) — 100 = opaque, 0 = invisible
+                <input type="number" min="0" max="100" step="5" value="100" data-skill-travel-opacity-pct>
+              </label>
+              <p class="note">Choisis « Onde sphérique expansive ». Le sprite « Projectile / trajet » s'agrandit du rayon initial au final pendant « Vers la cible (ms) ». La collision suit le bord de l'anneau au lieu du centre d'un projectile. Pour toucher le sol et les créatures en vol, active les deux présences dans les réglages de cible. Version initiale : collision avec la cible sélectionnée, pas encore de dégâts multi-cibles 2v2.</p>
+            </fieldset>
+            <p class="note">Pour « Chute de pierre » : choisis « Projectile », puis « Chute du ciel » à l'étape 2. Le projectile apparaît au-dessus de la cible, descend durant « Vers la cible (ms) » et déclenche l’impact habituel. Utilise ton sprite de pierre dans « Projectile / trajet » ; l’option ne change ni les dégâts, ni le ciblage, ni la collision des autres compétences.</p>
+          </fieldset>
+          <label>Charge — vue joueur
+            <select data-skill-cast-layer-player>
+              <option value="front">Devant la créature</option>
+              <option value="behind" selected>Derrière la créature</option>
+            </select>
+          </label>
+          <label>Charge — vue ennemi
+            <select data-skill-cast-layer-opponent>
+              <option value="front" selected>Devant la créature</option>
+              <option value="behind">Derrière la créature</option>
+            </select>
+          </label>
+          <label>Projectile — vue joueur
+            <select data-skill-travel-layer-player>
+              <option value="front">Devant la créature</option>
+              <option value="behind" selected>Derrière la créature</option>
+            </select>
+          </label>
+          <label>Projectile — vue ennemi
+            <select data-skill-travel-layer-opponent>
+              <option value="front" selected>Devant la créature</option>
+              <option value="behind">Derrière la créature</option>
+            </select>
+          </label>
+          <h3 class="skill-fx-stage-heading">IMPACT</h3>
+          <label>Impact
+            <select data-skill-impact-fx data-asset-role="impact"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-impact-01" selected>Impact feu</option></select>
+          </label>
+          <label>Scale impact
+            <input type="number" min="0.25" max="8" step="0.05" value="1.70" data-skill-impact-scale>
+          </label>
+          <label>Opacité de l’impact (%) — 100 = opaque, 0 = invisible
+            <input type="number" min="0" max="100" step="5" value="100" data-skill-impact-opacity-pct>
+          </label>
+          <label>Animation de l’impact
+            <select data-skill-impact-playback>
+              <option value="once">Lire une fois à la vitesse du sprite</option>
+              <option value="loop">Boucler pendant l’impact</option>
+              <option value="stretch">Adapter à la durée visuelle de l’impact</option>
+            </select>
+          </label>
+          <label>Impact — vue joueur
+            <select data-skill-impact-layer-player><option value="front">Devant la créature</option><option value="behind">Derrière la créature</option></select>
+          </label>
+          <label>Impact — vue ennemi
+            <select data-skill-impact-layer-opponent><option value="front">Devant la créature</option><option value="behind">Derrière la créature</option></select>
+          </label>
+          <label>Durée visuelle de l’impact (ms)
+            <input type="number" min="0" step="50" value="0" data-skill-impact-duration>
+          </label>
+          <p class="note">0 = durée automatique. « Adapter » répartit les phases sur la durée choisie. « Boucler » répète le sprite pendant cette durée. Les dégâts restent appliqués au contact.</p>
+          <label>Décalage horizontal de l’impact (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-impact-offset-x>
+          </label>
+          <label>Décalage vertical de l’impact — joueur (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-impact-offset-y>
+          </label>
+          <label>Impact — côté adversaire
+            <select data-skill-impact-offset-mode>
+              <option value="mirror_x" selected>Miroir horizontal automatique</option>
+              <option value="same">Même décalage des deux côtés</option>
+              <option value="custom">Réglage séparé</option>
+            </select>
+          </label>
+          <label>Impact — décalage horizontal adversaire (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-impact-opponent-offset-x>
+          </label>
+          <label>Impact — décalage vertical adversaire (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-impact-opponent-offset-y>
+          </label>
+          <p class="note">Le flash, les particules d’impact et la fumée utilisent le même point visuel que le sprite d’impact.</p>
+          <h3 class="skill-fx-stage-heading">ZONE / AURA</h3>
+          <label>Visuel persistant de zone
+            <select data-skill-zone-fx data-asset-role="zone"><option value="">Aucun</option></select>
+          </label>
+          <label>Ancrage visuel de la zone
+            <select data-skill-zone-attachment>
+              <option value="source" selected>Suit la créature (ex. Vague de flammes)</option>
+              <option value="fixed-source">Reste au sol dès l'activation (ex. Voile aqueux)</option>
+            </select>
+          </label>
+          <p class="note">L’ancrage est visuel : le moteur garde seul l’autorité du rayon, de la durée et des buffs de zone.</p>
+          <label>Opacité de la zone / aura (%) — 100 = opaque, 0 = invisible
+            <input type="number" min="0" max="100" step="5" value="100" data-skill-zone-opacity-pct>
+          </label>
+          <label>Animation de la zone
+            <select data-skill-zone-playback>
+              <option value="loop" selected>Boucler tant que la zone existe</option>
+              <option value="once">Lire une fois à la vitesse du sprite</option>
+              <option value="stretch">Adapter à la durée de la zone</option>
+              <option value="hold-last">Jouer une fois puis garder la dernière image (jusqu’à la fin de la zone)</option>
+            </select>
+          </label>
+          <label>Zone — vue joueur
+            <select data-skill-zone-layer-player><option value="front">Devant la créature</option><option value="behind" selected>Derrière la créature</option></select>
+          </label>
+          <label>Zone — vue ennemi
+            <select data-skill-zone-layer-opponent><option value="front">Devant la créature</option><option value="behind" selected>Derrière la créature</option></select>
+          </label>
+          <label>Scale global de la zone
+            <input type="number" min="0.25" max="8" step="0.05" value="1" data-skill-zone-scale>
+          </label>
+          <label>Largeur du visuel de zone
+            <input type="number" min="0.25" max="8" step="0.05" value="1" data-skill-zone-scale-x>
+          </label>
+          <label>Hauteur du visuel de zone
+            <input type="number" min="0.25" max="8" step="0.05" value="1" data-skill-zone-scale-y>
+          </label>
+          <label>Décalage horizontal de la zone (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-zone-offset-x>
+          </label>
+          <label>Décalage vertical de la zone — joueur (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-zone-offset-y>
+          </label>
+          <label>Zone — côté adversaire
+            <select data-skill-zone-offset-mode>
+              <option value="mirror_x" selected>Miroir horizontal automatique</option>
+              <option value="same">Même décalage des deux côtés</option>
+              <option value="custom">Réglage séparé</option>
+            </select>
+          </label>
+          <label>Zone — décalage horizontal adversaire (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-zone-opponent-offset-x>
+          </label>
+          <label>Zone — décalage vertical adversaire (px)
+            <input type="number" min="-300" max="300" step="5" value="0" data-skill-zone-opponent-offset-y>
+          </label>
+        </div>
+
+        <details class="skill-fx-expert" data-skill-fx-expert>
+          <summary>Affiner Glow, traînée, fumée et particules (facultatif)</summary>
+          <div class="projectile-clash-config">
+            <h3>Réglages experts FX détaillés (facultatif)</h3>
+            <p class="note">Le mode simple règle automatiquement l’intensité et le rayon du glow. Ici tu peux affiner les valeurs exactes. Ces réglages sont uniquement visuels : ils ne changent ni collision, ni dégâts, ni timing gameplay.</p>
+          <div class="grid two">
+            <label>Couleur du glow
+              <input type="color" value="#ff7a2d" data-skill-fx-glow-color>
+            </label>
+            <label>Intensité du glow
+              <input type="number" min="0" max="1" step="0.05" value="0" data-skill-fx-glow-strength>
+            </label>
+            <label>Rayon du glow (px)
+              <input type="number" min="1" max="64" step="1" value="16" data-skill-fx-glow-radius>
+            </label>
+            <label>Couleur du flash d’impact
+              <input type="color" value="#ffffff" data-skill-impact-flash-color>
+            </label>
+            <label>Opacité du flash d’impact
+              <input type="number" min="0" max="1" step="0.05" value="0" data-skill-impact-flash-opacity>
+            </label>
+            <label>Durée du flash (ms)
+              <input type="number" min="1" max="1000" step="10" value="120" data-skill-impact-flash-duration>
+            </label>
+            <label>Scale du flash
+              <input type="number" min="0.1" max="5" step="0.05" value="1.5" data-skill-impact-flash-scale>
+            </label>
+            <label>Secousse caméra simple — amplitude (px)
+              <input type="number" min="0" max="24" step="0.5" value="0" data-skill-impact-shake-amplitude>
+            </label>
+            <label>Secousse caméra simple — durée (ms)
+              <input type="number" min="1" max="1000" step="10" value="140" data-skill-impact-shake-duration>
+            </label>
+            <label>Quand montrer l'impact visuel ?
+              <select data-skill-impact-visual-timing>
+                <option value="immediate">Dès le début (comme avant)</option>
+                <option value="during">Pendant les secousses (au milieu)</option>
+                <option value="after">Après les secousses (à la fin)</option>
+              </select>
+            </label>
+            <div class="skill-status-visual-config" style="grid-column: 1 / -1;">
+              <h4>Séquence de tremblements — Séisme / impacts</h4>
+              <p class="note">Ajoute plusieurs secousses successives. Pour chaque secousse : pause avant, force et durée. Si une séquence existe, elle remplace les réglages de secousse simple sans les effacer. Un seul mouvement de caméra, sans modifier les dégâts.</p>
+              <div data-skill-impact-shake-sequence-host></div>
+              <button type="button" class="small-action" data-skill-impact-shake-preset>Préparer 4 secousses de séisme</button>
+              <button type="button" class="small-action" data-skill-impact-shake-add>+ Ajouter une secousse</button>
+              <p class="note">Le préréglage remplace les secousses saisies et choisit l'impact visuel après la séquence. Tu peux ensuite modifier chaque secousse. Les dégâts du combat ne sont pas décalés.</p>
+            </div>
+            <label>Cast — couleur particules
+              <input type="color" value="#ffb347" data-skill-cast-burst-color>
+            </label>
+            <label>Cast — particules
+              <input type="number" min="0" max="12" step="1" value="0" data-skill-cast-burst-count>
+            </label>
+            <label>Cast — dispersion (px)
+              <input type="number" min="0" max="120" step="2" value="0" data-skill-cast-burst-spread>
+            </label>
+            <label>Cast — taille particule (px)
+              <input type="number" min="0" max="24" step="1" value="0" data-skill-cast-burst-size>
+            </label>
+            <label>Cast — montée (px)
+              <input type="number" min="0" max="120" step="2" value="0" data-skill-cast-burst-rise>
+            </label>
+            <label>Cast — durée (ms)
+              <input type="number" min="0" max="1400" step="20" value="0" data-skill-cast-burst-duration>
+            </label>
+            <label>Cast — opacité
+              <input type="number" min="0" max="1" step="0.05" value="0" data-skill-cast-burst-opacity>
+            </label>
+            <label>Traînée — couleur
+              <input type="color" value="#ff7a2d" data-skill-projectile-trail-color>
+            </label>
+            <label>Traînée — particules
+              <input type="number" min="0" max="10" step="1" value="0" data-skill-projectile-trail-count>
+            </label>
+            <label>Traînée — longueur (px)
+              <input type="number" min="0" max="120" step="2" value="0" data-skill-projectile-trail-length>
+            </label>
+            <label>Traînée — taille particule (px)
+              <input type="number" min="0" max="24" step="1" value="0" data-skill-projectile-trail-size>
+            </label>
+            <label>Traînée — opacité
+              <input type="number" min="0" max="1" step="0.05" value="0" data-skill-projectile-trail-opacity>
+            </label>
+            <label>Traînée — ancrage horizontal (%)
+              <input type="number" min="0" max="100" step="1" value="50" data-skill-projectile-trail-anchor-x>
+            </label>
+            <label>Traînée — ancrage vertical (%)
+              <input type="number" min="0" max="100" step="1" value="50" data-skill-projectile-trail-anchor-y>
+            </label>
+            <label>Impact burst — couleur
+              <input type="color" value="#ffd27a" data-skill-impact-burst-color>
+            </label>
+            <label>Impact burst — particules
+              <input type="number" min="0" max="18" step="1" value="0" data-skill-impact-burst-count>
+            </label>
+            <label>Impact burst — dispersion (px)
+              <input type="number" min="0" max="160" step="2" value="0" data-skill-impact-burst-spread>
+            </label>
+            <label>Impact burst — taille particule (px)
+              <input type="number" min="0" max="24" step="1" value="0" data-skill-impact-burst-size>
+            </label>
+            <label>Impact burst — durée (ms)
+              <input type="number" min="0" max="1200" step="10" value="0" data-skill-impact-burst-duration>
+            </label>
+            <label>Impact burst — opacité
+              <input type="number" min="0" max="1" step="0.05" value="0" data-skill-impact-burst-opacity>
+            </label>
+            <label>Fumée — couleur
+              <input type="color" value="#594943" data-skill-aftermath-smoke-color>
+            </label>
+            <label>Fumée — volutes
+              <input type="number" min="0" max="8" step="1" value="0" data-skill-aftermath-smoke-count>
+            </label>
+            <label>Fumée — dispersion (px)
+              <input type="number" min="0" max="120" step="2" value="0" data-skill-aftermath-smoke-spread>
+            </label>
+            <label>Fumée — taille (px)
+              <input type="number" min="0" max="80" step="2" value="0" data-skill-aftermath-smoke-size>
+            </label>
+            <label>Fumée — montée (px)
+              <input type="number" min="0" max="120" step="2" value="0" data-skill-aftermath-smoke-rise>
+            </label>
+            <label>Fumée — durée (ms)
+              <input type="number" min="0" max="1800" step="20" value="0" data-skill-aftermath-smoke-duration>
+            </label>
+            <label>Fumée — opacité
+              <input type="number" min="0" max="1" step="0.05" value="0" data-skill-aftermath-smoke-opacity>
+            </label>
+          </div>
+          </div>
+        </details>
+
+        <p class="note">
+          Pour une aura ou une zone persistante, le visuel reste affiché tant que la zone existe. Choisis une lecture unique, une boucle ou une animation adaptée à sa durée. En lecture unique, la dernière phase reste affichée. Les décalages déplacent uniquement le visuel, sans modifier le rayon ni les dégâts.
+        </p>
+        </details>
+
+
+      </article>
+
+      <article class="card">
+        <div class="card-title">
+          <span class="step">8</span>
+          <div>
+            <h2>Audio de la capacité</h2>
+            <p>Les choix apparaissent lorsqu'un catalogue audio est présent.</p>
+          </div>
+        </div>
+        <div class="grid three">
+          <label>Son de cast
+            <select data-skill-cast-audio data-private-audio data-audio-roles="cast,release,preparation"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
+          <label>Son du trajet (projectile / rayon)
+            <select data-skill-travel-audio data-private-audio data-audio-roles="travel"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
+          <label>Son d'impact
+            <select data-skill-impact-audio data-private-audio data-audio-roles="impact"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
+          <label>Son de zone / aura
+            <select data-skill-zone-audio data-private-audio data-audio-roles="aura"><option value="">Aucun</option></select><button type="button" class="audio-preview-action" data-private-audio-preview>Écouter</button>
+          </label>
+        </div>
+        <div class="creator-audio-import" data-creator-audio-importer>
+          <h3>Importer un son personnel</h3>
+          <p class="note">Le son importé rejoint les mêmes sélecteurs et le même Audio Adapter que la bibliothèque GenSrpG.</p>
+          <div class="grid three">
+            <label>Utiliser comme
+              <select data-creator-audio-role>
+                <option value="cast">Cast / incantation</option>
+                <option value="release">Déclenchement</option>
+                <option value="preparation">Préparation</option>
+                <option value="travel">Trajet / projectile</option>
+                <option value="impact">Impact</option>
+                <option value="aura">Zone / aura</option>
+              </select>
+            </label>
+            <label>Nom
+              <input type="text" placeholder="Mon son" data-creator-audio-label>
+            </label>
+            <label>Fichier
+              <input type="file" accept="audio/mpeg,audio/wav,audio/x-wav,audio/ogg,.mp3,.wav,.ogg" data-creator-audio-file>
+            </label>
+          </div>
+          <button type="button" class="primary-action" data-creator-audio-import>Importer mon son</button>
+          <p class="note" data-creator-audio-state data-tone="info">Aucun son personnel importé dans cette session.</p>
+        </div>
+        <p class="note">Le même son de trajet sert aux projectiles / rayons (lecture continue arrêtée à la résolution) et aux attaques de contact : un son à chaque appui / rebond de la créature (ou une seule fois au départ pour un déplacement volant ou sans appui). Le son d'impact reste distinct. Le son de zone boucle tant que la zone persistante existe et s'arrête avec elle.</p>
+      </article>
+    </section>
+
+    <footer class="editor-footer">
+      <div>
+        <strong>Validation</strong>
+        <p data-editor-status data-tone="info" role="status" aria-live="polite">Charge de la bibliothèque visuelle…</p>
+        <small class="editor-footer__hint">Les modifications valides sont enregistrées au lancement du test.</small>
+      </div>
+      <div class="editor-footer__actions">
+        <button type="button" class="secondary-action" data-editor-validate>
+          Vérifier la configuration
+        </button>
+        <button type="button" class="primary-action" data-editor-test-combat disabled>
+          Tester en combat
+        </button>
+      </div>
+    </footer>
+  </main>
+
+  <section class="capture-preview-shell" data-capture-preview-shell data-landscape-required="false" hidden>
+    <div class="capture-preview-rotate-gate" data-preview-rotate-gate role="status" aria-live="polite">
+      <strong>Tourne ton téléphone</strong>
+      <span>Le combat est configuré pour jouer en plein écran paysage.</span>
+    </div>
+    <button type="button" class="capture-preview-back" data-preview-back-editor>
+      Retour à l’éditeur
+    </button>
+    <div class="capture-preview-host" data-capture-preview-host></div>
+
+    <template data-capture-preview-template>
+      <main class="game game--coop-2v2" data-combat-demo>
+        <section class="arena arena--coop-2v2" data-combat-arena aria-label="Prévisualisation du combat Capture">
+          <div class="arena__ground" aria-hidden="true"></div>
+
+
+          <article
+            class="fighter fighter--player"
+            data-demo-slot="local-1"
+            data-demo-view="player"
+            data-target-actor="local-1"
+            data-preview-actor-ui="local-1"
+            role="button"
+            tabindex="0"
+          >
+            <span class="visually-hidden" data-demo-label>Créature locale</span>
+            <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>
+            <div class="fighter__motion" data-demo-motion>
+              <img class="fighter__image" data-demo-image alt="">
+            </div>
+          </article>
+
+          <article
+            class="fighter fighter--ally"
+            data-demo-slot="local-2"
+            data-demo-view="player"
+            data-target-actor="local-2"
+            data-preview-actor-ui="local-2"
+            role="button"
+            tabindex="0"
+          >
+            <span class="visually-hidden" data-demo-label>Créature alliée</span>
+            <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>
+            <div class="fighter__motion" data-demo-motion>
+              <img class="fighter__image" data-demo-image alt="">
+            </div>
+          </article>
+
+          <article
+            class="fighter fighter--opponent"
+            data-demo-slot="opponent-1"
+            data-demo-view="opponent"
+            data-target-actor="opponent-1"
+            data-preview-actor-ui="opponent-1"
+            role="button"
+            tabindex="0"
+          >
+            <span class="visually-hidden" data-demo-label>Adversaire</span>
+            <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>
+            <div class="fighter__motion" data-demo-motion>
+              <img class="fighter__image" data-demo-image alt="">
+            </div>
+          </article>
+
+          <article
+            class="fighter fighter--opponent-b"
+            data-demo-slot="opponent-2"
+            data-demo-view="opponent"
+            data-target-actor="opponent-2"
+            data-preview-actor-ui="opponent-2"
+            role="button"
+            tabindex="0"
+          >
+            <span class="visually-hidden" data-demo-label>Second adversaire</span>
+            <span class="fighter__shadow" data-demo-shadow aria-hidden="true"></span>
+            <div class="fighter__motion" data-demo-motion>
+              <img class="fighter__image" data-demo-image alt="">
+            </div>
+          </article>
+
+          <button
+            type="button"
+            class="squad-card squad-card--player squad-card--local-full"
+            data-target-actor="local-1"
+            data-preview-actor-ui="local-1"
+          >
+            <strong>Créature locale</strong>
+            <div class="squad-card__hp">
+              <progress data-combat-hp="local-1" max="100" value="100"></progress>
+              <span data-combat-hp-value="local-1">100 / 100 PV</span>
+            </div>
+            <div
+              class="status-icons"
+              data-combat-status-icons="local-1"
+              aria-label="Buffs et debuffs de la créature locale"
+            ></div>
+            <small data-combat-action="local-1">Prêt</small>
+            <progress
+              class="squad-card__charge squad-card__charge--local"
+              data-combat-actor-charge="local-1"
+              data-active="false"
+              max="1"
+              value="0"
+            ></progress>
+          </button>
+
+          <button
+            type="button"
+            class="squad-card squad-card--opponent"
+            data-target-actor="opponent-1"
+            data-preview-actor-ui="opponent-1"
+          >
+            <strong>Adversaire</strong>
+            <div class="squad-card__hp">
+              <progress data-combat-hp="opponent-1" max="100" value="100"></progress>
+              <span data-combat-hp-value="opponent-1">100 / 100 PV</span>
+            </div>
+            <div
+              class="status-icons"
+              data-combat-status-icons="opponent-1"
+              aria-label="Buffs et debuffs du premier adversaire"
+            ></div>
+            <small data-combat-action="opponent-1">Prêt</small>
+            <progress
+              class="squad-card__charge"
+              data-combat-actor-charge="opponent-1"
+              data-active="false"
+              max="1"
+              value="0"
+            ></progress>
+          </button>
+
+          <details class="combat-test-enemy-reserves" data-combat-enemy-reserves hidden>
+            <summary data-combat-enemy-reserves-summary>Réserves adverses</summary>
+            <div class="combat-test-enemy-reserves__body">
+              <p class="combat-test-enemy-reserves__hint">PV adverses. Active une capacité ciblant la réserve pour choisir une créature.</p>
+              <div data-combat-enemy-reserves-list></div>
+            </div>
+          </details>
+
+          <button
+            type="button"
+            class="squad-card squad-card--opponent-b"
+            data-target-actor="opponent-2"
+            data-preview-actor-ui="opponent-2"
+          >
+            <strong>Adversaire</strong>
+            <div class="squad-card__hp">
+              <progress data-combat-hp="opponent-2" max="100" value="100"></progress>
+              <span data-combat-hp-value="opponent-2">100 / 100 PV</span>
+            </div>
+            <div
+              class="status-icons"
+              data-combat-status-icons="opponent-2"
+              aria-label="Buffs et debuffs du second adversaire"
+            ></div>
+            <small data-combat-action="opponent-2">Prêt</small>
+            <progress
+              class="squad-card__charge"
+              data-combat-actor-charge="opponent-2"
+              data-active="false"
+              max="1"
+              value="0"
+            ></progress>
+          </button>
+
+          <div class="coop-command-stack">
+            <button
+              type="button"
+              class="squad-card squad-card--ally squad-card--command-ally"
+              data-target-actor="local-2"
+              data-preview-actor-ui="local-2"
+            >
+              <img
+                class="squad-card__creature-icon"
+                data-ally-creature-icon
+                alt=""
+                aria-hidden="true"
+              >
+              <span class="squad-card__body">
+                <strong>Allié</strong>
+                <span class="squad-card__hp">
+                  <progress data-combat-hp="local-2" max="100" value="100"></progress>
+                  <span data-combat-hp-value="local-2">100 / 100 PV</span>
+                </span>
+                <span
+                  class="status-icons"
+                  data-combat-status-icons="local-2"
+                  aria-label="Buffs et debuffs de la créature alliée"
+                ></span>
+                <small data-combat-action="local-2">Prêt</small>
+                <progress
+                  class="squad-card__charge"
+                  data-combat-actor-charge="local-2"
+                  data-active="false"
+                  max="1"
+                  value="0"
+                ></progress>
+              </span>
+            </button>
+
+            <section class="coop-controls" aria-label="Capacités de la créature locale">
+              <div class="coop-controls__controlled-name" data-combat-controlled-name hidden aria-live="polite"></div>
+              <div class="hud__energy">
+                <div class="hud__energy-line">
+                  <strong>Votre énergie</strong>
+                  <span data-combat-energy-value="local-1">0 / 10⚡</span>
+                </div>
+                <div
+                  class="hud__energy-orbs"
+                  data-combat-energy-orbs="local-1"
+                  role="img"
+                  aria-label="Énergie : 0 sur 10"
+                ></div>
+                <progress
+                  class="hud__energy-native"
+                  data-combat-energy="local-1"
+                  aria-hidden="true"
+                  max="10"
+                  value="0"
+                ></progress>
+              </div>
+              <div class="combat-primary-actions">
+                <div class="skill-bar__grid" data-combat-skills></div>
+              </div>
+              <details class="combat-test-team-menu" data-combat-team-menu hidden>
+                <summary data-combat-team-summary>
+                  <span data-combat-team-summary-label>Rappel · équipe</span>
+                  <small data-combat-recall-countdown hidden aria-live="off"></small>
+                </summary>
+                <div class="combat-test-team-menu__body">
+                  <div data-combat-team-rosters></div>
+                  <div class="combat-test-team-actions">
+                    <button type="button" data-combat-roster-command="switch">Rappel et invocation</button>
+                  </div>
+                  <p data-combat-recall-note></p>
+                </div>
+              </details>
+            </section>
+          </div>
+
+          <button
+            type="button"
+            class="combat-dodge-action combat-dodge-action--arena"
+            data-combat-dodge
+            hidden
+          >
+            <span class="action-option__icon-shell combat-dodge-action__icon-shell"
+                  data-combat-reaction-icon-shell aria-hidden="true" hidden>
+              <img data-combat-reaction-icon
+                   class="action-option__icon action-option__icon--base combat-dodge-action__icon"
+                   alt="" hidden>
+              <img data-combat-reaction-icon-color
+                   class="action-option__icon action-option__icon--color combat-dodge-action__icon"
+                   alt="" hidden>
+              <span class="action-option__cooldown-dial"></span>
+              <span class="action-option__cooldown-needle"></span>
+            </span>
+            <strong>Esquive</strong>
+            <span class="combat-dodge-action__charges" data-combat-dodge-charges>0 / 0</span>
+            <small data-combat-dodge-recharge hidden></small>
+          </button>
+
+          <p
+            class="live-status live-status--coop"
+            data-combat-live-status
+            data-tone="info"
+            role="status"
+          >
+            Touchez une créature pour choisir votre cible.
+          </p>
+        </section>
+      </main>
+    </template>
+  </section>
+
+  <script type="module" src="./capture-editor-v2.js"></script>
+</body>
+</html>

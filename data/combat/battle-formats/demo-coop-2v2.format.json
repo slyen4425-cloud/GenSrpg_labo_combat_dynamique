@@ -1,0 +1,48 @@
+{
+  "id": "coop-2v2-lab-v1",
+  "localActorId": "player",
+  "teams": {
+    "players": [
+      "player",
+      "ally"
+    ],
+    "enemies": [
+      "opponent",
+      "opponent-b"
+    ]
+  },
+  "actors": [
+    {
+      "actorId": "player",
+      "teamId": "players",
+      "creatureId": "loup_volcanique",
+      "displayName": "Loup volcanique",
+      "fighterConfigId": "loup_volcanique",
+      "controllerId": "human-local"
+    },
+    {
+      "actorId": "ally",
+      "teamId": "players",
+      "creatureId": "golem_moussu",
+      "displayName": "Golem moussu",
+      "fighterConfigId": "golem_moussu",
+      "controllerId": "ai-ally"
+    },
+    {
+      "actorId": "opponent",
+      "teamId": "enemies",
+      "creatureId": "maraileron",
+      "displayName": "Maraileron",
+      "fighterConfigId": "maraileron",
+      "controllerId": "ai-enemy-a"
+    },
+    {
+      "actorId": "opponent-b",
+      "teamId": "enemies",
+      "creatureId": "braisombre",
+      "displayName": "Braisombre",
+      "fighterConfigId": "braisombre",
+      "controllerId": "ai-enemy-b"
+    }
+  ]
+}

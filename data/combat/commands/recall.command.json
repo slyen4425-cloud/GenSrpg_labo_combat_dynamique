@@ -1,0 +1,10 @@
+{
+  "id": "recall",
+  "name": "Rappel",
+  "kind": "recall",
+  "energyCost": 0,
+  "preparationMs": 2000,
+  "recoveryMs": 0,
+  "interruptibleDuringPreparation": true,
+  "effect": {}
+}

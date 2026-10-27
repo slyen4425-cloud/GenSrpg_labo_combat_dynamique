@@ -1,0 +1,244 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "fleche_spirituel",
+    "description": "Projectile d énergie pur qui ralenti l ennemie",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "fleche_spirituel",
+      "name": "Flèche spirituel",
+      "category": "offensive",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "spirit",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 700,
+      "travelMs": 850,
+      "recoveryMs": 0,
+      "cooldownMs": 9000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 1
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "eclat-spirituel",
+            "name": "Éclat spirituel",
+            "polarity": "detrimental",
+            "durationMs": 20000,
+            "maxStacks": 3,
+            "iconAssetId": "pack:capture:icon-skill-fleche-spirituelle-01",
+            "onStackAdded": {
+              "effects": [
+                {
+                  "kind": "apply_status",
+                  "targetScope": "target",
+                  "status": {
+                    "id": "marker-effect-charge-eclat-spirituel-0",
+                    "kind": "approach_time_modifier",
+                    "polarity": "detrimental",
+                    "durationModel": "time_ms",
+                    "durationMs": 20000,
+                    "stacking": "stack",
+                    "maxStacks": 3,
+                    "tags": [],
+                    "modifierPct": 10
+                  }
+                }
+              ]
+            }
+          },
+          "charges": 1
+        },
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 9,
+          "channel": "spirit",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:fleche_spirituel",
+      "version": 11,
+      "subjectType": "skill",
+      "subjectId": "fleche_spirituel",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-fleche-spirituelle-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-kitsune-lunaire-cast-01",
+          "displayScale": 0.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 30,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.7,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-kitsune-lunaire-projectile-01",
+          "displayScale": 1.3,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "trajectoryMode": "linear",
+          "frameSpeedMultiplier": 1.5,
+          "perspectiveAmount": 0
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-kitsune-lunaire-impact-01",
+          "displayScale": 1.2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {
+        "travel": {
+          "assetId": "gensrpg:sound:genrpg-pack2-9291c6e4",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:tower-d4a4ecd5",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": {
+          "color": "#ffffff",
+          "strength": 0.65,
+          "radiusPx": 22
+        },
+        "impactFlash": null,
+        "cameraShake": {
+          "amplitudePx": 5,
+          "durationMs": 140
+        },
+        "projectileTrail": {
+          "color": "#ffffff",
+          "count": 5,
+          "lengthPx": 40,
+          "sizePx": 6,
+          "opacity": 0.65,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 8,
+          "spreadPx": 52,
+          "sizePx": 7,
+          "durationMs": 320,
+          "opacity": 0.75
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 4,
+          "spreadPx": 42,
+          "sizePx": 30,
+          "risePx": 42,
+          "durationMs": 950,
+          "opacity": 0.5
+        },
+        "castBurst": {
+          "color": "#ffffff",
+          "count": 5,
+          "spreadPx": 38,
+          "sizePx": 6,
+          "risePx": 26,
+          "durationMs": 500,
+          "opacity": 0.65
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,255 @@
+{
+  "schema": "capture-creature-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-creature-editor-draft-v3",
+    "id": "crea_scar_2",
+    "displayName": "Scarabacier",
+    "description": "Scarabacier, créature de type steel.",
+    "level": 1,
+    "sourceStats": {
+      "force": 31,
+      "agility": 32,
+      "intelligence": 0,
+      "spirit": 35,
+      "endurance": 38,
+      "initiative": 34
+    },
+    "elements": [
+      "steel"
+    ],
+    "resistances": [
+      {
+        "kind": "element:fire",
+        "value": 0
+      },
+      {
+        "kind": "element:water",
+        "value": 0
+      },
+      {
+        "kind": "element:earth",
+        "value": 35
+      },
+      {
+        "kind": "element:air",
+        "value": 0
+      },
+      {
+        "kind": "element:electric",
+        "value": -50
+      },
+      {
+        "kind": "element:light",
+        "value": 0
+      },
+      {
+        "kind": "element:shadow",
+        "value": 0
+      },
+      {
+        "kind": "element:nature",
+        "value": 0
+      },
+      {
+        "kind": "element:ice",
+        "value": 0
+      },
+      {
+        "kind": "element:poison",
+        "value": 0
+      },
+      {
+        "kind": "element:steel",
+        "value": 35
+      },
+      {
+        "kind": "element:psy",
+        "value": 0
+      },
+      {
+        "kind": "element:spirit",
+        "value": 0
+      }
+    ],
+    "capture": {
+      "capturable": true,
+      "captureRate": 22,
+      "spawnChance": 5,
+      "spawnTags": [
+        "steel"
+      ],
+      "evolution": null
+    },
+    "combat": {
+      "maxHp": 190,
+      "maxEnergy": 0,
+      "initialEnergy": 0,
+      "energyChargeAmount": 0,
+      "energyChargeIntervalMs": 0,
+      "movementEnergyPerStep": 0,
+      "chargeTimeModifierPct": 0,
+      "approachTimeModifierPct": 25,
+      "reaction": {
+        "type": "defense",
+        "maxCharges": 1,
+        "rechargeMs": 20000,
+        "activeWindowMs": 500,
+        "damageReductionPct": 90
+      }
+    },
+    "skillIds": [
+      "cisaille",
+      "cap_water_atk_1"
+    ],
+    "presentation": {
+      "id": "creature:crea_scar_2",
+      "version": 7,
+      "subjectType": "creature",
+      "subjectId": "crea_scar_2",
+      "profileId": "biped",
+      "displayScale": 1,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1.7,
+          "position": {
+            "x": 0,
+            "y": 10
+          }
+        },
+        "opponent": {
+          "displayScale": 0.95,
+          "position": {
+            "x": 0,
+            "y": 50
+          }
+        }
+      },
+      "transformOrigin": {
+        "x": "50%",
+        "y": "50%"
+      },
+      "visual": {
+        "front": {
+          "assetId": "pack:capture:creature-scarabacier-opponent-01"
+        },
+        "back": {
+          "assetId": "pack:capture:creature-scarabacier-player-01"
+        },
+        "icon": {
+          "assetId": "pack:capture:creature-scarabacier-icon-01"
+        },
+        "dodge": {
+          "assetId": "pack:capture:sprite-status-stone-shell-01",
+          "displayScale": 2,
+          "durationMs": 700,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "movement": {
+          "assetId": "pack:capture:creature-scarabacier-roll-01",
+          "mode": "roll",
+          "displayScale": 1.2,
+          "rotationTurns": 6,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttack": {
+          "assetId": "pack:capture:creature-scarabacier-attack-face-v5",
+          "mode": "sprite",
+          "displayScale": 0.8,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttackBack": {
+          "assetId": "pack:capture:creature-scarabacier-attack-dos-v5",
+          "mode": "sprite",
+          "displayScale": 0.8,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttackPlacement": {
+          "front": {
+            "x": 0,
+            "y": 0
+          },
+          "back": {
+            "x": -20,
+            "y": -20
+          }
+        }
+      },
+      "sockets": [
+        {
+          "id": "mouth",
+          "label": "Bouche",
+          "front": {
+            "x": 0.27319587565407266,
+            "y": 0.6008679866790771
+          },
+          "back": {
+            "x": 0.7020618446705927,
+            "y": 0.4013020197550456
+          }
+        }
+      ],
+      "audio": {
+        "movement": {
+          "assetId": "gensrpg:sound:effect-ad54aecf",
+          "volume": 1
+        }
+      }
+    }
+  },
+  "statValues": {
+    "schema": "capture-creature-stat-values-v1",
+    "creatureId": "crea_scar_2",
+    "values": {
+      "health": 190,
+      "speed": 0,
+      "physical": 0,
+      "defense": 20,
+      "fire": 0,
+      "water": 0,
+      "earth": 0,
+      "air": 0,
+      "electric": 0,
+      "light": 0,
+      "shadow": 0,
+      "poison": 0,
+      "acier": 15
+    }
+  },
+  "loadout": {
+    "schema": "capture-active-skill-loadout-v1",
+    "creatureId": "crea_scar_2",
+    "slots": [
+      {
+        "id": "slot-1",
+        "skillId": "cisaille"
+      },
+      {
+        "id": "slot-2",
+        "skillId": "cap_water_atk_1"
+      },
+      {
+        "id": "slot-3",
+        "skillId": null
+      },
+      {
+        "id": "slot-4",
+        "skillId": null
+      },
+      {
+        "id": "slot-ultimate",
+        "skillId": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "player": [
+    "fireball",
+    "claw",
+    "aerial-dive",
+    "teleport-strike"
+  ],
+  "ally": [
+    "claw",
+    "fireball",
+    "aerial-dive",
+    "teleport-strike"
+  ],
+  "opponent": [
+    "fireball",
+    "claw",
+    "aerial-dive",
+    "teleport-strike"
+  ],
+  "opponent-b": [
+    "aerial-dive",
+    "fireball",
+    "claw",
+    "teleport-strike"
+  ]
+}

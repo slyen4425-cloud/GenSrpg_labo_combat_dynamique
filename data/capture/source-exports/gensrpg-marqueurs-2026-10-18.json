@@ -1,0 +1,45 @@
+{
+  "schema": "capture-markers-v1",
+  "markers": [
+    {
+      "id": "venin-static",
+      "name": "venin static",
+      "polarity": "detrimental",
+      "permanent": true,
+      "maxStacks": 20,
+      "iconAssetId": "pack:capture:icon-skill-toxine-01",
+      "periodic": {
+        "kind": "damage",
+        "amount": 2,
+        "intervalMs": 5000,
+        "damageMode": "combat",
+        "channel": "electric"
+      },
+      "onStackThreshold": {
+        "count": 20,
+        "consume": "reset",
+        "effects": [
+          {
+            "kind": "knockout",
+            "targetScope": "target"
+          }
+        ]
+      }
+    },
+    {
+      "id": "peste",
+      "name": "Peste",
+      "polarity": "detrimental",
+      "permanent": true,
+      "maxStacks": 20,
+      "iconAssetId": "pack:capture:icon-skill-toxine-01",
+      "periodic": {
+        "kind": "damage",
+        "amount": 15,
+        "intervalMs": 30000,
+        "damageMode": "combat",
+        "channel": "shadow"
+      }
+    }
+  ]
+}

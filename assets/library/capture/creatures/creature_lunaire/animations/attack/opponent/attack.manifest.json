@@ -1,0 +1,65 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "creature_lunaire",
+  "action": "attack",
+  "view": "opponent",
+  "frameCount": 8,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 110,
+  "playbackMode": "once",
+  "sourceArchive": "monster_capture_2_attaques_validees.zip",
+  "sourceArchiveSha256": "30065f416567696184a310563ab117c3f587e0a93010dc076730d073c1ebf665",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/creature_lunaire_attack_opponent_01.png",
+      "sha256": "38ae68adc0180249c58792c65aa281055f4168415b7411364e42dc12059452f2"
+    },
+    {
+      "index": 1,
+      "file": "frames/creature_lunaire_attack_opponent_02.png",
+      "sha256": "2c54c07239ec8ee3102f109e299c588a733f1e14761f838c207042ab43853f68"
+    },
+    {
+      "index": 2,
+      "file": "frames/creature_lunaire_attack_opponent_03.png",
+      "sha256": "5a717d9c7b9abecb0759877d592ad7cf0c22d6749a29aeff4767ec71d897a360"
+    },
+    {
+      "index": 3,
+      "file": "frames/creature_lunaire_attack_opponent_04.png",
+      "sha256": "a97477237af1073a9e36d8d2e76b27f22555beb23289b4d13e04a4c69e46d93b"
+    },
+    {
+      "index": 4,
+      "file": "frames/creature_lunaire_attack_opponent_05.png",
+      "sha256": "d43e90d41f3768f944f5d4c065f5f5901c27f0f21d63f8342ad1d55caa3a7a10"
+    },
+    {
+      "index": 5,
+      "file": "frames/creature_lunaire_attack_opponent_06.png",
+      "sha256": "e82d8029333988f4cbdc492659da693857b04dbafd717ae8e3fa93de28f21319"
+    },
+    {
+      "index": 6,
+      "file": "frames/creature_lunaire_attack_opponent_07.png",
+      "sha256": "4ca9d061e1ee139d173fdc20de8ffbbaf3c618a697d6c48e73f65eafb08aa547"
+    },
+    {
+      "index": 7,
+      "file": "frames/creature_lunaire_attack_opponent_08.png",
+      "sha256": "4577cd0fd3008654bca28eeb9cb71ce50e2f5e1f11c49e479cc8543304122ad3"
+    }
+  ],
+  "atlas": {
+    "file": "atlases/creature_lunaire_attack_opponent_8_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 8,
+    "frameWidth": 512,
+    "frameHeight": 512
+  },
+  "preview": "previews/creature_lunaire_attack_opponent_8_preview.webp"
+}

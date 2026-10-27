@@ -1,0 +1,209 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "Sacrifice_kitsune",
+    "description": "Kitsune se sacrifie pour laisser une zone qui soigne et boost la prochaine creature en combat.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "Sacrifice_kitsune",
+      "name": "Sacrifice Kitsune",
+      "category": "buff_debuff",
+      "form": "area",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "ultimate",
+      "element": "spirit",
+      "approachMode": "none",
+      "energyCost": 2,
+      "preparationMs": 2000,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "persistent_zone",
+          "targetScope": "all_allies",
+          "zoneId": "zone-2",
+          "radius": "short",
+          "durationMs": 45000,
+          "tickIntervalMs": 1000,
+          "reactivation": "refresh",
+          "maxActivations": 1,
+          "radiusGrowthSteps": 0,
+          "tickEffect": {
+            "kind": "apply_status",
+            "targetScope": "all_allies",
+            "status": {
+              "id": "aura",
+              "kind": "energy_regen_modifier",
+              "polarity": "beneficial",
+              "durationModel": "time_ms",
+              "durationMs": 3000,
+              "stacking": "refresh",
+              "maxStacks": 1,
+              "tags": [],
+              "modifierPct": 100
+            }
+          },
+          "persistAfterRecall": true,
+          "statusBehavior": "while_inside"
+        },
+        {
+          "kind": "persistent_zone",
+          "targetScope": "all_allies",
+          "zoneId": "zone-2-heal",
+          "radius": "short",
+          "durationMs": 45000,
+          "tickIntervalMs": 1000,
+          "reactivation": "refresh",
+          "maxActivations": 1,
+          "radiusGrowthSteps": 0,
+          "tickEffect": {
+            "kind": "apply_status",
+            "targetScope": "all_allies",
+            "status": {
+              "id": "status-3",
+              "kind": "heal_over_time",
+              "polarity": "beneficial",
+              "durationModel": "time_ms",
+              "durationMs": 45000,
+              "stacking": "refresh",
+              "maxStacks": 1,
+              "tags": [],
+              "amount": 10,
+              "tickIntervalMs": 2000
+            }
+          },
+          "persistAfterRecall": true,
+          "statusBehavior": "while_inside"
+        },
+        {
+          "kind": "persistent_zone",
+          "targetScope": "all_allies",
+          "zoneId": "zone-2-damage",
+          "radius": "short",
+          "durationMs": 45000,
+          "tickIntervalMs": 1000,
+          "reactivation": "refresh",
+          "maxActivations": 1,
+          "radiusGrowthSteps": 0,
+          "tickEffect": {
+            "kind": "apply_status",
+            "targetScope": "all_allies",
+            "status": {
+              "id": "status-4",
+              "kind": "outgoing_damage_modifier",
+              "polarity": "beneficial",
+              "durationModel": "time_ms",
+              "durationMs": 45000,
+              "stacking": "refresh",
+              "maxStacks": 1,
+              "tags": [],
+              "modifierPct": 200
+            }
+          },
+          "persistAfterRecall": true,
+          "statusBehavior": "while_inside"
+        },
+        {
+          "kind": "knockout",
+          "targetScope": "self"
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:Sacrifice_kitsune",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "Sacrifice_kitsune",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-soins-spirituels-01"
+        },
+        "aura": {
+          "assetId": "pack:capture:sprite-kitsune-lunaire-aura-01",
+          "displayScale": 1.6,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-source",
+          "anchor": null,
+          "offsetX": -20,
+          "offsetY": -60,
+          "trigger": "impact",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.2,
+          "layerByView": {
+            "player": "behind",
+            "opponent": "behind"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-cc66c3dd",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}

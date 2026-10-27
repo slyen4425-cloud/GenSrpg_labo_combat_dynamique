@@ -1,0 +1,275 @@
+{
+  "schema": "capture-creature-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-creature-editor-draft-v3",
+    "id": "crea_foudrillon",
+    "displayName": "Freclairions",
+    "description": "Frelon électrique.",
+    "level": 1,
+    "sourceStats": {
+      "force": 25,
+      "agility": 44,
+      "intelligence": 0,
+      "spirit": 27,
+      "endurance": 16,
+      "initiative": 53
+    },
+    "elements": [
+      "air",
+      "electric"
+    ],
+    "resistances": [
+      {
+        "kind": "element:fire",
+        "value": 0
+      },
+      {
+        "kind": "element:water",
+        "value": 0
+      },
+      {
+        "kind": "element:earth",
+        "value": -50
+      },
+      {
+        "kind": "element:air",
+        "value": 35
+      },
+      {
+        "kind": "element:electric",
+        "value": 35
+      },
+      {
+        "kind": "element:light",
+        "value": 0
+      },
+      {
+        "kind": "element:shadow",
+        "value": 0
+      },
+      {
+        "kind": "element:nature",
+        "value": 0
+      },
+      {
+        "kind": "element:ice",
+        "value": 0
+      },
+      {
+        "kind": "element:poison",
+        "value": 0
+      },
+      {
+        "kind": "element:steel",
+        "value": 0
+      },
+      {
+        "kind": "element:psy",
+        "value": 0
+      },
+      {
+        "kind": "element:spirit",
+        "value": 0
+      }
+    ],
+    "capture": {
+      "capturable": true,
+      "captureRate": 17,
+      "spawnChance": 2,
+      "spawnTags": [
+        "air",
+        "electric"
+      ],
+      "evolution": null
+    },
+    "combat": {
+      "maxHp": 120,
+      "maxEnergy": 0,
+      "initialEnergy": 0,
+      "energyChargeAmount": 0,
+      "energyChargeIntervalMs": 0,
+      "movementEnergyPerStep": 0,
+      "chargeTimeModifierPct": 0,
+      "approachTimeModifierPct": -40
+    },
+    "skillIds": [
+      "cap_electric_atk_1",
+      "cap_electric_atk_2",
+      "cap_electric_atk_3",
+      "cap_electric_atk_4",
+      "cap_electric_atk_5",
+      "cap_electric_atk_6",
+      "cap_electric_atk_7",
+      "cap_electric_special_1",
+      "cap_electric_special_2",
+      "cap_air_atk_1",
+      "cap_air_atk_2",
+      "cap_air_atk_3",
+      "cap_air_atk_4",
+      "cap_air_atk_5",
+      "cap_air_atk_6",
+      "cap_air_atk_7",
+      "cap_air_special_1",
+      "cap_air_special_2",
+      "lib_gust",
+      "lib_tailwind",
+      "lib_static_bite",
+      "lib_chain_lightning",
+      "lib_paralyze",
+      "choc_venin",
+      "vol_eclaire",
+      "Nid_frelon"
+    ],
+    "presentation": {
+      "id": "creature:crea_foudrillon",
+      "version": 10,
+      "subjectType": "creature",
+      "subjectId": "crea_foudrillon",
+      "profileId": "flying",
+      "displayScale": 1,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1,
+          "position": {
+            "x": 0,
+            "y": -20
+          }
+        },
+        "opponent": {
+          "displayScale": 1,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      },
+      "transformOrigin": {
+        "x": "50%",
+        "y": "50%"
+      },
+      "visual": {
+        "front": {
+          "assetId": "pack:capture:creature-guepe-cybernetique-opponent-01"
+        },
+        "back": {
+          "assetId": "pack:capture:creature-guepe-cybernetique-player-01"
+        },
+        "icon": {
+          "assetId": "pack:capture:creature-guepe-cybernetique-icon-01"
+        },
+        "dodge": {
+          "assetId": "pack:capture:sprite-electric-yellow-beam-impact-01",
+          "displayScale": 1,
+          "durationMs": 700,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "rangedAttackBack": {
+          "assetId": "pack:capture:creature-guepe-cybernetique-attack-player-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "movementScaleByView": {
+          "player": 1.5,
+          "opponent": 1
+        },
+        "rangedAttackScaleByView": {
+          "player": 1,
+          "opponent": 1
+        },
+        "movementPlayback": {
+          "frameMs": 0,
+          "mode": "loop"
+        },
+        "movementBack": {
+          "assetId": "pack:capture:creature-guepe-cybernetique-movement-player-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 3,
+          "frameCount": 1,
+          "transitionMs": 80
+        }
+      },
+      "sockets": [
+        {
+          "id": "mouth",
+          "label": "Bouche",
+          "front": {
+            "x": 0.30824741971900577,
+            "y": 0.6418402989705404
+          },
+          "back": {
+            "x": 0.6896906945737669,
+            "y": 0.5719617207845052
+          }
+        }
+      ],
+      "audio": {
+        "movement": {
+          "assetId": "gensrpg:sound:effect-79dd62d8",
+          "volume": 1,
+          "mode": "loop"
+        }
+      },
+      "shadowOffset": {
+        "x": 0,
+        "y": 30
+      }
+    }
+  },
+  "statValues": {
+    "schema": "capture-creature-stat-values-v1",
+    "creatureId": "crea_foudrillon",
+    "values": {
+      "health": 120,
+      "speed": 15,
+      "physical": 0,
+      "defense": 0,
+      "fire": 0,
+      "water": 0,
+      "earth": 0,
+      "air": 10,
+      "electric": 10,
+      "light": 0,
+      "shadow": 0,
+      "poison": 0,
+      "acier": 0,
+      "nature": 0,
+      "esprit": 0
+    }
+  },
+  "loadout": {
+    "schema": "capture-active-skill-loadout-v1",
+    "creatureId": "crea_foudrillon",
+    "slots": [
+      {
+        "id": "slot-1",
+        "skillId": "lib_paralyze"
+      },
+      {
+        "id": "slot-2",
+        "skillId": "choc_venin"
+      },
+      {
+        "id": "slot-3",
+        "skillId": "lib_tailwind"
+      },
+      {
+        "id": "slot-4",
+        "skillId": "vol_eclaire"
+      },
+      {
+        "id": "slot-ultimate",
+        "skillId": "Nid_frelon"
+      }
+    ]
+  }
+}

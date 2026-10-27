@@ -1,0 +1,176 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_fire_atk_6",
+    "description": "Attaque Feu  ultime disponible au niveau 20.\nA chaque activation, augmente la zone de feu , jusqu'à 3 fois.\nLes créature ennemie qui entre , ou se trouve dans la zone subissent des dommages sur la durée.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_fire_atk_6",
+      "name": "Tempête de flammes",
+      "category": "offensive",
+      "form": "beam",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "ultimate",
+      "element": "fire",
+      "approachMode": "none",
+      "energyCost": 5,
+      "preparationMs": 2000,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 3500,
+      "maxUsesPerCombat": 6,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "combat_elapsed_ms",
+            "threshold": 25000
+          },
+          {
+            "type": "kills_by_self",
+            "threshold": 0
+          }
+        ]
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "persistent_zone",
+          "targetScope": "all_enemies",
+          "zoneId": "zone",
+          "radius": "short",
+          "durationMs": 15000,
+          "tickIntervalMs": 750,
+          "reactivation": "reinforce",
+          "maxActivations": 3,
+          "radiusGrowthSteps": 1,
+          "tickEffect": {
+            "kind": "damage",
+            "targetScope": "all_enemies",
+            "amount": 10,
+            "channel": null
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_fire_atk_6",
+      "version": 8,
+      "subjectType": "skill",
+      "subjectId": "cap_fire_atk_6",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-fire-breath-01"
+        },
+        "aura": {
+          "assetId": "pack:capture:sprite-fire-zone-loop-01",
+          "displayScale": 1.2,
+          "displayScaleX": 1.6,
+          "displayScaleY": 0.8,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.5,
+          "layerByView": {
+            "player": "behind",
+            "opponent": "behind"
+          }
+        }
+      },
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:effect-135ee2ed",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": {
+          "color": "#ffffff",
+          "count": 10,
+          "lengthPx": 72,
+          "sizePx": 9,
+          "opacity": 0.95,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 18,
+          "spreadPx": 96,
+          "sizePx": 11,
+          "durationMs": 460,
+          "opacity": 1
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 8,
+          "spreadPx": 60,
+          "sizePx": 34,
+          "risePx": 54,
+          "durationMs": 920,
+          "opacity": 0.5
+        },
+        "castBurst": {
+          "color": "#ffffff",
+          "count": 10,
+          "spreadPx": 62,
+          "sizePx": 9,
+          "risePx": 44,
+          "durationMs": 700,
+          "opacity": 0.95
+        }
+      }
+    }
+  }
+}

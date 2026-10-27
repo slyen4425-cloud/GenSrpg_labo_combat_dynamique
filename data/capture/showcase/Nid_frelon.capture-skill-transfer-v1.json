@@ -1,0 +1,245 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "Nid_frelon",
+    "description": "Attack a distance l enemies , et place 5 marqueur sur toute les créature ennemie en jeu et réserve.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "Nid_frelon",
+      "name": "Nid de frelon",
+      "category": "offensive",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "ultimate",
+      "element": "electric",
+      "approachMode": "none",
+      "energyCost": 8,
+      "preparationMs": 2800,
+      "travelMs": 1100,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 1
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_marker",
+          "targetScope": "all_enemies",
+          "marker": {
+            "id": "venin-static",
+            "name": "venin static",
+            "polarity": "detrimental",
+            "permanent": true,
+            "maxStacks": 20,
+            "iconAssetId": "pack:capture:icon-skill-toxine-01",
+            "periodic": {
+              "kind": "damage",
+              "amount": 2,
+              "intervalMs": 5000,
+              "damageMode": "combat",
+              "channel": "electric"
+            },
+            "onStackThreshold": {
+              "count": 20,
+              "consume": "reset",
+              "effects": [
+                {
+                  "kind": "knockout",
+                  "targetScope": "target"
+                }
+              ]
+            }
+          },
+          "charges": 5
+        },
+        {
+          "kind": "apply_marker",
+          "targetScope": "all_enemy_reserves",
+          "marker": {
+            "id": "venin-static",
+            "name": "venin static",
+            "polarity": "detrimental",
+            "permanent": true,
+            "maxStacks": 20,
+            "iconAssetId": "pack:capture:icon-skill-toxine-01",
+            "periodic": {
+              "kind": "damage",
+              "amount": 2,
+              "intervalMs": 5000,
+              "damageMode": "combat",
+              "channel": "electric"
+            },
+            "onStackThreshold": {
+              "count": 20,
+              "consume": "reset",
+              "effects": [
+                {
+                  "kind": "knockout",
+                  "targetScope": "target"
+                }
+              ]
+            }
+          },
+          "charges": 5
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:Nid_frelon",
+      "version": 11,
+      "subjectType": "skill",
+      "subjectId": "Nid_frelon",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-poison-cloud-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-cast-nature-01",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.5,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-projectile-earth-01",
+          "displayScale": 3,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "trajectoryMode": "linear",
+          "frameSpeedMultiplier": 4,
+          "perspectiveAmount": 0
+        }
+      },
+      "audio": {
+        "travel": {
+          "assetId": "gensrpg:sound:genrpg-pack2-ecd9f884",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-71e62374",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": {
+          "color": "#ffffff",
+          "strength": 0.65,
+          "radiusPx": 22
+        },
+        "impactFlash": null,
+        "cameraShake": {
+          "amplitudePx": 5,
+          "durationMs": 140
+        },
+        "projectileTrail": {
+          "color": "#ffffff",
+          "count": 5,
+          "lengthPx": 40,
+          "sizePx": 6,
+          "opacity": 0.65,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 8,
+          "spreadPx": 52,
+          "sizePx": 7,
+          "durationMs": 320,
+          "opacity": 0.75
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 4,
+          "spreadPx": 42,
+          "sizePx": 30,
+          "risePx": 42,
+          "durationMs": 950,
+          "opacity": 0.5
+        },
+        "castBurst": {
+          "color": "#ffffff",
+          "count": 5,
+          "spreadPx": 38,
+          "sizePx": 6,
+          "risePx": 26,
+          "durationMs": 500,
+          "opacity": 0.65
+        }
+      }
+    }
+  }
+}

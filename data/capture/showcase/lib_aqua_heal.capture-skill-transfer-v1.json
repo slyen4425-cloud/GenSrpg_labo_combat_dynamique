@@ -1,0 +1,116 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "lib_aqua_heal",
+    "description": "Rend des PV à une cible alliée.",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "lib_aqua_heal",
+      "name": "Onde régénérante",
+      "category": "heal",
+      "form": "self",
+      "loadoutSlot": "standard",
+      "element": "water",
+      "approachMode": "none",
+      "energyCost": 8,
+      "preparationMs": 2500,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 30000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "heal",
+          "targetScope": "self",
+          "amount": 5
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "id": "lib_aqua_heal_regeneration",
+            "kind": "heal_over_time",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 20000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "amount": 3,
+            "tickIntervalMs": 3000
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:lib_aqua_heal",
+      "version": 3,
+      "subjectType": "skill",
+      "subjectId": "lib_aqua_heal",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-recall-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {
+        "lib_aqua_heal_regeneration": {
+          "mode": "sprite",
+          "tintColor": "#9b59d0",
+          "tintOpacity": 0.35,
+          "sprite": {
+            "assetId": "pack:capture:sprite-water-healing-bubble-01",
+            "displayScale": 1.7,
+            "opacity": 0.45
+          }
+        }
+      }
+    }
+  }
+}

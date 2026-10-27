@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "releaseId": "combat-main-pilot-2026-10-27-rc1",
+  "status": "blocked-ci-not-published",
+  "code": {
+    "repository": "slyen4425-cloud/GenSrpg_labo_combat_dynamique",
+    "sourceBranch": "gh-pages",
+    "commit": "e97a259ff080a5a9ff40d0f4e0892f45d71f081d"
+  },
+  "assets": {
+    "repository": "slyen4425-cloud/GenSrpg_labo_combat_dynamique",
+    "sourceBranch": "global-assets",
+    "commit": "b3d46ce6f2639ebb59a2984aeff17f97cbcd7377",
+    "catalog": "data/assets/catalog/global-visual-assets.v1.json",
+    "baseUrl": "https://raw.githubusercontent.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/b3d46ce6f2639ebb59a2984aeff17f97cbcd7377/assets/library/",
+    "catalogUrl": "https://raw.githubusercontent.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/b3d46ce6f2639ebb59a2984aeff17f97cbcd7377/data/assets/catalog/global-visual-assets.v1.json"
+  },
+  "consumer": {
+    "targets": [
+      "GenSrpG Monster Capture",
+      "Labo Exploration"
+    ],
+    "autoSync": false
+  },
+  "validation": {
+    "ci": "RED",
+    "failedTests": 13,
+    "tests": 2319,
+    "reason": "Author showcase record regression assertions; no promotion until verified"
+  }
+}

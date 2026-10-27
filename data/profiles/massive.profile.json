@@ -1,0 +1,171 @@
+{
+  "id": "massive",
+  "label": "Massif / golem",
+  "description": "Profil générique pour golems, colosses et créatures massives. Idle ancré et locomotion lourde avec contacts de pas explicites.",
+  "idle": {
+    "bobY": 0,
+    "swayRotate": 0.18,
+    "swayX": 0,
+    "scaleXDelta": -0.002,
+    "scaleYDelta": 0.004,
+    "durationMs": 2100,
+    "transformOrigin": {
+      "x": "50%",
+      "y": "93%"
+    }
+  },
+  "attack": {
+    "lungeX": 46,
+    "lungeY": -4,
+    "stretchX": 0.035,
+    "squashY": 0.045,
+    "durationMs": 340,
+    "recoveryMs": 230
+  },
+  "hit": {
+    "recoilX": -22,
+    "recoilRotate": -4,
+    "durationMs": 190,
+    "filter": {
+      "brightness": 1.3,
+      "saturate": 4.5,
+      "sepia": 0.85,
+      "hueRotateDeg": -35
+    }
+  },
+  "ko": {
+    "fallY": 28,
+    "fadeTo": 0,
+    "rotate": -18,
+    "durationMs": 650
+  },
+  "specialMoves": {
+    "teleport": {
+      "vanishRatio": 0.4,
+      "returnVanishMs": 90,
+      "returnMs": 150
+    },
+    "aerial": {
+      "riseRatio": 0.64,
+      "riseEasing": "cubic-bezier(0.25, 0.65, 0.35, 1)",
+      "diveEasing": "ease-in",
+      "followThroughRatio": 0.35,
+      "repositionRatio": 0.1,
+      "riseY": -250,
+      "diveHeight": 270,
+      "returnMs": 240
+    },
+    "ground": {
+      "impactScaleX": 1.04,
+      "impactScaleY": 0.96,
+      "returnMs": 240
+    },
+    "perspective": {
+      "perspectiveScaleStrength": 1.25,
+      "perspectiveScaleMin": 0.7,
+      "perspectiveScaleMax": 1.35
+    }
+  },
+  "locomotion": {
+    "style": "heavy-step",
+    "durationMs": 760,
+    "phases": [
+      {
+        "label": "heavy-lift-1",
+        "at": 0.125,
+        "translateY": -26,
+        "rotateDeg": 0.32,
+        "scaleX": 0.997,
+        "scaleY": 1.004,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "heavy-contact-1",
+        "at": 0.25,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1.014,
+        "scaleY": 0.986,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "heavy-lift-2",
+        "at": 0.375,
+        "translateY": -26,
+        "rotateDeg": -0.28,
+        "scaleX": 0.997,
+        "scaleY": 1.004,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "heavy-contact-2",
+        "at": 0.5,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1.014,
+        "scaleY": 0.986,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "heavy-lift-3",
+        "at": 0.625,
+        "translateY": -26,
+        "rotateDeg": 0.26,
+        "scaleX": 0.997,
+        "scaleY": 1.004,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "heavy-contact-3",
+        "at": 0.75,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1.014,
+        "scaleY": 0.986,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "heavy-lift-4",
+        "at": 0.875,
+        "translateY": -26,
+        "rotateDeg": -0.22,
+        "scaleX": 0.997,
+        "scaleY": 1.004,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      },
+      {
+        "label": "heavy-contact-4",
+        "at": 1,
+        "translateY": 0,
+        "rotateDeg": 0,
+        "scaleX": 1.016,
+        "scaleY": 0.984,
+        "easing": "cubic-bezier(0.45,0,0.55,1)"
+      }
+    ],
+    "contacts": [
+      {
+        "at": 0.25,
+        "intensity": 0.72
+      },
+      {
+        "at": 0.5,
+        "intensity": 0.78
+      },
+      {
+        "at": 0.75,
+        "intensity": 0.86
+      },
+      {
+        "at": 1,
+        "intensity": 1
+      }
+    ],
+    "footfallFx": {
+      "cameraShake": {
+        "durationMs": 115,
+        "amplitudePx": 3.2
+      }
+    }
+  }
+}

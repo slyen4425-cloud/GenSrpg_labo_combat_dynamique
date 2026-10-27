@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>GenSrpG — Mini-test onde expansive 2v2</title>
+  <link rel="stylesheet" href="./demo.css?v=fire-zone-ring-20261016">
+  <link rel="stylesheet" href="./expanding-wave-2v2-preview.css">
+</head>
+<body class="wave-mini-body">
+  <main class="wave-mini">
+    <header class="wave-mini__header">
+      <div>
+        <strong>Monster Capture · mini-test 2v2</strong>
+        <p>Une seule onde de feu · deux ennemis touchés séparément</p>
+      </div>
+      <a href="./capture-editor-v2.html">Retour à l'éditeur</a>
+    </header>
+    <section class="wave-mini__stage" data-mini-arena aria-label="Terrain de mini-test 2 contre 2">
+      <div class="wave-mini__field" aria-hidden="true"></div>
+      <article class="wave-mini__actor wave-mini__actor--player" data-mini-actor="player">
+        <div class="wave-mini__model" data-mini-model="player" aria-label="Dragon"></div>
+        <span>Dragon <small data-mini-hp="player">100 PV</small></span>
+      </article>
+      <article class="wave-mini__actor wave-mini__actor--ally" data-mini-actor="ally">
+        <div class="wave-mini__model" data-mini-model="ally" aria-label="Allié"></div>
+        <span>Allié <small data-mini-hp="ally">100 PV</small></span>
+      </article>
+      <article class="wave-mini__actor wave-mini__actor--opponent" data-mini-actor="opponent">
+        <div class="wave-mini__model" data-mini-model="opponent" aria-label="Ennemi A"></div>
+        <span>Ennemi A <small data-mini-hp="opponent">100 PV</small></span>
+      </article>
+      <article class="wave-mini__actor wave-mini__actor--opponent-b" data-mini-actor="opponent-b">
+        <div class="wave-mini__model" data-mini-model="opponent-b" aria-label="Ennemi B"></div>
+        <span>Ennemi B <small data-mini-hp="opponent-b">100 PV</small></span>
+      </article>
+    </section>
+    <section class="wave-mini__controls" aria-label="Commandes de test">
+      <button type="button" data-mini-cast="player">🔥 Lancer depuis Dragon</button>
+      <button type="button" data-mini-cast="opponent">↩ Lancer côté ennemi</button>
+      <button type="button" class="wave-mini__reset" data-mini-reset>Réinitialiser</button>
+    </section>
+    <output class="wave-mini__status" data-mini-status role="status" aria-live="polite">Prêt : lance une onde pour vérifier les deux impacts.</output>
+    <p class="wave-mini__note">Aperçu technique séparé du jeu : le vrai moteur calcule les contacts, dégâts et PV. L'anneau provisoire représente le bord de collision, sans remplacer le sprite enregistré dans ton éditeur. Pour le cercle discret de Tempête de flammes, utilise l'éditeur Capture.</p>
+  </main>
+  <script type="module" src="./expanding-wave-2v2-preview.js"></script>
+</body>
+</html>

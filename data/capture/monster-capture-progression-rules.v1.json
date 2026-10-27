@@ -1,0 +1,26 @@
+{
+  "schema": "capture-progression-rules-v1",
+  "maxActiveSkills": 5,
+  "slotUnlockSchedule": [
+    {
+      "level": 1,
+      "slots": 1
+    },
+    {
+      "level": 5,
+      "slots": 2
+    },
+    {
+      "level": 10,
+      "slots": 3
+    },
+    {
+      "level": 15,
+      "slots": 4
+    },
+    {
+      "level": 20,
+      "slots": 5
+    }
+  ]
+}

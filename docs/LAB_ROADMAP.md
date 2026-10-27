@@ -58,6 +58,199 @@ Contraintes :
 - aucune téléportation résiduelle ;
 - état final déterministe.
 
+## Phase 2B — Prototype règles de combat distance/énergie
+
+Objectif : tester l'expérience cible sans intégrer GenSrpG et sans contaminer le moteur visuel.
+
+Socle :
+
+- trois bandes de distance : courte / moyenne / longue ;
+- énergie commune aux compétences et au déplacement ;
+- coût de déplacement configurable par créature et par palier ;
+- compétences séparant catégorie, forme et élément ;
+- préparation, trajet et récupération configurables ;
+- blocage, renvoi, immunité et contre ;
+- réactions soumises à leur propre temps de préparation ;
+- résolution sémantique avant toute animation.
+
+Interface test :
+
+- jauges d'énergie ;
+- déplacement tactile entre les trois bandes ;
+- coûts visibles ;
+- capacités data-driven ;
+- réaction adverse sélectionnable ;
+- journal de résolution ;
+- projectile générique minimal ;
+- outils d'animation bruts relégués en panneau laboratoire.
+
+Critère GREEN final : CI verte + vrai chemin données -> Combat Rules -> Presenter -> Animation/FX + validation smartphone de la lisibilité et de l'intuitivité.
+
+### Extension V2 timing / UI persistante
+
+- idle permanent hors actions transitoires ;
+- énergie initiale configurable, zéro par défaut du test ;
+- recharge discrète configurable en quantité / intervalle ;
+- temps de charge effectif modifié par la créature en pourcentage ;
+- modificateurs temporaires de charge avec expiration ;
+- Combat Runtime propriétaire de l'horloge ;
+- barre de charge visible pour chaque capacité ;
+- réactions déclenchables pendant une action en cours ;
+- seul le combattant qui change la distance bouge visuellement ;
+- arène et capacités visibles simultanément sur smartphone ;
+- HUD distance superposé supprimé.
+
+
+
+### Extension V3 — impact, esquive et commandes tactiques
+
+- dégâts appliqués uniquement à l'impact réel ;
+- séparation `form` / `approachMode` ;
+- approches `ground / aerial / teleport` ;
+- esquives ciblant forme et/ou approche ;
+- commandes séparées des compétences : Objet / Rappel / Invocation ;
+- coût énergie et temps de préparation configurables pour chaque commande ;
+- commandes interruptibles pendant leur préparation ;
+- effet Stun produisant une interruption uniquement à son impact ;
+- refus d'interruption après release ;
+- test laboratoire du Stun hors de l'interface joueur principale.
+
+Le changement réel de créature lors d'un Rappel/Invocation reste un raccord de roster séparé : ce lot valide le contrat, le coût, le timing, la completion et l'interruption.
+
+### Extension V4 — vue joueur et roster 2v2
+
+- démo nettoyée pour ressembler à une vraie partie ;
+- uniquement contrôles du joueur ;
+- Capacités / Objets / Équipe en menus déroulants ;
+- suppression des outils laboratoire du rendu utilisateur ;
+- équipe joueur : Marai + Drakon ;
+- équipe adverse : Drakon + Marai ;
+- réserve visible pour les deux camps ;
+- Rappel réellement retire le monstre actif de la scène ;
+- Invocation réellement remplace le slot joueur par le membre sélectionné ;
+- PV/énergie persistants par membre entre les changements ;
+- changement réel d'asset et de profil visuel lors d'une invocation ;
+- aucun contrôle direct de l'adversaire.
+
+### Extension V5 — réflexes, KO et mouvements spéciaux
+
+- capacités offensives visibles directement, sans menu déroulant ;
+- Objets et Équipe restent en menus secondaires compacts ;
+- arène légèrement plus haute pour améliorer la lisibilité ;
+- KO adverse suivi d'un remplacement réel depuis la réserve ;
+- snapshot du membre KO conservé ;
+- aucun contrôle direct joueur sur le remplacement adverse ;
+- événement visuel `teleport-attack` ;
+- événement visuel `aerial-attack` ;
+- ciblage visuel calculé depuis la géométrie réelle des deux acteurs ;
+- point d'impact visuel aligné sur `travelMs` ;
+- retour visuel après impact sans retarder les dégâts.
+
+### Extension V6 — mobilité d'impact et charge lisible
+
+- corps à corps au sol piloté par `travelMs` configurable ;
+- Griffe de test : 1,5 s pour atteindre la cible ;
+- support de capacités plus rapides sans changer le moteur (0,9 s / 0,5 s) ;
+- mouvement au sol jusqu'à la géométrie réelle de la cible ;
+- aérien pouvant sortir complètement du haut de l'arène avant piqué ;
+- KO sans retour à idle du combattant vaincu ;
+- KO détecté depuis l'événement hit et remplacé par le Roster Session ;
+- arène encore agrandie ;
+- barre de charge principale plus grande ;
+- nom de l'action et temps restant issus du Combat Runtime.
+
+
+### Extension V7 — feedback visuel d'impact
+
+- le recul `hit` reste l'animation de réaction principale ;
+- un flash/coloration bref rend l'impact immédiatement lisible ;
+- le feedback est piloté par le profil de créature ;
+- le canal visuel reste indépendant des règles de dégâts ;
+- le renderer restaure l'apparence normale après le Hit ;
+- le KO terminal reste prioritaire et protégé.
+
+### Extension V8 — interface joueur plein écran inspirée d'un jeu de capture
+
+Objectif : transformer la démo technique en interface de combat tactile lisible sans déplacer aucune autorité gameplay dans l'UI.
+
+- arène occupant pratiquement tout le viewport ;
+- HUD joueur et adversaire intégrés aux bords de l'arène ;
+- capacités principales visibles en permanence comme de vraies touches de jeu ;
+- nom de capacité conservé aujourd'hui, structure compatible avec future icône ou icône + nom ;
+- énergie, charge et disponibilité projetées depuis le Runtime existant ;
+- Objets / Équipe / déplacement intégrés dans le HUD de combat ;
+- réserve visible mais compacte ;
+- aucun calcul de portée, coût, dégâts, KO ou roster dans la couche de présentation ;
+- smartphone prioritaire, paysage et portrait supportés.
+
+Critère GREEN V8 : CI verte + contrôles tactiles présents dans l'arène + aucun panneau de démo technique séparé + validation smartphone de la lisibilité et de l'accès aux actions.
+
+
+### Extension V9 — contrôleur de décision adverse
+
+Objectif : donner à l'adversaire un comportement autonome observable sans créer un second moteur de combat.
+
+Architecture cible :
+
+`Combat State / Roster snapshot -> Opponent Decision Controller -> preview des actions existantes -> Combat Runtime / Combat Session -> Presenter`
+
+Principes :
+
+- aucune seconde horloge gameplay ;
+- aucune simulation de clics UI ;
+- aucune duplication des calculs de portée, énergie, dégâts ou réactions ;
+- décisions déterministes et testables avant ajout éventuel d'aléatoire ;
+- l'IA choisit uniquement parmi des actions déjà déclarées légales par les propriétaires existants.
+
+Premier périmètre retenu :
+
+1. comportement offensif normal sans réaction automatique permanente ;
+2. moteur de réactions générique conservé pour de futurs profils spécialisés ;
+3. stratégie énergie configurable :
+   - mode rapide ;
+   - mode fort ;
+   - économie d'énergie si la compétence forte n'est pas encore finançable ;
+4. choix d'une compétence uniquement parmi les skills autorisés par la policy et validés par Combat Session ;
+5. déplacement vers une distance utile uniquement si le budget réel couvre mouvement + compétence ciblée ;
+6. réévaluation d'une IA en attente uniquement depuis les mises à jour du Combat Runtime ;
+7. politique configurable afin de pouvoir tester plusieurs comportements ;
+8. initiative adverse autonome déclenchée depuis les mises à jour d'état du Combat Runtime, sans attendre une action joueur ;
+9. mobilité évasive data-driven :
+   - une compétence peut déclarer une fenêtre d'esquive pendant son trajet ;
+   - les formes d'attaques entrantes évitées sont configurées dans la compétence ;
+   - Combat Rules décide `evaded` à l'impact réel.
+
+Pré-requis de raccord identifiés :
+
+- rendre le HUD de charge actor-aware ;
+- router Presenter/FX selon l'actorId réel au lieu d'assumer `player -> opponent` ;
+- définir le comportement de KO du joueur lorsque l'adversaire peut infliger les derniers dégâts.
+
+Concurrence V9 :
+
+- `Combat Runtime` reste l'unique horloge gameplay ;
+- il autorise au maximum une action active par combattant ;
+- joueur et adversaire peuvent donc charger / voyager / impacter en parallèle ;
+- les releases et impacts dus dans un même tick sont triés par timestamp absolu ;
+- le premier impact réel est résolu en premier sur l'état courant ;
+- un simple Hit n'annule pas automatiquement l'autre action ;
+- une interruption explicite ou un KO peut annuler l'action concernée ;
+- au premier jalon, seules les compétences sont concurrentes dans l'UI ;
+- déplacement, Objet, Rappel et Invocation restent globalement verrouillés pendant une action afin de ne pas changer silencieusement cible/distance en vol ;
+- le moteur de réactions reste disponible via `runtime.react()`, mais il est désactivé dans la policy de combat normal V9 ;
+- les projectiles concurrents peuvent utiliser une règle de clash data-driven déclarée dans `SkillDefinition`, sans détection de collision gameplay dans le renderer.
+
+### Disponibilité future des compétences
+
+À traiter dans un chantier gameplay séparé après stabilisation de V9 :
+
+- système de disponibilité 100 % data-driven au niveau `SkillDefinition` ;
+- possibilité d'ajouter un `cooldownMs` configurable par compétence ;
+- possibilité future de charges, nombre d'utilisations ou autres contraintes ;
+- aucun cooldown codé en dur dans l'IA ou l'UI ;
+- Combat Runtime / Combat State resteront propriétaires du temps et de la disponibilité réelle ;
+- l'IA ne fera que consulter cette disponibilité pour décider.
+
 ## Phase 3 — FX génériques
 
 Objectif : ajouter une couche d'effets indépendante.
@@ -104,6 +297,66 @@ Fonctions :
 - export/import d'un preset de profil.
 
 La Demo UI reste un client du Core.
+
+## Phase 5B — Bibliothèque d'assets créateurs
+
+Objectif : préparer une bibliothèque commune d'icônes, sprites / FX et sons utilisable par les créateurs, sans rendre le gameplay dépendant des médias.
+
+Ordre obligatoire :
+
+1. architecture et classification ;
+2. contrats `AssetDefinition / AssetPack / AssetBinding` ;
+3. Asset Catalog pur ;
+4. Audio Asset Input ;
+5. bindings de présentation de quelques compétences de test ;
+6. petit pack d'assets autorisés ;
+7. import créateur dans le laboratoire ;
+8. stockage persistant GenSrpG seulement lors d'un futur chantier d'intégration explicite.
+
+Invariants :
+
+- références par `assetId`, jamais par chemin physique dans le gameplay ;
+- séparation `core / pack / project / user` ;
+- Asset Input reste propriétaire de la validation des fichiers ;
+- SkillDefinition reste propriétaire du gameplay ;
+- les bindings de présentation restent séparés ;
+- un asset optionnel absent déclenche un fallback et ne casse pas le combat ;
+- provenance / auteur / licence doivent être traçables ;
+- une image unique reste un fallback valide pour une créature.
+
+Document de référence :
+
+`docs/LAB_ASSET_LIBRARY.md`
+
+Le futur éditeur de compétences devra respecter en particulier la section
+« Réglages visuels du futur éditeur de compétences » :
+
+- sélection des assets par IDs stables ;
+- scale indépendant par slot visuel ;
+- modes d'attache lanceur / cible / position fixe / trajet ;
+- anchors et offsets éditables ;
+- layer devant / derrière ;
+- déclencheurs utilisateur traduits vers les phases techniques ;
+- presets simples avant réglages avancés.
+
+Critère GREEN de la phase complète :
+
+- contrats et catalogue testés ;
+- au moins un vrai chemin icon / FX / audio via assetId ;
+- import personnel de laboratoire testable ;
+- aucun lien à `Zombicide-40k` ;
+- CI verte ;
+- validation utilisateur.
+
+
+### Retours de production ouverts — 2026-10-03
+
+Deux besoins de polish doivent être traités après pré-audit, sans créer d'autorité concurrente :
+
+- **présentation des créatures par camp/vue** : permettre des réglages indépendants joueur/adversaire pour scale et offsets X/Y, afin de compenser les différences de cadrage et de perspective entre les assets ; ces réglages restent purement visuels ;
+- **lisibilité des impacts** : les impacts réels doivent être suffisamment visibles en combat. Vérifier d'abord layer, durée/vitesse, scale, anchor/offset et profondeur, puis corriger via les paramètres de présentation/FX existants plutôt que par une règle gameplay ou un second moteur.
+
+Critère de validation : preview réelle sur smartphone et validation utilisateur ; la CI seule ne suffit pas pour déclarer le rendu artistique GREEN.
 
 ## Phase 6 — Performance et robustesse mobile
 
@@ -162,3 +415,190 @@ Pour chaque phase :
 pré-audit -> checkpoint départ -> branche de travail -> micro-lot -> tests -> checkpoint GREEN -> documentation -> phase suivante.
 
 Pas de saut de phase structurelle pour gagner du temps.
+
+
+### Avancement des retours de production — Presentation Feedback V1 — 2026-10-03
+
+Les réglages par vue (taille et X/Y), la gestion once/loop/stretch des projectiles et la durée/scale/offset des impacts sont maintenant implémentés dans les contrats et consommateurs existants. CI technique 923/923 au commit 82c8dac19656e18e8a85c7412e1b5ebd5b38a4b0. Les notes ouvertes précédentes restent la source historique ; l’implémentation et ses preuves sont décrites dans docs/LAB_PRESENTATION_FEEDBACK_V1.md.
+
+État : prêt pour test utilisateur dans la preview publiée. Validation artistique réelle sur smartphone encore ouverte ; aucun GREEN final, aucun merge main. Les presets et les médias globaux restent inchangés.
+
+
+### Dernières planches et ombre — 2026-10-04
+Implémentation technique terminée : 12 animations CAST/STATUS source-alpha (96 phases, 112 fichiers image réels), IDs/catalogue/runtime raccordés, ombre au sol issue du plan canonique et lifecycle WAAPI partagé. Full CI source 948/948 et assets 202/202 ; décodage des 108 fichiers de lecture et preview réelle clair/sombre vérifiés. Main protégé ; validation artistique/tactile finale de Sylvain ouverte. Référence : docs/LAB_CAST_STATUS_SOURCE_ALPHA_V1.md.
+
+
+## Suivi 2026-10-04 — Phase 5B, réglages des sprites dans l’éditeur
+
+Choix ouverts pour cast/impact/aura-zone/statut, filtre projectile conservé, réglages de lecture/placement exposés via les contrats existants. CI 966/966 et parcours natif desktop vérifiés sur `d8a1105604e00032573c9ace63f0f4c8cfb5368c`. Validation smartphone utilisateur à faire avant GREEN utilisateur. Détails : `docs/LAB_UNIFIED_SPRITE_CONTROLS_V1.md`.
+
+## Suivi 2026-10-04 — Combat de test conservé dans l’éditeur final
+
+Le test combat reste une fonction durable de l’éditeur. Toute la bibliothèque active est sélectionnable ; les miroirs et répétitions ont des états indépendants. Chaque camp possède 1–6 membres, avec 1 ou 2 actifs et les autres en réserve native. Le menu Équipe, Rappel/Invocation et le remplacement KO restent clients des owners existants. Les modifications valides sont enregistrées au lancement, sans retour aux boutons Save, et un refus permet de corriger puis réessayer. La barre Vérifier/Tester reste fixe sur téléphone.
+
+Code `0ec42fd2d2b006c939c29a8bdb61e11a26ec97d7`, CI **989/989**, parcours natifs miroir/équipes/réserves/KO/pending edits et revue responsive vérifiés. Les fiches sans illustration utilisent un placeholder explicite et n’acquièrent aucun nouveau média. Validation sur smartphone physique de Sylvain encore ouverte avant GREEN utilisateur ; main/global-assets/Zombicide-40k inchangés. Détails : `docs/LAB_EDITOR_COMBAT_TEST_V1.md`.
+
+
+## 2026-10-04 — IA de zone et relève Capture v1 : vérification technique réussie
+
+Trois besoins utilisateur implémentés par les propriétaires existants : renforcement des zones par IA avec économie d’énergie ; remplacement gratuit en 1 s puis arrivée instantanée ; statuts influençant le temps d’approche de la créature.
+
+Cette demande remplace pour switch seulement le verrou global de commandes de la première V9. Les autres acteurs continuent pendant le rappel ; slot toujours ciblable et relève atomique Roster Session. Le bouton unique du test Capture évite la succession de deux commandes laissant un terrain vide. Les anciennes commandes restent compatibles et gratuites.
+
+Source `0e151d26fde11af17525f442f648b2334f07e107`, CI 1006/1006. Vérification vraie chaîne 1v1/2v2, zone adverse au rayon long, rechargement du statut +50 % dans l’éditeur et affichage en combat, panneau mobile 360/390/430/paysage. Branche `work/lab-combat-tactics-switch-travel-v1-2026-10-04`. Rapport : docs/LAB_COMBAT_TACTICS_SWITCH_TRAVEL_V1.md. Validation technique acquise ; retour utilisateur encore nécessaire pour GREEN utilisateur.
+
+
+## 2026-10-04 — Retours zone / dégâts / rappel / K.O.
+
+Lot zone-ko-feedback-v1 techniquement vérifié : contact anticipé traité par les autorités natives, continuations K.O. annulées au remplacement, chiffres de dégâts mieux placés et lisibles, rappel gratuit 2 secondes éditable par session. CI 37211319259 : 1017 PASS / 0 FAIL. Vérifications natives mobile 390 px et relève avant nouveau dégât réalisées. Validation smartphone Sylvain attendue avant GREEN utilisateur. Rapport : LAB_ZONE_KO_FEEDBACK_V1_REPORT.md. Branche work/lab-zone-ko-feedback-v1-2026-10-04. Aucun raccord au dépôt principal.
+
+
+## 2026-10-04 — Tempête au repos et animation de relève
+
+Lot zone-idle-recall-fx-v1 techniquement vérifié : la présence dans une zone suit l'ellipse affichée et le modèle via un contrat spatial pur, lu sur l'horloge native ; fallback headless conservé. Animation Core planifie rappel/arrivée, Presenter préserve le rappel sous hit non létal. Coût 0, préparation 2000 ms par défaut éditable, relève atomique inchangés. Source 794b80d3deecac4705faf5c9d581f130074d5c0c ; CI 37214761522, 1029/1029. Tests natifs sans attaque au repos desktop/mobile, réserve visible dès l'arrivée. Validation artistique sur smartphone physique ouverte, main protégé. Rapport : docs/LAB_ZONE_IDLE_RECALL_FX_V1_REPORT.md.
+
+
+## 2026-10-04 — Validation zone-idle-recall et nouvelle référence de rythme
+
+Sylvain valide la preview 200b42055f2063c9545db6da01d3104e18f1fee0. GREEN utilisateur du lot : checkpoint/lab-zone-idle-recall-fx-v1-green-2026-10-04 sur ce SHA, sans merge main. La référence de vitesse devient ensuite le rythme précédemment utilisé à 0.5 : affichage 1×, vitesse native 0.5. Contrat de facteur UI centralisé, moteur et unités des anciens exports préservés ; micro-lot combat-reference-pace-v1 à vérifier en preview dédiée.
+
+
+Résultat combat-reference-pace-v1 : nouveau 1× équivalent à l'ancien 0.5 et 2× à l'ancien 1, paramètres natifs historiques préservés. Source 9deff685fef8275c4c1e07d0fa18ac0d7ea24fcc, CI 37222043505 : 1033/1033 ; vrai combat Griffe et revue 390 px concluants. Rapport : docs/LAB_COMBAT_REFERENCE_PACE_V1_REPORT.md. Nouveau GREEN utilisateur attend validation du rythme ; dernier GREEN utilisateur zone-idle-recall-fx-v1 conservé.
+
+
+## Extension — Combat expressif Monster Capture
+
+Référence :
+
+`docs/LAB_COMBAT_EXPRESSIVENESS_ARCHITECTURE_V1.md`
+
+Ordre obligatoire des micro-lots :
+
+1. Presence / reach contract ;
+2. Burrow gameplay, puis rendu visuel ;
+3. Dodge générique + `dodgeable` ;
+4. Immunity status dégâts + états négatifs ;
+5. Scheduled effects sur l'horloge Runtime existante ;
+6. Reserve targeting via Roster Session ;
+7. Creature mobility tempo côté combat ;
+8. exposition complète dans Human Editor.
+
+Chaque lot suit :
+
+`documenter -> contrat -> RED -> implémentation minimale -> vraie chaîne -> CI -> checkpoint GREEN`.
+
+Interdiction de traiter ces huit points dans un seul lot.
+
+
+## Capture smartphone — décision paysage définitive
+
+Référence : `docs/LAB_CAPTURE_LANDSCAPE_PRODUCT_DECISION_V1.md`
+
+Décision produit :
+- gameplay Exploration Capture : smartphone paysage ;
+- gameplay Combat Capture : smartphone paysage ;
+- éditeur : responsive portrait/paysage.
+
+Backlog UI ajouté, à traiter en micro-lot séparé :
+- déplacer légèrement le camp ennemi vers le haut/droite dans la composition paysage ;
+- vérifier 1v1 / 2v2, collision, sockets, FX et smartphone réel ;
+- ne pas toucher aux scales auteur.
+
+Ordre du chantier Combat Expressiveness conservé :
+1. Reserve Targeting V1 ;
+2. Creature Mobility Tempo ;
+3. exposition Human Editor des nouveaux contrats ;
+4. micro-lot placement ennemi paysage (peut être réalisé plus tôt uniquement sur branche dédiée si besoin de validation visuelle).
+
+
+## Décision différée — Projet portable : médias utilisateur + arènes
+
+Décision produit enregistrée le 2026-10-07. Ce chantier est **reporté jusqu'au raccord réel à l'application GenSrpG** ; il ne doit pas être développé dans le laboratoire de manière isolée.
+
+### Bibliothèque audio utilisateur
+
+Un son importé par un créateur devient un **asset audio du projet**, réutilisable partout où un slot audio compatible existe.
+
+Règles cibles :
+- l'import ne doit pas enfermer le son dans « créature », « capacité », « cast », « impact », etc. ;
+- ces notions deviennent des **rôles/tags de classement, filtrage et suggestion**, jamais des interdictions d'usage ;
+- un même `assetId` peut être référencé par plusieurs créatures, capacités, objets, événements ou systèmes de présentation ;
+- les octets audio doivent être persistés avec le projet via le futur propriétaire de stockage GenSrpG, et non via une simple Object URL de session ;
+- l'export/partage d'une game doit transporter les médias utilisateur nécessaires, ou un paquet/manifeste permettant de les restaurer sans dépendre du poste du créateur ;
+- lorsqu'un autre joueur importe/ouvre la game, les monstres, capacités et sons référencés doivent être disponibles avec les mêmes `assetId` ;
+- le gameplay et les fiches continuent à ne stocker que des références stables, jamais des chemins locaux ni des URL temporaires.
+
+Architecture cible à préciser lors du raccord application :
+`Project Asset Library -> assetId stable -> Project Package/Manifest + blobs -> import destinataire -> Asset Catalog -> bindings existants`.
+
+### Visuels et créatures utilisateur
+
+La même exigence de portabilité s'applique aux visuels, créatures, capacités et autres médias utilisateur : une game partagée doit rester jouable sans réimport manuel des fichiers d'origine.
+
+### Arènes utilisateur
+
+Le système d'import devra aussi accepter des **arènes personnalisées** comme assets de projet :
+- import d'image d'arène via l'Asset Input existant/généralisé ;
+- `assetId` stable ;
+- sélection dans les combats de test puis dans les données de game ;
+- transport avec le projet partagé selon le même mécanisme de paquet/manifeste.
+
+### Raccord World Builder futur
+
+Dans le futur chantier Exploration / World Builder, un environnement ou une zone devra pouvoir référencer une ou plusieurs arènes par `assetId`.
+
+Exemples de correspondance :
+- forêt -> arènes forêt configurées ;
+- neige -> arènes neige configurées ;
+- ville -> arènes ville configurées.
+
+Le World Builder ne doit ni copier les fichiers ni devenir propriétaire des médias : il référence la **Project Asset Library** par ID stable.
+
+### Frontières
+
+- aucun raccord au dépôt Exploration depuis ce lot documentaire ;
+- aucune persistance IndexedDB/projet ajoutée dans le laboratoire maintenant ;
+- aucune seconde bibliothèque média ;
+- Creator Audio Import V1 et Creator Visual Import V1 restent des prototypes de session jusqu'au chantier d'intégration application.
+
+
+## Backlog séparé — IA tactique Capture : Esquive et choix de compétences (2026-10-14)
+
+**Statut : conception future seulement, NE PAS IMPLÉMENTER dans le chantier actuel.** L'auteur valide la mécanique Beam Clash/puissance du rayon et demande une IA plus intelligente pour les tests et le futur jeu réel.
+
+Constat confirmé : `src/core/combat/battle-actor-ai-controller.js` effectue une rotation déterministe `skillIndex` sur les capacités autorisées, privilégie certains objectifs de zones, et sélectionne la première cible vivante. Le contrôleur ne pilote pas d'Esquive réactive. Il n'emploie pas une appréciation de danger, du rôle tactique, des PV, de l'effet de statut ou de l'intérêt d'une capacité au moment choisi.
+
+Résultat attendu après conception et validation :
+- **Réactions défensives** : évaluer la menace d'une attaque ennemie visible (`projectile/beam/contact/zone` selon le vrai contrat), les fenêtres d'impact et les charges/cooldowns de l'Esquive native ; ne pas esquiver un tir non esquivable, ne pas « voir » des données interdites ; respecter le timing et le coût comme le joueur ;
+- **Choix tactique** : comparer actions réellement disponibles, portée/cible, PV, soins, protections, dégâts élémentaires, statuts, buffs, debuffs, coût énergie, cooldown, objectifs de combat et usage ultime ; éviter la répétition mécaniquement circulaire et ne pas sacrifier l'efficacité pour du hasard ;
+- **Variété contrôlée** : plusieurs profils IA configurables (agressive/équilibrée/prudente), variabilité maîtrisée reproductible en tests (graine déterministe si du hasard intervient) ; aucune liste de tours fixée ni scripts liés aux noms de capacités ;
+- **Adaptation 1v1/2v2** : évaluer menace et cibles pour chaque acteur, ne pas voler le contrôle à l'allié humain solo, ni contourner `CombatRuntime`, `Combat Rules`, `BattleFormat` ou `Roster Session`.
+
+**Ordre requis quand ce chantier sera autorisé** : diagnostic de l'IA existante -> contrat de décision -> tests RED de réaction/esquive et choix varié -> petit correctif du propriétaire AI -> tests du vrai Runtime 1v1/2v2 -> CI GREEN + smartphone. Les valeurs de difficulté, probabilités, timing de réaction et profils devront être décidés lors de la conception. Aucun travail de moteur ou UI aujourd'hui.
+
+
+## Backlog — Buffs génériques à déclenchement événementiel (2026-10-14)
+
+**Statut : V1 implémentée dans le Labo Combat, sous réserve des contrôles GREEN finaux.** Références : `docs/LAB_TRIGGERED_BUFF_V1.md` (portée effective), `docs/LAB_TRIGGERED_BUFFS_BACKLOG_V1.md` (extensions futures).
+
+Demande auteur : une capacité, notamment **ultime**, pose un buff temporaire (exemple **60 s**) qui fait **à chaque dégât infligé par son porteur** une action paramétrable : brûlure sur la victime, soin du porteur, application d'un autre statut, ou combinaison. Les déclenchements cessent à l'expiration. La même infrastructure pourra plus tard alimenter des **capacités passives**.
+
+Architecture cible à étudier : `événement de combat canonique -> conditions -> effets réutilisables -> cible`, buff possédé par Status Runtime et horloge native, validation par les règles, configuration via Human Editor, import/export fidèle. Pas d'effets cachés en dur par compétence.
+
+Avant tout code, définir les cas PV réellement perdus / bouclier / DoT / renvoi / AOE, l'ordre et la quantité de déclenchements, les protections contre les boucles de procs, stacking/réactivation, mort/rappel et les règles des passifs. Puis TDD RED, lot minimal de contrat et vrai moteur, extension éditeur et tests 1v1/2v2 séparés. Ne pas confondre avec `onStackThreshold`, `activationRequirements.damage_dealt` ou `auto_dodge`.
+
+Aucune modification autorisée à l'IA tactique actuelle, aux capacités/monstres auteur, à Beam Clash ou à l'Esquive foudroyante par ce backlog documentaire.
+
+### V1 — Buff temporaire à déclenchement sur dégâts
+`StatusEffectV1.triggered_buff` : durée éditable, événement d'origine `onDamageDealt` (seulement PV réellement retirés par des attaques directes/tactiques immédiates), liste d'effets à cible victime/soi, réutilisation de `SkillEffectV1`, moteur et Human Editor existants. Brûlure/soin configurables, exclusion des attaques évitées et dégâts indirects, protection contre récursion. Sources/tests et parcours détaillés dans `docs/LAB_TRIGGERED_BUFF_V1.md`.
+
+Extension future distincte : passifs permanents, déclencheurs universels et dégâts périodiques/zone persistante, conditions avancées, probabilité/proc, multi-cibles complexes et contrôle smartphone physique.
+
+
+## 2026-10-14 — Évolution des buffs : événements génériques V2
+
+Nouvelle exigence auteur : **ne pas limiter les buffs à `sur dégâts infligés`**. Un éditeur doit séparer **événement déclencheur** et **effet(s)**, afin de composer une malédiction `quand on se déplace → subir des dégâts`, un buff `quand on esquive → se soigner`, ou tout autre enchaînement futur sans coder une capacité spéciale.
+
+Premier micro-lot du dispatch générique : `damage_dealt`, `damage_taken`, `movement` (changement tactique de distance confirmé), `evaded` (esquive confirmée). Statut V2 `onEvent:{event,effects}` ; ancien `onDamageDealt` supporté par le même propriétaire sans altération d'exports. Déclenchement réel à partir de Combat Rules/Status Runtime/horloge unique, prévention de récursivité, UI de sélection dans Human Editor. Référence `docs/LAB_EVENT_TRIGGERS_V2.md`.
+
+Autres événements à ajouter par lots propres selon les vrais propriétaires (approches et déplacements visuels, DoT, zones, soin, KO, conditions/charges/hasard et passifs), **sans requalifier rétroactivement les événements déjà existants**. Pas de deuxième moteur et pas de changement de compétences/monstres auteur.

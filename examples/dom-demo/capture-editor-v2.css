@@ -1,0 +1,1830 @@
+:root {
+  --editor-footer-space: 8rem;
+  color-scheme: dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #071017;
+  color: #eef7fa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100%;
+  background:
+    radial-gradient(circle at 20% -10%, rgba(45, 165, 190, 0.2), transparent 32rem),
+    linear-gradient(180deg, #081218, #061016 60%, #050c11);
+}
+
+body {
+  min-height: 100svh;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+.editor-shell {
+  width: min(100%, 78rem);
+  margin: 0 auto;
+  padding:
+    max(0.8rem, env(safe-area-inset-top))
+    max(0.8rem, env(safe-area-inset-right))
+    calc(var(--editor-footer-space) + env(safe-area-inset-bottom))
+    max(0.8rem, env(safe-area-inset-left));
+}
+
+.editor-header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.4rem 0.15rem 1rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.25rem;
+  color: #78d6e7;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 5vw, 2.8rem);
+  letter-spacing: -0.035em;
+}
+
+.subtitle {
+  max-width: 48rem;
+  margin: 0.35rem 0 0;
+  color: #8fa8b0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.header-state {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  min-width: fit-content;
+  margin-top: 0.25rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid rgba(116, 218, 237, 0.16);
+  border-radius: 999px;
+  background: rgba(11, 31, 40, 0.8);
+  color: #a7bdc4;
+  font-size: 0.68rem;
+}
+
+.state-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: #66d0e1;
+  box-shadow: 0 0 0.8rem rgba(102, 208, 225, 0.55);
+}
+
+.editor-tabs {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+  margin-bottom: 0.8rem;
+  padding: 0.45rem;
+  border: 1px solid rgba(126, 216, 234, 0.13);
+  border-radius: 0.9rem;
+  background: rgba(5, 15, 21, 0.93);
+  backdrop-filter: blur(14px);
+}
+
+.editor-tabs button {
+  display: grid;
+  gap: 0.08rem;
+  min-height: 3.6rem;
+  padding: 0.58rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+  background: transparent;
+  color: #829ba3;
+  text-align: left;
+  cursor: pointer;
+}
+
+.editor-tabs button[data-active="true"] {
+  border-color: rgba(113, 222, 241, 0.3);
+  background: linear-gradient(145deg, rgba(22, 84, 101, 0.9), rgba(12, 51, 63, 0.92));
+  color: #f4fdff;
+}
+
+.editor-tabs span {
+  font-weight: 950;
+}
+
+.editor-tabs small {
+  color: inherit;
+  font-size: 0.63rem;
+  opacity: 0.74;
+}
+
+.editor-panel {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.editor-panel[hidden] {
+  display: none;
+}
+
+.card {
+  padding: 0.9rem;
+  border: 1px solid rgba(116, 218, 237, 0.13);
+  border-radius: 0.95rem;
+  background: linear-gradient(160deg, rgba(11, 31, 40, 0.96), rgba(7, 22, 29, 0.96));
+  box-shadow: 0 0.7rem 2rem rgba(0, 0, 0, 0.16);
+}
+
+.hero-card {
+  border-color: rgba(124, 229, 247, 0.24);
+}
+
+.card-title {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  align-items: center;
+  min-height: 44px;
+  margin-bottom: 0.75rem;
+}
+
+.card-title > div {
+  min-width: 0;
+}
+
+.card[data-editor-collapsible="true"] > .card-title {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.card[data-editor-collapsible="true"] > .card-title::after {
+  content: "▾ Fermer";
+  display: grid;
+  min-width: 5.6rem;
+  min-height: 44px;
+  place-items: center;
+  padding: 0.4rem 0.62rem;
+  border: 1px solid rgba(131, 230, 247, 0.25);
+  border-radius: 0.65rem;
+  background: rgba(11, 42, 52, 0.88);
+  color: #dff8fc;
+  font-size: 0.68rem;
+  font-weight: 950;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.card[data-collapsed="true"] > .card-title::after {
+  content: "▸ Dérouler";
+}
+
+.card[data-editor-collapsible="true"] > .card-title:focus-visible {
+  outline: 2px solid rgba(124, 229, 247, 0.85);
+  outline-offset: 3px;
+  border-radius: 0.65rem;
+}
+
+.card[data-collapsed="true"] > :not(.card-title) {
+  display: none !important;
+}
+
+.card[data-collapsed="true"] > .card-title {
+  margin-bottom: 0;
+}
+
+.card-title h2,
+.card-title p {
+  margin: 0;
+}
+
+.card-title h2 {
+  font-size: 1rem;
+}
+
+.card-title p {
+  margin-top: 0.1rem;
+  color: #7f99a2;
+  font-size: 0.7rem;
+}
+
+.step {
+  display: grid;
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: #123d49;
+  color: #8ce5f3;
+  font-size: 0.75rem;
+  font-weight: 1000;
+}
+
+label {
+  display: grid;
+  gap: 0.3rem;
+  color: #c8d8dd;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(134, 222, 239, 0.17);
+  border-radius: 0.55rem;
+  outline: none;
+  background: #0a2029;
+  color: #f4fbfd;
+}
+
+input,
+select {
+  min-height: 2.55rem;
+  padding: 0.5rem 0.6rem;
+}
+
+textarea {
+  padding: 0.6rem;
+  resize: vertical;
+  line-height: 1.4;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: rgba(117, 224, 243, 0.75);
+  box-shadow: 0 0 0 2px rgba(99, 210, 229, 0.12);
+}
+
+.grid {
+  display: grid;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid.four,
+.timing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.technical-field {
+  max-width: 24rem;
+  opacity: 0.78;
+}
+
+.asset-trio {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 0.7rem;
+}
+
+.asset-card {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.preview-box {
+  position: relative;
+  display: grid;
+  min-height: 11rem;
+  place-items: center;
+  overflow: hidden;
+  border: 1px dashed rgba(130, 224, 241, 0.22);
+  border-radius: 0.75rem;
+  background:
+    radial-gradient(circle, rgba(55, 122, 137, 0.14), transparent 55%),
+    #07171e;
+}
+
+.preview-box--icon {
+  min-height: 8rem;
+}
+
+.preview-box img {
+  max-width: 92%;
+  max-height: 10rem;
+  object-fit: contain;
+}
+
+.preview-box img[data-empty="true"] {
+  display: none;
+}
+
+.preview-box span {
+  position: absolute;
+  right: 0.45rem;
+  bottom: 0.4rem;
+  padding: 0.2rem 0.38rem;
+  border-radius: 999px;
+  background: rgba(3, 13, 18, 0.74);
+  color: #78929a;
+  font-size: 0.58rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.socket-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.65rem;
+}
+
+.socket-surface {
+  position: relative;
+  min-height: 15rem;
+  overflow: hidden;
+  border: 1px dashed rgba(123, 226, 244, 0.33);
+  border-radius: 0.8rem;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(34, 105, 120, 0.22), transparent 45%),
+    #071820;
+  color: #7fa0aa;
+  cursor: crosshair;
+}
+
+
+.socket-surface > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.socket-surface > img[data-empty="true"] {
+  display: none;
+}
+
+.socket-surface > span:last-child {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 1rem);
+  padding: 0.28rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(3, 14, 19, 0.78);
+  font-size: 0.6rem;
+  font-weight: 900;
+}
+
+.socket-marker {
+  position: absolute;
+  z-index: 3;
+  width: 1.1rem;
+  height: 1.1rem;
+  transform: translate(-50%, -50%);
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: #53cfe4;
+  box-shadow: 0 0 0 0.28rem rgba(83, 207, 228, 0.2), 0 0 1rem rgba(83, 207, 228, 0.9);
+  pointer-events: none;
+}
+
+.chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.55rem 0 0.7rem;
+}
+
+.check-chip,
+.switch-line {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.check-chip {
+  padding: 0.45rem 0.55rem;
+  border: 1px solid rgba(125, 221, 239, 0.16);
+  border-radius: 0.6rem;
+  background: #0a2029;
+}
+
+.check-chip input,
+.switch-line input {
+  width: 1rem;
+  height: 1rem;
+  min-height: 0;
+  margin: 0;
+}
+
+.resistance-grid {
+  margin-top: 0.25rem;
+}
+
+details summary {
+  color: #a7c0c7;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.detail-grid {
+  margin: 0.8rem 0 0;
+}
+
+.loadout-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.note {
+  margin: 0.65rem 0 0;
+  color: #809aa3;
+  font-size: 0.68rem;
+  line-height: 1.4;
+}
+
+.option-block {
+  margin-top: 0.65rem;
+}
+
+.option-block > strong {
+  color: #9fb8bf;
+  font-size: 0.7rem;
+}
+
+.editor-footer {
+  position: fixed;
+  z-index: 20;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+  padding:
+    0.65rem
+    max(0.8rem, env(safe-area-inset-right))
+    max(0.65rem, env(safe-area-inset-bottom))
+    max(0.8rem, env(safe-area-inset-left));
+  border-top: 1px solid rgba(124, 224, 242, 0.18);
+  background: rgba(5, 14, 20, 0.94);
+  backdrop-filter: blur(16px);
+}
+
+.editor-footer strong {
+  font-size: 0.76rem;
+}
+
+.editor-footer p {
+  max-height: 3rem;
+  overflow: auto;
+  margin: 0.15rem 0 0;
+  color: #839da6;
+  font-size: 0.66rem;
+}
+
+.editor-footer p[data-tone="ok"] {
+  color: #86e5a9;
+}
+
+.editor-footer p[data-tone="error"] {
+  color: #ff9d9d;
+}
+
+.primary-action {
+  min-height: 2.7rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(131, 230, 247, 0.35);
+  border-radius: 0.65rem;
+  background: linear-gradient(145deg, #176176, #104655);
+  color: #ffffff;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+@media (max-width: 780px) {
+  .editor-header {
+    display: grid;
+  }
+
+  .header-state {
+    justify-self: start;
+  }
+
+  .asset-trio {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .asset-card:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .grid.four,
+  .timing-grid,
+  .loadout-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .editor-shell {
+    padding:
+      max(0.55rem, env(safe-area-inset-top))
+      max(0.55rem, env(safe-area-inset-right))
+      calc(var(--editor-footer-space) + env(safe-area-inset-bottom))
+      max(0.55rem, env(safe-area-inset-left));
+  }
+
+  .editor-tabs {
+    gap: 0.3rem;
+    padding: 0.35rem;
+  }
+
+  .editor-tabs button {
+    min-height: 3.2rem;
+    padding: 0.48rem;
+    text-align: center;
+  }
+
+  .editor-tabs small {
+    display: none;
+  }
+
+  .card {
+    padding: 0.72rem;
+  }
+
+  .grid.two,
+  .grid.three,
+  .grid.four,
+  .timing-grid,
+  .loadout-grid,
+  .asset-trio,
+  .socket-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .asset-card:last-child {
+    grid-column: auto;
+  }
+
+  .preview-box {
+    min-height: 9rem;
+  }
+
+  .socket-surface {
+    min-height: 12rem;
+  }
+
+  :root { --editor-footer-space: 11rem; }
+
+  .editor-footer {
+    position: fixed;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .primary-action {
+    width: 100%;
+  }
+}
+
+
+/* Capture Editor -> Combat Preview composition.
+   demo.css is loaded first; editor.css owns the page shell and view switching. */
+html,
+body {
+  width: 100%;
+  height: auto;
+  overflow: auto;
+}
+
+body[data-editor-view="preview"] {
+  height: 100svh;
+  overflow: hidden;
+}
+
+.editor-footer__actions {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.secondary-action {
+  min-height: 2.7rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(131, 230, 247, 0.22);
+  border-radius: 0.65rem;
+  background: rgba(10, 32, 41, 0.92);
+  color: #d7e8ed;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.primary-action:disabled,
+.secondary-action:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.capture-preview-shell[hidden] {
+  display: none;
+}
+
+.capture-preview-shell [data-preview-actor-ui][hidden] {
+  display: none !important;
+}
+
+.skill-save-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+
+
+.skill-activation-config {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.7rem;
+}
+
+.skill-activation-config[hidden] {
+  display: none;
+}
+
+.skill-activation-conditions {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.skill-activation-condition {
+  display: grid;
+  grid-template-columns:
+    minmax(150px, 1.4fr)
+    minmax(105px, 0.8fr)
+    minmax(78px, auto)
+    auto;
+  gap: 0.5rem;
+  align-items: end;
+  padding: 0.65rem;
+  border: 1px solid rgba(131, 230, 247, 0.16);
+  border-radius: 0.7rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.skill-activation-condition__unit {
+  min-height: 2.45rem;
+  display: flex;
+  align-items: center;
+  color: #9fb8bf;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.activation-condition-help {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.activation-condition-help span {
+  padding: 0.25rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(131, 230, 247, 0.08);
+  color: #9fb8bf;
+  font-size: 0.66rem;
+}
+
+
+.skill-effects-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 0.7rem;
+}
+
+.skill-effect-row {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(131, 230, 247, 0.16);
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.skill-effect-row__header {
+  display: grid;
+  grid-template-columns:
+    minmax(150px, 1.2fr)
+    minmax(150px, 1fr)
+    auto;
+  gap: 0.55rem;
+  align-items: end;
+}
+
+.skill-effect-row__config,
+.skill-status-config {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.skill-status-config {
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(131, 230, 247, 0.12);
+}
+
+.skill-status-config__grid,
+.skill-status-config__specific {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(130px, 1fr));
+  gap: 0.55rem;
+}
+
+.skill-effect-row [hidden],
+.skill-status-config [hidden] {
+  display: none !important;
+}
+
+.tactical-effect-help {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+
+.tactical-effect-help span {
+  padding: 0.25rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(131, 230, 247, 0.08);
+  color: #9fb8bf;
+  font-size: 0.66rem;
+}
+
+.skill-fx-stage-heading {
+  grid-column: 1 / -1;
+  margin: 1.05rem 0 0.2rem;
+  padding: 0.55rem 0.7rem;
+  border-left: 3px solid #8adfeb;
+  border-radius: 0.3rem 0.6rem 0.6rem 0.3rem;
+  background: rgba(81, 174, 197, 0.13);
+  color: #e6fbff;
+  font-size: clamp(0.84rem, 2.7vw, 1rem);
+  letter-spacing: 0.07em;
+}
+[data-skill-fx-expert] {
+  margin: 0.85rem;
+  border: 1px solid rgba(125, 229, 247, 0.2);
+  border-radius: 0.65rem;
+  background: rgba(2, 13, 23, 0.42);
+}
+[data-skill-fx-expert] > summary {
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  cursor: pointer;
+  color: #a9cbd3;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+[data-skill-fx-expert] > summary:focus-visible { outline: 2px solid #ade7ff; outline-offset: 2px; }
+[data-skill-fx-advanced] {
+  margin-top: 0.85rem;
+  border: 1px solid rgba(125, 229, 247, 0.34);
+  border-radius: 0.85rem;
+  background:
+    linear-gradient(145deg, rgba(18, 64, 77, 0.34), rgba(7, 24, 31, 0.86));
+  box-shadow: inset 0 0 0 1px rgba(124, 229, 247, 0.05);
+}
+
+[data-skill-fx-advanced] > summary {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  color: #effcff;
+  font-size: 0.82rem;
+  font-weight: 1000;
+  cursor: pointer;
+  list-style-position: inside;
+}
+
+[data-skill-fx-advanced] > summary small {
+  color: #8fdbea;
+  font-size: 0.62rem;
+  font-weight: 850;
+}
+
+[data-skill-fx-advanced][open] > summary {
+  border-bottom: 1px solid rgba(125, 229, 247, 0.2);
+}
+
+[data-skill-fx-advanced] > :not(summary) {
+  margin-right: 0.8rem;
+  margin-left: 0.8rem;
+}
+
+body[data-preview-landscape-active="true"] {
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.capture-preview-shell {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  overflow: hidden;
+  background: #071016;
+}
+
+.capture-preview-shell:fullscreen,
+.capture-preview-shell[data-landscape-required="true"] {
+  width: 100vw;
+  height: 100dvh;
+}
+
+.capture-preview-rotate-gate {
+  display: none;
+  position: absolute;
+  z-index: 110;
+  inset: 0;
+  place-content: center;
+  gap: 0.45rem;
+  padding: 2rem;
+  background: rgba(4, 13, 18, 0.97);
+  color: #f0fbfd;
+  text-align: center;
+}
+
+.capture-preview-rotate-gate strong {
+  font-size: clamp(1.35rem, 6vw, 2.25rem);
+}
+
+.capture-preview-rotate-gate span {
+  color: #9fc0c8;
+  font-size: 0.9rem;
+}
+
+@media (orientation: portrait) {
+  .capture-preview-shell[data-landscape-required="true"]
+    .capture-preview-rotate-gate {
+    display: grid;
+  }
+}
+
+.capture-preview-host {
+  width: 100%;
+  height: 100%;
+}
+
+.capture-preview-host > .game {
+  height: 100%;
+  padding-top:
+    max(3.4rem, calc(env(safe-area-inset-top) + 3rem));
+}
+
+.capture-preview-back {
+  position: absolute;
+  z-index: 130;
+  top: max(0.55rem, env(safe-area-inset-top));
+  left: max(0.55rem, env(safe-area-inset-left));
+  min-height: 2.45rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid rgba(139, 232, 248, 0.32);
+  border-radius: 999px;
+  background: rgba(5, 17, 23, 0.9);
+  color: #eef9fc;
+  font-weight: 900;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.capture-preview-shell .arena {
+  height: 100%;
+  min-height: 0;
+}
+
+/* Landscape preview V2: keep the combat scene on its authored 16:9 canvas.
+   The fullscreen shell may be wider than 16:9; the scene itself must not stretch. */
+.capture-preview-shell[data-landscape-required="true"] .capture-preview-host {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  padding:
+    max(0.18rem, env(safe-area-inset-top))
+    max(0.18rem, env(safe-area-inset-right))
+    max(0.18rem, env(safe-area-inset-bottom))
+    max(0.18rem, env(safe-area-inset-left));
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .capture-preview-host > .game {
+  display: grid;
+  width: min(100%, 177.7778dvh);
+  height: auto;
+  max-height: 100dvh;
+  aspect-ratio: 16 / 9;
+  place-items: stretch;
+  padding: 0;
+}
+
+.capture-preview-shell[data-landscape-required="true"] .arena {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.75rem;
+}
+
+/* Keep perceived creature size tied to the short edge in landscape.
+   Data-owned displayScale remains untouched. */
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--player {
+  width: min(29dvh, 15.5rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--ally {
+  width: min(27dvh, 14.5rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--opponent {
+  width: min(31dvh, 16.5rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--opponent-b {
+  width: min(30dvh, 16rem);
+}
+
+/* Compact landscape HUD: preserve hierarchy without covering the combat. */
+.capture-preview-shell[data-landscape-required="true"]
+  .squad-card--local-full {
+  width: min(11.5rem, 28%);
+  min-height: 3.8rem;
+  padding: 0.34rem 0.4rem;
+  gap: 0.2rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .squad-card--local-full strong {
+  font-size: clamp(0.68rem, 2.3dvh, 0.88rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .squad-card--local-full .squad-card__hp span,
+.capture-preview-shell[data-landscape-required="true"]
+  .squad-card--local-full small {
+  font-size: clamp(0.42rem, 1.55dvh, 0.56rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .squad-card--opponent,
+.capture-preview-shell[data-landscape-required="true"]
+  .squad-card--opponent-b {
+  width: min(10.5rem, 25%);
+  min-height: 3.35rem;
+  padding: 0.3rem 0.36rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .coop-command-stack {
+  width: min(15rem, 35%);
+  gap: 0.2rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .coop-controls {
+  gap: 0.16rem;
+  padding: 0.2rem;
+  border-radius: 0.65rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .skill-bar__grid {
+  gap: 0.1rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .action-option--skill {
+  min-height: 2.9rem;
+  padding: 0.1rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .action-option--skill strong {
+  font-size: clamp(0.38rem, 1.4dvh, 0.48rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .action-option__icon {
+  width: clamp(1.45rem, 5.5dvh, 2rem);
+  height: clamp(1.45rem, 5.5dvh, 2rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .capture-preview-back {
+  top: max(0.28rem, env(safe-area-inset-top));
+  left: max(0.28rem, env(safe-area-inset-left));
+  min-height: 2rem;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.68rem;
+}
+
+@media (max-width: 520px) {
+  .editor-footer__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .preview-landscape-toggle {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .preview-landscape-toggle span {
+    white-space: normal;
+  }
+
+  .skill-save-actions {
+    grid-template-columns: 1fr;
+  }
+
+
+  .skill-activation-condition {
+    grid-template-columns: 1fr;
+  }
+
+  .skill-effect-row__header,
+  .skill-status-config__grid,
+  .skill-status-config__specific {
+    grid-template-columns: 1fr;
+  }
+
+  .skill-activation-condition__unit {
+    min-height: auto;
+  }
+
+  .secondary-action,
+  .primary-action {
+    width: 100%;
+  }
+
+  .capture-preview-host > .game {
+    padding:
+      max(3.25rem, calc(env(safe-area-inset-top) + 2.9rem))
+      max(0.18rem, env(safe-area-inset-right))
+      max(0.18rem, env(safe-area-inset-bottom))
+      max(0.18rem, env(safe-area-inset-left));
+  }
+
+  .capture-preview-shell[data-landscape-required="true"]
+    .capture-preview-host > .game {
+    padding: 0;
+  }
+}
+
+
+.stat-values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 10px;
+}
+
+.stat-value-card,
+.stat-definition-row,
+.progression-row {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.stat-value-card__title {
+  font-weight: 800;
+}
+
+.stat-value-card small {
+  opacity: 0.75;
+  line-height: 1.25;
+}
+
+.stat-registry-list,
+.progression-schedule {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.stat-definition-row {
+  grid-template-columns: minmax(90px, 0.8fr) repeat(6, minmax(115px, 1fr)) auto;
+  align-items: end;
+}
+
+.stat-definition-field {
+  display: grid;
+  gap: 4px;
+}
+
+.stat-definition-field small {
+  opacity: 0.72;
+  line-height: 1.15;
+}
+
+.progression-row {
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+}
+
+.stat-custom-builder {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.small-action {
+  min-height: 40px;
+}
+
+[data-loadout-slot][data-locked="true"],
+.loadout-grid label[data-locked="true"] {
+  opacity: 0.48;
+}
+
+@media (max-width: 760px) {
+  .stat-definition-row {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-definition-row > strong,
+  .stat-definition-row > .small-action {
+    grid-column: 1 / -1;
+  }
+
+  .progression-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .progression-row > .small-action {
+    grid-column: 1 / -1;
+  }
+}
+
+.projectile-clash-config {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.projectile-clash-config h3 {
+  margin: 0;
+}
+
+
+
+html {
+  scroll-padding-bottom: calc(var(--editor-footer-space) + env(safe-area-inset-bottom));
+}
+
+.editor-footer__hint {
+  display: block;
+  margin-top: 0.2rem;
+  color: #9fb8bf;
+  font-size: 0.68rem;
+}
+
+.test-team {
+  min-width: 0;
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid rgba(125, 221, 239, 0.18);
+  border-radius: 0.65rem;
+}
+
+.test-team legend { color: #bfeef5; font-size: 0.82rem; font-weight: 800; }
+.test-team__current { display: grid; gap: 0.4rem; margin: 0.6rem 0; font-size: 0.8rem; }
+.test-team [hidden] { display: none; }
+
+.combat-test-team-menu { position: relative; margin-top: .4rem; }
+.combat-test-team-menu summary { display: flex; align-items: center; gap: .4rem; min-height: 2.5rem; padding: .45rem .55rem; border-radius: .6rem; background: #0b2934; color: #d7e8ed; cursor: pointer; list-style: none; font-size: .72rem; }
+.combat-test-team-menu summary::-webkit-details-marker { display: none; }
+.combat-test-team-menu summary::before { content: "▸"; flex: 0 0 auto; color: #94c8d6; }
+.combat-test-team-menu[open] summary::before { content: "▾"; }
+.combat-test-team-menu summary:focus-visible { outline: 2px solid #9ae1f4; outline-offset: 2px; }
+[data-combat-team-summary-label] { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+[data-combat-recall-countdown] { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; min-width: 2.6rem; padding: .19rem .32rem; border: 1px solid rgba(234,192,116,.48); border-radius: 999px; background: rgba(87,58,22,.40); color: #f3dfb7; font-size: .63rem; font-weight: 750; line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+[data-combat-recall-countdown][hidden] { display: none; }
+.capture-preview-shell[data-landscape-required="true"] .combat-test-team-menu summary { min-height: 2rem; padding: .22rem .4rem; font-size: clamp(.52rem, 1.7dvh, .66rem); }
+.capture-preview-shell[data-landscape-required="true"] [data-combat-recall-countdown] { padding: .15rem .28rem; min-width: 2.35rem; font-size: clamp(.5rem, 1.5dvh, .6rem); }
+.combat-test-team-menu__body { position: absolute; z-index: 30; bottom: calc(100% + .4rem); right: 0; width: min(28rem, 88vw); max-height: min(24rem, 66svh); overflow: auto; padding: .75rem; border: 1px solid #42616d; border-radius: .7rem; background: #081820; box-shadow: 0 8px 32px #0009; }
+[data-combat-team-rosters] section { display: grid; gap: .3rem; margin-bottom: .7rem; }
+[data-combat-team-rosters] strong { font-size: .8rem; color: #a3dbe5; }
+[data-combat-team-rosters] p { margin: 0; padding: .45rem; font-size: .75rem; }
+[data-roster-member-id], .combat-test-team-actions button { min-height: 2.75rem; padding: .5rem; border: 1px solid #42616d; border-radius: .5rem; background: #12303c; color: #d7e8ed; font-size: .75rem; }
+[data-roster-member-id][aria-pressed="true"] { border-color: #7dd9ed; background: #1b4858; }
+/* Reserve portrait V1 — compact projection of the canonical creature icon. */
+.combat-reserve-member { display:flex; align-items:center; gap:.45rem; text-align:left; }
+.combat-reserve-member__portrait {
+  width:clamp(1.9rem, 5.2dvh, 2.3rem); height:clamp(1.9rem, 5.2dvh, 2.3rem);
+  flex:0 0 auto; border-radius:.38rem; background:#091b26; object-fit:contain;
+}
+.combat-reserve-member__label { flex:1 1 auto; min-width:0; overflow-wrap:anywhere; }
+
+.combat-test-team-actions { display: grid; grid-template-columns: 1fr; gap: .4rem; }
+
+
+/* Capture Game Options / Dodge V1 — layout only.
+   Gameplay availability remains owned by Combat Runtime. */
+.game-option-group {
+  margin-top: 0.9rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(125, 221, 239, 0.18);
+  border-radius: 0.65rem;
+}
+
+.game-option-group legend {
+  padding: 0 0.35rem;
+  font-weight: 800;
+}
+
+.combat-primary-actions {
+  display: block;
+  width: 100%;
+}
+
+.combat-dodge-action {
+  min-width: 3.25rem;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.08rem;
+  padding: 0.2rem 0.28rem;
+  border-radius: 0.55rem;
+}
+
+.combat-dodge-action--arena {
+  position: absolute;
+  z-index: 16;
+  right: calc(min(20rem, 42vw) + 0.75rem);
+  bottom: 0.45rem;
+}
+
+/* One reaction button with the SAME skill dial/artwork from demo.css.
+   The native Combat Session drives --cooldown-progress, not CSS timers. */
+.combat-dodge-action__icon-shell {
+  width: clamp(1.65rem, 5dvh, 2.35rem);
+  height: clamp(1.65rem, 5dvh, 2.35rem);
+  flex: 0 0 auto;
+}
+.combat-dodge-action__icon-shell[hidden] { display: none; }
+.combat-dodge-action__icon { object-fit: contain; pointer-events: none; }
+.combat-dodge-action__icon[hidden] { display: none; }
+.combat-dodge-action[data-cooldown-active="true"] .action-option__icon--base {
+  filter: grayscale(1) saturate(0) brightness(0.48)
+    drop-shadow(0 0.18rem 0.24rem rgba(0, 0, 0, 0.42));
+}
+.combat-dodge-action[data-cooldown-active="true"] .action-option__cooldown-dial,
+.combat-dodge-action[data-cooldown-active="true"] .action-option__cooldown-needle {
+  opacity: 1;
+}
+.combat-dodge-action[data-cooldown-active="true"]:disabled {
+  opacity: 1;
+  filter: none;
+}
+.combat-dodge-action[data-cooldown-exhausted="true"] {
+  border-color: rgba(145, 193, 205, 0.28);
+}
+.combat-dodge-action__charges {
+  font-weight: 800;
+}
+
+.combat-dodge-action small {
+  white-space: nowrap;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .combat-dodge-action--arena {
+  right: calc(min(15rem, 35%) + 0.65rem);
+  bottom: 0.8rem;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .combat-dodge-action {
+  min-width: clamp(3.2rem, 7.8vw, 4.5rem);
+  min-height: clamp(2.6rem, 8.5dvh, 3.4rem);
+  padding: 0.28rem 0.24rem;
+  font-size: clamp(0.46rem, 1.45dvh, 0.6rem);
+}
+
+/* Capture landscape opponent slot placement V1.
+   Shared preview arena is also used for 1v1; these are the EXACT
+   original 1v1 landscape values (from production before the 2v2 polish).
+   Do not move the single enemy when changing 2v2 composition. */
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 {
+  --arena-coop-far-primary-y: 33%;
+  --arena-coop-far-secondary-y: 34%;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--opponent {
+  left: 77%;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2 .fighter--opponent-b {
+  left: 34%;
+}
+
+/* Capture landscape 2v2 depth V2: only if the real BattleFormat exposes
+   TWO active allies/opponents. The 1v1 preview shares arena--coop-2v2,
+   so that class alone MUST NEVER enable this perspective.
+   Visible slot geometry remains the native source for hit/FX anchors. */
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] {
+  --arena-coop-far-primary-y: 30%;
+  --arena-coop-far-secondary-y: 28%;
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .fighter--opponent {
+  left: 68%;
+  width: min(24dvh, 13rem);
+}
+
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .fighter--opponent-b {
+  left: 46%;
+  width: min(23dvh, 12.5rem);
+}
+
+
+
+/* Rayon : quatre stages cohérents, mobiles et uniquement visibles si Style = Rayon. */
+[data-skill-beam-stage-editor] [data-beam-stage][hidden] {
+  display: none !important;
+}
+[data-skill-beam-stage-editor] [data-beam-stage] {
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid rgba(122, 222, 241, 0.25);
+  border-radius: 0.75rem;
+}
+[data-skill-beam-stage-editor] [data-beam-stage] legend {
+  color: #bcebf9;
+  font-weight: 800;
+  padding: 0 0.3rem;
+}
+[data-skill-beam-stage-editor] [data-beam-stage-fields] {
+  margin-top: 0.55rem;
+}
+[data-skill-beam-stage-editor] [data-beam-stage-fields] label {
+  display: block;
+}
+
+
+/* Informations tactiles : panneaux repliés, accessibles au clavier et sur mobile. */
+.editor-context-help {
+  margin: .55rem 0 .8rem;
+  border: 1px solid rgba(131,230,247,.25);
+  border-radius: .65rem;
+  padding: .35rem .65rem;
+  background: rgba(5,25,36,.34);
+}
+.editor-context-help > summary {
+  cursor: pointer;
+  user-select: none;
+  color: #a9e8f6;
+  font-weight: 700;
+  font-size: .88rem;
+  min-height: 2.2rem;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  list-style: none;
+}
+.editor-context-help > summary::-webkit-details-marker {display:none;}
+.editor-context-help > summary:focus-visible {outline:2px solid #b8f1fa;outline-offset:2px;}
+.editor-context-help[open] > summary {border-bottom:1px solid rgba(131,230,247,.18);margin-bottom:.4rem;}
+.editor-context-help .note {margin:.45rem 0;line-height:1.55;overflow-wrap:anywhere;}
+@media(max-width:520px) {
+  .editor-context-help {padding:.35rem .55rem;}
+  .editor-context-help > summary {min-height:2.75rem;}
+}
+
+/* Native expandable enemy bench HUD, accessible on touch and keyboard. */
+.capture-preview-shell .arena--coop-2v2 > .combat-test-enemy-reserves {
+  position:absolute; z-index:24; top:0.45rem;
+  right:calc(min(12.5rem, 30vw) + 0.8rem);
+  width:clamp(6rem, 17vw, 9rem); max-width:26%; margin:0;
+}
+.combat-test-enemy-reserves > summary {
+  min-height:2rem; display:flex; align-items:center; padding:.25rem .5rem;
+  border:1px solid rgba(120,202,235,.38); border-radius:.6rem;
+  background:#112a38; color:#def4ff; font-size:.72rem; font-weight:800;
+  cursor:pointer; list-style:none; touch-action:manipulation;
+}
+.combat-test-enemy-reserves > summary::-webkit-details-marker { display:none; }
+.combat-test-enemy-reserves > summary::before { content:"▸"; margin-right:.35rem; }
+.combat-test-enemy-reserves[open] > summary::before { content:"▾"; }
+.combat-test-enemy-reserves > summary:focus-visible { outline:2px solid #ade7ff; }
+.combat-test-enemy-reserves__body {
+  position:absolute; z-index:40; top:calc(100% + .35rem); bottom:auto; left:0; right:auto;
+  width:min(19rem,65vw); max-height:min(17rem,60svh); overflow:auto;
+  padding:.55rem; border:1px solid #4d7184; border-radius:.7rem;
+  background:rgba(5,21,30,.98); box-shadow:0 .6rem 1.4rem #0009;
+}
+.combat-test-enemy-reserves__hint { font-size:.68rem; margin:0 0 .4rem; color:#b5d3e0; }
+.combat-enemy-reserves__team { display:grid; gap:.3rem; margin-bottom:.45rem; }
+.combat-enemy-reserves__team > strong { font-size:.71rem; color:#a9d7e9; }
+.combat-enemy-reserves__member {
+  display:grid; grid-template-columns:clamp(1.9rem,5.2dvh,2.3rem) minmax(0,1fr) auto; align-items:center;
+  gap:.17rem .45rem; width:100%; min-height:2.65rem; padding:.33rem .45rem;
+  border:1px solid #496675; border-radius:.48rem; color:#edf8ff;
+  background:#15313c; text-align:left; touch-action:manipulation;
+}
+.combat-enemy-reserves__member[hidden] { display:none; }
+.combat-enemy-reserves__member[data-skill-reserve-candidate="true"] {
+  border-color:#6ff1c2; background:#16463e; cursor:pointer; box-shadow:0 0 .45rem #38d99e48;
+}
+.combat-enemy-reserves__member:disabled { opacity:.86; }
+.combat-enemy-reserves__member[data-defeated="true"] { opacity:.5; }
+.combat-enemy-reserves__portrait {
+  grid-column:1; grid-row:1 / span 2; width:clamp(1.9rem,5.2dvh,2.3rem);
+  height:clamp(1.9rem,5.2dvh,2.3rem); border-radius:.38rem;
+  background:#0a1a24; object-fit:contain;
+}
+.combat-enemy-reserves__member[data-has-portrait="false"] { grid-template-columns:minmax(0,1fr) auto; }
+.combat-enemy-reserves__name { grid-column:2; font-size:.73rem; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.combat-enemy-reserves__member[data-has-portrait="false"] .combat-enemy-reserves__name { grid-column:1; }
+.combat-enemy-reserves__value { font-size:.63rem; font-weight:700; white-space:nowrap; }
+.combat-enemy-reserves__hp { grid-column:2/-1; width:100%; height:.43rem; accent-color:#69df8e; }
+.combat-enemy-reserves__member[data-has-portrait="false"] .combat-enemy-reserves__hp { grid-column:1/-1; }
+.combat-enemy-reserves__member[data-has-portrait="false"] .combat-enemy-reserves__value { grid-column:2; }
+.capture-preview-shell[data-landscape-required="true"] .combat-test-enemy-reserves > summary {
+  min-height:1.8rem; font-size:clamp(.53rem,1.7dvh,.7rem);
+}
+
+
+/* Compact adjacency to enemy HP in phone landscape; drop-down remains on screen. */
+.capture-preview-shell[data-landscape-required="true"] .arena--coop-2v2 > .combat-test-enemy-reserves {
+  right:calc(min(10.5rem, 25%) + 0.8rem);
+  width:clamp(5.8rem, 18%, 9rem);
+  max-width:25%;
+}
+.capture-preview-shell[data-landscape-required="true"] .combat-test-enemy-reserves__body {
+  left:auto;
+  right:0;
+  width:min(20rem, 70vw);
+  max-height:min(16rem, 62svh);
+}
+
+
+/* Rayon : le préréglage et ses boutons restent visibles quel que soit le Style.
+   Seuls les champs de phases sont masqués jusqu'à Style = Rayon (attribut hidden).
+   Ne pas masquer le conteneur : cela cachait aussi « Appliquer le modèle ». */
+.beam-visual-editor {
+  margin: 0.9rem 0;
+  padding: 0.8rem;
+  border: 1px solid rgba(128, 221, 242, 0.33);
+  border-radius: 0.8rem;
+  background: rgba(20, 60, 74, 0.28);
+}
+.beam-visual-editor__heading h3 { margin: 0 0 0.2rem; color: #ddf8fd; font-size: 1rem; }
+.beam-visual-editor__heading p { margin: 0 0 0.65rem; color: #a5cdd7; font-size: 0.78rem; line-height: 1.45; }
+.beam-visual-editor [data-beam-stage] { min-width: 0; }
+.beam-visual-editor [data-beam-stage-fields] label { min-width: 0; }
+
+/* Mouvement : options compactes et cliquables, sans hériter du label grid et input width:100%. */
+.skill-movement-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 0.45rem;
+  padding: 0.65rem;
+  margin: 0.7rem 0;
+  border: 1px solid rgba(131, 230, 247, 0.24);
+  border-radius: 0.65rem;
+}
+.skill-movement-choices > legend { padding: 0 0.28rem; font-size: 0.86rem; font-weight: 800; color: #d4edf4; }
+.skill-movement-choices > .switch-line,
+.skill-movement-choices > .note { grid-column: 1 / -1; }
+.skill-movement-choices > .switch-line { min-height: 2.5rem; }
+.skill-movement-choices > label.check {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.65rem;
+  margin: 0;
+  border: 1px solid rgba(131, 230, 247, 0.16);
+  border-radius: 0.55rem;
+  background: rgba(16, 44, 56, 0.64);
+  cursor: pointer;
+}
+.skill-movement-choices > label.check input[type="checkbox"] {
+  width: 1.13rem;
+  height: 1.13rem;
+  min-width: 1.13rem;
+  min-height: 0;
+  flex: 0 0 1.13rem;
+  padding: 0;
+  margin: 0;
+  accent-color: #b2a2eb;
+}
+.skill-movement-choices > label.check:focus-within { border-color: #b6e5f5; }
+.skill-movement-choices > .note { margin: 0.25rem 0 0; line-height: 1.4; }
+@media (max-width: 600px) {
+  .skill-movement-choices { grid-template-columns: 1fr; padding: 0.6rem; }
+  .beam-visual-editor { padding: 0.6rem; }
+}
+
+
+/* Combat 2v2 readable mobile HUD and enemy bench V1.
+   Active count comes from BattleFormat: NEVER change 1v1 layouts here.
+   Keep opposite cards separated so two fighters can be identified at a glance. */
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--opponent {
+  top: .45rem;
+  right: .45rem;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--opponent-b {
+  top: .45rem;
+  left: clamp(4.5rem, 8%, 7rem);
+  right: auto;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] > .combat-test-enemy-reserves {
+  top: clamp(2.25rem, 7dvh, 3rem);
+  left: 33%;
+  right: auto;
+  width: clamp(6.6rem, 17%, 9rem);
+  max-width: 22%;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] > .combat-test-enemy-reserves .combat-test-enemy-reserves__body {
+  left: 0;
+  right: auto;
+}
+.combat-test-enemy-reserves__empty {
+  margin: .25rem 0;
+  color: #b8ced9;
+  font-size: .7rem;
+  line-height: 1.35;
+}
+.combat-test-enemy-reserves__empty[hidden] { display: none; }
+
+/* Restore a visible second ally: its actual render slot moves toward arena
+   center, while the command dock loses the huge 72%-wide footprint.
+   The renderer/collision/FX all read these same real DOM positions. */
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .fighter--ally {
+  left: 52%;
+}
+
+/* Shared compact TWO-active HUD for IA + solo-dual; 1v1 is excluded
+   through the real BattleFormat active count. */
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .coop-command-stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: end;
+  width: min(19rem, 34%);
+  gap: .18rem;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--command-ally {
+  position: absolute;
+  right: calc(100% + 8.5rem);
+  bottom: 0;
+  left: auto;
+  width: clamp(8rem, 14vw, 10rem);
+  min-height: 3.35rem;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  align-items: center;
+  gap: .22rem;
+  padding: .24rem .3rem;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--command-ally .squad-card__creature-icon {
+  width: 1.65rem;
+  height: 1.65rem;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--command-ally .squad-card__body {
+  gap: .1rem;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--command-ally strong {
+  font-size: clamp(.57rem, 1.8dvh, .73rem);
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .squad-card--local-full {
+  width: min(11rem, 23%);
+  min-height: 3.6rem;
+  padding: .27rem .33rem;
+  gap: .16rem;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .coop-controls {
+  min-width: 0;
+  gap: .12rem;
+  padding: .22rem .28rem;
+  border-radius: .55rem;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .hud__energy-orbs {
+  gap: .1rem;
+  padding: .05rem 0;
+  min-height: 1rem;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .action-option--skill {
+  aspect-ratio: auto;
+  min-height: clamp(2.45rem, 9.2dvh, 3.05rem);
+  height: clamp(2.45rem, 9.2dvh, 3.05rem);
+  padding: .1rem;
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .action-option__icon {
+  width: clamp(1.35rem, 4.9dvh, 1.8rem);
+  height: clamp(1.35rem, 4.9dvh, 1.8rem);
+}
+.capture-preview-shell[data-landscape-required="true"]
+  .arena--coop-2v2[data-combat-active-count="2"] .combat-dodge-action--arena {
+  right: calc(min(19rem, 34%) + .58rem);
+  bottom: .6rem;
+}
+@media (max-height: 440px) and (orientation: landscape) {
+  .capture-preview-shell[data-landscape-required="true"]
+    .arena--coop-2v2[data-combat-active-count="2"] .coop-command-stack {
+    width: min(18rem, 35%);
+  }
+  .capture-preview-shell[data-landscape-required="true"]
+    .arena--coop-2v2[data-combat-active-count="2"] .squad-card--command-ally {
+    right: calc(100% + 6rem);
+    width: clamp(7.3rem, 13vw, 9rem);
+  }
+  .capture-preview-shell[data-landscape-required="true"]
+    .arena--coop-2v2[data-combat-active-count="2"] .combat-dodge-action--arena {
+    right: calc(min(18rem, 35%) + .5rem);
+  }
+}
+
+/* Solo 2v2 controls only: render focus for the local human actor, never the target. */
+[data-local-control-mode="solo-dual"] [data-controlled-actor="true"] {
+  outline:2px solid #83e5dd;
+  outline-offset:2px;
+  box-shadow:0 0 .5rem rgba(80,214,201,.38);
+}
+.coop-controls__controlled-name {
+  padding:.15rem .45rem;
+  margin-bottom:.25rem;
+  color:#b4f6e7;
+  border-left:3px solid #7be1c9;
+  font-size:clamp(.62rem,1.7dvh,.81rem);
+  font-weight:750;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.coop-controls__controlled-name[hidden] { display:none; }
+
+/* Shared marker authoring uses the current editor layout, not a competing HUD. */
+[data-marker-authoring] .grid.two > label,
+[data-skill-effect-config-kind="apply_marker"] > label,
+[data-skill-effect-config-kind="consume_marker"] > label {
+  min-width:0;
+}
+[data-marker-authoring] input,
+[data-marker-authoring] select,
+[data-skill-effect-config-kind="apply_marker"] input,
+[data-skill-effect-config-kind="consume_marker"] input,
+[data-skill-effect-config-kind="apply_marker"] select,
+[data-skill-effect-config-kind="consume_marker"] select {
+  max-width:100%;
+}
+[data-marker-authoring] [data-marker-threshold-fields] {
+  padding:.7rem;
+  margin:.6rem 0;
+  border:1px solid rgba(117,210,226,.2);
+  border-radius:.65rem;
+}
+[data-marker-authoring] [data-marker-library-state][data-tone="error"] {
+  color:#ffb3a3;
+}
+[data-marker-consume-result] {
+  padding:.7rem;
+  border:1px solid rgba(117,210,226,.22);
+  border-radius:.65rem;
+  margin:.5rem 0;
+  min-width:0;
+}
+[data-marker-consume-result] > button {
+  width:fit-content;
+}
+[data-marker-authoring] [hidden],
+[data-marker-consume-result] [hidden],
+[data-skill-effect-config-kind="apply_marker"][hidden],
+[data-skill-effect-config-kind="consume_marker"][hidden] {display:none!important;}
+@media(max-width:620px) {
+  [data-marker-authoring] .skill-save-actions {flex-wrap:wrap;}
+  [data-marker-authoring] .skill-save-actions > * {max-width:100%;}
+  [data-marker-consume-result] {grid-template-columns: minmax(0,1fr);}
+}
+
+/* Parcours FX : choix canonique de l'icône et de la forme avant les presets. */
+.fx-first-choices {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0.85rem 0 1rem;
+}
+.fx-first-choices__step {
+  min-width: 0;
+  padding: 0.8rem;
+  border: 1px solid rgba(138, 223, 235, 0.33);
+  border-radius: 0.8rem;
+  background: rgba(81, 174, 197, 0.08);
+}
+.fx-first-choices__step h3 {
+  margin: 0 0 0.55rem;
+  font-size: clamp(0.9rem, 2.7vw, 1rem);
+  color: #e6fbff;
+}
+.fx-first-choices__step .note { margin-bottom: 0; }
+
+/* Appearance authoring: readable, native disclosure controls (mobile-friendly). */
+.creature-appearance-group { border: 1px solid rgba(131, 230, 247, .28); border-radius: .9rem; margin: .75rem 0; background: rgba(9, 34, 44, .46); overflow: clip; }
+.creature-appearance-group > summary { display:flex; flex-wrap:wrap; align-items:center; gap:.45rem .8rem; min-height:3.35rem; padding:.75rem .9rem; cursor:pointer; list-style:none; background: rgba(22, 64, 76, .72); }
+.creature-appearance-group > summary::-webkit-details-marker { display:none; }
+.creature-appearance-group > summary::before { content:"▸"; color:#b5edfa; font-size:1.1rem; font-weight:800; }
+.creature-appearance-group[open] > summary::before { content:"▾"; }
+.creature-appearance-group > summary strong { font-size:.92rem; color:#edfcff; font-weight:900; letter-spacing:.015em; }
+.creature-appearance-group > summary small { color:#a8d4e0; font-size:.72rem; margin-left:auto; }
+.creature-appearance-group > summary:focus-visible { outline:3px solid #a8e6f5; outline-offset:-3px; }
+.creature-appearance-group[open] > summary { border-bottom:1px solid rgba(131,230,247,.23); }
+.creature-appearance-group__body { padding:.8rem; min-width:0; }
+.creature-appearance-group__body > fieldset { margin:.7rem 0; }
+@media(max-width:620px) { .creature-appearance-group > summary { align-items:flex-start; } .creature-appearance-group > summary small { width:100%; margin:0 0 0 1.3rem; } .creature-appearance-group__body { padding:.6rem; } }
+
+/* Separate movement and attack visually without changing existing chapters. */
+.creature-animation-chapter { margin: .6rem 0 1.1rem; padding: .9rem; border: 2px solid rgba(103,210,232,.53); border-radius: .82rem; background: rgba(25,85,106,.18); }
+.creature-animation-chapter--attack { border-color: rgba(236,166,91,.64); background: rgba(107,62,29,.16); }
+.creature-animation-title { font-size: clamp(1.1rem,2.3vw,1.35rem); margin: 0 0 .8rem; letter-spacing: .04em; font-weight: 950; }
+.creature-animation-title small { display:block; font-size: .8rem; font-weight: 600; opacity: .8; letter-spacing:0; }
+@media(max-width:700px) {
+  .creature-appearance-group__body label, .creature-appearance-group__body .note,
+  .creature-appearance-group__body select, .creature-appearance-group__body input { font-size: max(.92rem,14px); }
+  .creature-appearance-group>summary { font-size: 1.03rem; }
+  .creature-animation-chapter { padding: .65rem; }
+}
+
+.creature-animation-chapter label[hidden] { display: none !important; }

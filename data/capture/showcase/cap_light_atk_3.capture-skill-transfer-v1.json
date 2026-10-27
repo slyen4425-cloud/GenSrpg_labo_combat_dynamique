@@ -1,0 +1,206 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "cap_light_atk_3",
+    "description": "Attaque Lumière de puissance 5. Disponible au niveau 10.",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "cap_light_atk_3",
+      "name": "Charge solaire",
+      "category": "offensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "light",
+      "approachMode": "ground",
+      "energyCost": 3,
+      "preparationMs": 800,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 45000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "ally",
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-1",
+            "kind": "outgoing_damage_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 30000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "modifierPct": 50
+          }
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "all_ally_reserves",
+          "status": {
+            "id": "status-3",
+            "kind": "outgoing_damage_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 30000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "modifierPct": 50
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:cap_light_atk_3",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "cap_light_atk_3",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-healing-wave-01"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-electric-yellow-beam-cast-01",
+          "displayScale": 2.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.3,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:conflux-43060f16",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {
+        "status-1": {
+          "mode": "tint",
+          "tintBlinkEnabled": true,
+          "tintBlinkPeriodMs": 2000,
+          "tintColor": "#ffcb13",
+          "tintOpacity": 0.8,
+          "sprite": null
+        },
+        "status-3": {
+          "mode": "tint",
+          "tintBlinkEnabled": true,
+          "tintBlinkPeriodMs": 2000,
+          "tintColor": "#ffcb13",
+          "tintOpacity": 0.8,
+          "sprite": null
+        }
+      },
+      "feedback": {
+        "glow": {
+          "color": "#ffffff",
+          "strength": 0.65,
+          "radiusPx": 22
+        },
+        "impactFlash": null,
+        "cameraShake": {
+          "amplitudePx": 5,
+          "durationMs": 140
+        },
+        "projectileTrail": {
+          "color": "#ffffff",
+          "count": 5,
+          "lengthPx": 40,
+          "sizePx": 6,
+          "opacity": 0.65,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 8,
+          "spreadPx": 52,
+          "sizePx": 7,
+          "durationMs": 320,
+          "opacity": 0.75
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 4,
+          "spreadPx": 42,
+          "sizePx": 30,
+          "risePx": 42,
+          "durationMs": 950,
+          "opacity": 0.5
+        },
+        "castBurst": {
+          "color": "#ffffff",
+          "count": 5,
+          "spreadPx": 38,
+          "sizePx": 6,
+          "risePx": 26,
+          "durationMs": 500,
+          "opacity": 0.65
+        }
+      }
+    }
+  }
+}

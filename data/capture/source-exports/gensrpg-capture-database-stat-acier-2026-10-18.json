@@ -1,0 +1,11 @@
+{
+  "id": "acier",
+  "label": "Acier",
+  "damageChannel": "acier",
+  "resistanceChannel": "acier",
+  "damagePctPerPoint": 1,
+  "resistancePctPerPoint": 1,
+  "chargeTimeReductionPctPerPoint": 0,
+  "maxHpPerPoint": 0,
+  "damageReductionPctPerPoint": 0
+}

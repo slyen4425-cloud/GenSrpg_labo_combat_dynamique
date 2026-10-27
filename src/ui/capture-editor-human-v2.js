@@ -1,0 +1,13874 @@
+import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js";
+import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js";
+import { normalizeCaptureMarkerLibraryV1 } from "../contracts/capture-marker-v1.js";
+import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1, captureMarkerZoneSelectV1 } from "./capture-marker-effect-fields-v1.js";
+import { captureEditorElementChannelChoicesV1, captureEditorGeneratedStatIdV1 } from "./capture-editor-element-channel-select-v1.js";
+import {
+  mountCaptureBeamStageLayoutV1,
+  syncCaptureBeamStageLayoutV1
+} from "./capture-editor-beam-stage-layout-v1.js";
+import {
+  captureBeamVisualPackV1,
+  applyCaptureBeamVisualPackV1,
+  snapshotCaptureBeamPresetControlsV1,
+  restoreCaptureBeamPresetControlsV1
+} from "./capture-editor-beam-visual-pack-v1.js";
+import { buildCaptureEditorCombatTestV1, prepareCaptureEditorCombatEditsV1, mountCaptureEditorCombatTeamControlsV1, shouldTestSavedCreatureWhenEvolutionIncompleteV1 } from "./capture-editor-combat-test-v1.js";
+import {
+  skillSpriteControlsFromFieldsV1,
+  skillSpriteControlFieldsFromVisualsV1,
+  skillSpriteOpacityPercentToUnitV1,
+  readSkillSpriteControlsV1,
+  writeSkillSpriteControlsV1,
+  appendStatusSpriteControlsV1,
+  readStatusSpriteControlsV1
+} from "./capture-editor-sprite-controls-v1.js";
+import {
+  normalizeCaptureCreatureEditorDraftV2
+} from "../contracts/capture-creature-editor-draft-v2.js";
+import {
+  normalizeCaptureCreatureEditorDraftV3
+} from "../contracts/capture-creature-editor-draft-v3.js";
+import {burrowEditorFieldsFromVisualV1,readBurrowStageFieldsV1,writeBurrowStageFieldsV1,burrowBindingFromFieldsV1,updateBurrowStageVisibilityV1,populateBurrowStageAssetChoicesV1} from "./capture-burrow-stage-fields-v1.js";
+import {
+  normalizeCaptureSkillEditorDraftV1
+} from "../contracts/capture-skill-editor-draft-v1.js";
+import {
+  normalizeSkillDefinition,
+  SKILL_ACTIVATION_REQUIREMENT_MODES,
+  SKILL_ACTIVATION_REQUIREMENT_TYPES
+} from "../contracts/skill-definition.js";
+import {
+  normalizeSkillEffectV1,
+  SKILL_EFFECT_V1_KINDS,
+  SKILL_EFFECT_V1_TARGET_SCOPES
+} from "../contracts/skill-effect-v1.js";
+import {
+  STATUS_EFFECT_V1_KINDS,
+  STATUS_EFFECT_V1_POLARITIES,
+  STATUS_EFFECT_V1_STACKING,
+  TRIGGERED_BUFF_EVENT_TYPES_V2,
+  DAMAGE_REFLECTION_INCOMING_KINDS_V1
+} from "../contracts/status-effect-v1.js";
+import {
+  CAPTURE_ULTIMATE_SKILL_SLOT_ID,
+  normalizeCaptureActiveSkillLoadoutV1
+} from "../contracts/capture-active-skill-loadout-v1.js";
+import {
+  normalizeCaptureBattleSetupEditorDraftV1,
+  CAPTURE_COMBAT_REFERENCE_SPEED_V1,
+  captureCombatPaceToSkillSpeedV1
+} from "../contracts/capture-battle-setup-editor-draft-v1.js";
+import {
+  CAPTURE_GAME_OPTIONS_V1_DEFAULT,
+  normalizeCaptureGameOptionsV1
+} from "../contracts/capture-game-options-v1.js";
+import {
+  exportCaptureEditorDraftsToCombatExportV2
+} from "../adapters/input/capture/capture-editor-exporter-v2.js";
+import {
+  exportCaptureEditorDraftsToCombatExportV3
+} from "../adapters/input/capture/capture-editor-exporter-v3.js";
+import {
+  GLOBAL_VISUAL_LIBRARY,
+  globalVisualAssetUrl
+} from "../assets/global-visual-library.js";
+import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
+import {
+  capturePortableNativeSkillDraftsV1
+} from "../catalogs/capture-portable-native-skill-catalog-v1.js";
+import {
+  captureComplexNativeSkillDraftsV1
+} from "../catalogs/capture-complex-native-skill-catalog-v1.js";
+import {
+  canonicalCaptureCreatureRecordsV1
+} from "../catalogs/capture-canonical-creature-catalog-v1.js";
+import {
+  buildPrivateAudioRoleGroupsV1
+} from "./private-audio-role-groups-v1.js";
+import {
+  resolveCaptureSkillSaveModeV1,
+  nextCaptureSkillDraftIdV1
+} from "./capture-editor-skill-save-mode-v1.js";
+import {
+  resolveCaptureCreatureSaveModeV1,
+  nextCaptureCreatureDraftIdV1
+} from "./capture-editor-creature-save-mode-v1.js";
+import {
+  importMonsterCaptureCreatureRecordV1
+} from "../adapters/input/capture/monster-capture-creature-import-v1.js";
+import {
+  normalizeCaptureCombatRulesEditorDraftV1
+} from "../contracts/capture-combat-rules-editor-draft-v1.js";
+import {
+  CAPTURE_CREATURE_VISUAL_BINDINGS_V1,
+  captureCreatureVisualBindingForIdV1
+} from "../catalogs/capture-creature-visual-bindings-v1.js";
+import {
+  applyCaptureCreatureVisualBindingV1
+} from "../adapters/input/capture/capture-creature-visual-binding-v1.js";
+import {
+  buildCaptureCreatureHistoricalLoadoutV1
+} from "../catalogs/capture-creature-historical-loadout-v1.js";
+import {
+  CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1
+} from "../catalogs/capture-showcase-creature-presets-v1.js";
+import {
+  CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
+  CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
+} from "../catalogs/capture-showcase-skill-presets-v1.js";
+import {
+  CAPTURE_FX_STARTER_PROFILES_V1,
+  captureFxStarterProfileByIdV1,
+  applyCaptureFxStarterProfileV1
+} from "../catalogs/capture-fx-starter-profile-catalog-v1.js";
+import {
+  CAPTURE_FX_GLOW_PRESETS_V1,
+  captureFxGlowPresetByIdV1,
+  applyCaptureFxGlowPresetV1,
+  captureFxGlowPresetIdForValuesV1
+} from "../catalogs/capture-fx-glow-presets-v1.js";
+import {
+  captureFxParticlePresetByIdV1,
+  applyCaptureFxParticlePresetV1,
+  captureFxParticlePresetIdForValuesV1
+} from "../catalogs/capture-fx-particle-presets-v1.js";
+import {
+  CAPTURE_FX_QUICK_PROFILES_V1,
+  captureFxQuickProfileByIdV1,
+  applyCaptureFxQuickProfileV1,
+  captureFxQuickProfileIdForValuesV1,
+  captureFxQuickWarningsV1,
+  captureFxQuickTrajectoryHintV1
+} from "./capture-fx-quick-mode-v1.js";
+
+import {
+  normalizeCaptureStatRegistryV1
+} from "../contracts/capture-stat-registry-v1.js";
+import {
+  normalizeCaptureCreatureStatValuesV1
+} from "../contracts/capture-creature-stat-values-v1.js";
+import {
+  projectCaptureStatEffectsV1
+} from "../core/combat/capture-stat-effects-v1.js";
+import {captureStatEffectSummaryV1 as humanStatEffectSummaryV1} from "./capture-stat-effect-summary-v1.js";
+export {humanStatEffectSummaryV1};
+import {
+  normalizeCaptureProgressionRulesV1,
+  captureActiveSkillSlotsForLevelV1
+} from "../contracts/capture-progression-rules-v1.js";
+import {
+  importMonsterCaptureStatValuesV1
+} from "../adapters/input/capture/monster-capture-stat-values-v1.js";
+import {
+  exportCaptureCreatureTransferJsonV1,
+  exportCaptureSkillTransferJsonV1,
+  importCaptureTransferJsonV1,
+  planCaptureTransferImportV1
+} from "../adapters/input/capture/capture-entity-transfer-v1.js";
+import {
+  exportCaptureDatabaseJsonV1
+} from "../adapters/input/capture/capture-database-transfer-v1.js";
+import {
+  buildCaptureEditorDatabaseV1,
+  applyCaptureTransferPlanToEditorStateV1,
+  applyCaptureTransferBatchToEditorStateV1
+} from "./capture-editor-file-transfer-v1.js";
+import {
+  validateCaptureLoadoutSkillSlotsV1
+} from "../adapters/input/capture/capture-loadout-skill-slot-v1.js";
+import {
+  settleCaptureEditorStartupDependenciesV1
+} from "./capture-editor-startup-v1.js";
+
+const PRIVATE_AUDIO_CATALOG_URL = new URL(
+  "../../data/presentation/audio/private-audio-catalog.v1.json",
+  import.meta.url
+);
+
+const NATIVE_SKILL_CATALOG_URL = new URL(
+  "../../data/combat/skills/catalog.v1.json",
+  import.meta.url
+);
+
+const MONSTER_CAPTURE_CREATURE_CATALOG_URL = new URL(
+  "../../data/capture/monster-capture-creatures.v1.json",
+  import.meta.url
+);
+
+const MONSTER_CAPTURE_STAT_REGISTRY_URL = new URL(
+  "../../data/capture/monster-capture-stat-registry.v1.json",
+  import.meta.url
+);
+
+const MONSTER_CAPTURE_PROGRESSION_RULES_URL = new URL(
+  "../../data/capture/monster-capture-progression-rules.v1.json",
+  import.meta.url
+);
+
+const EDITOR_VISUAL_ASSETS_BY_ROOT =
+  new WeakMap();
+
+function clamp01(value) {
+  return Math.min(1, Math.max(0, value));
+}
+
+function requiredText(value, field) {
+  if (typeof value !== "string" || value.trim() === "") {
+    throw new TypeError(field + " est obligatoire");
+  }
+  return value.trim();
+}
+
+function optionalText(value) {
+  if (value == null) {
+    return null;
+  }
+  const text = String(value).trim();
+  return text === "" ? null : text;
+}
+
+
+const HUMAN_MOBILITY_TEMPO_PRESETS_V1 =
+  Object.freeze({
+    "very-fast": -40,
+    fast: -20,
+    normal: 0,
+    slow: 25,
+    "very-slow": 50
+  });
+
+export function humanMobilityTempoPresetValueV1(
+  presetId
+) {
+  const id = String(presetId ?? "").trim();
+  if (
+    !Object.prototype.hasOwnProperty.call(
+      HUMAN_MOBILITY_TEMPO_PRESETS_V1,
+      id
+    )
+  ) {
+    throw new RangeError(
+      "Preset de mobilité inconnu : " + id
+    );
+  }
+  return HUMAN_MOBILITY_TEMPO_PRESETS_V1[id];
+}
+
+export function humanMobilityTempoPresetIdV1(
+  modifierPct
+) {
+  const value = finiteNumber(
+    modifierPct,
+    "Tempo de mobilité"
+  );
+  for (
+    const [id, presetValue] of
+    Object.entries(
+      HUMAN_MOBILITY_TEMPO_PRESETS_V1
+    )
+  ) {
+    if (presetValue === value) {
+      return id;
+    }
+  }
+  return "custom";
+}
+
+
+export function humanTacticalSecondsToMsV1(value) {
+  const number = finiteNumber(
+    value,
+    "Durée tactique"
+  );
+  if (number < 0) {
+    throw new RangeError(
+      "Durée tactique doit être positive ou nulle"
+    );
+  }
+  return Math.round(number * 1000);
+}
+
+export function humanTacticalMsToSecondsV1(value) {
+  const number = finiteNumber(
+    value,
+    "Durée tactique"
+  );
+  if (number < 0) {
+    throw new RangeError(
+      "Durée tactique doit être positive ou nulle"
+    );
+  }
+  return number / 1000;
+}
+
+export function humanTacticalStatusStatIdsV1(
+  registry
+) {
+  return normalizeCaptureStatRegistryV1(
+    registry
+  ).stats.map((entry) => entry.id);
+}
+
+function humanTacticalStatusToContractV1(
+  status,
+  {
+    defaultDamageChannel = null
+  } = {}
+) {
+  if (
+    !status ||
+    typeof status !== "object" ||
+    Array.isArray(status)
+  ) {
+    throw new TypeError(
+      "Statut tactique invalide"
+    );
+  }
+
+  const output = {
+    id: requiredText(
+      status.id,
+      "ID du statut"
+    ),
+    kind: requiredText(
+      status.kind,
+      "Type du statut"
+    ),
+    polarity: requiredText(
+      status.polarity,
+      "Polarité du statut"
+    ),
+    durationMs:
+      status.durationMs != null
+        ? finiteNumber(
+            status.durationMs,
+            "Durée du statut"
+          )
+        : humanTacticalSecondsToMsV1(
+            status.durationSeconds
+          ),
+    stacking:
+      status.stacking ?? "refresh",
+    tags: stableIds(status.tags)
+  };
+
+  if (
+    output.stacking === "stack"
+  ) {
+    output.maxStacks = positiveInteger(
+      status.maxStacks ?? 1,
+      "Stacks max"
+    );
+  }
+
+  if (status.onStackThreshold != null && output.stacking === "stack") {
+    output.onStackThreshold = {
+      count: positiveInteger(status.onStackThreshold.count, "Seuil de stacks"),
+      consume: status.onStackThreshold.consume ?? "reset",
+      effects: buildHumanTacticalSkillEffectsV1(status.onStackThreshold.effects ?? [],
+        {defaultDamageChannel})
+    };
+  }
+
+  if(output.kind==="outgoing_damage_modifier"){
+    output.modifierPct=finiteNumber(status.modifierPct,"Variation dégâts infligés (%)");
+  }
+  if (output.kind === "stat_modifier") {
+    if (status.activationCondition === "moving") output.activationCondition = "moving";
+    output.statId = requiredText(
+      status.statId,
+      "Statistique du statut"
+    );
+    output.deltaPoints = finiteNumber(
+      status.deltaPoints,
+      "Variation de statistique"
+    );
+  }
+
+  if (output.kind === "approach_time_modifier" || output.kind === "energy_regen_modifier" || output.kind === "skill_cooldown_rate_modifier") {
+    output.modifierPct = finiteNumber(status.modifierPct, "Variation du statut (%)");
+  }
+
+  if (
+    output.kind === "damage_over_time" ||
+    output.kind === "heal_over_time"
+  ) {
+    output.amount = finiteNumber(
+      status.amount,
+      "Valeur périodique"
+    );
+    output.tickIntervalMs =
+      status.tickIntervalMs != null
+        ? finiteNumber(
+            status.tickIntervalMs,
+            "Intervalle du statut"
+          )
+        : humanTacticalSecondsToMsV1(
+            status.tickSeconds
+          );
+  }
+
+  if (output.kind === "damage_over_time") {
+    const damageChannel =
+      optionalText(status.channel) ??
+      optionalText(defaultDamageChannel);
+
+    output.channel = requiredText(
+      damageChannel,
+      "Élément des dégâts périodiques"
+    );
+  }
+
+  if (output.kind === "shield") {
+    output.amount = finiteNumber(
+      status.amount,
+      "Valeur du bouclier"
+    );
+  }
+
+  if (output.kind === "damage_reflection") {
+    output.percent = finiteNumber(status.percent, "Renvoi des dégâts reçus (%)");
+    if (status.incomingKinds !== undefined) output.incomingKinds = stableIds(status.incomingKinds);
+    if (status.contactDamage !== undefined) {
+      output.contactDamage = finiteNumber(status.contactDamage, "Riposte de contact");
+    }
+  }
+
+  if (output.kind === "triggered_buff") {
+    const effects = buildHumanTacticalSkillEffectsV1(
+      status.onEvent?.effects ?? status.onDamageDealt?.effects ?? [],
+      {defaultDamageChannel}
+    );
+    if (status.onEvent != null) {
+      output.onEvent = {event:requiredText(status.onEvent.event,"Déclencheur du buff"),effects};
+    } else {
+      output.onDamageDealt = {effects};
+    }
+  }
+
+  if (output.kind === "immunity") {
+    output.domains = stableIds(
+      status.domains
+    );
+    if (status.intangible === true) output.intangible = true;
+  }
+
+  return output;
+}
+
+export function buildHumanTacticalSkillEffectsV1(
+  effects,
+  {
+    defaultDamageChannel = null
+  } = {}
+) {
+  if (!Array.isArray(effects)) {
+    throw new TypeError(
+      "Les effets tactiques doivent être une liste"
+    );
+  }
+
+  const builtEffects = effects.map((effect) => {
+    if (
+      !effect ||
+      typeof effect !== "object" ||
+      Array.isArray(effect)
+    ) {
+      throw new TypeError(
+        "Effet tactique invalide"
+      );
+    }
+
+    const kind = requiredText(
+      effect.kind,
+      "Type d’effet tactique"
+    );
+    const targetScope = requiredText(
+      effect.targetScope,
+      "Cible d’effet tactique"
+    );
+
+    if (kind === "apply_marker" || kind === "consume_marker" || kind === "knockout") {
+      return normalizeSkillEffectV1(effect);
+    }
+
+    if (kind === "scheduled_effect") {
+      const delayMs =
+        effect.trigger?.delayMs != null
+          ? finiteNumber(
+              effect.trigger.delayMs,
+              "Délai de l’effet programmé"
+            )
+          : humanTacticalSecondsToMsV1(
+              effect.delaySeconds
+            );
+
+      return normalizeSkillEffectV1({
+        kind,
+        targetScope,
+        trigger: {
+          type: "after_ms",
+          delayMs
+        },
+        effects:
+          buildHumanTacticalSkillEffectsV1(
+            effect.effects ?? [],
+            {
+              defaultDamageChannel
+            }
+          )
+      });
+    }
+
+    if (kind === "scheduled_effect") {
+      const nestedKind = row.querySelector(
+        "[data-skill-scheduled-effect-kind]"
+      ).value;
+      const nested = {
+        kind: nestedKind,
+        targetScope: "target",
+        amount: Number(
+          row.querySelector(
+            "[data-skill-scheduled-effect-amount]"
+          ).value
+        )
+      };
+      if (nestedKind === "damage") {
+        nested.channel =
+          row.querySelector(
+            "[data-skill-scheduled-effect-channel]"
+          ).value || null;
+      }
+
+      return {
+        kind,
+        targetScope: "target",
+        delaySeconds: Number(
+          row.querySelector(
+            "[data-skill-scheduled-delay-seconds]"
+          ).value
+        ),
+        effects: [nested]
+      };
+    }
+
+    if (kind === "persistent_zone") {
+      const tickEffect =
+        effect.tickEffect ?? {};
+
+      const radiusGrowthSteps =
+        finiteNumber(
+          effect.radiusGrowthSteps ?? 0,
+          "Croissance du rayon"
+        );
+      if (
+        !Number.isInteger(radiusGrowthSteps) ||
+        radiusGrowthSteps < 0
+      ) {
+        throw new RangeError(
+          "Croissance du rayon doit être un entier positif ou nul"
+        );
+      }
+
+      return normalizeSkillEffectV1({
+        kind,
+        targetScope,
+        zoneId: requiredText(
+          effect.zoneId,
+          "ID de zone"
+        ),
+        radius: requiredText(
+          effect.radius ?? "short",
+          "Rayon initial"
+        ),
+        durationMs:
+          effect.durationMs != null
+            ? finiteNumber(
+                effect.durationMs,
+                "Durée de zone"
+              )
+            : humanTacticalSecondsToMsV1(
+                effect.durationSeconds
+              ),
+        tickIntervalMs:
+          effect.tickIntervalMs != null
+            ? finiteNumber(
+                effect.tickIntervalMs,
+                "Intervalle de zone"
+              )
+            : humanTacticalSecondsToMsV1(
+                effect.tickSeconds
+              ),
+        reactivation: requiredText(
+          effect.reactivation ?? "refresh",
+          "Réactivation de zone"
+        ),
+        maxActivations: positiveInteger(
+          effect.maxActivations ?? 1,
+          "Activations max de zone"
+        ),
+        radiusGrowthSteps,
+        ...(effect.damageTrigger !== undefined ? {damageTrigger:effect.damageTrigger} : {}),
+        ...(effect.persistAfterRecall === true ? {persistAfterRecall:true} : {}),
+        ...(tickEffect.kind === "apply_status"
+          ? {statusBehavior:effect.statusBehavior ?? "while_inside"} : {}),
+        tickEffect: tickEffect.kind === "apply_status"
+          ? {kind:"apply_status",targetScope,
+              status:humanTacticalStatusToContractV1(tickEffect.status,
+                {defaultDamageChannel})}
+          : tickEffect.kind === "apply_marker"
+            ? normalizeSkillEffectV1({...tickEffect,targetScope})
+            : {kind:"damage",targetScope:tickEffect.targetScope ?? targetScope,
+                amount:finiteNumber(tickEffect.amount ?? effect.tickDamage ?? 0,
+                  "Dégâts par tick de zone"),
+                channel:optionalText(tickEffect.channel ?? effect.channel)}
+      });
+    }
+
+    if (kind === "apply_status") {
+      return normalizeSkillEffectV1({
+        kind,
+        targetScope,
+        status:
+          humanTacticalStatusToContractV1(
+            effect.status,
+            {
+              defaultDamageChannel
+            }
+          )
+      });
+    }
+
+    if (
+      kind === "cleanse" ||
+      kind === "dispel"
+    ) {
+      return normalizeSkillEffectV1({
+        kind,
+        targetScope,
+        statusTags: stableIds(
+          effect.statusTags
+        )
+      });
+    }
+
+    if (kind === "life_steal") {
+      return normalizeSkillEffectV1({
+        kind, targetScope,
+        percent: finiteNumber(effect.percent, "Drain de vie (%)"),
+        ...(effect.maxHeal === undefined || effect.maxHeal === "" || effect.maxHeal === null
+          ? {} : {maxHeal: finiteNumber(effect.maxHeal, "Plafond du drain")})
+      });
+    }
+
+    if (kind === "damage") {
+      return normalizeSkillEffectV1({
+        kind,
+        targetScope,
+        amount: finiteNumber(
+          effect.amount,
+          "Dégâts tactiques"
+        ),
+        channel:
+          optionalText(effect.channel),
+        ...(effect.ignoreResistancePct === undefined ? {} : {
+          ignoreResistancePct: finiteNumber(
+            effect.ignoreResistancePct,
+            "Résistance ignorée (%)"
+          )
+        }),
+        ...(effect.ignoreDamageReductionPct === undefined ? {} : {
+          ignoreDamageReductionPct: finiteNumber(
+            effect.ignoreDamageReductionPct,
+            "Défense ignorée (%)"
+          )
+        })
+      });
+    }
+
+    return normalizeSkillEffectV1({
+      kind,
+      targetScope,
+      amount: finiteNumber(
+        effect.amount,
+        "Valeur d’effet tactique"
+      )
+    });
+  });
+  // The combat status runtime owns active statuses by ID.
+  // Never silently replace another effect of the same authored skill.
+  const statusIds = new Set();
+  for (const effect of builtEffects) {
+    if (effect.kind !== "apply_status") continue;
+    const id = effect.status.id;
+    if (statusIds.has(id)) {
+      throw new RangeError(
+        "Deux effets de statut utilisent le même identifiant « " +
+          id +
+          " ». Choisis un ID différent pour chaque effet."
+      );
+    }
+    statusIds.add(id);
+  }
+  return builtEffects;
+}
+
+
+const CAPTURE_EDITOR_COMPAT_DISTANCES_V1 =
+  Object.freeze([
+    "short",
+    "medium",
+    "long"
+  ]);
+
+const TARGET_RELATION_ORDER_V1 =
+  Object.freeze([
+    "enemy",
+    "ally",
+    "self"
+  ]);
+
+function addTargetRelationsV1(target, relations) {
+  for (const relation of relations) {
+    target.add(relation);
+  }
+}
+
+function targetRelationsForTargetScopedEffectV1(effect) {
+  switch (effect.kind) {
+    case "damage":
+    case "energy_drain":
+    case "dispel":
+      return ["enemy"];
+
+    case "heal":
+    case "energy_restore":
+    case "cleanse":
+      return ["ally", "self"];
+
+    // Consuming markers does not decide whether the target is hostile.
+    // A companion heal or damage effect owns that relation. When marker
+    // consumption is the only targeted effect, the existing form fallback
+    // in humanSkillTargetRelationsFromTacticalEffectsV1 still applies.
+    case "consume_marker":
+      return [];
+
+    case "apply_status": {
+      const polarity =
+        effect.status?.polarity ?? "neutral";
+      if (polarity === "detrimental") {
+        return ["enemy"];
+      }
+      if (polarity === "beneficial") {
+        return ["ally", "self"];
+      }
+      return ["enemy", "ally", "self"];
+    }
+
+    default:
+      return ["enemy"];
+  }
+}
+
+export function humanSkillTargetRelationsFromTacticalEffectsV1(
+  effects,
+  {
+    form = null
+  } = {}
+) {
+  if (!Array.isArray(effects)) {
+    throw new TypeError(
+      "Les effets tactiques doivent être une liste"
+    );
+  }
+
+  const relations = new Set();
+
+  for (const effect of effects) {
+    switch (effect.targetScope) {
+      case "self":
+        relations.add("self");
+        break;
+
+      case "all_enemy_reserves":
+      case "all_enemies":
+        relations.add("enemy");
+        break;
+
+      case "all_ally_reserves":
+      case "all_allies":
+        addTargetRelationsV1(
+          relations,
+          ["ally", "self"]
+        );
+        break;
+
+      case "all_except_self":
+        addTargetRelationsV1(
+          relations,
+          ["enemy", "ally"]
+        );
+        break;
+
+      case "target":
+        addTargetRelationsV1(
+          relations,
+          targetRelationsForTargetScopedEffectV1(
+            effect
+          )
+        );
+        break;
+
+      default:
+        throw new RangeError(
+          "Cible d’effet tactique inconnue : " +
+            effect.targetScope
+        );
+    }
+  }
+
+  if (relations.size === 0) {
+    relations.add(
+      form === "self"
+        ? "self"
+        : "enemy"
+    );
+  }
+
+  return TARGET_RELATION_ORDER_V1.filter(
+    (relation) => relations.has(relation)
+  );
+}
+
+function finiteNumber(value, field) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) {
+    throw new TypeError(field + " doit être un nombre");
+  }
+  return number;
+}
+
+function positiveInteger(value, field) {
+  const number = finiteNumber(value, field);
+  if (!Number.isInteger(number) || number < 1) {
+    throw new RangeError(field + " doit être un entier supérieur ou égal à 1");
+  }
+  return number;
+}
+
+function stableIds(values) {
+  if (!Array.isArray(values)) {
+    return [];
+  }
+  return values
+    .map((value) => optionalText(value))
+    .filter((value) => value !== null);
+}
+
+
+function activationRequirementTypeMetaV1(type) {
+  switch (type) {
+    case "combat_elapsed_ms":
+      return Object.freeze({
+        label: "Temps de combat écoulé",
+        unit: "secondes",
+        step: 0.1,
+        max: null
+      });
+    case "damage_dealt":
+      return Object.freeze({
+        label: "Dégâts infligés",
+        unit: "dégâts",
+        step: 1,
+        max: null
+      });
+    case "damage_taken":
+      return Object.freeze({
+        label: "Dégâts subis",
+        unit: "dégâts",
+        step: 1,
+        max: null
+      });
+    case "hp_at_or_below_pct":
+      return Object.freeze({
+        label: "PV ≤",
+        unit: "% PV max",
+        step: 1,
+        max: 100
+      });
+    case "allies_defeated":
+      return Object.freeze({
+        label: "Alliés KO",
+        unit: "allié(s)",
+        step: 1,
+        max: null
+      });
+    case "enemies_defeated":
+      return Object.freeze({
+        label: "Ennemis KO",
+        unit: "ennemi(s)",
+        step: 1,
+        max: null
+      });
+    case "kills_by_self":
+      return Object.freeze({
+        label: "KO réalisés par le lanceur",
+        unit: "KO",
+        step: 1,
+        max: null
+      });
+    default:
+      throw new RangeError(
+        "Type de condition d’activation inconnu : " +
+          type
+      );
+  }
+}
+
+export function humanSkillActivationThresholdToContractV1(
+  type,
+  value
+) {
+  if (
+    !SKILL_ACTIVATION_REQUIREMENT_TYPES.includes(type)
+  ) {
+    throw new RangeError(
+      "Type de condition d’activation inconnu : " +
+        type
+    );
+  }
+
+  const number = finiteNumber(
+    value,
+    "Seuil d’activation"
+  );
+  if (number < 0) {
+    throw new RangeError(
+      "Seuil d’activation doit être positif ou nul"
+    );
+  }
+
+  if (
+    type === "hp_at_or_below_pct" &&
+    number > 100
+  ) {
+    throw new RangeError(
+      "Le seuil de PV doit être compris entre 0 et 100 %"
+    );
+  }
+
+  return type === "combat_elapsed_ms"
+    ? number * 1000
+    : number;
+}
+
+export function humanSkillActivationThresholdFromContractV1(
+  type,
+  threshold
+) {
+  if (
+    !SKILL_ACTIVATION_REQUIREMENT_TYPES.includes(type)
+  ) {
+    throw new RangeError(
+      "Type de condition d’activation inconnu : " +
+        type
+    );
+  }
+
+  const number = finiteNumber(
+    threshold,
+    "Seuil d’activation"
+  );
+
+  return type === "combat_elapsed_ms"
+    ? number / 1000
+    : number;
+}
+
+export function buildHumanSkillActivationRequirementsV1({
+  enabled,
+  mode = "all",
+  conditions = []
+}) {
+  if (enabled !== true) {
+    return {
+      mode: "all",
+      conditions: []
+    };
+  }
+
+  if (
+    !SKILL_ACTIVATION_REQUIREMENT_MODES.includes(mode)
+  ) {
+    throw new RangeError(
+      "Mode de conditions d’activation inconnu"
+    );
+  }
+
+  if (
+    !Array.isArray(conditions) ||
+    conditions.length === 0
+  ) {
+    throw new RangeError(
+      "Ajoute au moins une condition d’activation"
+    );
+  }
+
+  return {
+    mode,
+    conditions: conditions.map(
+      (condition) => ({
+        type: requiredText(
+          condition.type,
+          "Type de condition"
+        ),
+        threshold:
+          humanSkillActivationThresholdToContractV1(
+            condition.type,
+            condition.value
+          )
+      })
+    )
+  };
+}
+
+export function buildHumanCreatureStatValuesV1({
+  creatureId,
+  values,
+  registry
+}) {
+  return normalizeCaptureCreatureStatValuesV1(
+    {
+      schema: "capture-creature-stat-values-v1",
+      creatureId: requiredText(
+        creatureId,
+        "ID créature"
+      ),
+      values: values ?? {}
+    },
+    registry
+  );
+}
+
+export function buildHumanStatRegistryV1({
+  definitions
+}) {
+  return normalizeCaptureStatRegistryV1({
+    schema: "capture-stat-registry-v1",
+    stats: Array.isArray(definitions)
+      ? definitions
+      : []
+  });
+}
+
+export function addHumanCustomStatDefinitionV1({
+  registry,
+  definition
+}) {
+  const current =
+    normalizeCaptureStatRegistryV1(registry);
+
+  return buildHumanStatRegistryV1({
+    definitions: [
+      ...current.stats,
+      definition
+    ]
+  });
+}
+
+export function buildHumanEvolutionV1({
+  enabled,
+  targetId,
+  level
+}) {
+  if (enabled !== true) {
+    return null;
+  }
+
+  return Object.freeze({
+    condition: "level",
+    level: positiveInteger(
+      level,
+      "Niveau d’évolution"
+    ),
+    targetId: requiredText(
+      targetId,
+      "Créature cible de l’évolution"
+    )
+  });
+}
+
+export function buildHumanProgressionRulesV1({
+  maxActiveSkills,
+  slotUnlockSchedule
+}) {
+  const rules =
+    normalizeCaptureProgressionRulesV1({
+      schema: "capture-progression-rules-v1",
+      maxActiveSkills: positiveInteger(
+        maxActiveSkills,
+        "Maximum de capacités actives"
+      ),
+      slotUnlockSchedule:
+        Array.isArray(slotUnlockSchedule)
+          ? slotUnlockSchedule
+          : []
+    });
+
+  if (rules.maxActiveSkills > 5) {
+    throw new RangeError(
+      "Le loadout Capture accepte au maximum 4 capacités standards et 1 ultime"
+    );
+  }
+
+  return rules;
+}
+
+export function humanLoadoutAvailabilityV1({
+  progressionRules,
+  creatureLevel
+}) {
+  const rules =
+    normalizeCaptureProgressionRulesV1(
+      progressionRules
+    );
+  const unlocked =
+    captureActiveSkillSlotsForLevelV1(
+      rules,
+      positiveInteger(
+        creatureLevel,
+        "Niveau créature"
+      )
+    );
+
+  return Object.freeze(
+    [0, 1, 2, 3].map(
+      (index) =>
+        index < Math.min(4, unlocked)
+    )
+  );
+}
+
+export function validateHumanLoadoutProgressionV1({
+  loadout,
+  progressionRules,
+  creatureLevel,
+  skillDrafts = []
+}) {
+  if (
+    !loadout ||
+    !Array.isArray(loadout.slots)
+  ) {
+    throw new TypeError(
+      "Loadout Capture invalide"
+    );
+  }
+
+  humanLoadoutAvailabilityV1({
+    progressionRules,
+    creatureLevel: positiveInteger(
+      creatureLevel,
+      "Niveau créature"
+    )
+  });
+
+  validateCaptureLoadoutSkillSlotsV1({
+    loadout,
+    skillDrafts
+  });
+
+  return loadout;
+}
+
+function legacySourceStatsV1(previousDraft) {
+  const source =
+    previousDraft?.sourceStats;
+
+  if (
+    source &&
+    typeof source === "object"
+  ) {
+    return {
+      force: Number(source.force) || 0,
+      agility: Number(source.agility) || 0,
+      intelligence:
+        Number(source.intelligence) || 0,
+      spirit: Number(source.spirit) || 0,
+      endurance: Number(source.endurance) || 0,
+      initiative:
+        Number(source.initiative) || 0
+    };
+  }
+
+  return {
+    force: 0,
+    agility: 0,
+    intelligence: 0,
+    spirit: 0,
+    endurance: 0,
+    initiative: 0
+  };
+}
+
+function resistanceEntries(raw) {
+  if (Array.isArray(raw)) {
+    return raw;
+  }
+  if (!raw || typeof raw !== "object") {
+    return [];
+  }
+
+  return Object.entries(raw)
+    .filter(([, value]) => value !== "" && value != null)
+    .map(([element, value]) => ({
+      kind: element.includes(":") ? element : "element:" + element,
+      value: finiteNumber(value, "Résistance " + element)
+    }));
+}
+
+function audioSlots(raw) {
+  if (!raw || typeof raw !== "object") {
+    return {};
+  }
+
+  const output = {};
+  for (const role of ["attack", "hit", "ko", "movement", "dodge", "defense"]) {
+    const entry = raw[role];
+    if (entry == null || entry === "") {
+      continue;
+    }
+
+    if (typeof entry === "string") {
+      output[role] = {
+        assetId: requiredText(entry, "Son " + role)
+      };
+      continue;
+    }
+
+    output[role] = {
+      assetId: requiredText(
+        entry.assetId,
+        "Son " + role
+      ),
+      ...(entry.volume == null
+        ? {}
+        : { volume: finiteNumber(entry.volume, "Volume " + role) }),
+      ...(role==="movement"&&entry.mode!=null?{mode:requiredText(entry.mode,"Mode déplacement")}:{}),
+      ...(role==="movement"&&entry.repeatIntervalMs!=null
+        ? {repeatIntervalMs:finiteNumber(entry.repeatIntervalMs,"Intervalle déplacement")}
+        : {})
+    };
+  }
+
+  return output;
+}
+
+function visualSlot(assetId, {
+  attachment,
+  trigger,
+  anchor = null,
+  layerByView = null,
+  displayScale = 1,
+  displayScaleX = 1,
+  displayScaleY = 1,
+  offsetX = 0,
+  offsetY = 0,
+  offsetMode = null,
+  opponentOffsetX = null,
+  opponentOffsetY = null,
+  durationMs = null,
+  playbackMode = "once",
+  opacity = 1
+}) {
+  const id = optionalText(assetId);
+  if (id === null) {
+    return null;
+  }
+
+  const normalizedScale = finiteNumber(
+    displayScale,
+    "Scale FX"
+  );
+  if (
+    normalizedScale < 0.25 ||
+    normalizedScale > 8
+  ) {
+    throw new RangeError(
+      "Scale FX doit être compris entre 0.25 et 8"
+    );
+  }
+
+  const normalizedScaleX = finiteNumber(
+    displayScaleX,
+    "Scale horizontal FX"
+  );
+  const normalizedScaleY = finiteNumber(
+    displayScaleY,
+    "Scale vertical FX"
+  );
+  for (const [label, value] of [
+    ["horizontal", normalizedScaleX],
+    ["vertical", normalizedScaleY]
+  ]) {
+    if (value < 0.25 || value > 8) {
+      throw new RangeError(
+        `Scale ${label} FX doit être compris entre 0.25 et 8`
+      );
+    }
+  }
+
+  const normalizedOffsetX =
+    finiteNumber(
+      offsetX,
+      "Décalage horizontal FX"
+    );
+  const normalizedOffsetY =
+    finiteNumber(
+      offsetY,
+      "Décalage vertical FX"
+    );
+
+  let sideOffset = {};
+  if (offsetMode != null && offsetMode !== "") {
+    if (
+      !["same", "mirror_x", "custom"].includes(
+        offsetMode
+      )
+    ) {
+      throw new RangeError(
+        "Mode de décalage visuel invalide: " +
+          offsetMode
+      );
+    }
+    sideOffset = {
+      offsetMode
+    };
+    if (offsetMode === "custom") {
+      sideOffset.opponentOffsetX =
+        finiteNumber(
+          opponentOffsetX,
+          "Décalage horizontal adversaire"
+        );
+      sideOffset.opponentOffsetY =
+        finiteNumber(
+          opponentOffsetY,
+          "Décalage vertical adversaire"
+        );
+    }
+  }
+
+  return {
+    assetId: id,
+    attachment,
+    trigger,
+    anchor,
+    displayScale: normalizedScale,
+    displayScaleX: normalizedScaleX,
+    displayScaleY: normalizedScaleY,
+    layerByView: {
+      player:
+        layerByView?.player ?? "front",
+      opponent:
+        layerByView?.opponent ?? "front"
+    },
+    playbackMode,
+    ...(durationMs == null ? {} : { durationMs }),
+    offsetX: normalizedOffsetX,
+    offsetY: normalizedOffsetY,
+    ...sideOffset,
+    rotationDeg: 0,
+    opacity: (() => {
+      const amount = finiteNumber(opacity, "Opacité FX");
+      if (amount < 0 || amount > 1) {
+        throw new RangeError("Opacité FX doit être entre 0 et 1");
+      }
+      return amount;
+    })()
+  };
+}
+
+function audioSkillSlot(
+  assetId,
+  { loop = false } = {}
+) {
+  const id = optionalText(assetId);
+  return id === null
+    ? null
+    : {
+        assetId: id,
+        volume: 1,
+        loop: loop === true
+      };
+}
+
+function presentationFeedbackFromFieldsV1(
+  presentation
+) {
+  const shakeSequence = Array.isArray(presentation.impactShakeSequence)
+    ? presentation.impactShakeSequence
+    : [];
+  const glowStrength = Math.max(
+    0,
+    Math.min(
+      1,
+      Number(
+        presentation.fxGlowStrength
+      ) || 0
+    )
+  );
+  const flashOpacity = Math.max(
+    0,
+    Math.min(
+      1,
+      Number(
+        presentation.impactFlashOpacity
+      ) || 0
+    )
+  );
+  const shakeAmplitude = Math.max(
+    0,
+    Number(
+      presentation.impactShakeAmplitudePx
+    ) || 0
+  );
+
+  function boundedParticleCount(
+    value,
+    maximum,
+    field
+  ) {
+    const number = Number(value) || 0;
+    if (
+      !Number.isInteger(number) ||
+      number < 0 ||
+      number > maximum
+    ) {
+      throw new RangeError(
+        field +
+          " doit être un entier entre 0 et " +
+          maximum
+      );
+    }
+    return number;
+  }
+
+  const trailCount =
+    boundedParticleCount(
+      presentation.projectileTrailCount,
+      10,
+      "Particules de traînée"
+    );
+  const burstCount =
+    boundedParticleCount(
+      presentation.impactBurstCount,
+      18,
+      "Particules d’impact"
+    );
+  const castBurstCount =
+    boundedParticleCount(
+      presentation.castBurstCount,
+      12,
+      "Particules de Cast"
+    );
+  const smokeCount =
+    boundedParticleCount(
+      presentation.aftermathSmokeCount,
+      8,
+      "Volutes de fumée"
+    );
+
+  if (
+    glowStrength <= 0 &&
+    flashOpacity <= 0 &&
+    shakeAmplitude <= 0 &&
+    shakeSequence.length === 0 &&
+    castBurstCount <= 0 &&
+    trailCount <= 0 &&
+    burstCount <= 0 &&
+    smokeCount <= 0
+  ) {
+    return null;
+  }
+
+  const feedback = {};
+
+  if (glowStrength > 0) {
+    feedback.glow = {
+      color:
+        String(
+          presentation.fxGlowColor ??
+            "#ffffff"
+        ),
+      strength: glowStrength,
+      radiusPx: Math.max(
+        1,
+        finiteNumber(
+          presentation.fxGlowRadiusPx ?? 16,
+          "Rayon glow FX"
+        )
+      )
+    };
+  }
+
+  if (flashOpacity > 0) {
+    feedback.impactFlash = {
+      color:
+        String(
+          presentation.impactFlashColor ??
+            "#ffffff"
+        ),
+      opacity: flashOpacity,
+      durationMs: Math.max(
+        1,
+        finiteNumber(
+          presentation.impactFlashDurationMs ??
+            120,
+          "Durée flash impact"
+        )
+      ),
+      scale: Math.max(
+        0.1,
+        finiteNumber(
+          presentation.impactFlashScale ??
+            1.5,
+          "Scale flash impact"
+        )
+      )
+    };
+  }
+
+  if (shakeAmplitude > 0 || shakeSequence.length > 0) {
+    feedback.cameraShake = {
+      // An authored sequence supersedes the old simple shake while
+      // retaining the original scalar fields for old exports.
+      amplitudePx: shakeSequence.length ? Number(shakeSequence[0].amplitudePx) : shakeAmplitude,
+      durationMs: shakeSequence.length
+        ? Number(shakeSequence[0].durationMs)
+        : Math.max(
+            1,
+            finiteNumber(
+              presentation.impactShakeDurationMs ?? 140,
+              "Durée shake impact"
+            )
+          ),
+      ...(shakeSequence.length ? { sequence: shakeSequence.map((pulse) => ({
+        pauseMs: Number(pulse.pauseMs),
+        amplitudePx: Number(pulse.amplitudePx),
+        durationMs: Number(pulse.durationMs)
+      })) } : {}),
+      ...(["during","after"].includes(presentation.impactVisualTiming)
+        ? { impactVisualTiming: presentation.impactVisualTiming } : {})
+    };
+  }
+
+  if (castBurstCount > 0) {
+    feedback.castBurst = {
+      color:
+        String(
+          presentation.castBurstColor ??
+            presentation.fxGlowColor ??
+            "#ffffff"
+        ),
+      count: castBurstCount,
+      spreadPx: Math.max(
+        1,
+        finiteNumber(
+          presentation.castBurstSpreadPx,
+          "Dispersion particules Cast"
+        )
+      ),
+      sizePx: Math.max(
+        1,
+        finiteNumber(
+          presentation.castBurstSizePx,
+          "Taille particule Cast"
+        )
+      ),
+      risePx: Math.max(
+        1,
+        finiteNumber(
+          presentation.castBurstRisePx,
+          "Montée particules Cast"
+        )
+      ),
+      durationMs: Math.max(
+        1,
+        finiteNumber(
+          presentation.castBurstDurationMs,
+          "Durée particules Cast"
+        )
+      ),
+      opacity: Math.max(
+        0,
+        Math.min(
+          1,
+          finiteNumber(
+            presentation.castBurstOpacity,
+            "Opacité particules Cast"
+          )
+        )
+      )
+    };
+  }
+
+  if (trailCount > 0) {
+    feedback.projectileTrail = {
+      color:
+        String(
+          presentation.projectileTrailColor ??
+            presentation.fxGlowColor ??
+            "#ffffff"
+        ),
+      count: trailCount,
+      lengthPx: Math.max(
+        1,
+        finiteNumber(
+          presentation.projectileTrailLengthPx,
+          "Longueur traînée"
+        )
+      ),
+      sizePx: Math.max(
+        1,
+        finiteNumber(
+          presentation.projectileTrailSizePx,
+          "Taille particule traînée"
+        )
+      ),
+      opacity: Math.max(
+        0,
+        Math.min(
+          1,
+          finiteNumber(
+            presentation.projectileTrailOpacity,
+            "Opacité traînée"
+          )
+        )
+      ),
+      anchorX: Math.max(
+        0,
+        Math.min(
+          1,
+          finiteNumber(
+            presentation.projectileTrailAnchorX ?? 0.5,
+            "Ancrage horizontal traînée"
+          )
+        )
+      ),
+      anchorY: Math.max(
+        0,
+        Math.min(
+          1,
+          finiteNumber(
+            presentation.projectileTrailAnchorY ?? 0.5,
+            "Ancrage vertical traînée"
+          )
+        )
+      )
+    };
+  }
+
+  if (burstCount > 0) {
+    feedback.impactBurst = {
+      color:
+        String(
+          presentation.impactBurstColor ??
+            presentation.impactFlashColor ??
+            presentation.fxGlowColor ??
+            "#ffffff"
+        ),
+      count: burstCount,
+      spreadPx: Math.max(
+        1,
+        finiteNumber(
+          presentation.impactBurstSpreadPx,
+          "Dispersion particules impact"
+        )
+      ),
+      sizePx: Math.max(
+        1,
+        finiteNumber(
+          presentation.impactBurstSizePx,
+          "Taille particule impact"
+        )
+      ),
+      durationMs: Math.max(
+        1,
+        finiteNumber(
+          presentation.impactBurstDurationMs,
+          "Durée particules impact"
+        )
+      ),
+      opacity: Math.max(
+        0,
+        Math.min(
+          1,
+          finiteNumber(
+            presentation.impactBurstOpacity,
+            "Opacité particules impact"
+          )
+        )
+      )
+    };
+  }
+
+  if (smokeCount > 0) {
+    feedback.aftermathSmoke = {
+      color:
+        String(
+          presentation.aftermathSmokeColor ??
+            "#594943"
+        ),
+      count: smokeCount,
+      spreadPx: Math.max(
+        1,
+        finiteNumber(
+          presentation.aftermathSmokeSpreadPx,
+          "Dispersion fumée"
+        )
+      ),
+      sizePx: Math.max(
+        1,
+        finiteNumber(
+          presentation.aftermathSmokeSizePx,
+          "Taille fumée"
+        )
+      ),
+      risePx: Math.max(
+        1,
+        finiteNumber(
+          presentation.aftermathSmokeRisePx,
+          "Montée fumée"
+        )
+      ),
+      durationMs: Math.max(
+        1,
+        finiteNumber(
+          presentation.aftermathSmokeDurationMs,
+          "Durée fumée"
+        )
+      ),
+      opacity: Math.max(
+        0,
+        Math.min(
+          1,
+          finiteNumber(
+            presentation.aftermathSmokeOpacity,
+            "Opacité fumée"
+          )
+        )
+      )
+    };
+  }
+
+  return feedback;
+}
+
+function presentationForSkill(fields) {
+  const presentation = fields.presentation ?? {};
+  const iconAssetId = optionalText(
+    presentation.iconAssetId
+  );
+  const socketId = optionalText(
+    presentation.socketId
+  );
+  const statusVisuals =
+    presentation.statusVisuals &&
+    typeof presentation.statusVisuals === "object"
+      ? presentation.statusVisuals
+      : {};
+  const hasStatusVisuals =
+    Object.keys(statusVisuals).length > 0;
+  const feedback =
+    presentationFeedbackFromFieldsV1(
+      presentation
+    );
+  const hasFeedback =
+    feedback !== null;
+
+  const cast = visualSlot(
+    presentation.castAssetId,
+    {
+      attachment: "source",
+      trigger: "preparation-start",
+      anchor: socketId,
+      displayScale:
+        presentation.castDisplayScale ?? 1,
+      layerByView: {
+        player:
+          presentation.castLayerPlayer ??
+          "front",
+        opponent:
+          presentation.castLayerOpponent ??
+          "front"
+      },
+      ...skillSpriteControlsFromFieldsV1(presentation, "cast")
+    }
+  );
+  const beamStart = visualSlot(
+    presentation.beamStartAssetId,
+    {
+      attachment: "source",
+      trigger: "travel-start",
+      anchor: socketId,
+      displayScale: presentation.beamStartDisplayScale ?? 1,
+      playbackMode: "loop",
+      layerByView: {
+        player: "front",
+        opponent: "front"
+      }
+    }
+  );
+  const travel = visualSlot(
+    presentation.travelAssetId,
+    {
+      attachment: "trajectory",
+      trigger: "travel-start",
+      anchor: socketId,
+      displayScale:
+        presentation.travelDisplayScale ?? 1,
+      opacity: skillSpriteOpacityPercentToUnitV1(presentation.travelOpacityPct ?? 100),
+      playbackMode:
+        presentation.travelPlaybackMode ?? "stretch",
+      layerByView: {
+        player:
+          presentation.travelLayerPlayer ??
+          "front",
+        opponent:
+          presentation.travelLayerOpponent ??
+          "front"
+      }
+    }
+  );
+  if (travel !== null) {
+    const speed = finiteNumber(presentation.travelFrameSpeedMultiplier ?? 1, "Vitesse de boucle du projectile");
+    const depth = finiteNumber(presentation.travelPerspectiveAmount ?? 0, "Perspective du projectile");
+    if (speed < 0.25 || speed > 4) throw new RangeError("Vitesse de boucle : de 0.25 à 4");
+    if (depth < 0 || depth > 0.5) throw new RangeError("Perspective : de 0 à 0.5");
+    if (speed !== 1) travel.frameSpeedMultiplier = speed;
+    if (depth !== 0) travel.perspectiveAmount = depth;
+    const far = finiteNumber(presentation.travelFarScaleRatio ?? 1, "Taille distante du projectile");
+    if (far < 0.15 || far > 1) throw new RangeError("Taille distante : de 0.15 à 1");
+    if (far !== 1) travel.farScaleRatio = far;
+    const arrival = presentation.travelArrivalLayer ?? "same";
+    if (!["same","front","behind"].includes(arrival)) {
+      throw new RangeError("Calque d’arrivée du projectile invalide");
+    }
+    if (arrival !== "same") travel.arrivalLayer = arrival;
+  }
+  if (travel !== null && presentation.travelTrajectoryMode === "skyfall") {
+    travel.trajectoryMode = "skyfall";
+    travel.fallHeightPx = finiteNumber(
+      presentation.fallHeightPx ?? 400, "Hauteur de chute du projectile"
+    );
+    travel.fallOffsetXPx = finiteNumber(
+      presentation.fallOffsetXPx ?? 0, "Décalage du projectile tombant"
+    );
+  }
+  const impact = visualSlot(
+    presentation.impactAssetId,
+    {
+      attachment: "fixed-target",
+      trigger: "impact",
+      anchor: null,
+      displayScale:
+        presentation.impactDisplayScale ?? 1,
+      durationMs: presentation.impactDurationMs == null || presentation.impactDurationMs === 0
+        ? null : finiteNumber(presentation.impactDurationMs, "Durée visuelle de l’impact"),
+      playbackMode: presentation.impactDurationMs > 0 ? "stretch" : "once",
+      offsetX: presentation.impactOffsetX ?? 0,
+      offsetY: presentation.impactOffsetY ?? 0,
+      ...skillSpriteControlsFromFieldsV1(presentation, "impact")
+    }
+  );
+  const persistentZone = visualSlot(
+    presentation.zoneAssetId,
+    {
+      attachment: presentation.zoneAttachment ?? "source",
+      trigger: "impact",
+      anchor: null,
+      displayScale:
+        presentation.zoneDisplayScale ?? 1,
+      displayScaleX:
+        presentation.zoneDisplayScaleX ?? 1,
+      displayScaleY:
+        presentation.zoneDisplayScaleY ?? 1,
+      offsetX:
+        presentation.zoneOffsetX ?? 0,
+      offsetY:
+        presentation.zoneOffsetY ?? 0,
+      layerByView: {
+        player: "behind",
+        opponent: "behind"
+      },
+      ...skillSpriteControlsFromFieldsV1(presentation, "zone")
+    }
+  );
+
+  const castAudio = audioSkillSlot(
+    presentation.castAudioAssetId
+  );
+  const travelAudio = audioSkillSlot(
+    presentation.travelAudioAssetId,
+    { loop: true }
+  );
+  const impactAudio = audioSkillSlot(
+    presentation.impactAudioAssetId
+  );
+  const auraAudio = audioSkillSlot(
+    presentation.zoneAudioAssetId,
+    { loop: true }
+  );
+
+  const burrowTerrain = fields.approachMode === "burrow"
+    ? burrowBindingFromFieldsV1(presentation)
+    : null;
+  const hasVisual =
+    iconAssetId !== null ||
+    cast !== null ||
+    beamStart !== null ||
+    travel !== null ||
+    impact !== null ||
+    persistentZone !== null ||
+    burrowTerrain !== null;
+  const hasAudio =
+    castAudio !== null ||
+    travelAudio !== null ||
+    impactAudio !== null ||
+    auraAudio !== null;
+
+  if (
+    !hasVisual &&
+    !hasAudio &&
+    !hasStatusVisuals &&
+    !hasFeedback
+  ) {
+    return null;
+  }
+
+  const visual = {};
+  if (iconAssetId !== null) {
+    visual.icon = { assetId: iconAssetId };
+  }
+  if (cast !== null) {
+    visual.cast = cast;
+  }
+  if (beamStart !== null) {
+    visual.beamStart = beamStart;
+  }
+  if (travel !== null) {
+    visual.travel = travel;
+  }
+  if (impact !== null) {
+    visual.impact = impact;
+  }
+  if (persistentZone !== null) {
+    visual.aura = persistentZone;
+  }
+  if (burrowTerrain !== null) {
+    visual.burrowTerrain = burrowTerrain;
+  }
+
+  const audio = {};
+  if (castAudio !== null) {
+    audio.cast = castAudio;
+  }
+  if (travelAudio !== null) {
+    audio.travel = travelAudio;
+  }
+  if (impactAudio !== null) {
+    audio.impact = impactAudio;
+  }
+  if (auraAudio !== null) {
+    audio.aura = auraAudio;
+  }
+
+  const baseVersion =
+    (travel?.farScaleRatio != null || travel?.arrivalLayer != null)
+        ? 12
+        : (travel?.frameSpeedMultiplier != null || travel?.perspectiveAmount != null)
+          ? 11
+        : travel?.trajectoryMode === "skyfall"
+          ? 10
+        : (
+        [cast, impact, persistentZone].some(
+          (slot) =>
+            slot?.offsetMode != null
+        ) ||
+        Object.values(statusVisuals).some(
+          (status) =>
+            status?.sprite?.offsetMode != null
+        )
+      )
+        ? 9
+        : feedback?.projectileTrail
+          ? 8
+          : feedback?.castBurst
+            ? 7
+            : feedback?.aftermathSmoke
+              ? 6
+              : feedback?.impactBurst
+                ? 5
+                : hasFeedback
+                  ? 4
+                  : hasStatusVisuals
+                    ? 3
+                    : 2;
+
+  return {
+    id:
+      "skill:" +
+      requiredText(
+        fields.id,
+        "ID capacité"
+      ),
+    version: burrowTerrain !== null ? 13 : baseVersion,
+    ...(burrowTerrain !== null ? {baseVersion} : {}),
+    subjectType: "skill",
+    subjectId: requiredText(
+      fields.id,
+      "ID capacité"
+    ),
+    visual,
+    audio,
+    ...(hasFeedback
+      ? {
+          statusVisuals,
+          feedback
+        }
+      : hasStatusVisuals
+        ? { statusVisuals }
+        : {})
+  };
+}
+
+export function normalizedSocketPointV2({
+  clientX,
+  clientY,
+  rect
+}) {
+  if (
+    !rect ||
+    !Number.isFinite(rect.left) ||
+    !Number.isFinite(rect.top) ||
+    !Number.isFinite(rect.width) ||
+    !Number.isFinite(rect.height) ||
+    rect.width <= 0 ||
+    rect.height <= 0
+  ) {
+    throw new TypeError("rect doit décrire une surface valide");
+  }
+
+  return Object.freeze({
+    x: clamp01((clientX - rect.left) / rect.width),
+    y: clamp01((clientY - rect.top) / rect.height)
+  });
+}
+
+export function buildHumanCreatureDraftV2(fields) {
+  if (!fields || typeof fields !== "object") {
+    throw new TypeError("Données créature invalides");
+  }
+
+  const id = requiredText(fields.id, "ID créature");
+  const visual = fields.visual ?? {};
+  const frontAssetId = optionalText(
+    visual.frontAssetId
+  );
+  const backAssetId = optionalText(
+    visual.backAssetId
+  );
+  const iconAssetId = optionalText(
+    visual.iconAssetId
+  );
+  const sockets = Array.isArray(fields.sockets)
+    ? fields.sockets
+    : [];
+
+  let presentation = null;
+
+  if (frontAssetId !== null) {
+    const presentationVisual = {
+      front: { assetId: frontAssetId }
+    };
+
+    if (backAssetId !== null) {
+      presentationVisual.back = {
+        assetId: backAssetId
+      };
+    }
+
+    if (iconAssetId !== null) {
+      presentationVisual.icon = {
+        assetId: iconAssetId
+      };
+    }
+
+    presentation = {
+      id: "creature:" + id,
+      version: 1,
+      subjectType: "creature",
+      subjectId: id,
+      profileId: requiredText(
+        fields.profileId,
+        "Style de position"
+      ),
+      visual: presentationVisual,
+      sockets,
+      audio: audioSlots(fields.audio)
+    };
+  }
+
+  return normalizeCaptureCreatureEditorDraftV2({
+    schema: "capture-creature-editor-draft-v2",
+    id,
+    displayName: requiredText(
+      fields.displayName,
+      "Nom créature"
+    ),
+    description: optionalText(fields.description),
+    level: positiveInteger(fields.level, "Niveau"),
+    sourceStats: {
+      force: finiteNumber(fields.sourceStats?.force, "Force"),
+      agility: finiteNumber(fields.sourceStats?.agility, "Agilité"),
+      intelligence: finiteNumber(
+        fields.sourceStats?.intelligence,
+        "Intelligence"
+      ),
+      spirit: finiteNumber(fields.sourceStats?.spirit, "Esprit"),
+      endurance: finiteNumber(
+        fields.sourceStats?.endurance,
+        "Endurance"
+      ),
+      initiative: finiteNumber(
+        fields.sourceStats?.initiative,
+        "Initiative"
+      )
+    },
+    elements: stableIds(fields.elements),
+    resistances: resistanceEntries(fields.resistances),
+    capture: {
+      capturable: fields.capture?.capturable === true,
+      captureRate: finiteNumber(
+        fields.capture?.captureRate,
+        "Taux de capture"
+      ),
+      spawnChance: finiteNumber(
+        fields.capture?.spawnChance,
+        "Chance d’apparition"
+      ),
+      spawnTags: stableIds(fields.capture?.spawnTags),
+      evolution: fields.capture?.evolution ?? null
+    },
+    combat: {
+      maxHp: finiteNumber(fields.combat?.maxHp, "PV max"),
+      maxEnergy: finiteNumber(
+        fields.combat?.maxEnergy,
+        "Énergie max"
+      ),
+      initialEnergy: finiteNumber(
+        fields.combat?.initialEnergy,
+        "Énergie initiale"
+      ),
+      energyChargeAmount: finiteNumber(
+        fields.combat?.energyChargeAmount,
+        "Énergie récupérée"
+      ),
+      energyChargeIntervalMs: finiteNumber(
+        fields.combat?.energyChargeIntervalMs,
+        "Intervalle de récupération"
+      ),
+      movementEnergyPerStep: finiteNumber(
+        fields.combat?.movementEnergyPerStep,
+        "Coût de déplacement"
+      ),
+      chargeTimeModifierPct: finiteNumber(
+        fields.combat?.chargeTimeModifierPct,
+        "Modificateur de charge"
+      ),
+      approachTimeModifierPct: finiteNumber(
+        fields.combat?.approachTimeModifierPct ?? 0,
+        "Tempo de mobilité"
+      )
+    },
+    skillIds: stableIds(fields.linkedSkillIds),
+    presentation
+  });
+}
+
+
+export function syncHumanCreatureReactionControlsV1(root) {
+  const type = root.querySelector("[data-creature-reaction-type]")?.value ?? "legacy";
+  const editable = type !== "none" && type !== "legacy";
+  for (const selector of [
+    "[data-creature-reaction-charges]",
+    "[data-creature-reaction-recharge]",
+    "[data-creature-reaction-window]",
+    "[data-creature-reaction-reduction]"
+  ]) {
+    const element = root.querySelector(selector);
+    if (element) element.disabled = !editable || (selector.includes("reduction") && type !== "defense");
+  }
+  const reductionField = root.querySelector("[data-creature-reaction-defense-field]");
+  if (reductionField) reductionField.hidden = type !== "defense";
+  const iconSelect = root.querySelector("[data-creature-reaction-icon]");
+  if (iconSelect) iconSelect.disabled = !editable;
+  const previewImage = root.querySelector("[data-preview-reaction-icon]");
+  if (previewImage) {
+    const assetId = captureReactionIconAssetIdV1({
+      type: type === "legacy" ? "dodge" : type,
+      iconAssetId: iconSelect?.value || undefined
+    });
+    const asset = (EDITOR_VISUAL_ASSETS_BY_ROOT.get(root) ?? [])
+      .find(entry => entry.id === assetId);
+    const url = asset?.resource?.runtimeUrl ||
+      (asset?.resource?.file ? globalVisualAssetUrl(asset.resource.file) : null);
+    if (url) {
+      previewImage.src = url;
+      previewImage.dataset.empty = "false";
+      previewImage.alt = asset.label || "Réaction défensive";
+    } else {
+      previewImage.removeAttribute("src");
+      previewImage.dataset.empty = "true";
+    }
+  }
+}
+
+export function buildHumanCreatureDraftV3(fields) {
+  const base = buildHumanCreatureDraftV2(fields);
+  const displayScale = finiteNumber(
+    fields?.displayScale ?? 1,
+    "Taille en combat"
+  );
+  const dodgeAssetId = optionalText(
+    fields?.visual?.dodgeAssetId
+  );
+  const rangedAttackAssetId = optionalText(fields?.visual?.rangedAttackAssetId);
+  const rangedAttackBackAssetId = optionalText(fields?.visual?.rangedAttackBackAssetId);
+  const rangedAttackSettings = {
+    mode: fields?.visual?.rangedAttackMode ?? "sprite",
+    displayScale: finiteNumber(fields?.visual?.rangedAttackDisplayScale ?? 1, "Taille de l'animation distance"),
+    rotationTurns: finiteNumber(fields?.visual?.rangedAttackRotationTurns ?? 0, "Tours de l'animation distance"),
+    frameCount: finiteNumber(fields?.visual?.rangedAttackFrameCount ?? 1, "Frames de l'animation distance"),
+    transitionMs: finiteNumber(fields?.visual?.rangedAttackTransitionMs ?? 80, "Transition de l'animation distance")
+  };
+  // Same settings, independent stable asset IDs per camera view.
+  const rangedAttackVisual = rangedAttackAssetId === null
+    ? null : { assetId: rangedAttackAssetId, ...rangedAttackSettings };
+  const rangedAttackBackVisual = rangedAttackBackAssetId === null
+    ? null : { assetId: rangedAttackBackAssetId, ...rangedAttackSettings };
+  const attackPlacement = {
+    front: {
+      x: finiteNumber(fields?.visual?.rangedAttackFrontOffsetX ?? 0, "Décalage X de l'attaque face"),
+      y: finiteNumber(fields?.visual?.rangedAttackFrontOffsetY ?? 0, "Décalage Y de l'attaque face")
+    },
+    back: {
+      x: finiteNumber(fields?.visual?.rangedAttackBackOffsetX ?? 0, "Décalage X de l'attaque dos"),
+      y: finiteNumber(fields?.visual?.rangedAttackBackOffsetY ?? 0, "Décalage Y de l'attaque dos")
+    }
+  };
+  const hasAttackPlacement = (rangedAttackVisual !== null || rangedAttackBackVisual !== null) &&
+    Object.values(attackPlacement).some(point => point.x !== 0 || point.y !== 0);
+  const movementAssetId = optionalText(fields?.visual?.movementAssetId);
+  const movementBackAssetId = optionalText(fields?.visual?.movementBackAssetId);
+  const movementVisual = movementAssetId === null ? null : {
+    assetId: movementAssetId,
+    mode: fields?.visual?.movementMode ?? "roll",
+    displayScale: finiteNumber(fields?.visual?.movementDisplayScale ?? 1, "Taille mouvement"),
+    rotationTurns: finiteNumber(fields?.visual?.movementRotationTurns ?? 3, "Tours du roulement"),
+    frameCount: finiteNumber(fields?.visual?.movementFrameCount ?? 1, "Frames mouvement"),
+    transitionMs: finiteNumber(fields?.visual?.movementTransitionMs ?? 80, "Transition mouvement")
+  };
+  // Both movement views use the same validated frame and playback
+  // settings; separate asset IDs never introduce a second animation engine.
+  const movementBackVisual = movementBackAssetId === null ? null : {
+    ...(movementVisual ?? {
+      mode: fields?.visual?.movementMode ?? "roll",
+      displayScale: finiteNumber(fields?.visual?.movementDisplayScale ?? 1, "Taille mouvement"),
+      rotationTurns: finiteNumber(fields?.visual?.movementRotationTurns ?? 3, "Tours du roulement"),
+      frameCount: finiteNumber(fields?.visual?.movementFrameCount ?? 1, "Frames mouvement"),
+      transitionMs: finiteNumber(fields?.visual?.movementTransitionMs ?? 80, "Transition mouvement")
+    }),
+    assetId: movementBackAssetId
+  };
+  const commonMovement = movementVisual ?? movementBackVisual;
+  const movementScaleByView = commonMovement === null ? null : {
+    player: finiteNumber(fields?.visual?.movementPlayerScale ?? commonMovement.displayScale, "Taille déplacement joueur"),
+    opponent: finiteNumber(fields?.visual?.movementOpponentScale ?? commonMovement.displayScale, "Taille déplacement adversaire")
+  };
+  const attackScaleByView = (rangedAttackVisual === null && rangedAttackBackVisual === null) ? null : {
+    player: finiteNumber(fields?.visual?.rangedAttackPlayerScale ?? rangedAttackBackVisual?.displayScale ?? rangedAttackVisual?.displayScale ?? 1, "Taille attaque joueur"),
+    opponent: finiteNumber(fields?.visual?.rangedAttackOpponentScale ?? rangedAttackVisual?.displayScale ?? rangedAttackBackVisual?.displayScale ?? 1, "Taille attaque adversaire")
+  };
+  const movementFrameMs = finiteNumber(fields?.visual?.movementFrameMs ?? 0, "Durée frame déplacement");
+  const movementPlaybackMode = fields?.visual?.movementPlaybackMode ?? "loop";
+  const movementPlayback = commonMovement === null ? null : { frameMs: movementFrameMs, mode: movementPlaybackMode };
+  const hasAppearanceV9 = movementBackVisual !== null;
+  const shadowOffset = {
+    x: finiteNumber(fields?.shadowOffset?.x ?? 0, "Décalage X de l’ombre"),
+    y: finiteNumber(fields?.shadowOffset?.y ?? 0, "Décalage Y de l’ombre")
+  };
+  const hasShadowOffset = shadowOffset.x !== 0 || shadowOffset.y !== 0;
+  const hasAppearanceV8 = (
+    (movementScaleByView !== null && (
+      movementScaleByView.player !== commonMovement.displayScale ||
+      movementScaleByView.opponent !== commonMovement.displayScale)) ||
+    (attackScaleByView !== null && (
+      attackScaleByView.player !== (rangedAttackBackVisual?.displayScale ?? rangedAttackVisual?.displayScale) ||
+      attackScaleByView.opponent !== (rangedAttackVisual?.displayScale ?? rangedAttackBackVisual?.displayScale))) ||
+    (movementPlayback !== null && (movementFrameMs !== 0 || movementPlaybackMode !== "loop"))
+  );
+  const dodgeVisual =
+    dodgeAssetId === null
+      ? null
+      : {
+          assetId: dodgeAssetId,
+          displayScale: finiteNumber(
+            fields?.visual?.dodgeDisplayScale ?? 1,
+            "Taille de l’effet d’esquive"
+          ),
+          durationMs: finiteNumber(
+            fields?.visual?.dodgeDurationMs ?? 700,
+            "Durée visuelle de l’esquive"
+          ),
+          offsetX: finiteNumber(
+            fields?.visual?.dodgeOffsetX ?? 0,
+            "Décalage X de l’effet d’esquive"
+          ),
+          offsetY: finiteNumber(
+            fields?.visual?.dodgeOffsetY ?? 0,
+            "Décalage Y de l’effet d’esquive"
+          )
+        };
+
+  return normalizeCaptureCreatureEditorDraftV3({
+    ...base,
+    schema: "capture-creature-editor-draft-v3",
+    combat: {
+      ...base.combat,
+      ...(fields?.combat?.reaction === undefined ? {} : {
+        reaction: fields.combat.reaction
+      })
+    },
+    presentation:
+      base.presentation === null
+        ? null
+        : {
+            ...base.presentation,
+            version:
+              hasShadowOffset ? 10 : (hasAppearanceV9 ? 9 : (hasAppearanceV8 ? 8 : (hasAttackPlacement ? 7 : (rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3))))))),
+            displayScale,
+            ...(hasShadowOffset ? { shadowOffset } : {}),
+            ...(fields?.viewOverrides == null ? {} : { viewOverrides: fields.viewOverrides }),
+            position:
+              fields?.position ?? {
+                x: 0,
+                y: 0
+              },
+            transformOrigin:
+              fields?.transformOrigin ?? {
+                x: "50%",
+                y: "50%"
+              },
+            ...((dodgeVisual === null && movementVisual === null && movementBackVisual === null && rangedAttackVisual === null && rangedAttackBackVisual === null) ? {} : {
+              visual: {
+                ...base.presentation.visual,
+                ...(dodgeVisual === null ? {} : { dodge: dodgeVisual }),
+                ...(movementVisual === null ? {} : { movement: movementVisual }),
+                ...(movementBackVisual === null ? {} : { movementBack: movementBackVisual }),
+                ...(rangedAttackVisual === null ? {} : { rangedAttack: rangedAttackVisual }),
+                ...(rangedAttackBackVisual === null ? {} : { rangedAttackBack: rangedAttackBackVisual }),
+                ...(hasAttackPlacement ? { rangedAttackPlacement: attackPlacement } : {}),
+                ...((hasAppearanceV8 || hasAppearanceV9) && movementScaleByView !== null ? { movementScaleByView } : {}),
+                ...(hasAppearanceV8 && attackScaleByView !== null ? { rangedAttackScaleByView: attackScaleByView } : {}),
+                ...((hasAppearanceV8 || hasAppearanceV9) && movementPlayback !== null ? { movementPlayback } : {})
+              }
+            })
+          }
+  });
+}
+
+export function hydrateInitialSkillEffectsFromNativeV1(
+  fields,
+  nativeDraft
+) {
+  if (!fields || typeof fields !== "object") {
+    throw new TypeError("Données capacité initiale invalides");
+  }
+
+  const existingEffects = Array.isArray(fields.effects)
+    ? fields.effects
+    : [];
+
+  if (existingEffects.length > 0) {
+    return fields;
+  }
+
+  const nativeDefinition = nativeDraft?.definition;
+  if (
+    !nativeDefinition ||
+    nativeDefinition.id !== fields.id
+  ) {
+    return fields;
+  }
+
+  const hydratedEffects = [];
+  const legacyDamage =
+    Number(nativeDefinition.effect?.damage ?? 0);
+
+  if (legacyDamage > 0) {
+    hydratedEffects.push({
+      kind: "damage",
+      targetScope: "target",
+      amount: legacyDamage,
+      channel: nativeDefinition.element ?? null
+    });
+  }
+
+  if (hydratedEffects.length === 0) {
+    return fields;
+  }
+
+  return {
+    ...fields,
+    effects: hydratedEffects
+  };
+}
+
+
+const HUMAN_SKILL_ELEMENT_GROUP_META_V1 = Object.freeze([
+  Object.freeze({ element: "fire", label: "Feu" }),
+  Object.freeze({ element: "water", label: "Eau" }),
+  Object.freeze({ element: "earth", label: "Terre" }),
+  Object.freeze({ element: "air", label: "Air" }),
+  Object.freeze({ element: "electric", label: "Électricité" }),
+  Object.freeze({ element: "light", label: "Lumière" }),
+  Object.freeze({ element: "shadow", label: "Ombre" }),
+  Object.freeze({ element: "nature", label: "Nature" }),
+  Object.freeze({ element: "ice", label: "Glace" }),
+  Object.freeze({ element: "poison", label: "Poison" }),
+  Object.freeze({ element: "steel", label: "Acier" }),
+  Object.freeze({ element: "psy", label: "Psy" }),
+  Object.freeze({ element: "spirit", label: "Esprit" })
+]);
+
+const HUMAN_SKILL_ELEMENT_META_BY_ID_V1 = new Map(
+  HUMAN_SKILL_ELEMENT_GROUP_META_V1.map(
+    (entry, index) => [
+      entry.element,
+      Object.freeze({
+        ...entry,
+        order: index
+      })
+    ]
+  )
+);
+
+function humanSkillSelectorElementMetaV1(element) {
+  const normalized =
+    typeof element === "string" &&
+    element.trim() !== ""
+      ? element.trim()
+      : null;
+
+  if (normalized === null) {
+    return Object.freeze({
+      element: null,
+      label: "Neutre",
+      order:
+        HUMAN_SKILL_ELEMENT_GROUP_META_V1.length +
+        1000
+    });
+  }
+
+  const known =
+    HUMAN_SKILL_ELEMENT_META_BY_ID_V1.get(
+      normalized
+    );
+  if (known) {
+    return known;
+  }
+
+  return Object.freeze({
+    element: normalized,
+    label:
+      normalized.slice(0, 1).toLocaleUpperCase("fr") +
+      normalized.slice(1),
+    order:
+      HUMAN_SKILL_ELEMENT_GROUP_META_V1.length +
+      100
+  });
+}
+
+export function humanSkillSelectorGroupsV1(entries) {
+  if (!Array.isArray(entries)) {
+    throw new TypeError(
+      "skill selector entries must be an array"
+    );
+  }
+
+  const groupsByElement = new Map();
+
+  for (const entry of entries) {
+    if (
+      !entry ||
+      typeof entry !== "object" ||
+      Array.isArray(entry)
+    ) {
+      throw new TypeError(
+        "skill selector entry must be an object"
+      );
+    }
+
+    const meta =
+      humanSkillSelectorElementMetaV1(
+        entry.element
+      );
+    const key = meta.element ?? "__neutral__";
+
+    if (!groupsByElement.has(key)) {
+      groupsByElement.set(key, {
+        element: meta.element,
+        label: meta.label,
+        order: meta.order,
+        entries: []
+      });
+    }
+
+    groupsByElement.get(key).entries.push(entry);
+  }
+
+  const groups = [...groupsByElement.values()];
+
+  groups.sort((left, right) => {
+    const order =
+      left.order - right.order;
+    if (order !== 0) {
+      return order;
+    }
+    return left.label.localeCompare(
+      right.label,
+      "fr",
+      { sensitivity: "base" }
+    );
+  });
+
+  for (const group of groups) {
+    group.entries.sort((left, right) => {
+      const leftLevel = Number(
+        left.requiredLevel
+      );
+      const rightLevel = Number(
+        right.requiredLevel
+      );
+      const level =
+        (Number.isFinite(leftLevel)
+          ? leftLevel
+          : Number.POSITIVE_INFINITY) -
+        (Number.isFinite(rightLevel)
+          ? rightLevel
+          : Number.POSITIVE_INFINITY);
+
+      if (level !== 0) {
+        return level;
+      }
+
+      const name = String(
+        left.name ?? ""
+      ).localeCompare(
+        String(right.name ?? ""),
+        "fr",
+        { sensitivity: "base" }
+      );
+      if (name !== 0) {
+        return name;
+      }
+
+      return String(
+        left.id ?? ""
+      ).localeCompare(
+        String(right.id ?? ""),
+        "fr",
+        { sensitivity: "base" }
+      );
+    });
+  }
+
+  return Object.freeze(
+    groups.map((group) =>
+      Object.freeze({
+        element: group.element,
+        label: group.label,
+        entries: Object.freeze(
+          [...group.entries]
+        )
+      })
+    )
+  );
+}
+
+
+
+/**
+ * Display-only groups. Never consolidate records by display name:
+ * the creator's stable ID and authored draft remain authoritative.
+ */
+export function humanCreatureSelectorGroupsV1(records) {
+  if (!Array.isArray(records)) {
+    throw new TypeError("creature selector records must be an array");
+  }
+  return humanSkillSelectorGroupsV1(
+    records.map((record) => {
+      const draft = record?.draft ?? record;
+      const elements = Array.isArray(draft?.elements)
+        ? [...draft.elements]
+        : [];
+      return Object.freeze({
+        id: draft.id,
+        name: draft.displayName,
+        element: elements[0] ?? null,
+        elements: Object.freeze(elements),
+        requiredLevel: 0
+      });
+    })
+  );
+}
+
+/**
+ * Same French display name is a navigation ambiguity, not permission
+ * to delete either skill: both IDs and their gameplay remain intact.
+ */
+export function humanSkillDuplicateNameIdsV1(entries) {
+  const counts = new Map();
+  for (const entry of entries) {
+    const name = String(entry.name ?? "")
+      .trim()
+      .toLocaleLowerCase("fr");
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+  return new Set(
+    entries
+      .filter((entry) =>
+        counts.get(
+          String(entry.name ?? "").trim().toLocaleLowerCase("fr")
+        ) > 1
+      )
+      .map((entry) => entry.id)
+  );
+}
+
+export function humanConfiguredSkillLibraryEntriesV1(
+  configuredSkills
+) {
+  if (!(configuredSkills instanceof Map)) {
+    throw new TypeError(
+      "configuredSkills must be a Map"
+    );
+  }
+
+  return Object.freeze(
+    [...configuredSkills.values()].map(
+      (draft) =>
+        Object.freeze({
+          id: draft.id,
+          name: draft.definition.name,
+          element:
+            draft.definition.element ?? null,
+          requiredLevel: draft.requiredLevel,
+          loadoutSlot:
+            draft.definition.loadoutSlot ??
+            "standard"
+        })
+    )
+  );
+}
+
+export function humanSkillEditorFieldsFromDraftV1(
+  input
+) {
+  const draft =
+    normalizeCaptureSkillEditorDraftV1(input);
+  const definition = draft.definition;
+  const presentation =
+    draft.presentation ?? {};
+  const visual = presentation.visual ?? {};
+  const audio = presentation.audio ?? {};
+  const cast = visual.cast ?? null;
+  const beamStart = visual.beamStart ?? null;
+  const travel = visual.travel ?? null;
+  const impact = visual.impact ?? null;
+  const zone = visual.aura ?? null;
+
+  const fields = {
+    id: draft.id,
+    name: definition.name,
+    description: draft.description ?? "",
+    requiredLevel: draft.requiredLevel,
+    usageScopes: [...draft.usageScopes],
+    loadoutSlot:
+      definition.loadoutSlot ?? "standard",
+    category: definition.category,
+    form: definition.form,
+    element: definition.element,
+    approachMode:
+      definition.approachMode ?? "none",
+    contactHold: definition.contactHold ?? null,
+    hitPresenceStates:
+      definition.hitPresenceStates == null
+        ? null
+        : [...definition.hitPresenceStates],
+    dodgeable:
+      definition.dodgeable !== false,
+    hitsIntangible: definition.hitsIntangible === true,
+    targetLocations:
+      [...(definition.targetLocations ?? ["active"])],
+    energyCost: definition.energyCost,
+    preparationMs: definition.preparationMs,
+    travelMs: definition.travelMs,
+    recoveryMs: definition.recoveryMs,
+    cooldownMs: definition.cooldownMs ?? 0,
+    maxUsesPerCombat:
+      definition.maxUsesPerCombat ?? null,
+    activationRequirements:
+      definition.activationRequirements,
+    markerCost:definition.markerCost ?? null,
+    effects: [...(definition.effects ?? [])],
+    reaction: definition.reaction,
+    evasion: definition.evasion,
+    projectileClash:
+      definition.projectileClash,
+    effectTags:
+      [...(definition.effect?.tags ?? [])],
+    presentation: {
+      bindingVersion:
+        presentation.version ?? null,
+      ...skillSpriteControlFieldsFromVisualsV1(visual),
+      ...burrowEditorFieldsFromVisualV1(visual),
+      statusVisuals:
+        presentation.statusVisuals ?? {},
+      iconAssetId:
+        visual.icon?.assetId ?? "",
+      castAssetId:
+        cast?.assetId ?? "",
+      beamStartAssetId:
+        beamStart?.assetId ?? "",
+      beamStartDisplayScale:
+        beamStart?.displayScale ?? 1,
+      castDisplayScale:
+        cast?.displayScale ?? 1,
+      travelAssetId:
+        travel?.assetId ?? "",
+      travelDisplayScale:
+        travel?.displayScale ?? 1,
+      travelOpacityPct: (travel?.opacity ?? 1) * 100,
+      travelPlaybackMode:
+        travel?.playbackMode ?? "stretch",
+      travelFrameSpeedMultiplier: travel?.frameSpeedMultiplier ?? 1,
+      travelPerspectiveAmount: travel?.perspectiveAmount ?? 0,
+      travelFarScaleRatio: travel?.farScaleRatio ?? 1,
+      travelArrivalLayer: travel?.arrivalLayer ?? "same",
+      travelTrajectoryMode: definition.projectileTargeting === "expanding_wave"
+        ? "expanding_wave" : travel?.trajectoryMode ?? "linear",
+      waveStartRadiusPct: definition.expandingWave?.startRadiusPct ?? 3,
+      waveEndRadiusPct: definition.expandingWave?.endRadiusPct ?? 65,
+      waveThicknessPct: definition.expandingWave?.thicknessPct ?? 6,
+      fallHeightPx: travel?.fallHeightPx ?? 400,
+      fallOffsetXPx: travel?.fallOffsetXPx ?? 0,
+      castLayerPlayer:
+        cast?.layerByView?.player ??
+        "front",
+      castLayerOpponent:
+        cast?.layerByView?.opponent ??
+        "front",
+      travelLayerPlayer:
+        travel?.layerByView?.player ??
+        "front",
+      travelLayerOpponent:
+        travel?.layerByView?.opponent ??
+        "front",
+      impactAssetId:
+        impact?.assetId ?? "",
+      impactDisplayScale:
+        impact?.displayScale ?? 1,
+      impactDurationMs: impact?.durationMs ?? 0,
+      impactOffsetX: impact?.offsetX ?? 0,
+      impactOffsetY: impact?.offsetY ?? 0,
+      zoneAssetId:
+        zone?.assetId ?? "",
+      zoneAttachment:
+        zone?.attachment ?? "source",
+      zoneDisplayScale:
+        zone?.displayScale ?? 1,
+      zoneDisplayScaleX:
+        zone?.displayScaleX ?? 1,
+      zoneDisplayScaleY:
+        zone?.displayScaleY ?? 1,
+      zoneOffsetX:
+        zone?.offsetX ?? 0,
+      zoneOffsetY:
+        zone?.offsetY ?? 0,
+      socketId:
+        cast?.anchor ??
+        travel?.anchor ??
+        null,
+      castAudioAssetId:
+        audio.cast?.assetId ?? "",
+      travelAudioAssetId:
+        audio.travel?.assetId ?? "",
+      impactAudioAssetId:
+        audio.impact?.assetId ?? "",
+      zoneAudioAssetId:
+        audio.aura?.assetId ?? "",
+      fxGlowColor:
+        presentation.feedback?.glow?.color ??
+        "#ffffff",
+      fxGlowStrength:
+        presentation.feedback?.glow?.strength ??
+        0,
+      fxGlowRadiusPx:
+        presentation.feedback?.glow?.radiusPx ??
+        16,
+      impactFlashColor:
+        presentation.feedback?.impactFlash
+          ?.color ?? "#ffffff",
+      impactFlashOpacity:
+        presentation.feedback?.impactFlash
+          ?.opacity ?? 0,
+      impactFlashDurationMs:
+        presentation.feedback?.impactFlash
+          ?.durationMs ?? 120,
+      impactFlashScale:
+        presentation.feedback?.impactFlash
+          ?.scale ?? 1.5,
+      impactShakeAmplitudePx:
+        presentation.feedback?.cameraShake
+          ?.amplitudePx ?? 0,
+      impactShakeDurationMs:
+        presentation.feedback?.cameraShake
+          ?.durationMs ?? 140,
+      impactShakeSequence:
+        presentation.feedback?.cameraShake?.sequence?.map((pulse) => ({...pulse})) ?? [],
+      impactVisualTiming:
+        presentation.feedback?.cameraShake?.impactVisualTiming ?? "immediate",
+      castBurstColor:
+        presentation.feedback?.castBurst
+          ?.color ?? "#ffffff",
+      castBurstCount:
+        presentation.feedback?.castBurst
+          ?.count ?? 0,
+      castBurstSpreadPx:
+        presentation.feedback?.castBurst
+          ?.spreadPx ?? 0,
+      castBurstSizePx:
+        presentation.feedback?.castBurst
+          ?.sizePx ?? 0,
+      castBurstRisePx:
+        presentation.feedback?.castBurst
+          ?.risePx ?? 0,
+      castBurstDurationMs:
+        presentation.feedback?.castBurst
+          ?.durationMs ?? 0,
+      castBurstOpacity:
+        presentation.feedback?.castBurst
+          ?.opacity ?? 0,
+      projectileTrailColor:
+        presentation.feedback?.projectileTrail
+          ?.color ?? "#ffffff",
+      projectileTrailCount:
+        presentation.feedback?.projectileTrail
+          ?.count ?? 0,
+      projectileTrailLengthPx:
+        presentation.feedback?.projectileTrail
+          ?.lengthPx ?? 0,
+      projectileTrailSizePx:
+        presentation.feedback?.projectileTrail
+          ?.sizePx ?? 0,
+      projectileTrailOpacity:
+        presentation.feedback?.projectileTrail
+          ?.opacity ?? 0,
+      projectileTrailAnchorX:
+        presentation.feedback?.projectileTrail
+          ?.anchorX ?? 0.5,
+      projectileTrailAnchorY:
+        presentation.feedback?.projectileTrail
+          ?.anchorY ?? 0.5,
+      impactBurstColor:
+        presentation.feedback?.impactBurst
+          ?.color ?? "#ffffff",
+      impactBurstCount:
+        presentation.feedback?.impactBurst
+          ?.count ?? 0,
+      impactBurstSpreadPx:
+        presentation.feedback?.impactBurst
+          ?.spreadPx ?? 0,
+      impactBurstSizePx:
+        presentation.feedback?.impactBurst
+          ?.sizePx ?? 0,
+      impactBurstDurationMs:
+        presentation.feedback?.impactBurst
+          ?.durationMs ?? 0,
+      impactBurstOpacity:
+        presentation.feedback?.impactBurst
+          ?.opacity ?? 0,
+      aftermathSmokeColor:
+        presentation.feedback?.aftermathSmoke
+          ?.color ?? "#594943",
+      aftermathSmokeCount:
+        presentation.feedback?.aftermathSmoke
+          ?.count ?? 0,
+      aftermathSmokeSpreadPx:
+        presentation.feedback?.aftermathSmoke
+          ?.spreadPx ?? 0,
+      aftermathSmokeSizePx:
+        presentation.feedback?.aftermathSmoke
+          ?.sizePx ?? 0,
+      aftermathSmokeRisePx:
+        presentation.feedback?.aftermathSmoke
+          ?.risePx ?? 0,
+      aftermathSmokeDurationMs:
+        presentation.feedback?.aftermathSmoke
+          ?.durationMs ?? 0,
+      aftermathSmokeOpacity:
+        presentation.feedback?.aftermathSmoke
+          ?.opacity ?? 0
+    }
+  };
+
+  return hydrateInitialSkillEffectsFromNativeV1(
+    fields,
+    draft
+  );
+}
+
+// Presentation-only diagnostic: healing still belongs exclusively to Combat Rules.
+// A creator may export an unfinished draft, but must not be told an empty heal is ready.
+function hasPositiveHealingSkillEffectV1(effect) {
+  if (effect?.kind === "heal") {
+    return Number(effect.amount) > 0;
+  }
+  if (effect?.kind === "apply_status") {
+    return effect.status?.kind === "heal_over_time" &&
+      Number(effect.status.amount) > 0;
+  }
+  if (effect?.kind === "scheduled_effect") {
+    return Array.isArray(effect.effects) &&
+      effect.effects.some(hasPositiveHealingSkillEffectV1);
+  }
+  return false;
+}
+
+export function humanSkillHealExportWarningV1(draft) {
+  const definition = draft?.definition;
+  if (definition?.category !== "heal") {
+    return null;
+  }
+  if (Number(definition.effect?.heal) > 0 ||
+      definition.effects?.some(hasPositiveHealingSkillEffectV1)) {
+    return null;
+  }
+  return "Attention : la capacité est classée Soin mais aucun effet de récupération de PV n'est configuré. Vérifie les Effets tactiques et le Soin périodique : le fichier exporté ne restaurera aucun PV.";
+}
+
+export function buildHumanSkillDraftV1(fields) {
+  if (!fields || typeof fields !== "object") {
+    throw new TypeError("Données capacité invalides");
+  }
+
+  const id = requiredText(fields.id, "ID capacité");
+  const reaction = fields.reaction ?? {};
+  const projectileClash = fields.projectileClash ?? {};
+  const usesTacticalEffects =
+    Object.prototype.hasOwnProperty.call(
+      fields,
+      "effects"
+    );
+  const tacticalEffects =
+    usesTacticalEffects
+      ? buildHumanTacticalSkillEffectsV1(
+          fields.effects ?? [],
+          {
+            defaultDamageChannel:
+              fields.element ?? null
+          }
+        )
+      : [];
+
+  return normalizeCaptureSkillEditorDraftV1({
+    schema: "capture-skill-editor-draft-v1",
+    id,
+    description: optionalText(fields.description),
+    requiredLevel: positiveInteger(
+      fields.requiredLevel,
+      "Niveau requis"
+    ),
+    usageScopes: stableIds(fields.usageScopes),
+    definition: {
+      id,
+      name: requiredText(fields.name, "Nom capacité"),
+      category: requiredText(
+        fields.category,
+        "Type de capacité"
+      ),
+      form: requiredText(fields.form, "Style de capacité"),
+      // The authored trajectory owns projectile targeting in the Capture editor.
+      // A skyfall targets a fixed landing point, not a moving creature;
+      // other projectiles remain direct. Combat Rules reads only this definition.
+      projectileTargeting:
+        fields.form !== "projectile" ? "direct"
+          : fields.presentation?.travelTrajectoryMode === "expanding_wave"
+            ? "expanding_wave"
+            : fields.presentation?.travelTrajectoryMode === "skyfall"
+              ? "fixed_point"
+              : "direct",
+      ...(fields.form === "projectile" &&
+        fields.presentation?.travelTrajectoryMode === "expanding_wave"
+          ? {expandingWave:{
+              startRadiusPct: finiteNumber(fields.presentation.waveStartRadiusPct ?? 3,"Rayon de départ de l’onde"),
+              endRadiusPct: finiteNumber(fields.presentation.waveEndRadiusPct ?? 65,"Rayon final de l’onde"),
+              thicknessPct: finiteNumber(fields.presentation.waveThicknessPct ?? 6,"Épaisseur de l’onde")
+            }}
+          : {}),
+      loadoutSlot:
+        fields.loadoutSlot === "ultimate"
+          ? "ultimate"
+          : "standard",
+      element: optionalText(fields.element),
+      approachMode: requiredText(
+        fields.approachMode ?? "none",
+        "Déplacement"
+      ),
+      ...(fields.contactHold ? {
+        contactHold: {
+          tickIntervalMs: finiteNumber(fields.contactHold.tickIntervalMs, "Intervalle maintien au contact"),
+          maxDurationMs: finiteNumber(fields.contactHold.maxDurationMs ?? 0, "Durée maximale au contact"),
+          effects: buildHumanTacticalSkillEffectsV1(fields.contactHold.effects ?? [], {
+            defaultDamageChannel: fields.element ?? null
+          })
+        }
+      } : {}),
+      hitPresenceStates:
+        fields.hitPresenceStates == null
+          ? null
+          : stableIds(
+              fields.hitPresenceStates
+            ),
+      dodgeable:
+        fields.dodgeable !== false,
+      hitsIntangible: fields.hitsIntangible === true,
+      targetLocations:
+        stableIds(
+          fields.targetLocations ?? ["active"]
+        ),
+      energyCost: finiteNumber(
+        fields.energyCost,
+        "Coût énergie"
+      ),
+      preparationMs: finiteNumber(
+        fields.preparationMs,
+        "Temps de préparation"
+      ),
+      travelMs: finiteNumber(
+        fields.travelMs,
+        "Temps pour atteindre la cible"
+      ),
+      recoveryMs: finiteNumber(
+        fields.recoveryMs,
+        "Temps de récupération"
+      ),
+      cooldownMs: finiteNumber(
+        fields.cooldownMs,
+        "Temps de recharge"
+      ),
+      maxUsesPerCombat:
+        fields.maxUsesPerCombat == null ||
+        Number(fields.maxUsesPerCombat) === 0
+          ? null
+          : positiveInteger(
+              fields.maxUsesPerCombat,
+              "Utilisations max par combat"
+            ),
+      allowedDistances:
+        usesTacticalEffects
+          ? [...CAPTURE_EDITOR_COMPAT_DISTANCES_V1]
+          : stableIds(
+              fields.allowedDistances
+            ),
+      targetRelations:
+        usesTacticalEffects
+          ? humanSkillTargetRelationsFromTacticalEffectsV1(
+              tacticalEffects,
+              { form: fields.form }
+            )
+          : stableIds(
+              fields.targetRelations
+            ),
+      activationRequirements:
+        fields.activationRequirements ?? {
+          mode: "all",
+          conditions: []
+        },
+      ...(fields.markerCost == null ? {} : {markerCost:fields.markerCost}),
+      reaction: {
+        blockForms: stableIds(reaction.blockForms),
+        reflectForms: stableIds(reaction.reflectForms),
+        immuneElements: stableIds(
+          reaction.immuneElements
+        ),
+        counterForms: stableIds(
+          reaction.counterForms
+        ),
+        evadeForms: stableIds(reaction.evadeForms),
+        evadeApproaches: stableIds(
+          reaction.evadeApproaches
+        )
+      },
+      evasion:
+        fields.evasion ?? {
+          window: null,
+          incomingForms: []
+        },
+      projectileClash: {
+        power: finiteNumber(
+          projectileClash.power ?? 0,
+          "Puissance du projectile"
+        )
+      },
+      effect: {
+        damage:
+          usesTacticalEffects
+            ? 0
+            : finiteNumber(
+                fields.damage ?? 0,
+                "Dégâts"
+              ),
+        heal:
+          usesTacticalEffects
+            ? 0
+            : finiteNumber(
+                fields.heal ?? 0,
+                "Soin"
+              ),
+        stunMs:
+          usesTacticalEffects
+            ? 0
+            : finiteNumber(
+                fields.stunMs ?? 0,
+                "Stun"
+              ),
+        interruptsPreparation:
+          usesTacticalEffects
+            ? false
+            : fields.interruptsPreparation === true,
+        tags: stableIds(fields.effectTags)
+      },
+      effects: tacticalEffects
+    },
+    presentation: presentationForSkill(fields)
+  });
+}
+
+export function captureSkillDraftHasUnsavedChangesV1({
+  currentDraft,
+  configuredSkills
+}) {
+  if (
+    !currentDraft ||
+    typeof currentDraft !== "object" ||
+    Array.isArray(currentDraft)
+  ) {
+    throw new TypeError(
+      "currentDraft must be a skill draft"
+    );
+  }
+  if (!(configuredSkills instanceof Map)) {
+    throw new TypeError(
+      "configuredSkills must be a Map"
+    );
+  }
+
+  const id = requiredText(
+    currentDraft.id,
+    "ID capacité"
+  );
+  const savedDraft =
+    configuredSkills.get(id) ?? null;
+
+  if (savedDraft === null) {
+    return true;
+  }
+
+  // A legacy offensive skill can be hydrated automatically by the editor:
+  // effect.damage:N -> effects:[{kind:"damage",amount:N,...}].
+  // This is only a SERIALIZATION change, not a user edit. Compare it against
+  // the same canonical form used by the editor, while retaining the strict
+  // check for all other skills and truly modified controls.
+  if (JSON.stringify(currentDraft) === JSON.stringify(savedDraft)) {
+    return false;
+  }
+  const legacyEffect = savedDraft.definition?.effect ?? null;
+  const legacyEffects = savedDraft.definition?.effects ?? [];
+  const canHydrateLegacyDamageOnly =
+    Number(legacyEffect?.damage ?? 0) > 0 &&
+    (!Array.isArray(legacyEffects) || legacyEffects.length === 0) &&
+    Number(legacyEffect?.heal ?? 0) === 0 &&
+    Number(legacyEffect?.stunMs ?? 0) === 0 &&
+    legacyEffect?.interruptsPreparation !== true &&
+    (!Array.isArray(legacyEffect?.tags) || legacyEffect.tags.length === 0);
+  if (!canHydrateLegacyDamageOnly) {
+    return true;
+  }
+
+  try {
+    const editorCanonicalDraft = buildHumanSkillDraftV1(
+      humanSkillEditorFieldsFromDraftV1(savedDraft)
+    );
+    return JSON.stringify(currentDraft) !== JSON.stringify(editorCanonicalDraft);
+  } catch {
+    // Never silently dismiss a real unsaved edit on an invalid legacy draft.
+    return true;
+  }
+}
+
+export function buildHumanLoadoutV1({
+  creatureId,
+  skillIds,
+  ultimateSkillId = null
+}) {
+  const ids = Array.isArray(skillIds)
+    ? [...skillIds]
+    : [];
+
+  if (ids.length > 4) {
+    throw new RangeError(
+      "Le loadout standard ne peut pas dépasser 4 capacités"
+    );
+  }
+
+  while (ids.length < 4) {
+    ids.push(null);
+  }
+
+  return normalizeCaptureActiveSkillLoadoutV1({
+    schema: "capture-active-skill-loadout-v1",
+    creatureId: requiredText(
+      creatureId,
+      "Créature du loadout"
+    ),
+    slots: [
+      ...ids.map((skillId, index) => ({
+        id: "slot-" + (index + 1),
+        skillId: optionalText(skillId)
+      })),
+      {
+        id: CAPTURE_ULTIMATE_SKILL_SLOT_ID,
+        skillId:
+          optionalText(ultimateSkillId)
+      }
+    ]
+  });
+}
+
+export function buildHumanBattleSetupV1({
+  battleId,
+  localCreatureId,
+  localDisplayName,
+  opponentCreatureId,
+  opponentDisplayName,
+  arenaId,
+  activePerTeam,
+  skillSpeedMultiplier = CAPTURE_COMBAT_REFERENCE_SPEED_V1,
+  gameOptions
+}) {
+  const count = positiveInteger(
+    activePerTeam,
+    "Nombre de créatures actives"
+  );
+
+  if (count > 2) {
+    throw new RangeError(
+      "Le combat Capture accepte uniquement 1v1 ou 2v2"
+    );
+  }
+
+  const localSlots = [];
+  const enemySlots = [];
+
+  for (let index = 0; index < count; index += 1) {
+    const number = index + 1;
+
+    localSlots.push({
+      actorId: "local-" + number,
+      creatureId: requiredText(
+        localCreatureId,
+        "Créature locale"
+      ),
+      displayName: requiredText(
+        localDisplayName,
+        "Nom créature locale"
+      ),
+      controllerId:
+        index === 0
+          ? "human-local"
+          : "ai-ally",
+      roster: null
+    });
+
+    enemySlots.push({
+      actorId: "opponent-" + number,
+      creatureId: requiredText(
+        opponentCreatureId,
+        "Créature adverse"
+      ),
+      displayName: requiredText(
+        opponentDisplayName,
+        "Nom créature adverse"
+      ),
+      controllerId: "ai-enemy",
+      roster: null
+    });
+  }
+
+  return normalizeCaptureBattleSetupEditorDraftV1({
+    schema: "capture-battle-setup-editor-draft-v1",
+    id: requiredText(battleId, "ID combat"),
+    localActorId: "local-1",
+    arenaId: requiredText(
+      arenaId,
+      "Arène du combat"
+    ),
+    skillSpeedMultiplier,
+    ...(gameOptions === undefined ? {} : { gameOptions }),
+    teams: [
+      {
+        id: "local-team",
+        slots: localSlots
+      },
+      {
+        id: "enemy-team",
+        slots: enemySlots
+      }
+    ]
+  });
+}
+
+// Two preview actors may reference the same configured definition.
+// Only identical rows are shared; conflicting IDs still reach the exporter guard.
+function uniqueHumanPreviewRecords(records) {
+  const seen = new Set();
+  return records.filter((record) => {
+    const serialized = JSON.stringify(record);
+    if (seen.has(serialized)) return false;
+    seen.add(serialized);
+    return true;
+  });
+}
+
+export function buildHumanEditorExportV2({
+  creatureDraft,
+  skillDrafts,
+  loadout,
+  battleSetup,
+  opponentCreatureDraft,
+  opponentSkillDrafts,
+  opponentLoadout
+}) {
+  return exportCaptureEditorDraftsToCombatExportV2({
+    battleSetup,
+    creatureDrafts: uniqueHumanPreviewRecords([
+      creatureDraft,
+      opponentCreatureDraft
+    ]),
+    skillDrafts: [
+      ...skillDrafts,
+      ...opponentSkillDrafts
+    ],
+    loadouts: uniqueHumanPreviewRecords([
+      loadout,
+      opponentLoadout
+    ]),
+    metadata: {
+      editor: "capture-human-v2"
+    }
+  });
+}
+
+
+export function buildHumanEditorExportV3({
+  creatureDraft,
+  skillDrafts,
+  loadout,
+  battleSetup,
+  opponentCreatureDraft,
+  opponentSkillDrafts,
+  opponentLoadout,
+  statRegistry = null,
+  statValues = [],
+  progressionRules = null
+}) {
+  const statsInput =
+    statRegistry === null
+      ? {}
+      : {
+          statRegistry,
+          statValues: uniqueHumanPreviewRecords(statValues)
+        };
+  const progressionInput =
+    progressionRules === null
+      ? {}
+      : {
+          progressionRules
+        };
+
+  return exportCaptureEditorDraftsToCombatExportV3({
+    battleSetup,
+    creatureDrafts: uniqueHumanPreviewRecords([
+      creatureDraft,
+      opponentCreatureDraft
+    ]),
+    skillDrafts: [
+      ...skillDrafts,
+      ...opponentSkillDrafts
+    ],
+    loadouts: uniqueHumanPreviewRecords([
+      loadout,
+      opponentLoadout
+    ]),
+    ...statsInput,
+    ...progressionInput,
+    metadata: {
+      editor: "capture-human-v2"
+    }
+  });
+}
+
+function one(root, selector) {
+  const element = root.querySelector(selector);
+  if (!element) {
+    throw new Error(
+      "Élément éditeur introuvable : " + selector
+    );
+  }
+  return element;
+}
+
+function checkedValues(root, selector) {
+  return [...root.querySelectorAll(selector)]
+    .filter((element) => element.checked)
+    .map((element) => element.value);
+}
+
+function selectedValue(root, selector) {
+  return one(root, selector).value;
+}
+
+function numericValue(root, selector) {
+  return Number(selectedValue(root, selector));
+}
+
+export function readHumanGameOptionsV1(root) {
+  const activeWindowInput =
+    root.querySelector(
+      "[data-game-dodge-active-seconds]"
+    );
+
+  const recallCooldownInput = root.querySelector("[data-game-recall-cooldown-seconds]");
+  return normalizeCaptureGameOptionsV1({
+    recallCooldownMs: recallCooldownInput === null
+      ? CAPTURE_GAME_OPTIONS_V1_DEFAULT.recallCooldownMs
+      : Number(recallCooldownInput.value) * 1000,
+    dodge: {
+      enabled:
+        one(
+          root,
+          "[data-game-dodge-enabled]"
+        ).checked,
+      maxCharges: positiveInteger(
+        numericValue(
+          root,
+          "[data-game-dodge-charges]"
+        ),
+        "Charges d’esquive"
+      ),
+      rechargeMs:
+        numericValue(
+          root,
+          "[data-game-dodge-recharge-seconds]"
+        ) * 1000,
+      activeWindowMs:
+        activeWindowInput === null
+          ? CAPTURE_GAME_OPTIONS_V1_DEFAULT
+              .dodge.activeWindowMs
+          : Number(
+              activeWindowInput.value
+            ) * 1000
+    }
+  });
+}
+
+export function readHumanCombatRulesV1(root) {
+  return normalizeCaptureCombatRulesEditorDraftV1({
+    schema: "capture-combat-rules-editor-draft-v1",
+    maxEnergy: numericValue(
+      root,
+      "[data-max-energy]"
+    ),
+    initialEnergy: numericValue(
+      root,
+      "[data-initial-energy]"
+    ),
+    energyChargeAmount: numericValue(
+      root,
+      "[data-energy-charge-amount]"
+    ),
+    energyChargeIntervalMs: numericValue(
+      root,
+      "[data-energy-charge-interval]"
+    ),
+    movementEnergyPerStep: numericValue(
+      root,
+      "[data-movement-energy]"
+    ),
+    chargeTimeModifierPct: numericValue(
+      root,
+      "[data-charge-time-modifier]"
+    )
+  });
+}
+
+function renderHumanProjectilePowerV1(
+  root,
+  projectileClash
+) {
+  one(
+    root,
+    "[data-skill-projectile-power]"
+  ).value = String(
+    projectileClash?.power ?? 0
+  );
+}
+
+export function readHumanProjectilePowerV1(
+  root,
+  form
+) {
+  return {
+    power:
+      (form === "projectile" || form === "beam")
+        ? numericValue(
+            root,
+            "[data-skill-projectile-power]"
+          )
+        : 0
+  };
+}
+
+function writeHumanContactHoldFieldsV1(root, hold, statRegistry = null, statusVisuals = {}) {
+  one(root, "[data-skill-contact-hold-enabled]").checked = hold !== null && hold !== undefined;
+  one(root, "[data-skill-contact-hold-settings]").hidden = hold === null || hold === undefined;
+  one(root, "[data-skill-contact-hold-interval]").value = String(hold?.tickIntervalMs ?? 1000);
+  one(root, "[data-skill-contact-hold-duration]").value = String(hold?.maxDurationMs ?? 0);
+  renderHumanSkillEffectsV1(root, hold?.effects ?? [], statRegistry, statusVisuals,
+    "[data-skill-contact-hold-effects-host]");
+}
+
+function writeSkillTemplateFields(
+  root,
+  fields,
+  statRegistry = null
+) {
+  const mapping = [
+    ["[data-skill-id]", fields.id],
+    ["[data-skill-name]", fields.name],
+    ["[data-skill-description]", fields.description],
+    ["[data-skill-category]", fields.category],
+    ["[data-skill-element]", fields.element ?? ""],
+    ["[data-skill-required-level]", fields.requiredLevel],
+    [
+      "[data-skill-max-uses-per-combat]",
+      fields.maxUsesPerCombat ?? 0
+    ]
+  ];
+
+  one(
+    root,
+    "[data-skill-ultimate]"
+  ).checked =
+    fields.loadoutSlot === "ultimate";
+
+  for (const [selector, value] of mapping) {
+    one(root, selector).value = String(value ?? "");
+  }
+
+  if (
+    Object.prototype.hasOwnProperty.call(
+      fields,
+      "activationRequirements"
+    )
+  ) {
+    renderHumanSkillActivationRequirementsV1(
+      root,
+      fields.activationRequirements
+    );
+  }
+  if(Object.prototype.hasOwnProperty.call(fields,"markerCost"))
+    renderHumanSkillMarkerCostV1(root, fields.markerCost);
+
+  renderHumanSkillEffectsV1(
+    root,
+    fields.effects ?? [],
+    statRegistry
+  );
+
+  if (
+    Object.prototype.hasOwnProperty.call(
+      fields,
+      "projectileClash"
+    )
+  ) {
+    renderHumanProjectilePowerV1(
+      root,
+      fields.projectileClash
+    );
+  }
+}
+
+function writeSkillDraftFields(
+  root,
+  draft,
+  statRegistry = null
+) {
+  const fields =
+    humanSkillEditorFieldsFromDraftV1(
+      draft
+    );
+
+  writeSkillSpriteControlsV1(root, fields.presentation);
+  writeBurrowStageFieldsV1(root, fields.presentation);
+  writeSkillFeedbackControlsV1(
+    root,
+    fields.presentation
+  );
+  ensureSkillSocketReferenceOptionV1(
+    root,
+    fields.presentation.socketId
+  );
+  const values = [
+    ["[data-skill-id]", fields.id],
+    ["[data-skill-name]", fields.name],
+    [
+      "[data-skill-description]",
+      fields.description
+    ],
+    [
+      "[data-skill-category]",
+      fields.category
+    ],
+    ["[data-skill-form]", fields.form],
+    [
+      "[data-skill-element]",
+      fields.element ?? ""
+    ],
+    [
+      "[data-skill-energy-cost]",
+      fields.energyCost
+    ],
+    [
+      "[data-skill-required-level]",
+      fields.requiredLevel
+    ],
+    [
+      "[data-skill-approach]",
+      fields.approachMode
+    ],
+    [
+      "[data-skill-preparation]",
+      fields.preparationMs
+    ],
+    [
+      "[data-skill-travel-time]",
+      fields.travelMs
+    ],
+    [
+      "[data-skill-recovery]",
+      fields.recoveryMs
+    ],
+    [
+      "[data-skill-cooldown]",
+      fields.cooldownMs
+    ],
+    [
+      "[data-skill-max-uses-per-combat]",
+      fields.maxUsesPerCombat ?? 0
+    ],
+    [
+      "[data-skill-icon]",
+      fields.presentation.iconAssetId
+    ],
+    [
+      "[data-skill-socket]",
+      fields.presentation.socketId ?? ""
+    ],
+    [
+      "[data-skill-cast-fx]",
+      fields.presentation.castAssetId
+    ],
+    [
+      "[data-skill-cast-scale]",
+      fields.presentation.castDisplayScale
+    ],
+    ["[data-skill-beam-start-fx]", fields.presentation.beamStartAssetId],
+    ["[data-skill-beam-start-scale]", fields.presentation.beamStartDisplayScale],
+    [
+      "[data-skill-travel-fx]",
+      fields.presentation.travelAssetId
+    ],
+    [
+      "[data-skill-travel-scale]",
+      fields.presentation.travelDisplayScale
+    ],
+    ["[data-skill-travel-opacity-pct]", fields.presentation.travelOpacityPct],
+    [
+      "[data-skill-travel-playback]",
+      fields.presentation.travelPlaybackMode
+    ],
+    ["[data-skill-travel-frame-speed]", fields.presentation.travelFrameSpeedMultiplier],
+    ["[data-skill-travel-perspective]", fields.presentation.travelPerspectiveAmount],
+    ["[data-skill-travel-far-scale]", fields.presentation.travelFarScaleRatio],
+    ["[data-skill-travel-arrival-layer]", fields.presentation.travelArrivalLayer],
+    ["[data-skill-trajectory-mode]", fields.presentation.travelTrajectoryMode],
+    ["[data-skill-wave-start-radius]", fields.presentation.waveStartRadiusPct],
+    ["[data-skill-wave-end-radius]", fields.presentation.waveEndRadiusPct],
+    ["[data-skill-wave-thickness]", fields.presentation.waveThicknessPct],
+    ["[data-skill-fall-height]", fields.presentation.fallHeightPx],
+    ["[data-skill-fall-offset-x]", fields.presentation.fallOffsetXPx],
+    [
+      "[data-skill-cast-layer-player]",
+      fields.presentation.castLayerPlayer
+    ],
+    [
+      "[data-skill-cast-layer-opponent]",
+      fields.presentation.castLayerOpponent
+    ],
+    [
+      "[data-skill-travel-layer-player]",
+      fields.presentation.travelLayerPlayer
+    ],
+    [
+      "[data-skill-travel-layer-opponent]",
+      fields.presentation.travelLayerOpponent
+    ],
+    [
+      "[data-skill-impact-fx]",
+      fields.presentation.impactAssetId
+    ],
+    [
+      "[data-skill-impact-scale]",
+      fields.presentation.impactDisplayScale
+    ],
+    ["[data-skill-impact-duration]", fields.presentation.impactDurationMs],
+    ["[data-skill-impact-offset-x]", fields.presentation.impactOffsetX],
+    ["[data-skill-impact-offset-y]", fields.presentation.impactOffsetY],
+    [
+      "[data-skill-zone-fx]",
+      fields.presentation.zoneAssetId
+    ],
+    [
+      "[data-skill-zone-attachment]",
+      fields.presentation.zoneAttachment
+    ],
+    [
+      "[data-skill-zone-scale]",
+      fields.presentation.zoneDisplayScale
+    ],
+    [
+      "[data-skill-zone-scale-x]",
+      fields.presentation.zoneDisplayScaleX
+    ],
+    [
+      "[data-skill-zone-scale-y]",
+      fields.presentation.zoneDisplayScaleY
+    ],
+    [
+      "[data-skill-zone-offset-x]",
+      fields.presentation.zoneOffsetX
+    ],
+    [
+      "[data-skill-zone-offset-y]",
+      fields.presentation.zoneOffsetY
+    ],
+    [
+      "[data-skill-cast-audio]",
+      fields.presentation.castAudioAssetId
+    ],
+    [
+      "[data-skill-travel-audio]",
+      fields.presentation.travelAudioAssetId
+    ],
+    [
+      "[data-skill-impact-audio]",
+      fields.presentation.impactAudioAssetId
+    ],
+    [
+      "[data-skill-zone-audio]",
+      fields.presentation.zoneAudioAssetId
+    ]
+  ];
+
+  for (const [selector, value] of values) {
+    one(root, selector).value =
+      String(value ?? "");
+  }
+  syncCaptureBeamStageLayoutV1(root);
+
+  one(
+    root,
+    "[data-skill-ultimate]"
+  ).checked =
+    fields.loadoutSlot === "ultimate";
+
+  const reachEnabled =
+    fields.hitPresenceStates !== null;
+  one(
+    root,
+    "[data-skill-hit-presence-enabled]"
+  ).checked = reachEnabled;
+  for (
+    const input of root.querySelectorAll(
+      "[data-skill-hit-presence]"
+    )
+  ) {
+    input.checked =
+      reachEnabled
+        ? fields.hitPresenceStates.includes(
+            input.value
+          )
+        : input.value === "surface";
+    input.disabled = !reachEnabled;
+  }
+
+  one(
+    root,
+    "[data-skill-dodgeable]"
+  ).checked =
+    fields.dodgeable !== false;
+  one(root, "[data-skill-hits-intangible]").checked = fields.hitsIntangible === true;
+
+  for (
+    const input of root.querySelectorAll(
+      "[data-skill-location-scope]"
+    )
+  ) {
+    input.checked =
+      fields.targetLocations.includes(
+        input.value
+      );
+  }
+
+  renderHumanSkillActivationRequirementsV1(
+    root,
+    fields.activationRequirements
+  );
+  renderHumanSkillMarkerCostV1(root,fields.markerCost);
+  renderHumanSkillEffectsV1(
+    root,
+    fields.effects,
+    statRegistry,
+    fields.presentation.statusVisuals
+  );
+  writeHumanContactHoldFieldsV1(root, fields.contactHold, statRegistry,
+    fields.presentation.statusVisuals);
+  renderHumanProjectilePowerV1(
+    root,
+    fields.projectileClash
+  );
+
+  return fields;
+}
+
+function prepareNewSkillDraftFields(
+  root,
+  id,
+  statRegistry = null
+) {
+  writeSkillSpriteControlsV1(root);
+  const values = [
+    ["[data-skill-id]", id],
+    ["[data-skill-name]", "Nouvelle capacité"],
+    ["[data-skill-description]", ""],
+    ["[data-skill-category]", "offensive"],
+    ["[data-skill-form]", "contact"],
+    ["[data-skill-element]", ""],
+    ["[data-skill-energy-cost]", 0],
+    ["[data-skill-required-level]", 1],
+    ["[data-skill-approach]", "none"],
+    ["[data-skill-preparation]", 0],
+    ["[data-skill-travel-time]", 0],
+    ["[data-skill-recovery]", 0],
+    ["[data-skill-cooldown]", 0],
+    ["[data-skill-max-uses-per-combat]", 0],
+    ["[data-skill-projectile-power]", 0],
+    ["[data-skill-icon]", ""],
+    ["[data-skill-socket]", ""],
+    ["[data-skill-cast-fx]", ""],
+    ["[data-skill-cast-scale]", 1],
+    ["[data-skill-beam-start-fx]", ""],
+    ["[data-skill-beam-start-scale]", 1],
+    ["[data-skill-travel-fx]", ""],
+    ["[data-skill-travel-scale]", 1],
+    ["[data-skill-travel-opacity-pct]", 100],
+    ["[data-skill-travel-playback]", "stretch"],
+    ["[data-skill-travel-frame-speed]", 1],
+    ["[data-skill-travel-perspective]", 0],
+    ["[data-skill-travel-far-scale]", 1],
+    ["[data-skill-travel-arrival-layer]", "same"],
+    ["[data-skill-trajectory-mode]", "linear"],
+    ["[data-skill-wave-start-radius]", 3],
+    ["[data-skill-wave-end-radius]", 65],
+    ["[data-skill-wave-thickness]", 6],
+    ["[data-skill-fall-height]", 400],
+    ["[data-skill-fall-offset-x]", 0],
+    ["[data-skill-cast-layer-player]", "front"],
+    ["[data-skill-cast-layer-opponent]", "front"],
+    ["[data-skill-travel-layer-player]", "front"],
+    ["[data-skill-travel-layer-opponent]", "front"],
+    ["[data-skill-impact-fx]", ""],
+    ["[data-skill-impact-scale]", 1],
+    ["[data-skill-impact-duration]", 0],
+    ["[data-skill-impact-offset-x]", 0],
+    ["[data-skill-impact-offset-y]", 0],
+    ["[data-skill-zone-fx]", ""],
+    ["[data-skill-zone-attachment]", "source"],
+    ["[data-skill-zone-scale]", 1],
+    ["[data-skill-zone-scale-x]", 1],
+    ["[data-skill-zone-scale-y]", 1],
+    ["[data-skill-zone-offset-x]", 0],
+    ["[data-skill-zone-offset-y]", 0],
+    ["[data-skill-cast-audio]", ""],
+    ["[data-skill-travel-audio]", ""],
+    ["[data-skill-impact-audio]", ""],
+    ["[data-skill-zone-audio]", ""]
+  ];
+
+  for (const [selector, value] of values) {
+    one(root, selector).value = String(value);
+  }
+  syncCaptureBeamStageLayoutV1(root);
+
+  one(
+    root,
+    "[data-skill-ultimate]"
+  ).checked = false;
+
+  one(
+    root,
+    "[data-skill-hit-presence-enabled]"
+  ).checked = false;
+  for (
+    const input of root.querySelectorAll(
+      "[data-skill-hit-presence]"
+    )
+  ) {
+    input.checked =
+      input.value === "surface";
+    input.disabled = true;
+  }
+  one(
+    root,
+    "[data-skill-dodgeable]"
+  ).checked = true;
+  one(root, "[data-skill-hits-intangible]").checked = false;
+  for (
+    const input of root.querySelectorAll(
+      "[data-skill-location-scope]"
+    )
+  ) {
+    input.checked =
+      input.value === "active";
+  }
+
+  renderHumanProjectilePowerV1(
+    root,
+    {
+      power: 0
+    }
+  );
+  renderHumanSkillActivationRequirementsV1(
+    root,
+    {
+      mode: "all",
+      conditions: []
+    }
+  );
+  renderHumanSkillMarkerCostV1(root,null);
+  renderHumanSkillEffectsV1(
+    root,
+    [],
+    statRegistry
+  );
+  writeHumanContactHoldFieldsV1(root, null, statRegistry);
+  writeSkillFeedbackControlsV1(
+    root,
+    {}
+  );
+
+}
+
+function creatureAudioAssetId(entry) {
+  return entry?.assetId ?? "";
+}
+
+function creatureResistanceValue(draft, element) {
+  const kind = "element:" + element;
+  return (
+    draft.resistances.find(
+      (entry) => entry.kind === kind
+    )?.value ?? 0
+  );
+}
+
+function setFieldValue(root, selector, value) {
+  one(root, selector).value = String(value ?? "");
+}
+
+function dispatchFieldEvent(element, type) {
+  element.dispatchEvent(new Event(type, {
+    bubbles: true
+  }));
+}
+
+function replaceCreatureSockets(
+  root,
+  sockets,
+  presentation
+) {
+  sockets.clear();
+
+  for (
+    const marker of root.querySelectorAll(
+      ".socket-marker"
+    )
+  ) {
+    marker.remove();
+  }
+
+  for (const socket of presentation?.sockets ?? []) {
+    sockets.set(socket.id, {
+      id: socket.id,
+      label: socket.label,
+      front: socket.front
+        ? { ...socket.front }
+        : null,
+      back: socket.back
+        ? { ...socket.back }
+        : null
+    });
+  }
+
+  syncSkillSocketSelect(root, sockets);
+  syncCreatureSocketMarkers(root, sockets);
+}
+
+// Shared editor controls describe the existing primary appearance: FACE if
+// present, otherwise DOS. Never synthesize "roll" for a back-only sprite.
+export function captureCreatureEditorVisualSlotForSettingsV1(visual, role) {
+  if (role === "movement") return visual?.movement ?? visual?.movementBack ?? null;
+  if (role === "attack") return visual?.rangedAttack ?? visual?.rangedAttackBack ?? null;
+  throw new RangeError("Unknown creature animation appearance role: " + role);
+}
+
+function writeCreatureRecordFields(
+  root,
+  record,
+  sockets,
+  statRegistry = null
+) {
+  const draft = record.draft;
+  const loadout = record.loadout;
+  const presentation = draft.presentation;
+  const movementEditorSlot = captureCreatureEditorVisualSlotForSettingsV1(presentation?.visual, "movement");
+  const attackEditorSlot = captureCreatureEditorVisualSlotForSettingsV1(presentation?.visual, "attack");
+  one(root, "[data-creature-custom-views]").checked = Boolean(
+    presentation?.viewOverrides && Object.keys(presentation.viewOverrides).length
+  );
+
+  const fields = [
+    ["[data-creature-id]", draft.id],
+    ["[data-creature-name]", draft.displayName],
+    ["[data-creature-description]", draft.description],
+    ["[data-creature-level]", draft.level],
+    [
+      "[data-creature-profile]",
+      presentation?.profileId ?? "biped"
+    ],
+    ["[data-creature-shadow-offset-x]", presentation?.shadowOffset?.x ?? 0],
+    ["[data-creature-shadow-offset-y]", presentation?.shadowOffset?.y ?? 0],
+    [
+      "[data-creature-display-scale]",
+      presentation?.displayScale ?? 1
+    ],
+    [
+      "[data-creature-approach-time-modifier]",
+      draft.combat?.approachTimeModifierPct ?? 0
+    ],
+    ["[data-creature-player-scale]", presentation?.viewOverrides?.player?.displayScale ?? presentation?.displayScale ?? 1],
+    ["[data-creature-opponent-scale]", presentation?.viewOverrides?.opponent?.displayScale ?? presentation?.displayScale ?? 1],
+    ["[data-creature-player-x]", presentation?.viewOverrides?.player?.position?.x ?? presentation?.position?.x ?? 0],
+    ["[data-creature-player-y]", presentation?.viewOverrides?.player?.position?.y ?? presentation?.position?.y ?? 0],
+    ["[data-creature-opponent-x]", presentation?.viewOverrides?.opponent?.position?.x ?? presentation?.position?.x ?? 0],
+    ["[data-creature-opponent-y]", presentation?.viewOverrides?.opponent?.position?.y ?? presentation?.position?.y ?? 0],
+    [
+      "[data-capture-rate]",
+      draft.capture.captureRate
+    ],
+    [
+      "[data-spawn-chance]",
+      draft.capture.spawnChance
+    ],
+    [
+      "[data-creature-front-select]",
+      presentation?.visual?.front?.assetId ?? ""
+    ],
+    [
+      "[data-creature-back-select]",
+      presentation?.visual?.back?.assetId ?? ""
+    ],
+    [
+      "[data-creature-icon-select]",
+      presentation?.visual?.icon?.assetId ?? ""
+    ],
+    ["[data-creature-reaction-type]", draft.combat?.reaction?.type ?? "legacy"],
+    ["[data-creature-reaction-charges]", draft.combat?.reaction?.maxCharges ?? 2],
+    ["[data-creature-reaction-recharge]", (draft.combat?.reaction?.rechargeMs ?? 30000) / 1000],
+    ["[data-creature-reaction-window]", (draft.combat?.reaction?.activeWindowMs ?? 250) / 1000],
+    ["[data-creature-reaction-reduction]", draft.combat?.reaction?.damageReductionPct ?? 50],
+    ["[data-creature-reaction-icon]", draft.combat?.reaction?.iconAssetId ?? ""],
+    [
+      "[data-creature-dodge-fx]",
+      presentation?.visual?.dodge?.assetId ?? ""
+    ],
+    [
+      "[data-creature-dodge-scale]",
+      presentation?.visual?.dodge?.displayScale ?? 1
+    ],
+    [
+      "[data-creature-dodge-duration]",
+      presentation?.visual?.dodge?.durationMs ?? 700
+    ],
+    [
+      "[data-creature-dodge-offset-x]",
+      presentation?.visual?.dodge?.offsetX ?? 0
+    ],
+    [
+      "[data-creature-dodge-offset-y]",
+      presentation?.visual?.dodge?.offsetY ?? 0
+    ],
+    ["[data-creature-movement-visual]", presentation?.visual?.movement?.assetId ?? ""],
+    ["[data-creature-movement-back-visual]", presentation?.visual?.movementBack?.assetId ?? ""],
+    ["[data-creature-movement-mode]", movementEditorSlot?.mode ?? "roll"],
+    ["[data-creature-movement-scale]", movementEditorSlot?.displayScale ?? 1],
+    ["[data-creature-movement-player-scale]", presentation?.visual?.movementScaleByView?.player ?? movementEditorSlot?.displayScale ?? 1],
+    ["[data-creature-movement-opponent-scale]", presentation?.visual?.movementScaleByView?.opponent ?? movementEditorSlot?.displayScale ?? 1],
+    ["[data-creature-movement-frame-ms]", presentation?.visual?.movementPlayback?.frameMs ?? 0],
+    ["[data-creature-movement-playback]", presentation?.visual?.movementPlayback?.mode ?? "loop"],
+    ["[data-creature-movement-turns]", movementEditorSlot?.rotationTurns ?? 3],
+    ["[data-creature-movement-frames]", movementEditorSlot?.frameCount ?? 1],
+    ["[data-creature-movement-transition]", movementEditorSlot?.transitionMs ?? 80],
+    ["[data-creature-ranged-attack-visual]", presentation?.visual?.rangedAttack?.assetId ?? ""],
+    ["[data-creature-ranged-attack-back-visual]", presentation?.visual?.rangedAttackBack?.assetId ?? ""],
+    ["[data-creature-ranged-front-offset-x]", presentation?.visual?.rangedAttackPlacement?.front?.x ?? 0],
+    ["[data-creature-ranged-front-offset-y]", presentation?.visual?.rangedAttackPlacement?.front?.y ?? 0],
+    ["[data-creature-ranged-back-offset-x]", presentation?.visual?.rangedAttackPlacement?.back?.x ?? 0],
+    ["[data-creature-ranged-back-offset-y]", presentation?.visual?.rangedAttackPlacement?.back?.y ?? 0],
+    ["[data-creature-ranged-attack-mode]", attackEditorSlot?.mode ?? "sprite"],
+    ["[data-creature-ranged-attack-scale]", attackEditorSlot?.displayScale ?? 1],
+    ["[data-creature-ranged-attack-player-scale]", presentation?.visual?.rangedAttackScaleByView?.player ?? attackEditorSlot?.displayScale ?? 1],
+    ["[data-creature-ranged-attack-opponent-scale]", presentation?.visual?.rangedAttackScaleByView?.opponent ?? attackEditorSlot?.displayScale ?? 1],
+    ["[data-creature-ranged-attack-turns]", attackEditorSlot?.rotationTurns ?? 0],
+    ["[data-creature-ranged-attack-frames]", attackEditorSlot?.frameCount ?? 1],
+    ["[data-creature-ranged-attack-transition]", attackEditorSlot?.transitionMs ?? 80],
+    [
+      "[data-creature-audio-attack]",
+      creatureAudioAssetId(
+        presentation?.audio?.attack
+      )
+    ],
+    [
+      "[data-creature-audio-movement]",
+      creatureAudioAssetId(
+        presentation?.audio?.movement
+      )
+    ],
+    ["[data-creature-audio-movement-mode]",presentation?.audio?.movement?.mode??"once"],
+    ["[data-creature-audio-movement-interval]",presentation?.audio?.movement?.repeatIntervalMs??400],
+    [
+      "[data-creature-audio-hit]",
+      creatureAudioAssetId(
+        presentation?.audio?.hit
+      )
+    ],
+    [
+      "[data-creature-audio-ko]",
+      creatureAudioAssetId(
+        presentation?.audio?.ko
+      )
+    ],
+    ["[data-creature-audio-dodge]",creatureAudioAssetId(presentation?.audio?.dodge)],
+    ["[data-creature-audio-defense]",creatureAudioAssetId(presentation?.audio?.defense)]
+  ];
+
+  for (const [selector, value] of fields) {
+    setFieldValue(root, selector, value);
+  }
+  syncHumanCreatureReactionControlsV1(root);
+
+  one(
+    root,
+    "[data-creature-mobility-preset]"
+  ).value =
+    humanMobilityTempoPresetIdV1(
+      draft.combat?.approachTimeModifierPct ?? 0
+    );
+
+  one(root, "[data-capturable]").checked =
+    draft.capture.capturable;
+
+  const evolution =
+    draft.capture.evolution;
+  const evolutionEnabled = one(
+    root,
+    "[data-evolution-enabled]"
+  );
+  const evolutionTarget = one(
+    root,
+    "[data-evolution-target]"
+  );
+  const evolutionLevel = one(
+    root,
+    "[data-evolution-level]"
+  );
+
+  evolutionEnabled.checked =
+    evolution !== null;
+
+  if (
+    evolution?.targetId &&
+    ![
+      ...evolutionTarget.options
+    ].some(
+      (option) =>
+        option.value ===
+        evolution.targetId
+    )
+  ) {
+    createOption(
+      evolutionTarget,
+      evolution.targetId,
+      evolution.targetId
+    );
+  }
+
+  evolutionTarget.value =
+    evolution?.targetId ?? "";
+  evolutionLevel.value = String(
+    evolution?.level ??
+      Math.max(2, draft.level + 1)
+  );
+  syncEvolutionControlsV1(root);
+
+  if (statRegistry !== null) {
+    renderHumanStatValuesV1(
+      root,
+      statRegistry,
+      record.statValues ?? null
+    );
+  }
+
+  for (
+    const input of root.querySelectorAll(
+      "[data-element]"
+    )
+  ) {
+    input.checked =
+      draft.elements.includes(input.value);
+  }
+
+  for (
+    const input of root.querySelectorAll(
+      "[data-resistance]"
+    )
+  ) {
+    input.value = String(
+      creatureResistanceValue(
+        draft,
+        input.dataset.resistance
+      )
+    );
+  }
+
+  const standardSlots = [
+    ...root.querySelectorAll(
+      '[data-loadout-slot-type="standard"]'
+    )
+  ];
+  for (
+    let index = 0;
+    index < standardSlots.length;
+    index += 1
+  ) {
+    standardSlots[index].value =
+      loadout.slots[index]?.skillId ?? "";
+  }
+
+  one(
+    root,
+    '[data-loadout-slot-type="ultimate"]'
+  ).value =
+    loadout.slots.find(
+      (slot) =>
+        slot.id ===
+        CAPTURE_ULTIMATE_SKILL_SLOT_ID
+    )?.skillId ?? "";
+
+  replaceCreatureSockets(
+    root,
+    sockets,
+    presentation
+  );
+
+  for (const selector of [
+    "[data-creature-front-select]",
+    "[data-creature-back-select]",
+    "[data-creature-icon-select]"
+  ]) {
+    dispatchFieldEvent(
+      one(root, selector),
+      "change"
+    );
+  }
+
+  dispatchFieldEvent(
+    one(root, "[data-creature-display-scale]"),
+    "input"
+  );
+}
+
+function prepareNewCreatureDraftFields(
+  root,
+  id,
+  sockets,
+  statRegistry = null
+) {
+  one(root, "[data-creature-custom-views]").checked = false;
+  const defaults = [
+    ["[data-creature-id]", id],
+    ["[data-creature-name]", "Nouvelle créature"],
+    ["[data-creature-description]", ""],
+    ["[data-creature-level]", 1],
+    ["[data-creature-profile]", "biped"],
+    ["[data-creature-mobility-preset]", "normal"],
+    ["[data-creature-approach-time-modifier]", 0],
+    ["[data-creature-display-scale]", 1],
+    ["[data-creature-shadow-offset-x]", 0],
+    ["[data-creature-shadow-offset-y]", 0],
+    ["[data-creature-player-scale]", 1],
+    ["[data-creature-opponent-scale]", 1],
+    ["[data-creature-player-x]", 0],
+    ["[data-creature-player-y]", 0],
+    ["[data-creature-opponent-x]", 0],
+    ["[data-creature-opponent-y]", 0],
+    ["[data-creature-front-select]", ""],
+    ["[data-creature-back-select]", ""],
+    ["[data-creature-icon-select]", ""],
+    ["[data-creature-reaction-type]", "dodge"],
+    ["[data-creature-reaction-charges]", 2],
+    ["[data-creature-reaction-recharge]", 30],
+    ["[data-creature-reaction-window]", 0.25],
+    ["[data-creature-reaction-reduction]", 50],
+    ["[data-creature-reaction-icon]", ""],
+    ["[data-creature-dodge-fx]", ""],
+    ["[data-creature-dodge-scale]", 1],
+    ["[data-creature-dodge-duration]", 700],
+    ["[data-creature-dodge-offset-x]", 0],
+    ["[data-creature-dodge-offset-y]", 0],
+    ["[data-creature-movement-visual]", ""],
+    ["[data-creature-movement-back-visual]", ""],
+    ["[data-creature-movement-mode]", "roll"],
+    ["[data-creature-movement-scale]", 1],
+    ["[data-creature-movement-player-scale]", 1],
+    ["[data-creature-movement-opponent-scale]", 1],
+    ["[data-creature-movement-frame-ms]", 0],
+    ["[data-creature-movement-playback]", "loop"],
+    ["[data-creature-movement-turns]", 3],
+    ["[data-creature-movement-frames]", 1],
+    ["[data-creature-movement-transition]", 80],
+    ["[data-creature-ranged-attack-visual]", ""],
+    ["[data-creature-ranged-attack-back-visual]", ""],
+    ["[data-creature-ranged-front-offset-x]", 0],
+    ["[data-creature-ranged-front-offset-y]", 0],
+    ["[data-creature-ranged-back-offset-x]", 0],
+    ["[data-creature-ranged-back-offset-y]", 0],
+    ["[data-creature-ranged-attack-mode]", "sprite"],
+    ["[data-creature-ranged-attack-scale]", 1],
+    ["[data-creature-ranged-attack-player-scale]", 1],
+    ["[data-creature-ranged-attack-opponent-scale]", 1],
+    ["[data-creature-ranged-attack-turns]", 0],
+    ["[data-creature-ranged-attack-frames]", 1],
+    ["[data-creature-ranged-attack-transition]", 80],
+    ["[data-creature-audio-attack]", ""],
+    ["[data-creature-audio-movement]", ""],
+    ["[data-creature-audio-movement-mode]", "once"],
+    ["[data-creature-audio-movement-interval]", 400],
+    ["[data-creature-audio-hit]", ""],
+    ["[data-creature-audio-ko]", ""],
+    ["[data-creature-audio-dodge]", ""],
+    ["[data-creature-audio-defense]", ""],
+    ["[data-capture-rate]", 30],
+    ["[data-spawn-chance]", 10],
+  ];
+
+  for (const [selector, value] of defaults) {
+    setFieldValue(root, selector, value);
+  }
+
+  syncHumanCreatureReactionControlsV1(root);
+  one(root, "[data-capturable]").checked = true;
+  one(
+    root,
+    "[data-evolution-enabled]"
+  ).checked = false;
+  one(
+    root,
+    "[data-evolution-target]"
+  ).value = "";
+  one(
+    root,
+    "[data-evolution-level]"
+  ).value = "10";
+  syncEvolutionControlsV1(root);
+
+  if (statRegistry !== null) {
+    renderHumanStatValuesV1(
+      root,
+      statRegistry,
+      null
+    );
+  }
+
+  for (
+    const input of root.querySelectorAll(
+      "[data-element]"
+    )
+  ) {
+    input.checked = false;
+  }
+  for (
+    const input of root.querySelectorAll(
+      "[data-resistance]"
+    )
+  ) {
+    input.value = "0";
+  }
+  for (
+    const select of root.querySelectorAll(
+      "[data-loadout-slot]"
+    )
+  ) {
+    select.value = "";
+  }
+
+  replaceCreatureSockets(root, sockets, null);
+
+  for (const selector of [
+    "[data-creature-front-select]",
+    "[data-creature-back-select]",
+    "[data-creature-icon-select]"
+  ]) {
+    dispatchFieldEvent(
+      one(root, selector),
+      "change"
+    );
+  }
+
+  dispatchFieldEvent(
+    one(root, "[data-creature-display-scale]"),
+    "input"
+  );
+}
+
+function setStatus(root, message, tone = "info") {
+  const status = one(root, "[data-editor-status]");
+  status.textContent = message;
+  status.dataset.tone = tone;
+}
+
+function setTab(root, tabId) {
+  for (const button of root.querySelectorAll("[data-editor-tab]")) {
+    button.dataset.active =
+      button.dataset.editorTab === tabId
+        ? "true"
+        : "false";
+  }
+
+  for (const panel of root.querySelectorAll("[data-editor-panel]")) {
+    panel.hidden =
+      panel.dataset.editorPanel !== tabId;
+  }
+}
+
+function createOption(select, value, label) {
+  const option = document.createElement("option");
+  option.value = value;
+  option.textContent = label;
+  select.append(option);
+  return option;
+}
+
+
+function syncHumanSkillActivationConditionRowV1(
+  row
+) {
+  const type = row.querySelector(
+    "[data-skill-activation-condition-type]"
+  ).value;
+  const input = row.querySelector(
+    "[data-skill-activation-condition-threshold]"
+  );
+  const unit = row.querySelector(
+    "[data-skill-activation-condition-unit]"
+  );
+  const meta = activationRequirementTypeMetaV1(
+    type
+  );
+
+  input.step = String(meta.step);
+  input.min = "0";
+  if (meta.max === null) {
+    input.removeAttribute("max");
+  } else {
+    input.max = String(meta.max);
+  }
+  unit.textContent = meta.unit;
+}
+
+function appendHumanSkillActivationConditionV1(
+  root,
+  condition = {
+    type: "combat_elapsed_ms",
+    threshold: 10000
+  }
+) {
+  const host = one(
+    root,
+    "[data-skill-activation-conditions-host]"
+  );
+  const row = document.createElement("div");
+  row.className = "skill-activation-condition";
+  row.dataset.skillActivationCondition = "true";
+
+  const typeLabel = document.createElement("label");
+  typeLabel.textContent = "Condition";
+  const type = document.createElement("select");
+  type.dataset.skillActivationConditionType =
+    "true";
+
+  for (
+    const conditionType of
+    SKILL_ACTIVATION_REQUIREMENT_TYPES
+  ) {
+    const meta =
+      activationRequirementTypeMetaV1(
+        conditionType
+      );
+    createOption(
+      type,
+      conditionType,
+      meta.label
+    );
+  }
+  type.value = condition.type;
+
+  const thresholdLabel =
+    document.createElement("label");
+  thresholdLabel.textContent = "Seuil";
+  const threshold =
+    document.createElement("input");
+  threshold.type = "number";
+  threshold.dataset.skillActivationConditionThreshold =
+    "true";
+  threshold.value = String(
+    humanSkillActivationThresholdFromContractV1(
+      condition.type,
+      condition.threshold
+    )
+  );
+
+  const unit = document.createElement("span");
+  unit.className =
+    "skill-activation-condition__unit";
+  unit.dataset.skillActivationConditionUnit =
+    "true";
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "small-action";
+  remove.textContent = "Retirer";
+  remove.dataset.skillActivationRemove = "true";
+
+  typeLabel.append(type);
+  thresholdLabel.append(threshold);
+  row.append(
+    typeLabel,
+    thresholdLabel,
+    unit,
+    remove
+  );
+  host.append(row);
+  syncHumanSkillActivationConditionRowV1(
+    row
+  );
+
+  return row;
+}
+
+function renderHumanSkillMarkerCostV1(root, markerCost) {
+  const toggle=one(root,"[data-skill-marker-cost-enabled]");
+  const config=one(root,"[data-skill-marker-cost-fields]");
+  const select=one(root,"[data-skill-marker-cost-id]");
+  toggle.checked=markerCost!=null;
+  config.hidden=!toggle.checked;
+  select.textContent="";
+  createOption(select,"","Choisir un marqueur");
+  const markers=captureMarkerOptionsV1(root).sort((a,b)=>a.name.localeCompare(b.name,"fr"));
+  for(const marker of markers)createOption(select,marker.id,marker.name);
+  if(markerCost && !markers.some(marker=>marker.id===markerCost.markerId))
+    createOption(select,markerCost.markerId,"Marqueur manquant : "+markerCost.markerId);
+  select.value=markerCost?.markerId??"";
+  one(root,"[data-skill-marker-cost-source]").value=markerCost?.source??"self";
+  one(root,"[data-skill-marker-cost-count]").value=String(markerCost?.count??3);
+}
+
+function readHumanSkillMarkerCostV1(root) {
+  if(!one(root,"[data-skill-marker-cost-enabled]").checked)return null;
+  const markerId=selectedValue(root,"[data-skill-marker-cost-id]");
+  if(!markerId)throw new RangeError("Choisis un marqueur pour le coût d'activation.");
+  return {markerId,
+    source:selectedValue(root,"[data-skill-marker-cost-source]"),
+    count:numericValue(root,"[data-skill-marker-cost-count]")};
+}
+
+function renderHumanSkillActivationRequirementsV1(
+  root,
+  requirements
+) {
+  const value =
+    requirements ?? {
+      mode: "all",
+      conditions: []
+    };
+  const conditions =
+    Array.isArray(value.conditions)
+      ? value.conditions
+      : [];
+  const enabled = conditions.length > 0;
+  const toggle = one(
+    root,
+    "[data-skill-activation-enabled]"
+  );
+  const config = one(
+    root,
+    "[data-skill-activation-config]"
+  );
+  const mode = one(
+    root,
+    "[data-skill-activation-mode]"
+  );
+  const host = one(
+    root,
+    "[data-skill-activation-conditions-host]"
+  );
+
+  toggle.checked = enabled;
+  config.hidden = !enabled;
+  mode.value =
+    SKILL_ACTIVATION_REQUIREMENT_MODES.includes(
+      value.mode
+    )
+      ? value.mode
+      : "all";
+  host.textContent = "";
+
+  for (const condition of conditions) {
+    appendHumanSkillActivationConditionV1(
+      root,
+      condition
+    );
+  }
+}
+
+function readHumanSkillActivationRequirementsV1(
+  root
+) {
+  const enabled = one(
+    root,
+    "[data-skill-activation-enabled]"
+  ).checked;
+  const mode = selectedValue(
+    root,
+    "[data-skill-activation-mode]"
+  );
+
+  const conditions = [
+    ...root.querySelectorAll(
+      "[data-skill-activation-condition]"
+    )
+  ].map((row) => ({
+    type: row.querySelector(
+      "[data-skill-activation-condition-type]"
+    ).value,
+    value: Number(
+      row.querySelector(
+        "[data-skill-activation-condition-threshold]"
+      ).value
+    )
+  }));
+
+  return buildHumanSkillActivationRequirementsV1({
+    enabled,
+    mode,
+    conditions
+  });
+}
+
+function tacticalEffectKindLabelV1(kind) {
+  return {
+    damage: "Dégâts / Dégâts de zone",
+    heal: "Soin",
+    energy_restore: "Gain d’énergie",
+    energy_drain: "Drain d’énergie",
+    life_steal: "Drain de vie — % des PV retirés",
+    knockout: "K.O. (immunités respectées)",
+    apply_status: "Buff / Debuff / Statut",
+    apply_marker: "Poser des marqueurs",
+    consume_marker: "Consommer des marqueurs → effets",
+    cleanse: "Nettoyage",
+    dispel: "Dissipation",
+    persistent_zone: "Zone persistante",
+    scheduled_effect: "Effet différé"
+  }[kind] ?? kind;
+}
+
+function tacticalTargetScopeLabelV1(scope) {
+  return {
+    target: "Cible",
+    self: "Soi-même",
+    all_enemies: "Tous les ennemis",
+    all_allies: "Tous les alliés",
+    all_except_self: "Tous sauf soi",
+    all_enemy_reserves: "Tous les ennemis en réserve",
+    all_ally_reserves: "Toutes les réserves alliées",
+    all_active: "Toutes les créatures en jeu (actives)"
+  }[scope] ?? scope;
+}
+
+function tacticalStatusKindLabelV1(kind) {
+  return {
+    stat_modifier: "Modification de stat",
+    outgoing_damage_modifier:"Dégâts infligés (tous types, %)",
+    stack_counter: "Compteur de charges (sans effet avant le seuil)",
+    approach_time_modifier: "Temps de trajet de la créature",
+    energy_regen_modifier: "Régénération d’énergie (%)",
+    skill_cooldown_rate_modifier: "Recharge des compétences (%)",
+    damage_over_time: "Dégâts périodiques",
+    heal_over_time: "Soin périodique",
+    shield: "Bouclier",
+    damage_reflection: "Renvoi de dégâts",
+    projectile_mirror: "Miroir — renvoi réel de projectile",
+    auto_dodge: "Esquive automatique (durée X)",
+    triggered_buff: "Buff à déclenchement — événement → effets",
+    immunity: "Immunité",
+    immobilize: "Immobilisation",
+    silence: "Silence",
+    stun: "Stun",
+    taunt: "Provocation"
+  }[kind] ?? kind;
+}
+
+function tacticalPolarityLabelV1(polarity) {
+  return {
+    beneficial: "Bénéfique",
+    detrimental: "Négatif",
+    neutral: "Neutre"
+  }[polarity] ?? polarity;
+}
+
+function tacticalStackingLabelV1(stacking) {
+  return {
+    replace: "Remplacer",
+    refresh: "Rafraîchir la durée",
+    stack: "Empiler"
+  }[stacking] ?? stacking;
+}
+
+function tacticalFieldV1(
+  caption,
+  input,
+  className = ""
+) {
+  const label = document.createElement("label");
+  if (className) {
+    label.className = className;
+  }
+  label.textContent = caption;
+  label.append(input);
+  return label;
+}
+
+function tacticalNumberInputV1(
+  datasetKey,
+  value,
+  {
+    min = null,
+    max = null,
+    step = "1"
+  } = {}
+) {
+  const input = document.createElement("input");
+  input.type = "number";
+  input.step = String(step);
+  if (min !== null) {
+    input.min = String(min);
+  }
+  if (max !== null) {
+    input.max = String(max);
+  }
+  input.value = String(value ?? 0);
+  input.dataset[datasetKey] = "true";
+  return input;
+}
+
+function tacticalTextInputV1(
+  datasetKey,
+  value
+) {
+  const input = document.createElement("input");
+  input.value = String(value ?? "");
+  input.dataset[datasetKey] = "true";
+  return input;
+}
+
+// Options come from the existing Capture element selector and live stat registry.
+function humanNativeElementChoicesV1(root) {
+  const select = root.querySelector("[data-skill-element]");
+  if (select) return [...select.options].filter(o=>o.value).map(o=>({id:o.value,label:o.textContent}));
+  return [...root.querySelectorAll("[data-element]")].map(input=>({
+    id:input.value,label:input.closest("label")?.textContent?.trim()||input.value
+  }));
+}
+function populateHumanElementChannelSelectV1(root,select,statRegistry,selectedId="") {
+  const sameSkill=select.dataset.elementChannelSameSkill==="true";
+  const customStat=select.dataset.elementChannelCustomBuilder==="true" ? {
+    id:root.querySelector("[data-stat-custom-id]")?.value??"",
+    label:root.querySelector("[data-stat-custom-label]")?.value??""
+  } : null;
+  const options=captureEditorElementChannelChoicesV1({
+    nativeElements:humanNativeElementChoicesV1(root),statRegistry,
+    selectedId,customStat
+  });
+  select.textContent="";
+  createOption(select,"",sameSkill?"Même élément que la capacité":"Aucun canal");
+  for(const {id,label} of options)createOption(select,id,label);
+  select.value=selectedId??"";
+}
+function humanElementChannelSelectV1(root,statRegistry,datasetKey,selectedId,{sameSkill=false,customBuilder=false}={}) {
+  const select=document.createElement("select");
+  select.dataset[datasetKey]="true";
+  select.dataset.elementChannelChoice="true";
+  select.dataset.elementChannelSameSkill=String(sameSkill);
+  select.dataset.elementChannelCustomBuilder=String(customBuilder);
+  populateHumanElementChannelSelectV1(root,select,statRegistry,selectedId??"");
+  return select;
+}
+function refreshHumanElementChannelSelectsV1(root,statRegistry) {
+  for(const select of root.querySelectorAll("[data-element-channel-choice]")) {
+    populateHumanElementChannelSelectV1(root,select,statRegistry,select.value);
+  }
+}
+function tacticalDamageElementSelectV1(root,statRegistry,datasetKey,value) {
+  return humanElementChannelSelectV1(root,statRegistry,datasetKey,value,{sameSkill:true});
+}
+
+function fillStatusStatSelectV1(
+  select,
+  statRegistry,
+  selectedId = ""
+) {
+  select.textContent = "";
+  const stats =
+    statRegistry?.stats ?? [];
+
+  if (stats.length === 0) {
+    createOption(
+      select,
+      "",
+      "Aucune statistique disponible"
+    );
+  } else {
+    for (const stat of stats) {
+      createOption(
+        select,
+        stat.id,
+        stat.label
+      );
+    }
+  }
+
+  if (
+    selectedId &&
+    !stats.some(
+      (stat) => stat.id === selectedId
+    )
+  ) {
+    createOption(
+      select,
+      selectedId,
+      selectedId + " — hors registre actuel"
+    );
+  }
+
+  select.value = selectedId || "";
+}
+
+function defaultHumanStatusTintColorV1(
+  status
+) {
+  const fingerprint = [
+    status?.id,
+    status?.channel,
+    ...(status?.tags ?? [])
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLocaleLowerCase("fr");
+
+  if (
+    fingerprint.includes("poison") ||
+    fingerprint.includes("toxic")
+  ) {
+    return "#39b54a";
+  }
+  if (
+    fingerprint.includes("burn") ||
+    fingerprint.includes("brul") ||
+    fingerprint.includes("fire")
+  ) {
+    return "#e84b32";
+  }
+  if (
+    fingerprint.includes("ice") ||
+    fingerprint.includes("freeze") ||
+    fingerprint.includes("frost")
+  ) {
+    return "#5bc8ff";
+  }
+  if (
+    fingerprint.includes("electric") ||
+    fingerprint.includes("shock")
+  ) {
+    return "#f5d742";
+  }
+
+  return "#9b59d0";
+}
+
+function populateHumanStatusVisualAssetV1(
+  root,
+  select,
+  selectedId = ""
+) {
+  const assets =
+    EDITOR_VISUAL_ASSETS_BY_ROOT.get(
+      root
+    ) ?? [];
+
+  select.dataset.assetRole = "status";
+  select.textContent = "";
+  createOption(select, "", "Aucun");
+
+  for (const asset of assets) {
+    if (
+      captureEditorAssetMatchesRoleV1(
+        asset,
+        "status"
+      )
+    ) {
+      createOption(
+        select,
+        asset.id,
+        asset.label || asset.id
+      );
+    }
+  }
+
+  if (
+    selectedId &&
+    ![...select.options].some(
+      (option) =>
+        option.value === selectedId
+    )
+  ) {
+    createOption(
+      select,
+      selectedId,
+      selectedId + " — hors catalogue"
+    );
+  }
+
+  select.value = selectedId || "";
+}
+
+function syncHumanStatusVisualFieldsV1(
+  row
+) {
+  const mode =
+    row.querySelector(
+      "[data-skill-status-visual-mode]"
+    )?.value ?? "none";
+
+  const tintFields =
+    row.querySelector(
+      "[data-skill-status-visual-tint-fields]"
+    );
+  if (tintFields) {
+    tintFields.hidden =
+      !["tint", "both"].includes(mode);
+  }
+
+  const spriteFields =
+    row.querySelector(
+      "[data-skill-status-visual-sprite-fields]"
+    );
+  if (spriteFields) {
+    spriteFields.hidden =
+      !["sprite", "both"].includes(mode);
+  }
+}
+
+
+// Author fields only: both the regular status and a zone-applied status
+// use the same native damage_reflection contract. No UI-side hit decision.
+function appendReflectionAuthorControlsV1(host, status, group) {
+  const section = document.createElement("div");
+  section.className = "skill-status-config__specific";
+  section.dataset.reflectionControls = group;
+  const all = document.createElement("input");
+  all.type = "checkbox";
+  all.dataset.reflectionAll = "true";
+  all.checked = status.incomingKinds === undefined;
+  const label = document.createElement("label");
+  label.className = "check";
+  label.append(all, document.createTextNode("Toutes les attaques (ancien comportement)"));
+  section.append(label);
+  const kinds = document.createElement("div");
+  kinds.className = "skill-status-config__grid";
+  const captions = {
+    contact:"Corps à corps", projectile:"Projectile direct",
+    beam:"Rayon", area:"Attaque de zone", zone:"Zone persistante",
+    dot:"Dégâts périodiques", scheduled:"Effet différé", other:"Autre dégât"
+  };
+  for (const kind of DAMAGE_REFLECTION_INCOMING_KINDS_V1) {
+    const field = document.createElement("label");
+    field.className = "check";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = kind;
+    checkbox.dataset.reflectionKind = "true";
+    checkbox.checked = status.incomingKinds?.includes(kind) ?? false;
+    field.append(checkbox, document.createTextNode(captions[kind] ?? kind));
+    kinds.append(field);
+  }
+  section.append(kinds);
+  // dataset keys must be valid JS identifiers: authored group labels can include hyphens.
+  const fixed = tacticalNumberInputV1("reflectionContactDamage" + group.replace(/[^a-zA-Z0-9]/g, ""),
+    status.contactDamage ?? 0, {min:0,step:"0.1"});
+  fixed.dataset.reflectionContactDamage = "true";
+  section.append(tacticalFieldV1(
+    "Armure de pointes : dégâts fixes sur coup de contact touchant (même avec bouclier)",
+    fixed
+  ));
+  const hint = document.createElement("small");
+  hint.className = "note";
+  hint.textContent = "Le pourcentage dépend des PV réellement perdus ; la riposte fixe exige un coup de corps à corps effectivement touchant. Une zone au déclenchement « entrée uniquement » se configure séparément dans Effet de zone.";
+  section.append(hint);
+  const sync = () => { kinds.hidden = all.checked; };
+  all.addEventListener("change", sync);
+  sync();
+  host.append(section);
+  return section;
+}
+function readReflectionAuthorControlsV1(section, status) {
+  if (!section) return;
+  const all = section.querySelector("[data-reflection-all]")?.checked === true;
+  if (!all) {
+    const incomingKinds = [...section.querySelectorAll("[data-reflection-kind]")]
+      .filter(x => x.checked).map(x => x.value);
+    if (incomingKinds.length === 0) {
+      throw new RangeError("Sélectionne au moins une catégorie d'attaque pour le renvoi de dégâts");
+    }
+    status.incomingKinds = incomingKinds;
+  }
+  const fixed = Number(section.querySelector("[data-reflection-contact-damage]")?.value ?? 0);
+  if (fixed > 0) status.contactDamage = fixed;
+}
+
+const STACK_THRESHOLD_EFFECT_KINDS_V1 = Object.freeze([
+  "damage", "heal", "energy_restore", "energy_drain",
+  "apply_status", "cleanse", "dispel"
+]);
+
+// Editor only: the existing tactical-effect contract and combat runtime
+// remain the sole validators and executors of threshold effects.
+function appendStackThresholdEffectRowV1(host, effect = {}, { damageBuff = false } = {}) {
+  const row = document.createElement("div");
+  row.className = "skill-effect-row";
+  row.dataset.stackThresholdEffectRow = "true";
+  const addField = (parent, label, key, value, {number = false, min = null, step = "1"} = {}) => {
+    const input = number
+      ? tacticalNumberInputV1(key, value, {min, step})
+      : tacticalTextInputV1(key, value);
+    parent.append(tacticalFieldV1(label, input));
+    return input;
+  };
+  const select = (parent, label, key, values, selected) => {
+    const node = document.createElement("select");
+    node.dataset[key] = "true";
+    for (const [value, caption] of values) createOption(node, value, caption);
+    node.value = selected;
+    parent.append(tacticalFieldV1(label, node));
+    return node;
+  };
+  const header = document.createElement("div");
+  header.className = "skill-effect-row__header";
+  const kind = select(header, damageBuff ? "Effet après dégâts" : "Effet au seuil", "stackThresholdEffectKind",
+    STACK_THRESHOLD_EFFECT_KINDS_V1.map(x=>[x,tacticalEffectKindLabelV1(x)]),
+    effect.kind ?? "damage");
+  select(header, "Cible", "stackThresholdEffectScope",
+    damageBuff
+      ? [["target","Autre acteur (ou soi pour déplacement)"],["self","Porteur du statut"]]
+      : [["target","Créature portant les stacks"],["self","Source des stacks"]],
+    effect.targetScope ?? "target");
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "small-action";
+  remove.textContent = "Retirer cet effet";
+  remove.dataset.stackThresholdRemove = "true";
+  header.append(remove);
+  const config = document.createElement("div");
+  config.className = "skill-status-config__grid";
+  const amountBox = document.createElement("div");
+  const damageChannelBox = document.createElement("div");
+  const tagsBox = document.createElement("div");
+  const statusBox = document.createElement("div");
+  statusBox.className = "skill-status-config";
+  addField(amountBox, "Quantité (dégâts / PV / énergie)", "stackThresholdAmount", effect.amount ?? 10,
+    {number:true,min:0,step:"0.1"});
+  addField(damageChannelBox, "Canal des dégâts (vide = élément de la compétence)",
+    "stackThresholdChannel", effect.channel ?? "");
+  addField(tagsBox, "Tags des statuts à retirer (séparés par des virgules)",
+    "stackThresholdTags", (effect.statusTags ?? []).join(", "));
+  const st = effect.status ?? {};
+  const stKind = select(statusBox, "Type de buff / malus", "stackThresholdStatusKind",
+    STATUS_EFFECT_V1_KINDS.filter(x=>x !== "triggered_buff").map(x=>[x,tacticalStatusKindLabelV1(x)]), st.kind ?? "stun");
+  addField(statusBox, "ID du statut appliqué", "stackThresholdStatusId", st.id ?? "stack-result");
+  const pol = select(statusBox, "Polarité", "stackThresholdStatusPolarity",
+    STATUS_EFFECT_V1_POLARITIES.map(x=>[x,tacticalPolarityLabelV1(x)]),
+    st.polarity ?? "detrimental");
+  addField(statusBox, "Durée du statut (secondes)", "stackThresholdStatusDuration",
+    st.durationMs == null ? 3 : humanTacticalMsToSecondsV1(st.durationMs),
+    {number:true,min:0.1,step:"0.1"});
+  const stAmount = addField(statusBox, "Valeur (PV, shield ou points)",
+    "stackThresholdStatusAmount", st.amount ?? st.deltaPoints ?? st.percent ?? st.modifierPct ?? 10,
+    {number:true,step:"0.1"});
+  const stTick = addField(statusBox, "Intervalle DoT / HoT (secondes)",
+    "stackThresholdStatusTick", st.tickIntervalMs == null ? 1 : humanTacticalMsToSecondsV1(st.tickIntervalMs),
+    {number:true,min:0.1,step:"0.1"});
+  const stChannel = addField(statusBox, "Canal DoT", "stackThresholdStatusChannel", st.channel ?? "physical");
+  const stStat = addField(statusBox, "ID statistique", "stackThresholdStatusStatId", st.statId ?? "force");
+  const immunity = document.createElement("label");
+  immunity.className = "check";
+  const intangible = document.createElement("input");
+  intangible.type = "checkbox";
+  intangible.dataset.stackThresholdStatusIntangible = "true";
+  intangible.checked = st.intangible === true;
+  immunity.append(intangible, document.createTextNode("Immatériel (immunité dégâts et malus)"));
+  statusBox.append(immunity);
+  const reflectionSubform = appendReflectionAuthorControlsV1(statusBox, st, "stack-result");
+  const note = document.createElement("small");
+  note.className = "note";
+  note.textContent = "Le buff/malus se crée dans le moteur de statuts existant. Les autres types d'effets utilisent les mêmes règles de combat.";
+  statusBox.append(note);
+  config.append(amountBox, damageChannelBox, tagsBox, statusBox);
+  row.append(header, config);
+  host.append(row);
+  function sync() {
+    const k = kind.value;
+    amountBox.hidden = !["damage","heal","energy_restore","energy_drain"].includes(k);
+    damageChannelBox.hidden = k !== "damage";
+    tagsBox.hidden = !["cleanse","dispel"].includes(k);
+    statusBox.hidden = k !== "apply_status";
+    const sk = stKind.value;
+    stAmount.parentElement.hidden = ![
+      "stat_modifier","approach_time_modifier","energy_regen_modifier",
+      "skill_cooldown_rate_modifier","damage_over_time","heal_over_time",
+      "shield","damage_reflection"
+    ].includes(sk);
+    stTick.parentElement.hidden = !["damage_over_time","heal_over_time"].includes(sk);
+    stChannel.parentElement.hidden = sk !== "damage_over_time";
+    stStat.parentElement.hidden = sk !== "stat_modifier";
+    immunity.hidden = sk !== "immunity";
+    reflectionSubform.hidden = sk !== "damage_reflection";
+    if (sk === "projectile_mirror" || (sk === "immunity" && intangible.checked)) {
+      pol.value = "beneficial";
+    }
+    if (sk === "immunity" && intangible.checked) {
+      // The native immunity contract requires both domains.
+    }
+  }
+  kind.addEventListener("change",sync);
+  stKind.addEventListener("change",()=>{
+    pol.value = ["damage_over_time","stun","immobilize","silence","taunt"]
+      .includes(stKind.value) ? "detrimental" : "beneficial";
+    sync();
+  });
+  intangible.addEventListener("change",sync);
+  remove.addEventListener("click",()=>row.remove());
+  sync();
+  return row;
+}
+
+function readStackThresholdEffectRowsV1(host) {
+  return [...host.querySelectorAll("[data-stack-threshold-effect-row]")].map(row => {
+    const field = name => row.querySelector("[data-" + name + "]")?.value;
+    const kind = field("stack-threshold-effect-kind");
+    const targetScope = field("stack-threshold-effect-scope");
+    if (kind === "cleanse" || kind === "dispel") {
+      return {kind,targetScope,statusTags:commaValuesV1(field("stack-threshold-tags"))};
+    }
+    if (kind === "apply_status") {
+      const sk = field("stack-threshold-status-kind");
+      const amount = Number(field("stack-threshold-status-amount"));
+      const st = {
+        id: field("stack-threshold-status-id"), kind:sk,
+        polarity:field("stack-threshold-status-polarity"),
+        durationSeconds:Number(field("stack-threshold-status-duration")),
+        stacking:"replace"
+      };
+      if (sk === "stat_modifier") {
+        st.statId = field("stack-threshold-status-stat-id");
+        st.deltaPoints = amount;
+      } else if (["approach_time_modifier","energy_regen_modifier","skill_cooldown_rate_modifier"].includes(sk)) {
+        st.modifierPct = amount;
+      } else if (["damage_over_time","heal_over_time"].includes(sk)) {
+        st.amount = amount;
+        st.tickSeconds = Number(field("stack-threshold-status-tick"));
+        if (sk === "damage_over_time") st.channel = field("stack-threshold-status-channel");
+      } else if (sk === "shield") {
+        st.amount = amount;
+      } else if (sk === "damage_reflection") {
+        st.percent = amount;
+        readReflectionAuthorControlsV1(row.querySelector('[data-reflection-controls="stack-result"]'), st);
+      } else if (sk === "immunity") {
+        st.domains = ["damage","negative_status"];
+        if (row.querySelector("[data-stack-threshold-status-intangible]")?.checked) st.intangible = true;
+      }
+      return {kind,targetScope,status:st};
+    }
+    return {kind,targetScope,amount:Number(field("stack-threshold-amount")),
+      ...(kind === "damage" ? {channel:field("stack-threshold-channel") || null} : {})};
+  });
+}
+
+function syncHumanSkillEffectRowV1(
+  row
+) {
+  const kind = row.querySelector(
+    "[data-skill-effect-kind]"
+  ).value;
+
+  const scope = row.querySelector(
+    "[data-skill-effect-scope]"
+  );
+  if (scope) {
+    const allActive=Array.from(scope.options).find(option=>option.value==="all_active");
+    if(allActive)allActive.hidden=!["apply_marker","consume_marker"].includes(kind);
+    if(scope.value==="all_active"&&allActive?.hidden)scope.value="target";
+    if (kind === "scheduled_effect" || kind === "life_steal") {
+      scope.value = kind === "life_steal" ? "self" : "target";
+      scope.disabled = true;
+    } else {
+      scope.disabled = false;
+    }
+  }
+
+  for (const node of row.querySelectorAll(
+    "[data-skill-effect-config-kind]"
+  )) {
+    const kinds = node.dataset
+      .skillEffectConfigKind
+      .split(",")
+      .map((value) => value.trim());
+    node.hidden = !kinds.includes(kind);
+  }
+
+  const statusKind =
+    row.querySelector(
+      "[data-skill-status-kind]"
+    )?.value ?? "";
+
+  const statusPolarity = row.querySelector("[data-skill-status-polarity]");
+  const intangibleToggle = row.querySelector("[data-skill-status-intangible]");
+  const intangibleSelected = statusKind === "immunity" && intangibleToggle?.checked === true;
+  for (const domain of row.querySelectorAll("[data-skill-status-immunity-domain]")) {
+    if (intangibleSelected) domain.checked = true;
+    domain.disabled = intangibleSelected;
+  }
+  if (statusPolarity && (statusKind === "projectile_mirror" || statusKind === "auto_dodge" || intangibleSelected)) {
+    statusPolarity.value = "beneficial";
+    statusPolarity.disabled = true;
+  } else if (statusPolarity) {
+    statusPolarity.disabled = false;
+  }
+
+  for (const node of row.querySelectorAll(
+    "[data-skill-status-config-kind]"
+  )) {
+    const kinds = node.dataset
+      .skillStatusConfigKind
+      .split(",")
+      .map((value) => value.trim());
+    node.hidden = !kinds.includes(statusKind);
+  }
+
+  const triggerHost = row.querySelector("[data-triggered-buff-effects-host]");
+  if (statusKind === "triggered_buff" && triggerHost && triggerHost.children.length === 0) {
+    row.querySelector('[data-skill-status-config-kind="triggered_buff"] button')?.click();
+  }
+  const zoneEffectKind=row.querySelector("[data-skill-zone-effect-kind]")?.value ?? "damage";
+  for(const node of row.querySelectorAll("[data-skill-zone-effect-config-kind]")){
+    node.hidden = !node.dataset.skillZoneEffectConfigKind.split(",").includes(zoneEffectKind);
+  }
+  const zoneStatusKind=row.querySelector("[data-skill-zone-status-kind]")?.value ?? "stat_modifier";
+  for(const node of row.querySelectorAll("[data-skill-zone-status-config-kind]")){
+    node.hidden = !node.dataset.skillZoneStatusConfigKind.split(",").includes(zoneStatusKind);
+  }
+  const zoneBehavior=row.querySelector("[data-skill-zone-status-behavior]");
+  if (zoneBehavior) zoneBehavior.disabled = zoneEffectKind !== "apply_status";
+  // A bound status lives exactly as long as its zone occupancy. Preserve the
+  // authored duration field for on_enter without making it look authoritative.
+  const zoneBound = kind === "persistent_zone" &&
+    zoneEffectKind === "apply_status" &&
+    zoneBehavior?.value === "while_inside";
+  const zoneDurationField=row.querySelector("[data-skill-zone-status-duration-field]");
+  const zoneDurationNote=row.querySelector("[data-skill-zone-status-duration-note]");
+  if (zoneDurationField) zoneDurationField.hidden = zoneBound;
+  if (zoneDurationNote) zoneDurationNote.hidden = !zoneBound;
+  const zonePersist=row.querySelector("[data-skill-zone-persist-after-recall]");
+  if (zonePersist) zonePersist.disabled = zoneEffectKind !== "apply_status";
+  const zoneStacks=row.querySelector("[data-skill-zone-status-max-stacks-field]");
+  const zoneStacking=row.querySelector("[data-skill-zone-status-stacking]")?.value;
+  if (zoneStacks) zoneStacks.hidden = zoneStacking !== "stack";
+
+  const stackingSelect = row.querySelector("[data-skill-status-stacking]");
+  if (stackingSelect) {
+    // Triggered buffs have one lifetime, never independent stacks. A
+    // switch from a stack-counter must not silently create invalid data.
+    const stackOption = [...stackingSelect.options].find(option => option.value === "stack");
+    if (stackOption) stackOption.disabled = statusKind === "triggered_buff";
+    if (statusKind === "triggered_buff" && stackingSelect.value === "stack") {
+      stackingSelect.value = "refresh";
+    }
+  }
+  const stacking = stackingSelect?.value ?? "refresh";
+  const maxStacks = row.querySelector(
+    "[data-skill-status-max-stacks-field]"
+  );
+  if (maxStacks) {
+    maxStacks.hidden = stacking !== "stack";
+  }
+  const thresholdEnabled = row.querySelector("[data-stack-threshold-enabled]");
+  const thresholdSettings = row.querySelector("[data-stack-threshold-settings]");
+  if (thresholdEnabled) thresholdEnabled.disabled = stacking !== "stack";
+  if (thresholdSettings) thresholdSettings.hidden = stacking !== "stack" || thresholdEnabled?.checked !== true;
+
+  syncHumanStatusVisualFieldsV1(
+    row
+  );
+}
+
+export function nextHumanTacticalStatusIdV1(existingIds = []) {
+  const taken = new Set(
+    [...existingIds].map((x) => String(x ?? "").trim())
+  );
+  let next = 1;
+  while (taken.has("status-" + next)) next += 1;
+  return "status-" + next;
+}
+
+export function nextHumanTacticalZoneIdV1(existingIds = []) {
+  const taken = new Set(existingIds.map(id => String(id ?? "").trim()));
+  let next = 1;
+  while (taken.has("zone-" + next)) next += 1;
+  return "zone-" + next;
+}
+
+function appendHumanSkillEffectV1(
+  root,
+  effect = null,
+  statRegistry = null,
+  statusPresentation = null,
+  hostSelector = "[data-skill-effects-host]"
+) {
+  const host = one(root, hostSelector);
+  const row = document.createElement("div");
+  row.className = "skill-effect-row";
+  row.dataset.skillEffectRow = "true";
+
+  const header = document.createElement("div");
+  header.className = "skill-effect-row__header";
+
+  const kind = document.createElement("select");
+  kind.dataset.skillEffectKind = "true";
+  for (const value of SKILL_EFFECT_V1_KINDS) {
+    createOption(
+      kind,
+      value,
+      tacticalEffectKindLabelV1(value)
+    );
+  }
+  if (hostSelector === "[data-skill-contact-hold-effects-host]") {
+    for (const option of kind.options) {
+      if (["persistent_zone", "scheduled_effect"].includes(option.value)) option.disabled = true;
+    }
+  }
+
+  const scope = document.createElement("select");
+  scope.dataset.skillEffectScope = "true";
+  for (
+    const value of
+    SKILL_EFFECT_V1_TARGET_SCOPES
+  ) {
+    createOption(
+      scope,
+      value,
+      tacticalTargetScopeLabelV1(value)
+    );
+  }
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "small-action";
+  remove.textContent = "Retirer";
+  remove.dataset.skillEffectRemove = "true";
+
+  header.append(
+    tacticalFieldV1("Effet", kind),
+    tacticalFieldV1("Portée", scope),
+    remove
+  );
+
+  const config = document.createElement("div");
+  config.className = "skill-effect-row__config";
+  const markerFields = captureMarkerEffectFieldsV1(root,effect);
+
+  const amount = tacticalNumberInputV1(
+    "skillEffectAmount",
+    effect?.amount ?? 0,
+    { min: 0, step: "0.1" }
+  );
+  const amountField = tacticalFieldV1(
+    "Valeur",
+    amount
+  );
+  amountField.dataset.skillEffectConfigKind =
+    "damage,heal,energy_restore,energy_drain";
+
+  const lifePercent = tacticalNumberInputV1(
+    "skillEffectLifeStealPercent", effect?.percent ?? 50,
+    {min:0,max:100,step:"1"}
+  );
+  const lifeMaximum = tacticalNumberInputV1(
+    "skillEffectLifeStealMaxHeal", effect?.maxHeal ?? "",
+    {min:0,step:"0.1"}
+  );
+  const lifePercentField = tacticalFieldV1(
+    "Drain de vie : pourcentage des PV réellement perdus par les ennemis", lifePercent
+  );
+  lifePercentField.dataset.skillEffectConfigKind = "life_steal";
+  const lifeMaximumField = tacticalFieldV1(
+    "Plafond de soin par utilisation (vide = sans plafond)", lifeMaximum
+  );
+  lifeMaximumField.dataset.skillEffectConfigKind = "life_steal";
+  const lifeNote = document.createElement("small");
+  lifeNote.className = "note";
+  lifeNote.dataset.skillEffectConfigKind = "life_steal";
+  lifeNote.textContent = "Un coup esquivé, immunisé ou entièrement absorbé ne soigne pas. Le soin dépend des vrais PV retirés par l'attaque et ses dégâts immédiats, pas des zones et DoT.";
+
+  const channel = humanElementChannelSelectV1(
+    root,statRegistry,"skillEffectChannel",effect?.channel??"",{sameSkill:true}
+  );
+  const channelField = tacticalFieldV1(
+    "Canal / élément",
+    channel
+  );
+  channelField.dataset.skillEffectConfigKind =
+    "damage";
+
+  const ignoreResistance = tacticalNumberInputV1(
+    "skillEffectIgnoreResistancePct",
+    effect?.ignoreResistancePct ?? 0,
+    { min: 0, max: 100, step: "5" }
+  );
+  const ignoreResistanceField = tacticalFieldV1(
+    "Ignorer la résistance du canal (Feu, Physique, Eau… %) ",
+    ignoreResistance
+  );
+  ignoreResistanceField.dataset.skillEffectConfigKind = "damage";
+
+  const ignoreDefense = tacticalNumberInputV1(
+    "skillEffectIgnoreDamageReductionPct",
+    effect?.ignoreDamageReductionPct ?? 0,
+    { min: 0, max: 100, step: "5" }
+  );
+  const ignoreDefenseField = tacticalFieldV1(
+    "Ignorer la défense globale (%)",
+    ignoreDefense
+  );
+  ignoreDefenseField.dataset.skillEffectConfigKind = "damage";
+
+  // Presentation-only convenience: write the existing two authoritative
+  // SkillEffect fields together. There is deliberately no third saved value.
+  const ignoreAll = tacticalNumberInputV1(
+    "skillEffectIgnoreAllMitigationPct",
+    Number(ignoreResistance.value) === Number(ignoreDefense.value)
+      ? ignoreResistance.value
+      : "",
+    { min: 0, max: 100, step: "5" }
+  );
+  const ignoreAllField = tacticalFieldV1(
+    "Ignorer toutes les résistances (%)",
+    ignoreAll
+  );
+  ignoreAllField.dataset.skillEffectConfigKind = "damage";
+
+  const advancedPenetration = document.createElement("details");
+  advancedPenetration.dataset.skillEffectConfigKind = "damage";
+  const advancedTitle = document.createElement("summary");
+  advancedTitle.textContent =
+    "Réglages avancés : résistance du canal et défense globale";
+  advancedPenetration.append(
+    advancedTitle,
+    ignoreResistanceField,
+    ignoreDefenseField
+  );
+  if (Number(ignoreResistance.value) !== Number(ignoreDefense.value)) {
+    advancedPenetration.open = true;
+    ignoreAll.placeholder = "Personnalisé";
+  }
+  ignoreAll.addEventListener("input", () => {
+    if (ignoreAll.value === "") return;
+    const pct = Number(ignoreAll.value);
+    if (!Number.isFinite(pct) || pct < 0 || pct > 100) return;
+    ignoreResistance.value = ignoreAll.value;
+    ignoreDefense.value = ignoreAll.value;
+  });
+  const syncMaster = () => {
+    ignoreAll.value =
+      Number(ignoreResistance.value) === Number(ignoreDefense.value)
+        ? ignoreResistance.value : "";
+  };
+  ignoreResistance.addEventListener("input", syncMaster);
+  ignoreDefense.addEventListener("input", syncMaster);
+
+  const penetrationNote = document.createElement("small");
+  penetrationNote.dataset.skillEffectConfigKind = "damage";
+  penetrationNote.className = "note";
+  penetrationNote.textContent =
+    "0 % : défenses normales ; 100 % : ignore la résistance physique/élémentaire du coup et la défense globale. Les boucliers et immunités restent actifs.";
+
+  const filterTags = tacticalTextInputV1(
+    "skillEffectStatusTags",
+    (effect?.statusTags ?? []).join(", ")
+  );
+  const filterTagsField = tacticalFieldV1(
+    "Tags à cibler (séparés par des virgules)",
+    filterTags
+  );
+  filterTagsField.dataset.skillEffectConfigKind =
+    "cleanse,dispel";
+
+  const statusBox =
+    document.createElement("div");
+  statusBox.className = "skill-status-config";
+  statusBox.dataset.skillEffectConfigKind =
+    "apply_status";
+
+  const status = effect?.status ?? {};
+
+  const statusId = tacticalTextInputV1(
+    "skillStatusId",
+    status.id ?? nextHumanTacticalStatusIdV1(
+      [...host.querySelectorAll("[data-skill-status-id]")]
+        .map((input) => input.value)
+    )
+  );
+  // Existing author IDs remain stable, but are not an editing requirement.
+  statusId.type = "hidden";
+  const statusKind =
+    document.createElement("select");
+  statusKind.dataset.skillStatusKind = "true";
+  for (const value of STATUS_EFFECT_V1_KINDS) {
+    createOption(
+      statusKind,
+      value,
+      tacticalStatusKindLabelV1(value)
+    );
+  }
+
+  const polarity =
+    document.createElement("select");
+  polarity.dataset.skillStatusPolarity =
+    "true";
+  for (
+    const value of
+    STATUS_EFFECT_V1_POLARITIES
+  ) {
+    createOption(
+      polarity,
+      value,
+      tacticalPolarityLabelV1(value)
+    );
+  }
+
+  const duration =
+    tacticalNumberInputV1(
+      "skillStatusDurationSeconds",
+      status.durationMs == null
+        ? 3
+        : humanTacticalMsToSecondsV1(
+            status.durationMs
+          ),
+      { min: 0.1, step: "0.1" }
+    );
+
+  const stacking =
+    document.createElement("select");
+  stacking.dataset.skillStatusStacking =
+    "true";
+  for (
+    const value of
+    STATUS_EFFECT_V1_STACKING
+  ) {
+    createOption(
+      stacking,
+      value,
+      tacticalStackingLabelV1(value)
+    );
+  }
+
+  const maxStacks =
+    tacticalNumberInputV1(
+      "skillStatusMaxStacks",
+      status.maxStacks ?? 2,
+      { min: 1, step: "1" }
+    );
+  const maxStacksField = tacticalFieldV1(
+    "Stacks max",
+    maxStacks
+  );
+  maxStacksField.dataset
+    .skillStatusMaxStacksField = "true";
+
+  row.dataset.skillStatusStoredTags =
+    JSON.stringify(
+      Array.isArray(status.tags)
+        ? status.tags
+        : []
+    );
+
+  const common = document.createElement("div");
+  common.className = "skill-status-config__grid";
+  common.append(
+    statusId,
+    tacticalFieldV1("Type de statut", statusKind),
+    tacticalFieldV1("Polarité", polarity),
+    tacticalFieldV1("Durée (secondes)", duration),
+    tacticalFieldV1("Stacking", stacking),
+    maxStacksField
+  );
+
+  const statId = document.createElement("select");
+  statId.dataset.skillStatusStatId = "true";
+  fillStatusStatSelectV1(
+    statId,
+    statRegistry,
+    status.statId ?? ""
+  );
+  const deltaPoints =
+    tacticalNumberInputV1(
+      "skillStatusDeltaPoints",
+      status.deltaPoints ?? 0,
+      { step: "0.1" }
+    );
+  const movingCondition = document.createElement("select");
+  movingCondition.dataset.skillStatusActivationCondition = "true";
+  createOption(movingCondition, "always", "Toujours pendant le buff");
+  createOption(movingCondition, "moving", "Uniquement pendant le déplacement réel");
+  movingCondition.value = status.activationCondition ?? "always";
+  const statConfig = document.createElement("div");
+  statConfig.className =
+    "skill-status-config__specific";
+  statConfig.dataset.skillStatusConfigKind =
+    "stat_modifier";
+  statConfig.append(
+    tacticalFieldV1("Statistique", statId),
+    tacticalFieldV1("Variation en points", deltaPoints),
+    tacticalFieldV1("Activation du bonus", movingCondition),
+    (() => { const note = document.createElement("small"); note.className = "note";
+      note.textContent = "Armure de roulement : Statistique = Défense, variation = +50 (10 % de réduction en plus), activation = déplacement. Le buff doit être actif : bonus pendant le trajet, jamais à l'arrêt.";
+      return note; })()
+  );
+
+  const outgoingDamagePctInput=tacticalNumberInputV1(
+    "skillStatusOutgoingDamageModifierPct",status.modifierPct??-30,{step:"1"}
+  );
+  const outgoingDamageConfig=document.createElement("div");
+  outgoingDamageConfig.className="skill-status-config__specific";
+  outgoingDamageConfig.dataset.skillStatusConfigKind="outgoing_damage_modifier";
+  outgoingDamageConfig.append(tacticalFieldV1("Dégâts infligés, tous éléments (%) — négatif = malus",outgoingDamagePctInput));
+  const approachPct = tacticalNumberInputV1(
+    "skillStatusApproachModifierPct", status.modifierPct ?? 50, { step: "1" }
+  );
+  const approachConfig = document.createElement("div");
+  approachConfig.className = "skill-status-config__specific";
+  approachConfig.dataset.skillStatusConfigKind = "approach_time_modifier";
+  const approachNote = document.createElement("p");
+  approachNote.textContent = "Positif : trajet plus lent ; négatif : plus rapide. +50 % transforme 1,3 s en 1,95 s. Agit sur les approches au sol et aériennes, indépendamment de la préparation et du cooldown.";
+  approachConfig.append(tacticalFieldV1("Variation du temps de trajet (%)", approachPct), approachNote);
+
+  const energyRegenPct = tacticalNumberInputV1(
+    "skillStatusEnergyRegenModifierPct", status.modifierPct ?? 100, {step:"5"}
+  );
+  const energyRegenConfig = document.createElement("div");
+  energyRegenConfig.className = "skill-status-config__specific";
+  energyRegenConfig.dataset.skillStatusConfigKind = "energy_regen_modifier";
+  energyRegenConfig.append(
+    tacticalFieldV1("Bonus de régénération d'énergie (%)", energyRegenPct),
+    (() => { const note = document.createElement("p"); note.className = "note";
+      note.textContent = "+100 % : double l’énergie à chaque récupération, -50 % : moitié ; 0 % : aucun changement. Le temps entre ticks ne change pas. Fin du buff : retour au réglage de base.";
+      return note; })()
+  );
+
+  const skillCooldownPct = tacticalNumberInputV1(
+    "skillStatusCooldownRateModifierPct", status.modifierPct ?? 100, {step:"5"}
+  );
+  const skillCooldownConfig = document.createElement("div");
+  skillCooldownConfig.className = "skill-status-config__specific";
+  skillCooldownConfig.dataset.skillStatusConfigKind = "skill_cooldown_rate_modifier";
+  const skillCooldownHelp = document.createElement("p");
+  skillCooldownHelp.className = "note";
+  skillCooldownHelp.textContent = "+100 % : recharge 2× plus rapide, -50 % : moitié de la vitesse, -100 % : pause. Les compétences déjà en recharge accélèrent aussi. Le progrès acquis est conservé à la fin du statut.";
+  skillCooldownConfig.append(
+    tacticalFieldV1("Vitesse de recharge des compétences (%)", skillCooldownPct),
+    skillCooldownHelp
+  );
+
+  const statusAmount =
+    tacticalNumberInputV1(
+      "skillStatusAmount",
+      status.amount ?? 1,
+      { min: 0, step: "0.1" }
+    );
+  const tickSeconds =
+    tacticalNumberInputV1(
+      "skillStatusTickSeconds",
+      status.tickIntervalMs == null
+        ? 1
+        : humanTacticalMsToSecondsV1(
+            status.tickIntervalMs
+          ),
+      { min: 0.1, step: "0.1" }
+    );
+  const statusChannel =
+    tacticalDamageElementSelectV1(
+      root,statRegistry,"skillStatusChannel",status.channel??""
+    );
+
+  const dotConfig = document.createElement("div");
+  dotConfig.className =
+    "skill-status-config__specific";
+  dotConfig.dataset.skillStatusConfigKind =
+    "damage_over_time";
+  dotConfig.append(
+    tacticalFieldV1(
+      "Dégâts à chaque intervalle",
+      statusAmount
+    ),
+    tacticalFieldV1(
+      "Intervalle (secondes)",
+      tickSeconds
+    ),
+    tacticalFieldV1(
+      "Élément des dégâts",
+      statusChannel
+    )
+  );
+
+  const hotAmount =
+    tacticalNumberInputV1(
+      "skillStatusHotAmount",
+      status.amount ?? 1,
+      { min: 0, step: "0.1" }
+    );
+  const hotTick =
+    tacticalNumberInputV1(
+      "skillStatusHotTickSeconds",
+      status.tickIntervalMs == null
+        ? 1
+        : humanTacticalMsToSecondsV1(
+            status.tickIntervalMs
+          ),
+      { min: 0.1, step: "0.1" }
+    );
+  const hotConfig = document.createElement("div");
+  hotConfig.className =
+    "skill-status-config__specific";
+  hotConfig.dataset.skillStatusConfigKind =
+    "heal_over_time";
+  hotConfig.append(
+    tacticalFieldV1("Soin par tick", hotAmount),
+    tacticalFieldV1(
+      "Intervalle (secondes)",
+      hotTick
+    )
+  );
+
+  const shieldAmount =
+    tacticalNumberInputV1(
+      "skillStatusShieldAmount",
+      status.amount ?? 1,
+      { min: 0, step: "0.1" }
+    );
+  const shieldConfig =
+    document.createElement("div");
+  shieldConfig.className =
+    "skill-status-config__specific";
+  shieldConfig.dataset.skillStatusConfigKind =
+    "shield";
+  shieldConfig.append(
+    tacticalFieldV1(
+      "Points de bouclier",
+      shieldAmount
+    )
+  );
+
+  const reflectionPercent = tacticalNumberInputV1(
+    "skillStatusReflectionPercent",
+    status.percent ?? 25,
+    { min: 0, max: 100, step: "1" }
+  );
+  const reflectionConfig = document.createElement("div");
+  reflectionConfig.className = "skill-status-config__specific";
+  reflectionConfig.dataset.skillStatusConfigKind = "damage_reflection";
+  reflectionConfig.append(
+    tacticalFieldV1("Dégâts réellement reçus renvoyés (%)", reflectionPercent)
+  );
+  appendReflectionAuthorControlsV1(reflectionConfig, status, "main");
+
+  const mirrorHelp = document.createElement("small");
+  mirrorHelp.className = "note";
+  mirrorHelp.dataset.skillStatusConfigKind = "projectile_mirror";
+  mirrorHelp.textContent = "Renvoie les projectiles directs après leur collision réelle avec le miroir. Le projectile doit ensuite rencontrer son lanceur pour lui infliger des dégâts. Sans effet sur le renvoi de dégâts en %. Il est possible de choisir un visuel persistant du statut ci-dessous.";
+
+  const immunityConfig =
+    document.createElement("div");
+  immunityConfig.className =
+    "skill-status-config__specific";
+  immunityConfig.dataset.skillStatusConfigKind =
+    "immunity";
+
+  for (const [value, label] of [
+    ["damage", "Immunité aux dégâts"],
+    [
+      "negative_status",
+      "Immunité aux états négatifs"
+    ]
+  ]) {
+    const field =
+      document.createElement("label");
+    field.className = "check";
+    const input =
+      document.createElement("input");
+    input.type = "checkbox";
+    input.value = value;
+    input.dataset
+      .skillStatusImmunityDomain =
+        "true";
+    input.checked =
+      (status.domains ?? [
+        "damage",
+        "negative_status"
+      ]).includes(value);
+    field.append(
+      input,
+      document.createTextNode(label)
+    );
+    immunityConfig.append(field);
+  }
+  const intangibleLabel = document.createElement("label");
+  intangibleLabel.className = "check";
+  const intangibleInput = document.createElement("input");
+  intangibleInput.type = "checkbox";
+  intangibleInput.dataset.skillStatusIntangible = "true";
+  intangibleInput.checked = status.intangible === true;
+  intangibleLabel.append(intangibleInput, document.createTextNode(
+    "Immatériel : traverse les dégâts et malus ordinaires (sauf attaque explicitement compatible)"
+  ));
+  immunityConfig.append(intangibleLabel);
+
+  const statusVisualBox =
+    document.createElement("div");
+  statusVisualBox.className =
+    "skill-status-visual-config";
+
+  const statusVisualMode =
+    document.createElement("select");
+  statusVisualMode.dataset.skillStatusVisualMode =
+    "true";
+  for (const [value, label] of [
+    ["none", "Aucun"],
+    ["tint", "Coloration du modèle"],
+    ["sprite", "Sprite autour du modèle"],
+    ["both", "Sprite + coloration"]
+  ]) {
+    createOption(
+      statusVisualMode,
+      value,
+      label
+    );
+  }
+
+  const statusTintColor =
+    document.createElement("input");
+  statusTintColor.type = "color";
+  statusTintColor.dataset.skillStatusTintColor =
+    "true";
+  statusTintColor.value =
+    statusPresentation?.tintColor ??
+    defaultHumanStatusTintColorV1(
+      status
+    );
+
+  // Palette de démarrage et choix hexadécimal libre partagent le même
+  // champ couleur canonique du modèle, sans deuxième registre.
+  const statusTintColorPreset = document.createElement("select");
+  statusTintColorPreset.dataset.skillStatusTintColorPreset = "true";
+  const tintPalette = [
+    ["#000000", "Noir"], ["#ffffff", "Blanc"],
+    ["#ef4444", "Rouge"], ["#22c55e", "Vert"],
+    ["#3b82f6", "Bleu"], ["#facc15", "Jaune"],
+    ["#f97316", "Orange"], ["#a855f7", "Violet"],
+    ["#ec4899", "Rose"], ["#06b6d4", "Cyan"],
+    ["#6b7280", "Gris"], ["#92400e", "Brun"]
+  ];
+  createOption(statusTintColorPreset, "custom", "Personnalisée");
+  for (const [hex, label] of tintPalette) {
+    createOption(statusTintColorPreset, hex, label);
+  }
+  statusTintColorPreset.value = tintPalette.some(([hex]) => hex === statusTintColor.value.toLowerCase())
+    ? statusTintColor.value.toLowerCase() : "custom";
+  statusTintColorPreset.addEventListener("change", () => {
+    if (statusTintColorPreset.value !== "custom") {
+      statusTintColor.value = statusTintColorPreset.value;
+    }
+  });
+  statusTintColor.addEventListener("input", () => {
+    statusTintColorPreset.value = tintPalette.some(([hex]) => hex === statusTintColor.value.toLowerCase())
+      ? statusTintColor.value.toLowerCase() : "custom";
+  });
+
+  const statusTintOpacity =
+    tacticalNumberInputV1(
+      "skillStatusTintOpacity",
+      statusPresentation?.tintOpacity ??
+        0.35,
+      {
+        min: 0,
+        max: 1,
+        step: "0.05"
+      }
+    );
+
+  const statusTintBlinkEnabled = document.createElement("input");
+  statusTintBlinkEnabled.type = "checkbox";
+  statusTintBlinkEnabled.dataset.skillStatusTintBlinkEnabled = "true";
+  statusTintBlinkEnabled.checked = statusPresentation?.tintBlinkEnabled === true;
+
+  const statusTintBlinkPeriodMs = tacticalNumberInputV1(
+    "skillStatusTintBlinkPeriodMs",
+    statusPresentation?.tintBlinkPeriodMs ?? 600,
+    { min: 120, max: 5000, step: "20" }
+  );
+
+  const statusVisualAsset =
+    document.createElement("select");
+  statusVisualAsset.dataset.skillStatusVisualAsset =
+    "true";
+  populateHumanStatusVisualAssetV1(
+    root,
+    statusVisualAsset,
+    statusPresentation?.sprite?.assetId ??
+      ""
+  );
+
+  const statusVisualScale =
+    tacticalNumberInputV1(
+      "skillStatusVisualScale",
+      statusPresentation?.sprite
+        ?.displayScale ?? 1,
+      {
+        min: 0.25,
+        max: 8,
+        step: "0.05"
+      }
+    );
+
+  const statusVisualOpacity =
+    tacticalNumberInputV1(
+      "skillStatusVisualOpacity",
+      (statusPresentation?.sprite?.opacity ?? 0.85) * 100,
+      {
+        min: 0,
+        max: 100,
+        step: 1
+      }
+    );
+
+  const tintFields =
+    document.createElement("div");
+  tintFields.className =
+    "skill-status-config__specific";
+  tintFields.dataset.skillStatusVisualTintFields =
+    "true";
+  tintFields.append(
+    tacticalFieldV1(
+      "Palette de couleurs (noir, blanc, rouge, vert…)",
+      statusTintColorPreset
+    ),
+    tacticalFieldV1(
+      "Couleur libre du modèle",
+      statusTintColor
+    ),
+    tacticalFieldV1(
+      "Intensité coloration (0 à 1)",
+      statusTintOpacity
+    ),
+    tacticalFieldV1(
+      "Faire clignoter la coloration",
+      statusTintBlinkEnabled
+    ),
+    tacticalFieldV1(
+      "Vitesse du clignotement — cycle complet (ms)",
+      statusTintBlinkPeriodMs
+    )
+  );
+
+  const spriteFields =
+    document.createElement("div");
+  spriteFields.className =
+    "skill-status-config__specific";
+  spriteFields.dataset.skillStatusVisualSpriteFields =
+    "true";
+  spriteFields.append(
+    tacticalFieldV1(
+      "Sprite du statut",
+      statusVisualAsset
+    ),
+    tacticalFieldV1(
+      "Échelle du sprite",
+      statusVisualScale
+    ),
+    tacticalFieldV1(
+      "Opacité du sprite (%)",
+      statusVisualOpacity
+    )
+  );
+
+  appendStatusSpriteControlsV1(spriteFields, statusPresentation?.sprite ?? {});
+
+  const statusVisualNote =
+    document.createElement("small");
+  statusVisualNote.className = "note";
+  statusVisualNote.textContent =
+    "Ce visuel appartient uniquement à la présentation. Mode « dernière image » : le sprite joue une seule fois à sa vitesse normale, garde la dernière image tant que le statut existe, puis disparaît à son expiration ou lorsqu'il est retiré.";
+
+  statusVisualBox.append(
+    tacticalFieldV1(
+      "Visuel persistant du statut",
+      statusVisualMode
+    ),
+    tintFields,
+    spriteFields,
+    statusVisualNote
+  );
+
+  // This is an authoring-only view of the canonical temporary status trigger.
+  // Reuse the existing nested tactical-effect editor and its serializer.
+  const triggeredBuffBox = document.createElement("div");
+  triggeredBuffBox.className = "skill-status-config__specific";
+  triggeredBuffBox.dataset.skillStatusConfigKind = "triggered_buff";
+  const triggeredBuffTitle = document.createElement("strong");
+  triggeredBuffTitle.textContent = "Quand cet événement se produit → déclencher les effets";
+  const triggeredBuffEvent = document.createElement("select");
+  triggeredBuffEvent.dataset.triggeredBuffEvent = "true";
+  const triggerCaptions = {
+    damage_dealt:"La créature inflige des dégâts (perte de PV)",
+    damage_taken:"La créature subit des dégâts (perte de PV)",
+    movement:"La créature se déplace (changement de distance réussi)",
+    evaded:"La créature esquive réellement une attaque"
+  };
+  for (const name of TRIGGERED_BUFF_EVENT_TYPES_V2) {
+    createOption(triggeredBuffEvent,name,triggerCaptions[name]);
+  }
+  triggeredBuffEvent.value = status.onEvent?.event ?? "damage_dealt";
+  // Existing author's onDamageDealt export retains its original format
+  // unless a different event is actively selected.
+  triggeredBuffEvent.dataset.legacy = String(status.onDamageDealt != null && status.onEvent == null);
+  const triggeredBuffHost = document.createElement("div");
+  triggeredBuffHost.dataset.triggeredBuffEffectsHost = "true";
+  for (const triggered of status.onEvent?.effects ?? status.onDamageDealt?.effects ?? []) {
+    appendStackThresholdEffectRowV1(triggeredBuffHost, triggered, {damageBuff:true});
+  }
+  const addTriggeredBuffEffect = document.createElement("button");
+  addTriggeredBuffEffect.type = "button";
+  addTriggeredBuffEffect.className = "small-action";
+  addTriggeredBuffEffect.textContent = "Ajouter un effet déclenché";
+  addTriggeredBuffEffect.addEventListener("click", () =>
+    appendStackThresholdEffectRowV1(triggeredBuffHost, {
+      kind:"apply_status", targetScope:"target",
+      status:{id:"buff-trigger-burn",kind:"damage_over_time",polarity:"detrimental",
+        durationMs:3000,stacking:"refresh",amount:2,tickIntervalMs:1000,channel:"fire"}
+    }, {damageBuff:true}));
+  const triggeredBuffNote = document.createElement("small");
+  triggeredBuffNote.className = "note";
+  triggeredBuffNote.textContent =
+    "Soi = porteur du statut. Cible = l'autre combattant de l'événement (ennemi blessé, agresseur si esquive/dégâts reçus). Pour un déplacement, la cible est le porteur. Les effets ne s'auto-déclenchent jamais.";
+  triggeredBuffEvent.addEventListener("change",()=>{
+    triggeredBuffEvent.dataset.legacy = "false";
+  });
+  triggeredBuffBox.append(triggeredBuffTitle,
+    tacticalFieldV1("Événement déclencheur",triggeredBuffEvent),
+    triggeredBuffHost,addTriggeredBuffEffect,triggeredBuffNote);
+  if (status.kind === "triggered_buff" && triggeredBuffHost.children.length === 0) {
+    addTriggeredBuffEffect.click();
+  }
+
+  const thresholdBox = document.createElement("div");
+  thresholdBox.className = "skill-status-config";
+  thresholdBox.dataset.stackThresholdBox = "true";
+  const thresholdLabel = document.createElement("label");
+  thresholdLabel.className = "check";
+  const thresholdEnable = document.createElement("input");
+  thresholdEnable.type = "checkbox";
+  thresholdEnable.dataset.stackThresholdEnabled = "true";
+  thresholdEnable.checked = status.onStackThreshold != null;
+  thresholdLabel.append(thresholdEnable,document.createTextNode("Déclencher des effets à un seuil de stacks"));
+  const thresholdSettings = document.createElement("div");
+  thresholdSettings.dataset.stackThresholdSettings = "true";
+  const thresholdGrid = document.createElement("div");
+  thresholdGrid.className = "skill-status-config__grid";
+  const thresholdCount = tacticalNumberInputV1("stackThresholdCount",status.onStackThreshold?.count ?? 2,{min:1,step:"1"});
+  const thresholdConsume = document.createElement("select");
+  thresholdConsume.dataset.stackThresholdConsume = "true";
+  for(const [value,label] of [["reset","Consommer toutes les charges, recommencer"],["keep","Conserver les charges, déclencher une seule fois"]])createOption(thresholdConsume,value,label);
+  thresholdConsume.value = status.onStackThreshold?.consume ?? "reset";
+  thresholdGrid.append(tacticalFieldV1("Nombre de stacks nécessaire",thresholdCount),
+    tacticalFieldV1("Après activation",thresholdConsume));
+  const thresholdEffectsHost = document.createElement("div");
+  thresholdEffectsHost.dataset.stackThresholdEffectsHost = "true";
+  for(const triggered of status.onStackThreshold?.effects ?? []) {
+    appendStackThresholdEffectRowV1(thresholdEffectsHost,triggered);
+  }
+  const addTrigger = document.createElement("button");
+  addTrigger.type = "button";
+  addTrigger.className = "small-action";
+  addTrigger.textContent = "Ajouter un effet déclenché";
+  addTrigger.dataset.stackThresholdAdd = "true";
+  addTrigger.addEventListener("click",()=>appendStackThresholdEffectRowV1(thresholdEffectsHost));
+  if (thresholdEnable.checked && thresholdEffectsHost.children.length === 0) {
+    appendStackThresholdEffectRowV1(thresholdEffectsHost);
+  }
+  thresholdEnable.addEventListener("change",()=>{
+    if(thresholdEnable.checked && thresholdEffectsHost.children.length === 0)appendStackThresholdEffectRowV1(thresholdEffectsHost);
+    syncHumanSkillEffectRowV1(row);
+  });
+  const thresholdNote = document.createElement("small");
+  thresholdNote.className = "note";
+  thresholdNote.textContent = "Un seul déclenchement au franchissement du seuil. Les effets respectent les immunités, PV, boucliers et énergie existants. Cible = porteur des stacks ; Source = créature qui applique le statut.";
+  thresholdSettings.append(thresholdGrid,thresholdEffectsHost,addTrigger,thresholdNote);
+  thresholdBox.append(thresholdLabel,thresholdSettings);
+
+  statusBox.append(
+    common,
+    thresholdBox,
+    triggeredBuffBox,
+    statConfig,
+    outgoingDamageConfig,
+    approachConfig,
+    energyRegenConfig,
+    skillCooldownConfig,
+    dotConfig,
+    hotConfig,
+    shieldConfig,
+    reflectionConfig,
+    mirrorHelp,
+    immunityConfig,
+    statusVisualBox
+  );
+
+  const scheduledBox =
+    document.createElement("div");
+  scheduledBox.className =
+    "skill-status-config";
+  scheduledBox.dataset.skillEffectConfigKind =
+    "scheduled_effect";
+
+  const scheduledDelay =
+    tacticalNumberInputV1(
+      "skillScheduledDelaySeconds",
+      effect?.trigger?.delayMs == null
+        ? 1
+        : humanTacticalMsToSecondsV1(
+            effect.trigger.delayMs
+          ),
+      { min: 0, step: "0.1" }
+    );
+
+  const nestedEffect =
+    effect?.effects?.[0] ?? {
+      kind: "damage",
+      targetScope: "target",
+      amount: 1,
+      channel: ""
+    };
+
+  const scheduledKind =
+    document.createElement("select");
+  scheduledKind.dataset
+    .skillScheduledEffectKind = "true";
+  for (const value of [
+    "damage",
+    "heal",
+    "energy_restore",
+    "energy_drain"
+  ]) {
+    createOption(
+      scheduledKind,
+      value,
+      tacticalEffectKindLabelV1(value)
+    );
+  }
+  scheduledKind.value =
+    nestedEffect.kind ?? "damage";
+
+  const scheduledAmount =
+    tacticalNumberInputV1(
+      "skillScheduledEffectAmount",
+      nestedEffect.amount ?? 1,
+      { min: 0, step: "0.1" }
+    );
+
+  const scheduledChannel =
+    humanElementChannelSelectV1(
+      root,statRegistry,"skillScheduledEffectChannel",
+      nestedEffect.channel??"",{sameSkill:true}
+    );
+
+  scheduledBox.append(
+    tacticalFieldV1(
+      "Délai avant déclenchement (secondes)",
+      scheduledDelay
+    ),
+    tacticalFieldV1(
+      "Effet déclenché",
+      scheduledKind
+    ),
+    tacticalFieldV1(
+      "Valeur",
+      scheduledAmount
+    ),
+    tacticalFieldV1(
+      "Canal / élément (si dégâts)",
+      scheduledChannel
+    )
+  );
+
+  const scheduledNote =
+    document.createElement("small");
+  scheduledNote.className = "note";
+  scheduledNote.textContent =
+    "Le délai utilise l’horloge combat existante. Aucun timer navigateur n’est créé par la capacité.";
+  scheduledBox.append(scheduledNote);
+
+  const zoneBox =
+    document.createElement("div");
+  zoneBox.className =
+    "skill-status-config";
+  zoneBox.dataset.skillEffectConfigKind =
+    "persistent_zone";
+
+  const zoneId = tacticalTextInputV1(
+    "skillZoneId",
+    effect?.zoneId ?? nextHumanTacticalZoneIdV1(
+      [...host.querySelectorAll("[data-skill-zone-id]")]
+        .map(input => input.value)
+    )
+  );
+  zoneId.type = "hidden";
+
+  const zoneRadius =
+    document.createElement("select");
+  zoneRadius.dataset.skillZoneRadius =
+    "true";
+  for (const [value, label] of [
+    ["short", "Proche"],
+    ["medium", "Moyen"],
+    ["long", "Loin"]
+  ]) {
+    createOption(
+      zoneRadius,
+      value,
+      label
+    );
+  }
+
+  const zoneDuration =
+    tacticalNumberInputV1(
+      "skillZoneDurationSeconds",
+      effect?.durationMs == null
+        ? 10
+        : humanTacticalMsToSecondsV1(
+            effect.durationMs
+          ),
+      { min: 0.1, step: "0.1" }
+    );
+
+  const zoneTick =
+    tacticalNumberInputV1(
+      "skillZoneTickSeconds",
+      effect?.tickIntervalMs == null
+        ? 1
+        : humanTacticalMsToSecondsV1(
+            effect.tickIntervalMs
+          ),
+      { min: 0.1, step: "0.1" }
+    );
+
+  const zoneReactivation =
+    document.createElement("select");
+  zoneReactivation.dataset
+    .skillZoneReactivation = "true";
+  createOption(
+    zoneReactivation,
+    "refresh",
+    "Garder la même taille"
+  );
+  createOption(
+    zoneReactivation,
+    "reinforce",
+    "Agrandir la zone"
+  );
+
+  const zoneMaxActivations =
+    tacticalNumberInputV1(
+      "skillZoneMaxActivations",
+      effect?.maxActivations ?? 1,
+      { min: 1, step: "1" }
+    );
+
+  const zoneRadiusGrowth =
+    tacticalNumberInputV1(
+      "skillZoneRadiusGrowthSteps",
+      effect?.radiusGrowthSteps ?? 0,
+      { min: 0, max: 2, step: "1" }
+    );
+
+  const zonePersistAfterRecall = document.createElement("input");
+  zonePersistAfterRecall.type = "checkbox";
+  zonePersistAfterRecall.dataset.skillZonePersistAfterRecall = "true";
+  zonePersistAfterRecall.checked = effect?.persistAfterRecall === true;
+
+  const zoneEffectKind = document.createElement("select");
+  zoneEffectKind.dataset.skillZoneEffectKind = "true";
+  createOption(zoneEffectKind, "damage", "Dégâts périodiques");
+  createOption(zoneEffectKind, "apply_status", "Bonus / Malus / Statut");
+  createOption(zoneEffectKind, "apply_marker", "Ajouter des marqueurs à l’entrée");
+
+  const zoneMarkerPick=captureMarkerZoneSelectV1(root,effect?.tickEffect?.marker??null);
+  const zoneMarkerCharges=tacticalNumberInputV1("skillZoneMarkerCharges",
+    effect?.tickEffect?.charges??2,{min:1,max:99,step:"1"});
+  const zoneMarkerBox=document.createElement("div");
+  zoneMarkerBox.className="skill-status-config__grid";
+  zoneMarkerBox.dataset.skillZoneEffectConfigKind="apply_marker";
+  zoneMarkerBox.append(
+    tacticalFieldV1("Marqueur à poser à chaque entrée",zoneMarkerPick),
+    tacticalFieldV1("Nombre de marqueurs par entrée",zoneMarkerCharges)
+  );
+  const zoneMarkerNote=document.createElement("small");
+  zoneMarkerNote.className="note";
+  zoneMarkerNote.textContent="Le marqueur conserve sa durée propre après sortie de la zone. Une nouvelle entrée en ajoute autant. Configure Poison dans la bibliothèque des marqueurs.";
+  zoneMarkerBox.append(zoneMarkerNote);
+  const zoneStatusBehavior = document.createElement("select");
+  zoneStatusBehavior.dataset.skillZoneStatusBehavior = "true";
+  createOption(zoneStatusBehavior, "while_inside", "Actif uniquement dans la zone");
+  createOption(zoneStatusBehavior, "on_enter", "À l’entrée : conserve sa durée après sortie");
+
+  const zoneDamageTrigger = document.createElement("select");
+  zoneDamageTrigger.dataset.skillZoneDamageTrigger = "true";
+  createOption(zoneDamageTrigger, "entry_and_tick", "À l'entrée et périodiquement (historique)");
+  createOption(zoneDamageTrigger, "entry_only", "Uniquement à chaque entrée réelle");
+
+  const zoneTickDamage =
+    tacticalNumberInputV1(
+      "skillZoneTickDamage",
+      effect?.tickEffect?.amount ?? 1,
+      { min: 0, step: "0.1" }
+    );
+
+  const zoneChannel =
+    tacticalDamageElementSelectV1(
+      root,statRegistry,"skillZoneChannel",effect?.tickEffect?.channel??""
+    );
+
+  const zs = effect?.tickEffect?.status ?? {};
+  const zoneStatusKind = document.createElement("select");
+  zoneStatusKind.dataset.skillZoneStatusKind = "true";
+  for (const kind of STATUS_EFFECT_V1_KINDS) {
+    createOption(zoneStatusKind,kind,tacticalStatusKindLabelV1(kind));
+  }
+  const zoneStatusPolarity = document.createElement("select");
+  zoneStatusPolarity.dataset.skillZoneStatusPolarity = "true";
+  for (const kind of STATUS_EFFECT_V1_POLARITIES) {
+    createOption(zoneStatusPolarity,kind,tacticalPolarityLabelV1(kind));
+  }
+  const zoneStatusStacking = document.createElement("select");
+  zoneStatusStacking.dataset.skillZoneStatusStacking = "true";
+  for (const kind of STATUS_EFFECT_V1_STACKING) {
+    createOption(zoneStatusStacking,kind,tacticalStackingLabelV1(kind));
+  }
+  const zoneStatusConfig = document.createElement("div");
+  zoneStatusConfig.className = "skill-status-config__grid";
+  zoneStatusConfig.dataset.skillZoneEffectConfigKind = "apply_status";
+  const zoneStatusNumber = (label,key,value,options={},kinds="") => {
+    const field = tacticalFieldV1(label,tacticalNumberInputV1(key,value,options));
+    if (kinds) field.dataset.skillZoneStatusConfigKind = kinds;
+    return field;
+  };
+  const zoneStatusText = (label,key,value,kinds="") => {
+    const field = tacticalFieldV1(label,tacticalTextInputV1(key,value));
+    if (kinds) field.dataset.skillZoneStatusConfigKind = kinds;
+    return field;
+  };
+  const zoneStatId = document.createElement("select");
+  zoneStatId.dataset.skillZoneStatusStatId = "true";
+  fillStatusStatSelectV1(zoneStatId,statRegistry,zs.statId ?? "");
+  const zoneStatField = tacticalFieldV1("Statistique",zoneStatId);
+  zoneStatField.dataset.skillZoneStatusConfigKind = "stat_modifier";
+  const zoneImmunity=document.createElement("div");
+  zoneImmunity.dataset.skillZoneStatusConfigKind="immunity";
+  for(const [value,label] of [["damage","Immunité aux dégâts"],["negative_status","Immunité aux statuts négatifs"]]){
+    const field=document.createElement("label");
+    field.className="check";
+    const checkbox=document.createElement("input");
+    checkbox.type="checkbox";
+    checkbox.value=value;
+    checkbox.dataset.skillZoneStatusImmunityDomain="true";
+    checkbox.checked=(zs.domains??["damage"]).includes(value);
+    field.append(checkbox,document.createTextNode(label));
+    zoneImmunity.append(field);
+  }
+  const zoneMaxStacksField = zoneStatusNumber(
+    "Stacks max", "skillZoneStatusMaxStacks", zs.maxStacks ?? 1,
+    {min:1,step:"1"}
+  );
+  zoneMaxStacksField.dataset.skillZoneStatusMaxStacksField = "true";
+  const zoneStatusDurationField = zoneStatusNumber(
+    "Durée du statut (secondes)", "skillZoneStatusDurationSeconds",
+    zs.durationMs == null ? 3 : humanTacticalMsToSecondsV1(zs.durationMs),
+    {min:0.1,step:"0.1"}
+  );
+  zoneStatusDurationField.dataset.skillZoneStatusDurationField = "true";
+  const zoneStatusDurationNote = document.createElement("small");
+  zoneStatusDurationNote.dataset.skillZoneStatusDurationNote = "true";
+  zoneStatusDurationNote.className = "note";
+  zoneStatusDurationNote.textContent =
+    "Tant que la créature reste dans la zone : le bonus est actif jusqu’à la sortie ou à la fin de la zone. " +
+    "La durée du statut enregistrée est conservée pour le mode « À l’entrée ».";
+  zoneStatusConfig.append(
+    tacticalFieldV1("Quand appliquer le statut ?", zoneStatusBehavior),
+    tacticalFieldV1("Conserver la zone après rappel / changement", zonePersistAfterRecall),
+    zoneStatusDurationNote,
+    zoneStatusText("ID du statut","skillZoneStatusId",zs.id ?? "aura"),
+    tacticalFieldV1("Type",zoneStatusKind),
+    tacticalFieldV1("Polarité",zoneStatusPolarity),
+    zoneStatusDurationField,
+    tacticalFieldV1("Empilement",zoneStatusStacking),
+    zoneMaxStacksField,
+    zoneStatusText("Tags (virgules)","skillZoneStatusTags",(zs.tags??[]).join(", ")),
+    zoneStatField,
+    zoneStatusNumber("Variation de stat (points)","skillZoneStatusDeltaPoints",
+      zs.deltaPoints ?? 25,{step:"0.1"},"stat_modifier"),
+    zoneStatusNumber("Dégâts renvoyés (%)","skillZoneStatusReflectionPercent",
+      zs.percent ?? 25,{min:0,max:100,step:"1"},"damage_reflection"),
+    (() => {
+      const container = document.createElement("div");
+      container.dataset.skillZoneStatusConfigKind = "damage_reflection";
+      appendReflectionAuthorControlsV1(container, zs, "zone-status");
+      return container;
+    })(),
+    zoneStatusNumber("Dégâts infligés, tous types (%) — positif = bonus","skillZoneStatusOutgoingDamageModifierPct",
+      zs.modifierPct ?? 0,{step:"1"},"outgoing_damage_modifier"),
+    zoneStatusNumber("Temps de trajet (%)","skillZoneStatusApproachModifierPct",
+      zs.modifierPct ?? 50,{step:"1"},"approach_time_modifier"),
+    zoneStatusNumber("Régénération d'énergie (%)","skillZoneStatusEnergyRegenModifierPct",
+      zs.modifierPct ?? 100,{step:"5"},"energy_regen_modifier"),
+    zoneStatusNumber("Recharge des compétences (%)","skillZoneStatusCooldownRateModifierPct",
+      zs.modifierPct ?? 100,{step:"5"},"skill_cooldown_rate_modifier"),
+    zoneStatusNumber("Dégâts / soins / bouclier","skillZoneStatusAmount",
+      zs.amount ?? 5,{min:0.1,step:"0.1"},"damage_over_time,heal_over_time,shield"),
+    zoneStatusNumber("Intervalle (secondes)","skillZoneStatusTickSeconds",
+      zs.tickIntervalMs == null ? 1 : humanTacticalMsToSecondsV1(zs.tickIntervalMs),
+      {min:0.1,step:"0.1"},"damage_over_time,heal_over_time"),
+    (()=>{ const field=tacticalFieldV1(
+      "Élément DoT",tacticalDamageElementSelectV1(root,statRegistry,"skillZoneStatusChannel",zs.channel??"poison")
+    );field.dataset.skillZoneStatusConfigKind="damage_over_time";return field;})(),
+    zoneImmunity
+  );
+
+  const zoneGrid =
+    document.createElement("div");
+  zoneGrid.className =
+    "skill-status-config__grid";
+  zoneGrid.append(
+    zoneId,
+    tacticalFieldV1(
+      "Rayon initial",
+      zoneRadius
+    ),
+    tacticalFieldV1(
+      "Durée (secondes)",
+      zoneDuration
+    ),
+    tacticalFieldV1("Réactivation",zoneReactivation),
+    tacticalFieldV1(
+      "Activations max",
+      zoneMaxActivations
+    ),
+    tacticalFieldV1("Croissance du rayon par activation",zoneRadiusGrowth),
+    tacticalFieldV1("Effet appliqué par cette zone",zoneEffectKind)
+  );
+  const zoneDamageBox=document.createElement("div");
+  zoneDamageBox.className="skill-status-config__grid";
+  zoneDamageBox.dataset.skillZoneEffectConfigKind="damage";
+  zoneDamageBox.append(
+    tacticalFieldV1("Déclencher les dégâts", zoneDamageTrigger),
+    tacticalFieldV1("Intervalle entre les dégâts (secondes)",zoneTick),
+    tacticalFieldV1("Dégâts à chaque intervalle",zoneTickDamage),
+    tacticalFieldV1("Élément des dégâts",zoneChannel)
+  );
+
+  const zoneNote =
+    document.createElement("small");
+  zoneNote.className = "note";
+  zoneNote.textContent =
+    "Toute réactivation renouvelle la durée et peut éventuellement agrandir le rayon. La zone contient directement son effet : inutile d’ajouter un buff indépendant. Les champs des dégâts ou du statut apparaissent selon « Effet appliqué ». Le mode « Dans la zone » retire le statut à la sortie ; « À l’entrée » laisse sa durée normale après sortie. La persistance après rappel n’est disponible que pour les zones à statut. La zone suit sa créature : pour une zone fixe en taille, choisir « Garder la même taille » et croissance 0. Le mode « Marqueurs » pose des charges uniquement à l’entrée réelle et conserve la durée propre des marqueurs après la sortie.";
+
+  zoneBox.append(zoneGrid,zoneDamageBox,zoneStatusConfig,zoneMarkerBox,zoneNote);
+
+  config.append(
+    amountField,
+    lifePercentField,
+    lifeMaximumField,
+    lifeNote,
+    channelField,
+    ignoreAllField,
+    advancedPenetration,
+    penetrationNote,
+    filterTagsField,
+    statusBox,
+    scheduledBox,
+    zoneBox,
+    markerFields.applyBox,
+    markerFields.consumeBox
+  );
+  row.append(header, config);
+  host.append(row);
+
+  kind.value = effect?.kind ?? "damage";
+  scope.value =
+    effect?.targetScope ?? "target";
+  statusKind.value =
+    status.kind ?? "stat_modifier";
+  polarity.value =
+    status.polarity ?? "beneficial";
+  stacking.value =
+    status.stacking ?? "refresh";
+  statusVisualMode.value =
+    statusPresentation?.mode ?? "none";
+  zoneRadius.value =
+    effect?.radius ?? "short";
+  zoneReactivation.value = effect?.reactivation ?? "refresh";
+  zoneEffectKind.value = effect?.tickEffect?.kind ?? "damage";
+  zoneDamageTrigger.value = effect?.damageTrigger ?? "entry_and_tick";
+  zoneStatusBehavior.value = effect?.statusBehavior ?? "while_inside";
+  zoneStatusKind.value = zs.kind ?? "stat_modifier";
+  zoneStatusPolarity.value = zs.polarity ?? "beneficial";
+  zoneStatusStacking.value = zs.stacking ?? "refresh";
+  zoneStatusKind.addEventListener("change",()=> {
+    zoneStatusPolarity.value = ["damage_over_time","stun","immobilize","silence","taunt"]
+      .includes(zoneStatusKind.value) ? "detrimental" : "beneficial";
+  });
+  syncHumanSkillEffectRowV1(row);
+  return row;
+}
+
+function renderHumanSkillEffectsV1(
+  root,
+  effects,
+  statRegistry = null,
+  statusVisuals = {},
+  hostSelector = "[data-skill-effects-host]"
+) {
+  const host = one(root, hostSelector);
+  host.textContent = "";
+
+  for (const effect of effects ?? []) {
+    const statusId =
+      effect?.kind === "apply_status"
+        ? effect?.status?.id ?? null
+        : null;
+
+    appendHumanSkillEffectV1(
+      root,
+      effect,
+      statRegistry,
+      statusId
+        ? statusVisuals?.[statusId] ?? null
+        : null,
+      hostSelector
+    );
+  }
+}
+
+function refreshHumanSkillEffectStatOptionsV1(
+  root,
+  statRegistry
+) {
+  refreshHumanElementChannelSelectsV1(root,statRegistry);
+  for (
+    const select of root.querySelectorAll(
+      "[data-skill-status-stat-id]"
+    )
+  ) {
+    fillStatusStatSelectV1(
+      select,
+      statRegistry,
+      select.value
+    );
+  }
+}
+
+function commaValuesV1(value) {
+  return String(value ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]") {
+  const rows = [
+    ...one(root, hostSelector).querySelectorAll(
+      "[data-skill-effect-row]"
+    )
+  ];
+
+  const effects = rows.map((row) => {
+    const kind = row.querySelector(
+      "[data-skill-effect-kind]"
+    ).value;
+    const targetScope = row.querySelector(
+      "[data-skill-effect-scope]"
+    ).value;
+
+    if (kind === "apply_marker" || kind === "consume_marker") {
+      return readCaptureMarkerEffectFieldsV1(root,row,kind,targetScope);
+    }
+    if (kind === "knockout") return {kind,targetScope};
+
+    if (kind === "persistent_zone") {
+      const zoneEffectKind=row.querySelector("[data-skill-zone-effect-kind]").value;
+      const zsKind=row.querySelector("[data-skill-zone-status-kind]").value;
+      const zs={
+        id:row.querySelector("[data-skill-zone-status-id]").value,
+        kind:zsKind,
+        polarity:row.querySelector("[data-skill-zone-status-polarity]").value,
+        durationSeconds:Number(row.querySelector("[data-skill-zone-status-duration-seconds]").value),
+        stacking:row.querySelector("[data-skill-zone-status-stacking]").value,
+        maxStacks:Number(row.querySelector("[data-skill-zone-status-max-stacks]").value),
+        tags:commaValuesV1(row.querySelector("[data-skill-zone-status-tags]").value)
+      };
+      if(zsKind==="outgoing_damage_modifier"){
+        zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-outgoing-damage-modifier-pct]").value);
+      } else if(zsKind==="stat_modifier"){
+        zs.statId=row.querySelector("[data-skill-zone-status-stat-id]").value;
+        zs.deltaPoints=Number(row.querySelector("[data-skill-zone-status-delta-points]").value);
+      } else if(zsKind==="damage_reflection"){
+        zs.percent=Number(row.querySelector("[data-skill-zone-status-reflection-percent]").value);
+        readReflectionAuthorControlsV1(row.querySelector('[data-reflection-controls="zone-status"]'), zs);
+      } else if(zsKind==="approach_time_modifier"){
+        zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-approach-modifier-pct]").value);
+      } else if(zsKind==="energy_regen_modifier"){
+        zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-energy-regen-modifier-pct]").value);
+      } else if(zsKind==="skill_cooldown_rate_modifier"){
+        zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-cooldown-rate-modifier-pct]").value);
+      } else if(["damage_over_time","heal_over_time","shield"].includes(zsKind)){
+        zs.amount=Number(row.querySelector("[data-skill-zone-status-amount]").value);
+        if(zsKind!=="shield")
+          zs.tickSeconds=Number(row.querySelector("[data-skill-zone-status-tick-seconds]").value);
+        if(zsKind==="damage_over_time")
+          zs.channel=row.querySelector("[data-skill-zone-status-channel]").value;
+      } else if(zsKind==="immunity"){
+        zs.domains=[...row.querySelectorAll("[data-skill-zone-status-immunity-domain]")]
+          .filter(x=>x.checked).map(x=>x.value);
+      }
+      return {
+        kind,
+        targetScope,
+        ...(zoneEffectKind==="apply_status" &&
+            row.querySelector("[data-skill-zone-persist-after-recall]").checked
+          ? {persistAfterRecall:true} : {}),
+        ...(zoneEffectKind==="apply_status"?{
+          statusBehavior:row.querySelector("[data-skill-zone-status-behavior]").value,
+          tickEffect:{kind:"apply_status",targetScope,status:zs}
+        }:{}),
+        ...(zoneEffectKind==="apply_marker"?{
+          tickEffect:{kind:"apply_marker",targetScope,
+            marker:captureMarkerDefinitionV1(root,row.querySelector("[data-skill-zone-marker-pick]").value),
+            charges:Number(row.querySelector("[data-skill-zone-marker-charges]").value)}
+        }:{}),
+        zoneId: row.querySelector(
+          "[data-skill-zone-id]"
+        ).value,
+        radius: row.querySelector(
+          "[data-skill-zone-radius]"
+        ).value,
+        durationSeconds: Number(
+          row.querySelector(
+            "[data-skill-zone-duration-seconds]"
+          ).value
+        ),
+        tickSeconds: Number(
+          row.querySelector(
+            "[data-skill-zone-tick-seconds]"
+          ).value
+        ),
+        reactivation: row.querySelector(
+          "[data-skill-zone-reactivation]"
+        ).value,
+        maxActivations: Number(
+          row.querySelector(
+            "[data-skill-zone-max-activations]"
+          ).value
+        ),
+        radiusGrowthSteps: Number(
+          row.querySelector(
+            "[data-skill-zone-radius-growth-steps]"
+          ).value
+        ),
+        ...(zoneEffectKind==="damage"?{
+          ...(row.querySelector("[data-skill-zone-damage-trigger]").value === "entry_only"
+            ? {damageTrigger:"entry_only"} : {}),
+          tickDamage:Number(row.querySelector("[data-skill-zone-tick-damage]").value),
+          channel:row.querySelector("[data-skill-zone-channel]").value || null
+        }:{})
+      };
+    }
+
+    if (kind === "apply_status") {
+      const statusKind = row.querySelector(
+        "[data-skill-status-kind]"
+      ).value;
+      const status = {
+        id: row.querySelector(
+          "[data-skill-status-id]"
+        ).value,
+        kind: statusKind,
+        polarity: row.querySelector(
+          "[data-skill-status-polarity]"
+        ).value,
+        durationSeconds: Number(
+          row.querySelector(
+            "[data-skill-status-duration-seconds]"
+          ).value
+        ),
+        stacking: row.querySelector(
+          "[data-skill-status-stacking]"
+        ).value,
+        maxStacks: Number(
+          row.querySelector(
+            "[data-skill-status-max-stacks]"
+          ).value
+        ),
+        tags: (() => {
+          try {
+            const stored = JSON.parse(
+              row.dataset
+                .skillStatusStoredTags ??
+                "[]"
+            );
+            return Array.isArray(stored)
+              ? stored
+              : [];
+          } catch {
+            return [];
+          }
+        })()
+      };
+
+      if (statusKind === "stat_modifier") {
+        const activation = row.querySelector("[data-skill-status-activation-condition]")?.value ?? "always";
+        if (activation === "moving") status.activationCondition = "moving";
+        status.statId = row.querySelector(
+          "[data-skill-status-stat-id]"
+        ).value;
+        status.deltaPoints = Number(
+          row.querySelector(
+            "[data-skill-status-delta-points]"
+          ).value
+        );
+      } else if(statusKind==="outgoing_damage_modifier"){
+        status.modifierPct=Number(row.querySelector("[data-skill-status-outgoing-damage-modifier-pct]").value);
+      } else if (statusKind === "approach_time_modifier") {
+        status.modifierPct = Number(row.querySelector("[data-skill-status-approach-modifier-pct]").value);
+      } else if (statusKind === "energy_regen_modifier") {
+        status.modifierPct = Number(row.querySelector("[data-skill-status-energy-regen-modifier-pct]").value);
+      } else if (statusKind === "skill_cooldown_rate_modifier") {
+        status.modifierPct = Number(row.querySelector("[data-skill-status-cooldown-rate-modifier-pct]").value);
+      } else if (
+        statusKind === "damage_over_time"
+      ) {
+        status.amount = Number(
+          row.querySelector(
+            "[data-skill-status-amount]"
+          ).value
+        );
+        status.tickSeconds = Number(
+          row.querySelector(
+            "[data-skill-status-tick-seconds]"
+          ).value
+        );
+        status.channel = row.querySelector(
+          "[data-skill-status-channel]"
+        ).value;
+      } else if (
+        statusKind === "heal_over_time"
+      ) {
+        status.amount = Number(
+          row.querySelector(
+            "[data-skill-status-hot-amount]"
+          ).value
+        );
+        status.tickSeconds = Number(
+          row.querySelector(
+            "[data-skill-status-hot-tick-seconds]"
+          ).value
+        );
+      } else if (statusKind === "shield") {
+        status.amount = Number(
+          row.querySelector(
+            "[data-skill-status-shield-amount]"
+          ).value
+        );
+      } else if (statusKind === "damage_reflection") {
+        status.percent = Number(row.querySelector("[data-skill-status-reflection-percent]").value);
+        readReflectionAuthorControlsV1(row.querySelector('[data-reflection-controls="main"]'), status);
+      } else if (statusKind === "triggered_buff") {
+        const triggerNode = row.querySelector("[data-triggered-buff-event]");
+        const effects = readStackThresholdEffectRowsV1(
+          row.querySelector("[data-triggered-buff-effects-host]")
+        );
+        if (triggerNode?.dataset.legacy === "true" && triggerNode.value === "damage_dealt") {
+          status.onDamageDealt = {effects};
+        } else {
+          status.onEvent = {event:triggerNode?.value ?? "damage_dealt",effects};
+        }
+      } else if (statusKind === "immunity") {
+        status.domains = [
+          ...row.querySelectorAll(
+            "[data-skill-status-immunity-domain]"
+          )
+        ]
+          .filter((input) => input.checked)
+          .map((input) => input.value);
+        if (row.querySelector("[data-skill-status-intangible]")?.checked === true) {
+          status.intangible = true;
+        }
+      }
+      if (status.stacking === "stack" && row.querySelector("[data-stack-threshold-enabled]")?.checked) {
+        status.onStackThreshold = {
+          count:Number(row.querySelector("[data-stack-threshold-count]").value),
+          consume:row.querySelector("[data-stack-threshold-consume]").value,
+          effects:readStackThresholdEffectRowsV1(row.querySelector("[data-stack-threshold-effects-host]"))
+        };
+      }
+
+      return {
+        kind,
+        targetScope,
+        status
+      };
+    }
+
+    if (
+      kind === "cleanse" ||
+      kind === "dispel"
+    ) {
+      return {
+        kind,
+        targetScope,
+        statusTags: commaValuesV1(
+          row.querySelector(
+            "[data-skill-effect-status-tags]"
+          ).value
+        )
+      };
+    }
+
+    if (kind === "life_steal") {
+      const max = row.querySelector("[data-skill-effect-life-steal-max-heal]").value;
+      return {
+        kind, targetScope:"self",
+        percent:Number(row.querySelector("[data-skill-effect-life-steal-percent]").value),
+        ...(max.trim() === "" ? {} : {maxHeal:Number(max)})
+      };
+    }
+
+    const output = {
+      kind,
+      targetScope,
+      amount: Number(
+        row.querySelector(
+          "[data-skill-effect-amount]"
+        ).value
+      )
+    };
+
+    if (kind === "damage") {
+      output.channel =
+        row.querySelector(
+          "[data-skill-effect-channel]"
+        ).value || null;
+      output.ignoreResistancePct = Number(
+        row.querySelector(
+          "[data-skill-effect-ignore-resistance-pct]"
+        ).value
+      );
+      output.ignoreDamageReductionPct = Number(
+        row.querySelector(
+          "[data-skill-effect-ignore-damage-reduction-pct]"
+        ).value
+      );
+    }
+
+    return output;
+  });
+
+  return buildHumanTacticalSkillEffectsV1(
+    effects
+  );
+}
+
+function readHumanStatusVisualsV1(root) {
+  const output = {};
+
+  for (
+    const row of root.querySelectorAll(
+      "[data-skill-effect-row]"
+    )
+  ) {
+    if (
+      row.querySelector(
+        "[data-skill-effect-kind]"
+      )?.value !== "apply_status"
+    ) {
+      continue;
+    }
+
+    const statusId = String(
+      row.querySelector(
+        "[data-skill-status-id]"
+      )?.value ?? ""
+    ).trim();
+    const mode =
+      row.querySelector(
+        "[data-skill-status-visual-mode]"
+      )?.value ?? "none";
+
+    if (!statusId || mode === "none") {
+      continue;
+    }
+
+    const presentation = {
+      mode,
+      tintColor:
+        row.querySelector(
+          "[data-skill-status-tint-color]"
+        )?.value ?? "#9b59d0",
+      tintOpacity: Number(
+        row.querySelector(
+          "[data-skill-status-tint-opacity]"
+        )?.value ?? 0.35
+      ),
+      tintBlinkEnabled:
+        row.querySelector(
+          "[data-skill-status-tint-blink-enabled]"
+        )?.checked === true,
+      tintBlinkPeriodMs: Number(
+        row.querySelector(
+          "[data-skill-status-tint-blink-period-ms]"
+        )?.value ?? 600
+      )
+    };
+
+    if (
+      mode === "sprite" ||
+      mode === "both"
+    ) {
+      const assetId = String(
+        row.querySelector(
+          "[data-skill-status-visual-asset]"
+        )?.value ?? ""
+      ).trim();
+
+      if (!assetId) {
+        throw new Error(
+          "Choisis un sprite pour le visuel du statut « " +
+            statusId +
+            " »."
+        );
+      }
+
+      presentation.sprite = {
+        ...readStatusSpriteControlsV1(row),
+        assetId,
+        displayScale: Number(
+          row.querySelector(
+            "[data-skill-status-visual-scale]"
+          )?.value ?? 1
+        ),
+        opacity: skillSpriteOpacityPercentToUnitV1(
+          row.querySelector(
+            "[data-skill-status-visual-opacity]"
+          )?.value ?? 85
+        )
+      };
+    }
+
+    const existing =
+      output[statusId] ?? null;
+    if (
+      existing !== null &&
+      JSON.stringify(existing) !==
+        JSON.stringify(presentation)
+    ) {
+      throw new Error(
+        "Le statut « " +
+          statusId +
+          " » possède deux présentations différentes dans la même capacité."
+      );
+    }
+
+    output[statusId] = presentation;
+  }
+
+  return output;
+}
+
+function statDefinitionField(caption, input) {
+  const field = document.createElement("label");
+  field.className = "stat-definition-field";
+
+  const title = document.createElement("small");
+  title.textContent = caption;
+
+  field.append(title, input);
+  return field;
+}
+
+function renderHumanStatValuesV1(
+  root,
+  registry,
+  statValues = null
+) {
+  const host = one(
+    root,
+    "[data-stat-values-host]"
+  );
+  const normalized =
+    normalizeCaptureStatRegistryV1(registry);
+  const values =
+    statValues?.values ?? {};
+
+  host.textContent = "";
+
+  for (const definition of normalized.stats) {
+    const label =
+      document.createElement("label");
+    label.className = "stat-value-card";
+
+    const title =
+      document.createElement("span");
+    title.className = "stat-value-card__title";
+    title.textContent = definition.label;
+
+    const input =
+      document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.step = "1";
+    input.value = String(
+      values[definition.id] ?? 0
+    );
+    input.dataset.statValue =
+      definition.id;
+
+    const meta =
+      document.createElement("small");
+    meta.textContent =
+      humanStatEffectSummaryV1({
+        definition,
+        value: values[definition.id] ?? 0
+      });
+
+    label.append(title, input, meta);
+    host.append(label);
+  }
+}
+
+function renderHumanStatRegistryV1(
+  root,
+  registry
+) {
+  const host = one(
+    root,
+    "[data-stat-registry-host]"
+  );
+  const normalized =
+    normalizeCaptureStatRegistryV1(registry);
+
+  host.textContent = "";
+
+  for (const definition of normalized.stats) {
+    const row =
+      document.createElement("div");
+    row.className = "stat-definition-row";
+    row.dataset.statDefinition =
+      definition.id;
+
+    const id =
+      document.createElement("strong");
+    id.textContent = definition.id;
+
+    const label =
+      document.createElement("input");
+    label.value = definition.label;
+    label.dataset.statDefinitionLabel =
+      "true";
+    label.setAttribute(
+      "aria-label",
+      "Libellé " + definition.id
+    );
+
+    const damageChannel=humanElementChannelSelectV1(
+      root,normalized,"statDefinitionDamageChannel",definition.damageChannel??""
+    );
+
+    const damageRate =
+      document.createElement("input");
+    damageRate.type = "number";
+    damageRate.min = "0";
+    damageRate.step = "0.05";
+    damageRate.value = String(
+      definition.damagePctPerPoint
+    );
+    damageRate.dataset.statDefinitionDamageRate =
+      "true";
+
+    const resistanceChannel=humanElementChannelSelectV1(
+      root,normalized,"statDefinitionResistanceChannel",definition.resistanceChannel??""
+    );
+
+    const resistanceRate =
+      document.createElement("input");
+    resistanceRate.type = "number";
+    resistanceRate.min = "0";
+    resistanceRate.step = "0.05";
+    resistanceRate.value = String(
+      definition.resistancePctPerPoint
+    );
+    resistanceRate.dataset.statDefinitionResistanceRate =
+      "true";
+
+    const chargeRate =
+      document.createElement("input");
+    chargeRate.type = "number";
+    chargeRate.min = "0";
+    chargeRate.step = "0.05";
+    chargeRate.value = String(
+      definition
+        .chargeTimeReductionPctPerPoint
+    );
+    chargeRate.dataset.statDefinitionChargeRate =
+      "true";
+
+    const maxHpRate =
+      document.createElement("input");
+    maxHpRate.type = "number";
+    maxHpRate.min = "0";
+    maxHpRate.step = "0.1";
+    maxHpRate.value = String(
+      definition.maxHpPerPoint
+    );
+    maxHpRate.dataset.statDefinitionMaxHpRate =
+      "true";
+
+    const outgoingRate=document.createElement("input");
+    outgoingRate.type="number";
+    outgoingRate.min="0";
+    outgoingRate.step="0.05";
+    outgoingRate.value=String(definition.outgoingDamagePctPerPoint??0);
+    outgoingRate.dataset.statDefinitionOutgoingDamageRate="true";
+    const damageReductionRate =
+      document.createElement("input");
+    damageReductionRate.type = "number";
+    damageReductionRate.min = "0";
+    damageReductionRate.step = "0.05";
+    damageReductionRate.value = String(
+      definition.damageReductionPctPerPoint
+    );
+    damageReductionRate.dataset
+      .statDefinitionDamageReductionRate =
+        "true";
+
+    const remove =
+      document.createElement("button");
+    remove.type = "button";
+    remove.className = "small-action";
+    remove.textContent = "Retirer";
+    remove.dataset.statDefinitionRemove =
+      definition.id;
+
+    row.append(
+      id,
+      statDefinitionField("Nom", label),
+      statDefinitionField(
+        "Canal dégâts",
+        damageChannel
+      ),
+      statDefinitionField(
+        "Dégâts % / point",
+        damageRate
+      ),
+      statDefinitionField(
+        "Canal résistance",
+        resistanceChannel
+      ),
+      statDefinitionField(
+        "Résistance % / point",
+        resistanceRate
+      ),
+      statDefinitionField(
+        "Réduction charge % / point",
+        chargeRate
+      ),
+      statDefinitionField("Tous dégâts infligés % / point",outgoingRate),
+      statDefinitionField(
+        "Réduction dégâts reçus % / point",
+        damageReductionRate
+      ),
+      statDefinitionField(
+        "PV max / point",
+        maxHpRate
+      ),
+      remove
+    );
+    host.append(row);
+  }
+  refreshHumanElementChannelSelectsV1(root,normalized);
+  captureMarkerRefreshReferenceChoicesV1(root);
+}
+
+function readHumanStatRegistryV1(root) {
+  const definitions = [
+    ...root.querySelectorAll(
+      "[data-stat-definition]"
+    )
+  ].map((row) => {
+    const damageChannel = optionalText(
+      row.querySelector(
+        "[data-stat-definition-damage-channel]"
+      ).value
+    );
+    const resistanceChannel =
+      optionalText(
+        row.querySelector(
+          "[data-stat-definition-resistance-channel]"
+        ).value
+      );
+
+    return {
+      id: row.dataset.statDefinition,
+      label: row.querySelector(
+        "[data-stat-definition-label]"
+      ).value,
+      damageChannel,
+      resistanceChannel,
+      damagePctPerPoint:
+        damageChannel === null
+          ? 0
+          : finiteNumber(
+              row.querySelector(
+                "[data-stat-definition-damage-rate]"
+              ).value,
+              "Dégâts % par point"
+            ),
+      resistancePctPerPoint:
+        resistanceChannel === null
+          ? 0
+          : finiteNumber(
+              row.querySelector(
+                "[data-stat-definition-resistance-rate]"
+              ).value,
+              "Résistance % par point"
+            ),
+      chargeTimeReductionPctPerPoint:
+        finiteNumber(
+          row.querySelector(
+            "[data-stat-definition-charge-rate]"
+          ).value,
+          "Réduction charge % par point"
+        ),
+      outgoingDamagePctPerPoint:finiteNumber(
+        row.querySelector("[data-stat-definition-outgoing-damage-rate]").value,
+        "Tous dégâts infligés % par point"
+      ),
+      damageReductionPctPerPoint:
+        finiteNumber(
+          row.querySelector(
+            "[data-stat-definition-damage-reduction-rate]"
+          ).value,
+          "Réduction dégâts reçus % par point"
+        ),
+      maxHpPerPoint:
+        finiteNumber(
+          row.querySelector(
+            "[data-stat-definition-max-hp-rate]"
+          ).value,
+          "PV max par point"
+        )
+    };
+  });
+
+  return buildHumanStatRegistryV1({
+    definitions
+  });
+}
+
+function readHumanCreatureStatValuesV1(
+  root,
+  creatureId,
+  registry
+) {
+  const values = {};
+  for (
+    const input of root.querySelectorAll(
+      "[data-stat-value]"
+    )
+  ) {
+    values[input.dataset.statValue] =
+      finiteNumber(
+        input.value,
+        "Stat " + input.dataset.statValue
+      );
+  }
+
+  return buildHumanCreatureStatValuesV1({
+    creatureId,
+    values,
+    registry
+  });
+}
+
+function renderHumanProgressionRulesV1(
+  root,
+  progressionRules
+) {
+  const rules =
+    normalizeCaptureProgressionRulesV1(
+      progressionRules
+    );
+  one(
+    root,
+    "[data-progression-max-active]"
+  ).value = String(rules.maxActiveSkills);
+
+  const host = one(
+    root,
+    "[data-progression-schedule-host]"
+  );
+  host.textContent = "";
+
+  rules.slotUnlockSchedule.forEach(
+    (step, index) => {
+      const row =
+        document.createElement("div");
+      row.className = "progression-row";
+      row.dataset.progressionStep =
+        String(index);
+
+      const levelLabel =
+        document.createElement("label");
+      levelLabel.textContent = "Niveau";
+      const levelInput =
+        document.createElement("input");
+      levelInput.type = "number";
+      levelInput.min = "1";
+      levelInput.value = String(step.level);
+      levelInput.dataset.progressionLevel =
+        "true";
+      levelLabel.append(levelInput);
+
+      const slotsLabel =
+        document.createElement("label");
+      slotsLabel.textContent =
+        "Slots actifs";
+      const slotsInput =
+        document.createElement("input");
+      slotsInput.type = "number";
+      slotsInput.min = "1";
+      slotsInput.max = "5";
+      slotsInput.value = String(step.slots);
+      slotsInput.dataset.progressionSlots =
+        "true";
+      slotsLabel.append(slotsInput);
+
+      const remove =
+        document.createElement("button");
+      remove.type = "button";
+      remove.className = "small-action";
+      remove.textContent = "Retirer";
+      remove.dataset.progressionRemove =
+        String(index);
+      remove.disabled =
+        rules.slotUnlockSchedule.length <= 1;
+
+      row.append(
+        levelLabel,
+        slotsLabel,
+        remove
+      );
+      host.append(row);
+    }
+  );
+}
+
+function readHumanProgressionRulesV1(root) {
+  const steps = [
+    ...root.querySelectorAll(
+      "[data-progression-step]"
+    )
+  ].map((row) => ({
+    level: positiveInteger(
+      Number(
+        row.querySelector(
+          "[data-progression-level]"
+        ).value
+      ),
+      "Niveau du palier"
+    ),
+    slots: positiveInteger(
+      Number(
+        row.querySelector(
+          "[data-progression-slots]"
+        ).value
+      ),
+      "Slots du palier"
+    )
+  }));
+
+  return buildHumanProgressionRulesV1({
+    maxActiveSkills: positiveInteger(
+      Number(
+        one(
+          root,
+          "[data-progression-max-active]"
+        ).value
+      ),
+      "Maximum de capacités actives"
+    ),
+    slotUnlockSchedule: steps
+  });
+}
+
+function syncEvolutionControlsV1(root) {
+  const enabled = one(
+    root,
+    "[data-evolution-enabled]"
+  ).checked;
+  one(
+    root,
+    "[data-evolution-target]"
+  ).disabled = !enabled;
+  one(
+    root,
+    "[data-evolution-level]"
+  ).disabled = !enabled;
+}
+
+// Deterministic navigation metadata from the ONE asset catalog (never a parallel list).
+// Skill cast/travel/impact FX do not belong in a creature animation chooser.
+export function captureEditorCreatureVisualKindV1(asset) {
+  const tags = Array.isArray(asset?.tags) ? asset.tags : [];
+  if (asset?.mediaType !== "image") return null;
+  const creatureOwned = asset.category === "creature" ||
+    asset.category === "movement" ||
+    asset.assetType === "portrait" && tags.includes("creature") ||
+    tags.includes("creature") && (tags.includes("attack") || tags.includes("movement"));
+  if (!creatureOwned) return null;
+  if (asset.category === "movement" || tags.includes("movement") || tags.includes("roll")) return "movement";
+  if (asset.category === "attack" || tags.includes("attack")) return "attack";
+  return "model";
+}
+
+export function captureEditorAssetMatchesRoleV1(asset, role) {
+  if (!asset?.compatibility?.uses?.includes("editor")) {
+    return false;
+  }
+
+  if (role === "creature") {
+    return (
+      asset.category === "creature" ||
+      (
+        asset.assetType === "portrait" &&
+        asset.tags?.includes("creature")
+      )
+    );
+  }
+
+  if (role === "icon") {
+    return asset.assetType === "icon";
+  }
+  if (role === "movement" || role === "attack") {
+    // The selectable catalog contains genuine animated creature sprite strips
+    // only. Legacy static choices are preserved by populateSelect's fallback,
+    // never offered as NEW movement or attack animation options.
+    return captureEditorCreatureVisualKindV1(asset) === role &&
+      asset.assetType === "sprite" &&
+      Number.isInteger(asset.resource?.frameCount) &&
+      asset.resource.frameCount > 1;
+  }
+
+  if (
+    role === "cast" ||
+    role === "travel" ||
+    role === "impact" ||
+    role === "zone" ||
+    role === "status" ||
+    role === "dodge"
+  ) {
+    const tags = Array.isArray(asset.tags)
+      ? asset.tags
+      : [];
+    const creatureOwned =
+      asset.category === "creature" ||
+      asset.assetType === "portrait" ||
+      tags.includes("creature");
+
+    return (
+      !creatureOwned &&
+      (role !== "travel" || asset.category === "travel" ||
+        (asset.category === "skill" && tags.includes("expanding"))) &&
+      asset.mediaType === "image" &&
+      (
+        asset.assetType === "sprite" ||
+        asset.assetType === "fx"
+      )
+    );
+  }
+
+  if (role === "audio") {
+    return asset.mediaType === "audio";
+  }
+
+  return false;
+}
+
+export function captureEditorAssetLibraryGroupV1(asset) {
+  return asset?.source?.scope === "user"
+    ? "user"
+    : "gensrpg";
+}
+
+
+/**
+ * Asset elements come from the existing catalog tags and creator-given
+ * names/filenames. Synonyms are navigation vocabulary, never gameplay
+ * metadata or a replacement for the authored asset definition.
+ */
+const HUMAN_ASSET_ELEMENT_WORDS_V1 = Object.freeze({
+  fire: ["fire", "feu", "fireball", "flame", "flamme", "flammes", "lava", "lave", "volcan", "volcanique"],
+  water: ["water", "eau", "aqua", "aquatique", "aquafin", "maree", "hydro"],
+  earth: ["earth", "terre", "rock", "roche", "pierre", "stone", "moss"],
+  air: ["air", "vent", "wind", "tornade"],
+  electric: ["electric", "electricity", "electrique", "electricite", "foudre", "lightning", "eclair", "electro"],
+  light: ["light", "lumiere", "luminous", "lumineux"],
+  shadow: ["shadow", "ombre", "tenebres", "dark"],
+  nature: ["nature", "plante", "plant", "thorn", "ronce"],
+  ice: ["ice", "glace", "givre", "frost"],
+  poison: ["poison", "toxique", "toxic"],
+  steel: ["steel", "acier", "metal"],
+  psy: ["psy", "psychique", "psychic"],
+  spirit: ["spirit", "esprit", "spectre"]
+});
+
+function humanAssetWordsV1(value) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+}
+
+function humanAssetElementFromWordsV1(words) {
+  for (const known of HUMAN_SKILL_ELEMENT_GROUP_META_V1) {
+    const aliases = HUMAN_ASSET_ELEMENT_WORDS_V1[known.element] ?? [known.element];
+    if (words.some((word) => aliases.includes(word))) {
+      return known.element;
+    }
+  }
+  return null;
+}
+
+export function humanVisualAssetElementV1(asset) {
+  const tags = Array.isArray(asset?.tags)
+    ? asset.tags.flatMap(humanAssetWordsV1)
+    : [];
+  const tagged = humanAssetElementFromWordsV1(tags);
+  if (tagged !== null) return tagged;
+
+  const named = [
+    asset?.label,
+    asset?.resource?.originalName,
+    asset?.resource?.file,
+    asset?.id
+  ].flatMap(humanAssetWordsV1);
+  return humanAssetElementFromWordsV1(named);
+}
+
+export function humanVisualAssetGroupsV1(assets) {
+  if (!Array.isArray(assets)) {
+    throw new TypeError("visual assets must be an array");
+  }
+  const byId = new Map();
+  for (const asset of assets) {
+    if (typeof asset?.id === "string" && !byId.has(asset.id)) {
+      byId.set(asset.id, asset);
+    }
+  }
+  const entries = [...byId.values()].map((asset) => ({
+    id: asset.id,
+    name: asset.label || asset.id,
+    element: humanVisualAssetElementV1(asset),
+    requiredLevel: 0,
+    asset
+  }));
+  return Object.freeze(
+    humanSkillSelectorGroupsV1(entries).map((group) =>
+      Object.freeze({
+        element: group.element,
+        label: group.element === null ? "Autres / non classés" : group.label,
+        entries: Object.freeze(group.entries.map((entry) => entry.asset))
+      })
+    )
+  );
+}
+
+function populateSelect(select, assets, role) {
+  const previous = select.value;
+  const allowEmpty =
+    select.dataset.requiredAsset !== "true";
+
+  select.textContent = "";
+
+  const reactionIcons =
+    select.matches?.("[data-creature-reaction-icon]") === true;
+  if (allowEmpty) {
+    createOption(select, "", reactionIcons
+      ? "Icône par défaut (Esquive / Défense)" : "Aucun");
+  }
+
+  const matchingAssets = assets.filter(
+    (asset) =>
+      captureEditorAssetMatchesRoleV1(
+        asset,
+        role
+      )
+  );
+  // Mobile native menus: no optgroup nesting for this specific chooser.
+  // Include EVERY compatible icon from the one shared GenSrpG catalog,
+  // including personal session imports. Keep other selectors unchanged.
+  if (reactionIcons) {
+    const unique = [...new Map(
+      matchingAssets.map(asset => [asset.id, asset])
+    ).values()].sort((a, b) =>
+      String(a.label || a.id).localeCompare(
+        String(b.label || b.id), "fr", { sensitivity: "base" }
+      )
+    );
+    for (const asset of unique) {
+      const library = captureEditorAssetLibraryGroupV1(asset) === "user"
+        ? "Mes assets" : "GenSrpG";
+      createOption(select, asset.id, library + " · " + (asset.label || asset.id));
+    }
+    select.dataset.availableIcons = String(unique.length);
+  }
+  const libraryGroups = reactionIcons ? [] : [
+    {
+      id: "gensrpg",
+      label: "Bibliothèque GenSrpG"
+    },
+    {
+      id: "user",
+      label: "Mes assets"
+    }
+  ];
+
+  const creatureAnimationSelector = role === "movement" || role === "attack";
+  for (const libraryGroup of libraryGroups) {
+    const groupAssets =
+      matchingAssets.filter(
+        (asset) =>
+          captureEditorAssetLibraryGroupV1(
+            asset
+          ) === libraryGroup.id
+      );
+
+    if (groupAssets.length === 0) {
+      continue;
+    }
+
+    if (creatureAnimationSelector) {
+      // Native mobile combobox groups, no nested optgroups. Element + source
+      // are derived from the ONE catalog; a static illustration never joins
+      // this list, even when tagged "creature" or "movement".
+      const compatible = groupAssets.filter(asset =>
+        captureEditorCreatureVisualKindV1(asset) === role
+      );
+      for (const elementGroup of humanVisualAssetGroupsV1(compatible)) {
+        const group = document.createElement("optgroup");
+        group.label = libraryGroup.label + " · " + elementGroup.label;
+        group.dataset.assetOrigin = libraryGroup.id;
+        group.dataset.assetElement = elementGroup.element ?? "none";
+        group.dataset.assetKind = role;
+        for (const asset of [...elementGroup.entries].sort((a,b) =>
+          String(a.label || a.id).localeCompare(
+            String(b.label || b.id), "fr", {sensitivity:"base"}
+          )
+        )) {
+          createOption(group, asset.id, asset.label || asset.id);
+        }
+        select.append(group);
+      }
+      continue;
+    }
+
+    for (const elementGroup of humanVisualAssetGroupsV1(groupAssets)) {
+      const group = document.createElement("optgroup");
+      group.label = libraryGroup.label + " · " + elementGroup.label;
+      group.dataset.assetOrigin = libraryGroup.id;
+      group.dataset.assetElement = elementGroup.element ?? "none";
+
+      for (const asset of elementGroup.entries) {
+        createOption(
+          group,
+          asset.id,
+          asset.label || asset.id
+        );
+      }
+      select.append(group);
+    }
+  }
+
+  if (previous) {
+    if (
+      ![...select.options].some(
+        (option) =>
+          option.value === previous
+      )
+    ) {
+      createOption(
+        select,
+        previous,
+        previous + (creatureAnimationSelector
+          ? " — ancien choix (conservé, hors animations)"
+          : " — hors catalogue")
+      );
+    }
+    select.value = previous;
+  }
+}
+
+
+function populatePrivateAudioSelect(select, entries) {
+  const previous = select.value;
+  const preferredRoles = String(
+    select.dataset.audioRoles ?? ""
+  )
+    .split(",")
+    .map((role) => role.trim())
+    .filter(Boolean);
+
+  select.textContent = "";
+  createOption(select, "", "Aucun");
+
+  const groups =
+    buildPrivateAudioRoleGroupsV1(
+      entries,
+      preferredRoles
+    );
+
+  for (const audioGroup of groups) {
+    const group = document.createElement("optgroup");
+    group.label = audioGroup.label;
+    group.dataset.audioRole = audioGroup.role;
+
+    for (const entry of audioGroup.entries) {
+      const option = document.createElement("option");
+      option.value = entry.assetId;
+      option.textContent = entry.displayLabel;
+      option.dataset.audioRole = audioGroup.role;
+      option.dataset.audioCategory = entry.category;
+      group.append(option);
+    }
+
+    select.append(group);
+  }
+
+  if (
+    previous &&
+    [...select.options].some(
+      (option) => option.value === previous
+    )
+  ) {
+    select.value = previous;
+  }
+}
+
+async function hydratePrivateAudioCatalog(
+  root,
+  listen,
+  creatorAudioAssets = null
+) {
+  const response = await fetch(
+    PRIVATE_AUDIO_CATALOG_URL,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Catalogue audio indisponible (" +
+        response.status +
+        ")"
+    );
+  }
+
+  const catalog = await response.json();
+  const entries = Array.isArray(catalog.entries)
+    ? [...catalog.entries]
+    : [];
+  catalog.entries = entries;
+
+  function refreshAudioSelects() {
+    for (
+      const select of root.querySelectorAll(
+        "[data-private-audio]"
+      )
+    ) {
+      populatePrivateAudioSelect(
+        select,
+        entries
+      );
+    }
+  }
+
+  function mountCreatorAudioImporter(importer) {
+    const importButton = importer.querySelector(
+      "[data-creator-audio-import]"
+    );
+    const fileInput = importer.querySelector(
+      "[data-creator-audio-file]"
+    );
+    const roleInput = importer.querySelector(
+      "[data-creator-audio-role]"
+    );
+    const labelInput = importer.querySelector(
+      "[data-creator-audio-label]"
+    );
+    const state = importer.querySelector(
+      "[data-creator-audio-state]"
+    );
+
+    if (
+      !importButton ||
+      !fileInput ||
+      !roleInput
+    ) {
+      return;
+    }
+
+    if (
+      !creatorAudioAssets ||
+      typeof creatorAudioAssets.importAudio !==
+        "function"
+    ) {
+      importButton.disabled = true;
+      if (state) {
+        state.textContent =
+          "Import audio personnel indisponible dans ce contexte.";
+        state.dataset.tone = "warning";
+      }
+      return;
+    }
+
+    listen(
+      importButton,
+      "click",
+      () => {
+        try {
+          const file =
+            fileInput.files?.[0] ?? null;
+          if (!file) {
+            throw new Error(
+              "Choisis un son MP3, WAV ou OGG."
+            );
+          }
+
+          const role =
+            String(
+              roleInput.value ?? ""
+            ).trim();
+          const label =
+            String(
+              labelInput?.value ??
+                file.name ??
+                "Son personnel"
+            ).trim();
+
+          const asset =
+            creatorAudioAssets.importAudio({
+              file,
+              label,
+              role
+            });
+
+          entries.push(asset);
+          refreshAudioSelects();
+
+          const card =
+            importer.closest?.(".card") ??
+            importer.parentElement;
+          const compatibleSelect =
+            [
+              ...(
+                card?.querySelectorAll?.(
+                  "select[data-private-audio]"
+                ) ?? []
+              )
+            ].find((select) =>
+              String(
+                select.dataset.audioRoles ?? ""
+              )
+                .split(",")
+                .map(value => value.trim())
+                .filter(Boolean)
+                .includes(role)
+            ) ?? null;
+
+          if (compatibleSelect) {
+            compatibleSelect.value =
+              asset.assetId;
+            compatibleSelect.dispatchEvent(
+              new Event("change", {
+                bubbles: true
+              })
+            );
+          }
+
+          if (state) {
+            state.textContent =
+              "Importé : " +
+              asset.label +
+              " (" +
+              asset.assetId +
+              ")";
+            state.dataset.tone = "ok";
+          }
+
+          fileInput.value = "";
+          if (labelInput) {
+            labelInput.value = "";
+          }
+        } catch (error) {
+          if (state) {
+            state.textContent =
+              error.message;
+            state.dataset.tone = "error";
+          }
+        }
+      }
+    );
+  }
+
+  refreshAudioSelects();
+
+  for (
+    const importer of root.querySelectorAll(
+      "[data-creator-audio-importer]"
+    )
+  ) {
+    mountCreatorAudioImporter(importer);
+  }
+
+  return catalog;
+}
+
+async function hydrateCaptureStatRegistryV1() {
+  const response = await fetch(
+    MONSTER_CAPTURE_STAT_REGISTRY_URL,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Registre stats Monster Capture indisponible (" +
+        response.status +
+        ")"
+    );
+  }
+
+  return normalizeCaptureStatRegistryV1(
+    await response.json()
+  );
+}
+
+async function hydrateCaptureProgressionRulesV1() {
+  const response = await fetch(
+    MONSTER_CAPTURE_PROGRESSION_RULES_URL,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Règles de progression Monster Capture indisponibles (" +
+        response.status +
+        ")"
+    );
+  }
+
+  return buildHumanProgressionRulesV1(
+    await response.json()
+  );
+}
+
+async function hydrateMonsterCaptureCreatureCatalog(
+  statRegistry
+) {
+  const response = await fetch(
+    MONSTER_CAPTURE_CREATURE_CATALOG_URL,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Catalogue créatures Monster Capture indisponible (" +
+        response.status +
+        ")"
+    );
+  }
+
+  const catalog = await response.json();
+  const entries = Array.isArray(catalog.entries)
+    ? catalog.entries
+    : [];
+
+  const expectedCount = Number(
+    catalog.provenance?.sourceCount
+  );
+
+  if (
+    !Number.isInteger(expectedCount) ||
+    expectedCount < 1
+  ) {
+    throw new RangeError(
+      "Le catalogue Monster Capture doit déclarer un sourceCount valide."
+    );
+  }
+
+  if (entries.length !== expectedCount) {
+    throw new RangeError(
+      "Le catalogue Monster Capture contient " +
+        entries.length +
+        " créatures au lieu des " +
+        expectedCount +
+        " entrées historiques attendues."
+    );
+  }
+
+  const uniqueIdCount = new Set(
+    entries.map((entry) => entry.id)
+  ).size;
+
+  if (uniqueIdCount !== entries.length) {
+    throw new RangeError(
+      "Le catalogue Monster Capture contient des identifiants de créatures dupliqués."
+    );
+  }
+
+  const canonicalEntries =
+    canonicalCaptureCreatureRecordsV1(
+      entries
+    );
+
+  return Object.freeze(
+    canonicalEntries.map((entry) => {
+      const record =
+        importMonsterCaptureCreatureRecordV1(
+          entry
+        );
+      return Object.freeze({
+        ...record,
+        statValues:
+          importMonsterCaptureStatValuesV1(
+            entry,
+            statRegistry
+          )
+      });
+    })
+  );
+}
+
+async function hydrateCaptureShowcaseMarkersV1(){
+  const filename="data/capture/showcase/markers.capture-markers-v1.json";
+  const response=await fetch(new URL("../../"+filename,import.meta.url),{cache:"no-store"});
+  if(!response.ok)throw new Error("Marqueurs vitrine indisponibles : "+response.status);
+  const payload=await response.json();
+  if(payload.schema!=="capture-markers-v1")throw new RangeError("Format de bibliothèque de marqueurs invalide");
+  return normalizeCaptureMarkerLibraryV1(payload.markers);
+}
+
+async function hydrateCaptureShowcaseSkillPresetsV1() {
+  const transfers = await Promise.all(
+    CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.map(
+      async (presetFile) => {
+        const response = await fetch(
+          new URL(
+            "../../" + presetFile,
+            import.meta.url
+          ),
+          { cache: "no-store" }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "Preset capacité vitrine Capture indisponible : " +
+              presetFile +
+              " (" +
+              response.status +
+              ")"
+          );
+        }
+
+        const transfer =
+          importCaptureTransferJsonV1(
+            await response.text()
+          );
+
+        if (transfer.kind !== "skill") {
+          throw new RangeError(
+            "Un preset de capacité vitrine Capture doit être une capacité : " +
+              presetFile
+          );
+        }
+
+        return transfer;
+      }
+    )
+  );
+
+  const ids = transfers.map(
+    (transfer) => transfer.value.draft.id
+  );
+
+  if (new Set(ids).size !== ids.length) {
+    throw new RangeError(
+      "Les presets de capacités vitrine Capture contiennent un identifiant dupliqué."
+    );
+  }
+
+  return Object.freeze(transfers);
+}
+
+async function hydrateCaptureShowcaseCreaturePresetsV1(
+  statRegistry
+) {
+  const transfers = await Promise.all(
+    CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.map(
+      async (presetFile) => {
+        const response = await fetch(
+          new URL(
+            "../../" + presetFile,
+            import.meta.url
+          ),
+          { cache: "no-store" }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "Preset vitrine Capture indisponible : " +
+              presetFile +
+              " (" +
+              response.status +
+              ")"
+          );
+        }
+
+        const transfer =
+          importCaptureTransferJsonV1(
+            await response.text(),
+            { statRegistry }
+          );
+
+        if (transfer.kind !== "creature") {
+          throw new RangeError(
+            "Un preset vitrine Capture doit être une créature : " +
+              presetFile
+          );
+        }
+
+        return transfer;
+      }
+    )
+  );
+
+  const ids = transfers.map(
+    (transfer) => transfer.value.draft.id
+  );
+
+  if (new Set(ids).size !== ids.length) {
+    throw new RangeError(
+      "Les presets vitrine Capture contiennent un identifiant de créature dupliqué."
+    );
+  }
+
+  return Object.freeze(transfers);
+}
+
+async function hydrateCaptureCreatureVisualMetadataV1() {
+  const uniqueBindings = [
+    ...new Map(
+      CAPTURE_CREATURE_VISUAL_BINDINGS_V1.map(
+        (binding) => [
+          binding.metaId,
+          binding
+        ]
+      )
+    ).values()
+  ];
+
+  const entries = await Promise.all(
+    uniqueBindings.map(async (binding) => {
+      const response = await fetch(
+        globalVisualAssetUrl(
+          binding.metaFile
+        ),
+        { cache: "no-store" }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "Metadata visuelle créature indisponible : " +
+            binding.metaId +
+            " (" +
+            response.status +
+            ")"
+        );
+      }
+
+      return [
+        binding.metaId,
+        await response.json()
+      ];
+    })
+  );
+
+  return Object.freeze(
+    Object.fromEntries(entries)
+  );
+}
+
+async function hydrateNativeSkillCatalog() {
+  const response = await fetch(
+    NATIVE_SKILL_CATALOG_URL,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Bibliothèque native indisponible (" +
+      response.status +
+      ")"
+    );
+  }
+
+  const catalog = await response.json();
+  const entries = Array.isArray(catalog.entries)
+    ? catalog.entries
+    : [];
+
+  return new Map(
+    entries.map((entry) => {
+      const definition =
+        normalizeSkillDefinition(entry.definition);
+
+      const draft =
+        normalizeCaptureSkillEditorDraftV1({
+          schema: "capture-skill-editor-draft-v1",
+          id: definition.id,
+          description:
+            "Capacité native du laboratoire.",
+          requiredLevel: 1,
+          usageScopes: ["capture", "combat"],
+          definition,
+          presentation: null
+        });
+
+      return [draft.id, draft];
+    })
+  );
+}
+
+async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
+  const response = await fetch(
+    GLOBAL_VISUAL_LIBRARY.catalogUrl,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Catalogue assets indisponible (" +
+      response.status +
+      ")"
+    );
+  }
+
+  const catalog = await response.json();
+  const assets = Array.isArray(catalog.assets)
+    ? [...catalog.assets]
+    : [];
+  catalog.assets = assets;
+
+  const byId = new Map(
+    assets.map((asset) => [asset.id, asset])
+  );
+  EDITOR_VISUAL_ASSETS_BY_ROOT.set(
+    root,
+    Object.freeze([...assets])
+  );
+  populateBurrowStageAssetChoicesV1(root, assets);
+
+  for (const select of root.querySelectorAll("[data-asset-role]")) {
+    populateSelect(
+      select,
+      assets,
+      select.dataset.assetRole
+    );
+  }
+  syncHumanCreatureReactionControlsV1(root);
+  captureMarkerRefreshReferenceChoicesV1(root);
+
+  function preview(select, image) {
+    const asset = byId.get(select.value);
+    const runtimeUrl =
+      asset?.resource?.runtimeUrl;
+    const file = asset?.resource?.file;
+    const url =
+      typeof runtimeUrl === "string" &&
+      runtimeUrl.trim() !== ""
+        ? runtimeUrl
+        : typeof file === "string" &&
+            file.trim() !== ""
+          ? globalVisualAssetUrl(file)
+          : null;
+
+    if (!url) {
+      image.removeAttribute("src");
+      image.dataset.empty = "true";
+      return;
+    }
+
+    image.src = url;
+    image.alt = asset.label || asset.id;
+    image.dataset.empty = "false";
+  }
+
+  const frontSelect = one(
+    root,
+    "[data-creature-front-select]"
+  );
+  const backSelect = one(
+    root,
+    "[data-creature-back-select]"
+  );
+  const iconSelect = one(
+    root,
+    "[data-creature-icon-select]"
+  );
+
+  const frontImage = one(root, "[data-preview-front]");
+  const backImage = one(root, "[data-preview-back]");
+  const iconImage = one(root, "[data-preview-icon]");
+  const socketFrontImage = one(
+    root,
+    "[data-socket-front-preview]"
+  );
+  const socketBackImage = one(
+    root,
+    "[data-socket-back-preview]"
+  );
+
+  function syncPreviews(select, images) {
+    for (const image of images) {
+      preview(select, image);
+    }
+  }
+
+  for (const [select, images] of [
+    [frontSelect, [frontImage, socketFrontImage]],
+    [backSelect, [backImage, socketBackImage]],
+    [iconSelect, [iconImage]]
+  ]) {
+    listen(
+      select,
+      "change",
+      () => syncPreviews(select, images)
+    );
+    syncPreviews(select, images);
+  }
+
+  function refreshCreatorAssetLists() {
+    EDITOR_VISUAL_ASSETS_BY_ROOT.set(
+      root,
+      Object.freeze([...assets])
+    );
+    populateBurrowStageAssetChoicesV1(root, assets);
+    for (
+      const select of root.querySelectorAll(
+        "[data-asset-role]"
+      )
+    ) {
+      populateSelect(
+        select,
+        assets,
+        select.dataset.assetRole
+      );
+    }
+    syncHumanCreatureReactionControlsV1(root);
+    captureMarkerRefreshReferenceChoicesV1(root);
+  }
+
+  function mountCreatorVisualImporter(
+    importer
+  ) {
+    const creatorImportButton =
+      importer.querySelector(
+        "[data-creator-visual-import]"
+      );
+    const creatorImportFile =
+      importer.querySelector(
+        "[data-creator-visual-file]"
+      );
+    const creatorImportRole =
+      importer.querySelector(
+        "[data-creator-visual-role]"
+      );
+    const creatorImportLabel =
+      importer.querySelector(
+        "[data-creator-visual-label]"
+      );
+    const creatorImportState =
+      importer.querySelector(
+        "[data-creator-visual-state]"
+      );
+
+    if (
+      !creatorImportButton ||
+      !creatorImportFile ||
+      !creatorImportRole
+    ) {
+      return;
+    }
+
+    if (
+      !creatorVisualAssets ||
+      typeof creatorVisualAssets.importImage !==
+        "function"
+    ) {
+      creatorImportButton.disabled = true;
+      if (creatorImportState) {
+        creatorImportState.textContent =
+          "Import personnel indisponible dans ce contexte.";
+        creatorImportState.dataset.tone =
+          "warning";
+      }
+      return;
+    }
+
+    listen(
+      creatorImportButton,
+      "click",
+      () => {
+        try {
+          const file =
+            creatorImportFile.files?.[0];
+          if (!file) {
+            throw new Error(
+              "Choisis une image PNG, WebP ou JPEG."
+            );
+          }
+
+          const role =
+            String(
+              creatorImportRole.value ?? ""
+            ).trim();
+          const label =
+            String(
+              creatorImportLabel?.value ??
+                file.name ??
+                "Asset personnel"
+            ).trim();
+
+          const asset =
+            creatorVisualAssets.importImage({
+              file,
+              label,
+              role
+            });
+
+          assets.push(asset);
+          byId.set(asset.id, asset);
+          refreshCreatorAssetLists();
+
+          const preferredSelect =
+            role === "creature"
+              ? frontSelect
+              : root.querySelector(
+                  '[data-asset-role="' +
+                    role +
+                    '"]'
+                );
+
+          if (preferredSelect) {
+            preferredSelect.value =
+              asset.id;
+            preferredSelect.dispatchEvent(
+              new Event("change", {
+                bubbles: true
+              })
+            );
+          }
+
+          for (
+            const state of root.querySelectorAll(
+              "[data-creator-visual-state]"
+            )
+          ) {
+            state.textContent =
+              "Importé : " +
+              asset.label +
+              " (" +
+              asset.id +
+              ")";
+            state.dataset.tone = "ok";
+          }
+
+          creatorImportFile.value = "";
+          if (creatorImportLabel) {
+            creatorImportLabel.value = "";
+          }
+        } catch (error) {
+          if (creatorImportState) {
+            creatorImportState.textContent =
+              error.message;
+            creatorImportState.dataset.tone =
+              "error";
+          }
+        }
+      }
+    );
+  }
+
+  for (
+    const importer of root.querySelectorAll(
+      "[data-creator-visual-importer]"
+    )
+  ) {
+    mountCreatorVisualImporter(importer);
+  }
+
+  const scaleInput = one(
+    root,
+    "[data-creature-display-scale]"
+  );
+  const scaleOutput = one(
+    root,
+    "[data-creature-scale-value]"
+  );
+
+  function syncScalePreview() {
+    const scale = Number(scaleInput.value) || 1;
+    scaleOutput.textContent =
+      scale.toFixed(2) + "×";
+
+    const custom = one(root, "[data-creature-custom-views]").checked;
+    one(root, "[data-creature-view-settings]").hidden = !custom;
+    for (const [view, images] of [
+      ["opponent", [frontImage]],
+      ["player", [backImage]]
+    ]) {
+      const viewScale = one(root, "[data-creature-" + view + "-scale]");
+      if (!custom) viewScale.value = String(scale);
+      for (const axis of ["scale", "x", "y"]) {
+        one(root, "[data-creature-" + view + "-" + axis + "]").disabled = !custom;
+      }
+      const resolvedScale = custom ? Number(viewScale.value) || scale : scale;
+      const x = custom ? numericValue(root, "[data-creature-" + view + "-x]") : 0;
+      const y = custom ? numericValue(root, "[data-creature-" + view + "-y]") : 0;
+      for (const image of images) {
+        image.style.transform = `translate(${x}px, ${y}px) scale(${resolvedScale})`;
+      }
+    }
+    // Keep the existing socket-editing reference frame separate from combat placement.
+    for (const image of [socketFrontImage, socketBackImage]) {
+      image.style.transform = `scale(${scale})`;
+    }
+  }
+
+  listen(one(root, "[data-creature-custom-views]"), "change", syncScalePreview);
+  for (const view of ["player", "opponent"]) {
+    for (const axis of ["scale", "x", "y"]) {
+      listen(one(root, "[data-creature-" + view + "-" + axis + "]"), "input", syncScalePreview);
+    }
+  }
+
+  listen(
+    scaleInput,
+    "input",
+    syncScalePreview
+  );
+  syncScalePreview();
+
+  return catalog;
+}
+
+function initialSocketStore() {
+  return new Map();
+}
+
+function socketList(store) {
+  const sockets = [];
+
+  for (const [id, value] of store.entries()) {
+    if (!value.front) {
+      continue;
+    }
+
+    sockets.push({
+      id,
+      label: value.label || id,
+      front: value.front,
+      back: value.back ?? null
+    });
+  }
+
+  return sockets;
+}
+
+export function syncCaptureSkillSocketOptionsV1({
+  existingValue = "",
+  existingOptions = [],
+  sockets = []
+}) {
+  const centerLabel =
+    existingOptions.find(
+      (option) => option.value === ""
+    )?.label || "Centre par défaut";
+
+  const options = [
+    Object.freeze({
+      value: "",
+      label: centerLabel
+    })
+  ];
+
+  const seen = new Set([""]);
+
+  for (const socket of sockets) {
+    if (
+      !socket ||
+      typeof socket.id !== "string" ||
+      socket.id.trim() === "" ||
+      !socket.front
+    ) {
+      continue;
+    }
+
+    const id = socket.id.trim();
+    if (seen.has(id)) {
+      continue;
+    }
+    seen.add(id);
+
+    options.push(
+      Object.freeze({
+        value: id,
+        label:
+          typeof socket.label === "string" &&
+          socket.label.trim() !== ""
+            ? socket.label.trim()
+            : id
+      })
+    );
+  }
+
+  const requestedValue =
+    typeof existingValue === "string"
+      ? existingValue.trim()
+      : "";
+
+  if (
+    requestedValue !== "" &&
+    !seen.has(requestedValue)
+  ) {
+    const previous =
+      existingOptions.find(
+        (option) =>
+          option?.value === requestedValue
+      ) ?? null;
+    const previousLabel =
+      typeof previous?.label === "string"
+        ? previous.label.trim()
+        : "";
+
+    seen.add(requestedValue);
+    options.push(
+      Object.freeze({
+        value: requestedValue,
+        label:
+          previousLabel !== ""
+            ? previousLabel
+            : requestedValue +
+              " · référence sauvegardée"
+      })
+    );
+  }
+
+  return Object.freeze({
+    options: Object.freeze(options),
+    value: seen.has(requestedValue)
+      ? requestedValue
+      : ""
+  });
+}
+
+function ensureSkillSocketReferenceOptionV1(
+  root,
+  socketId
+) {
+  const value =
+    typeof socketId === "string"
+      ? socketId.trim()
+      : "";
+
+  if (value === "") {
+    return;
+  }
+
+  const select = one(
+    root,
+    "[data-skill-socket]"
+  );
+  if (
+    [...select.options].some(
+      (option) => option.value === value
+    )
+  ) {
+    return;
+  }
+
+  createOption(
+    select,
+    value,
+    value + " · référence sauvegardée"
+  );
+}
+
+function syncSkillSocketSelect(root, sockets) {
+  const select = one(
+    root,
+    "[data-skill-socket]"
+  );
+  const current = select.value;
+
+  const result =
+    syncCaptureSkillSocketOptionsV1({
+      existingValue: current,
+      existingOptions: [
+        ...select.options
+      ].map((option) => ({
+        value: option.value,
+        label: option.textContent
+      })),
+      sockets: socketList(sockets)
+    });
+
+  select.textContent = "";
+  for (const option of result.options) {
+    createOption(
+      select,
+      option.value,
+      option.label
+    );
+  }
+  select.value = result.value;
+}
+
+export function captureSelectedSocketPointV1({
+  sockets,
+  socketId,
+  view
+}) {
+  if (!(sockets instanceof Map)) {
+    throw new TypeError("sockets must be a Map");
+  }
+  if (view !== "front" && view !== "back") {
+    throw new RangeError(
+      "socket view must be front or back"
+    );
+  }
+
+  const socket = sockets.get(socketId);
+  const point = socket?.[view] ?? null;
+
+  if (point === null) {
+    return null;
+  }
+
+  return {
+    x: Number(point.x),
+    y: Number(point.y)
+  };
+}
+
+function clearSocketMarker(surface) {
+  surface.querySelector(
+    "[data-socket-marker]"
+  )?.remove();
+}
+
+function syncCreatureSocketMarkers(
+  root,
+  sockets
+) {
+  const socketId = selectedValue(
+    root,
+    "[data-socket-kind]"
+  );
+
+  for (
+    const surface of root.querySelectorAll(
+      "[data-socket-surface]"
+    )
+  ) {
+    const point =
+      captureSelectedSocketPointV1({
+        sockets,
+        socketId,
+        view: surface.dataset.socketView
+      });
+
+    if (point === null) {
+      clearSocketMarker(surface);
+      continue;
+    }
+
+    updateSocketMarker(
+      surface,
+      point,
+      socketId
+    );
+  }
+}
+
+function updateSocketMarker(
+  surface,
+  point,
+  socketId = ""
+) {
+  let marker = surface.querySelector("[data-socket-marker]");
+  if (!marker) {
+    marker = document.createElement("span");
+    marker.dataset.socketMarker = "true";
+    marker.className = "socket-marker";
+    surface.append(marker);
+  }
+
+  marker.dataset.socketId = socketId;
+  marker.style.left = (point.x * 100) + "%";
+  marker.style.top = (point.y * 100) + "%";
+}
+
+function readCreatureFields(
+  root,
+  sockets,
+  previousDraft = null
+) {
+  const elements = checkedValues(
+    root,
+    "[data-element]:checked"
+  );
+
+  const resistances = {};
+  for (const input of root.querySelectorAll("[data-resistance]")) {
+    resistances[input.dataset.resistance] = input.value;
+  }
+
+  return {
+    id: selectedValue(root, "[data-creature-id]"),
+    displayName: selectedValue(
+      root,
+      "[data-creature-name]"
+    ),
+    description: selectedValue(
+      root,
+      "[data-creature-description]"
+    ),
+    level: numericValue(root, "[data-creature-level]"),
+    sourceStats:
+      legacySourceStatsV1(
+        previousDraft
+      ),
+    elements,
+    resistances,
+    capture: {
+      capturable: one(
+        root,
+        "[data-capturable]"
+      ).checked,
+      captureRate: numericValue(
+        root,
+        "[data-capture-rate]"
+      ),
+      spawnChance: numericValue(
+        root,
+        "[data-spawn-chance]"
+      ),
+      spawnTags: elements,
+      evolution: buildHumanEvolutionV1({
+        enabled: one(
+          root,
+          "[data-evolution-enabled]"
+        ).checked,
+        targetId: selectedValue(
+          root,
+          "[data-evolution-target]"
+        ),
+        level: numericValue(
+          root,
+          "[data-evolution-level]"
+        )
+      })
+    },
+    combat: {
+      approachTimeModifierPct:
+        numericValue(
+          root,
+          "[data-creature-approach-time-modifier]"
+        ),
+      ...(selectedValue(root, "[data-creature-reaction-type]") === "legacy" ? {} : {
+        reaction: {
+          type: selectedValue(root, "[data-creature-reaction-type]"),
+          maxCharges: numericValue(root, "[data-creature-reaction-charges]"),
+          rechargeMs: numericValue(root, "[data-creature-reaction-recharge]") * 1000,
+          activeWindowMs: numericValue(root, "[data-creature-reaction-window]") * 1000,
+          damageReductionPct: numericValue(root, "[data-creature-reaction-reduction]"),
+          ...(selectedValue(root, "[data-creature-reaction-icon]") ? {
+            iconAssetId: selectedValue(root, "[data-creature-reaction-icon]")
+          } : {})
+        }
+      })
+    },
+    linkedSkillIds: [
+      selectedValue(root, "[data-skill-id]")
+    ],
+    profileId: selectedValue(
+      root,
+      "[data-creature-profile]"
+    ),
+    displayScale: numericValue(
+      root,
+      "[data-creature-display-scale]"
+    ),
+    shadowOffset: {
+      x: numericValue(root, "[data-creature-shadow-offset-x]"),
+      y: numericValue(root, "[data-creature-shadow-offset-y]")
+    },
+    ...(one(root, "[data-creature-custom-views]").checked ? {
+      viewOverrides: Object.fromEntries(["player", "opponent"].map(view => [view, {
+        displayScale: numericValue(root, "[data-creature-" + view + "-scale]"),
+        position: {
+          x: numericValue(root, "[data-creature-" + view + "-x]"),
+          y: numericValue(root, "[data-creature-" + view + "-y]")
+        }
+      }]))
+    } : {}),
+    visual: {
+      frontAssetId: selectedValue(
+        root,
+        "[data-creature-front-select]"
+      ),
+      backAssetId: selectedValue(
+        root,
+        "[data-creature-back-select]"
+      ),
+      iconAssetId: selectedValue(
+        root,
+        "[data-creature-icon-select]"
+      ),
+      dodgeAssetId: selectedValue(
+        root,
+        "[data-creature-dodge-fx]"
+      ),
+      dodgeDisplayScale: numericValue(
+        root,
+        "[data-creature-dodge-scale]"
+      ),
+      dodgeDurationMs: numericValue(
+        root,
+        "[data-creature-dodge-duration]"
+      ),
+      dodgeOffsetX: numericValue(
+        root,
+        "[data-creature-dodge-offset-x]"
+      ),
+      dodgeOffsetY: numericValue(
+        root,
+        "[data-creature-dodge-offset-y]"
+      ),
+      movementAssetId: selectedValue(root, "[data-creature-movement-visual]"),
+      movementBackAssetId: selectedValue(root, "[data-creature-movement-back-visual]"),
+      movementMode: selectedValue(root, "[data-creature-movement-mode]"),
+      movementDisplayScale: numericValue(root, "[data-creature-movement-scale]"),
+      movementPlayerScale: numericValue(root, "[data-creature-movement-player-scale]"),
+      movementOpponentScale: numericValue(root, "[data-creature-movement-opponent-scale]"),
+      movementFrameMs: numericValue(root, "[data-creature-movement-frame-ms]"),
+      movementPlaybackMode: selectedValue(root, "[data-creature-movement-playback]"),
+      movementRotationTurns: numericValue(root, "[data-creature-movement-turns]"),
+      movementFrameCount: numericValue(root, "[data-creature-movement-frames]"),
+      movementTransitionMs: numericValue(root, "[data-creature-movement-transition]"),
+      rangedAttackAssetId: selectedValue(root, "[data-creature-ranged-attack-visual]"),
+      rangedAttackBackAssetId: selectedValue(root, "[data-creature-ranged-attack-back-visual]"),
+      rangedAttackFrontOffsetX: numericValue(root, "[data-creature-ranged-front-offset-x]"),
+      rangedAttackFrontOffsetY: numericValue(root, "[data-creature-ranged-front-offset-y]"),
+      rangedAttackBackOffsetX: numericValue(root, "[data-creature-ranged-back-offset-x]"),
+      rangedAttackBackOffsetY: numericValue(root, "[data-creature-ranged-back-offset-y]"),
+      rangedAttackMode: selectedValue(root, "[data-creature-ranged-attack-mode]"),
+      rangedAttackDisplayScale: numericValue(root, "[data-creature-ranged-attack-scale]"),
+      rangedAttackPlayerScale: numericValue(root, "[data-creature-ranged-attack-player-scale]"),
+      rangedAttackOpponentScale: numericValue(root, "[data-creature-ranged-attack-opponent-scale]"),
+      rangedAttackRotationTurns: numericValue(root, "[data-creature-ranged-attack-turns]"),
+      rangedAttackFrameCount: numericValue(root, "[data-creature-ranged-attack-frames]"),
+      rangedAttackTransitionMs: numericValue(root, "[data-creature-ranged-attack-transition]")
+    },
+    sockets: socketList(sockets),
+    audio: {
+      attack: selectedValue(
+        root,
+        "[data-creature-audio-attack]"
+      ),
+      movement:(()=>{
+        const assetId=selectedValue(root,"[data-creature-audio-movement]");
+        if(!assetId)return "";
+        const mode=selectedValue(root,"[data-creature-audio-movement-mode]");
+        if(mode==="once")return assetId;
+        return {
+          assetId,
+          mode,
+          ...(mode==="repeat"?{repeatIntervalMs:numericValue(root,"[data-creature-audio-movement-interval]")}: {})
+        };
+      })(),
+      hit: selectedValue(
+        root,
+        "[data-creature-audio-hit]"
+      ),
+      ko: selectedValue(
+        root,
+        "[data-creature-audio-ko]"
+      ),
+      dodge: selectedValue(root,"[data-creature-audio-dodge]"),
+      defense: selectedValue(root,"[data-creature-audio-defense]")
+    }
+  };
+}
+
+function readSkillFields(root) {
+  const form = selectedValue(
+    root,
+    "[data-skill-form]"
+  );
+
+  return {
+    id: selectedValue(root, "[data-skill-id]"),
+    name: selectedValue(root, "[data-skill-name]"),
+    description: selectedValue(
+      root,
+      "[data-skill-description]"
+    ),
+    requiredLevel: numericValue(
+      root,
+      "[data-skill-required-level]"
+    ),
+    loadoutSlot:
+      one(
+        root,
+        "[data-skill-ultimate]"
+      ).checked
+        ? "ultimate"
+        : "standard",
+    usageScopes: ["capture", "combat"],
+    category: selectedValue(
+      root,
+      "[data-skill-category]"
+    ),
+    form,
+    element: selectedValue(
+      root,
+      "[data-skill-element]"
+    ) || null,
+    approachMode: selectedValue(
+      root,
+      "[data-skill-approach]"
+    ),
+    contactHold: one(root, "[data-skill-contact-hold-enabled]").checked
+      ? {
+          tickIntervalMs: numericValue(root, "[data-skill-contact-hold-interval]"),
+          maxDurationMs: numericValue(root, "[data-skill-contact-hold-duration]"),
+          effects: readHumanSkillEffectsV1(root, "[data-skill-contact-hold-effects-host]")
+        }
+      : null,
+    hitPresenceStates:
+      one(
+        root,
+        "[data-skill-hit-presence-enabled]"
+      ).checked
+        ? checkedValues(
+            root,
+            "[data-skill-hit-presence]:checked"
+          )
+        : null,
+    dodgeable:
+      one(
+        root,
+        "[data-skill-dodgeable]"
+      ).checked,
+    hitsIntangible: one(root, "[data-skill-hits-intangible]").checked,
+    targetLocations:
+      checkedValues(
+        root,
+        "[data-skill-location-scope]:checked"
+      ),
+    energyCost: numericValue(
+      root,
+      "[data-skill-energy-cost]"
+    ),
+    preparationMs: numericValue(
+      root,
+      "[data-skill-preparation]"
+    ),
+    travelMs: numericValue(
+      root,
+      "[data-skill-travel-time]"
+    ),
+    recoveryMs: numericValue(
+      root,
+      "[data-skill-recovery]"
+    ),
+    cooldownMs: numericValue(
+      root,
+      "[data-skill-cooldown]"
+    ),
+    maxUsesPerCombat:
+      numericValue(
+        root,
+        "[data-skill-max-uses-per-combat]"
+      ) === 0
+        ? null
+        : numericValue(
+            root,
+            "[data-skill-max-uses-per-combat]"
+          ),
+    activationRequirements:
+      readHumanSkillActivationRequirementsV1(
+        root
+      ),
+    markerCost:readHumanSkillMarkerCostV1(root),
+    effects: readHumanSkillEffectsV1(root),
+    reaction: {
+      blockForms: [],
+      reflectForms: [],
+      immuneElements: [],
+      counterForms: [],
+      evadeForms: [],
+      evadeApproaches: []
+    },
+    projectileClash:
+      readHumanProjectilePowerV1(
+        root,
+        form
+      ),
+    presentation: {
+      ...readSkillSpriteControlsV1(root),
+      ...readBurrowStageFieldsV1(root),
+      iconAssetId: selectedValue(
+        root,
+        "[data-skill-icon]"
+      ),
+      castAssetId: selectedValue(
+        root,
+        "[data-skill-cast-fx]"
+      ),
+      castDisplayScale: numericValue(
+        root,
+        "[data-skill-cast-scale]"
+      ),
+      beamStartAssetId: selectedValue(
+        root,
+        "[data-skill-beam-start-fx]"
+      ),
+      beamStartDisplayScale: numericValue(
+        root,
+        "[data-skill-beam-start-scale]"
+      ),
+      travelAssetId: selectedValue(
+        root,
+        "[data-skill-travel-fx]"
+      ),
+      travelDisplayScale: numericValue(
+        root,
+        "[data-skill-travel-scale]"
+      ),
+      travelOpacityPct: numericValue(root, "[data-skill-travel-opacity-pct]"),
+      travelPlaybackMode: selectedValue(
+        root,
+        "[data-skill-travel-playback]"
+      ),
+      travelFrameSpeedMultiplier: numericValue(root, "[data-skill-travel-frame-speed]"),
+      travelPerspectiveAmount: numericValue(root, "[data-skill-travel-perspective]"),
+      travelFarScaleRatio: numericValue(root, "[data-skill-travel-far-scale]"),
+      travelArrivalLayer: selectedValue(root, "[data-skill-travel-arrival-layer]"),
+      travelTrajectoryMode: selectedValue(root, "[data-skill-trajectory-mode]"),
+      waveStartRadiusPct: numericValue(root, "[data-skill-wave-start-radius]"),
+      waveEndRadiusPct: numericValue(root, "[data-skill-wave-end-radius]"),
+      waveThicknessPct: numericValue(root, "[data-skill-wave-thickness]"),
+      fallHeightPx: numericValue(root, "[data-skill-fall-height]"),
+      fallOffsetXPx: numericValue(root, "[data-skill-fall-offset-x]"),
+      castLayerPlayer: selectedValue(
+        root,
+        "[data-skill-cast-layer-player]"
+      ),
+      castLayerOpponent: selectedValue(
+        root,
+        "[data-skill-cast-layer-opponent]"
+      ),
+      travelLayerPlayer: selectedValue(
+        root,
+        "[data-skill-travel-layer-player]"
+      ),
+      travelLayerOpponent: selectedValue(
+        root,
+        "[data-skill-travel-layer-opponent]"
+      ),
+      impactAssetId: selectedValue(
+        root,
+        "[data-skill-impact-fx]"
+      ),
+      impactDisplayScale: numericValue(
+        root,
+        "[data-skill-impact-scale]"
+      ),
+      impactDurationMs: numericValue(root, "[data-skill-impact-duration]"),
+      impactOffsetX: numericValue(root, "[data-skill-impact-offset-x]"),
+      impactOffsetY: numericValue(root, "[data-skill-impact-offset-y]"),
+      zoneAssetId: selectedValue(
+        root,
+        "[data-skill-zone-fx]"
+      ),
+      zoneAttachment: selectedValue(root, "[data-skill-zone-attachment]"),
+      zoneDisplayScale: numericValue(
+        root,
+        "[data-skill-zone-scale]"
+      ),
+      zoneDisplayScaleX: numericValue(
+        root,
+        "[data-skill-zone-scale-x]"
+      ),
+      zoneDisplayScaleY: numericValue(
+        root,
+        "[data-skill-zone-scale-y]"
+      ),
+      zoneOffsetX: numericValue(
+        root,
+        "[data-skill-zone-offset-x]"
+      ),
+      zoneOffsetY: numericValue(
+        root,
+        "[data-skill-zone-offset-y]"
+      ),
+      socketId: selectedValue(
+        root,
+        "[data-skill-socket]"
+      ) || null,
+      statusVisuals:
+        readHumanStatusVisualsV1(root),
+      castAudioAssetId: selectedValue(
+        root,
+        "[data-skill-cast-audio]"
+      ),
+      travelAudioAssetId: selectedValue(
+        root,
+        "[data-skill-travel-audio]"
+      ),
+      impactAudioAssetId: selectedValue(
+        root,
+        "[data-skill-impact-audio]"
+      ),
+      zoneAudioAssetId: selectedValue(
+        root,
+        "[data-skill-zone-audio]"
+      ),
+      fxGlowColor: selectedValue(
+        root,
+        "[data-skill-fx-glow-color]"
+      ),
+      fxGlowStrength: numericValue(
+        root,
+        "[data-skill-fx-glow-strength]"
+      ),
+      fxGlowRadiusPx: numericValue(
+        root,
+        "[data-skill-fx-glow-radius]"
+      ),
+      impactFlashColor: selectedValue(
+        root,
+        "[data-skill-impact-flash-color]"
+      ),
+      impactFlashOpacity: numericValue(
+        root,
+        "[data-skill-impact-flash-opacity]"
+      ),
+      impactFlashDurationMs: numericValue(
+        root,
+        "[data-skill-impact-flash-duration]"
+      ),
+      impactFlashScale: numericValue(
+        root,
+        "[data-skill-impact-flash-scale]"
+      ),
+      impactShakeAmplitudePx: numericValue(
+        root,
+        "[data-skill-impact-shake-amplitude]"
+      ),
+      impactShakeDurationMs: numericValue(
+        root,
+        "[data-skill-impact-shake-duration]"
+      ),
+      impactShakeSequence: readHumanCameraShakeSequenceV1(root),
+      impactVisualTiming: selectedValue(root, "[data-skill-impact-visual-timing]"),
+      castBurstColor: selectedValue(
+        root,
+        "[data-skill-cast-burst-color]"
+      ),
+      castBurstCount: numericValue(
+        root,
+        "[data-skill-cast-burst-count]"
+      ),
+      castBurstSpreadPx: numericValue(
+        root,
+        "[data-skill-cast-burst-spread]"
+      ),
+      castBurstSizePx: numericValue(
+        root,
+        "[data-skill-cast-burst-size]"
+      ),
+      castBurstRisePx: numericValue(
+        root,
+        "[data-skill-cast-burst-rise]"
+      ),
+      castBurstDurationMs: numericValue(
+        root,
+        "[data-skill-cast-burst-duration]"
+      ),
+      castBurstOpacity: numericValue(
+        root,
+        "[data-skill-cast-burst-opacity]"
+      ),
+      projectileTrailColor: selectedValue(
+        root,
+        "[data-skill-projectile-trail-color]"
+      ),
+      projectileTrailCount: numericValue(
+        root,
+        "[data-skill-projectile-trail-count]"
+      ),
+      projectileTrailLengthPx: numericValue(
+        root,
+        "[data-skill-projectile-trail-length]"
+      ),
+      projectileTrailSizePx: numericValue(
+        root,
+        "[data-skill-projectile-trail-size]"
+      ),
+      projectileTrailOpacity: numericValue(
+        root,
+        "[data-skill-projectile-trail-opacity]"
+      ),
+      projectileTrailAnchorX:
+        numericValue(
+          root,
+          "[data-skill-projectile-trail-anchor-x]"
+        ) / 100,
+      projectileTrailAnchorY:
+        numericValue(
+          root,
+          "[data-skill-projectile-trail-anchor-y]"
+        ) / 100,
+      impactBurstColor: selectedValue(
+        root,
+        "[data-skill-impact-burst-color]"
+      ),
+      impactBurstCount: numericValue(
+        root,
+        "[data-skill-impact-burst-count]"
+      ),
+      impactBurstSpreadPx: numericValue(
+        root,
+        "[data-skill-impact-burst-spread]"
+      ),
+      impactBurstSizePx: numericValue(
+        root,
+        "[data-skill-impact-burst-size]"
+      ),
+      impactBurstDurationMs: numericValue(
+        root,
+        "[data-skill-impact-burst-duration]"
+      ),
+      impactBurstOpacity: numericValue(
+        root,
+        "[data-skill-impact-burst-opacity]"
+      ),
+      aftermathSmokeColor: selectedValue(
+        root,
+        "[data-skill-aftermath-smoke-color]"
+      ),
+      aftermathSmokeCount: numericValue(
+        root,
+        "[data-skill-aftermath-smoke-count]"
+      ),
+      aftermathSmokeSpreadPx: numericValue(
+        root,
+        "[data-skill-aftermath-smoke-spread]"
+      ),
+      aftermathSmokeSizePx: numericValue(
+        root,
+        "[data-skill-aftermath-smoke-size]"
+      ),
+      aftermathSmokeRisePx: numericValue(
+        root,
+        "[data-skill-aftermath-smoke-rise]"
+      ),
+      aftermathSmokeDurationMs: numericValue(
+        root,
+        "[data-skill-aftermath-smoke-duration]"
+      ),
+      aftermathSmokeOpacity: numericValue(
+        root,
+        "[data-skill-aftermath-smoke-opacity]"
+      )
+    }
+  };
+}
+
+function readLoadout(root, creatureId) {
+  const skillIds = [
+    ...root.querySelectorAll(
+      '[data-loadout-slot-type="standard"]'
+    )
+  ].map((select) => select.value || null);
+  const ultimateSkillId =
+    one(
+      root,
+      '[data-loadout-slot-type="ultimate"]'
+    ).value || null;
+
+  return buildHumanLoadoutV1({
+    creatureId,
+    skillIds,
+    ultimateSkillId
+  });
+}
+
+export function preserveUnrepresentedCreatureFieldsV1({
+  fields,
+  previousDraft = null,
+  visibleElementIds = [],
+  visibleResistanceKinds = [],
+  activeSkillIds = [],
+  evolutionRepresented = false
+}) {
+  if (!fields || typeof fields !== "object") {
+    throw new TypeError("fields must be an object");
+  }
+
+  const visibleElements = new Set(
+    Array.isArray(visibleElementIds)
+      ? visibleElementIds.map(String)
+      : []
+  );
+  const visibleResistances = new Set(
+    Array.isArray(visibleResistanceKinds)
+      ? visibleResistanceKinds.map(String)
+      : []
+  );
+
+  const hiddenElements =
+    previousDraft?.elements?.filter(
+      (id) => !visibleElements.has(String(id))
+    ) ?? [];
+
+  const editedResistances =
+    resistanceEntries(fields.resistances);
+  const hiddenResistances =
+    previousDraft?.resistances?.filter(
+      (entry) =>
+        !visibleResistances.has(
+          String(entry.kind)
+        )
+    ) ?? [];
+
+  const hiddenSpawnTags =
+    previousDraft?.capture?.spawnTags?.filter(
+      (id) => !visibleElements.has(String(id))
+    ) ?? [];
+
+  return {
+    ...fields,
+    elements: [
+      ...new Set([
+        ...(fields.elements ?? []),
+        ...hiddenElements
+      ])
+    ],
+    resistances: [
+      ...editedResistances,
+      ...hiddenResistances
+    ],
+    capture: {
+      ...fields.capture,
+      spawnTags: [
+        ...new Set([
+          ...(fields.elements ?? []),
+          ...hiddenElements,
+          ...hiddenSpawnTags
+        ])
+      ],
+      evolution:
+        evolutionRepresented
+          ? (
+              fields.capture?.evolution ??
+              null
+            )
+          : (
+              previousDraft?.capture?.evolution ??
+              fields.capture?.evolution ??
+              null
+            )
+    },
+    combat: {
+      ...(fields.combat ?? {}),
+      maxEnergy:
+        previousDraft?.combat?.maxEnergy ?? 0,
+      initialEnergy:
+        previousDraft?.combat?.initialEnergy ?? 0,
+      energyChargeAmount:
+        previousDraft?.combat?.energyChargeAmount ?? 0,
+      energyChargeIntervalMs:
+        previousDraft?.combat?.energyChargeIntervalMs ?? 0,
+      movementEnergyPerStep:
+        previousDraft?.combat?.movementEnergyPerStep ?? 0,
+      chargeTimeModifierPct:
+        previousDraft?.combat?.chargeTimeModifierPct ?? 0
+    },
+    position:
+      previousDraft?.presentation?.position ??
+      fields.position ??
+      { x: 0, y: 0 },
+    transformOrigin:
+      previousDraft?.presentation?.transformOrigin ??
+      fields.transformOrigin ??
+      { x: "50%", y: "50%" },
+    linkedSkillIds: [
+      ...new Set([
+        ...(previousDraft?.skillIds ?? []),
+        ...(Array.isArray(activeSkillIds)
+          ? activeSkillIds
+          : [])
+      ])
+    ]
+  };
+}
+
+function skillGlowPresetPresentationFromControlsV1(
+  root
+) {
+  const strength =
+    root.querySelector(
+      "[data-skill-fx-glow-strength]"
+    );
+  const radius =
+    root.querySelector(
+      "[data-skill-fx-glow-radius]"
+    );
+  const color =
+    root.querySelector(
+      "[data-skill-fx-glow-color]"
+    );
+
+  return {
+    fxGlowColor:
+      color?.value ?? "#ffffff",
+    fxGlowStrength:
+      Number(strength?.value) || 0,
+    fxGlowRadiusPx:
+      Number(radius?.value) || 16
+  };
+}
+
+function syncSkillGlowPresetStateV1(
+  root
+) {
+  const select =
+    root.querySelector(
+      "[data-skill-fx-glow-preset]"
+    );
+  const state =
+    root.querySelector(
+      "[data-skill-fx-glow-preset-state]"
+    );
+
+  if (!select) {
+    return "custom";
+  }
+
+  const presetId =
+    captureFxGlowPresetIdForValuesV1(
+      skillGlowPresetPresentationFromControlsV1(
+        root
+      )
+    );
+
+  select.value = presetId;
+
+  if (state) {
+    const preset =
+      captureFxGlowPresetByIdV1(
+        presetId
+      );
+
+    if (preset) {
+      state.textContent =
+        preset.label +
+        " — " +
+        preset.description;
+      state.dataset.tone = "info";
+    } else {
+      state.textContent =
+        "Personnalisé — tes valeurs avancées ne correspondent plus exactement à un préréglage.";
+      state.dataset.tone = "info";
+    }
+  }
+
+  return presetId;
+}
+
+function skillParticlePresetPresentationFromControlsV1(
+  root
+) {
+  const value = (selector, fallback = 0) => {
+    const field = root.querySelector(selector);
+    return Number(field?.value) || fallback;
+  };
+  const text = (selector, fallback) =>
+    root.querySelector(selector)?.value ??
+    fallback;
+
+  return {
+    castBurstColor: text(
+      "[data-skill-cast-burst-color]",
+      "#ffffff"
+    ),
+    castBurstCount: value(
+      "[data-skill-cast-burst-count]"
+    ),
+    castBurstSpreadPx: value(
+      "[data-skill-cast-burst-spread]"
+    ),
+    castBurstSizePx: value(
+      "[data-skill-cast-burst-size]"
+    ),
+    castBurstRisePx: value(
+      "[data-skill-cast-burst-rise]"
+    ),
+    castBurstDurationMs: value(
+      "[data-skill-cast-burst-duration]"
+    ),
+    castBurstOpacity: value(
+      "[data-skill-cast-burst-opacity]"
+    ),
+    projectileTrailColor: text(
+      "[data-skill-projectile-trail-color]",
+      "#ffffff"
+    ),
+    projectileTrailCount: value(
+      "[data-skill-projectile-trail-count]"
+    ),
+    projectileTrailLengthPx: value(
+      "[data-skill-projectile-trail-length]"
+    ),
+    projectileTrailSizePx: value(
+      "[data-skill-projectile-trail-size]"
+    ),
+    projectileTrailOpacity: value(
+      "[data-skill-projectile-trail-opacity]"
+    ),
+    impactBurstColor: text(
+      "[data-skill-impact-burst-color]",
+      "#ffffff"
+    ),
+    impactBurstCount: value(
+      "[data-skill-impact-burst-count]"
+    ),
+    impactBurstSpreadPx: value(
+      "[data-skill-impact-burst-spread]"
+    ),
+    impactBurstSizePx: value(
+      "[data-skill-impact-burst-size]"
+    ),
+    impactBurstDurationMs: value(
+      "[data-skill-impact-burst-duration]"
+    ),
+    impactBurstOpacity: value(
+      "[data-skill-impact-burst-opacity]"
+    ),
+    aftermathSmokeColor: text(
+      "[data-skill-aftermath-smoke-color]",
+      "#594943"
+    ),
+    aftermathSmokeCount: value(
+      "[data-skill-aftermath-smoke-count]"
+    ),
+    aftermathSmokeSpreadPx: value(
+      "[data-skill-aftermath-smoke-spread]"
+    ),
+    aftermathSmokeSizePx: value(
+      "[data-skill-aftermath-smoke-size]"
+    ),
+    aftermathSmokeRisePx: value(
+      "[data-skill-aftermath-smoke-rise]"
+    ),
+    aftermathSmokeDurationMs: value(
+      "[data-skill-aftermath-smoke-duration]"
+    ),
+    aftermathSmokeOpacity: value(
+      "[data-skill-aftermath-smoke-opacity]"
+    )
+  };
+}
+
+function syncSkillParticlePresetStateV1(
+  root
+) {
+  const select =
+    root.querySelector(
+      "[data-skill-fx-particle-preset]"
+    );
+  const state =
+    root.querySelector(
+      "[data-skill-fx-particle-preset-state]"
+    );
+
+  if (!select) {
+    return "custom";
+  }
+
+  const presetId =
+    captureFxParticlePresetIdForValuesV1(
+      skillParticlePresetPresentationFromControlsV1(
+        root
+      )
+    );
+
+  select.value = presetId;
+
+  if (state) {
+    const preset =
+      captureFxParticlePresetByIdV1(
+        presetId
+      );
+    state.textContent = preset
+      ? preset.label +
+        " — " +
+        preset.description
+      : "Personnalisée — tes valeurs avancées ne correspondent plus exactement à un préréglage.";
+    state.dataset.tone = "info";
+  }
+
+  return presetId;
+}
+
+// Editor-only controls: the canonical value is presentation.feedback.cameraShake.
+function readHumanCameraShakeSequenceV1(root) {
+  return [...root.querySelectorAll("[data-skill-impact-shake-pulse]")].map((row) => ({
+    pauseMs: Number(row.querySelector("[data-skill-impact-shake-pulse-pause]")?.value),
+    amplitudePx: Number(row.querySelector("[data-skill-impact-shake-pulse-amplitude]")?.value),
+    durationMs: Number(row.querySelector("[data-skill-impact-shake-pulse-duration]")?.value)
+  }));
+}
+
+function appendHumanCameraShakePulseRowV1(root, pulse = {pauseMs:120, amplitudePx:8, durationMs:180}) {
+  const host = root.querySelector("[data-skill-impact-shake-sequence-host]");
+  if (!host) return;
+  if (host.querySelectorAll("[data-skill-impact-shake-pulse]").length >= 8) return;
+  const row = document.createElement("div");
+  row.className = "grid two";
+  row.dataset.skillImpactShakePulse = "true";
+  const pause = tacticalNumberInputV1("skillImpactShakePulsePause", pulse.pauseMs, {min:0,max:2500,step:"10"});
+  const amplitude = tacticalNumberInputV1("skillImpactShakePulseAmplitude", pulse.amplitudePx, {min:0.5,max:24,step:"0.5"});
+  const duration = tacticalNumberInputV1("skillImpactShakePulseDuration", pulse.durationMs, {min:30,max:2000,step:"10"});
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "small-action";
+  remove.textContent = "Retirer cette secousse";
+  remove.addEventListener("click", () => row.remove());
+  row.append(
+    tacticalFieldV1("Pause avant (ms)", pause),
+    tacticalFieldV1("Amplitude (px)", amplitude),
+    tacticalFieldV1("Durée (ms)", duration),
+    remove
+  );
+  host.append(row);
+}
+
+function renderHumanCameraShakeSequenceV1(root, pulses=[]) {
+  const host = root.querySelector("[data-skill-impact-shake-sequence-host]");
+  if (!host) return;
+  host.textContent = "";
+  for (const pulse of pulses) appendHumanCameraShakePulseRowV1(root,pulse);
+}
+
+
+function refreshSkillFxQuickControlStateV1(root, {resetSelection = false, restoreSaved = false} = {}) {
+  const select = root.querySelector("[data-skill-fx-quick-profile]");
+  if (!select) return;
+  // Saved FX values remain the only truth. Selection alone never edits them.
+  const values = {
+    ...skillGlowPresetPresentationFromControlsV1(root),
+    ...skillParticlePresetPresentationFromControlsV1(root),
+    impactShakeAmplitudePx: Number(root.querySelector("[data-skill-impact-shake-amplitude]")?.value) || 0
+  };
+  const savedPresetId = captureFxQuickProfileIdForValuesV1(values);
+  if (restoreSaved) select.value = savedPresetId;
+  else if (resetSelection) select.value = "current";
+  const profile = captureFxQuickProfileByIdV1(select.value);
+  const alreadyApplied = profile !== null && profile.id === savedPresetId;
+  const apply = root.querySelector("[data-skill-fx-quick-apply]");
+  if (apply) apply.disabled = profile === null || alreadyApplied;
+  const preview = root.querySelector("[data-skill-fx-quick-preview]");
+  if (preview) preview.dataset.level = profile?.id ?? "current";
+  const info = root.querySelector("[data-skill-fx-quick-state]");
+  if (info) info.textContent = profile
+    ? profile.label + " — " + profile.description +
+      (alreadyApplied
+        ? " Les valeurs actuelles correspondent déjà à ce préréglage. Enregistre la capacité pour conserver tes réglages."
+        : " Aperçu indicatif seulement : appuie sur Appliquer pour changer les valeurs, puis teste le vrai combat.")
+    : "Aperçu indicatif : tes réglages actuels sont conservés. Choisis un style puis appuie sur Appliquer, ou personnalise avec les contrôles détaillés.";
+
+  const context = root.querySelector("[data-skill-fx-quick-context]");
+  if (context) context.textContent = captureFxQuickTrajectoryHintV1({
+    form: root.querySelector("[data-skill-form]")?.value,
+    trajectoryMode: root.querySelector("[data-skill-trajectory-mode]")?.value
+  });
+  const warning = root.querySelector("[data-skill-fx-quick-warning]");
+  if (warning) {
+    const fx = {
+      ...skillParticlePresetPresentationFromControlsV1(root),
+      impactShakeAmplitudePx: Number(root.querySelector("[data-skill-impact-shake-amplitude]")?.value) || 0,
+      impactShakeSequence: readHumanCameraShakeSequenceV1(root)
+    };
+    const notes = captureFxQuickWarningsV1(fx);
+    warning.textContent = notes.length
+      ? notes.join(" ")
+      : "Tailles et secousses dans les limites conseillées. Tu peux affiner sans risque dans Réglages avancés.";
+    warning.dataset.tone = notes.length ? "warning" : "info";
+  }
+}
+
+function writeSkillFeedbackControlsV1(
+  root,
+  presentation = {}
+) {
+  const values = [
+    [
+      "[data-skill-fx-glow-color]",
+      presentation.fxGlowColor ??
+        "#ffffff"
+    ],
+    [
+      "[data-skill-fx-glow-strength]",
+      presentation.fxGlowStrength ?? 0
+    ],
+    [
+      "[data-skill-fx-glow-radius]",
+      presentation.fxGlowRadiusPx ?? 16
+    ],
+    [
+      "[data-skill-impact-flash-color]",
+      presentation.impactFlashColor ??
+        "#ffffff"
+    ],
+    [
+      "[data-skill-impact-flash-opacity]",
+      presentation.impactFlashOpacity ?? 0
+    ],
+    [
+      "[data-skill-impact-flash-duration]",
+      presentation.impactFlashDurationMs ??
+        120
+    ],
+    [
+      "[data-skill-impact-flash-scale]",
+      presentation.impactFlashScale ?? 1.5
+    ],
+    [
+      "[data-skill-impact-shake-amplitude]",
+      presentation.impactShakeAmplitudePx ??
+        0
+    ],
+    [
+      "[data-skill-impact-shake-duration]",
+      presentation.impactShakeDurationMs ??
+        140
+    ],
+    [
+      "[data-skill-impact-visual-timing]",
+      presentation.impactVisualTiming ?? "immediate"
+    ],
+    [
+      "[data-skill-cast-burst-color]",
+      presentation.castBurstColor ??
+        "#ffffff"
+    ],
+    [
+      "[data-skill-cast-burst-count]",
+      presentation.castBurstCount ?? 0
+    ],
+    [
+      "[data-skill-cast-burst-spread]",
+      presentation.castBurstSpreadPx ?? 0
+    ],
+    [
+      "[data-skill-cast-burst-size]",
+      presentation.castBurstSizePx ?? 0
+    ],
+    [
+      "[data-skill-cast-burst-rise]",
+      presentation.castBurstRisePx ?? 0
+    ],
+    [
+      "[data-skill-cast-burst-duration]",
+      presentation.castBurstDurationMs ?? 0
+    ],
+    [
+      "[data-skill-cast-burst-opacity]",
+      presentation.castBurstOpacity ?? 0
+    ],
+    [
+      "[data-skill-projectile-trail-color]",
+      presentation.projectileTrailColor ??
+        "#ffffff"
+    ],
+    [
+      "[data-skill-projectile-trail-count]",
+      presentation.projectileTrailCount ?? 0
+    ],
+    [
+      "[data-skill-projectile-trail-length]",
+      presentation.projectileTrailLengthPx ?? 0
+    ],
+    [
+      "[data-skill-projectile-trail-size]",
+      presentation.projectileTrailSizePx ?? 0
+    ],
+    [
+      "[data-skill-projectile-trail-opacity]",
+      presentation.projectileTrailOpacity ?? 0
+    ],
+    [
+      "[data-skill-projectile-trail-anchor-x]",
+      (presentation.projectileTrailAnchorX ?? 0.5) * 100
+    ],
+    [
+      "[data-skill-projectile-trail-anchor-y]",
+      (presentation.projectileTrailAnchorY ?? 0.5) * 100
+    ],
+    [
+      "[data-skill-impact-burst-color]",
+      presentation.impactBurstColor ??
+        "#ffffff"
+    ],
+    [
+      "[data-skill-impact-burst-count]",
+      presentation.impactBurstCount ?? 0
+    ],
+    [
+      "[data-skill-impact-burst-spread]",
+      presentation.impactBurstSpreadPx ?? 0
+    ],
+    [
+      "[data-skill-impact-burst-size]",
+      presentation.impactBurstSizePx ?? 0
+    ],
+    [
+      "[data-skill-impact-burst-duration]",
+      presentation.impactBurstDurationMs ?? 0
+    ],
+    [
+      "[data-skill-impact-burst-opacity]",
+      presentation.impactBurstOpacity ?? 0
+    ],
+    [
+      "[data-skill-aftermath-smoke-color]",
+      presentation.aftermathSmokeColor ??
+        "#594943"
+    ],
+    [
+      "[data-skill-aftermath-smoke-count]",
+      presentation.aftermathSmokeCount ?? 0
+    ],
+    [
+      "[data-skill-aftermath-smoke-spread]",
+      presentation.aftermathSmokeSpreadPx ?? 0
+    ],
+    [
+      "[data-skill-aftermath-smoke-size]",
+      presentation.aftermathSmokeSizePx ?? 0
+    ],
+    [
+      "[data-skill-aftermath-smoke-rise]",
+      presentation.aftermathSmokeRisePx ?? 0
+    ],
+    [
+      "[data-skill-aftermath-smoke-duration]",
+      presentation.aftermathSmokeDurationMs ?? 0
+    ],
+    [
+      "[data-skill-aftermath-smoke-opacity]",
+      presentation.aftermathSmokeOpacity ?? 0
+    ]
+  ];
+
+  for (const [selector, value] of values) {
+    const field = root.querySelector(selector);
+    if (field) {
+      field.value = String(value ?? "");
+    }
+  }
+
+  renderHumanCameraShakeSequenceV1(root,presentation.impactShakeSequence ?? []);
+  syncSkillGlowPresetStateV1(root);
+  syncSkillParticlePresetStateV1(root);
+  refreshSkillFxQuickControlStateV1(root, {restoreSaved:true});
+}
+
+function writeCaptureFxStarterPresentationFieldsV1(
+  root,
+  presentation
+) {
+  writeSkillSpriteControlsV1(
+    root,
+    presentation
+  );
+  writeSkillFeedbackControlsV1(
+    root,
+    presentation
+  );
+
+  const values = [
+    ["[data-skill-icon]", presentation.iconAssetId],
+    ["[data-skill-cast-fx]", presentation.castAssetId],
+    ["[data-skill-cast-scale]", presentation.castDisplayScale],
+    ["[data-skill-travel-fx]", presentation.travelAssetId],
+    ["[data-skill-travel-scale]", presentation.travelDisplayScale],
+    ["[data-skill-travel-opacity-pct]", presentation.travelOpacityPct],
+    ["[data-skill-travel-playback]", presentation.travelPlaybackMode],
+    ["[data-skill-travel-frame-speed]", presentation.travelFrameSpeedMultiplier ?? 1],
+    ["[data-skill-travel-perspective]", presentation.travelPerspectiveAmount ?? 0],
+    ["[data-skill-travel-far-scale]", presentation.travelFarScaleRatio ?? 1],
+    ["[data-skill-travel-arrival-layer]", presentation.travelArrivalLayer ?? "same"],
+    ["[data-skill-trajectory-mode]", presentation.travelTrajectoryMode],
+    ["[data-skill-wave-start-radius]", presentation.waveStartRadiusPct ?? 3],
+    ["[data-skill-wave-end-radius]", presentation.waveEndRadiusPct ?? 65],
+    ["[data-skill-wave-thickness]", presentation.waveThicknessPct ?? 6],
+    ["[data-skill-fall-height]", presentation.fallHeightPx],
+    ["[data-skill-fall-offset-x]", presentation.fallOffsetXPx],
+    ["[data-skill-travel-layer-player]", presentation.travelLayerPlayer],
+    ["[data-skill-travel-layer-opponent]", presentation.travelLayerOpponent],
+    ["[data-skill-impact-fx]", presentation.impactAssetId],
+    ["[data-skill-impact-scale]", presentation.impactDisplayScale],
+    ["[data-skill-impact-duration]", presentation.impactDurationMs],
+    ["[data-skill-zone-fx]", presentation.zoneAssetId],
+    ["[data-skill-zone-attachment]", presentation.zoneAttachment],
+    ["[data-skill-zone-scale]", presentation.zoneDisplayScale],
+    ["[data-skill-zone-scale-x]", presentation.zoneDisplayScaleX],
+    ["[data-skill-zone-scale-y]", presentation.zoneDisplayScaleY],
+    ["[data-skill-cast-audio]", presentation.castAudioAssetId],
+    ["[data-skill-travel-audio]", presentation.travelAudioAssetId],
+    ["[data-skill-impact-audio]", presentation.impactAudioAssetId],
+    ["[data-skill-zone-audio]", presentation.zoneAudioAssetId]
+  ];
+
+  for (const [selector, value] of values) {
+    const field = root.querySelector(selector);
+    if (field) {
+      field.value = String(value ?? "");
+    }
+  }
+}
+
+export function mountEditorCardDisclosuresV1({
+  root,
+  listen
+}) {
+  if (!root || typeof root.querySelectorAll !== "function") {
+    throw new TypeError(
+      "root doit exposer querySelectorAll()"
+    );
+  }
+  if (typeof listen !== "function") {
+    throw new TypeError(
+      "listen doit être une fonction"
+    );
+  }
+
+  let count = 0;
+
+  for (const card of root.querySelectorAll(".card")) {
+    const title = [...card.children].find(
+      (child) =>
+        child?.classList?.contains?.(
+          "card-title"
+        )
+    );
+
+    if (!title) {
+      continue;
+    }
+
+    card.dataset.editorCollapsible = "true";
+    if (
+      card.dataset.collapsed !== "true" &&
+      card.dataset.collapsed !== "false"
+    ) {
+      card.dataset.collapsed = "true";
+    }
+
+    title.dataset.editorCardToggle = "true";
+    title.setAttribute("role", "button");
+    title.tabIndex = 0;
+
+    const sync = () => {
+      const collapsed =
+        card.dataset.collapsed === "true";
+
+      title.setAttribute(
+        "aria-expanded",
+        collapsed ? "false" : "true"
+      );
+      title.dataset.disclosureLabel =
+        collapsed ? "Dérouler" : "Fermer";
+      title.setAttribute(
+        "aria-label",
+        (
+          collapsed
+            ? "Dérouler "
+            : "Fermer "
+        ) +
+          (
+            title.querySelector("h2")
+              ?.textContent ??
+            "ce bloc"
+          )
+      );
+    };
+
+    const toggle = () => {
+      card.dataset.collapsed =
+        card.dataset.collapsed === "true"
+          ? "false"
+          : "true";
+      sync();
+    };
+
+    listen(
+      title,
+      "click",
+      () => {
+        toggle();
+      }
+    );
+
+    listen(
+      title,
+      "keydown",
+      (event) => {
+        if (
+          event.key === "Enter" ||
+          event.key === " "
+        ) {
+          event.preventDefault();
+          toggle();
+        }
+      }
+    );
+
+    sync();
+    count += 1;
+  }
+
+  return count;
+}
+
+export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null }) {
+  if (!root || typeof root.querySelector !== "function") {
+    throw new TypeError("root doit être un élément DOM");
+  }
+
+  const listeners = [];
+  const sockets = initialSocketStore();
+  const configuredSkills = new Map();
+  const configuredCreatures = new Map();
+  let selectedCreatureId = null;
+  let creatureDirty = false;
+  let selectedLegacyState = null;
+  let disposed = false;
+  let lastExport = null;
+  let statRegistry = null;
+  let progressionRules = null;
+  const combatTeamControls = mountCaptureEditorCombatTeamControlsV1({
+    root, configuredCreatures,
+    getSelectedCreatureId: () => selectedValue(root, "[data-creature-id]"),
+    groupCreatures: humanCreatureSelectorGroupsV1
+  });
+
+  function listen(target, type, handler) {
+    if (disposed) {
+      return;
+    }
+    target.addEventListener(type, handler);
+    listeners.push(() =>
+      target.removeEventListener(type, handler)
+    );
+  }
+
+  const markerLibraryController = mountCaptureMarkerLibraryV1({
+    root,listen,configuredSkills,getStatRegistry:()=>statRegistry,
+    // The skill transfer button exports the live editor draft without saving.
+    // Give marker export the same visibility, but only parse the live draft
+    // when it actually contains a marker effect (unrelated incomplete new
+    // skill forms must not block the standalone library export).
+    getCurrentSkillDraft:()=>{
+      const pending=[...root.querySelectorAll("[data-skill-effect-row]")].some(row=>
+        row.querySelector("[data-skill-effect-kind]")?.value==="apply_marker");
+      return pending ? buildHumanSkillDraftV1(readSkillFields(root)) : null;
+    }
+  });
+  listen(one(root,"[data-skill-marker-cost-enabled]"),"change",() => {
+    one(root,"[data-skill-marker-cost-fields]").hidden =
+      !one(root,"[data-skill-marker-cost-enabled]").checked;
+  });
+
+  const contextualHelp = mountCaptureContextualHelpV1({
+    root, listen, getStatRegistry: () => statRegistry
+  });
+  listen(one(root,"[data-skill-approach]"),"change",()=>updateBurrowStageVisibilityV1(root));
+  updateBurrowStageVisibilityV1(root);
+  const beamStageLayout = mountCaptureBeamStageLayoutV1(root);
+  listen(one(root, "[data-skill-form]"), "change", () => beamStageLayout.sync());
+
+  mountEditorCardDisclosuresV1({
+    root,
+    listen
+  });
+
+  listen(one(root, "[data-skill-impact-shake-add]"), "click", () => {
+    const existing = readHumanCameraShakeSequenceV1(root);
+    // First activation keeps the former single shake as the first pulse.
+    if (existing.length === 0) {
+      const legacyAmplitude = Number(root.querySelector("[data-skill-impact-shake-amplitude]")?.value) || 0;
+      const legacyDuration = Number(root.querySelector("[data-skill-impact-shake-duration]")?.value) || 140;
+      if (legacyAmplitude > 0) {
+        appendHumanCameraShakePulseRowV1(root, {
+          pauseMs:0, amplitudePx:legacyAmplitude, durationMs:legacyDuration
+        });
+      }
+    }
+    appendHumanCameraShakePulseRowV1(root);
+  });
+
+  listen(one(root, "[data-skill-impact-shake-preset]"), "click", () => {
+    // Fast authoring shortcut only: writes ordinary editable sequence rows.
+    renderHumanCameraShakeSequenceV1(root, [
+      {pauseMs:0,amplitudePx:4,durationMs:180},
+      {pauseMs:90,amplitudePx:9,durationMs:220},
+      {pauseMs:120,amplitudePx:16,durationMs:320},
+      {pauseMs:130,amplitudePx:7,durationMs:210}
+    ]);
+    const timing = root.querySelector("[data-skill-impact-visual-timing]");
+    if (timing) timing.value = "after";
+  });
+
+  for (const tab of root.querySelectorAll("[data-editor-tab]")) {
+    listen(tab, "click", () =>
+      setTab(root, tab.dataset.editorTab)
+    );
+  }
+
+  setTab(root, "creature");
+
+  const reactionType = one(root, "[data-creature-reaction-type]");
+  listen(reactionType, "change", () => syncHumanCreatureReactionControlsV1(root));
+  listen(one(root, "[data-creature-reaction-icon]"), "change", () => syncHumanCreatureReactionControlsV1(root));
+  syncHumanCreatureReactionControlsV1(root);
+
+  const mobilityPreset = one(
+    root,
+    "[data-creature-mobility-preset]"
+  );
+  const mobilityModifier = one(
+    root,
+    "[data-creature-approach-time-modifier]"
+  );
+
+  listen(
+    mobilityPreset,
+    "change",
+    () => {
+      if (
+        mobilityPreset.value !== "custom"
+      ) {
+        mobilityModifier.value = String(
+          humanMobilityTempoPresetValueV1(
+            mobilityPreset.value
+          )
+        );
+        mobilityModifier.dispatchEvent(
+          new Event("input", {
+            bubbles: true
+          })
+        );
+      }
+    }
+  );
+
+  listen(
+    mobilityModifier,
+    "input",
+    () => {
+      mobilityPreset.value =
+        humanMobilityTempoPresetIdV1(
+          Number(mobilityModifier.value)
+        );
+    }
+  );
+
+  const hitPresenceEnabled = one(
+    root,
+    "[data-skill-hit-presence-enabled]"
+  );
+
+  function syncHitPresenceControlsV1() {
+    for (
+      const input of root.querySelectorAll(
+        "[data-skill-hit-presence]"
+      )
+    ) {
+      input.disabled =
+        !hitPresenceEnabled.checked;
+    }
+  }
+
+  listen(
+    hitPresenceEnabled,
+    "change",
+    syncHitPresenceControlsV1
+  );
+  syncHitPresenceControlsV1();
+
+  const librarySelect = one(
+    root,
+    "[data-skill-library-select]"
+  );
+  const libraryState = one(
+    root,
+    "[data-skill-library-state]"
+  );
+  const newSkillButton = one(
+    root,
+    "[data-skill-new]"
+  );
+  const createSkillButton = one(
+    root,
+    "[data-skill-create]"
+  );
+  const updateSkillButton = one(
+    root,
+    "[data-skill-update]"
+  );
+  const skillActivationEnabled = one(
+    root,
+    "[data-skill-activation-enabled]"
+  );
+  const skillActivationConfig = one(
+    root,
+    "[data-skill-activation-config]"
+  );
+  const skillActivationConditionsHost = one(
+    root,
+    "[data-skill-activation-conditions-host]"
+  );
+  const skillActivationAddButton = one(
+    root,
+    "[data-skill-activation-add]"
+  );
+  const skillEffectsHost = one(
+    root,
+    "[data-skill-effects-host]"
+  );
+  const skillEffectAddButton = one(
+    root,
+    "[data-skill-effect-add]"
+  );
+  const contactHoldEnabled = one(root, "[data-skill-contact-hold-enabled]");
+  const contactHoldSettings = one(root, "[data-skill-contact-hold-settings]");
+  const contactHoldEffectsHost = one(root, "[data-skill-contact-hold-effects-host]");
+  const contactHoldEffectAddButton = one(root, "[data-skill-contact-hold-effect-add]");
+  const creatureLibrarySelect = one(
+    root,
+    "[data-creature-library-select]"
+  );
+  const creatureLibraryState = one(
+    root,
+    "[data-creature-library-state]"
+  );
+  const newCreatureButton = one(
+    root,
+    "[data-creature-new]"
+  );
+  const createCreatureButton = one(
+    root,
+    "[data-creature-create]"
+  );
+  const updateCreatureButton = one(
+    root,
+    "[data-creature-update]"
+  );
+  const statRegistryApplyButton = one(
+    root,
+    "[data-stat-registry-apply]"
+  );
+  const statCustomAddButton = one(
+    root,
+    "[data-stat-custom-add]"
+  );
+  const progressionApplyButton = one(
+    root,
+    "[data-progression-apply]"
+  );
+  const progressionAddButton = one(
+    root,
+    "[data-progression-add-step]"
+  );
+  const progressionScheduleHost = one(
+    root,
+    "[data-progression-schedule-host]"
+  );
+  const exportCurrentCreatureButton = one(
+    root,
+    "[data-export-current-creature]"
+  );
+  const exportCurrentSkillButton = one(
+    root,
+    "[data-export-current-skill]"
+  );
+  const exportDatabaseButton = one(
+    root,
+    "[data-export-database]"
+  );
+  const importCaptureJsonInput = one(
+    root,
+    "[data-import-capture-json]"
+  );
+  const importReplaceExisting = one(
+    root,
+    "[data-import-replace-existing]"
+  );
+  const transferState = one(
+    root,
+    "[data-transfer-state]"
+  );
+
+  const fxGlowPresetSelect =
+    root.querySelector(
+      "[data-skill-fx-glow-preset]"
+    );
+  const fxGlowPresetState =
+    root.querySelector(
+      "[data-skill-fx-glow-preset-state]"
+    );
+
+  function updateGlowPresetStateV1(
+    presetId
+  ) {
+    const preset =
+      captureFxGlowPresetByIdV1(
+        presetId
+      );
+
+    if (!fxGlowPresetState) {
+      return;
+    }
+
+    fxGlowPresetState.textContent =
+      preset
+        ? preset.label +
+          " — " +
+          preset.description
+        : "Personnalisé — ouvre les réglages experts pour affiner précisément le glow.";
+    fxGlowPresetState.dataset.tone =
+      "info";
+  }
+
+  if (fxGlowPresetSelect) {
+    listen(
+      fxGlowPresetSelect,
+      "change",
+      () => {
+        const presetId =
+          fxGlowPresetSelect.value;
+
+        if (presetId === "custom") {
+          updateGlowPresetStateV1(
+            "custom"
+          );
+          return;
+        }
+
+        const applied =
+          applyCaptureFxGlowPresetV1({
+            presetId,
+            presentation:
+              skillGlowPresetPresentationFromControlsV1(
+                root
+              )
+          });
+
+        const strength =
+          root.querySelector(
+            "[data-skill-fx-glow-strength]"
+          );
+        const radius =
+          root.querySelector(
+            "[data-skill-fx-glow-radius]"
+          );
+
+        if (strength) {
+          strength.value = String(
+            applied.fxGlowStrength
+          );
+        }
+        if (radius) {
+          radius.value = String(
+            applied.fxGlowRadiusPx
+          );
+        }
+
+        updateGlowPresetStateV1(
+          presetId
+        );
+        setStatus(
+          "Glow « " +
+            captureFxGlowPresetByIdV1(
+              presetId
+            ).label +
+            " » appliqué. Les valeurs avancées restent modifiables.",
+          "ok"
+        );
+      }
+    );
+  }
+
+  for (const selector of [
+    "[data-skill-fx-glow-strength]",
+    "[data-skill-fx-glow-radius]"
+  ]) {
+    const field =
+      root.querySelector(selector);
+    if (!field) {
+      continue;
+    }
+
+    listen(field, "input", () => {
+      const presetId =
+        syncSkillGlowPresetStateV1(
+          root
+        );
+      updateGlowPresetStateV1(
+        presetId
+      );
+    });
+  }
+
+  const fxParticlePresetSelect =
+    root.querySelector(
+      "[data-skill-fx-particle-preset]"
+    );
+  const fxParticlePresetState =
+    root.querySelector(
+      "[data-skill-fx-particle-preset-state]"
+    );
+
+  function updateParticlePresetStateV1(
+    presetId
+  ) {
+    const preset =
+      captureFxParticlePresetByIdV1(
+        presetId
+      );
+    if (!fxParticlePresetState) {
+      return;
+    }
+    fxParticlePresetState.textContent =
+      preset
+        ? preset.label +
+          " — " +
+          preset.description
+        : "Personnalisée — ouvre les réglages experts pour affiner précisément les particules.";
+    fxParticlePresetState.dataset.tone =
+      "info";
+  }
+
+  if (fxParticlePresetSelect) {
+    listen(
+      fxParticlePresetSelect,
+      "change",
+      () => {
+        const presetId =
+          fxParticlePresetSelect.value;
+
+        if (presetId === "custom") {
+          updateParticlePresetStateV1(
+            "custom"
+          );
+          return;
+        }
+
+        const applied =
+          applyCaptureFxParticlePresetV1({
+            presetId,
+            presentation:
+              skillParticlePresetPresentationFromControlsV1(
+                root
+              )
+          });
+
+        const fields = [
+          [
+            "[data-skill-cast-burst-count]",
+            applied.castBurstCount
+          ],
+          [
+            "[data-skill-cast-burst-spread]",
+            applied.castBurstSpreadPx
+          ],
+          [
+            "[data-skill-cast-burst-size]",
+            applied.castBurstSizePx
+          ],
+          [
+            "[data-skill-cast-burst-rise]",
+            applied.castBurstRisePx
+          ],
+          [
+            "[data-skill-cast-burst-duration]",
+            applied.castBurstDurationMs
+          ],
+          [
+            "[data-skill-cast-burst-opacity]",
+            applied.castBurstOpacity
+          ],
+          [
+            "[data-skill-projectile-trail-count]",
+            applied.projectileTrailCount
+          ],
+          [
+            "[data-skill-projectile-trail-length]",
+            applied.projectileTrailLengthPx
+          ],
+          [
+            "[data-skill-projectile-trail-size]",
+            applied.projectileTrailSizePx
+          ],
+          [
+            "[data-skill-projectile-trail-opacity]",
+            applied.projectileTrailOpacity
+          ],
+          [
+            "[data-skill-impact-burst-count]",
+            applied.impactBurstCount
+          ],
+          [
+            "[data-skill-impact-burst-spread]",
+            applied.impactBurstSpreadPx
+          ],
+          [
+            "[data-skill-impact-burst-size]",
+            applied.impactBurstSizePx
+          ],
+          [
+            "[data-skill-impact-burst-duration]",
+            applied.impactBurstDurationMs
+          ],
+          [
+            "[data-skill-impact-burst-opacity]",
+            applied.impactBurstOpacity
+          ],
+          [
+            "[data-skill-aftermath-smoke-count]",
+            applied.aftermathSmokeCount
+          ],
+          [
+            "[data-skill-aftermath-smoke-spread]",
+            applied.aftermathSmokeSpreadPx
+          ],
+          [
+            "[data-skill-aftermath-smoke-size]",
+            applied.aftermathSmokeSizePx
+          ],
+          [
+            "[data-skill-aftermath-smoke-rise]",
+            applied.aftermathSmokeRisePx
+          ],
+          [
+            "[data-skill-aftermath-smoke-duration]",
+            applied.aftermathSmokeDurationMs
+          ],
+          [
+            "[data-skill-aftermath-smoke-opacity]",
+            applied.aftermathSmokeOpacity
+          ]
+        ];
+
+        for (const [selector, value] of fields) {
+          const field =
+            root.querySelector(selector);
+          if (field) {
+            field.value = String(value);
+          }
+        }
+
+        updateParticlePresetStateV1(
+          presetId
+        );
+        setStatus(
+          root,
+          "Particules « " +
+            captureFxParticlePresetByIdV1(
+              presetId
+            ).label +
+            " » appliquées sans modifier le gameplay.",
+          "ok"
+        );
+      }
+    );
+  }
+
+  for (const selector of [
+    "[data-skill-cast-burst-count]",
+    "[data-skill-cast-burst-spread]",
+    "[data-skill-cast-burst-size]",
+    "[data-skill-cast-burst-rise]",
+    "[data-skill-cast-burst-duration]",
+    "[data-skill-cast-burst-opacity]",
+    "[data-skill-projectile-trail-count]",
+    "[data-skill-projectile-trail-length]",
+    "[data-skill-projectile-trail-size]",
+    "[data-skill-projectile-trail-opacity]",
+    "[data-skill-impact-burst-count]",
+    "[data-skill-impact-burst-spread]",
+    "[data-skill-impact-burst-size]",
+    "[data-skill-impact-burst-duration]",
+    "[data-skill-impact-burst-opacity]",
+    "[data-skill-aftermath-smoke-count]",
+    "[data-skill-aftermath-smoke-spread]",
+    "[data-skill-aftermath-smoke-size]",
+    "[data-skill-aftermath-smoke-rise]",
+    "[data-skill-aftermath-smoke-duration]",
+    "[data-skill-aftermath-smoke-opacity]"
+  ]) {
+    const field =
+      root.querySelector(selector);
+    if (!field) {
+      continue;
+    }
+    listen(field, "input", () => {
+      const presetId =
+        syncSkillParticlePresetStateV1(
+          root
+        );
+      updateParticlePresetStateV1(
+        presetId
+      );
+    });
+  }
+
+  syncSkillParticlePresetStateV1(root);
+
+  const fxQuickSelect = root.querySelector("[data-skill-fx-quick-profile]");
+  const fxQuickApply = root.querySelector("[data-skill-fx-quick-apply]");
+  if (fxQuickSelect) {
+    listen(fxQuickSelect, "change", () => refreshSkillFxQuickControlStateV1(root));
+  }
+  if (fxQuickApply) {
+    listen(fxQuickApply, "click", () => {
+      const profile = captureFxQuickProfileByIdV1(fxQuickSelect?.value);
+      if (!profile) return;
+      // Compose through existing FX V1 owners. The button is the only write action;
+      // switching the preview choice or loading a skill must not mutate any field.
+      const applied = applyCaptureFxQuickProfileV1({
+        profileId: profile.id,
+        presentation: {
+          ...skillGlowPresetPresentationFromControlsV1(root),
+          ...skillParticlePresetPresentationFromControlsV1(root),
+          impactShakeAmplitudePx: Number(root.querySelector("[data-skill-impact-shake-amplitude]")?.value) || 0
+        }
+      });
+      // Reuse the existing glow and particle handlers: no second setter or FX owner.
+      if (fxGlowPresetSelect) {
+        fxGlowPresetSelect.value = profile.glowPresetId;
+        fxGlowPresetSelect.dispatchEvent(new Event("change", {bubbles:true}));
+      }
+      if (fxParticlePresetSelect) {
+        fxParticlePresetSelect.value = profile.particlePresetId;
+        fxParticlePresetSelect.dispatchEvent(new Event("change", {bubbles:true}));
+      }
+      const shake = root.querySelector("[data-skill-impact-shake-amplitude]");
+      if (shake) shake.value = String(applied.impactShakeAmplitudePx);
+      refreshSkillFxQuickControlStateV1(root);
+      setStatus(root, "Intensité « "+profile.label+" » appliquée. Les sprites, sons et la progression ne changent pas. Enregistre ta capacité pour conserver les effets.", "ok");
+    });
+  }
+  // Detailed edits mark the short-cut as custom; never overwrite authored settings.
+  for (const selector of [
+    "[data-skill-form]", "[data-skill-trajectory-mode]",
+    "[data-skill-fx-glow-strength]", "[data-skill-fx-glow-radius]",
+    "[data-skill-projectile-trail-count]", "[data-skill-projectile-trail-length]",
+    "[data-skill-projectile-trail-size]", "[data-skill-projectile-trail-anchor-y]",
+    "[data-skill-impact-shake-amplitude]", "[data-skill-aftermath-smoke-size]"
+  ]) {
+    const field = root.querySelector(selector);
+    if (field) listen(field, "input", () => refreshSkillFxQuickControlStateV1(root, {resetSelection:true}));
+  }
+  refreshSkillFxQuickControlStateV1(root);
+
+  const fxStarterProfileSelect =
+    root.querySelector(
+      "[data-skill-fx-starter-profile]"
+    );
+  const fxStarterApplyButton =
+    root.querySelector(
+      "[data-skill-fx-starter-apply]"
+    );
+  const fxStarterState =
+    root.querySelector(
+      "[data-skill-fx-starter-state]"
+    );
+  const beamPack = captureBeamVisualPackV1("pressurized-jet");
+  const beamPackButton = root.querySelector("[data-skill-beam-pack-apply]");
+  const beamUndoButton = root.querySelector("[data-skill-beam-pack-undo]");
+  let beamUndoSnapshot = null;
+  function clearBeamUndo() {
+    beamUndoSnapshot = null;
+    if (beamUndoButton) beamUndoButton.disabled = true;
+  }
+  for (const selector of ["[data-skill-library-select]", "[data-skill-new]"]) {
+    const control = root.querySelector(selector);
+    if (control) listen(control, selector === "[data-skill-new]" ? "click" : "change", clearBeamUndo);
+  }
+  const beamPackState = root.querySelector("[data-skill-beam-pack-state]");
+  function syncBeamPackReady() {
+    const ids = [beamPack.beamStart, beamPack.travel, beamPack.impact];
+    const missing = ids.filter(id => !fxStarterVisualAssetIds.has(id));
+    if (beamPackButton) beamPackButton.disabled = missing.length > 0;
+    if (beamPackState) {
+      beamPackState.textContent = missing.length === 0
+        ? "Modèle prêt : départ/charge à la bouche, corps continu et impact. Applique le modèle pour préremplir les champs, ou configure-les manuellement."
+        : "Pack indisponible : médias non chargés : " + missing.join(", ");
+      beamPackState.dataset.tone = missing.length === 0 ? "ok" : "warning";
+    }
+  }
+  if (beamPackButton) {
+    listen(beamPackButton, "click", () => {
+      try {
+        const ids = [beamPack.beamStart, beamPack.travel, beamPack.impact];
+        if (ids.some(id => !fxStarterVisualAssetIds.has(id))) {
+          throw new Error("Catalogue visuel du rayon indisponible.");
+        }
+        const originalInputs = snapshotCaptureBeamPresetControlsV1(root);
+        const current = readSkillFields(root).presentation;
+        const next = applyCaptureBeamVisualPackV1({
+          packId: beamPack.id,
+          presentation: current
+        });
+        one(root, "[data-skill-form]").value = "beam";
+        beamStageLayout.sync();
+        writeSkillSpriteControlsV1(root, next);
+        for (const [selector, value] of [
+          ["[data-skill-cast-fx]", next.castAssetId],
+          ["[data-skill-cast-scale]", next.castDisplayScale],
+          ["[data-skill-beam-start-fx]", next.beamStartAssetId],
+          ["[data-skill-beam-start-scale]", next.beamStartDisplayScale],
+          ["[data-skill-travel-fx]", next.travelAssetId],
+          ["[data-skill-travel-scale]", next.travelDisplayScale],
+          ["[data-skill-travel-playback]", next.travelPlaybackMode],
+          ["[data-skill-impact-fx]", next.impactAssetId],
+          ["[data-skill-impact-scale]", next.impactDisplayScale],
+          ["[data-skill-impact-duration]", next.impactDurationMs],
+          ["[data-skill-impact-offset-x]", next.impactOffsetX],
+          ["[data-skill-impact-offset-y]", next.impactOffsetY]
+        ]) {
+          one(root, selector).value = String(value);
+        }
+        beamUndoSnapshot ??= originalInputs;
+        if (beamUndoButton) beamUndoButton.disabled = false;
+        setStatus(root,
+          "Modèle de rayon d’eau prêt : trois phases liées. Tu peux annuler ou enregistrer explicitement.",
+          "ok");
+        if (beamPackState) {
+          beamPackState.textContent = "Rayon préparé à la bouche, sans modifier les dégâts ni les timings. Annuler le modèle reste possible.";
+          beamPackState.dataset.tone = "ok";
+        }
+      } catch (error) {
+        setStatus(root, error.message, "error");
+      }
+    });
+  }
+  if (beamUndoButton) {
+    listen(beamUndoButton, "click", () => {
+      if (!beamUndoSnapshot) return;
+      try {
+        restoreCaptureBeamPresetControlsV1(root, beamUndoSnapshot);
+        beamStageLayout.sync();
+        clearBeamUndo();
+        if (beamPackState) {
+          beamPackState.textContent = "Réglages précédents restaurés. La capacité enregistrée est inchangée.";
+          beamPackState.dataset.tone = "info";
+        }
+        setStatus(root, "Modèle de rayon annulé : tes choix visuels précédents sont restaurés.", "ok");
+      } catch (error) {
+        setStatus(root, error.message, "error");
+      }
+    });
+  }
+  let fxStarterLibrariesReady = false;
+  let fxStarterVisualAssetIds = new Set();
+  let fxStarterAudioAssetIds = new Set();
+
+  function updateFxStarterState(
+    message,
+    tone = "info"
+  ) {
+    if (!fxStarterState) {
+      return;
+    }
+    fxStarterState.textContent = message;
+    fxStarterState.dataset.tone = tone;
+  }
+
+  function syncFxStarterApplyButton() {
+    if (!fxStarterApplyButton) {
+      return;
+    }
+    fxStarterApplyButton.disabled =
+      !fxStarterLibrariesReady ||
+      !fxStarterProfileSelect?.value;
+  }
+
+  syncSkillGlowPresetStateV1(root);
+
+  if (fxStarterProfileSelect) {
+    fxStarterProfileSelect.textContent = "";
+    createOption(
+      fxStarterProfileSelect,
+      "",
+      "Choisir une base FX GenSrpG"
+    );
+
+    for (
+      const profile of
+        CAPTURE_FX_STARTER_PROFILES_V1
+    ) {
+      createOption(
+        fxStarterProfileSelect,
+        profile.id,
+        profile.label
+      );
+    }
+
+    fxStarterProfileSelect.disabled = true;
+    listen(
+      fxStarterProfileSelect,
+      "change",
+      syncFxStarterApplyButton
+    );
+  }
+
+  if (fxStarterApplyButton) {
+    fxStarterApplyButton.disabled = true;
+    listen(
+      fxStarterApplyButton,
+      "click",
+      () => {
+        try {
+          if (!fxStarterLibrariesReady) {
+            throw new Error(
+              "Les bibliothèques FX ne sont pas encore chargées."
+            );
+          }
+
+          const profile =
+            captureFxStarterProfileByIdV1(
+              fxStarterProfileSelect?.value
+            );
+
+          if (profile === null) {
+            throw new Error(
+              "Choisis une base FX GenSrpG."
+            );
+          }
+
+          const visualKeys = [
+            "iconAssetId",
+            "castAssetId",
+            "travelAssetId",
+            "impactAssetId",
+            "zoneAssetId"
+          ];
+          const audioKeys = [
+            "castAudioAssetId",
+            "travelAudioAssetId",
+            "impactAudioAssetId",
+            "zoneAudioAssetId"
+          ];
+          const missingVisual =
+            visualKeys
+              .map(
+                (key) =>
+                  profile.presentation[key]
+              )
+              .filter(
+                (assetId) =>
+                  assetId &&
+                  !fxStarterVisualAssetIds.has(
+                    assetId
+                  )
+              );
+          const missingAudio =
+            audioKeys
+              .map(
+                (key) =>
+                  profile.presentation[key]
+              )
+              .filter(
+                (assetId) =>
+                  assetId &&
+                  !fxStarterAudioAssetIds.has(
+                    assetId
+                  )
+              );
+
+          if (
+            missingVisual.length > 0 ||
+            missingAudio.length > 0
+          ) {
+            throw new Error(
+              "Profil FX incomplet dans les catalogues actifs : " +
+                [
+                  ...missingVisual,
+                  ...missingAudio
+                ].join(", ")
+            );
+          }
+
+          const currentPresentation =
+            readSkillFields(root)
+              .presentation;
+
+          const presentation =
+            applyCaptureFxStarterProfileV1({
+              profileId: profile.id,
+              presentation:
+                currentPresentation
+            });
+
+          writeCaptureFxStarterPresentationFieldsV1(
+            root,
+            presentation
+          );
+
+          updateFxStarterState(
+            "Style « " +
+              profile.label +
+              " » appliqué. Les sprites, sons, sockets et visuels de statut déjà configurés sont conservés ; les réglages FX restent personnalisables.",
+            "ok"
+          );
+          setStatus(
+            root,
+            "Style visuel « " +
+              profile.label +
+              " » appliqué sans remplacer les médias configurés ni modifier le gameplay.",
+            "ok"
+          );
+        } catch (error) {
+          updateFxStarterState(
+            error.message,
+            "error"
+          );
+          setStatus(
+            root,
+            error.message,
+            "error"
+          );
+        }
+      }
+    );
+  }
+
+  function updateCreatureLibraryState(
+    message,
+    tone = "info"
+  ) {
+    creatureLibraryState.textContent = message;
+    creatureLibraryState.dataset.tone = tone;
+  }
+
+  function updateTransferState(
+    message,
+    tone = "info"
+  ) {
+    transferState.textContent = message;
+    transferState.dataset.tone = tone;
+  }
+
+  function downloadCaptureJsonFileV1(
+    filename,
+    jsonText
+  ) {
+    const blob = new Blob(
+      [jsonText],
+      {
+        type:
+          "application/json;charset=utf-8"
+      }
+    );
+    const url =
+      URL.createObjectURL(blob);
+    const link =
+      document.createElement("a");
+
+    link.href = url;
+    link.download = filename;
+    link.hidden = true;
+    document.body.append(link);
+
+    try {
+      link.click();
+    } finally {
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  function safeTransferFilenamePartV1(
+    value
+  ) {
+    return String(value ?? "capture")
+      .trim()
+      .replace(/[^a-zA-Z0-9._-]+/g, "-")
+      .replace(/^-+|-+$/g, "") ||
+      "capture";
+  }
+
+  function ensureTransferOwnersReadyV1() {
+    if (statRegistry === null) {
+      throw new Error(
+        "Le registre de stats Capture n’est pas encore chargé."
+      );
+    }
+    if (progressionRules === null) {
+      throw new Error(
+        "Les règles de progression Capture ne sont pas encore chargées."
+      );
+    }
+  }
+
+  function currentEditorDatabaseV1() {
+    ensureTransferOwnersReadyV1();
+
+    return buildCaptureEditorDatabaseV1({
+      statRegistry,
+      progressionRules,
+      configuredCreatures,
+      configuredSkills,
+      metadata: {
+        producer:
+          "capture-human-editor-v2"
+      }
+    });
+  }
+
+  function refreshEditorAfterTransferV1({
+    plan,
+    applyResult
+  }) {
+    if (
+      plan.action ===
+      "replace-database"
+    ) {
+      statRegistry =
+        applyResult.statRegistry;
+      progressionRules =
+        applyResult.progressionRules;
+
+      renderHumanStatRegistryV1(
+        root,
+        statRegistry
+      );
+      contextualHelp.sync();
+      renderHumanProgressionRulesV1(
+        root,
+        progressionRules
+      );
+    }
+
+    refreshSkillLibraryOptions(
+      plan.kind === "skill"
+        ? plan.id
+        : librarySelect.value
+    );
+    refreshLoadoutOptions();
+    refreshCreatureLibraryOptions(
+      selectedCreatureId
+    );
+
+    if (
+      plan.kind === "creature" &&
+      plan.action !== "noop"
+    ) {
+      selectedCreatureId =
+        plan.id;
+    }
+
+    if (
+      plan.action ===
+      "replace-database" &&
+      (
+        selectedCreatureId === null ||
+        !configuredCreatures.has(
+          selectedCreatureId
+        )
+      )
+    ) {
+      selectedCreatureId =
+        configuredCreatures.keys()
+          .next().value ?? null;
+    }
+
+    const selectedRecord =
+      selectedCreatureId === null
+        ? null
+        : configuredCreatures.get(
+            selectedCreatureId
+          ) ?? null;
+
+    refreshEvolutionTargetOptions(
+      selectedRecord?.draft?.capture
+        ?.evolution?.targetId ??
+        null
+    );
+
+    if (selectedRecord !== null) {
+      loadCreatureRecord(
+        selectedRecord.draft.id
+      );
+    } else {
+      creatureLibrarySelect.value = "";
+    }
+
+    if (
+      plan.kind === "skill" &&
+      plan.action !== "noop"
+    ) {
+      const draft =
+        configuredSkills.get(plan.id);
+      if (draft) {
+        writeSkillDraftFields(
+          root,
+          draft,
+          statRegistry
+        );
+        librarySelect.value = plan.id;
+        one(
+          root,
+          "[data-skill-id]"
+        ).readOnly = true;
+        selectedLegacyState = null;
+      }
+      refreshLoadoutOptions(
+        plan.id
+      );
+    }
+
+    creatureDirty = false;
+  }
+
+  function refreshEvolutionTargetOptions(
+    preferredId = null
+  ) {
+    const select = one(
+      root,
+      "[data-evolution-target]"
+    );
+    const previous =
+      preferredId ??
+      select.value;
+
+    select.textContent = "";
+    createOption(
+      select,
+      "",
+      "Choisir une créature cible"
+    );
+
+    const currentId = optionalText(
+      one(
+        root,
+        "[data-creature-id]"
+      ).value
+    );
+
+    for (
+      const record of configuredCreatures.values()
+    ) {
+      if (
+        currentId !== null &&
+        record.draft.id === currentId
+      ) {
+        continue;
+      }
+      createOption(
+        select,
+        record.draft.id,
+        record.draft.displayName +
+          " · " +
+          record.draft.id
+      );
+    }
+
+    if (
+      previous &&
+      ![
+        ...select.options
+      ].some(
+        (option) =>
+          option.value === previous
+      )
+    ) {
+      createOption(
+        select,
+        previous,
+        previous
+      );
+    }
+
+    select.value = previous ?? "";
+  }
+
+  function syncLoadoutAvailability() {
+    const standardSlots = [
+      ...root.querySelectorAll(
+        '[data-loadout-slot-type="standard"]'
+      )
+    ];
+    const ultimateSlot = one(
+      root,
+      '[data-loadout-slot-type="ultimate"]'
+    );
+    const summary = one(
+      root,
+      "[data-loadout-policy-summary]"
+    );
+
+    if (progressionRules === null) {
+      [
+        ...standardSlots,
+        ultimateSlot
+      ].forEach(
+        (select) => {
+          select.disabled = false;
+          select.dataset.locked = "false";
+        }
+      );
+      summary.textContent =
+        "Chargement de la politique de progression…";
+      return;
+    }
+
+    const level = Math.max(
+      1,
+      Number(
+        one(
+          root,
+          "[data-creature-level]"
+        ).value
+      ) || 1
+    );
+    const availability =
+      humanLoadoutAvailabilityV1({
+        progressionRules,
+        creatureLevel: level
+      });
+    const unlocked =
+      availability.filter(Boolean).length;
+
+    standardSlots.forEach(
+      (select, index) => {
+        const available =
+          availability[index] === true;
+        select.disabled = false;
+        select.dataset.locked = "false";
+        select.dataset.activeNow =
+          available ? "true" : "false";
+        select.title =
+          available
+            ? "Slot standard actif au niveau actuel"
+            : "Slot standard configurable maintenant, activé automatiquement quand la progression le débloque";
+        const label =
+          select.closest("label");
+        if (label) {
+          label.dataset.locked = "false";
+          label.dataset.activeNow =
+            available ? "true" : "false";
+        }
+      }
+    );
+
+    ultimateSlot.disabled = false;
+    ultimateSlot.dataset.locked = "false";
+    const ultimateDraft =
+      configuredSkills.get(
+        ultimateSlot.value
+      ) ?? null;
+    const ultimateUnlocked =
+      progressionRules.maxActiveSkills < 5 ||
+      captureActiveSkillSlotsForLevelV1(progressionRules, level) >= 5;
+    const ultimateActive =
+      ultimateUnlocked &&
+      ultimateDraft !== null &&
+      ultimateDraft.requiredLevel <= level;
+    ultimateSlot.dataset.activeNow =
+      ultimateActive ? "true" : "false";
+    ultimateSlot.title =
+      ultimateSlot.value === ""
+        ? "Slot réservé aux capacités ultimes"
+        : ultimateActive
+          ? "Capacité ultime disponible au niveau actuel"
+          : !ultimateUnlocked
+            ? "Capacité ultime configurée, débloquée au cinquième palier de progression"
+            : "Capacité ultime configurée, disponible quand son niveau requis sera atteint";
+    const ultimateLabel =
+      ultimateSlot.closest("label");
+    if (ultimateLabel) {
+      ultimateLabel.dataset.locked = "false";
+      ultimateLabel.dataset.activeNow =
+        ultimateActive ? "true" : "false";
+    }
+
+    summary.textContent =
+      unlocked +
+      " slot" +
+      (unlocked > 1 ? "s" : "") +
+      " standard" +
+      (unlocked > 1 ? "s" : "") +
+      " actif" +
+      (unlocked > 1 ? "s" : "") +
+      " au niveau " +
+      level +
+      ". Les 4 slots standards suivent les quatre premiers paliers ; le 5e déverrouille le slot Ultime (qui respecte aussi le niveau requis).";
+  }
+
+  function refreshCreatureLibraryOptions(
+    preferredId = null
+  ) {
+    combatTeamControls.refresh();
+    const previous =
+      preferredId ??
+      selectedCreatureId ??
+      creatureLibrarySelect.value;
+
+    creatureLibrarySelect.textContent = "";
+    createOption(
+      creatureLibrarySelect,
+      "",
+      configuredCreatures.size === 0
+        ? "Aucune créature enregistrée"
+        : "Choisir une créature"
+    );
+
+    const groups = humanCreatureSelectorGroupsV1(
+      [...configuredCreatures.values()]
+    );
+    for (const group of groups) {
+      const optgroup = document.createElement("optgroup");
+      optgroup.label = group.label;
+      optgroup.dataset.creatureElement = group.element ?? "none";
+      for (const entry of group.entries) {
+        const multiElement = entry.elements.length > 1
+          ? " · " + entry.elements.map(
+              (element) => humanSkillSelectorElementMetaV1(element).label
+            ).join(" + ")
+          : "";
+        createOption(
+          optgroup,
+          entry.id,
+          entry.name + multiElement + " · " + entry.id
+        );
+      }
+      creatureLibrarySelect.append(optgroup);
+    }
+
+    if (
+      previous &&
+      configuredCreatures.has(previous)
+    ) {
+      creatureLibrarySelect.value = previous;
+    }
+  }
+
+  function currentCreatureRecord() {
+    const creatureId = selectedValue(
+      root,
+      "[data-creature-id]"
+    );
+    const previousRecord =
+      selectedCreatureId === creatureId
+        ? configuredCreatures.get(
+            selectedCreatureId
+          ) ?? null
+        : null;
+
+    const rawFields = readCreatureFields(
+      root,
+      sockets,
+      previousRecord?.draft ?? null
+    );
+
+    const statValues =
+      statRegistry === null
+        ? (
+            previousRecord?.statValues ??
+            null
+          )
+        : readHumanCreatureStatValuesV1(
+            root,
+            creatureId,
+            statRegistry
+          );
+
+    const projectedStats =
+      statRegistry !== null &&
+      statValues !== null
+        ? projectCaptureStatEffectsV1({
+            registry: statRegistry,
+            statValues
+          })
+        : null;
+
+    const projectedMaxHp =
+      projectedStats?.hasMaxHpProjection === true
+        ? projectedStats.maxHp
+        : (
+            previousRecord?.draft?.combat
+              ?.maxHp ?? 0
+          );
+
+    const rawFieldsWithHealth = {
+      ...rawFields,
+      combat: {
+        ...(rawFields.combat ?? {}),
+        maxHp: projectedMaxHp
+      }
+    };
+
+    const draftPreview =
+      buildHumanCreatureDraftV3(
+        preserveUnrepresentedCreatureFieldsV1({
+          fields: rawFieldsWithHealth,
+          previousDraft:
+            previousRecord?.draft ?? null,
+          visibleElementIds: [
+            ...root.querySelectorAll(
+              "[data-element]"
+            )
+          ].map((input) => input.value),
+          visibleResistanceKinds: [
+            ...root.querySelectorAll(
+              "[data-resistance]"
+            )
+          ].map(
+            (input) =>
+              "element:" +
+              input.dataset.resistance
+          ),
+          activeSkillIds: [],
+          evolutionRepresented: true
+        })
+      );
+
+    const loadout = readLoadout(
+      root,
+      creatureId
+    );
+    const activeSkillIds = [
+      ...new Set(
+        loadout.slots
+          .map((slot) => slot.skillId)
+          .filter(Boolean)
+      )
+    ];
+
+    if (progressionRules !== null) {
+      validateHumanLoadoutProgressionV1({
+        loadout,
+        progressionRules,
+        creatureLevel:
+          draftPreview.level,
+        skillDrafts: configuredSkills
+      });
+    }
+
+    const fields =
+      preserveUnrepresentedCreatureFieldsV1({
+        fields: rawFieldsWithHealth,
+        previousDraft:
+          previousRecord?.draft ?? null,
+        visibleElementIds: [
+          ...root.querySelectorAll(
+            "[data-element]"
+          )
+        ].map((input) => input.value),
+        visibleResistanceKinds: [
+          ...root.querySelectorAll(
+            "[data-resistance]"
+          )
+        ].map(
+          (input) =>
+            "element:" +
+            input.dataset.resistance
+        ),
+        activeSkillIds,
+        evolutionRepresented: true
+      });
+
+    const draft =
+      buildHumanCreatureDraftV3(fields);
+
+    return Object.freeze({
+      draft,
+      loadout,
+      statValues
+    });
+  }
+
+  function persistCurrentCreature(intent) {
+    const record = currentCreatureRecord();
+    const saveMode =
+      resolveCaptureCreatureSaveModeV1({
+        intent,
+        draftId: record.draft.id,
+        selectedCreatureId,
+        configuredCreatureIds: [
+          ...configuredCreatures.keys()
+        ]
+      });
+
+    configuredCreatures.set(
+      record.draft.id,
+      record
+    );
+    selectedCreatureId = record.draft.id;
+    creatureDirty = false;
+    one(
+      root,
+      "[data-creature-id]"
+    ).readOnly = true;
+    refreshCreatureLibraryOptions(
+      record.draft.id
+    );
+    refreshEvolutionTargetOptions(
+      record.draft.capture.evolution
+        ?.targetId ?? null
+    );
+    syncLoadoutAvailability();
+    updateCreatureLibraryState(
+      saveMode.mode === "create"
+        ? "Créature « " +
+            record.draft.displayName +
+            " » créée dans la bibliothèque active."
+        : "Créature « " +
+            record.draft.displayName +
+            " » mise à jour.",
+      "ok"
+    );
+
+    setStatus(
+      root,
+      saveMode.mode === "create"
+        ? "Nouvelle créature « " +
+            record.draft.displayName +
+            " » enregistrée."
+        : "Créature « " +
+            record.draft.displayName +
+            " » mise à jour.",
+      "ok"
+    );
+
+    return record;
+  }
+
+  function loadCreatureRecord(creatureId) {
+    const record =
+      configuredCreatures.get(creatureId);
+    if (!record) {
+      throw new RangeError(
+        "Créature inconnue : " + creatureId
+      );
+    }
+
+    refreshLoadoutOptions();
+    refreshEvolutionTargetOptions(
+      record.draft.capture.evolution
+        ?.targetId ?? null
+    );
+    writeCreatureRecordFields(
+      root,
+      record,
+      sockets,
+      statRegistry
+    );
+    syncLoadoutAvailability();
+    selectedCreatureId = creatureId;
+    creatureDirty = false;
+    one(
+      root,
+      "[data-creature-id]"
+    ).readOnly = true;
+    creatureLibrarySelect.value = creatureId;
+    combatTeamControls.refresh();
+    updateCreatureLibraryState(
+      "Modification de « " +
+        record.draft.displayName +
+        " ». Les changements sont enregistrés avec « Mettre à jour » ou au lancement du test.",
+      "info"
+    );
+    setStatus(
+      root,
+      "Créature « " +
+        record.draft.displayName +
+        " » chargée pour modification.",
+      "info"
+    );
+
+    return record;
+  }
+
+  function updateLibraryState(state) {
+    selectedLegacyState = state;
+    if (state === null) {
+      libraryState.textContent =
+        "Aucune capacité active chargée. Sélectionne une capacité existante ou crée-en une nouvelle.";
+      libraryState.dataset.tone = "info";
+      return;
+    }
+
+    libraryState.textContent = state.message;
+    libraryState.dataset.tone =
+      state.runtimeReady ? "ok" : "warning";
+  }
+
+  function refreshSkillLibraryOptions(
+    preferredId = null
+  ) {
+    markerLibraryController.indexSkills();
+    const previous =
+      preferredId ?? librarySelect.value;
+
+    librarySelect.textContent = "";
+    createOption(
+      librarySelect,
+      "",
+      "Sélectionner une capacité active"
+    );
+
+    const groups =
+      humanSkillSelectorGroupsV1(
+        humanConfiguredSkillLibraryEntriesV1(
+          configuredSkills
+        )
+      );
+
+    const duplicatedNames = humanSkillDuplicateNameIdsV1(
+      groups.flatMap((group) => group.entries)
+    );
+    for (const group of groups) {
+      const optgroup =
+        document.createElement("optgroup");
+      optgroup.label = group.label;
+
+      for (const entry of group.entries) {
+        const slotLabel =
+          entry.loadoutSlot === "ultimate"
+            ? " · Ultime"
+            : "";
+
+        createOption(
+          optgroup,
+          entry.id,
+          entry.name +
+            " · niv. " +
+            entry.requiredLevel +
+            slotLabel +
+            (duplicatedNames.has(entry.id) ? " · " + entry.id : "")
+        );
+      }
+
+      librarySelect.append(optgroup);
+    }
+
+    if (
+      previous &&
+      configuredSkills.has(previous)
+    ) {
+      librarySelect.value = previous;
+    }
+  }
+
+  function refreshLoadoutOptions(preferredId = null) {
+    const configured = [
+      ...configuredSkills.values()
+    ];
+    const standardSkills =
+      configured.filter(
+        (draft) =>
+          draft.definition.loadoutSlot !==
+          "ultimate"
+      );
+    const ultimateSkills =
+      configured.filter(
+        (draft) =>
+          draft.definition.loadoutSlot ===
+          "ultimate"
+      );
+    const standardSlots = [
+      ...root.querySelectorAll(
+        '[data-loadout-slot-type="standard"]'
+      )
+    ];
+    const ultimateSlot = one(
+      root,
+      '[data-loadout-slot-type="ultimate"]'
+    );
+
+    const populate = (
+      select,
+      drafts,
+      emptyLabel
+    ) => {
+      const previous = select.value;
+      select.textContent = "";
+      createOption(
+        select,
+        "",
+        emptyLabel
+      );
+
+      const groups =
+        humanSkillSelectorGroupsV1(
+          drafts.map((draft) => ({
+            id: draft.id,
+            name: draft.definition.name,
+            element:
+              draft.definition.element ?? null,
+            requiredLevel:
+              draft.requiredLevel
+          }))
+        );
+
+      const duplicatedNames = humanSkillDuplicateNameIdsV1(
+        groups.flatMap((group) => group.entries)
+      );
+      for (const group of groups) {
+        const optgroup =
+          document.createElement("optgroup");
+        optgroup.label = group.label;
+
+        for (const entry of group.entries) {
+          createOption(
+            optgroup,
+            entry.id,
+            entry.name +
+              " · déblocage niv. " +
+              entry.requiredLevel +
+              (duplicatedNames.has(entry.id) ? " · " + entry.id : "")
+          );
+        }
+
+        select.append(optgroup);
+      }
+
+      if (
+        previous &&
+        drafts.some(
+          (draft) =>
+            draft.id === previous
+        )
+      ) {
+        select.value = previous;
+      }
+    };
+
+    for (const select of standardSlots) {
+      populate(
+        select,
+        standardSkills,
+        "Vide"
+      );
+    }
+    populate(
+      ultimateSlot,
+      ultimateSkills,
+      "Aucune ultime"
+    );
+
+    if (
+      preferredId &&
+      configuredSkills.has(preferredId) &&
+      ![
+        ...standardSlots,
+        ultimateSlot
+      ].some(
+        (select) =>
+          select.value === preferredId
+      )
+    ) {
+      const draft =
+        configuredSkills.get(preferredId);
+
+      if (
+        draft.definition.loadoutSlot ===
+        "ultimate"
+      ) {
+        if (
+          ultimateSlot.value === "" &&
+          ultimateSlot.disabled !== true
+        ) {
+          ultimateSlot.value =
+            preferredId;
+        }
+      } else {
+        const empty =
+          standardSlots.find(
+            (select) =>
+              select.value === "" &&
+              select.disabled !== true
+          );
+        if (empty) {
+          empty.value = preferredId;
+        }
+      }
+    }
+
+    syncLoadoutAvailability();
+  }
+
+  function persistCurrentSkill(intent) {
+    if (
+      selectedLegacyState !== null &&
+      !selectedLegacyState.runtimeReady
+    ) {
+      throw new Error(
+        "Cette capacité historique nécessite StatusEffectV1 avant de pouvoir être enregistrée comme équivalent runtime complet."
+      );
+    }
+
+    const draft = buildHumanSkillDraftV1(
+      readSkillFields(root)
+    );
+
+    const saveMode = resolveCaptureSkillSaveModeV1({
+      intent,
+      draftId: draft.id,
+      configuredSkillIds: [...configuredSkills.keys()]
+    });
+
+    const loadoutBefore = [
+      ...root.querySelectorAll(
+        "[data-loadout-slot]"
+      )
+    ].map((select) => select.value);
+
+    configuredSkills.set(draft.id, draft);
+    refreshSkillLibraryOptions(draft.id);
+
+    if (saveMode.mode === "create") {
+      refreshLoadoutOptions(draft.id);
+    } else {
+      refreshLoadoutOptions();
+    }
+
+    writeSkillDraftFields(
+      root,
+      draft,
+      statRegistry
+    );
+    librarySelect.value = draft.id;
+    one(
+      root,
+      "[data-skill-id]"
+    ).readOnly = true;
+    selectedLegacyState = null;
+    updateLibraryState({
+      runtimeReady: true,
+      message:
+        "Capacité active « " +
+        draft.definition.name +
+        " » sauvegardée dans la bibliothèque active."
+    });
+
+    const loadoutAfter = [
+      ...root.querySelectorAll(
+        "[data-loadout-slot]"
+      )
+    ].map((select) => select.value);
+
+    if (
+      loadoutAfter.some(
+        (value, index) =>
+          value !== loadoutBefore[index]
+      )
+    ) {
+      creatureDirty = true;
+    }
+
+    setStatus(
+      root,
+      saveMode.mode === "create"
+        ? "Nouvelle capacité « " +
+            draft.definition.name +
+            " » créée dans la bibliothèque active."
+        : "Capacité « " +
+            draft.definition.name +
+            " » mise à jour dans la bibliothèque active.",
+      "ok"
+    );
+
+    return draft;
+  }
+
+  refreshSkillLibraryOptions();
+
+  listen(creatureLibrarySelect, "change", () => {
+    const creatureId =
+      creatureLibrarySelect.value;
+    if (!creatureId) {
+      return;
+    }
+
+    try {
+      loadCreatureRecord(creatureId);
+    } catch (error) {
+      setStatus(
+        root,
+        error.message,
+        "error"
+      );
+    }
+  });
+
+  listen(newCreatureButton, "click", () => {
+    const nextId =
+      nextCaptureCreatureDraftIdV1({
+        configuredCreatureIds: [
+          ...configuredCreatures.keys()
+        ]
+      });
+
+    selectedCreatureId = null;
+    creatureLibrarySelect.value = "";
+    prepareNewCreatureDraftFields(
+      root,
+      nextId,
+      sockets,
+      statRegistry
+    );
+    refreshEvolutionTargetOptions();
+    syncLoadoutAvailability();
+    one(
+      root,
+      "[data-creature-id]"
+    ).readOnly = false;
+    creatureDirty = true;
+    updateCreatureLibraryState(
+      "Nouvelle créature prête. Configure-la puis utilise « Enregistrer comme nouvelle ».",
+      "info"
+    );
+    setStatus(
+      root,
+      "Nouveau brouillon créature prêt.",
+      "info"
+    );
+    one(
+      root,
+      "[data-creature-name]"
+    ).focus?.();
+  });
+
+  listen(createCreatureButton, "click", () => {
+    try {
+      persistCurrentCreature("create");
+    } catch (error) {
+      setStatus(
+        root,
+        error.message,
+        "error"
+      );
+    }
+  });
+
+  listen(updateCreatureButton, "click", () => {
+    try {
+      persistCurrentCreature("update");
+    } catch (error) {
+      setStatus(
+        root,
+        error.message,
+        "error"
+      );
+    }
+  });
+
+  listen(librarySelect, "change", () => {
+    const abilityId = librarySelect.value;
+
+    if (!abilityId) {
+      updateLibraryState(null);
+      return;
+    }
+
+    const draft =
+      configuredSkills.get(abilityId);
+    if (!draft) {
+      setStatus(
+        root,
+        "Capacité active inconnue : " +
+          abilityId,
+        "error"
+      );
+      return;
+    }
+
+    writeSkillDraftFields(
+      root,
+      draft,
+      statRegistry
+    );
+    selectedLegacyState = null;
+    one(
+      root,
+      "[data-skill-id]"
+    ).readOnly = true;
+
+    updateLibraryState({
+      runtimeReady: true,
+      message:
+        "Capacité active « " +
+        draft.definition.name +
+        " » chargée depuis la bibliothèque active."
+    });
+
+    setStatus(
+      root,
+      "Capacité « " +
+        draft.definition.name +
+        " » chargée pour modification.",
+      "info"
+    );
+  });
+
+  listen(newSkillButton, "click", () => {
+    const nextId = nextCaptureSkillDraftIdV1({
+      configuredSkillIds: [...configuredSkills.keys()]
+    });
+
+    librarySelect.value = "";
+    updateLibraryState(null);
+    prepareNewSkillDraftFields(
+      root,
+      nextId,
+      statRegistry
+    );
+    one(
+      root,
+      "[data-skill-id]"
+    ).readOnly = false;
+    selectedLegacyState = null;
+
+    setStatus(
+      root,
+      "Nouvelle capacité prête : configure-la puis utilise « Enregistrer comme nouvelle ».",
+      "info"
+    );
+
+    one(root, "[data-skill-name]").focus?.();
+  });
+
+  listen(createSkillButton, "click", () => {
+    try {
+      persistCurrentSkill("create");
+    } catch (error) {
+      setStatus(
+        root,
+        error.message,
+        "error"
+      );
+    }
+  });
+
+  listen(updateSkillButton, "click", () => {
+    try {
+      persistCurrentSkill("update");
+    } catch (error) {
+      setStatus(
+        root,
+        error.message,
+        "error"
+      );
+    }
+  });
+
+  listen(
+    skillActivationEnabled,
+    "change",
+    () => {
+      skillActivationConfig.hidden =
+        !skillActivationEnabled.checked;
+
+      if (
+        skillActivationEnabled.checked &&
+        skillActivationConditionsHost.children
+          .length === 0
+      ) {
+        appendHumanSkillActivationConditionV1(
+          root
+        );
+      }
+    }
+  );
+
+  listen(
+    skillActivationAddButton,
+    "click",
+    () => {
+      if (!skillActivationEnabled.checked) {
+        skillActivationEnabled.checked = true;
+        skillActivationConfig.hidden = false;
+      }
+      appendHumanSkillActivationConditionV1(
+        root
+      );
+    }
+  );
+
+  listen(
+    skillActivationConditionsHost,
+    "change",
+    (event) => {
+      const row =
+        event.target?.closest?.(
+          "[data-skill-activation-condition]"
+        );
+      if (!row) {
+        return;
+      }
+
+      if (
+        event.target.matches(
+          "[data-skill-activation-condition-type]"
+        )
+      ) {
+        syncHumanSkillActivationConditionRowV1(
+          row
+        );
+      }
+    }
+  );
+
+  listen(
+    skillActivationConditionsHost,
+    "click",
+    (event) => {
+      const remove =
+        event.target?.closest?.(
+          "[data-skill-activation-remove]"
+        );
+      if (!remove) {
+        return;
+      }
+
+      const row = remove.closest(
+        "[data-skill-activation-condition]"
+      );
+      row?.remove();
+
+      if (
+        skillActivationConditionsHost.children
+          .length === 0
+      ) {
+        skillActivationEnabled.checked = false;
+        skillActivationConfig.hidden = true;
+      }
+    }
+  );
+
+  listen(skillEffectAddButton, "click", () => {
+    appendHumanSkillEffectV1(root, null, statRegistry);
+  });
+  listen(contactHoldEnabled, "change", () => {
+    contactHoldSettings.hidden = !contactHoldEnabled.checked;
+  });
+  listen(contactHoldEffectAddButton, "click", () => {
+    appendHumanSkillEffectV1(root, null, statRegistry, null,
+      "[data-skill-contact-hold-effects-host]");
+  });
+  // The same tactical row owner handles both lists, but each host is a
+  // separate explicit source. A repeated effect cannot silently become an
+  // immediate impact effect (or vice versa).
+  for (const effectsHost of [skillEffectsHost, contactHoldEffectsHost]) {
+    listen(effectsHost, "change", event => {
+      const row = event.target?.closest?.("[data-skill-effect-row]");
+      if (!row) return;
+      if (event.target.matches(
+        "[data-skill-effect-kind], " +
+        "[data-skill-status-kind], " +
+        "[data-skill-status-stacking], " +
+        "[data-stack-threshold-enabled], " +
+        "[data-skill-status-intangible], " +
+        "[data-skill-status-visual-mode], " +
+        "[data-skill-zone-effect-kind], " +
+        "[data-skill-zone-status-kind], " +
+        "[data-skill-zone-status-stacking], " +
+        "[data-skill-zone-status-behavior]"
+      )) syncHumanSkillEffectRowV1(row);
+    });
+    listen(effectsHost, "click", event => {
+      const remove = event.target?.closest?.("[data-skill-effect-remove]");
+      if (remove) remove.closest("[data-skill-effect-row]")?.remove();
+    });
+  }
+
+  const creatureOwnedSelectors = [
+    '[data-editor-panel="creature"] input',
+    '[data-editor-panel="creature"] select',
+    '[data-editor-panel="creature"] textarea'
+  ].join(", ");
+
+  for (
+    const field of root.querySelectorAll(
+      creatureOwnedSelectors
+    )
+  ) {
+    if (
+      field === creatureLibrarySelect ||
+      field === newCreatureButton ||
+      field === createCreatureButton ||
+      field === updateCreatureButton ||
+      field.closest(
+        "[data-global-editor-control]"
+      )
+    ) {
+      continue;
+    }
+
+    listen(field, "input", () => {
+      creatureDirty = true;
+    });
+    listen(field, "change", () => {
+      creatureDirty = true;
+    });
+  }
+
+  listen(
+    one(
+      root,
+      "[data-evolution-enabled]"
+    ),
+    "change",
+    () => {
+      syncEvolutionControlsV1(root);
+      creatureDirty = true;
+    }
+  );
+
+  listen(
+    one(
+      root,
+      "[data-creature-level]"
+    ),
+    "change",
+    () => {
+      refreshLoadoutOptions();
+      syncLoadoutAvailability();
+    }
+  );
+
+  listen(
+    one(
+      root,
+      ".loadout-grid"
+    ),
+    "change",
+    (event) => {
+      if (
+        event.target?.matches?.(
+          "[data-loadout-slot]"
+        )
+      ) {
+        syncLoadoutAvailability();
+      }
+    }
+  );
+
+  listen(
+    one(
+      root,
+      "[data-stat-values-host]"
+    ),
+    "input",
+    (event) => {
+      if (
+        event.target?.matches?.(
+          "[data-stat-value]"
+        )
+      ) {
+        creatureDirty = true;
+
+        const definition =
+          statRegistry?.stats.find(
+            (entry) =>
+              entry.id ===
+              event.target.dataset.statValue
+          ) ?? null;
+        const meta =
+          event.target
+            .closest(".stat-value-card")
+            ?.querySelector("small");
+
+        if (definition !== null && meta) {
+          meta.textContent =
+            humanStatEffectSummaryV1({
+              definition,
+              value: event.target.value
+            });
+        }
+      }
+    }
+  );
+
+  listen(
+    statRegistryApplyButton,
+    "click",
+    () => {
+      try {
+        if (statRegistry === null) {
+          throw new Error(
+            "Registre de stats non chargé"
+          );
+        }
+
+        syncCustomStatIdentifier();
+
+        const creatureId = selectedValue(
+          root,
+          "[data-creature-id]"
+        );
+        const valuesBefore =
+          readHumanCreatureStatValuesV1(
+            root,
+            creatureId,
+            statRegistry
+          );
+        statRegistry =
+          readHumanStatRegistryV1(root);
+        renderHumanStatRegistryV1(
+          root,
+          statRegistry
+        );
+        contextualHelp.sync();
+        renderHumanStatValuesV1(
+          root,
+          statRegistry,
+          valuesBefore
+        );
+        refreshHumanSkillEffectStatOptionsV1(
+          root,
+          statRegistry
+        );
+        setStatus(
+          root,
+          "Système de stats mis à jour pour cette session.",
+          "ok"
+        );
+      } catch (error) {
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  // User types a French stat name; its private stable ID is automatic.
+  function syncCustomStatIdentifier() {
+    const label = one(root, "[data-stat-custom-label]").value.trim();
+    one(root, "[data-stat-custom-id]").value = label
+      ? captureEditorGeneratedStatIdV1(label, statRegistry?.stats ?? [])
+      : "";
+    refreshHumanElementChannelSelectsV1(root, statRegistry);
+  }
+  listen(one(root, "[data-stat-custom-label]"), "input", syncCustomStatIdentifier);
+
+  listen(
+    statCustomAddButton,
+    "click",
+    () => {
+      try {
+        if (statRegistry === null) {
+          throw new Error(
+            "Registre de stats non chargé"
+          );
+        }
+
+        const creatureId = selectedValue(
+          root,
+          "[data-creature-id]"
+        );
+        const valuesBefore =
+          readHumanCreatureStatValuesV1(
+            root,
+            creatureId,
+            statRegistry
+          );
+        const editedRegistry =
+          readHumanStatRegistryV1(root);
+
+        statRegistry =
+          addHumanCustomStatDefinitionV1({
+            registry: editedRegistry,
+            definition: {
+              id: selectedValue(
+                root,
+                "[data-stat-custom-id]"
+              ),
+              label: selectedValue(
+                root,
+                "[data-stat-custom-label]"
+              ),
+              damageChannel:
+                optionalText(
+                  selectedValue(
+                    root,
+                    "[data-stat-custom-damage-channel]"
+                  )
+                ),
+              resistanceChannel:
+                optionalText(
+                  selectedValue(
+                    root,
+                    "[data-stat-custom-resistance-channel]"
+                  )
+                ),
+              damagePctPerPoint:
+                numericValue(
+                  root,
+                  "[data-stat-custom-damage-pct-per-point]"
+                ),
+              resistancePctPerPoint:
+                numericValue(
+                  root,
+                  "[data-stat-custom-resistance-pct-per-point]"
+                )
+,
+              chargeTimeReductionPctPerPoint:
+                numericValue(
+                  root,
+                  "[data-stat-custom-charge-pct-per-point]"
+                ),
+              damageReductionPctPerPoint:
+                numericValue(
+                  root,
+                  "[data-stat-custom-damage-reduction-pct-per-point]"
+                ),
+              maxHpPerPoint:
+                numericValue(
+                  root,
+                  "[data-stat-custom-max-hp-per-point]"
+                )
+            }
+          });
+
+        renderHumanStatRegistryV1(
+          root,
+          statRegistry
+        );
+        contextualHelp.sync();
+        renderHumanStatValuesV1(
+          root,
+          statRegistry,
+          valuesBefore
+        );
+        refreshHumanSkillEffectStatOptionsV1(
+          root,
+          statRegistry
+        );
+
+        one(
+          root,
+          "[data-stat-custom-id]"
+        ).value = "";
+        one(
+          root,
+          "[data-stat-custom-label]"
+        ).value = "";
+
+        setStatus(
+          root,
+          "Stat personnalisée ajoutée au registre de la session.",
+          "ok"
+        );
+      } catch (error) {
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    one(
+      root,
+      "[data-stat-registry-host]"
+    ),
+    "click",
+    (event) => {
+      const statId =
+        event.target?.dataset
+          ?.statDefinitionRemove;
+      if (!statId) {
+        return;
+      }
+
+      try {
+        if (statRegistry === null) {
+          throw new Error(
+            "Registre de stats non chargé"
+          );
+        }
+
+        const creatureId = selectedValue(
+          root,
+          "[data-creature-id]"
+        );
+        const valuesBefore =
+          readHumanCreatureStatValuesV1(
+            root,
+            creatureId,
+            statRegistry
+          );
+        const edited =
+          readHumanStatRegistryV1(root);
+        statRegistry =
+          buildHumanStatRegistryV1({
+            definitions:
+              edited.stats.filter(
+                (entry) =>
+                  entry.id !== statId
+              )
+          });
+        renderHumanStatRegistryV1(
+          root,
+          statRegistry
+        );
+        contextualHelp.sync();
+        renderHumanStatValuesV1(
+          root,
+          statRegistry,
+          valuesBefore
+        );
+        refreshHumanSkillEffectStatOptionsV1(
+          root,
+          statRegistry
+        );
+        setStatus(
+          root,
+          "Stat « " +
+            statId +
+            " » retirée du registre de la session.",
+          "info"
+        );
+      } catch (error) {
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    progressionApplyButton,
+    "click",
+    () => {
+      try {
+        progressionRules =
+          readHumanProgressionRulesV1(
+            root
+          );
+        renderHumanProgressionRulesV1(
+          root,
+          progressionRules
+        );
+        refreshLoadoutOptions();
+        setStatus(
+          root,
+          "Politique de déblocage des slots mise à jour.",
+          "ok"
+        );
+      } catch (error) {
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    progressionAddButton,
+    "click",
+    () => {
+      try {
+        const base =
+          progressionRules ??
+          readHumanProgressionRulesV1(
+            root
+          );
+        const last =
+          base.slotUnlockSchedule[
+            base.slotUnlockSchedule.length -
+              1
+          ];
+        const candidate =
+          buildHumanProgressionRulesV1({
+            maxActiveSkills:
+              base.maxActiveSkills,
+            slotUnlockSchedule: [
+              ...base.slotUnlockSchedule,
+              {
+                level:
+                  last.level + 10,
+                slots: Math.min(
+                  base.maxActiveSkills,
+                  last.slots + 1
+                )
+              }
+            ]
+          });
+        progressionRules = candidate;
+        renderHumanProgressionRulesV1(
+          root,
+          progressionRules
+        );
+        refreshLoadoutOptions();
+      } catch (error) {
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    progressionScheduleHost,
+    "click",
+    (event) => {
+      const rawIndex =
+        event.target?.dataset
+          ?.progressionRemove;
+      if (rawIndex == null) {
+        return;
+      }
+
+      try {
+        const edited =
+          readHumanProgressionRulesV1(
+            root
+          );
+        if (
+          edited.slotUnlockSchedule
+            .length <= 1
+        ) {
+          throw new RangeError(
+            "La progression doit conserver au moins un palier"
+          );
+        }
+        const index = Number(rawIndex);
+        progressionRules =
+          buildHumanProgressionRulesV1({
+            maxActiveSkills:
+              edited.maxActiveSkills,
+            slotUnlockSchedule:
+              edited.slotUnlockSchedule
+                .filter(
+                  (_, stepIndex) =>
+                    stepIndex !== index
+                )
+          });
+        renderHumanProgressionRulesV1(
+          root,
+          progressionRules
+        );
+        refreshLoadoutOptions();
+      } catch (error) {
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  try {
+    const initialSkill =
+      buildHumanSkillDraftV1(
+        readSkillFields(root)
+      );
+    configuredSkills.set(
+      initialSkill.id,
+      initialSkill
+    );
+    refreshSkillLibraryOptions(
+      initialSkill.id
+    );
+    refreshLoadoutOptions(
+      initialSkill.id
+    );
+  } catch {
+    refreshSkillLibraryOptions();
+    refreshLoadoutOptions();
+  }
+
+  try {
+    const initialRecord =
+      currentCreatureRecord();
+    configuredCreatures.set(
+      initialRecord.draft.id,
+      initialRecord
+    );
+    selectedCreatureId =
+      initialRecord.draft.id;
+    creatureDirty = false;
+    one(
+      root,
+      "[data-creature-id]"
+    ).readOnly = true;
+    refreshCreatureLibraryOptions(
+      selectedCreatureId
+    );
+    updateCreatureLibraryState(
+      "Créature initiale « " +
+        initialRecord.draft.displayName +
+        " » chargée dans la bibliothèque active.",
+      "info"
+    );
+  } catch (error) {
+    refreshCreatureLibraryOptions();
+    updateCreatureLibraryState(
+      "Créature initiale non enregistrée : " +
+        error.message,
+      "warning"
+    );
+  }
+
+  updateLibraryState(null);
+  syncSkillSocketSelect(root, sockets);
+  syncCreatureSocketMarkers(root, sockets);
+
+  listen(
+    one(root, "[data-socket-kind]"),
+    "change",
+    () => {
+      syncCreatureSocketMarkers(
+        root,
+        sockets
+      );
+    }
+  );
+
+  for (const surface of root.querySelectorAll("[data-socket-surface]")) {
+    listen(surface, "pointerdown", (event) => {
+      const socketId = selectedValue(
+        root,
+        "[data-socket-kind]"
+      );
+      const label = one(
+        root,
+        "[data-socket-kind]"
+      ).selectedOptions[0]?.textContent || socketId;
+
+      const point = normalizedSocketPointV2({
+        clientX: event.clientX,
+        clientY: event.clientY,
+        rect: surface.getBoundingClientRect()
+      });
+
+      const current = sockets.get(socketId) ?? {
+        id: socketId,
+        label,
+        front: null,
+        back: null
+      };
+
+      current[surface.dataset.socketView] = point;
+      sockets.set(socketId, current);
+      syncCreatureSocketMarkers(
+        root,
+        sockets
+      );
+      syncSkillSocketSelect(root, sockets);
+      creatureDirty = true;
+      setStatus(
+        root,
+        "Point " + label + " placé sur la vue " +
+          (surface.dataset.socketView === "front" ? "face" : "dos") +
+          ".",
+        "ok"
+      );
+    });
+  }
+
+  const validateButton = one(
+    root,
+    "[data-editor-validate]"
+  );
+
+  function currentSkillHasUnsavedChanges() {
+    try {
+      return captureSkillDraftHasUnsavedChangesV1({
+        currentDraft: buildHumanSkillDraftV1(
+          readSkillFields(root)
+        ),
+        configuredSkills
+      });
+    } catch {
+      return true;
+    }
+  }
+
+  function validate() {
+    try {
+      const useSavedCreatureForTest = shouldTestSavedCreatureWhenEvolutionIncompleteV1({
+        selectedCreatureId,
+        hasUnsavedCreatureChanges: creatureDirty,
+        evolutionEnabled: one(root, "[data-evolution-enabled]").checked,
+        evolutionTargetId: selectedValue(root, "[data-evolution-target]"),
+        configuredCreatures
+      });
+      if (selectedLegacyState !== null && !selectedLegacyState.runtimeReady) {
+        throw new Error("La capacité sélectionnée n’est pas encore utilisable en combat.");
+      }
+      const result = prepareCaptureEditorCombatEditsV1({
+        configuredSkills, configuredCreatures,
+        selectedSkillId: librarySelect.value || null,
+        selectedCreatureId,
+        readSkillDraft: () => currentSkillHasUnsavedChanges()
+          ? buildHumanSkillDraftV1(readSkillFields(root)) : null,
+        readCreatureRecord: () => useSavedCreatureForTest
+          ? null
+          : creatureDirty || selectedCreatureId === null
+            ? currentCreatureRecord() : null,
+        buildExport: () => buildCaptureEditorCombatTestV1({
+          configuredCreatures, configuredSkills,
+          ...combatTeamControls.read(),
+          arenaId: selectedValue(root, "[data-test-arena]"),
+          combatRules: readHumanCombatRulesV1(root),
+          gameOptions: readHumanGameOptionsV1(root),
+          skillSpeedMultiplier: captureCombatPaceToSkillSpeedV1(numericValue(root, "[data-combat-skill-speed]")),
+          recallPreparationMs: numericValue(root, "[data-recall-seconds]") * 1000,
+          statRegistry, progressionRules,
+          previewLevel: numericValue(root, "[data-test-creature-level]")
+        })
+      });
+      lastExport = result.exported;
+      if (result.skillDraft !== null) {
+        refreshSkillLibraryOptions(result.skillDraft.id);
+        refreshLoadoutOptions();
+        writeSkillDraftFields(root, result.skillDraft, statRegistry);
+        librarySelect.value = result.skillDraft.id;
+        one(root, "[data-skill-id]").readOnly = true;
+        updateLibraryState({ runtimeReady: true, message: "Modifications de la capacité enregistrées pour le test." });
+      }
+      if (result.creatureRecord !== null) {
+        selectedCreatureId = result.creatureRecord.draft.id;
+        refreshCreatureLibraryOptions(selectedCreatureId);
+        loadCreatureRecord(selectedCreatureId);
+      }
+      combatTeamControls.refresh();
+      const teamSizes = Object.values(lastExport.teams).map(actorIds =>
+        lastExport.rosters.filter(roster => actorIds.includes(roster.slotId))
+          .reduce((size, roster) => size + roster.members.length, 0)
+      );
+      one(root, "[data-editor-summary]").textContent =
+        teamSizes.join(" contre ") + " monstres · " + lastExport.actors.length + " actifs";
+      setStatus(root, useSavedCreatureForTest
+        ? "Test de capacité prêt avec la créature enregistrée. Le brouillon créature reste inchangé : choisis une cible d'évolution ou décoche Évolution avant de l'enregistrer."
+        : result.skillDraft !== null || result.creatureRecord !== null
+          ? "Configuration valide. Modifications enregistrées pour le test."
+          : "Configuration valide. Le combat de test est prêt.", useSavedCreatureForTest ? "warning" : "ok");
+      return lastExport;
+    } catch (error) {
+      lastExport = null;
+      one(root, "[data-editor-summary]").textContent = "Corrige les champs signalés.";
+      setStatus(root, error.message, "error");
+      return null;
+    }
+  }
+
+  listen(validateButton, "click", validate);
+
+  listen(
+    exportCurrentCreatureButton,
+    "click",
+    () => {
+      try {
+        ensureTransferOwnersReadyV1();
+        const record =
+          currentCreatureRecord();
+        const json =
+          exportCaptureCreatureTransferJsonV1(
+            record,
+            {
+              statRegistry
+            }
+          );
+        const filename =
+          "gensrpg-capture-creature-" +
+          safeTransferFilenamePartV1(
+            record.draft.id
+          ) +
+          ".json";
+
+        downloadCaptureJsonFileV1(
+          filename,
+          json
+        );
+        updateTransferState(
+          "Créature « " +
+            record.draft.displayName +
+            " » exportée.",
+          "ok"
+        );
+        setStatus(
+          root,
+          "Export créature prêt : " +
+            filename,
+          "ok"
+        );
+      } catch (error) {
+        updateTransferState(
+          error.message,
+          "error"
+        );
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    exportCurrentSkillButton,
+    "click",
+    () => {
+      try {
+        const draft =
+          buildHumanSkillDraftV1(
+            readSkillFields(root)
+          );
+        const healExportWarning = humanSkillHealExportWarningV1(draft);
+        const json =
+          exportCaptureSkillTransferJsonV1(
+            draft
+          );
+        const filename =
+          "gensrpg-capture-skill-" +
+          safeTransferFilenamePartV1(
+            draft.id
+          ) +
+          ".json";
+
+        downloadCaptureJsonFileV1(
+          filename,
+          json
+        );
+        updateTransferState(
+          "Capacité « " +
+            draft.definition.name +
+            " » exportée." +
+            (healExportWarning ? " " + healExportWarning : ""),
+          healExportWarning ? "warning" : "ok"
+        );
+        setStatus(
+          root,
+          "Export capacité prêt : " +
+            filename +
+            (healExportWarning ? " " + healExportWarning : ""),
+          healExportWarning ? "warn" : "ok"
+        );
+      } catch (error) {
+        updateTransferState(
+          error.message,
+          "error"
+        );
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    exportDatabaseButton,
+    "click",
+    () => {
+      try {
+        if (
+          creatureDirty ||
+          currentSkillHasUnsavedChanges()
+        ) {
+          throw new Error(
+            "Enregistre les modifications de la créature et de la capacité avant d’exporter toute la base."
+          );
+        }
+
+        const database =
+          currentEditorDatabaseV1();
+        const json =
+          exportCaptureDatabaseJsonV1(
+            database
+          );
+        const filename =
+          "gensrpg-capture-database-v1.json";
+
+        downloadCaptureJsonFileV1(
+          filename,
+          json
+        );
+        updateTransferState(
+          database.creatures.length +
+            " créatures et " +
+            database.skills.length +
+            " capacités exportées dans la base complète.",
+          "ok"
+        );
+        setStatus(
+          root,
+          "Base Capture complète exportée.",
+          "ok"
+        );
+      } catch (error) {
+        updateTransferState(
+          error.message,
+          "error"
+        );
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      }
+    }
+  );
+
+  listen(
+    importCaptureJsonInput,
+    "change",
+    async () => {
+      const file =
+        importCaptureJsonInput.files?.[0] ??
+        null;
+
+      if (file === null) {
+        return;
+      }
+
+      try {
+        if (
+          creatureDirty ||
+          currentSkillHasUnsavedChanges()
+        ) {
+          throw new Error(
+            "Enregistre ou annule les modifications en cours avant d’importer un fichier."
+          );
+        }
+
+        ensureTransferOwnersReadyV1();
+
+        const jsonText =
+          await file.text();
+        const transfer =
+          importCaptureTransferJsonV1(
+            jsonText,
+            {
+              statRegistry
+            }
+          );
+        const currentDatabase =
+          currentEditorDatabaseV1();
+        const mode =
+          importReplaceExisting.checked
+            ? "replace"
+            : "reject";
+        const plan =
+          planCaptureTransferImportV1({
+            currentDatabase,
+            transfer,
+            mode
+          });
+        const applyResult =
+          applyCaptureTransferPlanToEditorStateV1({
+            plan,
+            configuredCreatures,
+            configuredSkills,
+            statRegistry,
+            progressionRules
+          });
+
+        statRegistry =
+          applyResult.statRegistry;
+        progressionRules =
+          applyResult.progressionRules;
+
+        refreshEditorAfterTransferV1({
+          plan,
+          applyResult
+        });
+
+        const label =
+          plan.action === "noop"
+            ? "Le fichier est déjà identique à la bibliothèque active."
+            : plan.kind === "database"
+              ? "Base Capture importée et appliquée."
+              : plan.kind === "creature"
+                ? "Créature « " +
+                  plan.id +
+                  " » importée."
+                : "Capacité « " +
+                  plan.id +
+                  " » importée.";
+
+        updateTransferState(
+          label,
+          "ok"
+        );
+        setStatus(
+          root,
+          label,
+          "ok"
+        );
+      } catch (error) {
+        updateTransferState(
+          error.message,
+          "error"
+        );
+        setStatus(
+          root,
+          error.message,
+          "error"
+        );
+      } finally {
+        importCaptureJsonInput.value = "";
+      }
+    }
+  );
+
+  const ready =
+    settleCaptureEditorStartupDependenciesV1({
+      assetCatalogPromise:
+        hydrateAssetCatalog(root, listen, creatorVisualAssets),
+      privateAudioCatalogPromise:
+        hydratePrivateAudioCatalog(
+          root,
+          listen,
+          creatorAudioAssets
+        ),
+      nativeSkillsPromise:
+        hydrateNativeSkillCatalog(),
+      captureDataPromise:
+        hydrateCaptureStatRegistryV1()
+          .then(async (registry) => ({
+            registry,
+            records:
+              await hydrateMonsterCaptureCreatureCatalog(
+                registry
+              )
+          })),
+      progressionRulesPromise:
+        hydrateCaptureProgressionRulesV1(),
+      creatureVisualMetaPromise:
+        hydrateCaptureCreatureVisualMetadataV1()
+    })
+    .then(async ({
+      assetCatalog,
+      privateAudioCatalog,
+      nativeSkills,
+      captureData,
+      loadedProgressionRules,
+      creatureVisualMetaById,
+      availability,
+      warnings
+    }) => {
+      fxStarterVisualAssetIds = new Set(
+        (assetCatalog.assets ?? [])
+          .map((asset) => asset?.id)
+          .filter(Boolean)
+      );
+      fxStarterAudioAssetIds = new Set(
+        (privateAudioCatalog?.entries ?? [])
+          .map((entry) => entry?.assetId)
+          .filter(Boolean)
+      );
+      fxStarterLibrariesReady =
+        availability.assetCatalog &&
+        availability.privateAudioCatalog;
+      if (fxStarterProfileSelect) {
+        fxStarterProfileSelect.disabled =
+          !fxStarterLibrariesReady;
+      }
+      syncFxStarterApplyButton();
+      syncBeamPackReady();
+      updateFxStarterState(
+        fxStarterLibrariesReady
+          ? CAPTURE_FX_STARTER_PROFILES_V1.length +
+              " profils FX GenSrpG prêts. Choisis une base : elle sera copiée, jamais liée ni verrouillée."
+          : "Profils FX temporairement indisponibles : la bibliothèque de créatures reste utilisable.",
+        fxStarterLibrariesReady
+          ? "ok"
+          : "warning"
+      );
+
+      statRegistry = captureData.registry;
+      progressionRules =
+        loadedProgressionRules;
+
+      renderHumanStatRegistryV1(
+        root,
+        statRegistry
+      );
+      contextualHelp.sync();
+      renderHumanProgressionRulesV1(
+        root,
+        progressionRules
+      );
+
+      const monsterCaptureRecords =
+        captureData.records;
+
+      if (!currentSkillHasUnsavedChanges()) {
+        const initialFields =
+          readSkillFields(root);
+        const nativeInitialDraft =
+          nativeSkills.get(initialFields.id) ?? null;
+        const hydratedInitialFields =
+          hydrateInitialSkillEffectsFromNativeV1(
+            initialFields,
+            nativeInitialDraft
+          );
+
+        if (
+          hydratedInitialFields !== initialFields
+        ) {
+          renderHumanSkillEffectsV1(
+            root,
+            hydratedInitialFields.effects,
+            statRegistry
+          );
+
+          const hydratedInitialDraft =
+            buildHumanSkillDraftV1(
+              readSkillFields(root)
+            );
+
+          configuredSkills.set(
+            hydratedInitialDraft.id,
+            hydratedInitialDraft
+          );
+        }
+      }
+
+      const retiredNativeSkillIds = new Set(
+        CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
+      );
+
+      for (
+        const [skillId, draft] of nativeSkills
+      ) {
+        if (!retiredNativeSkillIds.has(skillId) && !configuredSkills.has(skillId)) {
+          configuredSkills.set(
+            skillId,
+            draft
+          );
+        }
+      }
+
+      for (
+        const draft of capturePortableNativeSkillDraftsV1()
+      ) {
+        if (!retiredNativeSkillIds.has(draft.id) && !configuredSkills.has(draft.id)) {
+          configuredSkills.set(
+            draft.id,
+            draft
+          );
+        }
+      }
+
+      for (
+        const draft of captureComplexNativeSkillDraftsV1()
+      ) {
+        if (!retiredNativeSkillIds.has(draft.id) && !configuredSkills.has(draft.id)) {
+          configuredSkills.set(
+            draft.id,
+            draft
+          );
+        }
+      }
+
+      const availableAssetIds = new Set(
+        (assetCatalog.assets ?? [])
+          .map((asset) => asset?.id)
+          .filter(
+            (assetId) =>
+              typeof assetId === "string" &&
+              assetId !== ""
+          )
+      );
+      const runtimeSkillIds = new Set(
+        configuredSkills.keys()
+      );
+
+      for (
+        const record of monsterCaptureRecords
+      ) {
+        const historicalLoadout =
+          buildCaptureCreatureHistoricalLoadoutV1({
+            creatureId: record.draft.id,
+            level: record.draft.level,
+            selectionMode: "planned",
+            abilityIds:
+              record.draft.skillIds,
+            runtimeSkillIds
+          });
+
+        const recordWithLoadout =
+          Object.freeze({
+            draft: record.draft,
+            loadout:
+              historicalLoadout.loadout,
+            statValues:
+              record.statValues
+          });
+
+        const binding =
+          captureCreatureVisualBindingForIdV1(
+            record.draft.id
+          );
+        const creatureMeta =
+          binding === null
+            ? null
+            : (
+                creatureVisualMetaById[
+                  binding.metaId
+                ] ?? null
+              );
+        const visualRecord =
+          binding === null ||
+          !availability.assetCatalog ||
+          !availability.creatureVisualMeta ||
+          creatureMeta === null
+            ? recordWithLoadout
+            : applyCaptureCreatureVisualBindingV1({
+                record: recordWithLoadout,
+                binding,
+                creatureMeta,
+                availableAssetIds
+              });
+        const hydratedRecord =
+          Object.freeze({
+            ...visualRecord,
+            statValues:
+              recordWithLoadout.statValues
+          });
+
+        if (
+          !configuredCreatures.has(
+            hydratedRecord.draft.id
+          )
+        ) {
+          configuredCreatures.set(
+            hydratedRecord.draft.id,
+            hydratedRecord
+          );
+        }
+      }
+
+      for (
+        const [
+          creatureId,
+          record
+        ] of configuredCreatures
+      ) {
+        if (record.statValues !== null &&
+            record.statValues !== undefined) {
+          continue;
+        }
+
+        const legacy =
+          record.draft.sourceStats ?? {};
+        const statValues =
+          importMonsterCaptureStatValuesV1(
+            {
+              id: creatureId,
+              stats: {
+                force:
+                  Number(legacy.force) || 0,
+                power:
+                  Number(legacy.force) || 0,
+                speed:
+                  Number(
+                    legacy.initiative
+                  ) || 0,
+                agility:
+                  Number(
+                    legacy.agility
+                  ) || 0
+              }
+            },
+            statRegistry
+          );
+
+        configuredCreatures.set(
+          creatureId,
+          Object.freeze({
+            ...record,
+            statValues
+          })
+        );
+      }
+
+      refreshSkillLibraryOptions(
+        librarySelect.value
+      );
+      refreshLoadoutOptions();
+      refreshCreatureLibraryOptions(
+        selectedCreatureId
+      );
+
+      let selectedRecord =
+        selectedCreatureId
+          ? configuredCreatures.get(
+              selectedCreatureId
+            )
+          : null;
+
+      refreshEvolutionTargetOptions(
+        selectedRecord?.draft?.capture
+          ?.evolution?.targetId ?? null
+      );
+
+      if (
+        selectedRecord &&
+        creatureDirty === false
+      ) {
+        renderHumanStatValuesV1(
+          root,
+          statRegistry,
+          selectedRecord.statValues
+        );
+      }
+
+      syncLoadoutAvailability();
+
+      const optionalStartupMessage =
+        warnings.length === 0
+          ? ""
+          : " Ressources de présentation partielles : " +
+            warnings.join(" · ");
+
+      updateCreatureLibraryState(
+        "Catalogue Monster Capture historique chargé. Chargement des modèles vitrine…" +
+          optionalStartupMessage,
+        warnings.length === 0
+          ? "ok"
+          : "warning"
+      );
+
+      if (!disposed) {
+        setStatus(
+          root,
+          "Bibliothèques principales chargées : 9 capacités laboratoire + 103 capacités Capture natives. Application des modèles vitrine en cours." +
+            optionalStartupMessage,
+          warnings.length === 0
+            ? "info"
+            : "warning"
+        );
+      }
+
+      try {
+        const showcaseSkillPresets =
+          await hydrateCaptureShowcaseSkillPresetsV1();
+        const showcaseCreaturePresets =
+          await hydrateCaptureShowcaseCreaturePresetsV1(
+            statRegistry
+          );
+        const showcaseMarkers=await hydrateCaptureShowcaseMarkersV1();
+        const showcasePresets = [
+          ...showcaseSkillPresets,
+          ...showcaseCreaturePresets
+        ];
+
+        const reloadSelectedSkillAfterPresets = !currentSkillHasUnsavedChanges();
+
+        const showcaseResult =
+          applyCaptureTransferBatchToEditorStateV1({
+            transfers: showcasePresets,
+            configuredCreatures,
+            configuredSkills,
+            statRegistry,
+            progressionRules,
+            mode: "replace",
+            metadata: {
+              producer:
+                "capture-human-editor-v2-showcase-startup"
+            }
+          });
+
+        statRegistry =
+          showcaseResult.statRegistry;
+        progressionRules =
+          showcaseResult.progressionRules;
+
+        refreshSkillLibraryOptions(
+          librarySelect.value
+        );
+        markerLibraryController.seedMarkers(showcaseMarkers);
+        refreshLoadoutOptions();
+        if (reloadSelectedSkillAfterPresets) {
+          const selectedSkill = configuredSkills.get(librarySelect.value);
+          if (selectedSkill) {
+            writeSkillDraftFields(root, selectedSkill, statRegistry);
+            selectedLegacyState = null;
+            one(root, "[data-skill-id]").readOnly = true;
+          }
+        }
+
+        refreshCreatureLibraryOptions(
+          selectedCreatureId
+        );
+
+        selectedRecord =
+          selectedCreatureId
+            ? configuredCreatures.get(
+                selectedCreatureId
+              )
+            : null;
+
+        refreshEvolutionTargetOptions(
+          selectedRecord?.draft?.capture
+            ?.evolution?.targetId ?? null
+        );
+
+        if (
+          selectedRecord &&
+          creatureDirty === false
+        ) {
+          loadCreatureRecord(
+            selectedRecord.draft.id
+          );
+        }
+
+        syncLoadoutAvailability();
+
+        updateCreatureLibraryState(
+          "Catalogue Monster Capture historique + 3 modèles vitrine chargés. Sélectionne une créature pour la modifier ou crée une nouvelle entrée." +
+            optionalStartupMessage,
+          warnings.length === 0
+            ? "ok"
+            : "warning"
+        );
+
+        if (!disposed) {
+          setStatus(
+            root,
+            "Bibliothèques principales, 9 capacités laboratoire + 103 capacités Capture natives et 3 modèles vitrine chargés." +
+              optionalStartupMessage,
+            warnings.length === 0
+              ? "info"
+              : "warning"
+          );
+        }
+      } catch (presetError) {
+        updateCreatureLibraryState(
+          "Catalogue historique chargé. Modèles vitrine indisponibles : " +
+            presetError.message,
+          "error"
+        );
+
+        if (!disposed) {
+          setStatus(
+            root,
+            "Bibliothèque historique conservée ; erreur modèles vitrine : " +
+              presetError.message,
+            "error"
+          );
+        }
+      }
+    })
+    .catch((error) => {
+      if (!disposed) {
+        setStatus(
+          root,
+          "Bibliothèques indisponibles : " +
+            error.message,
+          "error"
+        );
+      }
+      throw error;
+    });
+
+  return Object.freeze({
+    validate,
+    ready,
+    getLastExport() {
+      return lastExport;
+    },
+    dispose() {
+      if (disposed) {
+        return;
+      }
+      disposed = true;
+      markerLibraryController.dispose();
+      beamStageLayout.dispose();
+      combatTeamControls.dispose();
+      for (const remove of listeners.splice(0)) {
+        remove();
+      }
+    }
+  });
+}

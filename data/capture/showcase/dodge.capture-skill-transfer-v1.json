@@ -1,0 +1,110 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "dodge",
+    "description": "Capacité native du laboratoire.",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "dodge",
+      "name": "Esquive foudroyante",
+      "category": "defensive",
+      "form": "self",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": null,
+      "approachMode": "none",
+      "energyCost": 4,
+      "preparationMs": 300,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 20000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "ally",
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-1",
+            "kind": "auto_dodge",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 10000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": []
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:dodge",
+      "version": 3,
+      "subjectType": "skill",
+      "subjectId": "dodge",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-recall-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {
+        "status-1": {
+          "mode": "tint",
+          "tintBlinkEnabled": true,
+          "tintBlinkPeriodMs": 800,
+          "tintColor": "#ffffff",
+          "tintOpacity": 0.35,
+          "sprite": null
+        }
+      }
+    }
+  }
+}

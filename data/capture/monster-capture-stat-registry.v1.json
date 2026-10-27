@@ -1,0 +1,148 @@
+{
+  "schema": "capture-stat-registry-v1",
+  "stats": [
+    {
+      "id": "health",
+      "label": "Santé / PV",
+      "damageChannel": null,
+      "resistanceChannel": null,
+      "damagePctPerPoint": 0,
+      "resistancePctPerPoint": 0,
+      "chargeTimeReductionPctPerPoint": 0,
+      "maxHpPerPoint": 1
+    },
+    {
+      "id": "speed",
+      "label": "Vitesse",
+      "damageChannel": null,
+      "resistanceChannel": null,
+      "damagePctPerPoint": 0,
+      "resistancePctPerPoint": 0,
+      "chargeTimeReductionPctPerPoint": 1
+    },
+    {
+      "id": "physical",
+      "label": "Puissance physique",
+      "damageChannel": "physical",
+      "resistanceChannel": "physical",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
+    },
+    {
+      "id": "defense",
+      "label": "Défense",
+      "damageChannel": null,
+      "resistanceChannel": null,
+      "damagePctPerPoint": 0,
+      "resistancePctPerPoint": 0,
+      "chargeTimeReductionPctPerPoint": 0,
+      "damageReductionPctPerPoint": 0.2
+    },
+    {
+      "id": "fire",
+      "label": "Feu",
+      "damageChannel": "fire",
+      "resistanceChannel": "fire",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
+    },
+    {
+      "id": "water",
+      "label": "Eau",
+      "damageChannel": "water",
+      "resistanceChannel": "water",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
+    },
+    {
+      "id": "earth",
+      "label": "Terre",
+      "damageChannel": "earth",
+      "resistanceChannel": "earth",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
+    },
+    {
+      "id": "air",
+      "label": "Air",
+      "damageChannel": "air",
+      "resistanceChannel": "air",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
+    },
+    {
+      "id": "electric",
+      "label": "Électricité",
+      "damageChannel": "electric",
+      "resistanceChannel": "electric",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
+    },
+    {
+      "id": "light",
+      "label": "Lumière",
+      "damageChannel": "light",
+      "resistanceChannel": "light",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
+    },
+    {
+      "id": "shadow",
+      "label": "Ombre",
+      "damageChannel": "shadow",
+      "resistanceChannel": "shadow",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
+    },
+    {
+      "id": "poison",
+      "label": "Poison",
+      "damageChannel": "poison",
+      "resistanceChannel": "poison",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0
+    },
+    {
+      "id": "acier",
+      "label": "Acier",
+      "damageChannel": "acier",
+      "resistanceChannel": "acier",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0,
+      "maxHpPerPoint": 0,
+      "damageReductionPctPerPoint": 0
+    },
+    {
+      "id": "nature",
+      "label": "Nature",
+      "damageChannel": "nature",
+      "resistanceChannel": "nature",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0,
+      "maxHpPerPoint": 0,
+      "damageReductionPctPerPoint": 0
+    },
+    {
+      "id": "esprit",
+      "label": "Esprit",
+      "damageChannel": "esprit",
+      "resistanceChannel": "spirit",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0,
+      "maxHpPerPoint": 0,
+      "damageReductionPctPerPoint": 0
+    }
+  ]
+}

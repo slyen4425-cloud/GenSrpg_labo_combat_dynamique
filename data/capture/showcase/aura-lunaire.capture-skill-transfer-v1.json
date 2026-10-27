@@ -1,0 +1,139 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "aura-lunaire",
+    "description": "Augmente la puissance de la créature et la soigne",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "aura-lunaire",
+      "name": "Aura Lunaire",
+      "category": "buff_debuff",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "spirit",
+      "approachMode": "none",
+      "energyCost": 4,
+      "preparationMs": 1500,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 45000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "ally",
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-1",
+            "kind": "heal_over_time",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 10000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "amount": 10,
+            "tickIntervalMs": 2000
+          }
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-2",
+            "kind": "outgoing_damage_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 10000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "modifierPct": 100
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:aura-lunaire",
+      "version": 3,
+      "subjectType": "skill",
+      "subjectId": "aura-lunaire",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-charge-spirituelle-01"
+        }
+      },
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-a0b4a892",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {
+        "status-1": {
+          "mode": "sprite",
+          "tintBlinkEnabled": false,
+          "tintBlinkPeriodMs": 600,
+          "tintColor": "#9b59d0",
+          "tintOpacity": 0.35,
+          "sprite": {
+            "offsetX": 10,
+            "offsetY": -20,
+            "assetId": "pack:capture:sprite-kitsune-lunaire-aura-01",
+            "displayScale": 1.7,
+            "opacity": 0.65
+          }
+        }
+      }
+    }
+  }
+}

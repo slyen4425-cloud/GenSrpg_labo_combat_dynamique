@@ -1,0 +1,289 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+import * as humanEditor from "../../src/ui/capture-editor-human-v2.js";
+import {
+  importCaptureTransferJsonV1
+} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
+import {
+  normalizeCaptureSkillEditorDraftV1
+} from "../../src/contracts/capture-skill-editor-draft-v1.js";
+import {
+  normalizeSkillDefinition
+} from "../../src/contracts/skill-definition.js";
+
+async function text(relative) {
+  return readFile(
+    new URL("../../" + relative, import.meta.url),
+    "utf8"
+  );
+}
+
+async function tempeteDraft() {
+  const transfer = importCaptureTransferJsonV1(
+    await text(
+      "data/capture/showcase/cap_fire_atk_6.capture-skill-transfer-v1.json"
+    )
+  );
+  return transfer.value.draft;
+}
+
+async function fireballDraft() {
+  const catalog = JSON.parse(
+    await text("data/combat/skills/catalog.v1.json")
+  );
+  const entry = catalog.entries.find(
+    (item) => item.definition?.id === "fireball"
+  );
+  const definition = normalizeSkillDefinition(
+    entry.definition
+  );
+  return normalizeCaptureSkillEditorDraftV1({
+    schema: "capture-skill-editor-draft-v1",
+    id: definition.id,
+    description: "Capacité native du laboratoire.",
+    requiredLevel: 1,
+    usageScopes: ["capture", "combat"],
+    definition,
+    presentation: null
+  });
+}
+
+test("active skill library entries come from configuredSkills and include Fireball plus showcase replacement", async () => {
+  assert.equal(
+    typeof humanEditor.humanConfiguredSkillLibraryEntriesV1,
+    "function",
+    "active configuredSkills library helper must exist"
+  );
+
+  const configuredSkills = new Map([
+    ["fireball", await fireballDraft()],
+    ["cap_fire_atk_6", await tempeteDraft()]
+  ]);
+
+  const entries =
+    humanEditor.humanConfiguredSkillLibraryEntriesV1(
+      configuredSkills
+    );
+
+  assert.deepEqual(
+    entries.map((entry) => entry.id),
+    ["fireball", "cap_fire_atk_6"]
+  );
+  assert.equal(
+    entries.find((entry) => entry.id === "fireball")?.name,
+    "Boule de feu"
+  );
+  assert.equal(
+    entries.find((entry) => entry.id === "cap_fire_atk_6")
+      ?.name,
+    "Tempête de flammes"
+  );
+});
+
+test("showcase Tempete draft expands to complete editable fields from the active configured draft", async () => {
+  assert.equal(
+    typeof humanEditor.humanSkillEditorFieldsFromDraftV1,
+    "function",
+    "complete active skill draft mapper must exist"
+  );
+
+  const fields =
+    humanEditor.humanSkillEditorFieldsFromDraftV1(
+      await tempeteDraft()
+    );
+
+  assert.equal(fields.id, "cap_fire_atk_6");
+  assert.equal(fields.name, "Tempête de flammes");
+  assert.equal(fields.requiredLevel, 20);
+  assert.equal(fields.loadoutSlot, "ultimate");
+  assert.equal(fields.form, "beam");
+  assert.equal(fields.energyCost, 5);
+  assert.equal(fields.preparationMs, 2000);
+  assert.equal(fields.cooldownMs, 3500);
+  assert.equal(fields.maxUsesPerCombat, 6);
+  assert.equal(
+    fields.activationRequirements.conditions[0].threshold,
+    25000
+  );
+  assert.equal(fields.effects[0].kind, "persistent_zone");
+  assert.equal(fields.effects[0].maxActivations, 3);
+  assert.equal(
+    fields.presentation.iconAssetId,
+    "core:icon-skill-fire-breath-01"
+  );
+  assert.equal(
+    fields.presentation.zoneAssetId,
+    "pack:capture:sprite-fire-zone-loop-01"
+  );
+  assert.equal(fields.presentation.zoneDisplayScale, 1.2);
+  assert.equal(fields.presentation.zoneDisplayScaleX, 1.6);
+  assert.equal(fields.presentation.zoneDisplayScaleY, 0.8);
+  assert.equal(fields.presentation.zoneOffsetX, 0);
+  assert.equal(fields.presentation.zoneOffsetY, 0);
+  assert.equal(
+    fields.presentation.castAudioAssetId,
+    "gensrpg:sound:effect-135ee2ed"
+  );
+});
+
+test("Human Editor selection reads the active configured skill instead of merging a legacy template", async () => {
+  const source = await text(
+    "src/ui/capture-editor-human-v2.js"
+  );
+
+  const listenerStart = source.indexOf(
+    'listen(librarySelect, "change"'
+  );
+  assert.ok(listenerStart >= 0);
+
+  const listenerEnd = source.indexOf(
+    'listen(newSkillButton, "click"',
+    listenerStart
+  );
+  assert.ok(listenerEnd > listenerStart);
+
+  const listener = source.slice(
+    listenerStart,
+    listenerEnd
+  );
+
+  assert.match(listener, /configuredSkills\.get\(abilityId\)/);
+  assert.doesNotMatch(
+    listener,
+    /mergeCaptureLegacyAbilityTemplateIntoEditorFieldsV1/
+  );
+  assert.match(listener, /writeSkillDraftFields/);
+});
+
+test("active skill selector is refreshed after base hydration and showcase replacement", async () => {
+  const source = await text(
+    "src/ui/capture-editor-human-v2.js"
+  );
+
+  assert.match(
+    source,
+    /function refreshSkillLibraryOptions/
+  );
+
+  const showcaseApply = source.indexOf(
+    "applyCaptureTransferBatchToEditorStateV1"
+  );
+  const showcaseHydrate = source.indexOf(
+    "await hydrateCaptureShowcaseSkillPresetsV1"
+  );
+  const refreshAfterShowcase = source.indexOf(
+    "refreshSkillLibraryOptions",
+    showcaseHydrate
+  );
+
+  assert.ok(showcaseApply >= 0);
+  assert.ok(showcaseHydrate >= 0);
+  assert.ok(refreshAfterShowcase > showcaseHydrate);
+});
+
+
+test("Tempete active editor fields round-trip back to the same configured draft", async () => {
+  const source = await tempeteDraft();
+  const fields =
+    humanEditor.humanSkillEditorFieldsFromDraftV1(
+      source
+    );
+  const rebuilt =
+    humanEditor.buildHumanSkillDraftV1(fields);
+
+  assert.deepEqual(
+    rebuilt,
+    source,
+    "selecting and rebuilding the active showcase skill must not restore or lose legacy values"
+  );
+});
+
+
+test("updating requiredLevel keeps active skill and planned loadout stable", async () => {
+  const sourceDraft = await fireballDraft();
+  const fields =
+    humanEditor.humanSkillEditorFieldsFromDraftV1(
+      sourceDraft
+    );
+  const updated =
+    humanEditor.buildHumanSkillDraftV1({
+      ...fields,
+      requiredLevel: 7
+    });
+
+  const configuredSkills = new Map([
+    [sourceDraft.id, sourceDraft]
+  ]);
+  const plannedLoadout = {
+    schema: "capture-active-skill-loadout-v1",
+    creatureId: "crea-loup",
+    slots: [
+      { id: "slot-1", skillId: "fireball" },
+      { id: "slot-2", skillId: "claw" },
+      { id: "slot-3", skillId: null },
+      { id: "slot-4", skillId: null },
+      { id: "slot-ultimate", skillId: null }
+    ]
+  };
+  const before =
+    JSON.stringify(plannedLoadout);
+
+  configuredSkills.set(
+    updated.id,
+    updated
+  );
+
+  assert.equal(
+    configuredSkills.has("fireball"),
+    true
+  );
+  assert.equal(
+    configuredSkills.get("fireball").requiredLevel,
+    7
+  );
+  assert.equal(
+    configuredSkills.get("fireball")
+      .definition.loadoutSlot,
+    "standard"
+  );
+  assert.equal(
+    JSON.stringify(plannedLoadout),
+    before,
+    "editing requiredLevel must not mutate planned creature loadout"
+  );
+});
+
+test("skill update refreshes loadout without auto-placement and reloads the saved active draft", async () => {
+  const source = await text(
+    "src/ui/capture-editor-human-v2.js"
+  );
+  const start = source.indexOf(
+    "function persistCurrentSkill(intent)"
+  );
+  const end = source.indexOf(
+    "refreshSkillLibraryOptions();",
+    start
+  );
+  assert.ok(start >= 0);
+  assert.ok(end > start);
+
+  const block = source.slice(start, end);
+
+  assert.match(
+    block,
+    /saveMode\.mode\s*===\s*"create"[\s\S]*refreshLoadoutOptions\(draft\.id\)[\s\S]*refreshLoadoutOptions\(\)/,
+    "create may auto-place, update must only preserve existing loadout selections"
+  );
+  assert.match(
+    block,
+    /writeSkillDraftFields\([\s\S]*draft[\s\S]*statRegistry[\s\S]*\)/,
+    "successful update must reload the saved active draft"
+  );
+  assert.match(
+    block,
+    /librarySelect\.value\s*=\s*draft\.id/,
+    "successful update must keep the skill selected in the active library"
+  );
+});
