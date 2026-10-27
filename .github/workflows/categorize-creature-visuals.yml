@@ -1,0 +1,17 @@
+name: Categorize recent creature visuals
+on:
+  push:
+    branches: [work/capture-creature-element-tags-2026-10-27]
+    paths:
+      - '.github/workflows/categorize-creature-visuals.yml'
+      - 'scripts/categorize_creature_visuals.py'
+permissions:
+  contents: write
+jobs:
+  categorize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: python scripts/categorize_creature_visuals.py
