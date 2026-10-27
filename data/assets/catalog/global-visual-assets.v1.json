@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 263,
+    "assets": 266,
     "icons": 86,
-    "sprites": 154,
+    "sprites": 156,
     "fx": 2,
-    "portraits": 16,
+    "portraits": 17,
     "backgrounds": 5,
-    "creatures": 59
+    "creatures": 62
   },
   "assets": [
     {
@@ -8964,6 +8964,99 @@
       },
       "resource": {
         "file": "capture/creatures/pieuvre/runtime/pieuvre_icon.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-heriplante-opponent-01",
+      "label": "Hériplante — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "heriplante",
+        "opponent",
+        "nature"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/heriplante/runtime/heriplante_adversaire_face.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-heriplante-player-01",
+      "label": "Hériplante — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "heriplante",
+        "player",
+        "nature"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/heriplante/runtime/heriplante_joueur_dos.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-heriplante-icon-01",
+      "label": "Hériplante — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "heriplante",
+        "icon",
+        "nature"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/heriplante/runtime/heriplante_icone.png",
         "mime": "image/png"
       },
       "compatibility": {

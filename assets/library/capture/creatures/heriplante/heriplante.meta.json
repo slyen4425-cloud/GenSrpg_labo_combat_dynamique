@@ -1,0 +1,44 @@
+{
+  "id": "heriplante",
+  "name": "Hériplante",
+  "profile": "quadruped",
+  "views": {
+    "player": "runtime/heriplante_joueur_dos.png",
+    "opponent": "runtime/heriplante_adversaire_face.png",
+    "icon": "runtime/heriplante_icone.png"
+  },
+  "runtimePreview": {
+    "player": "runtime/heriplante_joueur_dos.png",
+    "opponent": "runtime/heriplante_adversaire_face.png",
+    "icon": "runtime/heriplante_icone.png"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [
+      512,
+      512
+    ],
+    "icon": [
+      512,
+      512
+    ]
+  },
+  "transformOrigin": {
+    "x": "50%",
+    "y": "88%"
+  },
+  "assetIds": {
+    "opponent": "pack:capture:creature-heriplante-opponent-01",
+    "player": "pack:capture:creature-heriplante-player-01",
+    "icon": "pack:capture:creature-heriplante-icon-01"
+  },
+  "source": {
+    "scope": "pack",
+    "packId": "capture",
+    "library": "global-assets"
+  },
+  "visualRevision": "user-approved-2026-10-27"
+}
