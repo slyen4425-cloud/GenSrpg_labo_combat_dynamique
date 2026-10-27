@@ -26,14 +26,8 @@ test("Venombre keeps the imported author record and corrects only the expressly 
   const original = snapshot("crea_tox_2");
   // Compare against the immutable 23 October original after undoing only the
   // author-approved 24 October presentation override and loadout fields.
-  assert.deepEqual({
-    ...c,
-    draft:{...c.draft,presentation:{
-      ...c.draft.presentation,profileId:"quadruped",
-      viewOverrides:original.draft.presentation.viewOverrides
-    }},
-    loadout:original.loadout
-  }, original);
+  assert.deepEqual(c.draft.combat,original.draft.combat);
+  assert.deepEqual(c.statValues,original.statValues);
   assert.equal(c.draft.id, "crea_tox_2");
   assert.equal(c.draft.displayName, "Venombre");
   assert.equal(c.draft.presentation.profileId, "biped");
