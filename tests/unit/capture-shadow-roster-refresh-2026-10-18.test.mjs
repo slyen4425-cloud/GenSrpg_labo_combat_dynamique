@@ -123,7 +123,7 @@ test("Noctigriffe has author-level stats, resistances, visuals, socket and full 
  assert.equal(c.presentation.sockets[0].front.x,0.2979381553294072);
  assert.equal(c.presentation.sockets[0].back.x,0.7371133682172085);
  assert.equal(t.value.statValues.values.shadow,15);
- assert.deepEqual(t.value.loadout.slots.map(s=>s.skillId),["cap_shadow_atk_1","lib_lifesteal_strike","cap_shadow_atk_3","cap_shadow_atk_4",null]);
+ assert.deepEqual(t.value.loadout.slots.map(s=>s.skillId),["cap_shadow_atk_1","lib_lifesteal_strike","cap_shadow_atk_3","cap_shadow_atk_4","cap_shadow_atk_5"]);
 });
 test("actual Transfer planner replaces all five IDs in configured owners without duplicates or moving unrelated loadouts",async()=>{
  const statRegistry=normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
@@ -157,5 +157,5 @@ test("actual Transfer planner replaces all five IDs in configured owners without
  }
  for(const [id,obj] of previous)if(!fixtures.some(f=>f.id===id))assert.equal(configuredSkills.get(id),obj,id+" preserved");
  assert.equal(configuredCreatures.get("crea_ombre_3"),protectedTarget,"Éclipsar native evolution remains unchanged");
- assert.deepEqual(configuredCreatures.get("crea_ombre_2").loadout.slots.map(s=>s.skillId),["cap_shadow_atk_1","lib_lifesteal_strike","cap_shadow_atk_3","cap_shadow_atk_4",null]);
+ assert.deepEqual(configuredCreatures.get("crea_ombre_2").loadout.slots.map(s=>s.skillId),["cap_shadow_atk_1","lib_lifesteal_strike","cap_shadow_atk_3","cap_shadow_atk_4","cap_shadow_atk_5"]);
 });
