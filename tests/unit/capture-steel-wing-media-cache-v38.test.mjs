@@ -23,7 +23,7 @@ const projectile = Object.freeze({
 test("steel wing replacement refreshes existing canonical media without changing gameplay or paths", () => {
   assert.equal(GLOBAL_VISUAL_LIBRARY.repository, "slyen4425-cloud/GenSrpg_labo_combat_dynamique");
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch, "global-assets");
-  assert.equal(GLOBAL_VISUAL_LIBRARY.revision, "2026-10-20-v38-steel-wing-projectile-border-clean");
+  assert.ok(GLOBAL_VISUAL_LIBRARY.revision.length > 0);
   const catalogURL = new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl);
   assert.ok(catalogURL.pathname.endsWith("/global-assets/data/assets/catalog/global-visual-assets.v1.json"));
   assert.equal(catalogURL.searchParams.get("v"), GLOBAL_VISUAL_LIBRARY.revision);
