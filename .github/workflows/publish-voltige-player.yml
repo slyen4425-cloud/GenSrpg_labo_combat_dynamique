@@ -1,0 +1,17 @@
+name: Publish Voltige approved player visual
+on:
+  push:
+    branches: [work/voltige-player-replacement-2026-10-27]
+    paths:
+      - '.github/workflows/publish-voltige-player.yml'
+      - 'scripts/publish_voltige_player.py'
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: python scripts/publish_voltige_player.py
