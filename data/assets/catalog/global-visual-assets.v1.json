@@ -15,10 +15,10 @@
   },
   "counts": {
     "assets": 263,
-    "icons": 87,
+    "icons": 86,
     "sprites": 154,
     "fx": 2,
-    "portraits": 15,
+    "portraits": 16,
     "backgrounds": 5,
     "creatures": 59
   },
@@ -8946,9 +8946,9 @@
     {
       "id": "pack:capture:creature-pieuvre-icon-01",
       "label": "Pieuvre — icon",
-      "assetType": "icon",
+      "assetType": "portrait",
       "mediaType": "image",
-      "category": "creature",
+      "category": "ui",
       "tags": [
         "creature",
         "capture",
