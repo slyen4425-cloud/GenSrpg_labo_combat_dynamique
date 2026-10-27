@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 260,
-    "icons": 86,
-    "sprites": 152,
+    "assets": 263,
+    "icons": 87,
+    "sprites": 154,
     "fx": 2,
     "portraits": 15,
     "backgrounds": 5,
-    "creatures": 56
+    "creatures": 59
   },
   "assets": [
     {
@@ -8871,6 +8871,99 @@
       },
       "resource": {
         "file": "capture/creatures/gorille_des_glaces/runtime/gorille_des_glaces_icon.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pieuvre-opponent-01",
+      "label": "Pieuvre — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "pieuvre",
+        "opponent",
+        "water"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/pieuvre/runtime/pieuvre_face.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pieuvre-player-01",
+      "label": "Pieuvre — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "pieuvre",
+        "player",
+        "water"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/pieuvre/runtime/pieuvre_dos.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pieuvre-icon-01",
+      "label": "Pieuvre — icon",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "pieuvre",
+        "icon",
+        "water"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/pieuvre/runtime/pieuvre_icon.png",
         "mime": "image/png"
       },
       "compatibility": {
