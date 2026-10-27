@@ -1,6 +1,6 @@
 const REPOSITORY = "slyen4425-cloud/GenSrpg_labo_combat_dynamique";
 const BRANCH = "global-assets";
-const REVISION = "2026-10-26-v41-venombre-four-animations";
+const REVISION = "2026-10-27-v42-pieuvre-three-views";
 
 export const GLOBAL_VISUAL_LIBRARY = Object.freeze({
   repository: REPOSITORY,
