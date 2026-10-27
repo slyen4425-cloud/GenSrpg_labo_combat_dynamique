@@ -1120,7 +1120,8 @@
         "creature",
         "capture",
         "maraileron",
-        "icon"
+        "icon",
+        "water"
       ],
       "source": {
         "scope": "pack",
@@ -1150,7 +1151,8 @@
         "creature",
         "capture",
         "maraileron",
-        "opponent"
+        "opponent",
+        "water"
       ],
       "source": {
         "scope": "pack",
@@ -1180,7 +1182,8 @@
         "creature",
         "capture",
         "maraileron",
-        "player"
+        "player",
+        "water"
       ],
       "source": {
         "scope": "pack",
@@ -8263,7 +8266,9 @@
         "lunaire",
         "animated",
         "opponent",
-        "movement"
+        "movement",
+        "spirit",
+        "kitsune-lunaire"
       ],
       "source": {
         "scope": "pack",
@@ -8299,7 +8304,9 @@
         "lunaire",
         "animated",
         "opponent",
-        "attack"
+        "attack",
+        "spirit",
+        "kitsune-lunaire"
       ],
       "source": {
         "scope": "pack",
@@ -8335,7 +8342,9 @@
         "lunaire",
         "animated",
         "player",
-        "movement"
+        "movement",
+        "spirit",
+        "kitsune-lunaire"
       ],
       "source": {
         "scope": "pack",
@@ -8371,7 +8380,9 @@
         "lunaire",
         "animated",
         "player",
-        "attack"
+        "attack",
+        "spirit",
+        "kitsune-lunaire"
       ],
       "source": {
         "scope": "pack",
@@ -8551,7 +8562,8 @@
         "venombre",
         "animated",
         "opponent",
-        "attack"
+        "attack",
+        "poison"
       ],
       "source": {
         "scope": "pack",
@@ -8587,7 +8599,8 @@
         "venombre",
         "animated",
         "opponent",
-        "movement"
+        "movement",
+        "poison"
       ],
       "source": {
         "scope": "pack",
@@ -8623,7 +8636,8 @@
         "venombre",
         "animated",
         "player",
-        "attack"
+        "attack",
+        "poison"
       ],
       "source": {
         "scope": "pack",
@@ -8659,7 +8673,8 @@
         "venombre",
         "animated",
         "player",
-        "movement"
+        "movement",
+        "poison"
       ],
       "source": {
         "scope": "pack",
@@ -8783,7 +8798,8 @@
         "creature",
         "capture",
         "gorille-des-glaces",
-        "opponent"
+        "opponent",
+        "ice"
       ],
       "source": {
         "scope": "pack",
@@ -8813,7 +8829,8 @@
         "creature",
         "capture",
         "gorille-des-glaces",
-        "player"
+        "player",
+        "ice"
       ],
       "source": {
         "scope": "pack",
@@ -8843,7 +8860,8 @@
         "creature",
         "capture",
         "gorille-des-glaces",
-        "icon"
+        "icon",
+        "ice"
       ],
       "source": {
         "scope": "pack",
