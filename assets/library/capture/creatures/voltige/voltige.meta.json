@@ -3,12 +3,12 @@
   "name": "Voltige",
   "profile": "biped",
   "views": {
-    "player": "runtime/voltige_player.webp",
+    "player": "runtime/voltige_player.png",
     "opponent": "runtime/voltige_opponent.webp",
     "icon": "runtime/voltige_icon.webp"
   },
   "runtimePreview": {
-    "player": "runtime/voltige_player.webp",
+    "player": "runtime/voltige_player.png",
     "opponent": "runtime/voltige_opponent.webp",
     "icon": "runtime/voltige_icon.webp"
   },
@@ -18,8 +18,8 @@
   },
   "canvas": {
     "combat": [
-      320,
-      320
+      512,
+      512
     ],
     "icon": [
       192,
@@ -96,5 +96,5 @@
     "packId": "capture",
     "library": "global-assets"
   },
-  "visualRevision": "validated-front-back-icon-2026-09-27"
+  "visualRevision": "player-user-approved-2026-10-27"
 }

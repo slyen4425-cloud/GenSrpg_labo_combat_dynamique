@@ -2736,8 +2736,8 @@
         "license": "project-internal"
       },
       "resource": {
-        "file": "capture/creatures/voltige/runtime/voltige_player.webp",
-        "mime": "image/webp"
+        "file": "capture/creatures/voltige/runtime/voltige_player.png",
+        "mime": "image/png"
       },
       "compatibility": {
         "uses": [
