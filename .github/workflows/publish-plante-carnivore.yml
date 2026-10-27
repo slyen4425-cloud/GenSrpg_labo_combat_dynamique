@@ -1,0 +1,21 @@
+name: Publish approved carnivorous plant masters to canonical library
+on:
+  push:
+    branches: [work/plante-carnivore-library-2026-10-27]
+    paths:
+      - '.github/workflows/publish-plante-carnivore.yml'
+      - 'scripts/publish_plante_carnivore.py'
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pillow
+      - run: python scripts/publish_plante_carnivore.py
