@@ -36,7 +36,8 @@ test("Acier 2026-10-18 preserved; Nature 2026-10-21 appended without changing ea
 });
 
 test("Scarabacier author preset and immutable historical archive remain unique",async()=>{
- assert.equal(catalog.length,12);
+ assert.equal(catalog.length,13);
+ assert.equal(catalog.filter(p=>p.endsWith('/crea_nat_1.capture-creature-transfer-v1.json')).length,1);
  assert.equal(new Set(catalog).size,catalog.length);
  assert.equal(catalog.filter(p=>p===scaraPath).length,1);
  const active=JSON.parse(await read(scaraPath)),archived=JSON.parse(await read(archivePath));
