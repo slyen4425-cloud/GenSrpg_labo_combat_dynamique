@@ -1,0 +1,45 @@
+{
+  "id": "plante_carnivore",
+  "name": "Plante carnivore",
+  "profile": "plant",
+  "views": {
+    "player": "runtime/plante_carnivore_dos.png",
+    "opponent": "runtime/plante_carnivore_face.png",
+    "icon": "runtime/plante_carnivore_icon.png"
+  },
+  "runtimePreview": {
+    "player": "runtime/plante_carnivore_dos.png",
+    "opponent": "runtime/plante_carnivore_face.png",
+    "icon": "runtime/plante_carnivore_icon.png"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [
+      512,
+      512
+    ],
+    "icon": [
+      512,
+      512
+    ]
+  },
+  "transformOrigin": {
+    "x": "50%",
+    "y": "88%"
+  },
+  "assetIds": {
+    "player": "pack:capture:creature-plante-carnivore-player-01",
+    "opponent": "pack:capture:creature-plante-carnivore-opponent-01",
+    "icon": "pack:capture:creature-plante-carnivore-icon-01"
+  },
+  "source": {
+    "scope": "pack",
+    "packId": "capture",
+    "library": "global-assets"
+  },
+  "visualRevision": "user-approved-2026-10-27",
+  "notes": "Modèles approuvés face, dos et icône, PNG RGBA 512x512, sans modification de pixels."
+}

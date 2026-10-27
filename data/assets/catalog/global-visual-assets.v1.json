@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 254,
+    "assets": 257,
     "icons": 86,
-    "sprites": 148,
+    "sprites": 150,
     "fx": 2,
-    "portraits": 13,
+    "portraits": 14,
     "backgrounds": 5,
-    "creatures": 54
+    "creatures": 55
   },
   "assets": [
     {
@@ -8674,6 +8674,96 @@
         "frameCount": 8,
         "frameMs": 125,
         "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-plante-carnivore-opponent-01",
+      "label": "Plante carnivore — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "plante-carnivore",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/plante_carnivore/runtime/plante_carnivore_face.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-plante-carnivore-player-01",
+      "label": "Plante carnivore — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "creature",
+        "capture",
+        "plante-carnivore",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/plante_carnivore/runtime/plante_carnivore_dos.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-plante-carnivore-icon-01",
+      "label": "Plante carnivore — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "creature",
+        "capture",
+        "plante-carnivore",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/plante_carnivore/runtime/plante_carnivore_icon.png",
+        "mime": "image/png"
       },
       "compatibility": {
         "uses": [
