@@ -15,7 +15,7 @@ with tempfile.TemporaryDirectory() as temp:
         for role in ("face","dos","icon"):
             path=f"assets/library/capture/creatures/gorille_des_glaces/models/gorille_des_glaces_{role}.png"
             data=subprocess.check_output(["git","show",f"{source}:{path}"])
-            assert data[:8]==b"\\x89PNG\\r\\n\\x1a\\n",role
+            assert data[:8]==bytes.fromhex("89504e470d0a1a0a"),role
             (models/f"gorille_des_glaces_{role}.png").write_bytes(data)
         meta={
             "id":"gorille_des_glaces","name":"Gorille des glaces","profile":"gorilla",
