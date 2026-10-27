@@ -811,3 +811,26 @@ La procédure opérationnelle obligatoire est [LAB_DELIVERY_WORKFLOW_V1.md](LAB_
 - Avant toute publication, relire les SHAs distants pour éviter d'écraser les travaux d'autres fils ; tenir `LAB_CURRENT_WORK.md` à jour pour une reprise indépendante de la conversation.
 - Ne pas demander à l'utilisateur de répéter des dépôts déjà accessibles ni publier un rapport d'achèvement sur la seule présence de fichiers.
 - Toute CI rouge reste rouge : un test ciblé réussi ne permet pas d'annoncer GREEN à la place de la suite requise.
+
+
+## 38. Promotion contrôlée de la version stable vers main (27 octobre 2026)
+
+**Déclenchement : uniquement sur demande explicite de l'auteur**, par exemple « publie la version stable sur main ». Le développement normal sur `work/<lot>`, la publication de test sur `gh-pages` et la mise à jour canonique des médias sur `global-assets` **ne déclenchent jamais automatiquement** une mise à jour de `main`.
+
+**Autorités conservées :**
+- `gh-pages` reste l'autorité du code exécuté par l'éditeur public Labo Combat ;
+- `global-assets` reste l'autorité unique des médias, modèles, sprites, animations, icônes et du catalogue ;
+- `main` devient un **point de livraison stable pour les projets consommateurs**, et non une nouvelle autorité d'édition des médias. Il doit représenter une paire cohérente et immuable de révisions validées du code et des assets. Ne pas recopier des médias pour créer un second catalogue concurrent.
+
+**Protocole de promotion :**
+1. Relire les chartes LIVE, `LAB_CURRENT_WORK.md`, les SHAs de `main`, `gh-pages`, `global-assets`, et identifier les lots validés, les chantiers non validés et les échecs CI.
+2. Créer un checkpoint START et une branche `work/<lot-promotion>`. Ne pas écraser ni forcer l'historique de `main`.
+3. Construire un manifeste de version stable, versionné sur `main`, indiquant explicitement : version, SHA du code issu de `gh-pages`, SHA de `global-assets`, chemin et révision du catalogue, contrat de chargement, date, résultats des tests et compatibilités consommateur.
+4. Vérifier que le code promu sait résoudre **exactement** les médias de la révision référencée, sans lecture implicite d'une tête de branche mouvante qui rendrait la version non reproductible. Si le code ne le permet pas, corriger cette cause racine sur la branche de travail et tester avant promotion.
+5. Exécuter les contrôles de build, CI, chargement des assets, sélecteurs et previews, ainsi que les tests de non-régression. Une CI rouge interdit toute déclaration GREEN.
+6. Promouvoir sur `main` uniquement après validation et autorisation explicite, par fusion traçable ou commit de livraison ; créer un tag de version et vérifier les fichiers réellement publiés.
+7. Fournir un rapport indiquant version, SHAs, état CI et liens. Ne jamais déclarer GenSrpG ou Labo Exploration synchronisés tant que leurs intégrations respectives n'ont pas été effectivement testées.
+
+**Consommateurs :** GenSrpG et Labo Exploration doivent pouvoir sélectionner une version stable publiée de `main` et sa révision d'assets associée. Le choix entre récupération automatique et mise à jour sur demande reste **à définir avec l'auteur** : aucune synchronisation automatique n'est autorisée pour l'instant.
+
+**Interdits :** fusion aveugle de `gh-pages` vers `main`, duplication d'autorités, références flottantes non reproductibles, écrasement des travaux parallèles, promotion d'un chantier incomplet ou publication non demandée.
