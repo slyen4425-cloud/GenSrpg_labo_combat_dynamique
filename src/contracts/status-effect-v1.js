@@ -445,7 +445,7 @@ export function normalizeStatusEffectV1(input) {
   }
 
   // Shared markers reuse the native stack counter and combat clock for damage,
-// heal or life steal. Only Combat Damage owns real HP loss.
+  // heal or life steal. Only Combat Damage owns real HP loss.
   // Other statuses must keep their original, independent effect definitions.
   if (value.periodic != null) {
     if (kind !== "stack_counter" || !output.tags.includes("gensrpg:marker:v1") ||
@@ -463,7 +463,7 @@ export function normalizeStatusEffectV1(input) {
       throw new RangeError("heal periodic markers cannot specify damage settings");
     }
     if (periodicKind !== "life_steal" &&
-        (periodic.percent != null || periodic.maxHeal != null)) {
+        (Object.hasOwn(periodic, "percent") || Object.hasOwn(periodic, "maxHeal"))) {
       throw new RangeError("periodic.percent/maxHeal require life_steal");
     }
     if (periodicKind === "life_steal" &&
