@@ -56,15 +56,15 @@ const server = createServer(async (req, res) => {
         import {normalizeSkillPresentationBinding} from "../../src/contracts/skill-presentation-binding.js";
         import {planSkillReleaseFx} from "../../src/core/fx/skill-fx-plan.js";
         import {createGlobalPresentationAssetResolverV1} from "../../src/assets/global-presentation-asset-resolver-v1.js";
-        import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js?v=projectile-heading-catalog-20261028";
+        import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js?v=intrinsic-facing-v44-20261028";
         let fx=null;
         try {
-          const files=await Promise.all(["graine_sansue_cap","coupe_feuille","cap_air_atk_4"].map(async name=>{
+          const files=await Promise.all(["graine_sansue_cap","coupe_feuille","cap_air_atk_4","fireball"].map(async name=>{
             const response=await fetch("../../data/capture/showcase/"+name+".capture-skill-transfer-v1.json",{cache:"no-store"});
             if(!response.ok)throw Error("skill author fixture missing: "+name);
             return (await response.json()).draft;
           }));
-          const [graine,coupe,tornade]=files;
+          const [graine,coupe,tornade,fireball]=files;
           const id=graine.id;
           // Asset metadata comes from the EXACT global-assets catalog used by
           // the running editor. No fabricated heading, sprite or second map.
@@ -85,6 +85,9 @@ const server = createServer(async (req, res) => {
             if(!resolved || resolved.headingRad!==0 || !resolved.url)
               throw Error("real direction metadata missing: "+assetId);
           }
+          const realFireball=assetForId("pack:capture:sprite-fireball-travel-01");
+          if(realFireball?.headingRad!==Math.PI || realFireball?.frameCount!==8 || !realFireball.url)
+            throw Error("actual left-facing Fireball atlas metadata missing");
           const projected=createCaptureSkillPresentationAssetsV2({
             skillPresentations:Object.fromEntries(files.map(file=>
               [file.id,normalizeSkillPresentationBinding(file.presentation)])),
@@ -115,9 +118,20 @@ const server = createServer(async (req, res) => {
             if(!sprite)throw Error("native sprite not visible in direction "+fromSlot);
             return sprite.style.transform;
           };
+          const shootBeam=(fromSlot,targetSlot)=>{
+            const before=arena.querySelectorAll(".skill-fx--beam").length;
+            fx.play({type:"beam",skillId:coupe.id,fromSlot,targetSlot,durationMs:coupe.definition.travelMs});
+            const shell=arena.querySelectorAll(".skill-fx--beam")[before];
+            const body=shell?.querySelector(".skill-fx__beam-body");
+            if(!body)throw Error("Coupe feuille authored beam body missing");
+            return {art:body.style.transform,shell:shell.style.transform};
+          };
           const outbound=shoot("player","opponent");
           const incoming=shoot("opponent","player");
-          const coupeIncoming=shoot("opponent","player",null,coupe.id);
+          const coupeIncoming=shootBeam("opponent","player");
+          const coupeOutgoing=shootBeam("player","opponent");
+          const fireballOutgoing=shoot("player","opponent",null,fireball.id);
+          const fireballIncoming=shoot("opponent","player",null,fireball.id);
           const neutralIncoming=shoot("opponent","player",null,tornade.id);
           const rect=arena.getBoundingClientRect();
           const contact={x:rect.left+730,y:rect.top+155};
@@ -127,7 +141,7 @@ const server = createServer(async (req, res) => {
           if(planned.length!==1 || planned[0].fromPoint!==contact)
             throw Error("mirror return lost contact point");
           const reflected=shoot(planned[0].fromSlot,planned[0].targetSlot,planned[0].fromPoint);
-          const coupeReflected=shoot(planned[0].fromSlot,planned[0].targetSlot,planned[0].fromPoint,coupe.id);
+          // Coupe feuille is a beam and cannot be redirected as a projectile by Miroir.
           // The same real media must stay upright when the PLAYER mirror
           // sends the enemy projectile back to the opponent (left -> right).
           const playerContact={x:rect.left+138,y:rect.top+351};
@@ -137,18 +151,20 @@ const server = createServer(async (req, res) => {
           if(reversePlan.length!==1 || reversePlan[0].fromPoint!==playerContact)
             throw Error("player mirror return lost actual contact point");
           const reflectedRight=shoot(reversePlan[0].fromSlot,reversePlan[0].targetSlot,
-            reversePlan[0].fromPoint,coupe.id);
+            reversePlan[0].fromPoint,id);
           const tilt=x=>Number(x.slice(x.indexOf("(")+1,x.indexOf("rad)")));
           if(outbound.includes("scaleX(-1)") ||
              !incoming.includes("scaleX(-1)") ||
-             !coupeIncoming.includes("scaleX(-1)") ||
+             coupeIncoming.art!=="scaleY(-1)" || coupeOutgoing.art!=="none" ||
+             !coupeIncoming.shell.includes("rotate(") ||
+             !fireballOutgoing.includes("scaleX(-1)") ||
+             fireballIncoming.includes("scaleX(-1)") ||
              !reflected.includes("scaleX(-1)") ||
-             !coupeReflected.includes("scaleX(-1)") ||
              reflectedRight.includes("scaleX(-1)") ||
              neutralIncoming!=="rotate(0rad)" ||
-             ![outbound,incoming,coupeIncoming,reflected,coupeReflected,reflectedRight].every(x=>Math.abs(tilt(x))<Math.PI/2))
+             ![outbound,incoming,reflected,reflectedRight,fireballOutgoing,fireballIncoming].every(x=>Math.abs(tilt(x))<Math.PI/2))
             throw Error("wrong real author projectile facing: "+
-              JSON.stringify({outbound,incoming,coupeIncoming,neutralIncoming,reflected,coupeReflected,reflectedRight}));
+              JSON.stringify({outbound,incoming,coupeIncoming,coupeOutgoing,fireballOutgoing,fireballIncoming,neutralIncoming,reflected,reflectedRight}));
           document.body.dataset.inboundProjectileProbe="ok:outbound:opponent:mirror";
         } catch(error) {
           document.body.dataset.inboundProjectileProbe="fail:"+error.message;

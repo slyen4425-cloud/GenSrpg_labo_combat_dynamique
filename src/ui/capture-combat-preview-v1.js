@@ -3,7 +3,7 @@ import {
 } from "./demo-app.js";
 import {
   mountCoop2v2Test
-} from "./combat-2v2-test-ui.js?v=projectile-facing-grainou-20261028";
+} from "./combat-2v2-test-ui.js?v=intrinsic-facing-v44-20261028";
 
 function requiredFunction(value, field) {
   if (typeof value !== "function") {
