@@ -6,7 +6,8 @@
 - Valeurs d'auteur conservées : Graine sansue, Nature, niveau 5, projectile, énergie 5, préparation/trajet 900 ms, CD 45 s. 1 marqueur `graine-sansue` (20 s, max 10) ; drain de vie 5 dégâts/charge chaque 3 s, calcul combat Nature, soin au lanceur 100 % des dégâts réels. Sprite cast Nature, projectile Terre et impact Nature conservés tels que fournis. Aucune association implicite à une créature.
 - Périmètre : fichiers canonical compétence/bibliothèque, registre de compétences, chaîne d'import JS versionnée de l'éditeur, tests de données/éditeur Chromium, provenance des deux exports et ce journal. Protéger moteur de combat, modules, main, catalogues d'assets, créatures et compétences existantes.
 - TDD RED : écrire les sentinelles d'intégration/absence de conflit et d'exposition navigateur avant l'import ; puis installer les données, tester via CI Foundation et quatre Chromium, checkpoint GREEN exact, PR gh-pages, vérifier Pages. Ne pas annoncer GREEN sans preuve.
-- Statut : tests RED en préparation ; non publié.
+- Vérification TDD : le commit RED `49ff196d` a fait échouer Foundation et la sentinelle navigateur en absence des nouveaux fichiers (attendu). Le code à `260c5bd1` a passé les quatre navigateurs, mais deux anciens tests Foundation comparaient à tort la bibliothèque active d'aujourd'hui avec l'archive immuable 2026-10-23 ; test corrigés à `9e9f35c0` pour contrôler **à la fois** l'archive intacte, les trois anciennes définitions préservées, les deux nouveaux marqueurs et l'idempotence du seed. Aucun affaiblissement des règles de conflit. PR #117 draft, CI intégrale du SHA `9e9f35c0` en cours, `gh-pages` encore intact.
+- État : branche fonctionnelle prête, documentation et provenance synchronisées ; validation CI exacte requise avant GREEN / fusion / Pages.
 
 ---
 
