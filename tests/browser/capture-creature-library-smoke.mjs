@@ -369,6 +369,32 @@ const server = createServer(async (req, res) => {
               const get=key=>document.querySelector("[data-"+key+"]");
               const fill=(key,v)=>{const node=get(key);if(!node)throw Error("field "+key+" absent");
                 node.value=String(v);node.dispatchEvent(new Event("change",{bubbles:true}));};
+              // Graine sansue and its shared marker must BOTH originate
+              // from the canonical showcase catalogs after actual browser boot.
+              if(!lib.querySelector('option[value="graine_sansue_cap"]'))
+                throw Error("Graine sansue missing from the active skill library");
+              if(!get("marker-library-select")?.querySelector('option[value="graine-sansue"]'))
+                throw Error("Graine sansue missing from the shared marker library");
+              lib.value="graine_sansue_cap";lib.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("skill-name")?.value!=="Graine sansue" ||
+                 get("skill-required-level")?.value!=="5" ||
+                 get("skill-cooldown")?.value!=="45000")
+                throw Error("Graine sansue author skill settings not loaded");
+              const graineRows=[...document.querySelectorAll("[data-skill-effect-row]")];
+              const graineMarker=graineRows.find(row=>
+                row.querySelector("[data-skill-effect-kind]")?.value==="apply_marker");
+              if(!graineMarker ||
+                 graineMarker.querySelector("[data-skill-marker-pick]")?.value!=="graine-sansue" ||
+                 graineMarker.querySelector("[data-skill-marker-charges]")?.value!=="1")
+                throw Error("Graine sansue does not use its single authored marker");
+              const markerSelect=get("marker-library-select");
+              markerSelect.value="graine-sansue";
+              markerSelect.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("marker-periodic-kind")?.value!=="life_steal" ||
+                 get("marker-periodic-percent")?.value!=="100" ||
+                 get("marker-periodic-seconds")?.value!=="3" ||
+                 get("marker-periodic-channel")?.value!=="nature")
+                throw Error("Shared Graine sansue drain is not loaded from its original author preset");
               // The three new author sheets must be read back from their
               // active owner after startup, never a native/legacy fallback.
               const lumiloSelect=get("creature-library-select");

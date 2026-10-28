@@ -2,6 +2,21 @@
   "schema": "capture-markers-v1",
   "markers": [
     {
+      "id": "poison",
+      "name": "Poison",
+      "polarity": "detrimental",
+      "durationMs": 25000,
+      "maxStacks": 30,
+      "iconAssetId": "pack:capture:icon-skill-poison-01",
+      "periodic": {
+        "kind": "damage",
+        "amount": 5,
+        "intervalMs": 5000,
+        "damageMode": "combat",
+        "channel": "physical"
+      }
+    },
+    {
       "id": "venin-static",
       "name": "venin static",
       "polarity": "detrimental",
@@ -66,6 +81,22 @@
         "intervalMs": 30000,
         "damageMode": "combat",
         "channel": "shadow"
+      }
+    },
+    {
+      "id": "graine-sansue",
+      "name": "Graine sansue",
+      "polarity": "detrimental",
+      "durationMs": 20000,
+      "maxStacks": 10,
+      "iconAssetId": "pack:capture:icon-skill-sangsue-01",
+      "periodic": {
+        "kind": "life_steal",
+        "amount": 5,
+        "intervalMs": 3000,
+        "damageMode": "combat",
+        "channel": "nature",
+        "percent": 100
       }
     }
   ]
