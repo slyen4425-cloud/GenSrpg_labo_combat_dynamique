@@ -154,5 +154,6 @@ test("the actual Capture editor presents, saves, reloads and explains the same p
   const extract=(text)=>text.match(/from "\.\/capture-marker-library-v1\.js(\?v=[\w-]+)?"/)?.[0]??"";
   assert.ok(extract(human),"human editor must import the canonical marker state owner");
   assert.equal(extract(human),extract(effects),"skill effect editor must use exactly the SAME ESM module instance");
+  assert.ok(human.includes('from "./capture-marker-effect-fields-v1.js?v=marker-life-drain-20261028"'),"parent must reload current effect-fields module so old cached URLs cannot create another state owner");
 
 });
