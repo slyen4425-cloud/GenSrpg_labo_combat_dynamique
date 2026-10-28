@@ -58,14 +58,16 @@ test("unoriented personal sprite also stays upright from player, no arbitrary do
   renderer.dispose();
 });
 
-test("directional asset explicitly declaring headingRad still rotates with trajectory in either direction",async()=>{
+test("directional asset with native heading follows both directions without upside-down opponent artwork",async()=>{
   const asset={...spriteAsset,headingRad:0};
   const a=await runProjectile({fromSlot:"player",asset});
   const b=await runProjectile({fromSlot:"opponent",asset});
   const headingA=Math.atan2(-200,640);
   const headingB=Math.atan2(200,-640);
   assert.equal(a.sprite.style.transform,`rotate(${headingA}rad)`);
-  assert.equal(b.sprite.style.transform,`rotate(${headingB}rad)`);
+  assert.equal(b.sprite.style.transform,`rotate(${headingB-Math.PI}rad) scaleX(-1)`);
+  assert.ok(Math.abs(headingB-Math.PI)<Math.PI/2,
+    "opponent projectile must not rotate its art by 180 degrees");
   a.renderer.dispose();b.renderer.dispose();
 });
 

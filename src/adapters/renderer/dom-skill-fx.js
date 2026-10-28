@@ -3099,17 +3099,23 @@ export function createDomSkillFxRenderer({
       const spriteNode = arena.ownerDocument.createElement("span");
       const coreAnchorX = clampUnit(travelVisual.coreAnchor?.x, 0.5);
       const coreAnchorY = clampUnit(travelVisual.coreAnchor?.y, 0.5);
-      // A sprite without an explicitly authored native heading is a
-      // non-directional visual (e.g. Tornade or a player's imported FX):
-      // translating it between camps must never turn it upside down.
-      // Only a directional asset declaring headingRad follows the shot line.
-      // Skyfall remains upright regardless of heading metadata.
+      // The same author sprite points forward for both camps. Rotating
+      // a leftward shot by ~180deg also turns its artwork upside down.
+      // Mirror ONLY explicitly directional sprites horizontally when the
+      // actual flight goes left (also covers mirrorReturn/contactPoint),
+      // then keep the small native-heading correction. No extra FX owner.
+      // Non-directional sprites (Tornade) and skyfall stay authored/upright.
       const headingRad = travelVisual.headingRad;
       const hasDirectionalHeading = typeof headingRad === "number" &&
         Number.isFinite(headingRad);
+      const mirrorLeftward = !skyfall && hasDirectionalHeading && deltaX < 0;
+      const travelAngle = Math.atan2(deltaY, deltaX);
       const rotationRad = skyfall || !hasDirectionalHeading
         ? 0
-        : Math.atan2(deltaY, deltaX) - headingRad;
+        : mirrorLeftward
+          ? (travelAngle > 0 ? travelAngle - Math.PI : travelAngle + Math.PI)
+            + headingRad
+          : travelAngle - headingRad;
 
       node.className += " skill-fx--sprite-shell";
       node.dataset.assetId = travelVisual.assetId ?? "";
@@ -3126,7 +3132,9 @@ export function createDomSkillFxRenderer({
       spriteNode.style.top = percent(0.5 - coreAnchorY);
       spriteNode.style.transformOrigin =
         `${percent(coreAnchorX)} ${percent(coreAnchorY)}`;
-      spriteNode.style.transform = `rotate(${rotationRad}rad)`;
+      spriteNode.style.transform = mirrorLeftward
+        ? `rotate(${rotationRad}rad) scaleX(-1)`
+        : `rotate(${rotationRad}rad)`;
       node.append(spriteNode);
       spriteBound = true;
     }
