@@ -13,7 +13,7 @@ import {
 } from "../../src/adapters/audio/combat-soundtrack-preview-bridge-v1.js";
 import {
   mountCaptureEditorHumanV2
-} from "../../src/ui/capture-editor-human-v2.js";
+} from "../../src/ui/capture-editor-human-v2.js?v=capture-showcase-20261028";
 import {
   createCreatorVisualAssetSessionV1
 } from "../../src/assets/creator-visual-asset-session-v1.js";
