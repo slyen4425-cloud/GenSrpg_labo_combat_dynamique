@@ -1,0 +1,24 @@
+{
+  "originalArchive": "fleur_defense_12_frames_512.zip",
+  "originalArchiveBytes": 6249269,
+  "originalArchiveSha256": "653c5012f182931b4add1bef4641ab8837e749358236dba6b33d5ed0c70f9169",
+  "originalGitBlobSha": "5f3bb2b288f8fdc4dc9c22bb474dfce13bb9b3c4",
+  "originalFileSha256": {
+    "frames/fleur_defense_00.png": "bd603b4fd003f9e8a417ec7b1db2440029a6748b485875559a55d20597b35b03",
+    "frames/fleur_defense_01.png": "0ef77336917c9613c1e793dcd72496a2f75ed3bf0cbc202232e03359917d2d46",
+    "frames/fleur_defense_02.png": "2f0dfa85d50443ad5cd8bd64a136b725e11d935f28464515994b29e6fd6dba5e",
+    "frames/fleur_defense_03.png": "f682fd700eedf46c26bb2318fb759043fa39cd356b3aa191d19af2999bf3feaa",
+    "frames/fleur_defense_04.png": "919186a1da3103136ce333a7344b8782a5f41632b8300ff105ba5c8cdca3d336",
+    "frames/fleur_defense_05.png": "445c76230ac9a1764c5767446a353977176b042dbf794a0593fffb59f3431f19",
+    "frames/fleur_defense_06.png": "ef72d8230864a364d9d7124ee6aabf89691e9536f97698ac1db92c10984a865b",
+    "frames/fleur_defense_07.png": "482aeca43d1315ddbd38f49ffe9beb25bb601bdcb6404d6dc04f8c24b1910fe7",
+    "frames/fleur_defense_08.png": "ac6acab21b0dc159984d1cca5bd3946f3018bc83c9736c05ac807d2cb599cc17",
+    "frames/fleur_defense_09.png": "71248a83ad23ec40e55af529340bf7cb412b87949e89b0a718890c5cccc9b0fc",
+    "frames/fleur_defense_10.png": "1a359cb4fd58232ef297b44c5b45f456c24e1de3eeec4da671abc0ba47aa763d",
+    "frames/fleur_defense_11.png": "007e60ca9bbabca16c0b949206aa54c16f200fec696ec29879bd337286c1a60b",
+    "manifest.json": "fc2587b715ff80aa2f6055035acff93c9a1edd71393dd076b706b8a08cf42f1c",
+    "fleur_defense_preview_512.webp": "a67e614cae919667fb48e4d1de793d5deeb03a1a1fe101d6aac68c575a93f6aa",
+    "fleur_defense_planche_512.png": "4a87448b335ff33d5b393499a233db7d53ed7a270d18cecaf5c954e21b59791b"
+  },
+  "generatedAtlasSha256": "bdf360537b77a070c566b7e5229c732cd02e38dd3276cfefb9e73b551852c786"
+}

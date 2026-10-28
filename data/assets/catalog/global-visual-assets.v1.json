@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 275,
+    "assets": 276,
     "icons": 87,
-    "sprites": 164,
+    "sprites": 165,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
@@ -9343,6 +9343,46 @@
         "frameCount": 12,
         "frameMs": 110,
         "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-fleur-defense-01",
+      "label": "Fleur défensive — fermeture protectrice (12f)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "nature",
+        "flower",
+        "defense",
+        "buff",
+        "shield",
+        "animated",
+        "hold-last-frame"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/fleur_defense/fleur_defense_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 155,
+        "playbackMode": "once",
+        "holdLastFrame": true
       },
       "compatibility": {
         "uses": [
