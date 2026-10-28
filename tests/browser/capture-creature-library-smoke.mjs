@@ -469,6 +469,25 @@ const server = createServer(async (req, res) => {
               // The three new author sheets must be read back from their
               // active owner after startup, never a native/legacy fallback.
               const lumiloSelect=get("creature-library-select");
+              if(!lumiloSelect?.querySelector('option[value="crea_nat_1"]'))
+                throw Error("Grainou missing from canonical creature library");
+              lumiloSelect.value="crea_nat_1";
+              lumiloSelect.dispatchEvent(new Event("change",{bubbles:true}));
+              const grainouSlots=[...document.querySelectorAll("[data-loadout-slot]")].map(x=>x.value);
+              if(get("creature-name")?.value!=="Grainou" ||
+                 grainouSlots[0]!=="coupe_feuille" ||
+                 grainouSlots[1]!=="graine_sansue_cap" ||
+                 get("creature-reaction-type")?.value!=="defense" ||
+                 get("creature-reaction-charges")?.value!=="2" ||
+                 get("creature-reaction-recharge")?.value!=="20" ||
+                 get("creature-reaction-window")?.value!=="0.4" ||
+                 get("creature-reaction-reduction")?.value!=="30")
+                throw Error("Grainou latest author loadout or defensive reaction not loaded: "+
+                  JSON.stringify({slots:grainouSlots,reaction:get("creature-reaction-type")?.value,
+                    charges:get("creature-reaction-charges")?.value,
+                    recharge:get("creature-reaction-recharge")?.value,
+                    window:get("creature-reaction-window")?.value,
+                    reduction:get("creature-reaction-reduction")?.value}));
               if(!lumiloSelect?.querySelector('option[value="crea_ombre_2"]'))
                 throw Error("Noctigriffe missing from configured creature owner");
               const teamSelect=get("test-opponent-creature");
