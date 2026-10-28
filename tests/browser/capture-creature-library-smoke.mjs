@@ -119,8 +119,24 @@ const server = createServer(async (req, res) => {
           if(!mode||!marker||!min)throw Error("missing native per-effect condition controls");
           mode.value="marker";mode.dispatchEvent(new Event("change",{bubbles:true}));
           marker.dispatchEvent(new Event("focus"));
-          if(marker.tagName!=="SELECT" || ![...marker.options].some(o=>o.value))
-            throw Error("registered marker list did not populate for effects");
+          // A newly opened editor legitimately has no registered markers.
+          // Create one through its real library, then verify that the
+          // condition picker updates from that authoritative registry.
+          if(![...marker.options].some(o=>o.value)){
+            const create=document.querySelector("[data-marker-new]");
+            const name=document.querySelector("[data-marker-name]");
+            const save=document.querySelector("[data-marker-save]");
+            if(!create||!name||!save)throw Error("marker author controls unavailable");
+            create.click();
+            name.value="Marqueur sommeil test";
+            name.dispatchEvent(new Event("input",{bubbles:true}));
+            name.dispatchEvent(new Event("change",{bubbles:true}));
+            save.click();
+            marker.dispatchEvent(new Event("focus"));
+          }
+          if(marker.tagName!=="SELECT" ||
+             ![...marker.options].some(o=>o.value==="marqueur-sommeil-test"))
+            throw Error("new official marker missing from effect condition picker");
           min.value="2";
           mode.value="sleep";mode.dispatchEvent(new Event("change",{bubbles:true}));
           if(mode.value!=="sleep")throw Error("Sommeil condition is unavailable");
