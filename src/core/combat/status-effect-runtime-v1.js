@@ -598,7 +598,7 @@ function applyDotTick({
       atMs,
       hitsIntangible: instance.hitsIntangible === true,
       incomingKind: "dot"
-    }).state;
+    });
   }
 
   const damage =
@@ -622,7 +622,7 @@ function applyDotTick({
     atMs,
     hitsIntangible: instance.hitsIntangible === true,
     incomingKind: "dot"
-  }).state;
+  });
 }
 
 export function advanceStatusEffectsOnOwnerActionEndV1({
@@ -772,10 +772,11 @@ export function advanceStatusEffectsV1({
           ? instance.definition.periodic ?? null : null;
         const amount = (periodic?.amount ?? instance.definition.amount ?? 0) * instance.stacks;
 
-        if (instance.definition.kind === "damage_over_time" || periodic?.kind === "damage") {
-          // Delegate to the same DoT damage owner, including shield, immunity,
-          // resistance when configured, and knockout attribution.
-          nextState = applyDotTick({
+        if (instance.definition.kind === "damage_over_time" ||
+            periodic?.kind === "damage" || periodic?.kind === "life_steal") {
+          // Same native DoT clock and Combat Damage owner: shield, immunity,
+          // resistance, overkill, knockout and reflection remain authoritative.
+          const hit = applyDotTick({
             state: nextState, fighterId, amount, atMs: tickAt,
             instance: periodic ? {
               ...instance,
@@ -784,6 +785,25 @@ export function advanceStatusEffectsV1({
                 channel: periodic.channel}
             } : instance
           });
+          nextState = hit.state;
+          // The marker's actual source (last placer) receives the heal, never
+          // the afflicted target. No resurrection, no retained/off-field caster
+          // fallback and no drain on absorbed or reflected damage.
+          if (periodic?.kind === "life_steal" && hit.appliedDamage > 0 &&
+              instance.sourceActorId !== fighterId &&
+              Number(nextState.fighters[instance.sourceActorId]?.hp) > 0) {
+            const requested = Math.min(
+              periodic.maxHeal ?? Infinity,
+              Math.round(hit.appliedDamage * periodic.percent) / 100
+            );
+            if (requested > 0) {
+              nextState = applyHotTick({
+                state: nextState,
+                targetActorId: instance.sourceActorId,
+                amount: requested
+              }).state;
+            }
+          }
         } else if (instance.definition.kind === "heal_over_time" || periodic?.kind === "heal") {
           nextState = applyHotTick({
             state: nextState,
