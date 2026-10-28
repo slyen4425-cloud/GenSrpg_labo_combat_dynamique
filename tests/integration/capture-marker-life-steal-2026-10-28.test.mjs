@@ -147,4 +147,12 @@ test("the actual Capture editor presents, saves, reloads and explains the same p
   }
   assert.match(js,/periodic\.kind==="life_steal"/);
   assert.match(explain,/p\.kind==="life_steal"/);
+  // Module URL identity is state ownership: different query URLs create
+  // different WeakMaps for one marker library, losing all marker pickers.
+  const human=await readFile(new URL("../../src/ui/capture-editor-human-v2.js",import.meta.url),"utf8");
+  const effects=await readFile(new URL("../../src/ui/capture-marker-effect-fields-v1.js",import.meta.url),"utf8");
+  const extract=(text)=>text.match(/from "\.\/capture-marker-library-v1\.js(\?v=[\w-]+)?"/)?.[0]??"";
+  assert.ok(extract(human),"human editor must import the canonical marker state owner");
+  assert.equal(extract(human),extract(effects),"skill effect editor must use exactly the SAME ESM module instance");
+
 });
