@@ -1,3 +1,14 @@
+## 2026-10-28 — Fleur défensive 12f + Spore soporifique (raccord Capture)
+
+- **Base/autorité** : `global-assets@4e938b32eb2b1e66ac110a82cd1f550b9c443ddf` ; checkpoint départ `checkpoint/lab-start-fleur-defense-spore-soporifique-2026-10-28` ; branche `work/lab-fleur-defense-spore-soporifique-2026-10-28`. Catalogue autoritaire unique `data/assets/catalog/global-visual-assets.v1.json`, sans modifier `main` ni `gh-pages`.
+- **ZIP déjà déposé** : `assets/library/capture/sprites/skills/fleur_defense_12_frames_512.zip` octet-identique à la source locale approuvée (Git blob `5f3bb2b288f8fdc4dc9c22bb474dfce13bb9b3c4`, SHA256 `653c5012f182931b4add1bef4641ab8837e749358236dba6b33d5ed0c70f9169`).
+- **Import réel** : `assets/library/capture/sprites/skills/fleur_defense/` contient 12 PNG RGBA 512², preview WebP animée, planche PNG, manifeste original, atlas WebP lossless 6144×512, séquence et provenance ; 18 fichiers physiques, 1 asset logique `pack:capture:sprite-fleur-defense-01`. Atlas/frames correspondance pixels contrôlée ; sprite `once` + `holdLastFrame` déclarés mais durée réelle du buff toujours propriétaire du runtime.
+- **Export capacité** : `data/capture/showcase/Spore_soporifique.capture-skill-transfer-v1.json`, ID stable `Spore_soporifique`, niveau 10 ; FX existants bulle expansive et Z de sommeil, statut source `stun` de 10 secondes conservé tel quel. Le dépôt de l'export ne prétend pas modifier automatiquement `configuredSkills` côté navigateur.
+- **Tests et prévisualisation** : sentinelle RED `tests/unit/capture-fleur-defense-spore-soporifique-2026-10-28.test.mjs` ; import source/CI complet via [action 40773353976](https://github.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/actions/runs/40773353976) : SUCCESS. Métadonnées : `docs/LAB_FLEUR_DEFENSE_SPORE_SOPORIFIQUE_2026_10_28.md`.
+- **À clôturer** : CI finale sur SHA exact du lot après journal/docs ; checkpoint GREEN technique ; fast-forward non forcé de `global-assets`; vérification Git finale. Preview en jeu et maintien jusqu'à expiration du buff à valider par l'auteur.
+
+---
+
 ## 2026-10-28 — Sommeil Z : publier l'animation de statut approuvée (12 frames)
 
 - **Source auteur** : `_incoming/GENSRPG_SOMMEIL_Z_12F_WEBP.zip`, 4 413 627 octets ; SHA256 `c54544b0d60519738ffa5bf81b1c5de57e1782d70eb5964fe65ee987449d02c6` ; blob Git `6d6e5d763e55133935726dbf95043ac9f1e1a445`. ZIP approuvé en conversation, 17 entrées/CRC valide, 12 frames WebP RGBA 512×512, atlas WebP 6144×512 et preview WebP 12 frames, planche de contrôle PNG.
