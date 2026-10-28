@@ -1,3 +1,11 @@
+## 2026-10-28 — Spore soporifique (import capacité auteur)
+- Base : `gh-pages@e7b7e71c8d43d48de78d757cb3f27ef1e1766679`, checkpoint de départ `checkpoint/lab-start-spore-soporifique-skill-2026-10-28`, branche `work/lab-spore-soporifique-skill-2026-10-28`.
+- Périmètre : dépôt exact du JSON de l'auteur sous source-exports, copie active vitrine par ID, entrée unique dans `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1`, sentinelle de fidélité, documentation. Moteurs/éditeur/FX et autres capacités protégés.
+- Test prévu : import du transfert, identité exacte source/vitrine, paramètres de statut, liens de sprites réels du catalogue `global-assets`, unicité du catalogue vitrine ; CI et checkpoint GREEN avant publication.
+- Statut : branche de travail, pas de GREEN ni d'auto-équipement annoncé.
+
+---
+
 ## 2026-10-28 — Sommeil / conditions selon statuts et marqueurs (lot coordonné en cours)
 - Demande auteur : Sommeil = étourdissement jusqu'aux premiers PV effectivement perdus (sans durée arbitraire), et effets de toute capacité conditionnés aux statuts ou charges de marqueurs de la cible, exemple +100 dégâts si endormi. Éditeur tactile sans saisie d'IDs.
 - Base gh-pages `89fb37307d4455801b2afe858c3d18e4d7554407` ; global-assets `0233463ad1c5b2304448ff06d4786e4e66eda215` **non modifié**.
