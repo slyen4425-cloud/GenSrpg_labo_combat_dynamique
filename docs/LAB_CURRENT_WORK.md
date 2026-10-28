@@ -5,7 +5,7 @@
 - Périmètre : importer en conservant les octets sources, trois IDs `pack:capture:sprite-feuille-tranchante-{cast,projectile,impact}-03`, mettre à jour le seul catalogue `data/assets/catalog/global-visual-assets.v1.json`, test sentinelle assets + script et workflow d'import documentés. Cast/impact une fois ; projectile en boucle ; catégories release/travel/impact.
 - Protégés : toute autre ressource, compétence, créature, renderer, UI, `gh-pages`, `main`, GenSrpG et exploration. Les visuels doivent rester sélectionnables dans l'éditeur sans auto-affectation aux compétences. Aucun second catalogue.
 - Vérifications : intégrité SHA/ZIP/CRC, 36 frames distinctes avec alpha, tailles/ordre et atlas, IDs uniques, vrais fichiers du catalogue, CI complète et revue du diff, checkpoint GREEN final, publication fast-forward sans écraser des commits tiers. Contrôle Android à faire par l'auteur.
-- État : dépôt ZIP reçu, préparation test RED puis import et CI.
+- Validation : test RED initial au SHA `de6e09e436a9f26e7a5d756fe07ae2893d050c40` ; import GitHub Actions `40638822172` SUCCESS, vérification ZIP/CRC/SHA/36 frames alpha/3 atlas et `npm run ci` sur le vrai jeu d'assets. Import commit `89a7c3d4730d2e2e086542f1eba5d024d9a20ca4` : catalogue 268→271 entrées, 158→161 sprites, métadonnées de comptage recalculées depuis les vrais actifs. Vérification CI complète sur ce journal final et publication sous fast-forward à confirmer.
 
 ---
 
