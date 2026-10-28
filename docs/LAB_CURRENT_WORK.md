@@ -1,3 +1,12 @@
+## 2026-10-28 — Projectile adverse : atlas historiques orientés à gauche (en cours)
+- Signalement auteur persistant après v43 : le sprite réel de Boule de feu historique a sa tête à gauche et sa traînée à droite ; son heading est absent du catalogue média. Le rendu existant le laisse donc identique dans les deux directions.
+- Source unique du cap natif : global-assets/data/assets/catalog/global-visual-assets.v1.json. Propriétaire unique du rendu selon la trajectoire réelle : src/adapters/renderer/dom-skill-fx.js. Aucun traitement spécifique par ID, camp ou compétence.
+- BASE gh-pages = 2ce536888d8dc552017958cc94082c36114b2049 ; BASE global-assets = 8ff0f81c89a9fd55ecc889e89c3ca2bbb356095b (concurrence médias à protéger).
+- START : checkpoint/lab-start-projectile-native-left-facing-{gh-pages,global-assets}-2026-10-28 ; WORK : work/lab-projectile-native-left-facing-{gh-pages,global-assets}-2026-10-28.
+- Fichiers autorisés : heading catalogue de Boule de feu, sentinelle média, moteur DOM projectile, tests bidirectionnels, révision cache, sentinelle navigateur, journal et note. Protégés : images, modèles, presets, gameplay, dégâts, trajectoire, collision, miroir sémantique, effets neutres et skyfall, main/GenSrpg.
+- TDD RED source native gauche et renderer ; GREEN exige les tests unitaires et d'intégration, Chromium du vrai catalogue, CI au SHA exact, checkpoints et Pages SUCCESS. Validation visuelle Android auteur reste distincte.
+
+---
 ## 2026-10-28 — Régression projectiles inversés : heading natif absent du catalogue média (en cours)
 - Signalement utilisateur après PR #118 publiée `gh-pages@d2f9f19618d26bc86adbd7c5698f59d4e72dfa5c` : de nombreux projectiles adverses / retours miroir sont toujours visuellement à l'envers. Les deux exports Grainou/Graine sansue sont bien sur gh-pages, ne pas les remanier.
 - Reproduction à la source : le navigateur Chromium de #118 substituait **un faux asset `headingRad:-0.48`** à tous les projectiles ; or le catalogue global réel n'exporte aucun `headingRad` pour les atlases de Graine sansue, Coupe feuille, Crachat acide, Rafale, Aile acier, Sakura. Le renderer respecte correctement son contrat et garde `rotate(0)` sur les médias sans cap, même lorsqu'ils repartent à gauche après miroir. La CI précédente ne couvrait donc pas le chemin des vrais assets.
