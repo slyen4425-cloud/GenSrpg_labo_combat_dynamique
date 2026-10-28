@@ -294,7 +294,8 @@ function markerFromFields(root){
       channel:value(root,"marker-periodic-channel").trim()||"physical"
     } : {}),
     ...(value(root,"marker-periodic-kind")==="life_steal" ? {
-      percent:Number(value(root,"marker-periodic-percent")),
+      percent:value(root,"marker-periodic-percent").trim()===""
+        ? NaN : Number(value(root,"marker-periodic-percent")),
       ...(value(root,"marker-periodic-max-heal").trim()==="" ? {}
         : {maxHeal:Number(value(root,"marker-periodic-max-heal"))})
     } : {})
