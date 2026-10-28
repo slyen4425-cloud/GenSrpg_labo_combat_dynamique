@@ -1,0 +1,80 @@
+{
+  "packId": "pack:capture:graine-sangsue-v1",
+  "name": "Graine sansue — projectile original validé et débuff bourgeons",
+  "format": "webp",
+  "background": "transparent",
+  "element": "nature",
+  "sourceImages": {
+    "projectile": "source/sprite_anime_de_graine_magique_verte.png",
+    "debuff": "source/a_clean_graphic_sprite_sheet_style_illustration_on.png"
+  },
+  "sprites": {
+    "projectile": {
+      "frames": 12,
+      "frameSize": [
+        512,
+        512
+      ],
+      "atlas": "projectile/graine_sangsue_projectile_atlas_12f.webp",
+      "frameFiles": [
+        "projectile/graine_sangsue_projectile_01.webp",
+        "projectile/graine_sangsue_projectile_02.webp",
+        "projectile/graine_sangsue_projectile_03.webp",
+        "projectile/graine_sangsue_projectile_04.webp",
+        "projectile/graine_sangsue_projectile_05.webp",
+        "projectile/graine_sangsue_projectile_06.webp",
+        "projectile/graine_sangsue_projectile_07.webp",
+        "projectile/graine_sangsue_projectile_08.webp",
+        "projectile/graine_sangsue_projectile_09.webp",
+        "projectile/graine_sangsue_projectile_10.webp",
+        "projectile/graine_sangsue_projectile_11.webp",
+        "projectile/graine_sangsue_projectile_12.webp"
+      ],
+      "preview": "preview_graine_sangsue_projectile_12f.webp",
+      "frameMs": 72,
+      "playback": "loop",
+      "assetId": "pack:capture:sprite-graine-sangsue-projectile-01"
+    },
+    "debuff": {
+      "frames": 12,
+      "frameSize": [
+        512,
+        512
+      ],
+      "atlas": "debuff/graine_sangsue_debuff_atlas_12f.webp",
+      "frameFiles": [
+        "debuff/graine_sangsue_debuff_01.webp",
+        "debuff/graine_sangsue_debuff_02.webp",
+        "debuff/graine_sangsue_debuff_03.webp",
+        "debuff/graine_sangsue_debuff_04.webp",
+        "debuff/graine_sangsue_debuff_05.webp",
+        "debuff/graine_sangsue_debuff_06.webp",
+        "debuff/graine_sangsue_debuff_07.webp",
+        "debuff/graine_sangsue_debuff_08.webp",
+        "debuff/graine_sangsue_debuff_09.webp",
+        "debuff/graine_sangsue_debuff_10.webp",
+        "debuff/graine_sangsue_debuff_11.webp",
+        "debuff/graine_sangsue_debuff_12.webp"
+      ],
+      "preview": "preview_graine_sangsue_debuff_12f.webp",
+      "frameMs": 115,
+      "playback": "once-hold-last",
+      "assetId": "pack:capture:sprite-graine-sangsue-debuff-01"
+    }
+  },
+  "debuffDisplay": {
+    "sequence": "debuff",
+    "freezeOnFrame": 12,
+    "holdFrame": "debuff/graine_sangsue_debuff_hold.webp",
+    "animationEnds": "after frame 12",
+    "holdUntil": "debuff removed by gameplay",
+    "followTarget": true,
+    "meaning": "overlay attached to creature, not ground area",
+    "note": "The visual assets do not implement target-following or status duration; configure them in the existing lab editor."
+  },
+  "authorApproval": {
+    "projectile": "first approved green vegetal seed",
+    "debuff": "latest accepted pink bud illustration"
+  },
+  "noGameplayChange": true
+}

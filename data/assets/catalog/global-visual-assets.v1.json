@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 272,
+    "assets": 274,
     "icons": 87,
-    "sprites": 161,
+    "sprites": 163,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
@@ -9210,6 +9210,88 @@
       "resource": {
         "file": "capture/icons/skills/icon_skill_graine_sangsue_01.webp",
         "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-graine-sangsue-projectile-01",
+      "label": "Graine sansue — Projectile (12f)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "capture",
+        "skill",
+        "nature",
+        "seed",
+        "sangsue",
+        "graine",
+        "projectile",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/graine_sangsue/projectile/graine_sangsue_projectile_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 72,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-graine-sangsue-debuff-01",
+      "label": "Graine sansue — Débuff : bourgeons fleuris (12f)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "nature",
+        "seed",
+        "sangsue",
+        "graine",
+        "debuff",
+        "animated",
+        "debuff",
+        "status",
+        "flower",
+        "bud",
+        "hold-last"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/graine_sangsue/debuff/graine_sangsue_debuff_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 115,
+        "playbackMode": "once",
+        "holdLastFrame": true
       },
       "compatibility": {
         "uses": [
