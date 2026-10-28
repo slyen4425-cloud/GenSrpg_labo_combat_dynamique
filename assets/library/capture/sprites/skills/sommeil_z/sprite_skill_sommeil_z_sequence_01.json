@@ -1,0 +1,38 @@
+{
+  "id": "pack:capture:sprite-sommeil-z-status-01",
+  "label": "Sommeil — Z flottants (état visuel)",
+  "frameSize": [
+    512,
+    512
+  ],
+  "frame_count": 12,
+  "frame_ms": 110,
+  "playback_mode": "loop",
+  "loop": true,
+  "loopUntil": "status-removed",
+  "anchor": "above-head",
+  "followTarget": true,
+  "visualOnly": true,
+  "frames": [
+    "frames/sommeil_z_01.webp",
+    "frames/sommeil_z_02.webp",
+    "frames/sommeil_z_03.webp",
+    "frames/sommeil_z_04.webp",
+    "frames/sommeil_z_05.webp",
+    "frames/sommeil_z_06.webp",
+    "frames/sommeil_z_07.webp",
+    "frames/sommeil_z_08.webp",
+    "frames/sommeil_z_09.webp",
+    "frames/sommeil_z_10.webp",
+    "frames/sommeil_z_11.webp",
+    "frames/sommeil_z_12.webp"
+  ],
+  "preview": "preview_sommeil_z_12f.webp",
+  "atlas": {
+    "file": "sommeil_z_atlas_12f.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 512,
+    "frameHeight": 512
+  }
+}

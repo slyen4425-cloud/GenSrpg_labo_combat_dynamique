@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 274,
+    "assets": 275,
     "icons": 87,
-    "sprites": 163,
+    "sprites": 164,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
@@ -9303,6 +9303,46 @@
         "frameMs": 115,
         "playbackMode": "once",
         "holdLastFrame": true
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-sommeil-z-status-01",
+      "label": "Sommeil — Z flottants (état visuel)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "status",
+        "stun",
+        "sleep",
+        "somnolence",
+        "sommeil",
+        "z",
+        "animated",
+        "fx"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/sommeil_z/sommeil_z_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 110,
+        "playbackMode": "loop"
       },
       "compatibility": {
         "uses": [

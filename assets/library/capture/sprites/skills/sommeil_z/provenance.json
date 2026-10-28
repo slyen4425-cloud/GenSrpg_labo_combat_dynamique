@@ -1,0 +1,25 @@
+{
+  "originalArchive": "GENSRPG_SOMMEIL_Z_12F_WEBP.zip",
+  "originalArchiveSha256": "c54544b0d60519738ffa5bf81b1c5de57e1782d70eb5964fe65ee987449d02c6",
+  "originalArchiveBytes": 4413627,
+  "originalGitBlobSha": "6d6e5d763e55133935726dbf95043ac9f1e1a445",
+  "originalFileSha256": {
+    "README.txt": "602ef9a3bcab96a8a4eb6ab74a71d56575b93e50f686c06a55484f8e06c88034",
+    "frames/sommeil_z_01.webp": "ad12443a877986b380830598af0987be48d695b6a9214f7e1d566cbdd6aea748",
+    "frames/sommeil_z_02.webp": "254b76f843f4aae585fee76d0c14e5a12a71187444316bc9c49c68af9459d50b",
+    "frames/sommeil_z_03.webp": "2d578723804f9cc843925532b6ced995ef958e2dd887169e3171067f337b2b18",
+    "frames/sommeil_z_04.webp": "c9699d41d3fe0371b282240af78a20ebbea7769a1a68ef4a4172efd5aae12625",
+    "frames/sommeil_z_05.webp": "a1c6a8312f84b623316f355611dcf46846fd705e62a14f6d7ff618cf2ace4481",
+    "frames/sommeil_z_06.webp": "10b605662ca5041d8445866d9abb5a7a67285c68c1880e7dcf7933718bcda275",
+    "frames/sommeil_z_07.webp": "2f862d9e05b459bcb97c59ff868c57765c9abd5e7c516ba691fdb0ad5967916c",
+    "frames/sommeil_z_08.webp": "472fcaac189a27068950a30c7d56bde30786dac45bff77583627b3be31d44290",
+    "frames/sommeil_z_09.webp": "6b1ec11385c74bdc5ebfe2f3f679e00acb0fc256a316345e9e5712c761e721ec",
+    "frames/sommeil_z_10.webp": "9418cdf1fd8c0400e1e666a8bc3f938ebe8d1c851d983edee899e0cf894ac00f",
+    "frames/sommeil_z_11.webp": "9f33b47f6f6a65041512ff0041f7802f5ee92b89b9b57f0f136e042080d9cda0",
+    "frames/sommeil_z_12.webp": "90fae456eae030e619602d568302c007963c01495de56f2192c446b57d2606c5",
+    "manifest.json": "8d1178e4d4b09b8bb61ca09cb86d9dfe76f5de4e9ffd1e0b70284f6348259701",
+    "planche_sommeil_z_12f.png": "103a3f84d7e8c57e594d8ac24e2e8f56ff3eb478eb52d341e7e1895c7cf5f034",
+    "preview_sommeil_z_12f.webp": "1fd473064893ecf015001902d590fd9582e894edd133faa12d383a1574e01e1e",
+    "sommeil_z_atlas_12f.webp": "0ff79a936d2a89978b365dfdd5bd52fe5192c60113dc5cc8e20e7c5a5578b63f"
+  }
+}
