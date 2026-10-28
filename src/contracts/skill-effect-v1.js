@@ -1,5 +1,5 @@
 import {
-  normalizeStatusEffectV1
+  normalizeStatusEffectV1, STATUS_EFFECT_V1_KINDS
 } from "./status-effect-v1.js";
 import { normalizeCaptureMarkerV1 } from "./capture-marker-v1.js";
 
@@ -36,12 +36,6 @@ export function isReserveEffectTargetScopeV2(scope) {
   return RESERVE_EFFECT_TARGET_SCOPES_V2.includes(scope);
 }
 
-const STATUS_CONDITION_KINDS = new Set([
-  "stat_modifier","outgoing_damage_modifier","stack_counter","approach_time_modifier",
-  "energy_regen_modifier","skill_cooldown_rate_modifier","damage_over_time",
-  "heal_over_time","shield","damage_reflection","projectile_mirror",
-  "auto_dodge","triggered_buff","immunity","immobilize","silence","stun","taunt"
-]);
 const KIND_SET = new Set(SKILL_EFFECT_V1_KINDS);
 const TARGET_SCOPE_SET = new Set(
   SKILL_EFFECT_V1_TARGET_SCOPES
@@ -280,7 +274,7 @@ export function normalizeSkillEffectV1(input) {
     if(!["sleep","status_kind","marker"].includes(type))throw new RangeError("Unknown condition type");
     const ref=type==="sleep"?null:requiredString(c.value,"condition.value");
     if(type==="sleep" && c.value!=null)throw new RangeError("Sleep has no ID");
-    if(type==="status_kind" && !STATUS_CONDITION_KINDS.has(ref))throw new RangeError("Unknown status condition");
+    if(type==="status_kind" && !STATUS_EFFECT_V1_KINDS.includes(ref))throw new RangeError("Unknown status condition");
     if(type==="marker" && !/^[a-z0-9][a-z0-9_-]{0,63}$/.test(ref))throw new RangeError("Invalid marker condition");
     const minimum=positiveInteger(c.minimum??1,"condition.minimum");
     if(minimum>99)throw new RangeError("Condition max is 99");
