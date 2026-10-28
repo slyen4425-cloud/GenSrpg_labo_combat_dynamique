@@ -15,7 +15,7 @@ test("public editor reloads the exact Capture skill manifest module through a re
   const html = await read("examples/dom-demo/capture-editor-v2.html");
   const entry = await read("examples/dom-demo/capture-editor-v2.js");
   const editor = await read("src/ui/capture-editor-human-v2.js");
-  assert.ok(html.includes(`src="./capture-editor-v2.js?v=${release}"`), "HTML must request the revised entry module");
+  assert.ok(html.includes(`src="./capture-editor-v2.js?v=projectile-preview-heading-20261028"`), "HTML must request the corrected preview entry module");
   assert.ok(entry.includes(`from "../../src/ui/capture-editor-human-v2.js?v=${release}"`), "entry must request the revised UI owner");
   assert.ok(editor.includes(`from "../catalogs/capture-showcase-skill-presets-v1.js?v=${release}"`), "UI owner must request the same versioned canonical skill manifest");
   assert.ok(editor.includes(`from "../assets/global-visual-library.js?v=${release}"`), "UI owner must not import stale media metadata");
