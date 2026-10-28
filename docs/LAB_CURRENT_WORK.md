@@ -1,3 +1,15 @@
+## 2026-10-28 — Icône Graine sangsue : bibliothèque Capture
+
+- **Demande** : publier l'icône Graine sangsue (écrit aussi « graine sensue » dans l'échange), modèle source déjà généré et approuvé, sans retouche artistique, au format des compétences Monster Capture.
+- **Owner unique** : bibliothèque visuelle `global-assets`. Base `global-assets@4b72ab532e79a23ba278bf3213c044d94d400409` ; checkpoint `checkpoint/lab-start-graine-sangsue-icon-2026-10-28` ; branche `work/lab-graine-sangsue-icon-2026-10-28`.
+- **Périmètre** : un WebP 128x128 RGB dans `assets/library/capture/icons/skills/icon_skill_graine_sangsue_01.webp` ; une entrée `pack:capture:icon-skill-graine-sangsue-01` dans `data/assets/catalog/global-visual-assets.v1.json` ; provenance SHA, test sentinelle, preview de la vraie icône, documentation de ce lot et ce journal.
+- **Source** : image originelle ChatGPT `graine_parasite_enchantée_aux_lianes_dorées.png` 1254x1254, SHA256 `39d8ccd4275b1792d0252454574cd71ae5608c16789b7998076c00e138d95065`. Exports PNG 512x512 et WebP RGB 128x128 LANCZOS, WebP q88. Le WebP source de publication a SHA256 `d7bd38c069960b81b48f84fa7ed4160a24f231af1dbd48a7b1c69ec28d8d7275` ; Git blob `14b471c44f563a77a8b750cf7fdc24dca379bc1a`.
+- **Protégés** : icône Sangsue existante, toute autre icône, animations/sprites, capacités/chargements/configurations, UI et moteur, `gh-pages`, `main`, GenSrpG et Exploration. Aucun auto-raccord des capacités par ressemblance de nom, aucun second catalogue.
+- **Chaîne cible** : catalogue `global-assets` existant → sélecteur `data-skill-icon` déjà déployé sur `gh-pages` → `presentation.iconAssetId` choisi par l'auteur ; test média/assetId et résolution, pas de modification à la fiche auteur.
+- **Critères** : contenu vrai et inspecté, format/dimensions et SHA, catalogue unique cohérent, tests complets, CI Github sur SHA final, diff limité, checkpoint GREEN technique puis fast-forward `global-assets` sous lease. Validation visuelle en jeu mobile séparée.
+
+---
+
 ## 2026-10-28 — Feuille tranchante V3 : importer 3 sprites 12f dans la bibliothèque Capture
 
 - Source utilisateur approuvée : `_incoming/FEUILLE_TRANCHANTE_STYLISE_V3_3x12_WEBP.zip` (3762696 octets ; SHA256 `1173442cfae9bacaf1a020b62f304a83644d3cca31553444fccafea08b285674` ; 47 entrées ZIP, 36 WebP RGBA 512x512, trois atlas WebP 6144x512 et previews WebP 12f).
