@@ -72,6 +72,63 @@ const server = createServer(async (req, res) => {
       })();`;
       contents=Buffer.from(code+"\n"+probe);
     }
+    // Browser exercises the real authoring widgets in the loaded editor;
+    // static selector tests alone did not catch previous gameplay regressions.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-sleep-author-ui")) {
+      const html=contents.toString("utf8");
+      contents=Buffer.from(html.replace(
+        'src="./capture-editor-v2.js?v=sleep-conditions-20261028"',
+        'src="./capture-editor-v2.js?verify-sleep-author-ui=1"'
+      ));
+    }
+    if (pathname.endsWith("/capture-editor-v2.js") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-sleep-author-ui")) {
+      const script=`
+      void (async()=>{
+        const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+        try{
+          let row=null;
+          for(let attempts=0;attempts<30 && row===null;attempts++){
+            const add=document.querySelector("[data-skill-effect-add]");
+            const host=document.querySelector("[data-skill-effects-host]");
+            if(add && host){
+              const initial=host.querySelectorAll("[data-skill-effect-row]").length;
+              add.click();
+              const all=[...host.querySelectorAll("[data-skill-effect-row]")];
+              if(all.length>initial)row=all.at(-1);
+            }
+            if(!row)await delay(200);
+          }
+          if(!row)throw Error("live editor did not add a tactical effect row");
+          const kind=row.querySelector("[data-skill-effect-kind]");
+          const statusKind=row.querySelector("[data-skill-status-kind]");
+          const sleep=row.querySelector("[data-skill-status-sleep-until-damage]");
+          const polarity=row.querySelector("[data-skill-status-polarity]");
+          const seconds=row.querySelector("[data-skill-status-duration-seconds]");
+          if(!kind||!statusKind||!sleep||!polarity||!seconds)
+            throw Error("real editor is missing Sommeil author controls");
+          kind.value="apply_status";kind.dispatchEvent(new Event("change",{bubbles:true}));
+          statusKind.value="stun";statusKind.dispatchEvent(new Event("change",{bubbles:true}));
+          sleep.checked=true;sleep.dispatchEvent(new Event("change",{bubbles:true}));
+          if(!seconds.parentElement.hidden||polarity.value!=="detrimental"||!polarity.disabled)
+            throw Error("Sommeil must hide its timer and force a negative stun");
+          const mode=row.querySelector("[data-skill-effect-condition-mode]");
+          const marker=row.querySelector("[data-skill-effect-condition-marker]");
+          const min=row.querySelector("[data-skill-effect-condition-minimum]");
+          if(!mode||!marker||!min)throw Error("missing native per-effect condition controls");
+          mode.value="marker";mode.dispatchEvent(new Event("change",{bubbles:true}));
+          marker.dispatchEvent(new Event("focus"));
+          if(marker.tagName!=="SELECT" || ![...marker.options].some(o=>o.value))
+            throw Error("registered marker list did not populate for effects");
+          min.value="2";
+          mode.value="sleep";mode.dispatchEvent(new Event("change",{bubbles:true}));
+          if(mode.value!=="sleep")throw Error("Sommeil condition is unavailable");
+          document.body.dataset.sleepUiProbe="ok:editor:sleep:markers:conditions";
+        }catch(error){document.body.dataset.sleepUiProbe="fail:"+error.message;}
+      })();`;
+      contents=Buffer.from(contents.toString("utf8")+"\n"+script);
+    }
     // Test-only network-stall simulation: leave the real module graph and data path intact.
     // Only presentation CDN requests remain pending, like a stalled mobile connection.
     if (pathname.endsWith("/capture-editor-v2.html") &&
@@ -2060,6 +2117,12 @@ try {
     throw Error("REAL editor preview opponent Graine sansue lost native heading: "+editorHeadingProbe+
       " JS="+(editorHeadingDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
   console.log("REAL editor -> active asset resolver -> Graine sansue opponent FX heading 0: preserved");
+  const sleepUiDom=await dumpDom(url+"?verify-sleep-author-ui=1");
+  const sleepUiProbe=sleepUiDom.match(/data-sleep-ui-probe="([^"]+)"/)?.[1]??"missing";
+  if(sleepUiProbe!=="ok:editor:sleep:markers:conditions")
+    throw Error("REAL editor Sommeil / conditional author controls: "+sleepUiProbe+
+      " JS="+(sleepUiDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
+  console.log("Sommeil browser: real editor adds a status, toggles stun-until-damage, and offers canonical marker/status conditions");
   const incomingDom=await dumpDom(url+"?verify-projectile-inbound-facing=1");
   const incomingProbe=incomingDom.match(/data-inbound-projectile-probe="([^"]+)"/)?.[1]??"missing";
   if(incomingProbe!=="ok:outbound:opponent:mirror:fireball:beam")
