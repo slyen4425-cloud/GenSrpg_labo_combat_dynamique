@@ -340,24 +340,17 @@ function humanTacticalStatusToContractV1(
       status.polarity,
       "Polarité du statut"
     ),
-    durationMs:
-      status.durationMs != null
-        ? finiteNumber(
-            status.durationMs,
-            "Durée du statut"
-          )
-        : humanTacticalSecondsToMsV1(
-            status.durationSeconds
-          ),
+    ...(status.kind === "stun" && status.durationModel === "until_damage"
+      ? {durationModel: "until_damage"}
+      : {durationMs:
+          status.durationMs != null
+            ? finiteNumber(status.durationMs, "Durée du statut")
+            : humanTacticalSecondsToMsV1(status.durationSeconds)}),
     stacking:
       status.stacking ?? "refresh",
     tags: stableIds(status.tags)
   };
 
-  if (output.kind === "stun" && status.durationModel === "until_damage") {
-    delete output.durationMs;
-    output.durationModel = "until_damage";
-  }
   if (
     output.stacking === "stack"
   ) {
