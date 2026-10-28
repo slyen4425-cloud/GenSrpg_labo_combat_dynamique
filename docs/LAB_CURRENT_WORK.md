@@ -1,3 +1,15 @@
+## 2026-10-28 — Sommeil Z : publier l'animation de statut approuvée (12 frames)
+
+- **Source auteur** : `_incoming/GENSRPG_SOMMEIL_Z_12F_WEBP.zip`, 4 413 627 octets ; SHA256 `c54544b0d60519738ffa5bf81b1c5de57e1782d70eb5964fe65ee987449d02c6` ; blob Git `6d6e5d763e55133935726dbf95043ac9f1e1a445`. ZIP approuvé en conversation, 17 entrées/CRC valide, 12 frames WebP RGBA 512×512, atlas WebP 6144×512 et preview WebP 12 frames, planche de contrôle PNG.
+- **Propriétaire unique** : catalogue `data/assets/catalog/global-visual-assets.v1.json` de `global-assets`. Source de départ `global-assets@a30333bb6da73c3c452506ad7997c5642536fa38` ; checkpoint de départ `checkpoint/lab-start-sommeil-z-vfx-2026-10-28`, branche `work/lab-sommeil-z-vfx-2026-10-28`. Le dépôt officiel ayant avancé pendant le téléversement, la branche a été réconciliée par un commit de fusion **non destructif** `e6d9279d51eabed6fe53e9ea500bacb10976a05c` sur `global-assets@22d59ab7bd98e90a582ac0b5aa290cd41457e03d`, préservant les commits concurrents et le ZIP original.
+- **Objectif** : importer 1 sprite de statut `pack:capture:sprite-sommeil-z-status-01`, catégorie `skill` compatible avec le sélecteur des FX de statut ; animation en boucle 110 ms/frame, overlay au-dessus de la tête et suivi visuel de la créature. Les paramètres souhaités `loopUntil=status-removed` et `anchor=above-head` sont déclarés dans la donnée, sans modifier Stun, les états du jeu, le renderer ou les compétences.
+- **Périmètre** : médias dans `assets/library/capture/sprites/skills/sommeil_z/`, catalogue canonique, manifeste de séquence et provenance, test RED, script d'import, workflow CI d'import et journal de chantier ; nettoyage du ZIP reçu après import (source toujours dans l'historique Git).
+- **Protégés** : autres sprites et icônes, `configuredSkills`, `configuredCreatures`, UI/Combat Runtime/FX renderer, `gh-pages`, `main`, GenSrpG, Exploration, aucune double autorité, aucune auto-affectation aux compétences.
+- **Gates** : octets source et Git SHA, ZIP CRC/chemins, 12 frames RGBA et alpha, 12 frames distinctes, atlas 6144×512 et preview 12f fidèles aux médias validés ; IDs uniques, vrai catalogue et chemin de résolution de l'éditeur, CI complète, revue diff, checkpoint GREEN, fast-forward non forcé vers `global-assets`. Essai mobile utilisateur séparé.
+- **Statut** : ZIP reçu, test et intégration en cours.
+
+---
+
 ## 2026-10-28 — Graine sansue : 2 sprites approuvés (projectile et débuff à maintien final)
 
 - **Source validée** : `_incoming/GRAINE_SANSUE_PROJECTILE_DEBUFF_2x12_WEBP.zip`, 9 566 663 octets, SHA256 `0f32fb77e24f8ad44c166fa78155f159bc2d85bc80f2464310cd65668ed74840`, blob GitHub `14b5778ca3efbe84d6edd03eeddb78aacb2a93d6`. 35 membres, ZIP CRC OK, 24 WebP de frames RGBA 512×512, deux atlas 6144×512 et deux previews animées 12f ; une image de maintien de débuff.
