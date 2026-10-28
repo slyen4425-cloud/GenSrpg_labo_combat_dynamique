@@ -13,7 +13,7 @@ import {
 } from "../../src/adapters/audio/combat-soundtrack-preview-bridge-v1.js";
 import {
   mountCaptureEditorHumanV2
-} from "../../src/ui/capture-editor-human-v2.js?v=graine-sansue-20261028";
+} from "../../src/ui/capture-editor-human-v2.js?v=projectile-facing-grainou-20261028";
 import {
   createCreatorVisualAssetSessionV1
 } from "../../src/assets/creator-visual-asset-session-v1.js";
@@ -25,7 +25,7 @@ import {
 } from "../../src/ui/capture-editor-preview-session-v2.js";
 import {
   loadCaptureEditorPreviewRuntimeV1
-} from "../../src/ui/capture-editor-preview-runtime-loader-v1.js";
+} from "../../src/ui/capture-editor-preview-runtime-loader-v1.js?v=projectile-facing-grainou-20261028";
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl

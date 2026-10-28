@@ -113,7 +113,9 @@
       "cap_earth_atk_6",
       "cap_earth_atk_7",
       "cap_earth_special_1",
-      "cap_earth_special_2"
+      "cap_earth_special_2",
+      "coupe_feuille",
+      "graine_sansue_cap"
     ],
     "presentation": {
       "id": "creature:crea_nat_1",
@@ -125,6 +127,22 @@
       "position": {
         "x": 0,
         "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1.5,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 0.9,
+          "position": {
+            "x": 0,
+            "y": 50
+          }
+        }
       },
       "transformOrigin": {
         "x": "50%",
@@ -185,19 +203,19 @@
     "slots": [
       {
         "id": "slot-1",
-        "skillId": "cap_earth_atk_1"
+        "skillId": "coupe_feuille"
       },
       {
         "id": "slot-2",
-        "skillId": "cap_earth_atk_2"
+        "skillId": "graine_sansue_cap"
       },
       {
         "id": "slot-3",
-        "skillId": "cap_earth_atk_3"
+        "skillId": null
       },
       {
         "id": "slot-4",
-        "skillId": "cap_earth_atk_4"
+        "skillId": null
       },
       {
         "id": "slot-ultimate",
