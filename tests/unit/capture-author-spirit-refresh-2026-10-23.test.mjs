@@ -33,16 +33,23 @@ test("exact new author JSON replaces only two existing active showcase skills",(
   }
 });
 
-test("the three uploaded markers are active and preserve canonical Eclat on arrow",()=>{
+test("historic three markers stay byte-provenanced while the five active markers preserve canonical Eclat on arrow",()=>{
   const active="data/capture/showcase/markers.capture-markers-v1.json";
   const source="data/capture/source-exports/gensrpg-capture-markers-2026-10-23.json";
-  assert.deepEqual(load(active),load(source));
   assert.equal(sha(load(source)),"c8e2ade953e2abcbfa965d7016e45687103493a5e2ee2b2d17ead788af0998d4");
+  const historical=JSON.parse(load(source));
   const markers=JSON.parse(load(active));
   assert.equal(markers.schema,"capture-markers-v1");
-  assert.deepEqual(markers.markers.map(x=>x.id),["venin-static","eclat-spirituel","peste"]);
+  assert.deepEqual(markers,JSON.parse(load("data/capture/source-exports/gensrpg-marqueurs-2026-10-28.json")),
+    "latest authored library must be preserved exactly, not replaced with an old snapshot");
+  assert.deepEqual(markers.markers.map(x=>x.id),
+    ["poison","venin-static","eclat-spirituel","peste","graine-sansue"]);
+  for(const old of historical.markers) {
+    assert.deepEqual(markers.markers.find(m=>m.id===old.id),old,
+      "prior authored marker definition must not change: "+old.id);
+  }
   const normal=normalizeCaptureMarkerLibraryV1(markers.markers);
-  assert.equal(normal.length,3);
+  assert.equal(normal.length,5);
   const arrow=JSON.parse(load("data/capture/showcase/fleche_spirituel.capture-skill-transfer-v1.json")).draft;
   const inline=arrow.definition.effects.find(x=>x.kind==="apply_marker").marker;
   assert.deepEqual(normalizeCaptureMarkerV1(inline),normal.find(x=>x.id==="eclat-spirituel"));
