@@ -1737,6 +1737,9 @@ function assertAquaHealSkill(dom, scenario) {
   if (!ids.includes("cap_water_atk_3")) {
     throw new Error(scenario + ": existing Jet pressurisé disappeared from active skill selector");
   }
+  if (ids.filter(id => id === "coupe_feuille").length !== 1) {
+    throw new Error(scenario + ": published Coupe feuille v11 must appear exactly once in active skill selector");
+  }
   console.log(scenario + ": lib_aqua_heal visible once alongside existing skills (" + ids.length + ")");
 }
 
