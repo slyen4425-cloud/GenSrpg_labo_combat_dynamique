@@ -18,7 +18,7 @@ Le catalogue de référence `global-assets/data/assets/catalog/global-visual-ass
 
 On n'a modifié aucun pixel, sprite atlas, déplacement, collision, timing, miroir, durée, élément, puissance ou compétence. Les huit anciens projectiles élémentaires à caps précisément calibrés (environ −0,45 à −0,53 rad) sont intacts. Aucun cap ajouté aux sprites non directionnels (Tornade) ni aux effets skyfall (chute de pierre/météorites). Le renderer unique conserve l'inversion horizontale quand le vol réel va vers la gauche, y compris le renvoi miroir à partir du véritable `contactPoint`.
 
-Le catalogue média validé est livré avec un ref immuable, `a30333bb6da73c3c452506ad7997c5642536fa38`, référencé par `src/assets/global-visual-library.js` dans l'éditeur public. Les fichiers image continuent de provenir de `global-assets`. Le pointage explicite sur le commit évite les réponses obsolètes d'un cache CDN de branche, sans créer de deuxième registre ni mécanisme de secours.
+Le catalogue média est livré sur l'unique branche `global-assets` (PR #119, SHA de livraison `a30333bb6da73c3c452506ad7997c5642536fa38`). Le module public `src/assets/global-visual-library.js` conserve exactement la même URL canonique pour le catalogue et les médias, mais avec la nouvelle révision `2026-10-28-v43-projectile-native-facing`. Les tests navigateur chargent désormais vraiment ce catalogue ; si le CDN sert momentanément l'ancienne version, la CI échoue explicitement plutôt que de passer avec une métadonnée factice. Pas de deuxième registre ni URL de secours.
 
 ## Contrôles et chaîne de preuve
 - START : `gh-pages@d2f9f19618d26bc86adbd7c5698f59d4e72dfa5c` ; `global-assets@4d2f931c40fd87142958481bb972520bba2f2b2c`.
@@ -26,7 +26,7 @@ Le catalogue média validé est livré avec un ref immuable, `a30333bb6da73c3c45
 - Test global-assets après correction : `0bdc986c`, CI push `40710792232` SUCCESS et PR `40711001526` SUCCESS ; checkpoint GREEN `checkpoint/lab-projectile-heading-catalog-global-assets-green-2026-10-28`.
 - PR #119 fusionnée vers `global-assets@a30333bb`, CI `40711328559` SUCCESS.
 - Test navigateur réel `verify-projectile-inbound-facing` : aucun `assetForId` fictif ; importe `GLOBAL_VISUAL_LIBRARY.catalogUrl` et `createGlobalPresentationAssetResolverV1`, utilise les transferts actifs `graine_sansue_cap`, `coupe_feuille` et `cap_air_atk_4`. Teste tir joueur, tir adverse, retour miroir avec `contactPoint`, Tornade qui reste droite et les six caps média.
-- Premier navigateur RED sur cache CDN mutable (asset sans heading malgré branche média mise à jour), d'où épingle immuable du catalogue à son SHA. Les assertions de cohérence de cache vérifient le même URL de module média pour l'éditeur et la page.
+- Premier navigateur RED sur cache CDN mutable (asset sans heading malgré branche média mise à jour), puis revalidation GREEN après propagation. Un essai de pointer sur un SHA immuable a révélé des tests historiques protégeant le contrat d'URL `global-assets?v=REVISION` ; la solution minimale respecte donc cette convention et la vraie sentinelle de catalogue. Les assertions de cache vérifient que le module média est importé à la même URL dans l'éditeur et la page.
 - Validation requise côté `gh-pages` : Foundation + les 4 tests Chromium SUCCESS au SHA final, checkpoint GREEN, fusion PR, CI Pages SUCCESS, puis inspection Android de l'auteur.
 
 ## Périmètre strict
