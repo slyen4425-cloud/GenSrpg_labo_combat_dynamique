@@ -1,0 +1,39 @@
+{
+  "type": "animation-once-hold-last",
+  "source": "fleur_fx_test.png",
+  "format": "png-rgba",
+  "dimensions": [
+    512,
+    512
+  ],
+  "frames": [
+    "frames/fleur_defense_00.png",
+    "frames/fleur_defense_01.png",
+    "frames/fleur_defense_02.png",
+    "frames/fleur_defense_03.png",
+    "frames/fleur_defense_04.png",
+    "frames/fleur_defense_05.png",
+    "frames/fleur_defense_06.png",
+    "frames/fleur_defense_07.png",
+    "frames/fleur_defense_08.png",
+    "frames/fleur_defense_09.png",
+    "frames/fleur_defense_10.png",
+    "frames/fleur_defense_11.png"
+  ],
+  "duration_ms": [
+    155,
+    155,
+    155,
+    155,
+    155,
+    155,
+    155,
+    155,
+    155,
+    155,
+    155,
+    1700
+  ],
+  "last_frame_hold": true,
+  "preview": "fleur_defense_preview_512.webp"
+}

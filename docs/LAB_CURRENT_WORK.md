@@ -1,8 +1,9 @@
-## 2026-10-28 — Import sprite défense florale (12f)
-- Base `global-assets@4e938b32eb2b1e66ac110a82cd1f550b9c443ddf`, checkpoint `checkpoint/lab-start-fleur-defense-vfx-2026-10-28` et chantier `work/lab-fleur-defense-vfx-2026-10-28`.
-- Source auteur déjà déposée : ZIP identique aux octets locaux SHA256 `653c5012f182931b4add1bef4641ab8837e749358236dba6b33d5ed0c70f9169`.
-- Périmètre : 1 asset logique, 12 frames PNG originales 512², 12 WebP dérivés, atlas, preview et manifeste, unique catalogue visuel, test médias et workflow d'import. Pas de changement de gameplay/éditeur/main/gh-pages ni des assets existants.
-- Test RED initial tant que pack non importé ; CI, checkpoint GREEN et publication fast-forward requis, validation visuelle smartphone distincte.
+## 2026-10-28 — Défense florale 12f : import canonique unique, sans second lot
+- Base `global-assets@4e938b32eb2b1e66ac110a82cd1f550b9c443ddf`, checkpoint `checkpoint/lab-start-fleur-defense-vfx-2026-10-28`, branche `work/lab-fleur-defense-vfx-2026-10-28`.
+- Source approuvée : ZIP SHA256 `653c5012f182931b4add1bef4641ab8837e749358236dba6b33d5ed0c70f9169`. Médias importés et testés dans le lot parallèle au run #40773353976, transférés par SHAs Git identiques sur cette unique branche de publication. Pas de double assetId.
+- Import matériel : 18 fichiers canoniques dont 12 PNG RGBA 512², atlas WebP 6144×512 et preview animée; ID `pack:capture:sprite-fleur-defense-01` dans l'unique catalogue `global-assets`.
+- Changement strictement visuel : aucune capacité nouvelle sur `global-assets`. Spore soporifique est propriétaire du catalogue vitrine `gh-pages` sur PR #128.
+- Tests : `tests/unit/capture-fleur-defense-vfx-2026-10-28.test.mjs`, contrôle des SHA source et médias, CI et preview ; statut technique à confirmer sur le SHA final avant checkpoint GREEN et fast-forward.
 
 ---
 
