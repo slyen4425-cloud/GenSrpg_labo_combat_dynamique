@@ -1,3 +1,15 @@
+## 2026-10-28 — Marqueur Drain de vie périodique (lot en cours)
+- Demande : permettre un marqueur qui retire des PV par charge puis rend au lanceur une part des PV *réellement perdus* par la cible, sans double autorité/masquage/rustine.
+- Base LIVE vérifiée : `gh-pages@d30204afd983bfd9fd3196dd8ca74e5ad8d4bf09`, médias `global-assets@4b72ab532e79a23ba278bf3213c044d94d400409`. Checkpoint START : `checkpoint/lab-start-marker-life-drain-2026-10-28` ; branche : `work/lab-marker-life-drain-2026-10-28`.
+- Propriétaires conservés : `CaptureMarkerV1` + `StatusEffectV1.periodic` (donnée) ; `StatusEffectRuntime` (horloge partagée, attribution source et application) ; `applyCombatDamageV1` (dégâts réellement infligés, immunité/bouclier/résistance/reflet/KO) ; `withFighterHp` (soin), UI Capture seulement pour paramétrer/afficher. Aucun timer ni statut additionnel.
+- Contrat prévu : `periodic.kind = "life_steal"`, `amount` par charge, `intervalMs`, `damageMode`, `channel`, `percent` (0 à 100), `maxHeal` (facultatif). Dégâts du marqueur sur le porteur ; soin sur `sourceActorId` vivant et présent, sur `appliedDamage` réellement enregistré, sans réveil si KO ni soin si bouclier/immunité, plafond PV et `maxHeal`. Coexistence et compatibilité damage/heal inchangées.
+- Fichiers autorisés : `src/contracts/status-effect-v1.js`, `src/core/combat/status-effect-runtime-v1.js`, `src/ui/capture-marker-library-v1.js`, `src/ui/capture-skill-explanation-v1.js`, `examples/dom-demo/capture-editor-v2.html`, tests ciblés `tests/integration/capture-marker-life-steal-2026-10-28.test.mjs` et navigateur existant, présent journal et doc de lot. Ne pas modifier moteur d'action direct, catalogues vitrine, créatures/skills de l'auteur, assets, main, exploration, GenSrpg.
+- Tests TDD RED : normalisation stricte, pose/round-trip, 1/3 charges, tick même horloge, bouclier/immunité/overkill, source absente/KO/reflet, soin plafonné, pas de soin sur le porteur, régressions damage/heal, champs éditeur.
+- Validation finale : CI Foundation et 4 Chromium au même SHA, revue du diff, test vrai éditeur, checkpoint GREEN au SHA exact, PR vers gh-pages puis CI/Pages SUCCESS. Contrôle Android utilisateur distinct.
+- Statut : implémentation non commencée ; tests RED en préparation.
+
+---
+
 ## 2026-10-28 — Réparer la recharge du catalogue Capture après Coupe feuille v11 (en cours)
 - Signalement : sur Android, l'éditeur affiche « Les presets de capacités vitrine Capture contiennent un identifiant dupliqué » et les compétences n'apparaissent pas.
 - Base exacte : `gh-pages@cae7fc655ad10de27b4972761d9ed53f4ab5dce0`. START : `checkpoint/lab-start-capture-showcase-library-reload-2026-10-28`. Travail : `work/lab-capture-showcase-library-reload-2026-10-28`.
