@@ -1,3 +1,15 @@
+## 2026-10-28 — Graine sansue : 2 sprites approuvés (projectile et débuff à maintien final)
+
+- **Source validée** : `_incoming/GRAINE_SANSUE_PROJECTILE_DEBUFF_2x12_WEBP.zip`, 9 566 663 octets, SHA256 `0f32fb77e24f8ad44c166fa78155f159bc2d85bc80f2464310cd65668ed74840`, blob GitHub `14b5778ca3efbe84d6edd03eeddb78aacb2a93d6`. 35 membres, ZIP CRC OK, 24 WebP de frames RGBA 512×512, deux atlas 6144×512 et deux previews animées 12f ; une image de maintien de débuff.
+- **Base et provenance** : autorité unique `global-assets@f02cb4cdf806e33ca225ad53274b9fb57e4f4577` ; checkpoint de départ `checkpoint/lab-start-graine-sangsue-vfx-2026-10-28` ; branche `work/lab-graine-sangsue-vfx-2026-10-28`. Le ZIP auteur est déposé sur la branche de travail, et les octets locaux ont le même Git blob SHA que GitHub.
+- **Objectif / propriétaire** : bibliothèque visuelle Capture, propriétaire du catalogue unique `data/assets/catalog/global-visual-assets.v1.json`. Deux `assetId` stables `pack:capture:sprite-graine-sangsue-projectile-01` (travel, 72ms, loop) et `pack:capture:sprite-graine-sangsue-debuff-01` (skill/status, 115ms, once + tenue frame 12 dans le manifeste). Destination `assets/library/capture/sprites/skills/graine_sangsue/`. La tenue sur la cible jusqu'à suppression du marqueur relève du runtime/éditeur existant, **pas de la seule importation de média**.
+- **Fichiers autorisés** : les nouveaux médias au chemin cible, provenance/manifeste de séquences, la seule entrée de catalogue, test sentinelle, script importer, workflow GitHub Action, docs du lot et ce journal. La source ZIP est retirée du répertoire `_incoming` après import pour ne pas doubler les médias (source conservée dans l'historique Git).
+- **Protégés** : sprites et icône préexistants, `configuredSkills`, `configuredCreatures`, UI/renderer, Combat Runtime, `gh-pages`, `main`, GenSrpG, Exploration. Aucune seconde autorité / rustine / auto-affectation de capacité.
+- **Tests et gates** : RED par sentinelle manquante, SHA Git/ZIP/CRC + exactitude octet des fichiers, dimensions RGBA/alpha, 24 frames distinctes, atlas et previews exacts, manifeste et maintien final, catégorie et IDs uniques, CI complète sur vrais médias, revue diff, checkpoint GREEN et fast-forward non forcé de `global-assets` sous SHA attendu. Vérification smartphone par l'auteur séparée.
+- **État** : réception GitHub vérifiée, import en cours.
+
+---
+
 ## 2026-10-28 — Icône Graine sangsue : bibliothèque Capture
 
 - **Demande** : publier l'icône Graine sangsue (écrit aussi « graine sensue » dans l'échange), modèle source déjà généré et approuvé, sans retouche artistique, au format des compétences Monster Capture.
