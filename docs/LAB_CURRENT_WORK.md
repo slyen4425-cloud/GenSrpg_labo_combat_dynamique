@@ -1,3 +1,15 @@
+## 2026-10-28 — Réparer la recharge du catalogue Capture après Coupe feuille v11 (en cours)
+- Signalement : sur Android, l'éditeur affiche « Les presets de capacités vitrine Capture contiennent un identifiant dupliqué » et les compétences n'apparaissent pas.
+- Base exacte : `gh-pages@cae7fc655ad10de27b4972761d9ed53f4ab5dce0`. START : `checkpoint/lab-start-capture-showcase-library-reload-2026-10-28`. Travail : `work/lab-capture-showcase-library-reload-2026-10-28`.
+- Diagnostic établi : les 57 chemins et IDs de presets présents sur gh-pages sont uniques, mais l'éditeur importe statiquement le manifeste JS et ses dépendances sous URLs stables ; les caches du navigateur peuvent encore servir le manifeste qui référençait Coupe feuille deux fois. Pages a déployé `cae7fc65` avec succès. Foundation échoue sur la sentinelle d'archive historique Coupe feuille v9 alors que la vitrine a reçu v11.
+- Autorité : catalogue `src/catalogs/capture-showcase-skill-presets-v1.js` unique ; aucune duplication/fallback et aucun masquage de détection des doublons. Archive 2026-10-27 v9 conservée, nouvelle archive 2026-10-28 du vrai export de 4176 octets, SHA256 `572e78fa2b2c1da0142be3ec48fa89b4e569331df32fa35a0360c76f3b6d5b6c`.
+- Périmètre autorisé : `examples/dom-demo/capture-editor-v2.html`, `examples/dom-demo/capture-editor-v2.js`, `src/ui/capture-editor-human-v2.js` (révision URL des modules modifiés), `data/capture/source-exports/gensrpg-capture-skill-coupe_feuille-2026-10-28.json`, tests de régression ciblés, `docs/LAB_CURRENT_WORK.md`, document de lot éventuel. Protéger moteur de combat, registre de créatures, médias global-assets, catalogue canonique, export auteur v11, main et GenSrpG.
+- TDD prévu : reproduire le manifeste au chargement sous URL versionnée, inclure chaîne HTML → point d'entrée → propriétaire UI → catalogue sans valeurs dupliquées ; tester intégrité des 57 IDs et conserver provenance historique et nouvelle ; CI Foundation + quatre tests Chromium, PR vers gh-pages, checkpoint GREEN seulement après CI exacte et vérification de publication.
+- Risques : cache CDN/navigation Android, intégrité archive historique, CI rouge préalable ; vérifier la branche avant fusion et ne pas appeler GREEN sans tous contrôles.
+- Statut : correctif en préparation ; vérification de l'éditeur public sur navigateur mobile distincte.
+
+---
+
 ## 2026-10-25 — Venombre : nouvelle Ultime et icône Tempête de venin (travail en cours)
 - Auteur : trois exports fournis `crea_tox_2` (4570 octets, SHA256 `9160546cccfeede4cfcdca3aaa86a72114528225dd11f3c5f86fcd1dec1d4172`), `cap_poison_atk_7` (5345 octets, SHA256 `5632ddd70f6c6b082dd66187f1c9fba71c215fda0b1063fba2d5fa01a67f861e`) et `cap_poison_atk_6` (3615 octets, SHA256 `9941f0e30069fbb3acd39a826987dda52a62bc61ef197706f9ba299225a0f76f`). Aucun changement silencieux des réglages.
 - Base `gh-pages@48a6bc1113759364dee49bc4a9d4b659298fe8d9`. START : `checkpoint/lab-start-venombre-ultimate-and-poison-visuals-2026-10-25`, branche : `work/lab-venombre-ultimate-and-poison-visuals-2026-10-25`.
