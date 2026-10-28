@@ -4308,7 +4308,8 @@
         "mime": "image/webp",
         "frameCount": 20,
         "frameMs": 65,
-        "playbackMode": "loop"
+        "playbackMode": "loop",
+        "headingRad": 0
       },
       "compatibility": {
         "uses": [
@@ -6113,7 +6114,8 @@
         "mime": "image/webp",
         "frameCount": 20,
         "frameMs": 65,
-        "playbackMode": "once"
+        "playbackMode": "once",
+        "headingRad": 0
       },
       "compatibility": {
         "uses": [
@@ -6878,7 +6880,8 @@
         "mime": "image/webp",
         "frameCount": 20,
         "frameMs": 55,
-        "playbackMode": "loop"
+        "playbackMode": "loop",
+        "headingRad": 0
       },
       "compatibility": {
         "uses": [
@@ -7685,7 +7688,8 @@
         "mime": "image/webp",
         "frameCount": 20,
         "frameMs": 60,
-        "playbackMode": "loop"
+        "playbackMode": "loop",
+        "headingRad": 0
       },
       "compatibility": {
         "uses": [
@@ -9135,7 +9139,8 @@
         "mime": "image/webp",
         "frameCount": 12,
         "frameMs": 65,
-        "playbackMode": "loop"
+        "playbackMode": "loop",
+        "headingRad": 0
       },
       "compatibility": {
         "uses": [
@@ -9247,7 +9252,8 @@
         "mime": "image/webp",
         "frameCount": 12,
         "frameMs": 72,
-        "playbackMode": "loop"
+        "playbackMode": "loop",
+        "headingRad": 0
       },
       "compatibility": {
         "uses": [
