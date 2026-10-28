@@ -56,7 +56,7 @@ const server = createServer(async (req, res) => {
         import {normalizeSkillPresentationBinding} from "../../src/contracts/skill-presentation-binding.js";
         import {planSkillReleaseFx} from "../../src/core/fx/skill-fx-plan.js";
         import {createGlobalPresentationAssetResolverV1} from "../../src/assets/global-presentation-asset-resolver-v1.js";
-        import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js?v=projectile-heading-catalog-20261028";
+        import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js?v=intrinsic-facing-v44-20261028";
         let fx=null;
         try {
           const files=await Promise.all(["graine_sansue_cap","coupe_feuille","cap_air_atk_4","fireball"].map(async name=>{
