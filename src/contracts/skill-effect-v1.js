@@ -36,6 +36,12 @@ export function isReserveEffectTargetScopeV2(scope) {
   return RESERVE_EFFECT_TARGET_SCOPES_V2.includes(scope);
 }
 
+const STATUS_CONDITION_KINDS = new Set([
+  "stat_modifier","outgoing_damage_modifier","stack_counter","approach_time_modifier",
+  "energy_regen_modifier","skill_cooldown_rate_modifier","damage_over_time",
+  "heal_over_time","shield","damage_reflection","projectile_mirror",
+  "auto_dodge","triggered_buff","immunity","immobilize","silence","stun","taunt"
+]);
 const KIND_SET = new Set(SKILL_EFFECT_V1_KINDS);
 const TARGET_SCOPE_SET = new Set(
   SKILL_EFFECT_V1_TARGET_SCOPES
