@@ -1,0 +1,35 @@
+{
+  "schema": "gensrpg-capture-single-skill-icon-v1",
+  "date": "2026-10-28",
+  "label": "Graine sangsue",
+  "aliases": [
+    "graine sensue"
+  ],
+  "assetId": "pack:capture:icon-skill-graine-sangsue-01",
+  "derivedFile": "capture/icons/skills/icon_skill_graine_sangsue_01.webp",
+  "derivedSha256": "d7bd38c069960b81b48f84fa7ed4160a24f231af1dbd48a7b1c69ec28d8d7275",
+  "gitBlobSHA": "14b471c44f563a77a8b750cf7fdc24dca379bc1a",
+  "bytes": 8652,
+  "dimensions": [
+    128,
+    128
+  ],
+  "format": "WebP VP8 RGB, 128x128, quality 88",
+  "originalSource": "graine_parasite_enchantée_aux_lianes_dorées.png",
+  "originalDimensions": [
+    1254,
+    1254
+  ],
+  "originalSha256": "39d8ccd4275b1792d0252454574cd71ae5608c16789b7998076c00e138d95065",
+  "sourcePNG512": "icon_skill_graine_sangsue_01_source.png",
+  "sourcePNG512Sha256": "9120d7c31eea23c2b3f1a3a654cf6d3670d5e8a911d45b5f0673cb0f56903c9b",
+  "sourcePackage": "graine_sangsue_monster_capture.zip",
+  "sourcePackageSha256": "993c6c8fd2c1b818595e8c11ed7fda2733c1746c380e65b018a237e4cbd6bef7",
+  "preview": "preview_graine_sangsue.png (in conversation ZIP)",
+  "previewSha256": "a1550639fa2eea502296554c4086b1803c9eac6402304d5d7694bbbe59a9d298",
+  "processing": "Pillow LANCZOS 1254→512→128, preserve approved graphic and frame",
+  "owner": "global-assets",
+  "branch": "work/lab-graine-sangsue-icon-2026-10-28",
+  "scope": "one skill icon only",
+  "notes": "Do not auto-bind to configured skills; existing Sangsue icon remains distinct."
+}

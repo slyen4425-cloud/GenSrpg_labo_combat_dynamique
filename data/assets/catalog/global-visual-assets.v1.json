@@ -14,8 +14,8 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 271,
-    "icons": 86,
+    "assets": 272,
+    "icons": 87,
     "sprites": 161,
     "fx": 2,
     "portraits": 17,
@@ -9175,6 +9175,41 @@
         "frameCount": 12,
         "frameMs": 85,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-graine-sangsue-01",
+      "label": "Graine sangsue",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "nature",
+        "seed",
+        "leech",
+        "drain",
+        "debuff",
+        "graine",
+        "sangsue"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (image validated in conversation)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_graine_sangsue_01.webp",
+        "mime": "image/webp"
       },
       "compatibility": {
         "uses": [
