@@ -1,3 +1,11 @@
+## 2026-10-28 — Graine sansue adversaire encore inversée : métadonnée supprimée par l'éditeur (en cours)
+- Régression après v44 confirmée par signalement Android de l'auteur. Cause démontrée dans le vrai client : examples/dom-demo/capture-editor-v2.js, fonction resolvePreviewPresentationAsset, recopie seulement assetId/url/frameCount/frameMs/playbackMode et JETTE headingRad du catalogue global. Le renderer attend headingRad pour inverser les tirs. Les anciens tests contrôlaient createGlobalPresentationAssetResolverV1 mais pas cette fonction utilisée au démarrage du vrai éditeur.
+- Propriétaire canonique EXISTANT : src/assets/global-presentation-asset-resolver-v1.js, alimenté par GLOBAL_VISUAL_LIBRARY.catalogUrl. Remplacer la conversion manuelle uniquement sur le chemin d'éditeur ; pas de nouveau catalogue ni second propriétaire ; conserver les priorités déjà prévues des assets démo / utilisateur et neutralité des médias sans heading.
+- BASE gh-pages b4bdf5e0e78045fac899e22dc3e2e07c049afd22 ; global-assets 0233463ad1c5b2304448ff06d4786e4e66eda215, ne pas modifier. START checkpoint/lab-start-projectile-preview-heading-loss-2026-10-28 ; WORK work/lab-projectile-preview-heading-loss-2026-10-28.
+- Autorisés : examples/dom-demo/capture-editor-v2.js, tests/integration/capture-editor-preview-direction-metadata-2026-10-28.test.mjs, browser smoke réel, cache ESM de l'éditeur, journal et note de lot. Protégés : moteur FX, règles, capacités/exports, sprites, IA, collisions, main/GenSrpg.
+- TDD RED : nouvelle sentinelle intégration échec attendu sur absence de relais canonique ; GREEN requis Foundation + 4 Chromium au même SHA, checkpoint GREEN, PR gh-pages, pages SUCCESS, contrôle Android auteur ensuite.
+
+---
 ## 2026-10-28 — Projectile adverse : atlas historiques orientés à gauche (en cours)
 - Signalement auteur persistant après v43 : le sprite réel de Boule de feu historique a sa tête à gauche et sa traînée à droite ; son heading est absent du catalogue média. Le rendu existant le laisse donc identique dans les deux directions.
 - Source unique du cap natif : global-assets/data/assets/catalog/global-visual-assets.v1.json. Propriétaire unique du rendu selon la trajectoire réelle : src/adapters/renderer/dom-skill-fx.js. Aucun traitement spécifique par ID, camp ou compétence.
