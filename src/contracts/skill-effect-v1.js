@@ -273,6 +273,24 @@ export function normalizeSkillEffectV1(input) {
     targetScope
   };
 
+  if(value.condition != null){
+    const c=objectValue(value.condition,"SkillEffectV1.condition");
+    assertKnownFields(c,new Set(["type","value","minimum","invert"]),"SkillEffectV1.condition");
+    const type=requiredString(c.type,"condition.type");
+    if(!["sleep","status_kind","marker"].includes(type))throw new RangeError("Unknown condition type");
+    const ref=type==="sleep"?null:requiredString(c.value,"condition.value");
+    if(type==="sleep" && c.value!=null)throw new RangeError("Sleep has no ID");
+    if(type==="status_kind" && !STATUS_CONDITION_KINDS.has(ref))throw new RangeError("Unknown status condition");
+    if(type==="marker" && !/^[a-z0-9][a-z0-9_-]{0,63}$/.test(ref))throw new RangeError("Invalid marker condition");
+    const minimum=positiveInteger(c.minimum??1,"condition.minimum");
+    if(minimum>99)throw new RangeError("Condition max is 99");
+    if(c.invert!=null && typeof c.invert!=="boolean")throw new TypeError("Invalid condition.invert");
+    if(["persistent_zone","scheduled_effect","life_steal"].includes(kind) || isReserveEffectTargetScopeV2(targetScope))
+      throw new RangeError("Conditions apply to immediate active-target effects only");
+    output.condition=Object.freeze({type,...(ref===null?{}:{value:ref}),minimum,
+      ...(c.invert===true?{invert:true}:{})});
+  }
+
   if (kind === "apply_marker") {
     output.marker = normalizeCaptureMarkerV1(value.marker);
     output.charges = positiveInteger(value.charges ?? 1, "SkillEffectV1.charges");
