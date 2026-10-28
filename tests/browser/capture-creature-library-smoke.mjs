@@ -40,7 +40,7 @@ const server = createServer(async (req, res) => {
         new URL(req.url, "http://localhost").searchParams.has("verify-editor-preview-heading")) {
       const html=contents.toString("utf8");
       contents=Buffer.from(html.replace(
-        'src="./capture-editor-v2.js?v=projectile-preview-heading-20261028"',
+        'src="./capture-editor-v2.js?v=sleep-conditions-20261028"',
         'src="./capture-editor-v2.js?verify-editor-preview-heading=1"'
       ));
     }
