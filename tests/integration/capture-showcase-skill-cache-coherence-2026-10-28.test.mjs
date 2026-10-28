@@ -6,7 +6,7 @@ import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1} from "../../src/catalogs/capture
 
 const read = async (path) =>
   readFile(new URL("../../" + path, import.meta.url), "utf8");
-const release = "graine-sansue-20261028";
+const release = "projectile-facing-grainou-20261028";
 const publishedPath = "data/capture/showcase/coupe_feuille.capture-skill-transfer-v1.json";
 const archivePath = "data/capture/source-exports/gensrpg-capture-skill-coupe_feuille-2026-10-28.json";
 const historicalPath = "data/capture/source-exports/gensrpg-capture-skill-coupe_feuille-2026-10-27.json";

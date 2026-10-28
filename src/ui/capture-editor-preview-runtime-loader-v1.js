@@ -13,7 +13,7 @@ async function defaultImportVisualAdapter() {
 
 async function defaultImportCombatPreview() {
   return import(
-    "./capture-combat-preview-v1.js"
+    "./capture-combat-preview-v1.js?v=projectile-facing-grainou-20261028"
   );
 }
 
