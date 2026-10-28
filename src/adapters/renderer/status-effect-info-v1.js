@@ -445,7 +445,9 @@ function effectLinesFor(
 
     case "stun":
       return Object.freeze([
-        "Impossible d’agir"
+        definition.durationModel === "until_damage"
+          ? "Sommeil : impossible d’agir jusqu’aux premiers PV perdus"
+          : "Impossible d’agir"
       ]);
 
     case "taunt":
@@ -464,6 +466,7 @@ function remainingLabelFor(
   elapsedMs
 ) {
   if (definition.durationModel === "permanent") return "Permanent";
+  if (definition.durationModel === "until_damage") return "Jusqu’aux premiers dégâts reçus";
   if (
     definition.durationModel ===
     "owner_action_end"
