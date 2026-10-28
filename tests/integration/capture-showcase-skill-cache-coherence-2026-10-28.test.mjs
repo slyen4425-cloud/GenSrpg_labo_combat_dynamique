@@ -6,7 +6,7 @@ import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1} from "../../src/catalogs/capture
 
 const read = async (path) =>
   readFile(new URL("../../" + path, import.meta.url), "utf8");
-const release = "projectile-heading-catalog-20261028";
+const release = "projectile-native-bidirectional-20261028";
 const publishedPath = "data/capture/showcase/coupe_feuille.capture-skill-transfer-v1.json";
 const archivePath = "data/capture/source-exports/gensrpg-capture-skill-coupe_feuille-2026-10-28.json";
 const historicalPath = "data/capture/source-exports/gensrpg-capture-skill-coupe_feuille-2026-10-27.json";
@@ -23,7 +23,7 @@ test("public editor reloads the exact Capture skill manifest module through a re
   const media = await read("src/assets/global-visual-library.js");
   assert.ok(media.includes('/${BRANCH}/data/assets/catalog/global-visual-assets.v1.json?v=${REVISION}'),
     "editor must use the same canonical global-assets branch and revisioned catalog URL");
-  assert.match(media,/const REVISION = "2026-10-28-v43-projectile-native-facing"/,
+  assert.match(media,/const REVISION = "2026-10-28-v44-projectile-native-bidirectional"/,
     "stable dated cache revision must remain compatible with all existing media URL users");
 });
 
