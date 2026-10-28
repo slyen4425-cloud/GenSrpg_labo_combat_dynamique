@@ -22,7 +22,9 @@ test("public editor reloads the exact Capture skill manifest module through a re
   assert.ok(entry.includes(`from "../../src/assets/global-visual-library.js?v=${release}"`), "entry and UI owner must use same media URL");
   const media = await read("src/assets/global-visual-library.js");
   assert.ok(media.includes('a30333bb6da73c3c452506ad7997c5642536fa38'),"global media release must be pinned to a proven immutable commit");
-  assert.ok(media.includes('/${REVISION}/data/assets/catalog/global-visual-assets.v1.json'),"live editor must load the media metadata from that exact commit, not the mutable branch cache");
+  assert.ok(media.includes('/${CATALOG_REF}/data/assets/catalog/global-visual-assets.v1.json'),"live editor must load the media metadata from that exact catalog commit, not the mutable branch cache");
+  assert.match(media,/const REVISION = "2026-10-28-v43-projectile-native-facing"/,
+    "stable dated cache revision must remain compatible with all existing media URL users");
 });
 
 test("every active Capture Showcase skill path and author id is unique", async () => {
