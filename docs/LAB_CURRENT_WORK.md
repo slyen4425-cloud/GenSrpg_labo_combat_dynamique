@@ -1,3 +1,15 @@
+## 2026-10-28 — Import Graine sansue + bibliothèque de marqueurs (lot en cours)
+- Demande : intégrer les deux exports utilisateur `gensrpg-capture-skill-graine_sansue_cap(1).json` (SHA256 b74b469b12c0f6206467ce7a1272eef1a5a0768643616e00a7eeefe6e12ef1da) et `gensrpg-marqueurs.json` (SHA256 7f15ebda6c3cfb874ada2da952d3012ea0934cfcc7cb80aea34b9c0b68387a18) sans doublons.
+- Base : `gh-pages@ff1c92ec79940267db39df468518301e2de8ddea`; médias `global-assets@f02cb4cdf806e33ca225ad53274b9fb57e4f4577` ; START `checkpoint/lab-start-graine-sansue-marker-skill-2026-10-28` ; branche `work/lab-graine-sansue-marker-skill-2026-10-28`.
+- Uniques autorités runtime : `data/capture/showcase/markers.capture-markers-v1.json` (bibliothèque) et `data/capture/showcase/graine_sansue_cap.capture-skill-transfer-v1.json` (compétence), indexée uniquement dans `src/catalogs/capture-showcase-skill-presets-v1.js`. Aucun catalogue secondaire. Archives datées en `data/capture/source-exports/` = provenance seulement.
+- Vérification des données avant modification : les trois marqueurs présents (venin-static, eclat-spirituel, peste) sont octet-JSON équivalents dans l'export reçu ; `poison` ajouté correspond à son unique définition déjà attachée à `cap_poison_atk_2` et `cap_poison_atk_7` ; `graine-sansue` de l'export compétence correspond exactement au nouveau marqueur de l'export bibliothèque. Aucun ID de compétence `graine_sansue_cap` dans le manifeste actif. Tous les assetIds requis existent dans le catalogue global-assets.
+- Valeurs d'auteur conservées : Graine sansue, Nature, niveau 5, projectile, énergie 5, préparation/trajet 900 ms, CD 45 s. 1 marqueur `graine-sansue` (20 s, max 10) ; drain de vie 5 dégâts/charge chaque 3 s, calcul combat Nature, soin au lanceur 100 % des dégâts réels. Sprite cast Nature, projectile Terre et impact Nature conservés tels que fournis. Aucune association implicite à une créature.
+- Périmètre : fichiers canonical compétence/bibliothèque, registre de compétences, chaîne d'import JS versionnée de l'éditeur, tests de données/éditeur Chromium, provenance des deux exports et ce journal. Protéger moteur de combat, modules, main, catalogues d'assets, créatures et compétences existantes.
+- TDD RED : écrire les sentinelles d'intégration/absence de conflit et d'exposition navigateur avant l'import ; puis installer les données, tester via CI Foundation et quatre Chromium, checkpoint GREEN exact, PR gh-pages, vérifier Pages. Ne pas annoncer GREEN sans preuve.
+- Statut : tests RED en préparation ; non publié.
+
+---
+
 ## 2026-10-28 — Marqueur Drain de vie périodique (livraison en validation)
 - Demande : ajouter un marqueur qui retire des PV par charge à chaque tick et rend au lanceur vivant un pourcentage des PV réellement perdus. Pas de seconde autorité, fallback, rustine, ni masquage de régressions.
 - Base exacte : `gh-pages@d30204afd983bfd9fd3196dd8ca74e5ad8d4bf09` ; propriétaire médias non modifié `global-assets@4b72ab532e79a23ba278bf3213c044d94d400409`. START `checkpoint/lab-start-marker-life-drain-2026-10-28` ; branche `work/lab-marker-life-drain-2026-10-28` ; PR #116 vers gh-pages.
