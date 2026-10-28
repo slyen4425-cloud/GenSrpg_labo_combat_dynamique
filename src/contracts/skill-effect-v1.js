@@ -43,7 +43,8 @@ const TARGET_SCOPE_SET = new Set(
 
 const COMMON_FIELDS = new Set([
   "kind",
-  "targetScope"
+  "targetScope",
+  "condition"
 ]);
 
 const FIELDS_BY_KIND = Object.freeze({
