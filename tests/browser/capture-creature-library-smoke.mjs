@@ -33,6 +33,45 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents=Buffer.from(html.replace("<head>","<head>"+diagnostic));
     }
+    // Verify the REAL editor preview's own resolver, not the standalone FX
+    // fixture used by older orientation tests. Execute in the native entry
+    // module scope so the probe calls the same functions as "Tester combat".
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-editor-preview-heading")) {
+      const html=contents.toString("utf8");
+      contents=Buffer.from(html.replace(
+        'src="./capture-editor-v2.js?v=projectile-preview-heading-20261028"',
+        'src="./capture-editor-v2.js?verify-editor-preview-heading=1"'
+      ));
+    }
+    if (pathname.endsWith("/capture-editor-v2.js") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-editor-preview-heading")) {
+      const code=contents.toString("utf8");
+      const probe=`
+      void (async () => {
+        try {
+          // Use the real global-assets catalog the editor loads in production.
+          visualContext=await loadPreviewVisualContext();
+          const file=await fetch("../../data/capture/showcase/graine_sansue_cap.capture-skill-transfer-v1.json",{cache:"no-store"});
+          if(!file.ok)throw Error("Graine sansue author's live skill missing");
+          const transfer=await file.json();
+          const assetId=transfer.draft.presentation.visual.travel.assetId;
+          const actualAsset=resolvePreviewPresentationAsset(assetId);
+          if(assetId!=="pack:capture:sprite-graine-sangsue-projectile-01" ||
+             actualAsset?.headingRad!==0 || actualAsset?.frameCount!==12)
+            throw Error("live editor preview stripped Graine sansue native heading: "+JSON.stringify(actualAsset));
+          const presentation=buildPreviewPresentationAssets({
+            skillPresentations:{[transfer.draft.id]:transfer.draft.presentation}
+          }).presentationForSkill(transfer.draft.id,{sourceView:"opponent-1",view:"opponent"});
+          if(presentation?.travel?.headingRad!==0 || presentation?.travel?.assetId!==assetId)
+            throw Error("live opponent presentation lost authored Graine direction");
+          document.body.dataset.editorPreviewHeadingProbe="ok:editor:opponent:heading:0";
+        } catch(error) {
+          document.body.dataset.editorPreviewHeadingProbe="fail:"+error.message;
+        }
+      })();`;
+      contents=Buffer.from(code+"\\n"+probe);
+    }
     // Test-only network-stall simulation: leave the real module graph and data path intact.
     // Only presentation CDN requests remain pending, like a stalled mobile connection.
     if (pathname.endsWith("/capture-editor-v2.html") &&
@@ -2015,6 +2054,12 @@ try {
   if(energyProbe!=="ok:12:5:50%")
     throw Error("Real Chrome energy orbs regression: "+energyProbe);
   console.log("Capture HUD energy orbs: real Chrome 12 circles, partial fill, 180px wrap, capacity 24 and accessible count");
+  const editorHeadingDom=await dumpDom(url+"?verify-editor-preview-heading=1");
+  const editorHeadingProbe=editorHeadingDom.match(/data-editor-preview-heading-probe="([^"]+)"/)?.[1]??"missing";
+  if(editorHeadingProbe!=="ok:editor:opponent:heading:0")
+    throw Error("REAL editor preview opponent Graine sansue lost native heading: "+editorHeadingProbe+
+      " JS="+(editorHeadingDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
+  console.log("REAL editor -> active asset resolver -> Graine sansue opponent FX heading 0: preserved");
   const incomingDom=await dumpDom(url+"?verify-projectile-inbound-facing=1");
   const incomingProbe=incomingDom.match(/data-inbound-projectile-probe="([^"]+)"/)?.[1]??"missing";
   if(incomingProbe!=="ok:outbound:opponent:mirror:fireball:beam")
