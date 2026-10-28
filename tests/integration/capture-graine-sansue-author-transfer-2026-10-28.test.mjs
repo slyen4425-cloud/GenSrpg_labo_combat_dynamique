@@ -16,9 +16,13 @@ test("Graine sansue has one canonical registered skill and preserves the full au
   const paths=CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1;
   assert.equal(paths.filter(x=>x===skillPath).length,1);
   assert.equal(paths.length,new Set(paths).size,"one registered path per skill");
-  const original=JSON.parse(await read(skillSourcePath));
+  const historicalRaw=await read(skillSourcePath);
+  assert.equal(createHash("sha256").update(historicalRaw).digest("hex"),
+    "b74b469b12c0f6206467ce7a1272eef1a5a0768643616e00a7eeefe6e12ef1da",
+    "the first 2026-10-28 skill source stays immutable");
+  const original=JSON.parse(await read("data/capture/source-exports/gensrpg-capture-skill-graine_sansue_cap-2026-10-28-r2.json"));
   const active=JSON.parse(await read(skillPath));
-  assert.deepEqual(active,original,"authored skill settings must not be rewritten");
+  assert.deepEqual(active,original,"active skill must equal latest author export, no rewriting");
   const transfer=importCaptureTransferJsonV1(await read(skillPath));
   assert.equal(transfer.kind,"skill");
   const d=transfer.value.draft;
@@ -29,7 +33,11 @@ test("Graine sansue has one canonical registered skill and preserves the full au
   assert.equal(d.definition.energyCost,5);
   assert.equal(d.definition.preparationMs,900);
   assert.equal(d.definition.travelMs,900);
-  assert.equal(d.definition.cooldownMs,45000);
+  assert.equal(d.definition.cooldownMs,10000);
+  assert.equal(d.definition.projectileClash.power,1);
+  assert.equal(d.presentation.visual.icon.assetId,"pack:capture:icon-skill-graine-sangsue-01");
+  assert.equal(d.presentation.visual.travel.assetId,"pack:capture:sprite-graine-sangsue-projectile-01");
+  assert.equal(d.presentation.visual.impact.assetId,"pack:capture:sprite-graine-sangsue-debuff-01");
   assert.equal(d.definition.effects.length,1);
   assert.equal(d.definition.effects[0].kind,"apply_marker");
   assert.equal(d.definition.effects[0].charges,1);

@@ -19,7 +19,11 @@ for(const [id,kind] of [["crea_nat_1","creature"],["coupe_feuille","skill"]]){
     const currentSource="data/capture/source-exports/gensrpg-capture-skill-"+id+"-2026-10-28.json";
     assert.deepEqual(JSON.parse(await read(live)),JSON.parse(await read(currentSource)));
   }else{
-    assert.equal(await read(live),await read(archived));
+    const historical=JSON.parse(await read(archived));
+    assert.equal(historical.draft.id,id,"2026-10-27 author creature archive remains untouched");
+    const currentSource="data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-28-r2.json";
+    assert.equal(await read(live),await read(currentSource),
+      "active creature must equal latest author export, without erasing historical provenance");
   }
   const catalog=kind==="creature"?CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1:CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1;
   assert.equal(catalog.filter(p=>p===live).length,1);

@@ -1,0 +1,226 @@
+{
+  "schema": "capture-creature-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-creature-editor-draft-v3",
+    "id": "crea_nat_1",
+    "displayName": "Grainou",
+    "description": "Grainou, créature de type nature/earth.",
+    "level": 1,
+    "sourceStats": {
+      "force": 10,
+      "agility": 13,
+      "intelligence": 0,
+      "spirit": 13,
+      "endurance": 10,
+      "initiative": 13
+    },
+    "elements": [
+      "earth",
+      "nature"
+    ],
+    "resistances": [
+      {
+        "kind": "element:fire",
+        "value": -50
+      },
+      {
+        "kind": "element:water",
+        "value": 35
+      },
+      {
+        "kind": "element:earth",
+        "value": 35
+      },
+      {
+        "kind": "element:air",
+        "value": 0
+      },
+      {
+        "kind": "element:electric",
+        "value": 0
+      },
+      {
+        "kind": "element:light",
+        "value": 0
+      },
+      {
+        "kind": "element:shadow",
+        "value": 0
+      },
+      {
+        "kind": "element:nature",
+        "value": 0
+      },
+      {
+        "kind": "element:ice",
+        "value": 0
+      },
+      {
+        "kind": "element:poison",
+        "value": 0
+      },
+      {
+        "kind": "element:steel",
+        "value": 0
+      },
+      {
+        "kind": "element:psy",
+        "value": 0
+      },
+      {
+        "kind": "element:spirit",
+        "value": 0
+      }
+    ],
+    "capture": {
+      "capturable": true,
+      "captureRate": 68,
+      "spawnChance": 18,
+      "spawnTags": [
+        "earth",
+        "nature"
+      ],
+      "evolution": {
+        "condition": "level",
+        "level": 17,
+        "targetId": "crea_nat_2"
+      }
+    },
+    "combat": {
+      "maxHp": 190,
+      "maxEnergy": 0,
+      "initialEnergy": 0,
+      "energyChargeAmount": 0,
+      "energyChargeIntervalMs": 0,
+      "movementEnergyPerStep": 0,
+      "chargeTimeModifierPct": 0,
+      "approachTimeModifierPct": 25,
+      "reaction": {
+        "type": "defense",
+        "maxCharges": 2,
+        "rechargeMs": 20000,
+        "activeWindowMs": 400,
+        "damageReductionPct": 30
+      }
+    },
+    "skillIds": [
+      "cap_earth_atk_1",
+      "cap_earth_atk_2",
+      "cap_earth_atk_3",
+      "cap_earth_atk_4",
+      "cap_earth_atk_5",
+      "cap_earth_atk_6",
+      "cap_earth_atk_7",
+      "cap_earth_special_1",
+      "cap_earth_special_2",
+      "coupe_feuille",
+      "graine_sansue_cap"
+    ],
+    "presentation": {
+      "id": "creature:crea_nat_1",
+      "version": 2,
+      "subjectType": "creature",
+      "subjectId": "crea_nat_1",
+      "profileId": "quadruped",
+      "displayScale": 1,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1.5,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 0.9,
+          "position": {
+            "x": 0,
+            "y": 50
+          }
+        }
+      },
+      "transformOrigin": {
+        "x": "50%",
+        "y": "50%"
+      },
+      "visual": {
+        "front": {
+          "assetId": "pack:capture:creature-heriplante-opponent-01"
+        },
+        "back": {
+          "assetId": "pack:capture:creature-heriplante-player-01"
+        },
+        "icon": {
+          "assetId": "pack:capture:creature-heriplante-icon-01"
+        }
+      },
+      "sockets": [
+        {
+          "id": "mouth",
+          "label": "Bouche",
+          "front": {
+            "x": 0.47319589617239,
+            "y": 0.1953125
+          },
+          "back": {
+            "x": 0.5072164973837093,
+            "y": 0.19930553436279297
+          }
+        }
+      ],
+      "audio": {}
+    }
+  },
+  "statValues": {
+    "schema": "capture-creature-stat-values-v1",
+    "creatureId": "crea_nat_1",
+    "values": {
+      "health": 190,
+      "speed": 0,
+      "physical": 0,
+      "defense": 20,
+      "fire": 0,
+      "water": 0,
+      "earth": 15,
+      "air": 0,
+      "electric": 0,
+      "light": 0,
+      "shadow": 0,
+      "poison": 0,
+      "acier": 0,
+      "nature": 20,
+      "esprit": 0
+    }
+  },
+  "loadout": {
+    "schema": "capture-active-skill-loadout-v1",
+    "creatureId": "crea_nat_1",
+    "slots": [
+      {
+        "id": "slot-1",
+        "skillId": "coupe_feuille"
+      },
+      {
+        "id": "slot-2",
+        "skillId": "graine_sansue_cap"
+      },
+      {
+        "id": "slot-3",
+        "skillId": null
+      },
+      {
+        "id": "slot-4",
+        "skillId": null
+      },
+      {
+        "id": "slot-ultimate",
+        "skillId": null
+      }
+    ]
+  }
+}
