@@ -86,6 +86,33 @@ test("native overkill, missing HP, maxHeal and a knocked-out caster are respecte
   assert.equal(full.fighters.a.hp,100,"healing cannot exceed maxHP");
 });
 
+test("reflected DoT knockout never allows the source to steal life back from KO",()=>{
+  const reflect={id:"reflect-dot",kind:"damage_reflection",polarity:"beneficial",
+    durationMs:15000,stacking:"replace",percent:100,incomingKinds:["dot"]};
+  let state=withFighterHp(initial(),"a",10);
+  state=applyStatusEffectV1({state,sourceActorId:"b",targetActorId:"b",
+    status:reflect,atMs:0});
+  state=tick(add(state,marker(),3));
+  assert.equal(state.fighters.b.hp,85,"victim loses 15 real HP");
+  assert.equal(state.fighters.a.hp,0,"100% reflection knocks out source before healing");
+});
+
+test("one shared marker clock credits only its most recent living caster across abilities",()=>{
+  const fighters=[fighter("a"),fighter("b"),fighter("c")];
+  let state=createCombatSession({fighters}).snapshot();
+  state=withFighterHp(withFighterHp(state,"a",25),"c",35);
+  state=applyStatusEffectV1({state,sourceActorId:"a",targetActorId:"b",
+    sourceSkillId:"first",status:markerStatusDefinitionV1(marker()),atMs:0});
+  state=applyStatusEffectV1({state,sourceActorId:"c",targetActorId:"b",
+    sourceSkillId:"second",status:markerStatusDefinitionV1(marker()),atMs:1000});
+  assert.equal(state.fighters.b.statusEffects.length,1,"no independent status or duplicate clock");
+  assert.equal(state.fighters.b.statusEffects[0].sourceActorId,"c");
+  state=tick(state,5000);
+  assert.equal(state.fighters.b.hp,90);
+  assert.equal(state.fighters.a.hp,25,"first caster is not healed by a marker now owned by c");
+  assert.equal(state.fighters.c.hp,40,"current source alone receives half of 10 real damage");
+});
+
 test("zero damage cannot drain, stack consumption changes next tick and existing damage/heal stay unchanged",()=>{
   let zero=withFighterHp(initial(),"a",40);
   zero=tick(add(zero,marker({percent:0}),3));
