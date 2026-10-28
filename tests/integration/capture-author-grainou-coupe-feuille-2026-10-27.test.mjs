@@ -11,7 +11,16 @@ for(const [id,kind] of [["crea_nat_1","creature"],["coupe_feuille","skill"]]){
   const suffix=kind==="creature"?"creature":"skill";
   const live="data/capture/showcase/"+id+".capture-"+suffix+"-transfer-v1.json";
   const archived="data/capture/source-exports/gensrpg-capture-"+suffix+"-"+id+"-2026-10-27.json";
-  assert.equal(await read(live),await read(archived));
+  if(kind==="skill"){
+    // Preserve the 2026-10-27 v9 source as immutable history, then validate
+    // the current v11 author-approved export against its own dated archive.
+    const historic=JSON.parse(await read(archived));
+    assert.equal(historic.draft.presentation.version,9);
+    const currentSource="data/capture/source-exports/gensrpg-capture-skill-"+id+"-2026-10-28.json";
+    assert.deepEqual(JSON.parse(await read(live)),JSON.parse(await read(currentSource)));
+  }else{
+    assert.equal(await read(live),await read(archived));
+  }
   const catalog=kind==="creature"?CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1:CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1;
   assert.equal(catalog.filter(p=>p===live).length,1);
   const registry=normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));

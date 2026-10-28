@@ -116,7 +116,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=capture-showcase-20261028";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
