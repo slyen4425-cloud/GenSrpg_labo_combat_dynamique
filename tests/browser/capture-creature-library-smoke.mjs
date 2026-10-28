@@ -378,8 +378,10 @@ const server = createServer(async (req, res) => {
               lib.value="graine_sansue_cap";lib.dispatchEvent(new Event("change",{bubbles:true}));
               if(get("skill-name")?.value!=="Graine sansue" ||
                  get("skill-required-level")?.value!=="5" ||
-                 get("skill-cooldown")?.value!=="45000")
-                throw Error("Graine sansue author skill settings not loaded");
+                 get("skill-cooldown")?.value!=="10000" ||
+                 get("skill-icon")?.value!=="pack:capture:icon-skill-graine-sangsue-01" ||
+                 get("skill-travel-fx")?.value!=="pack:capture:sprite-graine-sangsue-projectile-01")
+                throw Error("Graine sansue latest author skill settings not loaded");
               const graineRows=[...document.querySelectorAll("[data-skill-effect-row]")];
               const graineMarker=graineRows.find(row=>
                 row.querySelector("[data-skill-effect-kind]")?.value==="apply_marker");

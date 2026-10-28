@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
+import {createHash} from "node:crypto";
 import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 import {importCaptureTransferJsonV1} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 import {normalizeCaptureMarkerLibraryV1, markerStatusDefinitionV1} from "../../src/contracts/capture-marker-v1.js";
