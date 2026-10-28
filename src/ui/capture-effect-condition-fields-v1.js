@@ -30,7 +30,7 @@ export function appendCaptureEffectConditionFieldsV1({
   for(const kind of statusKinds)option(status,kind,statusLabel(kind));
   const marker=document.createElement("select");
   marker.dataset.skillEffectConditionMarker="true";
-  const markerSelection=()=>effect?.condition?.type==="marker"?effect.condition.value:marker.value;
+  const markerSelection=()=>marker.value || (effect?.condition?.type==="marker"?effect.condition.value:"");
   const populateMarkers=()=>{
     const selected=markerSelection();
     marker.textContent="";
