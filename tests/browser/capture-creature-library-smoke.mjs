@@ -127,15 +127,28 @@ const server = createServer(async (req, res) => {
           if(planned.length!==1 || planned[0].fromPoint!==contact)
             throw Error("mirror return lost contact point");
           const reflected=shoot(planned[0].fromSlot,planned[0].targetSlot,planned[0].fromPoint);
+          const coupeReflected=shoot(planned[0].fromSlot,planned[0].targetSlot,planned[0].fromPoint,coupe.id);
+          // The same real media must stay upright when the PLAYER mirror
+          // sends the enemy projectile back to the opponent (left -> right).
+          const playerContact={x:rect.left+138,y:rect.top+351};
+          const reverseAction={skill:{id,form:"projectile",projectileTargeting:"direct",element:"nature"},
+            travelMs:2500,mirrorReturn:{contactPoint:playerContact}};
+          const reversePlan=planSkillReleaseFx({action:reverseAction,actorSlot:"player",targetSlot:"opponent"});
+          if(reversePlan.length!==1 || reversePlan[0].fromPoint!==playerContact)
+            throw Error("player mirror return lost actual contact point");
+          const reflectedRight=shoot(reversePlan[0].fromSlot,reversePlan[0].targetSlot,
+            reversePlan[0].fromPoint,coupe.id);
           const tilt=x=>Number(x.slice(x.indexOf("(")+1,x.indexOf("rad)")));
           if(outbound.includes("scaleX(-1)") ||
              !incoming.includes("scaleX(-1)") ||
              !coupeIncoming.includes("scaleX(-1)") ||
              !reflected.includes("scaleX(-1)") ||
+             !coupeReflected.includes("scaleX(-1)") ||
+             reflectedRight.includes("scaleX(-1)") ||
              neutralIncoming!=="rotate(0rad)" ||
-             ![outbound,incoming,coupeIncoming,reflected].every(x=>Math.abs(tilt(x))<Math.PI/2))
+             ![outbound,incoming,coupeIncoming,reflected,coupeReflected,reflectedRight].every(x=>Math.abs(tilt(x))<Math.PI/2))
             throw Error("wrong real author projectile facing: "+
-              JSON.stringify({outbound,incoming,coupeIncoming,neutralIncoming,reflected}));
+              JSON.stringify({outbound,incoming,coupeIncoming,neutralIncoming,reflected,coupeReflected,reflectedRight}));
           document.body.dataset.inboundProjectileProbe="ok:outbound:opponent:mirror";
         } catch(error) {
           document.body.dataset.inboundProjectileProbe="fail:"+error.message;
