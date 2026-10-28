@@ -55,15 +55,40 @@ const server = createServer(async (req, res) => {
         import {createCaptureSkillPresentationAssetsV2} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
         import {normalizeSkillPresentationBinding} from "../../src/contracts/skill-presentation-binding.js";
         import {planSkillReleaseFx} from "../../src/core/fx/skill-fx-plan.js";
+        import {createGlobalPresentationAssetResolverV1} from "../../src/assets/global-presentation-asset-resolver-v1.js";
+        import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js?v=projectile-heading-catalog-20261028";
         let fx=null;
         try {
-          const response=await fetch("../../data/capture/showcase/cap_air_atk_4.capture-skill-transfer-v1.json",{cache:"no-store"});
-          if(!response.ok)throw Error("fixture missing");
-          const file=await response.json();
-          const id=file.draft.id;
+          const files=await Promise.all(["graine_sansue_cap","coupe_feuille","cap_air_atk_4"].map(async name=>{
+            const response=await fetch("../../data/capture/showcase/"+name+".capture-skill-transfer-v1.json",{cache:"no-store"});
+            if(!response.ok)throw Error("skill author fixture missing: "+name);
+            return (await response.json()).draft;
+          }));
+          const [graine,coupe,tornade]=files;
+          const id=graine.id;
+          // Asset metadata comes from the EXACT global-assets catalog used by
+          // the running editor. No fabricated heading, sprite or second map.
+          const mediaResponse=await fetch(GLOBAL_VISUAL_LIBRARY.catalogUrl,{cache:"no-store"});
+          if(!mediaResponse.ok)throw Error("live media catalog unavailable: "+mediaResponse.status);
+          const mediaCatalog=await mediaResponse.json();
+          const assetForId=createGlobalPresentationAssetResolverV1({
+            assetCatalog:mediaCatalog,assetUrlForFile:globalVisualAssetUrl
+          });
+          const directional=["pack:capture:sprite-graine-sangsue-projectile-01",
+            "pack:capture:sprite-feuille-tranchante-projectile-03",
+            "pack:capture:sprite-crachat-acide-projectile-01",
+            "pack:capture:sprite-air-wind-bolt-01",
+            "pack:capture:sprite-steel-wing-projectile-01",
+            "pack:capture:sprite-kitsune-lunaire-projectile-01"];
+          for(const assetId of directional){
+            const resolved=assetForId(assetId);
+            if(!resolved || resolved.headingRad!==0 || !resolved.url)
+              throw Error("real direction metadata missing: "+assetId);
+          }
           const projected=createCaptureSkillPresentationAssetsV2({
-            skillPresentations:{[id]:normalizeSkillPresentationBinding(file.draft.presentation)},
-            assetForId:()=>({url:"/directional-projectile.webp",headingRad:-0.48,coreAnchor:{x:0.5,y:0.5}})
+            skillPresentations:Object.fromEntries(files.map(file=>
+              [file.id,normalizeSkillPresentationBinding(file.presentation)])),
+            assetForId
           });
           const arena=document.createElement("div");
           arena.style.cssText="position:relative;width:900px;height:500px;pointer-events:none;";
@@ -81,9 +106,9 @@ const server = createServer(async (req, res) => {
               return {node,keyframes,options,finished:new Promise(()=>{}),cancel(){}};
             }
           });
-          const shoot=(fromSlot,targetSlot,fromPoint)=>{
+          const shoot=(fromSlot,targetSlot,fromPoint,skillId=id)=>{
             const before=arena.querySelectorAll(".skill-fx--projectile").length;
-            fx.play({type:"projectile",skillId:id,fromSlot,targetSlot,
+            fx.play({type:"projectile",skillId,fromSlot,targetSlot,
               ...(fromPoint?{fromPoint}:{}),durationMs:2500});
             const shell=arena.querySelectorAll(".skill-fx--projectile")[before];
             const sprite=shell?.querySelector(".skill-fx__sprite");
@@ -92,6 +117,8 @@ const server = createServer(async (req, res) => {
           };
           const outbound=shoot("player","opponent");
           const incoming=shoot("opponent","player");
+          const coupeIncoming=shoot("opponent","player",null,coupe.id);
+          const neutralIncoming=shoot("opponent","player",null,tornade.id);
           const rect=arena.getBoundingClientRect();
           const contact={x:rect.left+730,y:rect.top+155};
           const action={skill:{id,form:"projectile",projectileTargeting:"direct",element:"air"},
@@ -103,9 +130,12 @@ const server = createServer(async (req, res) => {
           const tilt=x=>Number(x.slice(x.indexOf("(")+1,x.indexOf("rad)")));
           if(outbound.includes("scaleX(-1)") ||
              !incoming.includes("scaleX(-1)") ||
+             !coupeIncoming.includes("scaleX(-1)") ||
              !reflected.includes("scaleX(-1)") ||
-             ![outbound,incoming,reflected].every(x=>Math.abs(tilt(x))<Math.PI/2))
-            throw Error("wrong physical projectile facing: "+JSON.stringify({outbound,incoming,reflected}));
+             neutralIncoming!=="rotate(0rad)" ||
+             ![outbound,incoming,coupeIncoming,reflected].every(x=>Math.abs(tilt(x))<Math.PI/2))
+            throw Error("wrong real author projectile facing: "+
+              JSON.stringify({outbound,incoming,coupeIncoming,neutralIncoming,reflected}));
           document.body.dataset.inboundProjectileProbe="ok:outbound:opponent:mirror";
         } catch(error) {
           document.body.dataset.inboundProjectileProbe="fail:"+error.message;
