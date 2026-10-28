@@ -1,6 +1,9 @@
 const REPOSITORY = "slyen4425-cloud/GenSrpg_labo_combat_dynamique";
 const BRANCH = "global-assets";
-const REVISION = "2026-10-27-v42-pieuvre-three-views";
+// Cache revision for the one canonical global-assets catalog and its image URLs.
+// Delivery must wait until the authoritative branch has propagated; the REAL
+// browser test now checks its metadata rather than inventing directional assets.
+const REVISION = "2026-10-28-v43-projectile-native-facing";
 
 export const GLOBAL_VISUAL_LIBRARY = Object.freeze({
   repository: REPOSITORY,
