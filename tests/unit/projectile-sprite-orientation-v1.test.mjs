@@ -95,3 +95,19 @@ test("global asset resolver preserves explicit heading zero but ignores missing/
   });
   assert.equal(resolve("directed").headingRad,0);
 });
+
+test("native left-facing legacy projectile reverses on rightward flight and stays upright inbound",async()=>{
+  // Source atlas: sprite_skill_fireball_travel_rl_atlas_01.png. Unlike the
+  // modern right-facing sprites, this artwork has its head at the LEFT edge.
+  const asset={...spriteAsset,headingRad:Math.PI};
+  const outbound=await runProjectile({fromSlot:"player",asset});
+  const inbound=await runProjectile({fromSlot:"opponent",asset});
+  const towardRight=Math.atan2(-200,640);
+  const towardLeft=Math.atan2(200,-640);
+  assert.equal(outbound.sprite.style.transform,`rotate(${towardRight}rad) scaleX(-1)`,
+    "left-native fireball must be mirrored for the player's rightward shot");
+  assert.equal(inbound.sprite.style.transform,`rotate(${towardLeft-Math.PI}rad)`,
+    "the adversary's leftward shot already matches left-native sprite orientation");
+  assert.equal(outbound.flight.options.duration,inbound.flight.options.duration);
+  outbound.renderer.dispose();inbound.renderer.dispose();
+});

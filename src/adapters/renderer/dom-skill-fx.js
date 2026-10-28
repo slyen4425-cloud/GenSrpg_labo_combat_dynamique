@@ -3099,23 +3099,33 @@ export function createDomSkillFxRenderer({
       const spriteNode = arena.ownerDocument.createElement("span");
       const coreAnchorX = clampUnit(travelVisual.coreAnchor?.x, 0.5);
       const coreAnchorY = clampUnit(travelVisual.coreAnchor?.y, 0.5);
-      // The same author sprite points forward for both camps. Rotating
-      // a leftward shot by ~180deg also turns its artwork upside down.
-      // Mirror ONLY explicitly directional sprites horizontally when the
-      // actual flight goes left (also covers mirrorReturn/contactPoint),
-      // then keep the small native-heading correction. No extra FX owner.
-      // Non-directional sprites (Tornade) and skyfall stay authored/upright.
+      // The media catalog alone declares the sprite's native direction.
+      // Most authored atlases point right, but older atlases (e.g. the
+      // original fireball) point left. Never infer sprite direction from the
+      // creature camp or from an asset/skill ID. Mirror only if the actual
+      // flight direction disagrees with the native heading. Mirror returns
+      // take the same path using their real contactPoint and deltaX.
+      // Neutral/skyfall assets keep their original upright presentation.
       const headingRad = travelVisual.headingRad;
       const hasDirectionalHeading = typeof headingRad === "number" &&
         Number.isFinite(headingRad);
-      const mirrorLeftward = !skyfall && hasDirectionalHeading && deltaX < 0;
+      const nativeLeftward = hasDirectionalHeading && Math.cos(headingRad) < 0;
+      const mirrorHorizontally = !skyfall && hasDirectionalHeading &&
+        (deltaX < 0) !== nativeLeftward;
       const travelAngle = Math.atan2(deltaY, deltaX);
-      const rotationRad = skyfall || !hasDirectionalHeading
+      // Preserve the existing rotations of all right-facing sprites; only
+      // native-left artworks require an inverted mirror decision and an
+      // angular wrap to avoid a nearly full-turn rotation for upper lanes.
+      let rotationRad = skyfall || !hasDirectionalHeading
         ? 0
-        : mirrorLeftward
-          ? (travelAngle > 0 ? travelAngle - Math.PI : travelAngle + Math.PI)
-            + headingRad
-          : travelAngle - headingRad;
+        : nativeLeftward
+          ? travelAngle - (mirrorHorizontally ? Math.PI - headingRad : headingRad)
+          : mirrorHorizontally
+            ? (travelAngle > 0 ? travelAngle - Math.PI : travelAngle + Math.PI)
+              + headingRad
+            : travelAngle - headingRad;
+      if (nativeLeftward && rotationRad > Math.PI) rotationRad -= 2 * Math.PI;
+      if (nativeLeftward && rotationRad < -Math.PI) rotationRad += 2 * Math.PI;
 
       node.className += " skill-fx--sprite-shell";
       node.dataset.assetId = travelVisual.assetId ?? "";
@@ -3132,7 +3142,7 @@ export function createDomSkillFxRenderer({
       spriteNode.style.top = percent(0.5 - coreAnchorY);
       spriteNode.style.transformOrigin =
         `${percent(coreAnchorX)} ${percent(coreAnchorY)}`;
-      spriteNode.style.transform = mirrorLeftward
+      spriteNode.style.transform = mirrorHorizontally
         ? `rotate(${rotationRad}rad) scaleX(-1)`
         : `rotate(${rotationRad}rad)`;
       node.append(spriteNode);
