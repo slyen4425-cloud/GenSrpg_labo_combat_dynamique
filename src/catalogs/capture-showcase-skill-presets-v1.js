@@ -1,6 +1,7 @@
 export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
   Object.freeze([
     "data/capture/showcase/coupe_feuille.capture-skill-transfer-v1.json",
+    "data/capture/showcase/graine_sansue_cap.capture-skill-transfer-v1.json",
     "data/capture/showcase/cap_fire_atk_5.capture-skill-transfer-v1.json",
     "data/capture/showcase/cap_poison_atk_2.capture-skill-transfer-v1.json",
     "data/capture/showcase/cap_poison_atk_3.capture-skill-transfer-v1.json",
