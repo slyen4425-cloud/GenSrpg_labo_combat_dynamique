@@ -1,3 +1,4 @@
+import {appendCaptureEffectConditionFieldsV1,readCaptureEffectConditionV1} from "./capture-effect-condition-fields-v1.js";
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js";
 import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js?v=marker-life-drain-20261028";
 import { normalizeCaptureMarkerLibraryV1 } from "../contracts/capture-marker-v1.js";
@@ -353,6 +354,10 @@ function humanTacticalStatusToContractV1(
     tags: stableIds(status.tags)
   };
 
+  if (output.kind === "stun" && status.durationModel === "until_damage") {
+    delete output.durationMs;
+    output.durationModel = "until_damage";
+  }
   if (
     output.stacking === "stack"
   ) {
@@ -696,10 +701,15 @@ export function buildHumanTacticalSkillEffectsV1(
       )
     });
   });
+  // Preserve one optional canonical condition on every immediate effect.
+  const conditionedEffects = builtEffects.map((built,index)=>
+    effects[index].condition
+      ? normalizeSkillEffectV1({...built,condition:effects[index].condition})
+      : built);
   // The combat status runtime owns active statuses by ID.
   // Never silently replace another effect of the same authored skill.
   const statusIds = new Set();
-  for (const effect of builtEffects) {
+  for (const effect of conditionedEffects) {
     if (effect.kind !== "apply_status") continue;
     const id = effect.status.id;
     if (statusIds.has(id)) {
@@ -711,7 +721,7 @@ export function buildHumanTacticalSkillEffectsV1(
     }
     statusIds.add(id);
   }
-  return builtEffects;
+  return conditionedEffects;
 }
 
 
@@ -5325,14 +5335,20 @@ function syncHumanSkillEffectRowV1(
     )?.value ?? "";
 
   const statusPolarity = row.querySelector("[data-skill-status-polarity]");
+  const sleepToggle=row.querySelector("[data-skill-status-sleep-until-damage]");
+  const sleeping=statusKind==="stun" && sleepToggle?.checked===true;
+  const sleepField=sleepToggle?.parentElement;
+  if(sleepField)sleepField.hidden=statusKind!=="stun";
+  const secondsField=row.querySelector("[data-skill-status-duration-seconds]")?.parentElement;
+  if(secondsField)secondsField.hidden=sleeping;
   const intangibleToggle = row.querySelector("[data-skill-status-intangible]");
   const intangibleSelected = statusKind === "immunity" && intangibleToggle?.checked === true;
   for (const domain of row.querySelectorAll("[data-skill-status-immunity-domain]")) {
     if (intangibleSelected) domain.checked = true;
     domain.disabled = intangibleSelected;
   }
-  if (statusPolarity && (statusKind === "projectile_mirror" || statusKind === "auto_dodge" || intangibleSelected)) {
-    statusPolarity.value = "beneficial";
+  if (statusPolarity && (sleeping || statusKind === "projectile_mirror" || statusKind === "auto_dodge" || intangibleSelected)) {
+    statusPolarity.value = sleeping ? "detrimental" : "beneficial";
     statusPolarity.disabled = true;
   } else if (statusPolarity) {
     statusPolarity.disabled = false;
@@ -5659,6 +5675,10 @@ function appendHumanSkillEffectV1(
       { min: 0.1, step: "0.1" }
     );
 
+  const sleepMode=document.createElement("input");
+  sleepMode.type="checkbox";
+  sleepMode.dataset.skillStatusSleepUntilDamage="true";
+  sleepMode.checked=status.kind==="stun" && status.durationModel==="until_damage";
   const stacking =
     document.createElement("select");
   stacking.dataset.skillStatusStacking =
@@ -5701,6 +5721,7 @@ function appendHumanSkillEffectV1(
     tacticalFieldV1("Type de statut", statusKind),
     tacticalFieldV1("Polarité", polarity),
     tacticalFieldV1("Durée (secondes)", duration),
+    tacticalFieldV1("Sommeil — se réveille après perte de PV (sans minuterie)", sleepMode),
     tacticalFieldV1("Stacking", stacking),
     maxStacksField
   );
@@ -6610,6 +6631,9 @@ function appendHumanSkillEffectV1(
     markerFields.consumeBox
   );
   row.append(header, config);
+  appendCaptureEffectConditionFieldsV1({root,row,effect,
+    statusKinds:STATUS_EFFECT_V1_KINDS,statusLabel:tacticalStatusKindLabelV1,
+    markerOptions:captureMarkerOptionsV1});
   host.append(row);
 
   kind.value = effect?.kind ?? "damage";
@@ -6621,6 +6645,7 @@ function appendHumanSkillEffectV1(
     status.polarity ?? "beneficial";
   stacking.value =
     status.stacking ?? "refresh";
+  sleepMode.addEventListener("change",()=>syncHumanSkillEffectRowV1(row));
   statusVisualMode.value =
     statusPresentation?.mode ?? "none";
   zoneRadius.value =
@@ -6843,6 +6868,10 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
         })()
       };
 
+      if (statusKind === "stun" &&
+          row.querySelector("[data-skill-status-sleep-until-damage]")?.checked===true) {
+        status.durationModel="until_damage";
+      }
       if (statusKind === "stat_modifier") {
         const activation = row.querySelector("[data-skill-status-activation-condition]")?.value ?? "always";
         if (activation === "moving") status.activationCondition = "moving";
@@ -6991,9 +7020,10 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
     return output;
   });
 
-  return buildHumanTacticalSkillEffectsV1(
-    effects
-  );
+  return buildHumanTacticalSkillEffectsV1(effects.map((effect,index)=>{
+    const condition=readCaptureEffectConditionV1(rows[index]);
+    return condition===null?effect:{...effect,condition};
+  }));
 }
 
 function readHumanStatusVisualsV1(root) {
