@@ -59,12 +59,12 @@ const server = createServer(async (req, res) => {
         import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js?v=projectile-heading-catalog-20261028";
         let fx=null;
         try {
-          const files=await Promise.all(["graine_sansue_cap","coupe_feuille","cap_air_atk_4"].map(async name=>{
+          const files=await Promise.all(["graine_sansue_cap","coupe_feuille","cap_air_atk_4","fireball"].map(async name=>{
             const response=await fetch("../../data/capture/showcase/"+name+".capture-skill-transfer-v1.json",{cache:"no-store"});
             if(!response.ok)throw Error("skill author fixture missing: "+name);
             return (await response.json()).draft;
           }));
-          const [graine,coupe,tornade]=files;
+          const [graine,coupe,tornade,fireball]=files;
           const id=graine.id;
           // Asset metadata comes from the EXACT global-assets catalog used by
           // the running editor. No fabricated heading, sprite or second map.
@@ -85,6 +85,9 @@ const server = createServer(async (req, res) => {
             if(!resolved || resolved.headingRad!==0 || !resolved.url)
               throw Error("real direction metadata missing: "+assetId);
           }
+          const legacyFireball=assetForId("pack:capture:sprite-fireball-travel-01");
+          if(!legacyFireball || legacyFireball.headingRad!==Math.PI)
+            throw Error("left-native legacy fireball heading missing from real media catalog");
           const projected=createCaptureSkillPresentationAssetsV2({
             skillPresentations:Object.fromEntries(files.map(file=>
               [file.id,normalizeSkillPresentationBinding(file.presentation)])),
@@ -117,7 +120,16 @@ const server = createServer(async (req, res) => {
           };
           const outbound=shoot("player","opponent");
           const incoming=shoot("opponent","player");
-          const coupeIncoming=shoot("opponent","player",null,coupe.id);
+          const fireballOutbound=shoot("player","opponent",null,fireball.id);
+          const fireballIncoming=shoot("opponent","player",null,fireball.id);
+          // Coupe feuille is genuinely a BEAM, not a projectile. Its real
+          // path must be tested without a mocked projectile command.
+          const beamsBefore=arena.querySelectorAll(".skill-fx--beam").length;
+          fx.play({type:"beam",skillId:coupe.id,fromSlot:"opponent",targetSlot:"player",durationMs:2500});
+          const coupeBeam=arena.querySelectorAll(".skill-fx--beam")[beamsBefore];
+          if(!coupeBeam?.querySelector(".skill-fx__beam-body") ||
+             !coupeBeam.style.transform.includes("rotate("))
+            throw Error("Coupe feuille must render through its real beam owner");
           const neutralIncoming=shoot("opponent","player",null,tornade.id);
           const rect=arena.getBoundingClientRect();
           const contact={x:rect.left+730,y:rect.top+155};
@@ -127,7 +139,13 @@ const server = createServer(async (req, res) => {
           if(planned.length!==1 || planned[0].fromPoint!==contact)
             throw Error("mirror return lost contact point");
           const reflected=shoot(planned[0].fromSlot,planned[0].targetSlot,planned[0].fromPoint);
-          const coupeReflected=shoot(planned[0].fromSlot,planned[0].targetSlot,planned[0].fromPoint,coupe.id);
+          const fireballMirrorAction={skill:{id:fireball.id,form:"projectile",projectileTargeting:"direct",element:"fire"},
+            travelMs:2500,mirrorReturn:{contactPoint:contact}};
+          const fireballMirrorPlan=planSkillReleaseFx({action:fireballMirrorAction,actorSlot:"opponent",targetSlot:"player"});
+          if(fireballMirrorPlan.length!==1 || fireballMirrorPlan[0].fromPoint!==contact)
+            throw Error("fireball mirror must preserve real contact point");
+          const fireballReflected=shoot(fireballMirrorPlan[0].fromSlot,fireballMirrorPlan[0].targetSlot,
+            fireballMirrorPlan[0].fromPoint,fireball.id);
           // The same real media must stay upright when the PLAYER mirror
           // sends the enemy projectile back to the opponent (left -> right).
           const playerContact={x:rect.left+138,y:rect.top+351};
@@ -137,19 +155,21 @@ const server = createServer(async (req, res) => {
           if(reversePlan.length!==1 || reversePlan[0].fromPoint!==playerContact)
             throw Error("player mirror return lost actual contact point");
           const reflectedRight=shoot(reversePlan[0].fromSlot,reversePlan[0].targetSlot,
-            reversePlan[0].fromPoint,coupe.id);
+            reversePlan[0].fromPoint,graine.id);
           const tilt=x=>Number(x.slice(x.indexOf("(")+1,x.indexOf("rad)")));
           if(outbound.includes("scaleX(-1)") ||
              !incoming.includes("scaleX(-1)") ||
-             !coupeIncoming.includes("scaleX(-1)") ||
+             !fireballOutbound.includes("scaleX(-1)") ||
+             fireballIncoming.includes("scaleX(-1)") ||
+             fireballReflected.includes("scaleX(-1)") ||
              !reflected.includes("scaleX(-1)") ||
-             !coupeReflected.includes("scaleX(-1)") ||
+
              reflectedRight.includes("scaleX(-1)") ||
              neutralIncoming!=="rotate(0rad)" ||
-             ![outbound,incoming,coupeIncoming,reflected,coupeReflected,reflectedRight].every(x=>Math.abs(tilt(x))<Math.PI/2))
+             ![outbound,incoming,fireballOutbound,fireballIncoming,reflected,fireballReflected,reflectedRight].every(x=>Math.abs(tilt(x))<Math.PI/2))
             throw Error("wrong real author projectile facing: "+
-              JSON.stringify({outbound,incoming,coupeIncoming,neutralIncoming,reflected,coupeReflected,reflectedRight}));
-          document.body.dataset.inboundProjectileProbe="ok:outbound:opponent:mirror";
+              JSON.stringify({outbound,incoming,fireballOutbound,fireballIncoming,neutralIncoming,reflected,fireballReflected,reflectedRight}));
+          document.body.dataset.inboundProjectileProbe="ok:outbound:opponent:mirror:fireball:beam";
         } catch(error) {
           document.body.dataset.inboundProjectileProbe="fail:"+error.message;
         } finally {fx?.dispose();}
@@ -1997,7 +2017,7 @@ try {
   console.log("Capture HUD energy orbs: real Chrome 12 circles, partial fill, 180px wrap, capacity 24 and accessible count");
   const incomingDom=await dumpDom(url+"?verify-projectile-inbound-facing=1");
   const incomingProbe=incomingDom.match(/data-inbound-projectile-probe="([^"]+)"/)?.[1]??"missing";
-  if(incomingProbe!=="ok:outbound:opponent:mirror")
+  if(incomingProbe!=="ok:outbound:opponent:mirror:fireball:beam")
     throw Error("Actual Chromium projectile facing / mirror return regression: "+incomingProbe+
       " JS="+(incomingDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
   console.log("Projectile orientation Chrome: outward, incoming and mirror return share native facing + contact point");
