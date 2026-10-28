@@ -100,7 +100,7 @@ const server = createServer(async (req, res) => {
           if(planned.length!==1 || planned[0].fromPoint!==contact)
             throw Error("mirror return lost contact point");
           const reflected=shoot(planned[0].fromSlot,planned[0].targetSlot,planned[0].fromPoint);
-          const tilt=x=>Number(x.match(/rotate\(([-\d.]+)rad\)/)?.[1]);
+          const tilt=x=>Number(x.slice(x.indexOf("(")+1,x.indexOf("rad)")));
           if(outbound.includes("scaleX(-1)") ||
              !incoming.includes("scaleX(-1)") ||
              !reflected.includes("scaleX(-1)") ||
