@@ -41,3 +41,5 @@ change('  stacking.value =\n    status.stacking ?? "refresh";',
        '  stacking.value =\n    status.stacking ?? "refresh";\n  sleepMode.addEventListener("change",()=>syncHumanSkillEffectRowV1(row));')
 p.write_text(s)
 print("Human Editor updated:",len(s),"chars")
+
+# Run once on the isolated sleep/conditions work branch.
