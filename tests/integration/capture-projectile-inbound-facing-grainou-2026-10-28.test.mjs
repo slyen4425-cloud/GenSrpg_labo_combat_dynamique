@@ -101,6 +101,20 @@ test("reflected projectile uses its real mirror contact point and receives the s
   f.renderer.dispose();
 });
 
+test("mirror triggered on player also returns rightward with original sprite facing",async()=>{
+  const contactPoint={x:140,y:350};
+  const skill={id:"cap_air_atk_4",form:"projectile",element:"air",
+    projectileTargeting:"direct",projectileClash:{power:1},travelMs:1500};
+  const action={skill,travelMs:1500,mirrorReturn:{contactPoint}};
+  const planned=planSkillReleaseFx({action,actorSlot:"player",targetSlot:"opponent"});
+  const f=await flight({...planned[0],asset:{url:"/reverse-mirror.webp",headingRad:-0.48}});
+  assert.doesNotMatch(f.sprite.style.transform,/scaleX\(-1\)/,
+    "the mirror facing must be derived from flight direction, not a fixed return flag");
+  assert.ok(Math.abs(angleOf(f.sprite.style.transform))<Math.PI/2);
+  assert.equal(f.command.fromPoint,contactPoint);
+  f.renderer.dispose();
+});
+
 test("non-directional Tornade/personal FX and skyfall never gain unwanted rotation or flip",async()=>{
   const neutral=await flight({fromSlot:"opponent",asset:{url:"/tornado.webp"}});
   assert.equal(neutral.sprite.style.transform,"rotate(0rad)");
