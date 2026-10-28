@@ -1508,7 +1508,12 @@
       },
       "resource": {
         "file": "capture/sprites/skills/fireball/atlases/sprite_skill_fireball_travel_rl_atlas_01.png",
-        "mime": "image/png"
+        "format": "sprite-strip",
+        "mime": "image/png",
+        "frameCount": 8,
+        "frameMs": 70,
+        "playbackMode": "loop",
+        "headingRad": 3.141592653589793
       },
       "compatibility": {
         "uses": [
