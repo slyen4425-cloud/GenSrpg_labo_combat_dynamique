@@ -1,3 +1,14 @@
+## 2026-10-28 — Feuille tranchante V3 : importer 3 sprites 12f dans la bibliothèque Capture
+
+- Source utilisateur approuvée : `_incoming/FEUILLE_TRANCHANTE_STYLISE_V3_3x12_WEBP.zip` (3762696 octets ; SHA256 `1173442cfae9bacaf1a020b62f304a83644d3cca31553444fccafea08b285674` ; 47 entrées ZIP, 36 WebP RGBA 512x512, trois atlas WebP 6144x512 et previews WebP 12f).
+- Propriétaire unique : catalogue d'assets `global-assets`. Base `global-assets@3d951dc040b0a4b8ea5df17e56650ed052420b48` ; START `checkpoint/lab-start-feuille-tranchante-v3-2026-10-28` ; travail `work/lab-feuille-tranchante-v3-2026-10-28`.
+- Périmètre : importer en conservant les octets sources, trois IDs `pack:capture:sprite-feuille-tranchante-{cast,projectile,impact}-03`, mettre à jour le seul catalogue `data/assets/catalog/global-visual-assets.v1.json`, test sentinelle assets + script et workflow d'import documentés. Cast/impact une fois ; projectile en boucle ; catégories release/travel/impact.
+- Protégés : toute autre ressource, compétence, créature, renderer, UI, `gh-pages`, `main`, GenSrpG et exploration. Les visuels doivent rester sélectionnables dans l'éditeur sans auto-affectation aux compétences. Aucun second catalogue.
+- Vérifications : intégrité SHA/ZIP/CRC, 36 frames distinctes avec alpha, tailles/ordre et atlas, IDs uniques, vrais fichiers du catalogue, CI complète et revue du diff, checkpoint GREEN final, publication fast-forward sans écraser des commits tiers. Contrôle Android à faire par l'auteur.
+- État : dépôt ZIP reçu, préparation test RED puis import et CI.
+
+---
+
 ## 2026-10-25 — Ailevent adversaire face : 12f vol + 12f attaque
 
 - Source originale déposée : _incoming/AILEVENT_FACE_2_ANIMATIONS_VALIDEE.zip ; SHA256 dde8c1bab4d8a2b0812e5593a7c268d0b0ae2c4f8ec5e5bccbb9179c4bdabca5 ; blob GitHub 2ecfa7695a5fc3bcdb9163187cd73f914045ef78.
