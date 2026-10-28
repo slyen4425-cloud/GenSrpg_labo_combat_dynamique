@@ -1,3 +1,11 @@
+## 2026-10-28 — Import sprite défense florale (12f)
+- Base `global-assets@4e938b32eb2b1e66ac110a82cd1f550b9c443ddf`, checkpoint `checkpoint/lab-start-fleur-defense-vfx-2026-10-28` et chantier `work/lab-fleur-defense-vfx-2026-10-28`.
+- Source auteur déjà déposée : ZIP identique aux octets locaux SHA256 `653c5012f182931b4add1bef4641ab8837e749358236dba6b33d5ed0c70f9169`.
+- Périmètre : 1 asset logique, 12 frames PNG originales 512², 12 WebP dérivés, atlas, preview et manifeste, unique catalogue visuel, test médias et workflow d'import. Pas de changement de gameplay/éditeur/main/gh-pages ni des assets existants.
+- Test RED initial tant que pack non importé ; CI, checkpoint GREEN et publication fast-forward requis, validation visuelle smartphone distincte.
+
+---
+
 ## 2026-10-28 — Sommeil Z : publier l'animation de statut approuvée (12 frames)
 
 - **Source auteur** : `_incoming/GENSRPG_SOMMEIL_Z_12F_WEBP.zip`, 4 413 627 octets ; SHA256 `c54544b0d60519738ffa5bf81b1c5de57e1782d70eb5964fe65ee987449d02c6` ; blob Git `6d6e5d763e55133935726dbf95043ac9f1e1a445`. ZIP approuvé en conversation, 17 entrées/CRC valide, 12 frames WebP RGBA 512×512, atlas WebP 6144×512 et preview WebP 12 frames, planche de contrôle PNG.
