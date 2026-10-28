@@ -12,7 +12,7 @@ const approved='pack:capture:creature-lunaire-attack-player-8-v1';
 const baseBlob='378268e5c414bad7d2440a65617efa99765ddf1f';
 function gitBlob(source){
  const bytes=Buffer.from(source);
- return crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length+'\\0'.replace('\\0','\0'))).update(bytes).digest('hex');
+ return crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length+String.fromCharCode(0))).update(bytes).digest('hex');
 }
 
 test('Kitsune approved back attack resolves to the existing 8-frame official catalog identity',()=>{
