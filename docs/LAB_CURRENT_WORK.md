@@ -6,7 +6,8 @@
 - Périmètre autorisé : `examples/dom-demo/capture-editor-v2.html`, `examples/dom-demo/capture-editor-v2.js`, `src/ui/capture-editor-human-v2.js` (révision URL des modules modifiés), `data/capture/source-exports/gensrpg-capture-skill-coupe_feuille-2026-10-28.json`, tests de régression ciblés, `docs/LAB_CURRENT_WORK.md`, document de lot éventuel. Protéger moteur de combat, registre de créatures, médias global-assets, catalogue canonique, export auteur v11, main et GenSrpG.
 - TDD prévu : reproduire le manifeste au chargement sous URL versionnée, inclure chaîne HTML → point d'entrée → propriétaire UI → catalogue sans valeurs dupliquées ; tester intégrité des 57 IDs et conserver provenance historique et nouvelle ; CI Foundation + quatre tests Chromium, PR vers gh-pages, checkpoint GREEN seulement après CI exacte et vérification de publication.
 - Risques : cache CDN/navigation Android, intégrité archive historique, CI rouge préalable ; vérifier la branche avant fusion et ne pas appeler GREEN sans tous contrôles.
-- Statut : correctif en préparation ; vérification de l'éditeur public sur navigateur mobile distincte.
+- Validation technique sur `work@6aaa71c6ee3dd588c01c1d6a8c14f86b70bb0b89` : GitHub Actions `40645648156`, 5 jobs / 5 SUCCESS ; Foundation 2326/2326 PASS ; vrai Chromium : bibliothèque 104 créatures et 124 capacités, y compris `coupe_feuille` exactement une fois. Sentinelle TDD RED `40645487910` (erreur cache, nouvelle provenance et test v9), puis GREEN. Les trois médias Feuille tranchante sont bien référencés par `global-assets` ; archive v9 préservée et archive source v11 intacte. Révision cohérente HTML → entrypoint → UI owner → manifeste, sans second catalogue.
+- Statut : tests du lot verts, revue et validation du SHA documentaire final avant checkpoint GREEN/PR/fusion gh-pages ; validation Android auteur toujours distincte.
 
 ---
 
