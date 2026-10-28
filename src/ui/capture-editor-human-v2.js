@@ -1,7 +1,7 @@
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js";
 import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js?v=marker-life-drain-20261028";
 import { normalizeCaptureMarkerLibraryV1 } from "../contracts/capture-marker-v1.js";
-import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1, captureMarkerZoneSelectV1 } from "./capture-marker-effect-fields-v1.js";
+import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1, captureMarkerZoneSelectV1 } from "./capture-marker-effect-fields-v1.js?v=marker-life-drain-20261028";
 import { captureEditorElementChannelChoicesV1, captureEditorGeneratedStatIdV1 } from "./capture-editor-element-channel-select-v1.js";
 import {
   mountCaptureBeamStageLayoutV1,
