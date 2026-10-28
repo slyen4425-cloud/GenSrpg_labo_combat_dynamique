@@ -45,6 +45,75 @@ const server = createServer(async (req, res) => {
         '</script>';
       contents = Buffer.from(html.replace("<head>", "<head>" + intercept));
     }
+    // Chromium regression on the ACTUAL DomSkillFxRenderer used by combat
+    // previews. The same projectile and mirror-return planner share one FX owner.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-projectile-inbound-facing")) {
+      const html=contents.toString("utf8");
+      const probe=`<script type="module">
+        import {createDomSkillFxRenderer} from "../../src/adapters/renderer/dom-skill-fx.js";
+        import {createCaptureSkillPresentationAssetsV2} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
+        import {normalizeSkillPresentationBinding} from "../../src/contracts/skill-presentation-binding.js";
+        import {planSkillReleaseFx} from "../../src/core/fx/skill-fx-plan.js";
+        let fx=null;
+        try {
+          const response=await fetch("../../data/capture/showcase/cap_air_atk_4.capture-skill-transfer-v1.json",{cache:"no-store"});
+          if(!response.ok)throw Error("fixture missing");
+          const file=await response.json();
+          const id=file.draft.id;
+          const projected=createCaptureSkillPresentationAssetsV2({
+            skillPresentations:{[id]:normalizeSkillPresentationBinding(file.draft.presentation)},
+            assetForId:()=>({url:"/directional-projectile.webp",headingRad:-0.48,coreAnchor:{x:0.5,y:0.5}})
+          });
+          const arena=document.createElement("div");
+          arena.style.cssText="position:relative;width:900px;height:500px;pointer-events:none;";
+          document.body.append(arena);
+          const make=(left,top)=>{
+            const n=document.createElement("div");
+            n.style.cssText="position:absolute;left:"+left+"px;top:"+top+"px;width:80px;height:80px;";
+            arena.append(n);return n;
+          };
+          const anchors={player:make(80,320),opponent:make(720,120)};
+          fx=createDomSkillFxRenderer({
+            arena,anchors,targetAnchors:anchors,
+            presentationForSkill:(skillId,context)=>projected.presentationForSkill(skillId,context),
+            animate(node,keyframes,options){
+              return {node,keyframes,options,finished:new Promise(()=>{}),cancel(){}};
+            }
+          });
+          const shoot=(fromSlot,targetSlot,fromPoint)=>{
+            const before=arena.querySelectorAll(".skill-fx--projectile").length;
+            fx.play({type:"projectile",skillId:id,fromSlot,targetSlot,
+              ...(fromPoint?{fromPoint}:{}),durationMs:2500});
+            const shell=arena.querySelectorAll(".skill-fx--projectile")[before];
+            const sprite=shell?.querySelector(".skill-fx__sprite");
+            if(!sprite)throw Error("native sprite not visible in direction "+fromSlot);
+            return sprite.style.transform;
+          };
+          const outbound=shoot("player","opponent");
+          const incoming=shoot("opponent","player");
+          const rect=arena.getBoundingClientRect();
+          const contact={x:rect.left+730,y:rect.top+155};
+          const action={skill:{id,form:"projectile",projectileTargeting:"direct",element:"air"},
+            travelMs:2500,mirrorReturn:{contactPoint:contact}};
+          const planned=planSkillReleaseFx({action,actorSlot:"opponent",targetSlot:"player"});
+          if(planned.length!==1 || planned[0].fromPoint!==contact)
+            throw Error("mirror return lost contact point");
+          const reflected=shoot(planned[0].fromSlot,planned[0].targetSlot,planned[0].fromPoint);
+          const tilt=x=>Number(x.match(/rotate\(([-\d.]+)rad\)/)?.[1]);
+          if(outbound.includes("scaleX(-1)") ||
+             !incoming.includes("scaleX(-1)") ||
+             !reflected.includes("scaleX(-1)") ||
+             ![outbound,incoming,reflected].every(x=>Math.abs(tilt(x))<Math.PI/2))
+            throw Error("wrong physical projectile facing: "+JSON.stringify({outbound,incoming,reflected}));
+          document.body.dataset.inboundProjectileProbe="ok:outbound:opponent:mirror";
+        } catch(error) {
+          document.body.dataset.inboundProjectileProbe="fail:"+error.message;
+        } finally {fx?.dispose();}
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
+
     // Chromium smoke: actual HUD orb renderer inside the native editor page.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-energy-orbs")) {
@@ -1864,6 +1933,12 @@ try {
   if(energyProbe!=="ok:12:5:50%")
     throw Error("Real Chrome energy orbs regression: "+energyProbe);
   console.log("Capture HUD energy orbs: real Chrome 12 circles, partial fill, 180px wrap, capacity 24 and accessible count");
+  const incomingDom=await dumpDom(url+"?verify-projectile-inbound-facing=1");
+  const incomingProbe=incomingDom.match(/data-inbound-projectile-probe="([^"]+)"/)?.[1]??"missing";
+  if(incomingProbe!=="ok:outbound:opponent:mirror")
+    throw Error("Actual Chromium projectile facing / mirror return regression: "+incomingProbe+
+      " JS="+(incomingDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
+  console.log("Projectile orientation Chrome: outward, incoming and mirror return share native facing + contact point");
   const veilDom=await dumpDom(url+"?verify-water-veil-ultimate=1");
   assertCreatures(veilDom,"Voile aqueux ultimate browser bootstrap");
   const veilProbe=veilDom.match(/data-water-veil-ultimate-probe="([^"]+)"/)?.[1] ?? "missing";
