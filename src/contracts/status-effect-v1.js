@@ -42,6 +42,7 @@ export const STATUS_EFFECT_V1_DURATION_MODELS =
   Object.freeze([
     "time_ms",
     "owner_action_end",
+    "until_damage",
     "permanent"
   ]);
 
@@ -274,6 +275,11 @@ function normalizeDuration(value) {
     });
   }
 
+  if (durationModel === "until_damage") {
+    if(value.durationMs != null || value.durationActions != null) throw new TypeError("until_damage has no countdown");
+    return Object.freeze({durationModel});
+  }
+
   if (durationModel === "permanent") {
     if (value.durationMs != null || value.durationActions != null) {
       throw new TypeError("Permanent statuses cannot specify durationMs or durationActions");
@@ -341,6 +347,10 @@ export function normalizeStatusEffectV1(input) {
   }
 
   const duration = normalizeDuration(value);
+  if (duration.durationModel === "until_damage" &&
+      (kind !== "stun" || polarity !== "detrimental" || stacking === "stack")) {
+    throw new RangeError("until_damage requires detrimental non-stacking stun");
+  }
   if (duration.durationModel === "permanent" &&
       (kind !== "stack_counter" ||
        !Array.isArray(value.tags) ||
