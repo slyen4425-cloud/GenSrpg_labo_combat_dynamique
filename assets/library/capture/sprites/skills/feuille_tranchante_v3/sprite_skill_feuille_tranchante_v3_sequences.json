@@ -1,0 +1,93 @@
+{
+  "id": "pack:capture:feuille-tranchante-v3",
+  "frameSize": [
+    512,
+    512
+  ],
+  "sequences": {
+    "cast": {
+      "id": "pack:capture:sprite-feuille-tranchante-cast-03",
+      "frame_count": 12,
+      "frame_ms": 75,
+      "loop": false,
+      "playback_mode": "once",
+      "frames": [
+        "cast/feuille_tranchante_cast_01.webp",
+        "cast/feuille_tranchante_cast_02.webp",
+        "cast/feuille_tranchante_cast_03.webp",
+        "cast/feuille_tranchante_cast_04.webp",
+        "cast/feuille_tranchante_cast_05.webp",
+        "cast/feuille_tranchante_cast_06.webp",
+        "cast/feuille_tranchante_cast_07.webp",
+        "cast/feuille_tranchante_cast_08.webp",
+        "cast/feuille_tranchante_cast_09.webp",
+        "cast/feuille_tranchante_cast_10.webp",
+        "cast/feuille_tranchante_cast_11.webp",
+        "cast/feuille_tranchante_cast_12.webp"
+      ],
+      "atlas": {
+        "file": "cast/feuille_tranchante_cast_atlas_12f.webp",
+        "format": "sprite-strip",
+        "frameCount": 12,
+        "frameWidth": 512,
+        "frameHeight": 512
+      }
+    },
+    "projectile": {
+      "id": "pack:capture:sprite-feuille-tranchante-projectile-03",
+      "frame_count": 12,
+      "frame_ms": 65,
+      "loop": true,
+      "playback_mode": "loop",
+      "frames": [
+        "projectile/feuille_tranchante_projectile_01.webp",
+        "projectile/feuille_tranchante_projectile_02.webp",
+        "projectile/feuille_tranchante_projectile_03.webp",
+        "projectile/feuille_tranchante_projectile_04.webp",
+        "projectile/feuille_tranchante_projectile_05.webp",
+        "projectile/feuille_tranchante_projectile_06.webp",
+        "projectile/feuille_tranchante_projectile_07.webp",
+        "projectile/feuille_tranchante_projectile_08.webp",
+        "projectile/feuille_tranchante_projectile_09.webp",
+        "projectile/feuille_tranchante_projectile_10.webp",
+        "projectile/feuille_tranchante_projectile_11.webp",
+        "projectile/feuille_tranchante_projectile_12.webp"
+      ],
+      "atlas": {
+        "file": "projectile/feuille_tranchante_projectile_atlas_12f.webp",
+        "format": "sprite-strip",
+        "frameCount": 12,
+        "frameWidth": 512,
+        "frameHeight": 512
+      }
+    },
+    "impact": {
+      "id": "pack:capture:sprite-feuille-tranchante-impact-03",
+      "frame_count": 12,
+      "frame_ms": 85,
+      "loop": false,
+      "playback_mode": "once",
+      "frames": [
+        "impact/feuille_tranchante_impact_01.webp",
+        "impact/feuille_tranchante_impact_02.webp",
+        "impact/feuille_tranchante_impact_03.webp",
+        "impact/feuille_tranchante_impact_04.webp",
+        "impact/feuille_tranchante_impact_05.webp",
+        "impact/feuille_tranchante_impact_06.webp",
+        "impact/feuille_tranchante_impact_07.webp",
+        "impact/feuille_tranchante_impact_08.webp",
+        "impact/feuille_tranchante_impact_09.webp",
+        "impact/feuille_tranchante_impact_10.webp",
+        "impact/feuille_tranchante_impact_11.webp",
+        "impact/feuille_tranchante_impact_12.webp"
+      ],
+      "atlas": {
+        "file": "impact/feuille_tranchante_impact_atlas_12f.webp",
+        "format": "sprite-strip",
+        "frameCount": 12,
+        "frameWidth": 512,
+        "frameHeight": 512
+      }
+    }
+  }
+}

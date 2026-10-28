@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 266,
+    "assets": 271,
     "icons": 86,
-    "sprites": 156,
+    "sprites": 161,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
@@ -9058,6 +9058,123 @@
       "resource": {
         "file": "capture/creatures/heriplante/runtime/heriplante_icone.png",
         "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-feuille-tranchante-cast-03",
+      "label": "Feuille tranchante V3 — cast (Nature / Terre, 12f)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "capture",
+        "skill",
+        "nature",
+        "terre",
+        "earth",
+        "foliage",
+        "leaf",
+        "cast",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/feuille_tranchante_v3/cast/feuille_tranchante_cast_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 75,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-feuille-tranchante-projectile-03",
+      "label": "Feuille tranchante V3 — projectile (Nature / Terre, 12f)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "capture",
+        "skill",
+        "nature",
+        "terre",
+        "earth",
+        "foliage",
+        "leaf",
+        "projectile",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/feuille_tranchante_v3/projectile/feuille_tranchante_projectile_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 65,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-feuille-tranchante-impact-03",
+      "label": "Feuille tranchante V3 — impact (Nature / Terre, 12f)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "capture",
+        "skill",
+        "nature",
+        "terre",
+        "earth",
+        "foliage",
+        "leaf",
+        "impact",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/feuille_tranchante_v3/impact/feuille_tranchante_impact_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 85,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [

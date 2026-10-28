@@ -1,0 +1,50 @@
+{
+  "pack": "FEUILLE_TRANCHANTE_STYLISE_V3",
+  "element": [
+    "nature",
+    "terre"
+  ],
+  "format": "webp",
+  "frameWidth": 512,
+  "frameHeight": 512,
+  "transparency": true,
+  "source_art": "original stylized reusable leaf art; 24 distinct leaf variants across 36 frames",
+  "animations": [
+    {
+      "id": "pack:capture:sprite-feuille-tranchante-cast-03",
+      "role": "cast",
+      "frames": 12,
+      "frameDurationMs": 75,
+      "mode": "once",
+      "width": 512,
+      "height": 512,
+      "atlas": "cast/feuille_tranchante_cast_atlas_12f.webp",
+      "preview": "preview_feuille_tranchante_cast.webp",
+      "framePattern": "cast/feuille_tranchante_cast_NN.webp"
+    },
+    {
+      "id": "pack:capture:sprite-feuille-tranchante-projectile-03",
+      "role": "projectile",
+      "frames": 12,
+      "frameDurationMs": 65,
+      "mode": "loop",
+      "width": 512,
+      "height": 512,
+      "atlas": "projectile/feuille_tranchante_projectile_atlas_12f.webp",
+      "preview": "preview_feuille_tranchante_projectile.webp",
+      "framePattern": "projectile/feuille_tranchante_projectile_NN.webp"
+    },
+    {
+      "id": "pack:capture:sprite-feuille-tranchante-impact-03",
+      "role": "impact",
+      "frames": 12,
+      "frameDurationMs": 85,
+      "mode": "once",
+      "width": 512,
+      "height": 512,
+      "atlas": "impact/feuille_tranchante_impact_atlas_12f.webp",
+      "preview": "preview_feuille_tranchante_impact.webp",
+      "framePattern": "impact/feuille_tranchante_impact_NN.webp"
+    }
+  ]
+}
