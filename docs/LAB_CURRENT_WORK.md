@@ -1,3 +1,13 @@
+## 2026-10-28 — Sommeil / conditions selon statuts et marqueurs (lot coordonné en cours)
+- Demande auteur : Sommeil = étourdissement jusqu'aux premiers PV effectivement perdus (sans durée arbitraire), et effets de toute capacité conditionnés aux statuts ou charges de marqueurs de la cible, exemple +100 dégâts si endormi. Éditeur tactile sans saisie d'IDs.
+- Base gh-pages `89fb37307d4455801b2afe858c3d18e4d7554407` ; global-assets `0233463ad1c5b2304448ff06d4786e4e66eda215` **non modifié**.
+- START checkpoint/lab-start-sleep-target-conditions-2026-10-28 ; WORK work/lab-sleep-target-conditions-2026-10-28. Tests RED commit `d39bf786`.
+- Propriétaires uniques : StatusEffectV1 pour le mode `until_damage` restreint au stun, Status Runtime pour présence du statut, Combat Damage Application pour réveil uniquement après perte réelle de PV, SkillEffectV1 pour `condition` facultative, Immediate Tactical Effects et Action Resolver pour évaluer les conditions sur la photo autoritaire de l'impact, Human Editor pour choix de statut/marqueur officiel et export/import fidèle.
+- Les résistances, immunités, boucliers, ticks, 1v1/2v2, esquive et effets sans condition restent historiques ; pas de changement à main, GenSrpg, médias, IA, autres compétences. Les conditions des effets immédiats s'appliquent par cible, avec référence au statut de la cible juste avant l'impact ; elles ne s'appliquent pas aux zones et programmations complexes (hors portée, interdit explicitement dans contrat).
+- À valider : RED puis GREEN Foundation, quatre Chromium, export/import et preview réel, checkpoint GREEN au SHA final, PR et Pages SUCCESS. Aucun GREEN avant ces contrôles.
+
+---
+
 ## 2026-10-28 — Graine sansue adversaire encore inversée : métadonnée supprimée par l'éditeur (en cours)
 - Régression après v44 confirmée par signalement Android de l'auteur. Cause démontrée dans le vrai client : examples/dom-demo/capture-editor-v2.js, fonction resolvePreviewPresentationAsset, recopie seulement assetId/url/frameCount/frameMs/playbackMode et JETTE headingRad du catalogue global. Le renderer attend headingRad pour inverser les tirs. Les anciens tests contrôlaient createGlobalPresentationAssetResolverV1 mais pas cette fonction utilisée au démarrage du vrai éditeur.
 - Propriétaire canonique EXISTANT : src/assets/global-presentation-asset-resolver-v1.js, alimenté par GLOBAL_VISUAL_LIBRARY.catalogUrl. Remplacer la conversion manuelle uniquement sur le chemin d'éditeur ; pas de nouveau catalogue ni second propriétaire ; conserver les priorités déjà prévues des assets démo / utilisateur et neutralité des médias sans heading.

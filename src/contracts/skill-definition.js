@@ -474,7 +474,7 @@ export function normalizeSkillDefinition(input) {
 
   if (
     normalizedLegacyEffect.damage > 0 &&
-    effects.some((entry) => entry.kind === "damage")
+    effects.some((entry) => entry.kind === "damage" && entry.condition == null)
   ) {
     throw new RangeError(
       "duplicate damage authority between effect and effects"

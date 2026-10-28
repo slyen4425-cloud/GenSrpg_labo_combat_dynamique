@@ -209,7 +209,7 @@ export function validateStatusEffectForTargetV1({
 }
 
 function refreshedLifetime(existing, now) {
-  if (existing.definition.durationModel === "permanent") {
+  if (["permanent","until_damage"].includes(existing.definition.durationModel)) {
     return {expiresAtMs:null,remainingActionEnds:null};
   }
   if (
