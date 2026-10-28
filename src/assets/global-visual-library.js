@@ -3,7 +3,8 @@ const BRANCH = "global-assets";
 // Immutable published global-assets revision: media metadata and the
 // six intrinsic projectile headings must match the exact GREEN media commit.
 // A mutable branch URL can serve stale metadata even with a query suffix.
-const REVISION = "a30333bb6da73c3c452506ad7997c5642536fa38";
+const REVISION = "2026-10-28-v43-projectile-native-facing";
+const CATALOG_REF = "a30333bb6da73c3c452506ad7997c5642536fa38";
 
 export const GLOBAL_VISUAL_LIBRARY = Object.freeze({
   repository: REPOSITORY,
@@ -12,7 +13,7 @@ export const GLOBAL_VISUAL_LIBRARY = Object.freeze({
   baseUrl:
     `https://raw.githubusercontent.com/${REPOSITORY}/${BRANCH}/assets/library/`,
   catalogUrl:
-    `https://raw.githubusercontent.com/${REPOSITORY}/${REVISION}/data/assets/catalog/global-visual-assets.v1.json`
+    `https://raw.githubusercontent.com/${REPOSITORY}/${CATALOG_REF}/data/assets/catalog/global-visual-assets.v1.json`
 });
 
 export function globalVisualAssetUrl(relativePath) {
