@@ -945,10 +945,12 @@ test("DOM projectile adapter anchors the fireball core on the path and orients t
     /rotate\(([-0-9.]+)rad\)/
   );
   assert.ok(rotationMatch);
-  const expectedRotation = Math.atan2(-50, 250) - Math.PI;
-  assert.ok(
-    Math.abs(Number(rotationMatch[1]) - expectedRotation) < 1e-9
-  );
+  // The original Fireball atlas points LEFT: outgoing rightward flight
+  // must mirror it horizontally and keep only the small trajectory tilt.
+  // Rotating by PI instead would turn the artwork upside down again.
+  const expectedRotation = Math.atan2(-50, 250);
+  assert.ok(Math.abs(Number(rotationMatch[1]) - expectedRotation) < 1e-9);
+  assert.match(sprite.style.transform, /scaleX\(-1\)/);
 
   assert.equal(shell.dataset.fxAnchor, "mouth");
   assert.equal(capturedKeyframes.length, 3);
