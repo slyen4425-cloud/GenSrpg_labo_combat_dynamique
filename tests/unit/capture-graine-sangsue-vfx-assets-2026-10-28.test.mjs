@@ -1,0 +1,80 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {readFileSync, existsSync} from "node:fs";
+import {createHash} from "node:crypto";
+import {dirname,resolve} from "node:path";
+import {fileURLToPath} from "node:url";
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const base = resolve(root,"assets/library/capture/sprites/skills/graine_sangsue");
+const catalog = JSON.parse(readFileSync(resolve(root,"data/assets/catalog/global-visual-assets.v1.json")));
+const sha = b => createHash("sha256").update(b).digest("hex");
+const roles = [["projectile","travel",72,"loop"],["debuff","skill",115,"once"]];
+
+test("Graine sansue real author-approved 2x12 frames and WebP atlases are wired by unique catalog assets", () => {
+  assert.equal(catalog.storage.branch, "global-assets");
+  assert.equal(catalog.counts.assets, catalog.assets.length);
+  assert.equal(catalog.counts.sprites, catalog.assets.filter(a => a.assetType === "sprite").length);
+  assert.equal(new Set(catalog.assets.map(a => a.id)).size, catalog.assets.length);
+  const sequences = JSON.parse(readFileSync(resolve(base,"sprite_skill_graine_sangsue_sequences_01.json")));
+  const provenance = JSON.parse(readFileSync(resolve(base,"provenance.json")));
+  const authorManifest = JSON.parse(readFileSync(resolve(base,"manifest.json")));
+  assert.equal(provenance.originalArchiveSha256, "0f32fb77e24f8ad44c166fa78155f159bc2d85bc80f2464310cd65668ed74840");
+  assert.equal(provenance.originalGitBlobSha, "14b5778ca3efbe84d6edd03eeddb78aacb2a93d6");
+  assert.deepEqual(Object.keys(sequences.sequences).sort(), roles.map(r => r[0]).sort());
+  assert.equal(authorManifest.packId, "pack:capture:graine-sangsue-v1");
+  for (const [role,category,ms,mode] of roles) {
+    const id = "pack:capture:sprite-graine-sangsue-"+role+"-01";
+    const matches = catalog.assets.filter(a => a.id === id);
+    assert.equal(matches.length,1,id);
+    const asset = matches[0], sequence = sequences.sequences[role];
+    assert.equal(asset.category,category);
+    assert.equal(asset.resource.frameCount,12);
+    assert.equal(asset.resource.frameMs,ms);
+    assert.equal(asset.resource.playbackMode,mode);
+    assert.ok(asset.compatibility.uses.includes("combat"));
+    assert.ok(asset.compatibility.uses.includes("capture"));
+    assert.ok(asset.compatibility.uses.includes("editor"));
+    assert.equal(sequence.id,id);
+    assert.equal(sequence.frame_ms,ms);
+    assert.equal(sequence.playback_mode,mode);
+    assert.equal(sequence.frames.length,12);
+    assert.equal(sequence.atlas.frameCount,12);
+    assert.equal(sequence.atlas.frameWidth,512);
+    assert.equal(sequence.atlas.frameHeight,512);
+    const atlasRel=role+"/graine_sangsue_"+role+"_atlas_12f.webp";
+    assert.equal(sequence.atlas.file,atlasRel);
+    assert.equal(asset.resource.file,"capture/sprites/skills/graine_sangsue/"+atlasRel);
+    const atlas = readFileSync(resolve(root,catalog.storage.libraryRoot,asset.resource.file));
+    assert.equal(atlas.toString("ascii",0,4),"RIFF");
+    assert.equal(atlas.toString("ascii",8,12),"WEBP");
+    assert.equal(sha(atlas),provenance.originalFileSha256[atlasRel]);
+    const frameHashes=new Set();
+    for(let i=1;i<=12;i++){
+      const fileRel=role+"/graine_sangsue_"+role+"_"+String(i).padStart(2,"0")+".webp";
+      assert.equal(sequence.frames[i-1],fileRel);
+      assert.equal(authorManifest.sprites[role].frameFiles[i-1],fileRel);
+      const b=readFileSync(resolve(base,fileRel));
+      assert.equal(b.toString("ascii",0,4),"RIFF");
+      assert.equal(b.toString("ascii",8,12),"WEBP");
+      assert.equal(sha(b),provenance.originalFileSha256[fileRel]);
+      frameHashes.add(sha(b));
+    }
+    assert.equal(frameHashes.size,12);
+    const preview="preview_graine_sangsue_"+role+"_12f.webp";
+    assert.ok(existsSync(resolve(base,preview)));
+    assert.equal(sha(readFileSync(resolve(base,preview))),provenance.originalFileSha256[preview]);
+  }
+  const debuff = sequences.sequences.debuff;
+  assert.equal(debuff.holdLastFrame,true);
+  assert.equal(debuff.holdFrameIndex,11);
+  assert.equal(debuff.holdUntil,"status-removed");
+  assert.equal(debuff.followTarget,true);
+  assert.equal(debuff.holdFrame,"debuff/graine_sangsue_debuff_hold.webp");
+  const freeze=readFileSync(resolve(base,debuff.holdFrame));
+  const final=readFileSync(resolve(base,debuff.frames[11]));
+  assert.ok(freeze.equals(final),"Hold image must be the byte-identical last author frame");
+  assert.equal(sha(freeze),provenance.originalFileSha256[debuff.holdFrame]);
+  assert.equal(authorManifest.debuffDisplay.freezeOnFrame,12);
+  assert.equal(authorManifest.debuffDisplay.followTarget,true);
+});
