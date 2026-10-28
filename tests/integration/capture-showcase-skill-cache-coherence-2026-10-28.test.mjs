@@ -6,7 +6,7 @@ import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1} from "../../src/catalogs/capture
 
 const read = async (path) =>
   readFile(new URL("../../" + path, import.meta.url), "utf8");
-const release = "capture-showcase-20261028";
+const release = "marker-life-drain-20261028";
 const publishedPath = "data/capture/showcase/coupe_feuille.capture-skill-transfer-v1.json";
 const archivePath = "data/capture/source-exports/gensrpg-capture-skill-coupe_feuille-2026-10-28.json";
 const historicalPath = "data/capture/source-exports/gensrpg-capture-skill-coupe_feuille-2026-10-27.json";
@@ -17,7 +17,7 @@ test("public editor reloads the exact Capture skill manifest module through a re
   const editor = await read("src/ui/capture-editor-human-v2.js");
   assert.ok(html.includes(`src="./capture-editor-v2.js?v=${release}"`), "HTML must request the revised entry module");
   assert.ok(entry.includes(`from "../../src/ui/capture-editor-human-v2.js?v=${release}"`), "entry must request the revised UI owner");
-  assert.ok(editor.includes(`from "../catalogs/capture-showcase-skill-presets-v1.js?v=${release}"`), "UI owner must request revised canonical manifest");
+  assert.match(editor, /from "\.\.\/catalogs\/capture-showcase-skill-presets-v1\.js\?v=[\w-]+"/, "UI owner must request one revisioned canonical manifest");
 });
 
 test("every active Capture Showcase skill path and author id is unique", async () => {

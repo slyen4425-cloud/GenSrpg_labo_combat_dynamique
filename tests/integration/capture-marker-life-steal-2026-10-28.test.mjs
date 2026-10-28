@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
 import {normalizeCaptureMarkerV1, markerStatusDefinitionV1, normalizeCaptureMarkerLibraryV1} from "../../src/contracts/capture-marker-v1.js";
 import {createCombatSession} from "../../src/core/combat/combat-session.js";
-import {withFighterHp} from "../../src/core/combat/combat-state.js";
+import {withFighterHp, advanceCombatTime} from "../../src/core/combat/combat-state.js";
 import {applyStatusEffectV1, advanceStatusEffectsV1, consumeCaptureMarkerStacksV1} from "../../src/core/combat/status-effect-runtime-v1.js";
 
 const fighter = id => ({id,maxHp:100,initialHp:100,maxEnergy:20,initialEnergy:20,
@@ -23,7 +23,9 @@ const add = (state,mark=marker(),stacks=1,sourceActorId="a") => {
   }
   return next;
 };
-const tick = (state,deltaMs=5000) => advanceStatusEffectsV1({state,deltaMs});
+// The session's real advance updates elapsedMs separately from StatusRuntime.
+const tick = (state,deltaMs=5000) =>
+  advanceCombatTime(advanceStatusEffectsV1({state,deltaMs}),deltaMs);
 
 test("periodic life_steal keeps the single stack counter, exports faithfully and validates its own fields",()=>{
   const m=normalizeCaptureMarkerV1(marker({maxHeal:12}));

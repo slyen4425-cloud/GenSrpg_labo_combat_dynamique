@@ -498,7 +498,7 @@ const server = createServer(async (req, res) => {
               if(nidScopes.join(",")!=="all_enemies,all_enemy_reserves" ||
                  nidMarkers.some(row=>row.querySelector("[data-skill-marker-charges]")?.value!=="5" ||
                    row.querySelector("[data-skill-marker-pick]")?.value!=="venin-static"))
-                throw Error("Nid de frelon active & reserve 5-charge marker scopes not rendered");
+                throw Error("Nid de frelon active & reserve 5-charge marker scopes not rendered: "+JSON.stringify({name:get("skill-name").value,scopes:nidScopes,charges:nidMarkers.map(row=>row.querySelector("[data-skill-marker-charges]")?.value),markers:nidMarkers.map(row=>row.querySelector("[data-skill-marker-pick]")?.value)}));
               // Author's real Dard static transfer: the uploaded marker-library JSON
               // is empty; the skill's single canonical apply_marker must populate it.
               if(!lib.querySelector('option[value="lib_paralyze"]'))

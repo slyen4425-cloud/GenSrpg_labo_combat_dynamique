@@ -678,7 +678,7 @@ export function advanceStatusEffectsOnOwnerActionEndV1({
         instance,
         amount,
         atMs: nextState.elapsedMs
-      });
+      }).state;
     } else if (
       instance.definition.kind ===
       "heal_over_time"
