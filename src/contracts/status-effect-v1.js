@@ -444,7 +444,8 @@ export function normalizeStatusEffectV1(input) {
     output.onStackAdded = Object.freeze({effects:Object.freeze(effects)});
   }
 
-  // Shared markers reuse this native stack counter for periodic damage/heal.
+  // Shared markers reuse the native stack counter and combat clock for damage,
+  // heal or life steal. Only Combat Damage owns real HP loss.
   // Other statuses must keep their original, independent effect definitions.
   if (value.periodic != null) {
     if (kind !== "stack_counter" || !output.tags.includes("gensrpg:marker:v1") ||
@@ -452,15 +453,30 @@ export function normalizeStatusEffectV1(input) {
       throw new RangeError("periodic effects are supported only on clocked shared markers");
     }
     const periodic = objectValue(value.periodic, "StatusEffectV1.periodic");
-    assertKnownFields(periodic, new Set(["kind", "amount", "intervalMs", "channel", "damageMode"]), "periodic");
+    assertKnownFields(periodic, new Set(["kind", "amount", "intervalMs", "channel", "damageMode", "percent", "maxHeal"]), "periodic");
     const periodicKind = requiredString(periodic.kind, "periodic.kind");
-    if (!["damage", "heal"].includes(periodicKind)) {
-      throw new RangeError("periodic.kind must be damage or heal");
+    if (!["damage", "heal", "life_steal"].includes(periodicKind)) {
+      throw new RangeError("periodic.kind must be damage, heal or life_steal");
     }
-    if (periodicKind === "heal" && (periodic.channel != null || periodic.damageMode != null)) {
+    const damaging = periodicKind === "damage" || periodicKind === "life_steal";
+    if (!damaging && (periodic.channel != null || periodic.damageMode != null)) {
       throw new RangeError("heal periodic markers cannot specify damage settings");
     }
-    const damageMode = periodicKind === "damage"
+    if (periodicKind !== "life_steal" &&
+        (Object.hasOwn(periodic, "percent") || Object.hasOwn(periodic, "maxHeal"))) {
+      throw new RangeError("periodic.percent/maxHeal require life_steal");
+    }
+    if (periodicKind === "life_steal" &&
+        (typeof periodic.percent !== "number" || !Number.isFinite(periodic.percent) ||
+         periodic.percent < 0 || periodic.percent > 100)) {
+      throw new RangeError("periodic.percent must be between 0 and 100");
+    }
+    if (periodicKind === "life_steal" && periodic.maxHeal !== undefined &&
+        (typeof periodic.maxHeal !== "number" || !Number.isFinite(periodic.maxHeal) ||
+         periodic.maxHeal < 0)) {
+      throw new RangeError("periodic.maxHeal must be non-negative when provided");
+    }
+    const damageMode = damaging
       ? requiredString(periodic.damageMode ?? "fixed", "periodic.damageMode") : null;
     if (damageMode !== null && !DAMAGE_MODE_SET.has(damageMode)) {
       throw new RangeError("Unsupported marker periodic damage mode");
@@ -469,9 +485,13 @@ export function normalizeStatusEffectV1(input) {
       kind: periodicKind,
       amount: positiveNumber(periodic.amount, "periodic.amount"),
       intervalMs: positiveNumber(periodic.intervalMs, "periodic.intervalMs"),
-      ...(periodicKind === "damage" ? {
+      ...(damaging ? {
         damageMode,
         channel: requiredString(periodic.channel ?? "physical", "periodic.channel")
+      } : {}),
+      ...(periodicKind === "life_steal" ? {
+        percent: periodic.percent,
+        ...(periodic.maxHeal === undefined ? {} : {maxHeal: periodic.maxHeal})
       } : {})
     });
   }

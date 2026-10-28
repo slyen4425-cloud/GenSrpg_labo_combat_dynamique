@@ -117,6 +117,8 @@ function statusStory(s){
     const p=s.periodic;
     result.push(finish(frequency(p.intervalMs).replace(/^t/,"T").replace(/^c/,"C")+", "+
       (p.kind==="damage"?"inflige "+num(p.amount)+" dégâts "+elementOf(p.channel):
+        p.kind==="life_steal"?"inflige "+num(p.amount)+" dégâts "+elementOf(p.channel)+
+          " par charge et rend "+num(p.percent)+" % des PV réellement retirés au lanceur":
         "rend "+num(p.amount)+" PV")));
   }
   if(s.onEvent||s.onDamageDealt){
@@ -178,6 +180,8 @@ function effectSentence(e){
         const p=m.periodic;
         lines.push(finish(frequency(p.intervalMs).replace(/^t/,"T").replace(/^c/,"C")+", ce marqueur "+
           (p.kind==="damage"?"inflige "+num(p.amount)+" dégâts "+elementOf(p.channel):
+            p.kind==="life_steal"?"inflige "+num(p.amount)+" dégâts "+elementOf(p.channel)+
+              " par charge et rend "+num(p.percent)+" % des PV réellement retirés au lanceur":
             "soigne "+num(p.amount)+" PV")));
       }
       if(m.onStackThreshold){

@@ -498,7 +498,7 @@ const server = createServer(async (req, res) => {
               if(nidScopes.join(",")!=="all_enemies,all_enemy_reserves" ||
                  nidMarkers.some(row=>row.querySelector("[data-skill-marker-charges]")?.value!=="5" ||
                    row.querySelector("[data-skill-marker-pick]")?.value!=="venin-static"))
-                throw Error("Nid de frelon active & reserve 5-charge marker scopes not rendered");
+                throw Error("Nid de frelon active & reserve 5-charge marker scopes not rendered: "+JSON.stringify({name:get("skill-name").value,scopes:nidScopes,charges:nidMarkers.map(row=>row.querySelector("[data-skill-marker-charges]")?.value),markers:nidMarkers.map(row=>row.querySelector("[data-skill-marker-pick]")?.value)}));
               // Author's real Dard static transfer: the uploaded marker-library JSON
               // is empty; the skill's single canonical apply_marker must populate it.
               if(!lib.querySelector('option[value="lib_paralyze"]'))
@@ -629,6 +629,46 @@ const server = createServer(async (req, res) => {
                 throw Error("marker dropdown selections lost on save");
               if(!prePicker.querySelector('option[value="poison-test"]')||prePicker.value!=="venin-static")
                 throw Error("new marker was not offered, or existing Venin choice was silently overwritten");
+              // Native life-steal marker: real Android author flow in the SAME
+              // marker library, including conditional fields and export/reload.
+              get("marker-new").click();
+              fill("marker-name","Drain vital");
+              get("marker-periodic-enabled").checked=true;
+              get("marker-periodic-enabled").dispatchEvent(new Event("change",{bubbles:true}));
+              fill("marker-periodic-kind","life_steal");
+              if(get("marker-periodic-percent-setting").hidden ||
+                 get("marker-periodic-max-heal-setting").hidden)
+                throw Error("life drain fields were not revealed by the real editor");
+              fill("marker-periodic-amount",5);
+              fill("marker-periodic-seconds",5);
+              fill("marker-periodic-mode","fixed");
+              fill("marker-periodic-channel","poison");
+              fill("marker-periodic-percent",50);
+              fill("marker-periodic-max-heal",8);
+              get("marker-save").click();
+              if(!get("marker-library-state").textContent.includes("enregistré"))
+                throw Error("life drain marker save failed: "+get("marker-library-state").textContent);
+              if(get("marker-id").value!=="drain-vital")
+                throw Error("life drain marker did not use a generated stable ID");
+              fill("marker-library-select","drain-vital");
+              if(get("marker-periodic-kind").value!=="life_steal" ||
+                 get("marker-periodic-percent").value!=="50" ||
+                 get("marker-periodic-max-heal").value!=="8" ||
+                 get("marker-periodic-channel").value!=="poison")
+                throw Error("life drain marker did not reload its typed definition");
+              const drainCreate=URL.createObjectURL;
+              let drainBlob=null;
+              try {
+                URL.createObjectURL=blob=>{drainBlob=blob;return drainCreate.call(URL,blob);};
+                get("marker-export").click();
+              } finally {URL.createObjectURL=drainCreate;}
+              const exportedDrain=drainBlob?JSON.parse(await drainBlob.text()):null;
+              const drainMarker=exportedDrain?.markers?.find(x=>x.id==="drain-vital");
+              if(drainMarker?.periodic?.kind!=="life_steal" ||
+                 drainMarker.periodic.percent!==50 || drainMarker.periodic.maxHeal!==8 ||
+                 drainMarker.periodic.amount!==5 || drainMarker.periodic.channel!=="poison")
+                throw Error("life drain marker export lost its native properties");
+              fill("marker-library-select","poison-test");
               get("marker-new").click();
               fill("marker-name","Poïson test");
               get("marker-save").click();
