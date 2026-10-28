@@ -70,7 +70,7 @@ const server = createServer(async (req, res) => {
           document.body.dataset.editorPreviewHeadingProbe="fail:"+error.message;
         }
       })();`;
-      contents=Buffer.from(code+"\\n"+probe);
+      contents=Buffer.from(code+"\n"+probe);
     }
     // Test-only network-stall simulation: leave the real module graph and data path intact.
     // Only presentation CDN requests remain pending, like a stalled mobile connection.
