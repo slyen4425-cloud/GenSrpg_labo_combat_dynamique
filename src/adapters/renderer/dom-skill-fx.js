@@ -2934,6 +2934,14 @@ export function createDomSkillFxRenderer({
         const rotationRad = Math.atan2(
           endY - startY, endX - startX
         ) - headingRad;
+        // The beam shell must still rotate from the same source to target.
+        // Correct its directional ART (not its geometry) when flying left;
+        // a 180-degree shell rotation alone turns leaves/other art upside down.
+        // A local vertical reflection after that rotation is a horizontal
+        // reflection in screen space. Neutral beams keep their authored art.
+        body.style.transform = typeof travelVisual.headingRad === "number" &&
+          Number.isFinite(travelVisual.headingRad) && endX < startX
+          ? "scaleY(-1)" : "none";
         node.style.left = `${startX}px`;
         node.style.top = `${startY}px`;
         node.style.width = `${distancePx}px`;
@@ -3099,23 +3107,28 @@ export function createDomSkillFxRenderer({
       const spriteNode = arena.ownerDocument.createElement("span");
       const coreAnchorX = clampUnit(travelVisual.coreAnchor?.x, 0.5);
       const coreAnchorY = clampUnit(travelVisual.coreAnchor?.y, 0.5);
-      // The same author sprite points forward for both camps. Rotating
-      // a leftward shot by ~180deg also turns its artwork upside down.
-      // Mirror ONLY explicitly directional sprites horizontally when the
-      // actual flight goes left (also covers mirrorReturn/contactPoint),
-      // then keep the small native-heading correction. No extra FX owner.
-      // Non-directional sprites (Tornade) and skyfall stay authored/upright.
+      // Intrinsic heading belongs to the unique media catalog: most sprites
+      // face right, while the legacy Fireball atlas actually faces LEFT.
+      // Compare that authored facing with the real horizontal flight (also
+      // mirrorReturn), so neither direction turns the artwork upside-down.
+      // No asset-id special cases or additional renderer/trajectory owners.
       const headingRad = travelVisual.headingRad;
       const hasDirectionalHeading = typeof headingRad === "number" &&
         Number.isFinite(headingRad);
-      const mirrorLeftward = !skyfall && hasDirectionalHeading && deltaX < 0;
+      const nativeLeftward = hasDirectionalHeading && Math.cos(headingRad) < 0;
+      const flyingLeftward = deltaX < 0;
+      const mirrorHorizontal = !skyfall && hasDirectionalHeading &&
+        (nativeLeftward !== flyingLeftward);
       const travelAngle = Math.atan2(deltaY, deltaX);
+      const flightTilt = flyingLeftward
+        ? (travelAngle > 0 ? travelAngle - Math.PI : travelAngle + Math.PI)
+        : travelAngle;
+      const nativeTilt = nativeLeftward
+        ? headingRad - (headingRad >= 0 ? Math.PI : -Math.PI)
+        : headingRad;
       const rotationRad = skyfall || !hasDirectionalHeading
         ? 0
-        : mirrorLeftward
-          ? (travelAngle > 0 ? travelAngle - Math.PI : travelAngle + Math.PI)
-            + headingRad
-          : travelAngle - headingRad;
+        : flightTilt + (mirrorHorizontal ? nativeTilt : -nativeTilt);
 
       node.className += " skill-fx--sprite-shell";
       node.dataset.assetId = travelVisual.assetId ?? "";
@@ -3132,7 +3145,7 @@ export function createDomSkillFxRenderer({
       spriteNode.style.top = percent(0.5 - coreAnchorY);
       spriteNode.style.transformOrigin =
         `${percent(coreAnchorX)} ${percent(coreAnchorY)}`;
-      spriteNode.style.transform = mirrorLeftward
+      spriteNode.style.transform = mirrorHorizontal
         ? `rotate(${rotationRad}rad) scaleX(-1)`
         : `rotate(${rotationRad}rad)`;
       node.append(spriteNode);
