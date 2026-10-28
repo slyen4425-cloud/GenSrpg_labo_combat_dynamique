@@ -14,7 +14,7 @@
       "id": "coupe_feuille",
       "name": "Coupe feuille",
       "category": "offensive",
-      "form": "contact",
+      "form": "beam",
       "projectileTargeting": "direct",
       "loadoutSlot": "standard",
       "element": "nature",
@@ -80,13 +80,16 @@
     },
     "presentation": {
       "id": "skill:coupe_feuille",
-      "version": 9,
+      "version": 11,
       "subjectType": "skill",
       "subjectId": "coupe_feuille",
       "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-thorn-vines-01"
+        },
         "cast": {
-          "assetId": "pack:capture:sprite-cast-nature-01",
-          "displayScale": 1.2,
+          "assetId": "pack:capture:sprite-feuille-tranchante-cast-03",
+          "displayScale": 1.8,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "source",
@@ -94,9 +97,50 @@
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "preparation-start",
-          "playbackMode": "once",
+          "playbackMode": "loop",
           "rotationDeg": 0,
           "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-feuille-tranchante-projectile-03",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "trajectoryMode": "linear",
+          "frameSpeedMultiplier": 2,
+          "perspectiveAmount": 0
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-feuille-tranchante-impact-03",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.7,
           "layerByView": {
             "player": "front",
             "opponent": "front"
