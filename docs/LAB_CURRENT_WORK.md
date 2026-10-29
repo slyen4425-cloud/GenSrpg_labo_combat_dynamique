@@ -6,6 +6,9 @@
 - **Paramètres intouchables** : ultime nature niveau 20, cible ennemie en réserve, 1 utilisation/combat, 6 énergie, préparation 2200ms, trajet 800ms, `force_reserve_switch` puis 2 charges du marqueur `graine-sansue` et 2 de `poison`. La source a explicitement `presentation:null` : ne pas inventer de liaison visuelle au sprite `pack:capture:sprite-liane-epineuse-rayon-01`, même si cet asset est publié séparément. `form:contact` est conservé tel qu'exporté.
 - **Protégés** : `configuredSkills` (chargement depuis le catalogue existant seulement), combat/roster/rendu, assets, éditions auteur, éditeur, autres presets, `main`, GenSrpg, Exploration. Aucun changement de logique, valeurs ou sprites, aucune rustine/duplicata.
 - **Gates** : TDD RED → GREEN, audit des IDs et de la référence d'asset, comparaison SHA256 source/vitrine, import par l'adaptateur officiel, présence dans le catalogue préchargé `configuredSkills`, effets conservés, CI + Chromium/Pages, checkpoint sur SHA final, PR/fusion, validation smartphone auteur séparée.
+- **Import sur branche de travail confirmé** : archive source 2 937 octets à l'identique (Git blob `cc1dc2f182ca59f700ad792a77474e9859ba093d`), vitrine active issue de la même archive, registre existant enrichi d'un unique chemin. Test `tests/integration/capture-liane-venimeuse-author-2026-10-29.test.mjs`, diff limité aux 5 fichiers autorisés. Commit de travail `e112621100399e8a5e98af7f41c77b2419c42a27` ; PR #143 ouverte. État PARTIEL jusqu'aux 5 jobs GitHub CI et au déploiement Pages.
+- **Incident CI non lié à ce lot** : le run de la base inchangée `40950282477` a échoué uniquement au smoke Chromium de la réaction Défense de Moussados/Foudrillon ; les 4 autres jobs étaient SUCCESS. Les runs sur les nouveaux commits sont actuellement QUEUED. Ne pas corriger ce défaut par rustine dans ce lot et ne pas annoncer GREEN/visible public sans validation réelle.
+
 
 ---
 
