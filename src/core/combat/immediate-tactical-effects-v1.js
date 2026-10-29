@@ -213,12 +213,29 @@ function applyDamageEffect({
   });
 }
 
+function targetMeetsEffectConditionV1({state,targetActorId,condition,atMs}){
+  if(!condition)return true;
+  if(!state.fighters[targetActorId])return false;
+  const present=activeStatusEffectsV1(state,targetActorId,atMs).some(entry=>{
+    const definition=entry.definition;
+    const matches=condition.type==="sleep"
+      ? definition.kind==="stun" && definition.durationModel==="until_damage"
+      : condition.type==="status_kind" ? definition.kind===condition.value
+      : definition.kind==="stack_counter" &&
+        definition.id==="marker:"+condition.value &&
+        definition.tags.includes("gensrpg:marker:v1");
+    return matches && entry.stacks>=condition.minimum;
+  });
+  return condition.invert===true?!present:present;
+}
+
 export function applyImmediateTacticalEffectsV1({
   state,
   actorId,
   targetId,
   skill,
   atMs,
+  conditionState = state,
   combatAtMs = atMs,
   battleFormat = null,
   thresholdDepth = 0,
@@ -330,6 +347,10 @@ export function applyImmediateTacticalEffectsV1({
       });
 
     for (const affectedId of affectedIds) {
+      // The impact snapshot is immutable: an earlier hit in the same skill
+      // cannot suppress its explicitly authored bonus against a sleeper.
+      if(!targetMeetsEffectConditionV1({state:conditionState,targetActorId:affectedId,
+        condition:effect.condition,atMs:combatAtMs}))continue;
       if (hasHostileMultiTargetEffect && isHostileEffect(effect) &&
           actorId !== affectedId) {
         if (!perVictimAutoDodge.has(affectedId)) {
