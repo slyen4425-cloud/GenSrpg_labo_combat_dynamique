@@ -1,3 +1,14 @@
+## 2026-10-29 — Nuage de spores sphérique V2 : bibliothèque Capture
+
+- **Source auteur approuvée** : `_incoming/GENSRPG_NUAGE_SPORES_SPHERIQUE_AUTOUR_CREATURE_V2_12F_WEBP.zip` (5 632 585 octets), SHA256 `c7929d95dbbd1d456d81db1d3eb941a4fe0e77569448fd509d7cb7bd5073aa79`, blob Git `f9aa7dc0b0668ca3c2d61ef3a65d39ee56960efc`. 18 fichiers originaux, CRC valide, 12 WebP RGBA 512×512 originaux et atlas 6144×512, preview WebP 12 frames, source et planche PNG. L'original ZIP local et le dépôt Git possèdent le même blob SHA.
+- **Source de vérité** : branche `global-assets`, catalogue `data/assets/catalog/global-visual-assets.v1.json`. Checkpoint de départ `checkpoint/lab-start-spores-spheriques-v2-2026-10-28`, SHA `4e938b32eb2b1e66ac110a82cd1f550b9c443ddf`, branche `work/lab-spores-spheriques-v2-2026-10-28`. Durant l'upload le canonique a progressé : fusion propre `c184e333bfc723076bcfb8d0b05f8867cd1be121` avec `global-assets@2377f0fd60364b1ed6a03d08ff357736e8d3bcff` préservant les nouvelles ressources tierces et l'archive auteur.
+- **Périmètre** : 1 sprite logique `pack:capture:sprite-spores-expansives-projectile-sphere-02`, classe catalogue `skill` (nuage radial, PAS projectile voyageur), `frameCount:12`, 100ms/frame, `once`. Ajouter exactement les octets validés à `assets/library/capture/sprites/skills/spores_spheriques_v2/` ; 1 entrée dans le seul catalogue, manifeste de séquence et provenance, test RED, importeur, workflow GitHub, documentation. Ne pas confondre `presentationType=radial-caster-cloud` et une attaque `travel` ; le rayon, la collision et les règles de gameplay restent propriétaires du moteur existant.
+- **Protégés** : les autres sprites/icônes et catalogues, moteurs/UI, `configuredSkills`, `configuredCreatures`, `gh-pages`, `main`, GenSrpg, Exploration. Aucun auto-raccord aux compétences sans export auteur. Pas de deuxième autorité ni de rustine.
+- **Gates** : validation octet SHA/CRC, 12 vraies frames transparentes différentes, pixels atlas identiques aux images, preview animée, statut image d'origine préservé, 1 ID unique, test de résolution de catalogue, CI complète sur vrais médias, diff limité, checkpoint GREEN technique et publication fast-forward `global-assets` (lease obligatoire). Test visuel sur smartphone distinct.
+- **Statut** : source validée et branche réconciliée ; test RED puis import et CI.
+
+---
+
 ## 2026-10-28 — Défense florale 12f : import canonique unique, sans second lot
 - Base `global-assets@4e938b32eb2b1e66ac110a82cd1f550b9c443ddf`, checkpoint `checkpoint/lab-start-fleur-defense-vfx-2026-10-28`, branche `work/lab-fleur-defense-vfx-2026-10-28`.
 - Source approuvée : ZIP SHA256 `653c5012f182931b4add1bef4641ab8837e749358236dba6b33d5ed0c70f9169`. Médias importés et testés dans le lot parallèle au run #40773353976, transférés par SHAs Git identiques sur cette unique branche de publication. Pas de double assetId.
