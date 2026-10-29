@@ -40,10 +40,12 @@ test("historic three markers stay byte-provenanced while the five active markers
   const historical=JSON.parse(load(source));
   const markers=JSON.parse(load(active));
   assert.equal(markers.schema,"capture-markers-v1");
-  assert.deepEqual(markers,JSON.parse(load("data/capture/source-exports/gensrpg-marqueurs-2026-10-28.json")),
-    "latest authored library must be preserved exactly, not replaced with an old snapshot");
+  const previous=JSON.parse(load("data/capture/source-exports/gensrpg-marqueurs-2026-10-28.json"));
+  assert.equal(previous.markers.find(x=>x.id==="graine-sansue").maxStacks,10,"historical snapshot stays immutable");
+  assert.deepEqual(markers,JSON.parse(load("data/capture/source-exports/gensrpg-marqueurs-2026-10-29-r2.json")),
+    "newest authored library must be preserved exactly");
   assert.deepEqual(markers.markers.map(x=>x.id),
-    ["poison","venin-static","eclat-spirituel","peste","graine-sansue"]);
+    ["poison","venin-static","graine-sansue","eclat-spirituel","peste"]);
   for(const old of historical.markers) {
     assert.deepEqual(markers.markers.find(m=>m.id===old.id),old,
       "prior authored marker definition must not change: "+old.id);
