@@ -1,3 +1,13 @@
+## 2026-10-29 — Correctif Nuage de spores V2 : visibilité dans le sélecteur Projectile
+
+- **Anomalie reproduite et cause racine** : l'asset validé `pack:capture:sprite-spores-expansives-projectile-sphere-02` est un FX radial (catégorie `skill` / `centerOnCaster:true` / `travelsToTarget:false`), et ne s'affiche pas dans la liste « Projectile » car il manque le tag `expanding`. L'éditeur LIVE `gh-pages/src/ui/capture-editor-human-v2.js` possède déjà le filtre `role !== "travel" || asset.category === "travel" || (asset.category === "skill" && tags.includes("expanding"))`. **Pas de changement du moteur nécessaire** pour le proposer dans cette liste.
+- **Base / propriétaire** : `global-assets@40fb99d22cd89bb451d0af5c6df35df097334d86` ; checkpoint START `checkpoint/lab-start-spores-sphere-projectile-select-2026-10-29` ; branche `work/lab-spores-sphere-projectile-select-2026-10-29`. Autorité unique : `data/assets/catalog/global-visual-assets.v1.json`.
+- **Périmètre limité** : enrichir **seulement** l'asset existant avec le tag officiel `expanding`, conserver `category:"skill"`, le même `assetId`, les 12 vrais WebP et leur empreinte, `presentationType:"radial-caster-cloud"`, `centerOnCaster:true` et `travelsToTarget:false` ; rendre son intitulé explicite « Projectile expansif » pour l'éditeur. Ajouter un test sentinelle ciblé qui échoue avant et réussit après. Aucune seconde entrée catalogue, aucun déplacement de fichier ni modification UI ou gameplay.
+- **Protections** : toutes les autres ressources, compétences, créatures, configuration auteur, renderer, UI, `gh-pages`, `main`, GenSrpg et Exploration. Respecter la charte, RED → GREEN, CI totale, revue diff, checkpoint GREEN, publication fast-forward non forcé sous lease. Vérification Android distincte.
+- **Critère de sortie** : l'unique asset est sélectionnable dans le rôle `travel` du vrai filtre existant **comme effet expansif**, sans devenir un projectile traversant l'arène ; CI sur commit final et publication dans `global-assets`.
+
+---
+
 ## 2026-10-29 — Nuage de spores sphérique V2 : bibliothèque Capture
 
 - **Source auteur approuvée** : `_incoming/GENSRPG_NUAGE_SPORES_SPHERIQUE_AUTOUR_CREATURE_V2_12F_WEBP.zip` (5 632 585 octets), SHA256 `c7929d95dbbd1d456d81db1d3eb941a4fe0e77569448fd509d7cb7bd5073aa79`, blob Git `f9aa7dc0b0668ca3c2d61ef3a65d39ee56960efc`. 18 fichiers originaux, CRC valide, 12 WebP RGBA 512×512 originaux et atlas 6144×512, preview WebP 12 frames, source et planche PNG. L'original ZIP local et le dépôt Git possèdent le même blob SHA.
