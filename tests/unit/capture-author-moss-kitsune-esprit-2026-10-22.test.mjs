@@ -50,7 +50,14 @@ test("Kitsune is unique in the active catalog; old source remains immutable",()=
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(p=>p===active(moss)).length,1);
  for(const id of [kitsune,moss]){
    assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.includes(archive(id)),false);
-   if(id===moss)assert.equal(read(active(id)),read(archive(id)));
+   if(id===moss){
+     const original=JSON.parse(read(archive(id)));
+     const current=JSON.parse(read(active(id)));
+     assert.equal(original.draft.combat.reaction,undefined,"immutable 2026-10-22 source remains unmodified");
+     assert.equal(current.draft.combat.reaction.type,"defense");
+     delete current.draft.combat.reaction;
+     assert.deepEqual(current,original,"only separately authorized Defense authoring may differ from original");
+   }
    else {
      const author=JSON.parse(read("data/capture/source-exports/gensrpg-capture-creature-kitsune_lunaire-2026-10-22-r2.json"));
      const now=JSON.parse(read(active(id)));
