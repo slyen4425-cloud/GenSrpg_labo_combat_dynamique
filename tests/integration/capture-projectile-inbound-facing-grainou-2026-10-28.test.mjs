@@ -130,8 +130,11 @@ test("latest two author transfers replace the same canonical IDs without losing 
   const liveCreature=await read(creaturePath);
   const savedSkill=await read(skillSource);
   const savedCreature=await read(creatureSource);
-  assert.equal(sha(liveSkill),sha(savedSkill),"published skill must exactly equal author upload");
-  assert.equal(sha(liveCreature),sha(savedCreature),"published creature must exactly equal author upload");
+  const expectedSkill=JSON.parse(savedSkill);
+  expectedSkill.draft.definition.effects[0].marker.maxStacks=2;
+  assert.deepEqual(JSON.parse(liveSkill),expectedSkill,"older skill stays identical except new author Graine marker cap");
+  const currentCreature=await read("data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r3.json");
+  assert.equal(sha(liveCreature),sha(currentCreature),"new creature source is published exactly");
   assert.equal(sha(savedSkill),"ec432fc7141806394c9be527c5f629ecaf870d103cbad7c06fecc927d93f7531");
   assert.equal(sha(savedCreature),"4a3ae6fa27f47382960720aa941d87c973546ba518fbaa6880c6d747ac283f1f");
   const skill=JSON.parse(liveSkill).draft;
@@ -146,7 +149,8 @@ test("latest two author transfers replace the same canonical IDs without losing 
   const creature=JSON.parse(liveCreature);
   assert.equal(creature.draft.id,"crea_nat_1");
   assert.equal(creature.draft.displayName,"Grainou");
-  assert.deepEqual(creature.loadout.slots.slice(0,2).map(slot=>slot.skillId),["coupe_feuille","graine_sansue_cap"]);
+  assert.deepEqual(creature.loadout.slots.slice(0,3).map(slot=>slot.skillId),["coupe_feuille","graine_sansue_cap","Spore_soporifique"]);
+  assert.equal(creature.draft.combat.reaction.activeWindowMs,800);
   assert.equal(creature.draft.combat.reaction.type,"defense");
   assert.equal(creature.draft.combat.reaction.damageReductionPct,30);
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(x=>x===skillPath).length,1);

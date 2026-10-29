@@ -75,7 +75,7 @@
             "name": "Graine sansue",
             "polarity": "detrimental",
             "durationMs": 20000,
-            "maxStacks": 10,
+            "maxStacks": 2,
             "iconAssetId": "pack:capture:icon-skill-sangsue-01",
             "periodic": {
               "kind": "life_steal",

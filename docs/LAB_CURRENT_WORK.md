@@ -1,3 +1,12 @@
+## 2026-10-29 — Placement des deux JSON auteur Grainou r3 + Marqueurs r2 (lot coordonné)
+- BASE `gh-pages@bfdfddc24b6f152658abd6c8bc808e934faa8f4a`, médias `global-assets@2bdc782aa256271f5dc4675a4f6da65faf74073b` non modifiés. START `checkpoint/lab-start-grainou-marker-author-r3-2026-10-29` ; WORK `work/lab-grainou-marker-author-r3-2026-10-29`.
+- Sources exactes : `gensrpg-capture-creature-crea_nat_1(2).json` (4640 octets, SHA256 70a9390ff81d42d7f2dc9ec574091078a31e20bdad48f8540a23ea627c78a72b), `gensrpg-marqueurs(2).json` (2549 octets, SHA256 9eb2fd0018119aaf672ffc04edf092b3c91dde2aad72620c263b47ddd003c1b5). Archives byte-exact dans `data/capture/source-exports/` datées 2026-10-29, sans écraser les précédentes.
+- Presets actifs uniques : `crea_nat_1` 400→800ms défense, ajout Spore soporifique à liste et slot 3 ; marqueur `graine-sansue` 10→2 charges sans toucher les autres ; la référence imbriquée du skill actif est réconciliée à 2 via une seule modification de `maxStacks`, l'ancien export compétence est archivé sans changement. Aucun nouveau manifeste, ni logique moteur, ni artefact média.
+- TDD RED `415e63b`. Tests r3, anciennes sentinelles adaptées pour conserver les provenances historiques ET vérifier le nouveau contenu ; Chromium réel vérifie la bibliothèque 2 charges et Grainou slot 3/0,8 s. Documentation `docs/LAB_GRAINOU_MARKERS_AUTHOR_R3_2026-10-29.md`.
+- CI 5 jobs au SHA final obligatoire avant checkpoint GREEN, PR, fusion/Pages ; smartphone auteur ensuite. Projet Sommeil jusqu'au dégât séparé et non annoncé comme livré par l'import.
+
+---
+
 ## 2026-10-28 — Spore soporifique (import capacité auteur)
 - Base : `gh-pages@e7b7e71c8d43d48de78d757cb3f27ef1e1766679`, checkpoint de départ `checkpoint/lab-start-spore-soporifique-skill-2026-10-28`, branche `work/lab-spore-soporifique-skill-2026-10-28`.
 - Périmètre : dépôt exact du JSON de l'auteur sous source-exports, copie active vitrine par ID, entrée unique dans `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1`, sentinelle de fidélité, documentation. Moteurs/éditeur/FX et autres capacités protégés.
