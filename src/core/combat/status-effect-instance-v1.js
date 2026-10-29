@@ -177,7 +177,7 @@ export function isStatusEffectRuntimeInstanceActiveV1(
   return (
     Number.isFinite(time) &&
     instance.appliedAtMs <= time &&
-    (instance.definition.durationModel === "permanent" ||
+    (["permanent", "until_damage"].includes(instance.definition.durationModel) ||
       time < instance.expiresAtMs)
   );
 }
