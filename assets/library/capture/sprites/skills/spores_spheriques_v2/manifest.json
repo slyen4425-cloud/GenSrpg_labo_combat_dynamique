@@ -1,0 +1,48 @@
+{
+  "id": "pack:capture:sprite-spores-expansives-projectile-sphere-02",
+  "label": "Nuage de spores expansif — sphère autour de la créature (Nature / Poison)",
+  "element": [
+    "nature",
+    "poison"
+  ],
+  "assetType": "sprite",
+  "role": "projectile",
+  "presentationType": "radial-caster-cloud",
+  "category": "skill",
+  "behavior": "expansion-radiale-autour-du-lanceur",
+  "centerOnCaster": true,
+  "travelsToTarget": false,
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameDurationMs": 100,
+  "playbackMode": "once",
+  "frameFiles": [
+    "frames/spores_spheriques_autour_creature_01.webp",
+    "frames/spores_spheriques_autour_creature_02.webp",
+    "frames/spores_spheriques_autour_creature_03.webp",
+    "frames/spores_spheriques_autour_creature_04.webp",
+    "frames/spores_spheriques_autour_creature_05.webp",
+    "frames/spores_spheriques_autour_creature_06.webp",
+    "frames/spores_spheriques_autour_creature_07.webp",
+    "frames/spores_spheriques_autour_creature_08.webp",
+    "frames/spores_spheriques_autour_creature_09.webp",
+    "frames/spores_spheriques_autour_creature_10.webp",
+    "frames/spores_spheriques_autour_creature_11.webp",
+    "frames/spores_spheriques_autour_creature_12.webp"
+  ],
+  "atlas": {
+    "file": "spores_spheriques_autour_creature_atlas_12f.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 512,
+    "frameHeight": 512
+  },
+  "preview": "preview_spores_spheriques_autour_creature_12f.webp",
+  "alpha": true,
+  "note": "Visuel radial centré sur la créature. Les règles de portée et zone d’effet appartiennent au moteur et doivent être configurées séparément.",
+  "sourceSheet": "planche_source_spores_spheriques.png",
+  "status": "artist-preview-pending-validation"
+}

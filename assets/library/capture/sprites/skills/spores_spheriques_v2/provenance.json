@@ -1,0 +1,26 @@
+{
+  "sourceArchive": "GENSRPG_NUAGE_SPORES_SPHERIQUE_AUTOUR_CREATURE_V2_12F_WEBP.zip",
+  "sourceArchiveSha256": "c7929d95dbbd1d456d81db1d3eb941a4fe0e77569448fd509d7cb7bd5073aa79",
+  "sourceGitBlobSha": "f9aa7dc0b0668ca3c2d61ef3a65d39ee56960efc",
+  "sourceArchiveBytes": 5632585,
+  "sourceFileSha256": {
+    "README.md": "6f441042db3401ada812bd620a362ff88ab9cbc752b69759b8d9d3c61145f4a0",
+    "frames/spores_spheriques_autour_creature_01.webp": "077809346ea3c658539e51dc78e8b09bcc4a05b3955ab34f6ba06897a052bccb",
+    "frames/spores_spheriques_autour_creature_02.webp": "8039c0ae30831290672edfd28be8cdb0412ea8f93333faf45cdc2c3fd1020afc",
+    "frames/spores_spheriques_autour_creature_03.webp": "0926f6eb16c9be9f7e920b0905083c65850b151d9fecee93ed6c71355533bf9a",
+    "frames/spores_spheriques_autour_creature_04.webp": "de40c74f21c0b48b9449ffb8cbad4260d9232bd138a6b09878cff2bffa852706",
+    "frames/spores_spheriques_autour_creature_05.webp": "c485e9d8a9c0e34222de4db2b421fe37c8d1dd422f7fd8d00852a59ee59dd0fe",
+    "frames/spores_spheriques_autour_creature_06.webp": "9138b5e263d38ac8b5bb547da4ef518fbfecaed1d0eb724596aa9c0449a7967d",
+    "frames/spores_spheriques_autour_creature_07.webp": "6064f2514da568c1126da3d16a8262c8542f51deb50dea30aa0ed9eb28cb52cc",
+    "frames/spores_spheriques_autour_creature_08.webp": "b33c7cf9f0cb050fff6ce4cb06a467ff35e7536fa9b2e6248a9f24461a5c0889",
+    "frames/spores_spheriques_autour_creature_09.webp": "dab33689345b7f7e849d61a4978e1e44a46ac2ad510f78e2f02718bcf883d0d3",
+    "frames/spores_spheriques_autour_creature_10.webp": "8ee8af98369e247d4d9040bf8c75e0133cb5fdf826c7856eac620d03178fc457",
+    "frames/spores_spheriques_autour_creature_11.webp": "8c81a3a1b2ee689fc323b366883ca75cfd84040489e1607f9691952d0aacff56",
+    "frames/spores_spheriques_autour_creature_12.webp": "7ec8d5ea825cb3cf93809ce9b23266b31585dcf0c53e2627a4df944c2a1c1208",
+    "manifest.json": "2edbfd3f4b4a774ea92446d80b693af8280c5b6c5cf63f3f82c8d6d6eea3a871",
+    "planche_source_spores_spheriques.png": "15b800fdc7334f34394fee03d324644c9a6c1ff551ed44c3b5a413da19c5c4c9",
+    "planche_spores_spheriques_12f.png": "941bba8a37f85eb230a155240bd1a7cbbc83ed878da07db4dbbe6c46d5f719e6",
+    "preview_spores_spheriques_autour_creature_12f.webp": "f741f8b24fb87cf88abb00429b8ce5e3921417421c98392f7cdcc0bb3a77ac10",
+    "spores_spheriques_autour_creature_atlas_12f.webp": "c297f51170b521ab30602b85ba44c94d22103e4a8d202668e98602b66a98511a"
+  }
+}

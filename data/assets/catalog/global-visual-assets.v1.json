@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 276,
+    "assets": 277,
     "icons": 87,
-    "sprites": 165,
+    "sprites": 166,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
@@ -9383,6 +9383,46 @@
         "frameMs": 155,
         "playbackMode": "once",
         "holdLastFrame": true
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-spores-expansives-projectile-sphere-02",
+      "label": "Nuage de spores expansif — sphère autour de la créature (Nature / Poison)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "nature",
+        "poison",
+        "spore",
+        "expansion",
+        "radial",
+        "caster-centered",
+        "non-travel",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/spores_spheriques_v2/spores_spheriques_autour_creature_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 100,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [
