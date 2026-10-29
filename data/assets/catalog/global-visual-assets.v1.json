@@ -14,8 +14,8 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 277,
-    "icons": 87,
+    "assets": 280,
+    "icons": 90,
     "sprites": 166,
     "fx": 2,
     "portraits": 17,
@@ -9425,6 +9425,102 @@
         "frameCount": 12,
         "frameMs": 100,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-spore-soporifique-01",
+      "label": "Spore soporifique",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "nature",
+        "spore",
+        "sleep",
+        "status"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (user-approved Nature icons)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_spore_soporifique_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-graine-de-vie-01",
+      "label": "Graine de vie",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "nature",
+        "seed",
+        "life",
+        "heal"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (user-approved Nature icons)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_graine_de_vie_01.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-ronce-01",
+      "label": "Ronce",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "skill",
+        "capture",
+        "nature",
+        "thorn",
+        "vine",
+        "bind"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (user-approved Nature icons)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/icon_skill_ronce_01.webp",
+        "mime": "image/webp"
       },
       "compatibility": {
         "uses": [

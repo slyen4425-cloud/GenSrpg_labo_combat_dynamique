@@ -1,0 +1,65 @@
+{
+  "schema": "capture-nature-skill-icons-v1",
+  "date": "2026-10-29",
+  "owner": "global-assets",
+  "sourceBundle": "icones_monster_capture_spore_vie_ronce.zip",
+  "sourceBundleSha256": "4a508dca7281d7ef944c30b8304c7d4d1b0c7c12fbd792a036b3b7680b849e6",
+  "sourceNote": "Three exact original user-approved ChatGPT image generations. Source PNG originals 1254x1254 RGB; 512x512 PNG masters, 128x128 RGB lossy WebP quality84; preview at 128 and 48 pixels. Masters and previews in conversation ZIP, optimized WebP in GitHub.",
+  "transforms": {
+    "sourceDimensions": [
+      1254,
+      1254
+    ],
+    "masterDimensions": [
+      512,
+      512
+    ],
+    "runtimeDimensions": [
+      128,
+      128
+    ],
+    "method": "Pillow LANCZOS, WebP q84 method6",
+    "transparent": false
+  },
+  "assets": [
+    {
+      "slug": "spore_soporifique",
+      "assetId": "pack:capture:icon-skill-spore-soporifique-01",
+      "label": "Spore soporifique",
+      "originalSource": "floraison_des_spores_rêveuses.png",
+      "originalSHA256": "7e8e103ed7938626c91a151eab59b5e965a02053fdc7ca7fc68913250fca9f3f",
+      "source512": "icon_skill_spore_soporifique_01_source_512.png",
+      "source512SHA256": "b7fb1b41a3d822ee57dff97d55e1e940a5a596c84d3e94512e4e54b6c59f47cf",
+      "catalogResource": "capture/icons/skills/icon_skill_spore_soporifique_01.webp",
+      "webpSHA256": "02a9aaa22d871a5b0c891104c675bb1aabf2bc43e8d28ceb2b3309dd3c87e559",
+      "gitBlobSHA": "55fa87fbc06379457dea7480592856490f67f904",
+      "webpBytes": 7624
+    },
+    {
+      "slug": "graine_de_vie",
+      "assetId": "pack:capture:icon-skill-graine-de-vie-01",
+      "label": "Graine de vie",
+      "originalSource": "graine_magique_de_renouveau_verdoyant.png",
+      "originalSHA256": "99bc2ee19a8bd13015360992d5e69b5ee87d184d5f733cffdf494d6ca6659a59",
+      "source512": "icon_skill_graine_de_vie_01_source_512.png",
+      "source512SHA256": "5ace6a5f4778d67959842cafd7bcbedd01144a46725638c20fdc8ba2c1d57c64",
+      "catalogResource": "capture/icons/skills/icon_skill_graine_de_vie_01.webp",
+      "webpSHA256": "6756200d9d840c15fd0c5f8d42793b125cffe3560cf01fe6c3c10d5d9406a6e2",
+      "gitBlobSHA": "eab881779bdb2b96cf13226189e852c834d7f3cf",
+      "webpBytes": 8234
+    },
+    {
+      "slug": "ronce",
+      "assetId": "pack:capture:icon-skill-ronce-01",
+      "label": "Ronce",
+      "originalSource": "fouet_de_lianes_épineuses_lumineuses.png",
+      "originalSHA256": "e8e6d08d17f652c943c688c57eaa167b869d3f045f5d9dc2916f9cb5950bdda8",
+      "source512": "icon_skill_ronce_01_source_512.png",
+      "source512SHA256": "5581a377c55aa795f2908ab78deec752c203d81c382c04579c660d7357ff1908",
+      "catalogResource": "capture/icons/skills/icon_skill_ronce_01.webp",
+      "webpSHA256": "690dd2ad2e3ca2b6136d5bd9d540a0cc718747444744ae021a87484c3ed5f9e4",
+      "gitBlobSHA": "f148dcca45995e68a7324bab07359ef9a3bb82d0",
+      "webpBytes": 8716
+    }
+  ]
+}
