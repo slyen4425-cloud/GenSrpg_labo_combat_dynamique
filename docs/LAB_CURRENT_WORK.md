@@ -1,3 +1,16 @@
+## 2026-10-29 — Ultime Liane venimeuse, import et rayon réserve (reprise)
+
+- Base: gh-pages@4fd0821545eaa41ce1d3115e56f3574db6273426, CI et Pages vertes. Checkpoint START checkpoint/lab-start-liane-venimeuse-complete-2026-10-29. Branche work/lab-liane-venimeuse-complete-2026-10-29. Test RED 1ac3a4be6a950be6730bc473d8a4a9a2d6b617c1.
+- Source immuable: 2937 octets, SHA256 15c7e1ad305b3ede49698e835675d1b95fdb68ac267cf8778435ded388264a7d. Ancienne PR #143 basée sur un autre état avec CI rouge; reprise sur base récente verte.
+- Un seul preset actif. Seul changement à la définition auteur: form contact → beam. Toutes les autres données (ultime N20 nature, cible réserve ennemie, 1 usage/combat, 6 énergie, préparation 2200ms, travel 800ms, force_reserve_switch, 2 charges Graine sansue, 2 Poison) inchangées.
+- Présentation par asset ID canonique pack:capture:sprite-liane-epineuse-rayon-01 sur global-assets, 12 vrais WebP transparents, rôle travel; aucun media dupliqué. Presenter FX existant + DomSkillFxRenderer utilisés.
+- Diagnostic: useSkillOnTarget de RosterSession résout les effets immédiatement et ne déclenche pas les callbacks Runtime réservés aux cibles actives. Un binding seul ne rend donc rien. Le nouveau pont presenter affiche seulement le beam lors d'un résultat réussi, sans double autorité ni timer de gameplay ajouté.
+- Limite: remplacement toujours immédiat selon le contrat existant de RosterSession, les 2200+800 ms ne retardent pas la résolution. Ne pas présenter comme une séquence pré-swap synchronisée.
+- Scope: original, vitrine, catalogue, presenter, UI de réserve, sentinelle test, docs. Protégés: CombatRuntime, RosterSession, autres skills/créatures, global-assets, main, GenSrpg et Exploration.
+- Gates: Foundation + 4 jobs Chromium sur SHA, checkpoint GREEN, PR/gh-pages/Pages SUCCESS, test Android utilisateur séparé.
+
+---
+
 ## 2026-10-29 — Raccord scène Combat Lab unique dans GenSrpg (C2, non publié)
 - Base Lab publié gh-pages@a32ac3e54dd6616f3fa1653e8aaecca5effde494 ; START checkpoint/lab-start-capture-native-scene-host-2026-10-29 ; work/lab-capture-native-scene-host-2026-10-29.
 - Problème réel Android : GenSrpg montre quatre portraits statiques et boutons verts au lieu de la vraie arène/FX/animations/sons du Labo. Le seul runtime/renderer/IA autoritaire doit être celui de mountCoop2v2Test, consommé via mountCaptureCombatPreviewV1. Ne pas empiler la CombatSession du provider GenSrpg sur la session interne du Labo.

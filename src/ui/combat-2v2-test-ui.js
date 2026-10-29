@@ -1463,6 +1463,10 @@ export async function mountCoop2v2Test({
       return false;
     }
     pendingSkillId = null;
+    // Native RosterSession remains authoritative for reserve gameplay.
+    presenter.presentReserveSkill({
+      result, skill, actorSlot: controlledActorId(), targetSlot: targetRef.teamId
+    });
     const member = rosterController.snapshot()[targetRef.teamId]?.members.find(x=>x.id===targetRef.memberId);
     setStatus(result.outcome === "forced_switched"
       ? skill.name + " : " + (member?.displayName ?? targetRef.memberId) + " entre en combat avec les effets appliqués."

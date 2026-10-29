@@ -82,6 +82,18 @@ export function createCombatResolutionPresenter({
     return Object.freeze({ status: type === "recall" ? "preparing" : "arriving", finished });
   }
 
+  // Project only a completed reserve action via the existing FX owner.
+  function presentReserveSkill({result,skill,actorSlot="player",targetSlot="opponent"}) {
+    if (disposed) return Object.freeze({status:"disposed"});
+    if (!result?.ok) return Object.freeze({status:"rejected"});
+    if (skill?.form !== "beam") return Object.freeze({status:"no_fx"});
+    return fx?.play({
+      type:"beam",skillId:skill.id,element:skill.element,
+      actorSlot,fromSlot:actorSlot,targetSlot,
+      durationMs:Math.max(1,Number(skill.travelMs)||1)
+    }) ?? Object.freeze({status:"no_fx"});
+  }
+
   function presentRosterArrival({ actorSlot, result }) {
     if (disposed) return Object.freeze({ status: "disposed" });
     if (!result?.ok || !["summoned", "switched", "ko_replaced"].includes(result.outcome)) return Object.freeze({ status: "no_fx" });
@@ -821,6 +833,7 @@ export function createCombatResolutionPresenter({
     present,
     presentPreparation,
     presentRosterArrival,
+    presentReserveSkill,
     presentRelease,
     presentOutcome,
     cancelPreparation,
