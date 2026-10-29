@@ -1,3 +1,12 @@
+## 2026-10-29 — Compatibilité du moteur Combat officiel avec les approches natives instantanées (raccord Exploration)
+- **Base stable** : main `92e2f75ff6e9b3e03d460115d53b5604adf0e718` ; START `checkpoint/lab-start-native-instant-locomotion-2026-10-29` ; branche `work/lab-native-instant-locomotion-2026-10-29`.
+- **Cause racine** : les compétences Capture historiques ont un déplacement natif autorisé à 0 ms ; le présentateur visuel transmet 1 ms à Animation Core, mais la quantification des phases de locomotion autorise plusieurs phases à la même milliseconde et lève `locomotion duration is too short for configured phases` en vrai combat.
+- **Périmètre propriétaire unique** : uniquement `src/core/animation/plan-animation.js`, sentinelle TDD RED/ GREEN et journal ; conserver les délais natifs, les dommages, les capacités, les déplacements, le renderer et les données auteur inchangés. Hors périmètre : Exploration, V80, les assets, les règles Combat.
+- **Correction** : chaque phase visuelle conserve une durée positive quand un total de 1 ms ne suffit pas à les représenter ; le temps de trajet autoritaire du Combat Session n'est jamais altéré. Pour les durées normales, préserver les durées exactement.
+- **Validation** : nouvelle sentinelle 1/2/3/6/100/900 ms + suite de tests et CI officielles avant checkpoint GREEN et fusion vers main. Aucune promotion de source avant GREEN.
+
+---
+
 ## 2026-10-28 — Kitsune Lunaire : réparer la référence auteur 7 → 8 frames (lot ciblé)
 - **Validation auteur préexistante** : l'animation **attaque dos 8 frames** de Kitsune Lunaire est déjà validée et publiée dans le catalogue visuel officiel ; ne pas redemander de validation ni générer un nouveau sprite. Le projet conserve les quatre animations disponibles dans la bibliothèque, sans les accrocher automatiquement en dehors du transfert ciblé.
 - **START avant code** : Labo `main@65e21792ff74aea9862e528c8dbfdb22797b6693`, `checkpoint/lab-start-kitsune-author-8frame-reference-2026-10-28`, branche `work/lab-kitsune-author-8frame-reference-2026-10-28`. Dernier propriétaire auteur = `data/capture/showcase/kitsune_lunaire.capture-creature-transfer-v1.json` sur main. Aucune intervention sur GenSrpg ni sur les branches médias.
