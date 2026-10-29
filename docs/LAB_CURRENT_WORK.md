@@ -1,3 +1,11 @@
+## 2026-10-29 — Grainou r5 + Explosion florale, deux exports auteur
+- Base gh-pages 9d5aff42447b3d3af71caca3d166206a6018b5e5 ; global-assets 2bdc782aa256271f5dc4675a4f6da65faf74073b protégé. START checkpoint/lab-start-grainou-explosion-florale-author-r5-2026-10-29 ; WORK work/lab-grainou-explosion-florale-author-r5-2026-10-29.
+- Sources exactes : crea_nat_1(4).json SHA256 d9545f76bd143330558e527f282abc2f3341ed68fa8253546cf671c96514e24a et explosion_florale.json SHA256 5d5848c128f97682f8c632522f67832d1934d6164b04fa5aa15afee5d1daa97e. Nouvelles archives immuables, anciennes préservées.
+- Une seule créature Grainou et un seul nouvel ID Explosion florale, quatrième slot. 25 dégâts nature par charge graine-sansue consommée, minimum une charge, sprite impact déjà référencé global-assets.
+- Fichiers autorisés : 2 archives, 2 vitrines, 1 registre skills, sentinelles TDD et historique, note + journal. Aucun moteur, média, autre créature, main, Exploration ou production. RED commit 92b6790 ; besoin Foundation + 4 Chromium, GREEN, PR et Pages SUCCESS.
+
+---
+
 ## 2026-10-29 — Deux imports auteur : Spore soporifique r2 et Grainou r4
 - Sources : `gensrpg-capture-skill-Spore_soporifique(1).json` 3271 octets SHA256 `45deeb29b981dd33d54b378b09a619d9efeb7ef8d9804b72a8a45550594b0a63` ; `gensrpg-capture-creature-crea_nat_1(3).json` 4839 octets SHA256 `56af0e17f4aad906429bb25ed86330ef75c5b576dda1a367d739e4840e23fa9e`. Archive immuable r2/r4 + remplacement unique des deux presets, sans modifier les manifestes ni les médias.
 - Base `gh-pages@4c98f881939a6ec66922370bd380d0d21109dd30`; assets `global-assets@2bdc782aa256271f5dc4675a4f6da65faf74073b` inchangés ; START `checkpoint/lab-start-spore-grainou-author-r4-2026-10-29` ; WORK `work/lab-spore-grainou-author-r4-2026-10-29`.

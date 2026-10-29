@@ -136,7 +136,9 @@ test("latest two author transfers replace the same canonical IDs without losing 
   const oldCreature=await read("data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r3.json");
   assert.equal(sha(oldCreature),"70a9390ff81d42d7f2dc9ec574091078a31e20bdad48f8540a23ea627c78a72b",
     "r3 remains immutable");
-  const currentCreature=await read("data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r4.json");
+  const r4Creature=await read("data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r4.json");
+  assert.equal(sha(r4Creature),"56af0e17f4aad906429bb25ed86330ef75c5b576dda1a367d739e4840e23fa9e","r4 source is historical and immutable");
+  const currentCreature=await read("data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r5.json");
   assert.equal(sha(liveCreature),sha(currentCreature),"new creature source is published exactly");
   assert.equal(sha(savedSkill),"ec432fc7141806394c9be527c5f629ecaf870d103cbad7c06fecc927d93f7531");
   assert.equal(sha(savedCreature),"4a3ae6fa27f47382960720aa941d87c973546ba518fbaa6880c6d747ac283f1f");

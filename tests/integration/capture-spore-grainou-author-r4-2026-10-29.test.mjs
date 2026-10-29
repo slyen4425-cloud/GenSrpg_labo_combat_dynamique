@@ -31,7 +31,7 @@ test("Spore soporifique r2 author bytes, canonical active identity and true expa
 test("Grainou r4 author bytes, active reaction defense and skill slot unchanged",async()=>{
  const src=await read(creatureSrc);
  assert.equal(sha(src),"56af0e17f4aad906429bb25ed86330ef75c5b576dda1a367d739e4840e23fa9e");
- assert.equal(await read(creatureActive),src);
+ assert.notEqual(await read(creatureActive),src,"Grainou r5 supersedes the archived r4 author file");
  const d=JSON.parse(src);
  assert.equal(d.draft.id,"crea_nat_1");
  assert.equal(d.draft.combat.reaction.type,"defense");

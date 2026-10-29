@@ -116,7 +116,8 @@
       "cap_earth_special_2",
       "coupe_feuille",
       "graine_sansue_cap",
-      "Spore_soporifique"
+      "Spore_soporifique",
+      "explosion_florale"
     ],
     "presentation": {
       "id": "creature:crea_nat_1",
@@ -223,7 +224,7 @@
       },
       {
         "id": "slot-4",
-        "skillId": null
+        "skillId": "explosion_florale"
       },
       {
         "id": "slot-ultimate",
