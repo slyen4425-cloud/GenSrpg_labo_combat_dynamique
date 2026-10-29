@@ -98,13 +98,14 @@ function locomotionShape({
       throw new RangeError("locomotion phase offsets must increase from 0 to 1");
     }
 
-    const endMs =
+    // A native zero-travel attack may request a 1ms presentation envelope.
+    // Keep the authored phase order by expanding VISUAL-only milliseconds as
+    // needed. Never change Combat Session action deadlines or its travelMs.
+    const requestedEndMs =
       at === 1
         ? totalDurationMs
         : Math.round(totalDurationMs * at);
-    if (endMs <= elapsedMs) {
-      throw new RangeError("locomotion duration is too short for configured phases");
-    }
+    const endMs = Math.max(elapsedMs + 1, requestedEndMs);
     const phaseDurationMs = endMs - elapsedMs;
     elapsedMs = endMs;
     previousAt = at;
