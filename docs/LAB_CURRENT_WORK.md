@@ -1,3 +1,11 @@
+## 2026-10-29 — Bestiaire : dégâts et effets par charge consommée
+- Départ gh-pages@9bda4f716f979a56def9bae3d21d2dd94770df8a ; START `checkpoint/lab-start-bestiary-marker-per-charge-prose-2026-10-29`, WORK `work/lab-bestiary-marker-per-charge-prose-2026-10-29`.
+- Correction du propriétaire partagé `capture-skill-explanation-v1.js` : la valeur des dégâts/soins/énergies perCharge est affichée avec le libellé `par charge consommée` ; aucune description spéciale à Grainou, aucun changement dans les dégâts ni les JSON auteur. Cas `perCharge:false` préservé.
+- TDD RED `3111e426`, tests des capacités Explosion florale, Choc venin, comportement générique, absence de faux multiplicateur dans les capacités ordinaires ; CI complète et Pages avant GREEN.
+- Détails : `docs/LAB_BESTIARY_MARKER_CONSUMPTION_PROSE_2026-10-29.md`.
+
+---
+
 ## 2026-10-29 — Nouvelle mécanique de remplacement forcé par capacité
 - BASE gh-pages 84c8d76eab5ec03029dc41c7fa0eecba1843a943 ; global-assets 4b727fe47693dd083c39e500ea66ace8d073e86d inchangé. START checkpoint/lab-start-force-enemy-reserve-switch-2026-10-29, WORK work/lab-force-enemy-reserve-switch-2026-10-29.
 - Périmètre : nouveau SkillEffect force_reserve_switch (réserve ennemie ciblée), remplacement RosterSession, marqueurs natifs avant entrée, vue/éditeur 2v2, UI projection, tests et documentation. Pas de nouvelle autorité de roster, aucune modification aux capacités auteur existantes.
