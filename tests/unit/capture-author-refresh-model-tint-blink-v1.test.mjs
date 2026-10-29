@@ -15,7 +15,12 @@ const creaturePath="data/capture/showcase/crea_mossback.capture-creature-transfe
 test("author exports remain byte-exact and replace stable skill/creature IDs",async()=>{
   const skill=await source(skillPath),creature=await source(creaturePath);
   assert.equal(createHash("sha256").update(skill).digest("hex"),"51f0a7eb1d648167ca908c3cd7d73e28ab970b49b33726e9e4859118803afc07");
-  assert.equal(creature,await source("data/capture/source-exports/gensrpg-capture-creature-crea_mossback-2026-10-22.json"),"new Moussados author extraction must remain exact");
+  const original=JSON.parse(await source("data/capture/source-exports/gensrpg-capture-creature-crea_mossback-2026-10-22.json"));
+  const revised=JSON.parse(creature);
+  assert.equal(original.draft.combat.reaction,undefined,"historic source export remains immutable");
+  assert.equal(revised.draft.combat.reaction.type,"defense");
+  delete revised.draft.combat.reaction;
+  assert.deepEqual(revised,original,"active Moussados remains exact except its new authored Defense reaction");
   const registry=normalizeCaptureStatRegistryV1(JSON.parse(await source("data/capture/monster-capture-stat-registry.v1.json")));
   const s=importCaptureTransferJsonV1(skill),c=importCaptureTransferJsonV1(creature,{statRegistry:registry});
   assert.equal(s.value.draft.id,"cap_earth_atk_3");
