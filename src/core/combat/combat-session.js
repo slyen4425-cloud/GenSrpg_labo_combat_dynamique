@@ -334,7 +334,8 @@ export function createCombatSession({
     reaction = null,
     targetActionContext = null,
     resolutionAtMs = null,
-    forcedOutcome = null
+    forcedOutcome = null,
+    confirmedVisibleBodyContact = false
   }) {
     const result = resolveSkillCompletion({
       state,
@@ -343,7 +344,8 @@ export function createCombatSession({
       targetActionContext,
       battleFormat,
       resolutionAtMs,
-      forcedOutcome
+      forcedOutcome,
+      confirmedVisibleBodyContact
     });
     const committed = action.mirrorReturn
       ? (state = result.state, result)
@@ -404,7 +406,8 @@ export function createCombatSession({
     reaction = null,
     targetActionContext = null,
     resolutionAtMs = null,
-    forcedOutcome = null
+    forcedOutcome = null,
+    confirmedVisibleBodyContact = false
   }) {
     return action.actionType === "command"
       ? completeCommand({ action })
@@ -413,7 +416,8 @@ export function createCombatSession({
           reaction,
           targetActionContext,
           resolutionAtMs,
-          forcedOutcome
+          forcedOutcome,
+          confirmedVisibleBodyContact
         });
   }
 
