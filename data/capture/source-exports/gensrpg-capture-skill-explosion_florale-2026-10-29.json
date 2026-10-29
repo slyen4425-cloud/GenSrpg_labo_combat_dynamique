@@ -1,0 +1,127 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "explosion_florale",
+    "description": "Na",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "explosion_florale",
+      "name": "Explosion florale",
+      "category": "offensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "nature",
+      "approachMode": "none",
+      "energyCost": 6,
+      "preparationMs": 800,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 3000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "consume_marker",
+          "targetScope": "target",
+          "markerId": "graine-sansue",
+          "count": "all",
+          "minimum": 1,
+          "perCharge": true,
+          "effects": [
+            {
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 25,
+              "channel": "nature"
+            }
+          ]
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:explosion_florale",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "explosion_florale",
+      "visual": {
+        "impact": {
+          "assetId": "pack:capture:sprite-spores-expansives-projectile-sphere-02",
+          "displayScale": 1.6,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.7,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}

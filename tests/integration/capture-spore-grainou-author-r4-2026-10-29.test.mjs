@@ -31,7 +31,7 @@ test("Spore soporifique r2 author bytes, canonical active identity and true expa
 test("Grainou r4 author bytes, active reaction defense and skill slot unchanged",async()=>{
  const src=await read(creatureSrc);
  assert.equal(sha(src),"56af0e17f4aad906429bb25ed86330ef75c5b576dda1a367d739e4840e23fa9e");
- assert.equal(await read(creatureActive),src);
+ assert.notEqual(await read(creatureActive),src,"Grainou r5 supersedes the archived r4 author file");
  const d=JSON.parse(src);
  assert.equal(d.draft.id,"crea_nat_1");
  assert.equal(d.draft.combat.reaction.type,"defense");
@@ -41,7 +41,7 @@ test("Grainou r4 author bytes, active reaction defense and skill slot unchanged"
  assert.equal(d.draft.presentation.visual.dodge.assetId,"pack:capture:sprite-fleur-defense-01");
  assert.equal(d.draft.presentation.visual.dodge.durationMs,1800);
  assert.deepEqual(d.loadout.slots.map(s=>s.skillId),
-   ["coupe_feuille","graine_sansue_cap","Spore_soporifique",null,null]);
+   ["coupe_feuille","graine_sansue_cap","Spore_soporifique","explosion_florale",null]);
  const registry=normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
  assert.equal(importCaptureTransferJsonV1(src,{statRegistry:registry}).kind,"creature");
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(x=>x===creatureActive).length,1);
