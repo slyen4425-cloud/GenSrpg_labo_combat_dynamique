@@ -100,7 +100,7 @@
         "type": "defense",
         "maxCharges": 2,
         "rechargeMs": 20000,
-        "activeWindowMs": 400,
+        "activeWindowMs": 800,
         "damageReductionPct": 30
       }
     },
@@ -115,7 +115,8 @@
       "cap_earth_special_1",
       "cap_earth_special_2",
       "coupe_feuille",
-      "graine_sansue_cap"
+      "graine_sansue_cap",
+      "Spore_soporifique"
     ],
     "presentation": {
       "id": "creature:crea_nat_1",
@@ -211,7 +212,7 @@
       },
       {
         "id": "slot-3",
-        "skillId": null
+        "skillId": "Spore_soporifique"
       },
       {
         "id": "slot-4",
