@@ -1,3 +1,14 @@
+## 2026-10-29 — Intégration de la capacité auteur « Liane venimeuse » (réserve ennemie)
+
+- **Source auteur** : fichier transmis `gensrpg-capture-skill-liane_venimeuse.json`, JSON de transfert `capture-skill-transfer-v1`, 2 937 octets, SHA256 `15c7e1ad305b3ede49698e835675d1b95fdb68ac267cf8778435ded388264a7d`. Identifiants `draft.id` et `definition.id` = `liane_venimeuse`.
+- **Base** : `gh-pages@a32ac3e54dd6616f3fa1653e8aaecca5effde494`, checkpoint `checkpoint/lab-start-liane-venimeuse-skill-2026-10-29`, travail `work/lab-liane-venimeuse-skill-2026-10-29` ; médias existants `global-assets@e6ef519b062e9e590faae63130ec12bfab263bac` inchangés.
+- **Propriétaire unique / périmètre** : ajouter la source auteur immuable `data/capture/source-exports/gensrpg-capture-skill-liane_venimeuse-2026-10-29.json`, la seule fiche active `data/capture/showcase/liane_venimeuse.capture-skill-transfer-v1.json`, l'index existant `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1`, une sentinelle d'import/ID/effets, puis publier après CI + Pages. Pas de seconde autorité ; aucun changement aux autres compétences ou créatures.
+- **Paramètres intouchables** : ultime nature niveau 20, cible ennemie en réserve, 1 utilisation/combat, 6 énergie, préparation 2200ms, trajet 800ms, `force_reserve_switch` puis 2 charges du marqueur `graine-sansue` et 2 de `poison`. La source a explicitement `presentation:null` : ne pas inventer de liaison visuelle au sprite `pack:capture:sprite-liane-epineuse-rayon-01`, même si cet asset est publié séparément. `form:contact` est conservé tel qu'exporté.
+- **Protégés** : `configuredSkills` (chargement depuis le catalogue existant seulement), combat/roster/rendu, assets, éditions auteur, éditeur, autres presets, `main`, GenSrpg, Exploration. Aucun changement de logique, valeurs ou sprites, aucune rustine/duplicata.
+- **Gates** : TDD RED → GREEN, audit des IDs et de la référence d'asset, comparaison SHA256 source/vitrine, import par l'adaptateur officiel, présence dans le catalogue préchargé `configuredSkills`, effets conservés, CI + Chromium/Pages, checkpoint sur SHA final, PR/fusion, validation smartphone auteur séparée.
+
+---
+
 ## 2026-10-29 — Bestiaire : dégâts et effets par charge consommée
 - Départ gh-pages@9bda4f716f979a56def9bae3d21d2dd94770df8a ; START `checkpoint/lab-start-bestiary-marker-per-charge-prose-2026-10-29`, WORK `work/lab-bestiary-marker-per-charge-prose-2026-10-29`.
 - Correction du propriétaire partagé `capture-skill-explanation-v1.js` : la valeur des dégâts/soins/énergies perCharge est affichée avec le libellé `par charge consommée` ; aucune description spéciale à Grainou, aucun changement dans les dégâts ni les JSON auteur. Cas `perCharge:false` préservé.
