@@ -42,6 +42,22 @@
       }
     },
     {
+      "id": "graine-sansue",
+      "name": "Graine sansue",
+      "polarity": "detrimental",
+      "durationMs": 20000,
+      "maxStacks": 2,
+      "iconAssetId": "pack:capture:icon-skill-sangsue-01",
+      "periodic": {
+        "kind": "life_steal",
+        "amount": 5,
+        "intervalMs": 3000,
+        "damageMode": "combat",
+        "channel": "nature",
+        "percent": 100
+      }
+    },
+    {
       "id": "eclat-spirituel",
       "name": "Éclat spirituel",
       "polarity": "detrimental",
@@ -81,22 +97,6 @@
         "intervalMs": 30000,
         "damageMode": "combat",
         "channel": "shadow"
-      }
-    },
-    {
-      "id": "graine-sansue",
-      "name": "Graine sansue",
-      "polarity": "detrimental",
-      "durationMs": 20000,
-      "maxStacks": 10,
-      "iconAssetId": "pack:capture:icon-skill-sangsue-01",
-      "periodic": {
-        "kind": "life_steal",
-        "amount": 5,
-        "intervalMs": 3000,
-        "damageMode": "combat",
-        "channel": "nature",
-        "percent": 100
       }
     }
   ]
