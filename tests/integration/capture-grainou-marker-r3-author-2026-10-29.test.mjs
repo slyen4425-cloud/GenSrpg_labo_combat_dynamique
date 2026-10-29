@@ -21,7 +21,7 @@ test("exact author creature r3 source, one canonical Grainou and Spore equipped 
  assert.equal(createHash("sha256").update(raw).digest("hex"),"70a9390ff81d42d7f2dc9ec574091078a31e20bdad48f8540a23ea627c78a72b");
  const author=JSON.parse(raw);
  const active=JSON.parse(await read(creatureFile));
- assert.deepEqual(active,author);
+ assert.notDeepEqual(active,author,"Grainou r4 supersedes the archived r3 source");
  const registry=normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
  assert.equal(importCaptureTransferJsonV1(await read(creatureFile),{statRegistry:registry}).kind,"creature");
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(x=>x===creatureFile).length,1);
