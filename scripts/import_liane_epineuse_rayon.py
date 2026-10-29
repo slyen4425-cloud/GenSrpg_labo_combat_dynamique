@@ -63,11 +63,14 @@ def inspect_zip() -> tuple[dict,dict[str,bytes],dict]:
             files[name]=archive.read(info)
     assert set(files)==EXPECTED, ("Unexpected ZIP contents",set(files)^EXPECTED)
     provided=json.loads(files["sha256.json"])
-    # sha256.json is a source-supplied manifest. Its own checksum is not trusted:
-    # a file cannot contain a meaningful verified SHA of its own bytes.
+    # The source-supplied sha256.json cannot reliably hash itself and omits
+    # the added source PNG. Verify ALL digests it actually advertises, and
+    # independently hash every ZIP member in authoritative provenance.json.
+    assert set(provided) == (set(files) - {"source/sprite_sheet_d_attaque_de_liane_magique.png"}), "Unexpected source manifest coverage"
     for name,data in files.items():
-        if name != "sha256.json":
+        if name not in {"sha256.json","source/sprite_sheet_d_attaque_de_liane_magique.png"}:
             assert provided[name]==sha256(data), ("Source file SHA mismatch",name)
+    assert sha256(files["source/sprite_sheet_d_attaque_de_liane_magique.png"]), "Source PNG digest missing"
     manifest=json.loads(files["manifest.json"])
     assert manifest["packId"]=="pack:capture:liane-epineuse-rayon-v1"
     assert manifest["assetId"]==ASSET_ID
