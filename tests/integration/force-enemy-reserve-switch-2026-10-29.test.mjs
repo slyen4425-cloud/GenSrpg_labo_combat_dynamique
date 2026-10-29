@@ -89,3 +89,12 @@ test("RED: replacing a KO reserve is prohibited and does not reset enemy active"
   assert.equal(h.roster.snapshot().opponent.activeMemberId,"e0");
   assert.deepEqual(h.cancelled,[]);
 });
+
+test("editor authoring preserves force switch without inventing amount, target remains an enemy reserve",async()=>{
+  const {buildHumanTacticalSkillEffectsV1,humanSkillTargetRelationsFromTacticalEffectsV1}=
+    await import("../../src/ui/capture-editor-human-v2.js");
+  const built=buildHumanTacticalSkillEffectsV1(fx);
+  assert.deepEqual(built[0],fx[0]);
+  assert.equal(built[1].marker.id,"ronce-test");
+  assert.deepEqual(humanSkillTargetRelationsFromTacticalEffectsV1(built,{form:"beam"}),["enemy"]);
+});

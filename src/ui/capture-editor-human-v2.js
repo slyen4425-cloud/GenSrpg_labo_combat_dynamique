@@ -487,7 +487,7 @@ export function buildHumanTacticalSkillEffectsV1(
       "Cible d’effet tactique"
     );
 
-    if (kind === "apply_marker" || kind === "consume_marker" || kind === "knockout") {
+    if (kind === "apply_marker" || kind === "consume_marker" || kind === "knockout" || kind === "force_reserve_switch") {
       return normalizeSkillEffectV1(effect);
     }
 
@@ -5490,6 +5490,11 @@ function appendHumanSkillEffectV1(
 
   const config = document.createElement("div");
   config.className = "skill-effect-row__config";
+  const forcedNote = document.createElement("p");
+  forcedNote.className = "note";
+  forcedNote.dataset.skillEffectConfigKind = "force_reserve_switch";
+  forcedNote.textContent = "Choisis une créature dans Réserves adverses. Elle remplace l’ennemi actif, puis reçoit les autres effets de cette capacité (ajoute un effet « Poser des marqueurs »). Le rappel volontaire de l’ennemi reste indépendant.";
+  config.append(forcedNote);
   const markerFields = captureMarkerEffectFieldsV1(root,effect);
 
   const amount = tacticalNumberInputV1(
@@ -12460,6 +12465,12 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     listen(effectsHost, "change", event => {
       const row = event.target?.closest?.("[data-skill-effect-row]");
       if (!row) return;
+      if (event.target.matches("[data-skill-effect-kind]") && event.target.value === "force_reserve_switch") {
+        // Author-only convenience: an enemy bench target must never be an
+        // active target. These are the existing canonical location controls.
+        for (const input of root.querySelectorAll("[data-skill-location-scope]"))
+          input.checked = input.value === "reserve";
+      }
       if (event.target.matches(
         "[data-skill-effect-kind], " +
         "[data-skill-status-kind], " +
