@@ -154,13 +154,14 @@ function penetrates(e){
     "ignore la réduction des dégâts":"ignore "+num(e.ignoreDamageReductionPct)+" % de la réduction des dégâts");
   return clauses;
 }
-function effectSentence(e){
+function effectSentence(e,{perCharge=false}={}){
   switch(e.kind){
     case "damage":return [finish("Inflige "+num(e.amount)+" dégâts"+(e.channel?" "+elementOf(e.channel):"")+
+      (perCharge?" par charge consommée":"")+
       onTarget(e.targetScope)+(penetrates(e).length?" et "+words(penetrates(e)):""))];
-    case "heal":return [finish("Rend "+num(e.amount)+" PV"+onTarget(e.targetScope))];
-    case "energy_restore":return [finish("Rend "+num(e.amount)+" points d'énergie"+onTarget(e.targetScope))];
-    case "energy_drain":return [finish("Retire "+num(e.amount)+" points d'énergie"+onTarget(e.targetScope))];
+    case "heal":return [finish("Rend "+num(e.amount)+" PV"+(perCharge?" par charge consommée":"")+onTarget(e.targetScope))];
+    case "energy_restore":return [finish("Rend "+num(e.amount)+" points d'énergie"+(perCharge?" par charge consommée":"")+onTarget(e.targetScope))];
+    case "energy_drain":return [finish("Retire "+num(e.amount)+" points d'énergie"+(perCharge?" par charge consommée":"")+onTarget(e.targetScope))];
     case "life_steal":return [finish("Récupère "+num(e.percent)+" % des dégâts infligés sous forme de PV"+
       (e.maxHeal!=null?" (maximum "+num(e.maxHeal)+" PV)":""))];
     case "knockout":return [finish("Met "+subject(e.targetScope)+" K.O.")];
@@ -199,8 +200,8 @@ function effectSentence(e){
     case "consume_marker":return [
       finish("Consomme "+(e.count==="all"?"les charges":num(e.count)+" charges")+" de "+e.markerId+
         onTarget(e.targetScope)+(e.minimum>1?" (au moins "+num(e.minimum)+")":"")+
-        (e.perCharge?" ; les effets augmentent avec les charges consommées":"")),
-      ...descriptions(e.effects)];
+        ""),
+      ...descriptions(e.effects,{perCharge:e.perCharge===true})];
     case "scheduled_effect":return [finish("Après "+duration(e.trigger.delayMs)+", "+
       descriptions(e.effects).map(x=>lowerSentence(x)).join(" et "))];
     case "persistent_zone":return groupZones([e]);
@@ -246,7 +247,7 @@ function groupZones(zones){
     " après un rappel";
   return [finish(text)];
 }
-function descriptions(effects){
+function descriptions(effects,{perCharge=false}={}){
   const list=effects??[], used=new Set(),out=[];
   for(let i=0;i<list.length;i++){
     if(used.has(i))continue;
@@ -261,7 +262,7 @@ function descriptions(effects){
       const clause=e.targetScope==="target"?
         "et supprime tous ses effets et marqueurs négatifs":
         "et supprime tous les effets et marqueurs négatifs"+onTarget(e.targetScope);
-      out.push(finish("Rend "+num(e.amount)+" PV "+subject+" "+clause));
+      out.push(finish("Rend "+num(e.amount)+" PV"+(perCharge?" par charge consommée":"")+" "+subject+" "+clause));
     }else if(e.kind==="persistent_zone"){
       const same=[];
       for(let j=i;j<list.length;j++){
@@ -303,7 +304,7 @@ function descriptions(effects){
       }
       out.push(groupChangeSentence(list,same));
     }else{
-      out.push(...effectSentence(e));
+      out.push(...effectSentence(e,{perCharge}));
     }
   }
   return out.filter(Boolean);
