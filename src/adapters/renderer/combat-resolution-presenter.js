@@ -21,6 +21,7 @@ export function createCombatResolutionPresenter({
   fx = null,
   audio = null,
   onActionContact = null,
+  onActionTravelEnd = null,
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer,
   instantAttackAnticipationMs = DEFAULT_INSTANT_ATTACK_ANTICIPATION_MS
@@ -45,6 +46,9 @@ export function createCombatResolutionPresenter({
     throw new TypeError(
       "onActionContact must be a function when supplied"
     );
+  }
+  if (onActionTravelEnd !== null && typeof onActionTravelEnd !== "function") {
+    throw new TypeError("onActionTravelEnd must be a function");
   }
   if (typeof setTimer !== "function" || typeof clearTimer !== "function") {
     throw new TypeError("timer functions are required");
@@ -457,6 +461,21 @@ export function createCombatResolutionPresenter({
                   )
               : null,
           onPhase({ label, phaseDurationMs }) {
+            if (label === "ground-home" && approachMode === "ground" &&
+                action.skill?.form === "contact" &&
+                typeof onActionTravelEnd === "function") {
+              // The existing collision watcher's rAF receives the last
+              // outbound frame before declaring an uncontacted approach over.
+              const complete = () => {
+                if (!disposed && approachVisualsByActor.get(actorSlot) === approachToken)
+                  onActionTravelEnd(Object.freeze({
+                    actorId:actorSlot,targetId:targetSlot,skillId
+                  }));
+              };
+              if (typeof globalThis.requestAnimationFrame === "function")
+                globalThis.requestAnimationFrame(complete);
+              else complete();
+            }
             if (!skillId) {
               return;
             }

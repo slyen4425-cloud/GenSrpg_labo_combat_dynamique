@@ -30,6 +30,7 @@ export function createCombatRuntime({
   clearTimer = defaultClearTimer,
   readZoneSpatialContext = null,
   enableExpandingWaveMultiTarget = false,
+  groundContactResolution = "timed",
   onState = () => {},
   onHealthDelta = () => {},
   onClock = () => {},
@@ -797,7 +798,8 @@ export function createCombatRuntime({
     record,
     atNowMs,
     { impactAtMs = null, visibleContact = false, contactPoint = null,
-      mirrorSpritePresent = false, mirrorSpriteContact = false } = {}
+      mirrorSpritePresent = false, mirrorSpriteContact = false,
+      forcedOutcomeOverride = null } = {}
   ) {
     if (
       !recordIsActive(record) ||
@@ -899,15 +901,19 @@ export function createCombatRuntime({
     const mirrorContact = mirrorCanIntercept(record, effectiveAction, resolutionCombatMs, visibleContact,
       {mirrorSpritePresent, mirrorSpriteContact});
     // An uncaught returning projectile cannot inflict damage at a timer boundary.
-    const forcedOutcome = mirrorContact ? "mirrored" :
+    const forcedOutcome = forcedOutcomeOverride ?? (mirrorContact ? "mirrored" :
       (record.mirrorReturn && !visibleContact ? "evaded" :
         (effectiveAction.actionType === "skill" &&
          effectiveAction.skill?.projectileTargeting === "expanding_wave" &&
-         !visibleContact ? "evaded" : null));
+         !visibleContact ? "evaded" : null)));
 
     const resolution = session.completeAction({
       action: effectiveAction,
       forcedOutcome,
+      confirmedVisibleBodyContact: visibleContact &&
+        effectiveAction.actionType === "skill" &&
+        effectiveAction.skill?.form === "contact" &&
+        effectiveAction.skill?.approachMode === "ground",
       reaction: effectiveReaction,
       targetActionContext,
       resolutionAtMs:
@@ -1147,6 +1153,13 @@ export function createCombatRuntime({
         } else if (item.type === "clash") {
           processProjectileClash(item);
         } else if (item.type === "resolution") {
+          const action = item.record.action;
+          if (groundContactResolution === "visible" &&
+              action.actionType === "skill" && action.skill?.form === "contact" &&
+              action.skill?.approachMode === "ground" && !item.record.mirrorReturn) {
+            // The same outbound AnimationPlan owns the final contact opportunity.
+            return;
+          }
           processResolution(item.record, atNowMs);
         } else {
           processRecoveryComplete(
@@ -1799,6 +1812,27 @@ export function createCombatRuntime({
     });
   }
 
+  function reportGroundApproachEnd({actorId,targetId,skillId = null}) {
+    if (disposed || groundContactResolution !== "visible")
+      return Object.freeze({ok:false,outcome:"not_authoritative"});
+    const current = now();
+    advanceSessionToClock(current);
+    settleDue(current);
+    const record = activeByActor.get(actorId) ?? null;
+    if (!record || record.resolved || !record.released ||
+        record.action.actionType !== "skill" ||
+        record.action.skill?.form !== "contact" ||
+        record.action.skill?.approachMode !== "ground" ||
+        record.action.targetId !== targetId ||
+        (skillId !== null && String(record.action.skill.id) !== String(skillId)))
+      return Object.freeze({ok:false,outcome:"no_matching_ground_approach"});
+    // No visible model intersection throughout the outbound path -> miss.
+    const resolution = processResolution(record,current,{
+      forcedOutcomeOverride:"evaded"
+    });
+    return Object.freeze({ok:Boolean(resolution),outcome:"travel_finished",resolution});
+  }
+
   function reportActionContact({
     actorId,
     targetId,
@@ -1996,6 +2030,7 @@ export function createCombatRuntime({
     interruptActive,
     applyResolutionInterrupt,
     reportActionContact,
+    reportGroundApproachEnd,
     reportExpandingWaveTargetContact,
     reportProjectileClashContact,
     cancelActionsForActor,

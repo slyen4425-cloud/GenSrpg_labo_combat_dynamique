@@ -523,6 +523,9 @@ export async function mountCombatTest({
     audio: combatAudio,
     onActionContact(contact) {
       return runtime?.reportActionContact(contact) ?? null;
+    },
+    onActionTravelEnd(approach) {
+      return runtime?.reportGroundApproachEnd(approach) ?? null;
     }
   });
 
@@ -1167,6 +1170,7 @@ export async function mountCombatTest({
 
   runtime = createCombatRuntime({
     session,
+    groundContactResolution: "visible",
     readZoneSpatialContext: state => fx.sampleZoneSpatialContext(state.persistentZones ?? []),
     onState(state) {
       impactHealthCue.clear();
