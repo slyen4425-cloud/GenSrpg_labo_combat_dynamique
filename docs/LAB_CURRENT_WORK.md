@@ -1,3 +1,16 @@
+## 2026-10-29 — Liane épineuse : rayon 12f validé, extension puis enroulement
+
+- **Demande / origine** : liane végétale épineuse sortant de la créature, se tendant vers la cible puis s'enroulant autour d'elle. Sprite de type rayon/beam ; le choix d'un ennemi dans sa réserve et son remplacement sont des règles de gameplay déjà distinctes et **non modifiées dans ce lot**.
+- **Source réelle déposée** : `_incoming/GENSRPG_LIANE_EPINEUSE_RAYON_12F_WEBP.zip`, 5 636 465 octets, SHA256 `59e6ad68defadd3ef9d187665fb345aeb8c11ddeebc24d34124e539677aabec3`, Git blob `f45b36716e92ff779383f91eee10d34c60e96378`. Source vérifiée localement octet-à-octet contre Git (même Git blob), ZIP CRC OK, 20 membres, 12 frames WebP RGBA 512×512 distinctes, strip atlas WebP 6144×512 pixel-identique aux frames, preview WebP 12f, planches PNG et illustration source. `manifest.json` original conservé sans retouche.
+- **Base connue** : `global-assets@4b727fe47693dd083c39e500ea66ace8d073e86d`; checkpoint existant `checkpoint/lab-start-liane-epineuse-rayon-2026-10-29` sur le même SHA ; branche `work/lab-liane-epineuse-rayon-2026-10-29` depuis cette base. Une seule autorité d'assets : `data/assets/catalog/global-visual-assets.v1.json` sur `global-assets`.
+- **Périmètre** : importer les vrais fichiers originaux dans `assets/library/capture/sprites/skills/liane_epineuse_rayon/`, un `assetId` stable `pack:capture:sprite-liane-epineuse-rayon-01`, classé `travel` pour le sélecteur des visuels de rayon/projection, tags `beam`/`vine`/`nature`, sans prétendre modifier le contrat du moteur. L'animation d'origine joue une fois, durées variables (frames 1–7 150ms, frames 8–11 190ms, frame 12 650ms), phases extension 1–7 et enroulement 8–12. Le catalogue `frameMs` fournit un défaut de 150ms mais le manifeste de séquence documente les timings approuvés individuellement.
+- **Fichiers autorisés** : nouveaux fichiers médias et provenance sous la racine cible, unique catalogue canonique, test RED→GREEN des médias réels et IDs, script import ZIP, workflow d'import Github Actions, et présent journal. Retirer l'archive `_incoming` après import sur la branche de travail (l'original reste traçable dans le commit parent Git).
+- **Protégés** : tous les autres médias, compétences et créatures sauvegardées, moteur de ciblage/réserve et FX, UI/renderer, `gh-pages`, `main`, GenSrpg et Exploration. Aucune double autorité, aucun fallback/placeholder, aucune auto-affectation d'une capacité. Test mobile réel en jeu par l'auteur séparé.
+- **Gates** : test sentinelle RED, source ZIP SHA/Git/CRC, 12 vrais WebP distincts avec alpha, atlas pixel-identique aux frames, preview 12f, SHA des sources, catégorie choisie par le vrai sélecteur, IDs uniques, CI intégrale, diff limité, checkpoint GREEN puis fast-forward sous lease, CI sur SHA canonique.
+- **État** : source vérifiée ; intégration sur branche dédiée en cours.
+
+---
+
 ## 2026-10-29 — Trois icônes Nature Monster Capture : Spore soporifique, Graine de vie, Ronce
 
 - **But** : intégrer les trois visuels déjà créés et acceptés dans la conversation à la bibliothèque officielle des icônes de compétences, sans régénérer les sources.
