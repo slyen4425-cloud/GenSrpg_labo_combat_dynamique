@@ -655,10 +655,12 @@ const server = createServer(async (req, res) => {
                  grainouSlots[1]!=="graine_sansue_cap" ||
                  grainouSlots[2]!=="Spore_soporifique" ||
                  get("creature-reaction-type")?.value!=="defense" ||
-                 get("creature-reaction-charges")?.value!=="2" ||
+                 get("creature-reaction-charges")?.value!=="5" ||
                  get("creature-reaction-recharge")?.value!=="20" ||
                  get("creature-reaction-window")?.value!=="0.8" ||
-                 get("creature-reaction-reduction")?.value!=="30")
+                 get("creature-reaction-reduction")?.value!=="30" ||
+                 get("creature-dodge-fx")?.value!=="pack:capture:sprite-fleur-defense-01" ||
+                 get("creature-dodge-duration")?.value!=="1800")
                 throw Error("Grainou latest author loadout or defensive reaction not loaded: "+
                   JSON.stringify({slots:grainouSlots,reaction:get("creature-reaction-type")?.value,
                     charges:get("creature-reaction-charges")?.value,

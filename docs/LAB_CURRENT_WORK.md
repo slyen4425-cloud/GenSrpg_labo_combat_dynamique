@@ -1,3 +1,11 @@
+## 2026-10-29 — Deux imports auteur : Spore soporifique r2 et Grainou r4
+- Sources : `gensrpg-capture-skill-Spore_soporifique(1).json` 3271 octets SHA256 `45deeb29b981dd33d54b378b09a619d9efeb7ef8d9804b72a8a45550594b0a63` ; `gensrpg-capture-creature-crea_nat_1(3).json` 4839 octets SHA256 `56af0e17f4aad906429bb25ed86330ef75c5b576dda1a367d739e4840e23fa9e`. Archive immuable r2/r4 + remplacement unique des deux presets, sans modifier les manifestes ni les médias.
+- Base `gh-pages@4c98f881939a6ec66922370bd380d0d21109dd30`; assets `global-assets@2bdc782aa256271f5dc4675a4f6da65faf74073b` inchangés ; START `checkpoint/lab-start-spore-grainou-author-r4-2026-10-29` ; WORK `work/lab-spore-grainou-author-r4-2026-10-29`.
+- Changement user : projectile Spore `sprite-spores-expansives-projectile-sphere-02` ; Grainou défense 5 charges et fleur défensive 1,8s. Sommeil reste `stun` 10s (export auteur) ; mécanique « jusqu'au dégât » hors ce lot.
+- TDD RED `46839704`; tests SHA/import/catalogues + browser, CI 5 jobs/5 et Pages obligatoires. Rapport `docs/LAB_SPORE_GRAINOU_AUTHOR_R4_2026-10-29.md`. Lot en cours.
+
+---
+
 ## 2026-10-29 — Placement des deux JSON auteur Grainou r3 + Marqueurs r2 (lot coordonné)
 - BASE `gh-pages@bfdfddc24b6f152658abd6c8bc808e934faa8f4a`, médias `global-assets@2bdc782aa256271f5dc4675a4f6da65faf74073b` non modifiés. START `checkpoint/lab-start-grainou-marker-author-r3-2026-10-29` ; WORK `work/lab-grainou-marker-author-r3-2026-10-29`.
 - Sources exactes : `gensrpg-capture-creature-crea_nat_1(2).json` (4640 octets, SHA256 70a9390ff81d42d7f2dc9ec574091078a31e20bdad48f8540a23ea627c78a72b), `gensrpg-marqueurs(2).json` (2549 octets, SHA256 9eb2fd0018119aaf672ffc04edf092b3c91dde2aad72620c263b47ddd003c1b5). Archives byte-exact dans `data/capture/source-exports/` datées 2026-10-29, sans écraser les précédentes.

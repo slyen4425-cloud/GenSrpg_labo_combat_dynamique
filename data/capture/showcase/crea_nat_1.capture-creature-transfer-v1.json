@@ -98,7 +98,7 @@
       "approachTimeModifierPct": 25,
       "reaction": {
         "type": "defense",
-        "maxCharges": 2,
+        "maxCharges": 5,
         "rechargeMs": 20000,
         "activeWindowMs": 800,
         "damageReductionPct": 30
@@ -120,7 +120,7 @@
     ],
     "presentation": {
       "id": "creature:crea_nat_1",
-      "version": 2,
+      "version": 3,
       "subjectType": "creature",
       "subjectId": "crea_nat_1",
       "profileId": "quadruped",
@@ -158,6 +158,13 @@
         },
         "icon": {
           "assetId": "pack:capture:creature-heriplante-icon-01"
+        },
+        "dodge": {
+          "assetId": "pack:capture:sprite-fleur-defense-01",
+          "displayScale": 1.5,
+          "durationMs": 1800,
+          "offsetX": 0,
+          "offsetY": 0
         }
       },
       "sockets": [

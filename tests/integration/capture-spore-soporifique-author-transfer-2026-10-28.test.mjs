@@ -7,10 +7,10 @@ import {importCaptureTransferJsonV1} from "../../src/adapters/input/capture/capt
 const read = (p)=>readFile(new URL("../../"+p, import.meta.url),"utf8");
 const canonical="data/capture/showcase/Spore_soporifique.capture-skill-transfer-v1.json";
 const archive="data/capture/source-exports/gensrpg-capture-skill-Spore_soporifique-2026-10-28.json";
-test("Spore soporifique: immutable author skill and single canonical skill registration",async()=>{
+test("Spore soporifique 2026-10-28: immutable HISTORICAL source and single canonical registration",async()=>{
  const raw=await read(archive);
  assert.equal(createHash("sha256").update(raw).digest("hex"),"b1ac566d24a3aaff996661a7127c2e95f9dd3011b5e09436df1050a3d681fbf2");
- assert.equal(await read(canonical),raw);
+ assert.notEqual(await read(canonical),raw,"a newer author file supersedes the historical source");
  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===canonical).length,1);
  assert.equal(new Set(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1).size,CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length);
  const transfer=importCaptureTransferJsonV1(raw);
