@@ -908,7 +908,8 @@ export function resolveSkillCompletion({
   targetActionContext = null,
   battleFormat = null,
   resolutionAtMs = null,
-  forcedOutcome = null
+  forcedOutcome = null,
+  confirmedVisibleBodyContact = false
 }) {
   const {
     actorId,
@@ -921,13 +922,16 @@ export function resolveSkillCompletion({
     impactAtMs
   } = action;
 
-  const presence =
-    presenceEvasionFor(
-      skill,
-      targetActionContext
-    );
+  const presenceAtImpact = presenceEvasionFor(skill,targetActionContext);
+  // Physical overlapping bodies are stronger evidence than a broad airborne
+  // phase flag, but only for confirmed ground melee contact (not projectiles).
+  const observedBodyContact = confirmedVisibleBodyContact === true &&
+    skill.form === "contact" && skill.approachMode === "ground";
+  const presence = observedBodyContact
+    ? Object.freeze({...presenceAtImpact,evasion:null})
+    : presenceAtImpact;
   const mobilityEvasion =
-    reaction == null &&
+    !observedBodyContact && reaction == null &&
     !(
       presence.reach.configured &&
       presence.reach.transientPresence

@@ -1,3 +1,11 @@
+## 2026-10-29 — Correction contact au sol versus retour aérien
+- BASE gh-pages 05aba3e71b5b2124529af9ef9b9a94f23f3daa32 et global-assets 4b727fe47693dd083c39e500ea66ace8d073e86d ; START checkpoint/lab-start-ground-aerial-contact-authority-2026-10-29, WORK work/lab-ground-aerial-contact-authority-2026-10-29.
+- Cause : CombatPresence considère une cible aérienne pendant la totalité de la phase nominale, même si un vrai contact de silhouettes est détecté. La résolution au délai nominal peut annoncer un raté pendant la trajectoire visible.
+- Fix : le contact visible valide au plus une résolution de mêlée au sol; l'absence de contact est confirmée à la phase ground-home de la trajectoire du moteur Animation. Résultat/dégâts : uniquement CombatRuntime puis CombatSession puis ActionResolver ; rendu et collision réutilisent leur propriétaire. Tous les nonvisuels gardent le mode timed ; seul UI 1v1/2v2 opte pour visible.
+- TDD RED ebe709ae ; tests Foundation + 4 Chromium, checkpoint GREEN exact, PR/Pages obligatoires. Enquête sur forçage de réserve terminée mais fonctionnalité séparée.
+
+---
+
 ## 2026-10-29 — Grainou r5 + Explosion florale, deux exports auteur
 - Base gh-pages 9d5aff42447b3d3af71caca3d166206a6018b5e5 ; global-assets 2bdc782aa256271f5dc4675a4f6da65faf74073b protégé. START checkpoint/lab-start-grainou-explosion-florale-author-r5-2026-10-29 ; WORK work/lab-grainou-explosion-florale-author-r5-2026-10-29.
 - Sources exactes : crea_nat_1(4).json SHA256 d9545f76bd143330558e527f282abc2f3341ed68fa8253546cf671c96514e24a et explosion_florale.json SHA256 5d5848c128f97682f8c632522f67832d1934d6164b04fa5aa15afee5d1daa97e. Nouvelles archives immuables, anciennes préservées.

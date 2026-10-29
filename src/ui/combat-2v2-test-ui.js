@@ -959,6 +959,9 @@ export async function mountCoop2v2Test({
     audio: combatAudio,
     onActionContact(contact) {
       return runtime?.reportActionContact(contact) ?? null;
+    },
+    onActionTravelEnd(approach) {
+      return runtime?.reportGroundApproachEnd(approach) ?? null;
     }
   });
 
@@ -1651,6 +1654,7 @@ export async function mountCoop2v2Test({
 
   runtime = createCombatRuntime({
     session,
+    groundContactResolution: "visible",
     enableExpandingWaveMultiTarget: previewFormat.enemyActorIds.length === 2,
     readZoneSpatialContext: state => fx.sampleZoneSpatialContext(state.persistentZones ?? []),
     onState(state) {
