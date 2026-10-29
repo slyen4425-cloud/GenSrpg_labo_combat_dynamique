@@ -23,7 +23,9 @@ test("Graine sansue has one canonical registered skill and preserves the full au
     "the first 2026-10-28 skill source stays immutable");
   const original=JSON.parse(await read("data/capture/source-exports/gensrpg-capture-skill-graine_sansue_cap-2026-10-28-r2.json"));
   const active=JSON.parse(await read(skillPath));
-  assert.deepEqual(active,original,"active skill must equal latest author export, no rewriting");
+  const expected=structuredClone(original);
+  expected.draft.definition.effects[0].marker.maxStacks=2;
+  assert.deepEqual(active,expected,"active skill changes only the marker limit explicitly supplied by the newer author library");
   const transfer=importCaptureTransferJsonV1(await read(skillPath));
   assert.equal(transfer.kind,"skill");
   const d=transfer.value.draft;
@@ -46,12 +48,14 @@ test("Graine sansue has one canonical registered skill and preserves the full au
 
 test("both uploaded sources share ONE native marker definition without rewriting prior library",async()=>{
   const published=JSON.parse(await read(markerPath));
-  const source=JSON.parse(await read(markerSourcePath));
+  const source=JSON.parse(await read("data/capture/source-exports/gensrpg-marqueurs-2026-10-29-r2.json"));
+  const archived=JSON.parse(await read(markerSourcePath));
+  assert.equal(archived.markers.find(m=>m.id==="graine-sansue").maxStacks,10,"old marker source is immutable");
   assert.equal(published.schema,"capture-markers-v1");
   assert.deepEqual(published,source,"published marker library differs from uploaded source");
   const normalized=normalizeCaptureMarkerLibraryV1(published.markers);
   assert.deepEqual(normalized.map(m=>m.id),[
-    "poison","venin-static","eclat-spirituel","peste","graine-sansue"
+    "poison","venin-static","graine-sansue","eclat-spirituel","peste"
   ]);
   const fromSkill=JSON.parse(await read(skillPath)).draft.definition.effects[0].marker;
   const fromLibrary=normalized.find(m=>m.id==="graine-sansue");
