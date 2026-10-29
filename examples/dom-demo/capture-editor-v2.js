@@ -13,7 +13,7 @@ import {
 } from "../../src/adapters/audio/combat-soundtrack-preview-bridge-v1.js";
 import {
   mountCaptureEditorHumanV2
-} from "../../src/ui/capture-editor-human-v2.js";
+} from "../../src/ui/capture-editor-human-v2.js?v=sleep-conditions-20261028";
 import {
   createCreatorVisualAssetSessionV1
 } from "../../src/assets/creator-visual-asset-session-v1.js";
@@ -25,17 +25,20 @@ import {
 } from "../../src/ui/capture-editor-preview-session-v2.js";
 import {
   loadCaptureEditorPreviewRuntimeV1
-} from "../../src/ui/capture-editor-preview-runtime-loader-v1.js";
+} from "../../src/ui/capture-editor-preview-runtime-loader-v1.js?v=projectile-native-bidirectional-20261028";
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../../src/assets/global-visual-library.js";
+} from "../../src/assets/global-visual-library.js?v=projectile-native-bidirectional-20261028";
 import {
   demoPresentationAssets
 } from "./demo-assets.js";
 import {
   createCaptureSkillPresentationAssetsV2
 } from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
+import {
+  createGlobalPresentationAssetResolverV1
+} from "../../src/assets/global-presentation-asset-resolver-v1.js";
 import {
   privateAudioRuntimeAssetV1
 } from "../../src/assets/private-audio-runtime-library-v1.js";
@@ -68,7 +71,18 @@ async function loadPreviewVisualContext() {
     fetchJson(GLOBAL_VISUAL_LIBRARY.catalogUrl),
     Promise.all(PROFILE_URLS.map(url => fetchJson(url)))
   ]);
-  return Object.freeze({ assetCatalog, profiles: Object.freeze(profiles) });
+  // The exact same canonical media resolver used by browser and unit tests.
+  // Preserve native headings (including explicit zero), frame metadata and
+  // future presentation fields in the live author editor's battle preview.
+  const resolvePresentationAsset = createGlobalPresentationAssetResolverV1({
+    assetCatalog,
+    assetUrlForFile: globalVisualAssetUrl
+  });
+  return Object.freeze({
+    assetCatalog,
+    profiles: Object.freeze(profiles),
+    resolvePresentationAsset
+  });
 }
 
 const root = document.querySelector(
@@ -385,34 +399,10 @@ function resolvePreviewPresentationAsset(assetId) {
     });
   }
 
-  const catalogAsset =
-    visualContext?.assetCatalog?.assets?.find(
-      (asset) => asset.id === assetId
-    ) ?? null;
-  const resource = catalogAsset?.resource ?? null;
-  const file = resource?.file;
-
-  if (typeof file !== "string" || file.trim() === "") {
-    return null;
-  }
-
-  return Object.freeze({
-    assetId,
-    url: globalVisualAssetUrl(file),
-    frameCount: Math.max(
-      1,
-      Math.floor(Number(resource?.frameCount) || 1)
-    ),
-    frameMs:
-      Number.isFinite(Number(resource?.frameMs)) &&
-      Number(resource.frameMs) > 0
-        ? Number(resource.frameMs)
-        : undefined,
-    playbackMode:
-      resource?.playbackMode === "loop"
-        ? "loop"
-        : "once"
-  });
+  // The media catalog is the only source of the sprite's native facing.
+  // Never rebuild a partial asset object here: dropping headingRad turns
+  // opponent projectiles (e.g. Graine sansue) the wrong way in REAL combat.
+  return visualContext?.resolvePresentationAsset?.(assetId) ?? null;
 }
 
 function buildPreviewPresentationAssets(
