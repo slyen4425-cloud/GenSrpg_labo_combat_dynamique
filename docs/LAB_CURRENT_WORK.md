@@ -1,3 +1,11 @@
+## 2026-10-29 — Raccord scène Combat Lab unique dans GenSrpg (C2, non publié)
+- Base Lab publié gh-pages@a32ac3e54dd6616f3fa1653e8aaecca5effde494 ; START checkpoint/lab-start-capture-native-scene-host-2026-10-29 ; work/lab-capture-native-scene-host-2026-10-29.
+- Problème réel Android : GenSrpg montre quatre portraits statiques et boutons verts au lieu de la vraie arène/FX/animations/sons du Labo. Le seul runtime/renderer/IA autoritaire doit être celui de mountCoop2v2Test, consommé via mountCaptureCombatPreviewV1. Ne pas empiler la CombatSession du provider GenSrpg sur la session interne du Labo.
+- Périmètre Lab : exposer un contrat d'embarquement optionnel (PV initiaux exacts, résultat terminal avec snapshot natif et fuite), sans toucher aux règles/IA ni au rendu standalone 1v1/2v2, tests RED/GREEN. Aucun déploiement gh-pages avant CI fondation + navigateur + revue et checkpoint vert. Côté GenSrpg la sauvegarde reste le seul propriétaire de résultat; aucune mutation des profils pendant ce lot.
+- Critère GREEN : le vrai DOM 2v2 du Labo, pas une nouvelle vue DOM de GenSrpg, reçoit un exporteur auteur officiel, affiche animations et icônes natives, un seul timer Combat, sauve tous les PV par Capture puis revient au World. Test navigateur paysage et Android utilisateur requis.
+
+---
+
 ## 2026-10-29 — Bestiaire : dégâts et effets par charge consommée
 - Départ gh-pages@9bda4f716f979a56def9bae3d21d2dd94770df8a ; START `checkpoint/lab-start-bestiary-marker-per-charge-prose-2026-10-29`, WORK `work/lab-bestiary-marker-per-charge-prose-2026-10-29`.
 - Correction du propriétaire partagé `capture-skill-explanation-v1.js` : la valeur des dégâts/soins/énergies perCharge est affichée avec le libellé `par charge consommée` ; aucune description spéciale à Grainou, aucun changement dans les dégâts ni les JSON auteur. Cas `perCharge:false` préservé.

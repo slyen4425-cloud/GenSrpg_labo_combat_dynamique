@@ -11,6 +11,7 @@ import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-pr
 import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-definition.js";
 import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
+import { createEmbeddedCombatLifecycleV1 } from "./embedded-combat-lifecycle-v1.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js";
 import { createBattleActorAiController, CAPTURE_AI_TACTICS_V1_DEFAULT } from "../core/combat/battle-actor-ai-controller.js";
 import {
@@ -565,7 +566,8 @@ export async function mountCoop2v2Test({
   presentationAssets = null,
   fetchImpl = fetch,
   formatUrl = DATA_URLS.format,
-  nativeCombatSource = null
+  nativeCombatSource = null,
+  embeddedBattle = null
 }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root must provide querySelector()");
@@ -598,12 +600,29 @@ export async function mountCoop2v2Test({
     formatUrl
   });
 
+  // An embedded host supplies only an already validated, Capture-owned HP
+  // snapshot. The Lab still constructs the ONLY CombatSession and controls
+  // all rules, state, effects and the single native combat clock.
+  const initialHpByActor = embeddedBattle?.initialHpByActor ?? null;
+  if(embeddedBattle!==null&&(!initialHpByActor||
+     typeof initialHpByActor!=="object"||Array.isArray(initialHpByActor)||
+     Object.keys(initialHpByActor).length!==fighters.length||
+     fighters.some(fighter=>!Object.prototype.hasOwnProperty.call(initialHpByActor,fighter.id)||
+       !Number.isFinite(initialHpByActor[fighter.id])||
+       initialHpByActor[fighter.id]<=0||
+       initialHpByActor[fighter.id]>fighter.maxHp))) {
+    throw new TypeError("Embedded native Combat HP snapshot must match every active Lab fighter");
+  }
+  const nativeFighters = initialHpByActor===null ? fighters :
+    fighters.map(fighter=>({...fighter,initialHp:initialHpByActor[fighter.id]}));
   const session = createCombatSession({
     distance: "medium",
     battleFormat: format,
-    fighters,
+    fighters: nativeFighters,
     skillSpeedMultiplier
   });
+  const embeddedLifecycle=embeddedBattle===null?null:
+    createEmbeddedCombatLifecycleV1({format});
 
   const arena = requiredElement(root, "[data-combat-arena]");
   const status = requiredElement(root, "[data-combat-live-status]");
@@ -1667,6 +1686,7 @@ export async function mountCoop2v2Test({
         }
       }
       renderState(state);
+      embeddedLifecycle?.observe(state);
       queueAiDecisions();
     },
     onHealthDelta(feedback) {
@@ -1928,6 +1948,13 @@ export async function mountCoop2v2Test({
     session,
     runtime,
     rosterSnapshot: () => rosterController?.snapshot() ?? null,
+    // An embedded host receives a native Lab outcome and actual native
+    // snapshots, never a fabricated GenSrpg UI result or a second runtime.
+    completion: embeddedLifecycle?.completion ?? null,
+    flee(){
+      if(!embeddedLifecycle||disposed)return false;
+      return embeddedLifecycle.flee(session.snapshot());
+    },
     get selectedTargetId() {
       return selectedTargetId;
     },
