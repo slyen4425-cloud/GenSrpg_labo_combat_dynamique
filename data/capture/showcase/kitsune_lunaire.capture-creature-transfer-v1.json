@@ -163,7 +163,7 @@
           "transitionMs": 80
         },
         "rangedAttackBack": {
-          "assetId": "pack:capture:creature-lunaire-attack-player-7-v1",
+          "assetId": "pack:capture:creature-lunaire-attack-player-8-v1",
           "mode": "sprite",
           "displayScale": 1,
           "rotationTurns": 0,
