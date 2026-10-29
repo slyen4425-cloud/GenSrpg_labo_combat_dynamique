@@ -1,0 +1,133 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "Spore_soporifique",
+    "description": "Na",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "Spore_soporifique",
+      "name": "Spore soporifique",
+      "category": "buff_debuff",
+      "form": "projectile",
+      "projectileTargeting": "expanding_wave",
+      "expandingWave": {
+        "startRadiusPct": 3,
+        "endRadiusPct": 65,
+        "thicknessPct": 6
+      },
+      "loadoutSlot": "standard",
+      "element": "nature",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 500,
+      "travelMs": 500,
+      "recoveryMs": 0,
+      "cooldownMs": 30000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-1",
+            "kind": "stun",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 10000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": []
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:Spore_soporifique",
+      "version": 3,
+      "subjectType": "skill",
+      "subjectId": "Spore_soporifique",
+      "visual": {
+        "travel": {
+          "assetId": "pack:capture:sprite-fire-bubble-expansion-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        }
+      },
+      "audio": {},
+      "statusVisuals": {
+        "status-1": {
+          "mode": "sprite",
+          "tintBlinkEnabled": false,
+          "tintBlinkPeriodMs": 600,
+          "tintColor": "#9b59d0",
+          "tintOpacity": 0.35,
+          "sprite": {
+            "assetId": "pack:capture:sprite-sommeil-z-status-01",
+            "displayScale": 1.5,
+            "opacity": 0.85
+          }
+        }
+      }
+    }
+  }
+}

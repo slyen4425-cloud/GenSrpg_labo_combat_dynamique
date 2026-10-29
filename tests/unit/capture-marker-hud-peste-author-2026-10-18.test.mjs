@@ -8,26 +8,33 @@ import {projectStatusEffectInfoV1,statusEffectInfoTextV1} from "../../src/adapte
 import {captureMarkerSeedLibraryV1} from "../../src/ui/capture-marker-library-v1.js";
 const read=path=>readFile(new URL("../../"+path,import.meta.url),"utf8");
 const showcase="data/capture/showcase/markers.capture-markers-v1.json";
-test("2026-10-18 author archive stays immutable; three active markers bootstrap without duplicate or data loss",async()=>{
+test("historical marker archives stay immutable; five active markers bootstrap without duplicate or data loss",async()=>{
  const historic=await read("data/capture/source-exports/gensrpg-marqueurs-2026-10-18.json");
  assert.equal(createHash("sha256").update(historic).digest("hex"),"83a6d8bdd3b358828adf990e719f125351f26a8a5b83d0dde4fd1e2589cfc7b1");
  const historicMarkers=normalizeCaptureMarkerLibraryV1(JSON.parse(historic).markers);
  assert.deepEqual(historicMarkers.map(y=>y.id),["venin-static","peste"]);
  const s=await read(showcase);
- assert.equal(s,await read("data/capture/source-exports/gensrpg-capture-markers-2026-10-23.json"));
+ const prior=JSON.parse(await read("data/capture/source-exports/gensrpg-marqueurs-2026-10-28.json"));
+ assert.equal(prior.markers.find(m=>m.id==="graine-sansue").maxStacks,10,"prior source preserved");
+ assert.deepEqual(JSON.parse(s),JSON.parse(await read("data/capture/source-exports/gensrpg-marqueurs-2026-10-29-r2.json")));
+ const legacy=normalizeCaptureMarkerLibraryV1(JSON.parse(
+   await read("data/capture/source-exports/gensrpg-capture-markers-2026-10-23.json")).markers);
  const x=normalizeCaptureMarkerLibraryV1(JSON.parse(s).markers);
- assert.deepEqual(x.map(y=>y.id),["venin-static","eclat-spirituel","peste"]);
- assert.deepEqual(x[0],historicMarkers[0]);
- assert.deepEqual(x[2],historicMarkers[1]);
+ assert.deepEqual(x.map(y=>y.id),["poison","venin-static","graine-sansue","eclat-spirituel","peste"]);
+ for(const old of legacy){
+   assert.deepEqual(x.find(m=>m.id===old.id),old,"2026-10-23 author marker unchanged: "+old.id);
+ }
+ assert.deepEqual(x.find(m=>m.id==="venin-static"),historicMarkers[0]);
+ assert.deepEqual(x.find(m=>m.id==="peste"),historicMarkers[1]);
  const stored=JSON.parse(await read("data/capture/showcase/lib_paralyze.capture-skill-transfer-v1.json")).draft.definition.effects.find(e=>e.kind==="apply_marker").marker;
- assert.deepEqual(x[0],stored,"venin-static is unchanged from active skill owner");
+ assert.deepEqual(x.find(m=>m.id==="venin-static"),stored,"venin-static remains unchanged from active skill owner");
  const map=new Map([[stored.id,stored]]);
- assert.equal(captureMarkerSeedLibraryV1(map,x),2,"Eclat and Peste inserted, existing venom kept");
- assert.deepEqual(map.get("peste"),x[2]);
- assert.deepEqual(map.get("eclat-spirituel"),x[1]);
+ assert.equal(captureMarkerSeedLibraryV1(map,x),4,"add poison, Eclat, Peste and Graine sansue once");
+ assert.deepEqual(map.get("peste"),x.find(m=>m.id==="peste"));
+ assert.deepEqual(map.get("eclat-spirituel"),x.find(m=>m.id==="eclat-spirituel"));
  assert.equal(captureMarkerSeedLibraryV1(map,x),0,"idempotent bootstrap");
  const snapshot=new Map(map);
- assert.throws(()=>captureMarkerSeedLibraryV1(map,[{...x[2],maxStacks:11}]),/Conflit|conflict/i);
+ assert.throws(()=>captureMarkerSeedLibraryV1(map,[{...x.find(m=>m.id==="peste"),maxStacks:11}]),/Conflit|conflict/i);
  assert.deepEqual(map,snapshot,"no partial mutation on conflict");
 });
 test("native combat HUD clearly explains base periodic damage, stacks, clock and threshold",async()=>{

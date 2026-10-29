@@ -1127,6 +1127,7 @@
               <select data-marker-periodic-kind>
                 <option value="damage">Dégâts par charge</option>
                 <option value="heal">Soin par charge</option>
+                <option value="life_steal">Drain de vie par charge</option>
               </select>
             </label>
             <label>Valeur par charge
@@ -1134,6 +1135,12 @@
             </label>
             <label>Toutes les (secondes)
               <input data-marker-periodic-seconds type="number" min="0.1" step="0.5" value="5">
+            </label>
+            <label data-marker-periodic-percent-setting hidden>PV restitués au lanceur (% des dégâts réels)
+              <input data-marker-periodic-percent type="number" min="0" max="100" step="1" value="50">
+            </label>
+            <label data-marker-periodic-max-heal-setting hidden>Plafond de soin par tick (PV, facultatif)
+              <input data-marker-periodic-max-heal type="number" min="0" step="0.1" placeholder="Aucun plafond">
             </label>
             <label data-marker-periodic-damage-setting>Calcul des dégâts
               <select data-marker-periodic-mode>
@@ -1145,7 +1152,7 @@
               <select data-marker-periodic-channel data-marker-channel-choice><option value="physical">Physique</option></select>
             </label>
           </div>
-          <p class="note">Exemple Venin : 3 charges × 5 dégâts = 15 dégâts toutes les 5 s, tant que le marqueur est actif. Les dégâts utilisent l'horloge et les protections du combat, même après un changement de capacité.</p>
+          <p class="note">Exemple Venin : 3 charges × 5 dégâts = 15 dégâts toutes les 5 s. En mode Drain de vie, le lanceur récupère le pourcentage choisi des PV réellement retirés, après les boucliers et résistances. Même horloge et même autorité de combat, sans effet sur un lanceur K.O.</p>
         </details>
         <label class="switch-line"><input type="checkbox" data-marker-threshold-enabled>
           <span>Déclencher un effet automatiquement à un nombre de charges</span></label>
@@ -2526,6 +2533,6 @@
     </template>
   </section>
 
-  <script type="module" src="./capture-editor-v2.js"></script>
+  <script type="module" src="./capture-editor-v2.js?v=sleep-conditions-20261028"></script>
 </body>
 </html>

@@ -289,9 +289,15 @@ function markerFromFields(root){
     kind:value(root,"marker-periodic-kind"),
     amount:Number(value(root,"marker-periodic-amount")),
     intervalMs:Math.round(Number(value(root,"marker-periodic-seconds"))*1000),
-    ...(value(root,"marker-periodic-kind")==="damage" ? {
+    ...(["damage","life_steal"].includes(value(root,"marker-periodic-kind")) ? {
       damageMode:value(root,"marker-periodic-mode"),
       channel:value(root,"marker-periodic-channel").trim()||"physical"
+    } : {}),
+    ...(value(root,"marker-periodic-kind")==="life_steal" ? {
+      percent:value(root,"marker-periodic-percent").trim()===""
+        ? NaN : Number(value(root,"marker-periodic-percent")),
+      ...(value(root,"marker-periodic-max-heal").trim()==="" ? {}
+        : {maxHeal:Number(value(root,"marker-periodic-max-heal"))})
     } : {})
   } : null;
   const permanent=selected(root,"marker-permanent")?.checked===true;
@@ -335,6 +341,8 @@ function loadFields(root,marker){
   set("marker-periodic-seconds",(marker.periodic?.intervalMs??5000)/1000);
   set("marker-periodic-mode",marker.periodic?.damageMode??"fixed");
   set("marker-periodic-channel",marker.periodic?.channel??"physical");
+  set("marker-periodic-percent",marker.periodic?.percent??50);
+  set("marker-periodic-max-heal",marker.periodic?.maxHeal??"");
   const chargeEffects=marker.onStackAdded?.effects??[];
   selected(root,"marker-charge-enabled").checked=chargeEffects.length>0;
   const firstCharge=markerThresholdFieldsForEffectV1(chargeEffects[0]);
@@ -382,11 +390,17 @@ function syncVisibility(root){
   const periodic=selected(root,"marker-periodic-enabled")?.checked===true;
   const periodicFields=find(root,"marker-periodic-fields");
   if(periodicFields)periodicFields.hidden=!periodic;
-  const showDamage=value(root,"marker-periodic-kind")==="damage";
+  const periodicKind=value(root,"marker-periodic-kind");
+  const showDamage=["damage","life_steal"].includes(periodicKind);
+  const isDrain=periodicKind==="life_steal";
   const mode=selected(root,"marker-periodic-damage-setting");
   const channel=selected(root,"marker-periodic-channel-setting");
   if(mode)mode.hidden=!showDamage;
   if(channel)channel.hidden=!showDamage||value(root,"marker-periodic-mode")!=="combat";
+  const percent=selected(root,"marker-periodic-percent-setting");
+  const maxHeal=selected(root,"marker-periodic-max-heal-setting");
+  if(percent)percent.hidden=!isDrain;
+  if(maxHeal)maxHeal.hidden=!isDrain;
   const chargeOn=selected(root,"marker-charge-enabled")?.checked===true;
   const chargeBox=find(root,"marker-charge-fields");
   if(chargeBox)chargeBox.hidden=!chargeOn;
@@ -521,6 +535,12 @@ function markerPeriodicSaveSummaryV1(marker){
   const periodic=marker.periodic;
   if(!periodic)return "Aucun effet périodique.";
   const seconds=(Math.round(periodic.intervalMs/100)/10).toLocaleString("fr-FR");
+  if(periodic.kind==="life_steal"){
+    return periodic.amount+" dégâts par charge toutes les "+seconds+" s, "
+      +periodic.percent+" % des PV réellement retirés rendus au lanceur"
+      +(periodic.maxHeal===undefined?"":" (soin plafonné à "+periodic.maxHeal+" PV)")
+      +(periodic.damageMode==="combat"?" (calcul combat)":"")+".";
+  }
   return periodic.amount+" "+(periodic.kind==="damage"?"dégâts":"PV soignés")+
     " par charge toutes les "+seconds+" s"+
     (periodic.damageMode==="combat"?" (avant défenses)":"")+".";

@@ -3,7 +3,7 @@ import {
 } from "./demo-app.js";
 import {
   mountCoop2v2Test
-} from "./combat-2v2-test-ui.js";
+} from "./combat-2v2-test-ui.js?v=projectile-native-bidirectional-20261028";
 
 function requiredFunction(value, field) {
   if (typeof value !== "function") {

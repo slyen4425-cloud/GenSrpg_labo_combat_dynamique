@@ -143,6 +143,18 @@ export function applyCombatDamageV1({
     }
   );
 
+  // This is the single HP-loss authority for every damage source. A
+  // Sommeil (stun with until_damage lifetime) ends only if HP was really
+  // removed, never when an attack was immune, avoided or shielded.
+  if (appliedDamage > 0) {
+    const current = fighterOf(nextState, targetActorId).statusEffects;
+    const remaining = current.filter(entry =>
+      entry.definition?.durationModel !== "until_damage");
+    if (remaining.length !== current.length) {
+      nextState = withFighterStatusEffects(nextState, targetActorId, remaining);
+    }
+  }
+
   if (
     hpBefore > 0 &&
     hpAfter === 0 &&
