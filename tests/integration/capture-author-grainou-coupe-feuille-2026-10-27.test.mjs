@@ -25,7 +25,10 @@ for(const [id,kind] of [["crea_nat_1","creature"],["coupe_feuille","skill"]]){
     const previous=JSON.parse(await read(currentSource));
     assert.equal(previous.loadout.slots[2].skillId,null,"previous r2 remains immutable");
     assert.equal(previous.draft.combat.reaction.activeWindowMs,400);
-    const latest="data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r3.json";
+    const r3="data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r3.json";
+    assert.equal(JSON.parse(await read(r3)).draft.combat.reaction.maxCharges,2,
+      "prior r3 remains untouched");
+    const latest="data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r4.json";
     assert.equal(await read(live),await read(latest),
       "active creature must equal newest author export, without erasing historical provenance");
   }
