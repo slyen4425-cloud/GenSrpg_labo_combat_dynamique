@@ -12,6 +12,7 @@ export const SKILL_EFFECT_V1_KINDS = Object.freeze([
   "knockout",
   "apply_status",
   "apply_marker",
+  "force_reserve_switch",
   "consume_marker",
   "cleanse",
   "dispel",
@@ -78,6 +79,7 @@ const FIELDS_BY_KIND = Object.freeze({
     "status"
   ]),
   apply_marker: new Set([...COMMON_FIELDS, "marker", "charges"]),
+  force_reserve_switch: COMMON_FIELDS,
   consume_marker: new Set([...COMMON_FIELDS, "markerId", "count", "minimum", "perCharge", "effects"]),
   cleanse: new Set([
     ...COMMON_FIELDS,
@@ -256,6 +258,10 @@ export function normalizeSkillEffectV1(input) {
   // clock, immunity and status lifetime rules as active combat.
   if (isReserveEffectTargetScopeV2(targetScope) && !["damage", "heal", "apply_marker", "apply_status"].includes(kind)) {
     throw new RangeError("Reserve effect scopes support damage/heal/apply_marker/apply_status only: " + kind);
+  }
+
+  if (kind === "force_reserve_switch" && targetScope !== "target") {
+    throw new RangeError("force_reserve_switch requires target scope");
   }
 
   if (kind === "life_steal" && targetScope !== "self") {

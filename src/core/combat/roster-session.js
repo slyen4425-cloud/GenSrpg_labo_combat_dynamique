@@ -68,7 +68,8 @@ export function createRosterSession({
   roster,
   fighterConfigs,
   battleFormat = null,
-  recallCooldownMs
+  recallCooldownMs,
+  cancelActiveActionForForcedSwitch = () => {}
 }) {
   const voluntaryCooldownMs = normalizeRosterVoluntarySwitchCooldownMsV1(recallCooldownMs);
   if (!combatSession || typeof combatSession.snapshot !== "function") {
@@ -218,7 +219,7 @@ export function createRosterSession({
 
   function reserveEffectsForSkill(skill) {
     const effects = [
-      ...(skill.effects ?? [])
+      ...(skill.effects ?? []).filter(effect => effect.kind !== "force_reserve_switch")
     ];
 
     if (
@@ -481,6 +482,29 @@ export function createRosterSession({
       recalledMemberId, memberId: member.id, creatureId: member.creatureId, displayName: member.displayName });
   }
 
+  // No new roster authority: this is the existing atomic slot replacement,
+  // but unlike a voluntary recall it does not start/reset recall cooldown.
+  function forceSwitchMemberBySkill(team, member) {
+    const recalledMemberId = team.activeMemberId;
+    cancelActiveActionForForcedSwitch(team.slotId);
+    syncActiveSnapshot(team);
+    const fighter = cloneFighterForSlot(
+      member.fighterConfig, team.slotId, member.savedFighter,
+      combatSession.snapshot().elapsedMs
+    );
+    combatSession.replaceFighter(team.slotId, fighter, {
+      clearSourceZones: true,
+      departingMemberId: recalledMemberId
+    });
+    team.activeMemberId = member.id;
+    team.selectedReserveMemberId = recalledMemberId;
+    return Object.freeze({
+      ok:true,outcome:"forced_switched",teamId:team.id,slotId:team.slotId,
+      recalledMemberId,memberId:member.id,creatureId:member.creatureId,
+      displayName:member.displayName
+    });
+  }
+
   function replaceKnockedOut(teamId) {
     const team = teamOf(teamId);
     if (!team.activeMemberId) {
@@ -631,6 +655,9 @@ export function createRosterSession({
     }
 
     if (targetRef.scope === "active") {
+      if (skill.effects?.some(effect => effect.kind === "force_reserve_switch")) {
+        return Object.freeze({ok:false,outcome:"reserve_target_required"});
+      }
       return (preview ? combatSession.previewSkill : combatSession.useSkill)({
         actorId,
         targetId: targetRef.actorId,
@@ -672,6 +699,15 @@ export function createRosterSession({
         relation,
         targetRef
       });
+    }
+
+    const forced = skill.effects?.some(effect => effect.kind === "force_reserve_switch") === true;
+    if (forced && relation !== "enemy") {
+      return Object.freeze({ok:false,outcome:"force_switch_enemy_only",targetRef});
+    }
+    if (forced && (!team.activeMemberId ||
+        Number(combatSession.snapshot().fighters[team.slotId]?.hp) <= 0)) {
+      return Object.freeze({ok:false,outcome:"force_switch_active_required",targetRef});
     }
 
     const reserveEffects =
@@ -815,9 +851,11 @@ export function createRosterSession({
         ]
       );
 
+    const forcedResult = forced ? forceSwitchMemberBySkill(team, member) : null;
     return Object.freeze({
       ok: true,
-      outcome: "resolved",
+      outcome: forcedResult ? "forced_switched" : "resolved",
+      ...(forcedResult ?? {}),
       actorId,
       targetRef,
       relation,
@@ -825,7 +863,12 @@ export function createRosterSession({
       state: combatSession.snapshot(),
       events: Object.freeze([
         ...started.events,
-        ...tactical.events
+        ...tactical.events,
+        ...(forcedResult ? [Object.freeze({
+          type:"roster-forced-switch",atMs:now,actorId:team.slotId,
+          sourceActorId:actorId,teamId:team.id,
+          recalledMemberId:forcedResult.recalledMemberId,memberId:member.id
+        })] : [])
       ])
     });
   }

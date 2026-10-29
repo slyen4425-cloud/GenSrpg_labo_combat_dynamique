@@ -757,6 +757,9 @@ function targetRelationsForTargetScopedEffectV1(effect) {
     case "consume_marker":
       return [];
 
+    case "force_reserve_switch":
+      return ["enemy"];
+
     case "apply_status": {
       const polarity =
         effect.status?.polarity ?? "neutral";
@@ -4752,6 +4755,7 @@ function tacticalEffectKindLabelV1(kind) {
     knockout: "K.O. (immunités respectées)",
     apply_status: "Buff / Debuff / Statut",
     apply_marker: "Poser des marqueurs",
+    force_reserve_switch: "Faire entrer la réserve ennemie choisie",
     consume_marker: "Consommer des marqueurs → effets",
     cleanse: "Nettoyage",
     dispel: "Dissipation",
@@ -5304,7 +5308,7 @@ function syncHumanSkillEffectRowV1(
     const allActive=Array.from(scope.options).find(option=>option.value==="all_active");
     if(allActive)allActive.hidden=!["apply_marker","consume_marker"].includes(kind);
     if(scope.value==="all_active"&&allActive?.hidden)scope.value="target";
-    if (kind === "scheduled_effect" || kind === "life_steal") {
+    if (kind === "scheduled_effect" || kind === "life_steal" || kind === "force_reserve_switch") {
       scope.value = kind === "life_steal" ? "self" : "target";
       scope.disabled = true;
     } else {
@@ -5455,7 +5459,7 @@ function appendHumanSkillEffectV1(
   }
   if (hostSelector === "[data-skill-contact-hold-effects-host]") {
     for (const option of kind.options) {
-      if (["persistent_zone", "scheduled_effect"].includes(option.value)) option.disabled = true;
+      if (["persistent_zone", "scheduled_effect", "force_reserve_switch"].includes(option.value)) option.disabled = true;
     }
   }
 
@@ -6729,7 +6733,7 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
     if (kind === "apply_marker" || kind === "consume_marker") {
       return readCaptureMarkerEffectFieldsV1(root,row,kind,targetScope);
     }
-    if (kind === "knockout") return {kind,targetScope};
+    if (kind === "knockout" || kind === "force_reserve_switch") return {kind,targetScope};
 
     if (kind === "persistent_zone") {
       const zoneEffectKind=row.querySelector("[data-skill-zone-effect-kind]").value;
