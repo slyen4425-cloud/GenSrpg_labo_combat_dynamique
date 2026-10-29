@@ -33,6 +33,118 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents=Buffer.from(html.replace("<head>","<head>"+diagnostic));
     }
+    // Verify the REAL editor preview's own resolver, not the standalone FX
+    // fixture used by older orientation tests. Execute in the native entry
+    // module scope so the probe calls the same functions as "Tester combat".
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-editor-preview-heading")) {
+      const html=contents.toString("utf8");
+      contents=Buffer.from(html.replace(
+        'src="./capture-editor-v2.js?v=sleep-conditions-20261028"',
+        'src="./capture-editor-v2.js?verify-editor-preview-heading=1"'
+      ));
+    }
+    if (pathname.endsWith("/capture-editor-v2.js") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-editor-preview-heading")) {
+      const code=contents.toString("utf8");
+      const probe=`
+      void (async () => {
+        try {
+          // Use the real global-assets catalog the editor loads in production.
+          visualContext=await loadPreviewVisualContext();
+          const file=await fetch("../../data/capture/showcase/graine_sansue_cap.capture-skill-transfer-v1.json",{cache:"no-store"});
+          if(!file.ok)throw Error("Graine sansue author's live skill missing");
+          const transfer=await file.json();
+          const assetId=transfer.draft.presentation.visual.travel.assetId;
+          const actualAsset=resolvePreviewPresentationAsset(assetId);
+          if(assetId!=="pack:capture:sprite-graine-sangsue-projectile-01" ||
+             actualAsset?.headingRad!==0 || actualAsset?.frameCount!==12)
+            throw Error("live editor preview stripped Graine sansue native heading: "+JSON.stringify(actualAsset));
+          const presentation=buildPreviewPresentationAssets({
+            skillPresentations:{[transfer.draft.id]:transfer.draft.presentation}
+          }).presentationForSkill(transfer.draft.id,{sourceView:"opponent-1",view:"opponent"});
+          if(presentation?.travel?.headingRad!==0 || presentation?.travel?.assetId!==assetId)
+            throw Error("live opponent presentation lost authored Graine direction");
+          document.body.dataset.editorPreviewHeadingProbe="ok:editor:opponent:heading:0";
+        } catch(error) {
+          document.body.dataset.editorPreviewHeadingProbe="fail:"+error.message;
+        }
+      })();`;
+      contents=Buffer.from(code+"\n"+probe);
+    }
+    // Browser exercises the real authoring widgets in the loaded editor;
+    // static selector tests alone did not catch previous gameplay regressions.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-sleep-author-ui")) {
+      const html=contents.toString("utf8");
+      contents=Buffer.from(html.replace(
+        'src="./capture-editor-v2.js?v=sleep-conditions-20261028"',
+        'src="./capture-editor-v2.js?verify-sleep-author-ui=1"'
+      ));
+    }
+    if (pathname.endsWith("/capture-editor-v2.js") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-sleep-author-ui")) {
+      const script=`
+      void (async()=>{
+        const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+        try{
+          let row=null;
+          for(let attempts=0;attempts<30 && row===null;attempts++){
+            const add=document.querySelector("[data-skill-effect-add]");
+            const host=document.querySelector("[data-skill-effects-host]");
+            if(add && host){
+              const initial=host.querySelectorAll("[data-skill-effect-row]").length;
+              add.click();
+              const all=[...host.querySelectorAll("[data-skill-effect-row]")];
+              if(all.length>initial)row=all.at(-1);
+            }
+            if(!row)await delay(200);
+          }
+          if(!row)throw Error("live editor did not add a tactical effect row");
+          const kind=row.querySelector("[data-skill-effect-kind]");
+          const statusKind=row.querySelector("[data-skill-status-kind]");
+          const sleep=row.querySelector("[data-skill-status-sleep-until-damage]");
+          const polarity=row.querySelector("[data-skill-status-polarity]");
+          const seconds=row.querySelector("[data-skill-status-duration-seconds]");
+          if(!kind||!statusKind||!sleep||!polarity||!seconds)
+            throw Error("real editor is missing Sommeil author controls");
+          kind.value="apply_status";kind.dispatchEvent(new Event("change",{bubbles:true}));
+          statusKind.value="stun";statusKind.dispatchEvent(new Event("change",{bubbles:true}));
+          sleep.checked=true;sleep.dispatchEvent(new Event("change",{bubbles:true}));
+          if(!seconds.parentElement.hidden||polarity.value!=="detrimental"||!polarity.disabled)
+            throw Error("Sommeil must hide its timer and force a negative stun");
+          const mode=row.querySelector("[data-skill-effect-condition-mode]");
+          const marker=row.querySelector("[data-skill-effect-condition-marker]");
+          const min=row.querySelector("[data-skill-effect-condition-minimum]");
+          if(!mode||!marker||!min)throw Error("missing native per-effect condition controls");
+          mode.value="marker";mode.dispatchEvent(new Event("change",{bubbles:true}));
+          marker.dispatchEvent(new Event("focus"));
+          // A newly opened editor legitimately has no registered markers.
+          // Create one through its real library, then verify that the
+          // condition picker updates from that authoritative registry.
+          if(![...marker.options].some(o=>o.value)){
+            const create=document.querySelector("[data-marker-new]");
+            const name=document.querySelector("[data-marker-name]");
+            const save=document.querySelector("[data-marker-save]");
+            if(!create||!name||!save)throw Error("marker author controls unavailable");
+            create.click();
+            name.value="Marqueur sommeil test";
+            name.dispatchEvent(new Event("input",{bubbles:true}));
+            name.dispatchEvent(new Event("change",{bubbles:true}));
+            save.click();
+            marker.dispatchEvent(new Event("focus"));
+          }
+          if(marker.tagName!=="SELECT" ||
+             ![...marker.options].some(o=>o.value==="marqueur-sommeil-test"))
+            throw Error("new official marker missing from effect condition picker");
+          min.value="2";
+          mode.value="sleep";mode.dispatchEvent(new Event("change",{bubbles:true}));
+          if(mode.value!=="sleep")throw Error("Sommeil condition is unavailable");
+          document.body.dataset.sleepUiProbe="ok:editor:sleep:markers:conditions";
+        }catch(error){document.body.dataset.sleepUiProbe="fail:"+error.message;}
+      })();`;
+      contents=Buffer.from(contents.toString("utf8")+"\n"+script);
+    }
     // Test-only network-stall simulation: leave the real module graph and data path intact.
     // Only presentation CDN requests remain pending, like a stalled mobile connection.
     if (pathname.endsWith("/capture-editor-v2.html") &&
@@ -45,6 +157,138 @@ const server = createServer(async (req, res) => {
         '</script>';
       contents = Buffer.from(html.replace("<head>", "<head>" + intercept));
     }
+    // Chromium regression on the ACTUAL DomSkillFxRenderer used by combat
+    // previews. The same projectile and mirror-return planner share one FX owner.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-projectile-inbound-facing")) {
+      const html=contents.toString("utf8");
+      const probe=`<script type="module">
+        import {createDomSkillFxRenderer} from "../../src/adapters/renderer/dom-skill-fx.js";
+        import {createCaptureSkillPresentationAssetsV2} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
+        import {normalizeSkillPresentationBinding} from "../../src/contracts/skill-presentation-binding.js";
+        import {planSkillReleaseFx} from "../../src/core/fx/skill-fx-plan.js";
+        import {createGlobalPresentationAssetResolverV1} from "../../src/assets/global-presentation-asset-resolver-v1.js";
+        import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js?v=projectile-native-bidirectional-20261028";
+        let fx=null;
+        try {
+          const files=await Promise.all(["graine_sansue_cap","coupe_feuille","cap_air_atk_4","fireball"].map(async name=>{
+            const response=await fetch("../../data/capture/showcase/"+name+".capture-skill-transfer-v1.json",{cache:"no-store"});
+            if(!response.ok)throw Error("skill author fixture missing: "+name);
+            return (await response.json()).draft;
+          }));
+          const [graine,coupe,tornade,fireball]=files;
+          const id=graine.id;
+          // Asset metadata comes from the EXACT global-assets catalog used by
+          // the running editor. No fabricated heading, sprite or second map.
+          const mediaResponse=await fetch(GLOBAL_VISUAL_LIBRARY.catalogUrl,{cache:"no-store"});
+          if(!mediaResponse.ok)throw Error("live media catalog unavailable: "+mediaResponse.status);
+          const mediaCatalog=await mediaResponse.json();
+          const assetForId=createGlobalPresentationAssetResolverV1({
+            assetCatalog:mediaCatalog,assetUrlForFile:globalVisualAssetUrl
+          });
+          const directional=["pack:capture:sprite-graine-sangsue-projectile-01",
+            "pack:capture:sprite-feuille-tranchante-projectile-03",
+            "pack:capture:sprite-crachat-acide-projectile-01",
+            "pack:capture:sprite-air-wind-bolt-01",
+            "pack:capture:sprite-steel-wing-projectile-01",
+            "pack:capture:sprite-kitsune-lunaire-projectile-01"];
+          for(const assetId of directional){
+            const resolved=assetForId(assetId);
+            if(!resolved || resolved.headingRad!==0 || !resolved.url)
+              throw Error("real direction metadata missing: "+assetId);
+          }
+          const legacyFireball=assetForId("pack:capture:sprite-fireball-travel-01");
+          if(!legacyFireball || legacyFireball.headingRad!==Math.PI)
+            throw Error("left-native legacy fireball heading missing from real media catalog");
+          const projected=createCaptureSkillPresentationAssetsV2({
+            skillPresentations:Object.fromEntries(files.map(file=>
+              [file.id,normalizeSkillPresentationBinding(file.presentation)])),
+            assetForId
+          });
+          const arena=document.createElement("div");
+          arena.style.cssText="position:relative;width:900px;height:500px;pointer-events:none;";
+          document.body.append(arena);
+          const make=(left,top)=>{
+            const n=document.createElement("div");
+            n.style.cssText="position:absolute;left:"+left+"px;top:"+top+"px;width:80px;height:80px;";
+            arena.append(n);return n;
+          };
+          const anchors={player:make(80,320),opponent:make(720,120)};
+          fx=createDomSkillFxRenderer({
+            arena,anchors,targetAnchors:anchors,
+            presentationForSkill:(skillId,context)=>projected.presentationForSkill(skillId,context),
+            animate(node,keyframes,options){
+              return {node,keyframes,options,finished:new Promise(()=>{}),cancel(){}};
+            }
+          });
+          const shoot=(fromSlot,targetSlot,fromPoint,skillId=id)=>{
+            const before=arena.querySelectorAll(".skill-fx--projectile").length;
+            fx.play({type:"projectile",skillId,fromSlot,targetSlot,
+              ...(fromPoint?{fromPoint}:{}),durationMs:2500});
+            const shell=arena.querySelectorAll(".skill-fx--projectile")[before];
+            const sprite=shell?.querySelector(".skill-fx__sprite");
+            if(!sprite)throw Error("native sprite not visible in direction "+fromSlot);
+            return sprite.style.transform;
+          };
+          const outbound=shoot("player","opponent");
+          const incoming=shoot("opponent","player");
+          const fireballOutbound=shoot("player","opponent",null,fireball.id);
+          const fireballIncoming=shoot("opponent","player",null,fireball.id);
+          // Coupe feuille is genuinely a BEAM, not a projectile. Its real
+          // path must be tested without a mocked projectile command.
+          const beamsBefore=arena.querySelectorAll(".skill-fx--beam").length;
+          fx.play({type:"beam",skillId:coupe.id,fromSlot:"opponent",targetSlot:"player",durationMs:2500});
+          const coupeBeam=arena.querySelectorAll(".skill-fx--beam")[beamsBefore];
+          if(!coupeBeam?.querySelector(".skill-fx__beam-body") ||
+             !coupeBeam.style.transform.includes("rotate("))
+            throw Error("Coupe feuille must render through its real beam owner");
+          const neutralIncoming=shoot("opponent","player",null,tornade.id);
+          const rect=arena.getBoundingClientRect();
+          const contact={x:rect.left+730,y:rect.top+155};
+          const action={skill:{id,form:"projectile",projectileTargeting:"direct",element:"air"},
+            travelMs:2500,mirrorReturn:{contactPoint:contact}};
+          const planned=planSkillReleaseFx({action,actorSlot:"opponent",targetSlot:"player"});
+          if(planned.length!==1 || planned[0].fromPoint!==contact)
+            throw Error("mirror return lost contact point");
+          const reflected=shoot(planned[0].fromSlot,planned[0].targetSlot,planned[0].fromPoint);
+          const fireballMirrorAction={skill:{id:fireball.id,form:"projectile",projectileTargeting:"direct",element:"fire"},
+            travelMs:2500,mirrorReturn:{contactPoint:contact}};
+          const fireballMirrorPlan=planSkillReleaseFx({action:fireballMirrorAction,actorSlot:"opponent",targetSlot:"player"});
+          if(fireballMirrorPlan.length!==1 || fireballMirrorPlan[0].fromPoint!==contact)
+            throw Error("fireball mirror must preserve real contact point");
+          const fireballReflected=shoot(fireballMirrorPlan[0].fromSlot,fireballMirrorPlan[0].targetSlot,
+            fireballMirrorPlan[0].fromPoint,fireball.id);
+          // The same real media must stay upright when the PLAYER mirror
+          // sends the enemy projectile back to the opponent (left -> right).
+          const playerContact={x:rect.left+138,y:rect.top+351};
+          const reverseAction={skill:{id,form:"projectile",projectileTargeting:"direct",element:"nature"},
+            travelMs:2500,mirrorReturn:{contactPoint:playerContact}};
+          const reversePlan=planSkillReleaseFx({action:reverseAction,actorSlot:"player",targetSlot:"opponent"});
+          if(reversePlan.length!==1 || reversePlan[0].fromPoint!==playerContact)
+            throw Error("player mirror return lost actual contact point");
+          const reflectedRight=shoot(reversePlan[0].fromSlot,reversePlan[0].targetSlot,
+            reversePlan[0].fromPoint,graine.id);
+          const tilt=x=>Number(x.slice(x.indexOf("(")+1,x.indexOf("rad)")));
+          if(outbound.includes("scaleX(-1)") ||
+             !incoming.includes("scaleX(-1)") ||
+             !fireballOutbound.includes("scaleX(-1)") ||
+             fireballIncoming.includes("scaleX(-1)") ||
+             fireballReflected.includes("scaleX(-1)") ||
+             !reflected.includes("scaleX(-1)") ||
+
+             reflectedRight.includes("scaleX(-1)") ||
+             neutralIncoming!=="rotate(0rad)" ||
+             ![outbound,incoming,fireballOutbound,fireballIncoming,reflected,fireballReflected,reflectedRight].every(x=>Math.abs(tilt(x))<Math.PI/2))
+            throw Error("wrong real author projectile facing: "+
+              JSON.stringify({outbound,incoming,fireballOutbound,fireballIncoming,neutralIncoming,reflected,fireballReflected,reflectedRight}));
+          document.body.dataset.inboundProjectileProbe="ok:outbound:opponent:mirror:fireball:beam";
+        } catch(error) {
+          document.body.dataset.inboundProjectileProbe="fail:"+error.message;
+        } finally {fx?.dispose();}
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
+
     // Chromium smoke: actual HUD orb renderer inside the native editor page.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-energy-orbs")) {
@@ -369,9 +613,60 @@ const server = createServer(async (req, res) => {
               const get=key=>document.querySelector("[data-"+key+"]");
               const fill=(key,v)=>{const node=get(key);if(!node)throw Error("field "+key+" absent");
                 node.value=String(v);node.dispatchEvent(new Event("change",{bubbles:true}));};
+              // Graine sansue and its shared marker must BOTH originate
+              // from the canonical showcase catalogs after actual browser boot.
+              if(!lib.querySelector('option[value="graine_sansue_cap"]'))
+                throw Error("Graine sansue missing from the active skill library");
+              if(!get("marker-library-select")?.querySelector('option[value="graine-sansue"]'))
+                throw Error("Graine sansue missing from the shared marker library");
+              lib.value="graine_sansue_cap";lib.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("skill-name")?.value!=="Graine sansue" ||
+                 get("skill-required-level")?.value!=="5" ||
+                 get("skill-cooldown")?.value!=="10000" ||
+                 get("skill-icon")?.value!=="pack:capture:icon-skill-graine-sangsue-01" ||
+                 get("skill-travel-fx")?.value!=="pack:capture:sprite-graine-sangsue-projectile-01")
+                throw Error("Graine sansue latest author skill settings not loaded");
+              const graineRows=[...document.querySelectorAll("[data-skill-effect-row]")];
+              const graineMarker=graineRows.find(row=>
+                row.querySelector("[data-skill-effect-kind]")?.value==="apply_marker");
+              if(!graineMarker ||
+                 graineMarker.querySelector("[data-skill-marker-pick]")?.value!=="graine-sansue" ||
+                 graineMarker.querySelector("[data-skill-marker-charges]")?.value!=="1")
+                throw Error("Graine sansue does not use its single authored marker");
+              const markerSelect=get("marker-library-select");
+              markerSelect.value="graine-sansue";
+              markerSelect.dispatchEvent(new Event("change",{bubbles:true}));
+              if(get("marker-periodic-kind")?.value!=="life_steal" ||
+                 get("marker-periodic-percent")?.value!=="100" ||
+                 get("marker-periodic-seconds")?.value!=="3" ||
+                 get("marker-periodic-channel")?.value!=="nature" ||
+                 get("marker-max")?.value!=="2")
+                throw Error("Shared Graine sansue drain is not loaded from its original author preset");
               // The three new author sheets must be read back from their
               // active owner after startup, never a native/legacy fallback.
               const lumiloSelect=get("creature-library-select");
+              if(!lumiloSelect?.querySelector('option[value="crea_nat_1"]'))
+                throw Error("Grainou missing from canonical creature library");
+              lumiloSelect.value="crea_nat_1";
+              lumiloSelect.dispatchEvent(new Event("change",{bubbles:true}));
+              const grainouSlots=[...document.querySelectorAll("[data-loadout-slot]")].map(x=>x.value);
+              if(get("creature-name")?.value!=="Grainou" ||
+                 grainouSlots[0]!=="coupe_feuille" ||
+                 grainouSlots[1]!=="graine_sansue_cap" ||
+                 grainouSlots[2]!=="Spore_soporifique" ||
+                 get("creature-reaction-type")?.value!=="defense" ||
+                 get("creature-reaction-charges")?.value!=="5" ||
+                 get("creature-reaction-recharge")?.value!=="20" ||
+                 get("creature-reaction-window")?.value!=="0.8" ||
+                 get("creature-reaction-reduction")?.value!=="30" ||
+                 get("creature-dodge-fx")?.value!=="pack:capture:sprite-fleur-defense-01" ||
+                 get("creature-dodge-duration")?.value!=="1800")
+                throw Error("Grainou latest author loadout or defensive reaction not loaded: "+
+                  JSON.stringify({slots:grainouSlots,reaction:get("creature-reaction-type")?.value,
+                    charges:get("creature-reaction-charges")?.value,
+                    recharge:get("creature-reaction-recharge")?.value,
+                    window:get("creature-reaction-window")?.value,
+                    reduction:get("creature-reaction-reduction")?.value}));
               if(!lumiloSelect?.querySelector('option[value="crea_ombre_2"]'))
                 throw Error("Noctigriffe missing from configured creature owner");
               const teamSelect=get("test-opponent-creature");
@@ -498,7 +793,7 @@ const server = createServer(async (req, res) => {
               if(nidScopes.join(",")!=="all_enemies,all_enemy_reserves" ||
                  nidMarkers.some(row=>row.querySelector("[data-skill-marker-charges]")?.value!=="5" ||
                    row.querySelector("[data-skill-marker-pick]")?.value!=="venin-static"))
-                throw Error("Nid de frelon active & reserve 5-charge marker scopes not rendered");
+                throw Error("Nid de frelon active & reserve 5-charge marker scopes not rendered: "+JSON.stringify({name:get("skill-name").value,scopes:nidScopes,charges:nidMarkers.map(row=>row.querySelector("[data-skill-marker-charges]")?.value),markers:nidMarkers.map(row=>row.querySelector("[data-skill-marker-pick]")?.value)}));
               // Author's real Dard static transfer: the uploaded marker-library JSON
               // is empty; the skill's single canonical apply_marker must populate it.
               if(!lib.querySelector('option[value="lib_paralyze"]'))
@@ -629,6 +924,46 @@ const server = createServer(async (req, res) => {
                 throw Error("marker dropdown selections lost on save");
               if(!prePicker.querySelector('option[value="poison-test"]')||prePicker.value!=="venin-static")
                 throw Error("new marker was not offered, or existing Venin choice was silently overwritten");
+              // Native life-steal marker: real Android author flow in the SAME
+              // marker library, including conditional fields and export/reload.
+              get("marker-new").click();
+              fill("marker-name","Drain vital");
+              get("marker-periodic-enabled").checked=true;
+              get("marker-periodic-enabled").dispatchEvent(new Event("change",{bubbles:true}));
+              fill("marker-periodic-kind","life_steal");
+              if(get("marker-periodic-percent-setting").hidden ||
+                 get("marker-periodic-max-heal-setting").hidden)
+                throw Error("life drain fields were not revealed by the real editor");
+              fill("marker-periodic-amount",5);
+              fill("marker-periodic-seconds",5);
+              fill("marker-periodic-mode","fixed");
+              fill("marker-periodic-channel","poison");
+              fill("marker-periodic-percent",50);
+              fill("marker-periodic-max-heal",8);
+              get("marker-save").click();
+              if(!get("marker-library-state").textContent.includes("enregistré"))
+                throw Error("life drain marker save failed: "+get("marker-library-state").textContent);
+              if(get("marker-id").value!=="drain-vital")
+                throw Error("life drain marker did not use a generated stable ID");
+              fill("marker-library-select","drain-vital");
+              if(get("marker-periodic-kind").value!=="life_steal" ||
+                 get("marker-periodic-percent").value!=="50" ||
+                 get("marker-periodic-max-heal").value!=="8" ||
+                 get("marker-periodic-channel").value!=="poison")
+                throw Error("life drain marker did not reload its typed definition");
+              const drainCreate=URL.createObjectURL;
+              let drainBlob=null;
+              try {
+                URL.createObjectURL=blob=>{drainBlob=blob;return drainCreate.call(URL,blob);};
+                get("marker-export").click();
+              } finally {URL.createObjectURL=drainCreate;}
+              const exportedDrain=drainBlob?JSON.parse(await drainBlob.text()):null;
+              const drainMarker=exportedDrain?.markers?.find(x=>x.id==="drain-vital");
+              if(drainMarker?.periodic?.kind!=="life_steal" ||
+                 drainMarker.periodic.percent!==50 || drainMarker.periodic.maxHeal!==8 ||
+                 drainMarker.periodic.amount!==5 || drainMarker.periodic.channel!=="poison")
+                throw Error("life drain marker export lost its native properties");
+              fill("marker-library-select","poison-test");
               get("marker-new").click();
               fill("marker-name","Poïson test");
               get("marker-save").click();
@@ -1737,6 +2072,9 @@ function assertAquaHealSkill(dom, scenario) {
   if (!ids.includes("cap_water_atk_3")) {
     throw new Error(scenario + ": existing Jet pressurisé disappeared from active skill selector");
   }
+  if (ids.filter(id => id === "coupe_feuille").length !== 1) {
+    throw new Error(scenario + ": published Coupe feuille v11 must appear exactly once in active skill selector");
+  }
   console.log(scenario + ": lib_aqua_heal visible once alongside existing skills (" + ids.length + ")");
 }
 
@@ -1793,6 +2131,24 @@ try {
   if(energyProbe!=="ok:12:5:50%")
     throw Error("Real Chrome energy orbs regression: "+energyProbe);
   console.log("Capture HUD energy orbs: real Chrome 12 circles, partial fill, 180px wrap, capacity 24 and accessible count");
+  const editorHeadingDom=await dumpDom(url+"?verify-editor-preview-heading=1");
+  const editorHeadingProbe=editorHeadingDom.match(/data-editor-preview-heading-probe="([^"]+)"/)?.[1]??"missing";
+  if(editorHeadingProbe!=="ok:editor:opponent:heading:0")
+    throw Error("REAL editor preview opponent Graine sansue lost native heading: "+editorHeadingProbe+
+      " JS="+(editorHeadingDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
+  console.log("REAL editor -> active asset resolver -> Graine sansue opponent FX heading 0: preserved");
+  const sleepUiDom=await dumpDom(url+"?verify-sleep-author-ui=1");
+  const sleepUiProbe=sleepUiDom.match(/data-sleep-ui-probe="([^"]+)"/)?.[1]??"missing";
+  if(sleepUiProbe!=="ok:editor:sleep:markers:conditions")
+    throw Error("REAL editor Sommeil / conditional author controls: "+sleepUiProbe+
+      " JS="+(sleepUiDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
+  console.log("Sommeil browser: real editor adds a status, toggles stun-until-damage, and offers canonical marker/status conditions");
+  const incomingDom=await dumpDom(url+"?verify-projectile-inbound-facing=1");
+  const incomingProbe=incomingDom.match(/data-inbound-projectile-probe="([^"]+)"/)?.[1]??"missing";
+  if(incomingProbe!=="ok:outbound:opponent:mirror:fireball:beam")
+    throw Error("Actual Chromium projectile facing / mirror return regression: "+incomingProbe+
+      " JS="+(incomingDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
+  console.log("Projectile orientation Chrome: outward, incoming and mirror return share native facing + contact point");
   const veilDom=await dumpDom(url+"?verify-water-veil-ultimate=1");
   assertCreatures(veilDom,"Voile aqueux ultimate browser bootstrap");
   const veilProbe=veilDom.match(/data-water-veil-ultimate-probe="([^"]+)"/)?.[1] ?? "missing";
