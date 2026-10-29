@@ -1087,6 +1087,7 @@ export function resolveSkillCompletion({
       const tactical =
         applyImmediateTacticalEffectsV1({
           state: nextState,
+          conditionState: state,
           actorId,
           targetId,
           skill: skill.effects?.some(effect => isReserveEffectTargetScopeV2(effect.targetScope))
