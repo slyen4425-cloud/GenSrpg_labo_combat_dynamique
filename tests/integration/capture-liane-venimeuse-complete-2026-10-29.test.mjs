@@ -50,3 +50,22 @@ test("RED: reserve result uses the existing presenter beam renderer once, never 
   assert.deepEqual(played[0],{type:"beam",skillId:"liane_venimeuse",element:"nature",actorSlot:"player",fromSlot:"player",targetSlot:"opponent",durationMs:800});
   presenter.dispose();
 });
+
+test("RED: author editor cache loads new Liane preset and latest canonical global-assets", async()=>{
+  const {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl}=await import("../../src/assets/global-visual-library.js");
+  assert.match(GLOBAL_VISUAL_LIBRARY.revision,/2026-10-29.*liane/);
+  assert.match(GLOBAL_VISUAL_LIBRARY.catalogUrl,/global-assets\\/data\\/assets\\/catalog\\/global-visual-assets/);
+  assert.match(globalVisualAssetUrl("capture/sprites/skills/liane_epineuse_rayon/liane_epineuse_rayon_atlas_12f.webp"),/liane_epineuse_rayon_atlas_12f.webp\\?v=/);
+  const expected="liane-venimeuse-20261029";
+  for (const file of [
+    "examples/dom-demo/capture-editor-v2.html",
+    "examples/dom-demo/capture-editor-v2.js",
+    "src/ui/capture-editor-human-v2.js",
+    "src/ui/capture-editor-preview-runtime-loader-v1.js",
+    "src/ui/capture-combat-preview-v1.js",
+    "src/ui/combat-2v2-test-ui.js"
+  ]) {
+    const text=await read(file);
+    assert.ok(text.includes(expected),"stale module version in "+file);
+  }
+});
