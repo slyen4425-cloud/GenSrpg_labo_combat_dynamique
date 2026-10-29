@@ -1,3 +1,15 @@
+## 2026-10-29 — Trois icônes Nature Monster Capture : Spore soporifique, Graine de vie, Ronce
+
+- **But** : intégrer les trois visuels déjà créés et acceptés dans la conversation à la bibliothèque officielle des icônes de compétences, sans régénérer les sources.
+- **Propriétaire** : Asset Library `global-assets`. Base `global-assets@2bdc782aa256271f5dc4675a4f6da65faf74073b` (CI success), checkpoint START `checkpoint/lab-start-nature-three-skill-icons-2026-10-29`, branche `work/lab-nature-three-skill-icons-2026-10-29`.
+- **Périmètre** : 3 WebP réels 128×128 dans `assets/library/capture/icons/skills/`, 3 nouveaux `assetId` stables `pack:capture:icon-skill-{spore-soporifique,graine-de-vie,ronce}-01` dans le catalogue unique `data/assets/catalog/global-visual-assets.v1.json`, provenance des médias, sentinelle TDD, documentation et ce journal.
+- **Fichiers sources** : `floraison_des_spores_rêveuses.png`, `graine_magique_de_renouveau_verdoyant.png`, `fouet_de_lianes_épineuses_lumineuses.png` (tous 1254×1254 RGB originaux). Source livrée 512×512 PNG, runtime WebP 128×128 RGB, previews de vérification 128 et 48 pixels. Archive utilisateur ZIP + provenance SHA256 locales.
+- **Intégration** : la bibliothèque `global-assets` reste autoritaire et l'éditeur `gh-pages` la charge déjà pour remplir `data-skill-icon` ; la sélection de chaque icône restera un geste de l'auteur. Aucun auto-binding par nom, aucune mutation des fiches auteur.
+- **Protections** : toutes les icônes et FX existants, sprites, créatures, profils, compétences, `main`, `gh-pages`, GenSrpG et Exploration. Aucune seconde autorité ni raccourci runtime.
+- **Gates** : TDD RED → données + 3 vrais médias → test sentinelle contenu/dimensions/hash/IDs → CI complète → revue diff → checkpoint GREEN technique → publication fast-forward sécurisée vers `global-assets`. Validation Android visuelle en jeu distincte.
+
+---
+
 ## 2026-10-29 — Correctif Nuage de spores V2 : visibilité dans le sélecteur Projectile
 
 - **Anomalie reproduite et cause racine** : l'asset validé `pack:capture:sprite-spores-expansives-projectile-sphere-02` est un FX radial (catégorie `skill` / `centerOnCaster:true` / `travelsToTarget:false`), et ne s'affiche pas dans la liste « Projectile » car il manque le tag `expanding`. L'éditeur LIVE `gh-pages/src/ui/capture-editor-human-v2.js` possède déjà le filtre `role !== "travel" || asset.category === "travel" || (asset.category === "skill" && tags.includes("expanding"))`. **Pas de changement du moteur nécessaire** pour le proposer dans cette liste.
