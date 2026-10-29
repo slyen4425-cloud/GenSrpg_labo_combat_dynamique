@@ -1,3 +1,12 @@
+## 2026-10-28 — Défense florale 12f : import canonique unique, sans second lot
+- Base `global-assets@4e938b32eb2b1e66ac110a82cd1f550b9c443ddf`, checkpoint `checkpoint/lab-start-fleur-defense-vfx-2026-10-28`, branche `work/lab-fleur-defense-vfx-2026-10-28`.
+- Source approuvée : ZIP SHA256 `653c5012f182931b4add1bef4641ab8837e749358236dba6b33d5ed0c70f9169`. Médias importés et testés dans le lot parallèle au run #40773353976, transférés par SHAs Git identiques sur cette unique branche de publication. Pas de double assetId.
+- Import matériel : 18 fichiers canoniques dont 12 PNG RGBA 512², atlas WebP 6144×512 et preview animée; ID `pack:capture:sprite-fleur-defense-01` dans l'unique catalogue `global-assets`.
+- Changement strictement visuel : aucune capacité nouvelle sur `global-assets`. Spore soporifique est propriétaire du catalogue vitrine `gh-pages` sur PR #128.
+- Tests : `tests/unit/capture-fleur-defense-vfx-2026-10-28.test.mjs`, contrôle des SHA source et médias, CI et preview ; statut technique à confirmer sur le SHA final avant checkpoint GREEN et fast-forward.
+
+---
+
 ## 2026-10-28 — Sommeil Z : publier l'animation de statut approuvée (12 frames)
 
 - **Source auteur** : `_incoming/GENSRPG_SOMMEIL_Z_12F_WEBP.zip`, 4 413 627 octets ; SHA256 `c54544b0d60519738ffa5bf81b1c5de57e1782d70eb5964fe65ee987449d02c6` ; blob Git `6d6e5d763e55133935726dbf95043ac9f1e1a445`. ZIP approuvé en conversation, 17 entrées/CRC valide, 12 frames WebP RGBA 512×512, atlas WebP 6144×512 et preview WebP 12 frames, planche de contrôle PNG.
