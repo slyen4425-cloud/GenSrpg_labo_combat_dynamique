@@ -14,11 +14,13 @@ test("historical marker archives stay immutable; five active markers bootstrap w
  const historicMarkers=normalizeCaptureMarkerLibraryV1(JSON.parse(historic).markers);
  assert.deepEqual(historicMarkers.map(y=>y.id),["venin-static","peste"]);
  const s=await read(showcase);
- assert.deepEqual(JSON.parse(s),JSON.parse(await read("data/capture/source-exports/gensrpg-marqueurs-2026-10-28.json")));
+ const prior=JSON.parse(await read("data/capture/source-exports/gensrpg-marqueurs-2026-10-28.json"));
+ assert.equal(prior.markers.find(m=>m.id==="graine-sansue").maxStacks,10,"prior source preserved");
+ assert.deepEqual(JSON.parse(s),JSON.parse(await read("data/capture/source-exports/gensrpg-marqueurs-2026-10-29-r2.json")));
  const legacy=normalizeCaptureMarkerLibraryV1(JSON.parse(
    await read("data/capture/source-exports/gensrpg-capture-markers-2026-10-23.json")).markers);
  const x=normalizeCaptureMarkerLibraryV1(JSON.parse(s).markers);
- assert.deepEqual(x.map(y=>y.id),["poison","venin-static","eclat-spirituel","peste","graine-sansue"]);
+ assert.deepEqual(x.map(y=>y.id),["poison","venin-static","graine-sansue","eclat-spirituel","peste"]);
  for(const old of legacy){
    assert.deepEqual(x.find(m=>m.id===old.id),old,"2026-10-23 author marker unchanged: "+old.id);
  }
