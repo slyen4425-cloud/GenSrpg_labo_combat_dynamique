@@ -14,13 +14,13 @@ const provenanceFile = 'assets/library/capture/icons/skills/capture_nature_icons
 test('three Nature skill icons have real verified WebP bytes and canonical editor IDs', () => {
   const manifest = JSON.parse(load(provenanceFile).toString('utf8'));
   const catalog = JSON.parse(load('data/assets/catalog/global-visual-assets.v1.json').toString('utf8'));
-  assert.equal(manifest.items.length, 3);
-  assert.deepEqual(manifest.items.map(i => i.slug).sort(), ['graine_de_vie','ronce','spore_soporifique']);
+  assert.equal(manifest.assets.length, 3);
+  assert.deepEqual(manifest.assets.map(i => i.slug).sort(), ['graine_de_vie','ronce','spore_soporifique']);
   assert.equal(catalog.storage.branch, 'global-assets');
   assert.equal(catalog.counts.assets, catalog.assets.length);
   assert.equal(catalog.counts.icons, catalog.assets.filter(a => a.assetType === 'icon').length);
   assert.equal(new Set(catalog.assets.map(a => a.id)).size, catalog.assets.length);
-  for (const item of manifest.items) {
+  for (const item of manifest.assets) {
     const matching = catalog.assets.filter(a => a.id === item.assetId);
     assert.equal(matching.length, 1, item.assetId);
     const asset = matching[0];
