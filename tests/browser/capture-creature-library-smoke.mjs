@@ -639,7 +639,8 @@ const server = createServer(async (req, res) => {
               if(get("marker-periodic-kind")?.value!=="life_steal" ||
                  get("marker-periodic-percent")?.value!=="100" ||
                  get("marker-periodic-seconds")?.value!=="3" ||
-                 get("marker-periodic-channel")?.value!=="nature")
+                 get("marker-periodic-channel")?.value!=="nature" ||
+                 get("marker-max")?.value!=="2")
                 throw Error("Shared Graine sansue drain is not loaded from its original author preset");
               // The three new author sheets must be read back from their
               // active owner after startup, never a native/legacy fallback.
@@ -652,10 +653,11 @@ const server = createServer(async (req, res) => {
               if(get("creature-name")?.value!=="Grainou" ||
                  grainouSlots[0]!=="coupe_feuille" ||
                  grainouSlots[1]!=="graine_sansue_cap" ||
+                 grainouSlots[2]!=="Spore_soporifique" ||
                  get("creature-reaction-type")?.value!=="defense" ||
                  get("creature-reaction-charges")?.value!=="2" ||
                  get("creature-reaction-recharge")?.value!=="20" ||
-                 get("creature-reaction-window")?.value!=="0.4" ||
+                 get("creature-reaction-window")?.value!=="0.8" ||
                  get("creature-reaction-reduction")?.value!=="30")
                 throw Error("Grainou latest author loadout or defensive reaction not loaded: "+
                   JSON.stringify({slots:grainouSlots,reaction:get("creature-reaction-type")?.value,
