@@ -1,0 +1,176 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "graine_sansue_cap",
+    "description": "Na",
+    "requiredLevel": 5,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "graine_sansue_cap",
+      "name": "Graine sansue",
+      "category": "offensive",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "nature",
+      "approachMode": "none",
+      "energyCost": 5,
+      "preparationMs": 900,
+      "travelMs": 900,
+      "recoveryMs": 0,
+      "cooldownMs": 10000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 1
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "graine-sansue",
+            "name": "Graine sansue",
+            "polarity": "detrimental",
+            "durationMs": 20000,
+            "maxStacks": 2,
+            "iconAssetId": "pack:capture:icon-skill-sangsue-01",
+            "periodic": {
+              "kind": "life_steal",
+              "amount": 5,
+              "intervalMs": 3000,
+              "damageMode": "combat",
+              "channel": "nature",
+              "percent": 100
+            }
+          },
+          "charges": 1
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:graine_sansue_cap",
+      "version": 11,
+      "subjectType": "skill",
+      "subjectId": "graine_sansue_cap",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-graine-sangsue-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-cast-nature-01",
+          "displayScale": 0.6,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.6,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-graine-sangsue-projectile-01",
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "trajectoryMode": "linear",
+          "frameSpeedMultiplier": 1.5,
+          "perspectiveAmount": 0
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-graine-sangsue-debuff-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}
