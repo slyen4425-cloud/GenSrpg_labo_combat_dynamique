@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
 import {createHash} from "node:crypto";
 import {importCaptureTransferJsonV1} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
+import {normalizeCaptureStatRegistryV1} from "../../src/contracts/capture-stat-registry-v1.js";
 import {normalizeCaptureMarkerLibraryV1} from "../../src/contracts/capture-marker-v1.js";
 import {CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
 import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
@@ -21,7 +22,8 @@ test("exact author creature r3 source, one canonical Grainou and Spore equipped 
  const author=JSON.parse(raw);
  const active=JSON.parse(await read(creatureFile));
  assert.deepEqual(active,author);
- assert.equal(importCaptureTransferJsonV1(await read(creatureFile)).kind,"creature");
+ const registry=normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
+ assert.equal(importCaptureTransferJsonV1(await read(creatureFile),{statRegistry:registry}).kind,"creature");
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(x=>x===creatureFile).length,1);
  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(x=>x==="data/capture/showcase/Spore_soporifique.capture-skill-transfer-v1.json").length,1);
  assert.equal(active.draft.combat.reaction.activeWindowMs,800);
