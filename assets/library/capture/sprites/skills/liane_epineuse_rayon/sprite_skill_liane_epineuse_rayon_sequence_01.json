@@ -1,0 +1,66 @@
+{
+  "id": "pack:capture:sprite-liane-epineuse-rayon-01",
+  "role": "beam",
+  "frameSize": [
+    512,
+    512
+  ],
+  "frame_count": 12,
+  "frame_ms": 150,
+  "frame_durations_ms": [
+    150,
+    150,
+    150,
+    150,
+    150,
+    150,
+    150,
+    190,
+    190,
+    190,
+    190,
+    650
+  ],
+  "playback_mode": "once",
+  "frames": [
+    "frames/liane_epineuse_rayon_01.webp",
+    "frames/liane_epineuse_rayon_02.webp",
+    "frames/liane_epineuse_rayon_03.webp",
+    "frames/liane_epineuse_rayon_04.webp",
+    "frames/liane_epineuse_rayon_05.webp",
+    "frames/liane_epineuse_rayon_06.webp",
+    "frames/liane_epineuse_rayon_07.webp",
+    "frames/liane_epineuse_rayon_08.webp",
+    "frames/liane_epineuse_rayon_09.webp",
+    "frames/liane_epineuse_rayon_10.webp",
+    "frames/liane_epineuse_rayon_11.webp",
+    "frames/liane_epineuse_rayon_12.webp"
+  ],
+  "phases": {
+    "extensionFrames": [
+      1,
+      7
+    ],
+    "wrapFrames": [
+      8,
+      12
+    ]
+  },
+  "visualIntent": {
+    "origin": "caster",
+    "target": "opponent",
+    "direction": "caster-to-target",
+    "end": "thorny vine coils around target",
+    "stretchesBetweenActors": true,
+    "affectsEnemyReserve": "gameplay-only; no roster logic in sprite"
+  },
+  "atlas": {
+    "file": "liane_epineuse_rayon_atlas_12f.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 512,
+    "frameHeight": 512
+  },
+  "preview": "preview_liane_epineuse_rayon_12f.webp",
+  "note": "Authored beam intent only; FX/runtime owns presentation, target selection, reserve swaps, and phase timing."
+}

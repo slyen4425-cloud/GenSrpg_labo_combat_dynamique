@@ -1,0 +1,75 @@
+{
+  "packId": "pack:capture:liane-epineuse-rayon-v1",
+  "title": "Liane épineuse — extension et enroulement",
+  "sourceImage": "sprite_sheet_d_attaque_de_liane_magique.png",
+  "assetId": "pack:capture:sprite-liane-epineuse-rayon-01",
+  "format": "webp",
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameCount": 12,
+  "background": "transparent",
+  "element": "nature",
+  "intendedEditorVisualRole": "beam",
+  "playbackMode": "once",
+  "frameDurationsMs": [
+    150,
+    150,
+    150,
+    150,
+    150,
+    150,
+    150,
+    190,
+    190,
+    190,
+    190,
+    650
+  ],
+  "frames": [
+    "frames/liane_epineuse_rayon_01.webp",
+    "frames/liane_epineuse_rayon_02.webp",
+    "frames/liane_epineuse_rayon_03.webp",
+    "frames/liane_epineuse_rayon_04.webp",
+    "frames/liane_epineuse_rayon_05.webp",
+    "frames/liane_epineuse_rayon_06.webp",
+    "frames/liane_epineuse_rayon_07.webp",
+    "frames/liane_epineuse_rayon_08.webp",
+    "frames/liane_epineuse_rayon_09.webp",
+    "frames/liane_epineuse_rayon_10.webp",
+    "frames/liane_epineuse_rayon_11.webp",
+    "frames/liane_epineuse_rayon_12.webp"
+  ],
+  "atlas": {
+    "file": "liane_epineuse_rayon_atlas_12f.webp",
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "frameCount": 12,
+    "layout": "horizontal"
+  },
+  "animatedPreview": "preview_liane_epineuse_rayon_12f.webp",
+  "previewSheet": "planche_liane_epineuse_12f.png",
+  "inspectSheet": "apercu_12_etapes_fond_sombre.png",
+  "phases": {
+    "extensionFrames": [
+      1,
+      7
+    ],
+    "wrapFrames": [
+      8,
+      12
+    ]
+  },
+  "visualIntent": {
+    "origin": "caster",
+    "target": "opponent",
+    "direction": "caster-to-target",
+    "end": "thorny vine coils around target",
+    "stretchesBetweenActors": true,
+    "affectsEnemyReserve": "gameplay-only; no roster logic in sprite"
+  },
+  "notes": "Animation de ray/beam à lier à la présentation existante. Elle ne force pas le swap de la réserve ennemie. Rejouer 1-7 pour extension, 8-12 pour enroulement si moteur supporte des phases. Pas de rotation automatique encodee dans les frames.",
+  "sourceStatus": "illustration generated in this conversation; author visual validation remains pending",
+  "processing": "4x3 grid extraction, trim neighbouring-cell spills and feather outer crop rim"
+}

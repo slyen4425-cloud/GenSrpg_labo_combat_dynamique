@@ -1,0 +1,3 @@
+# Liane épineuse — Rayon Nature (Monster Capture)
+
+Original author ZIP: 20 files kept byte-for-byte, including 12 transparent RGBA 512×512 WebP frames, strip atlas 6144×512, animated 12f preview, source image and control sheets. Phases 1–7: caster-to-target thorny vine extends; 8–12: coils around the target. The editor uses the existing beam/travel visual selector. Authored variable frame durations are in the sequence manifest; atlas catalog exposes the 150ms default. No game rules, reserve-switching logic, skills, characters or renderer were changed. Gameplay review in the smartphone preview is separate from asset library validation.

@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 280,
+    "assets": 281,
     "icons": 90,
-    "sprites": 166,
+    "sprites": 167,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
@@ -9521,6 +9521,50 @@
       "resource": {
         "file": "capture/icons/skills/icon_skill_ronce_01.webp",
         "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-liane-epineuse-rayon-01",
+      "label": "Rayon — Liane épineuse (extension et enroulement cible, 12f)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "capture",
+        "skill",
+        "nature",
+        "plant",
+        "vine",
+        "liane",
+        "thorn",
+        "epine",
+        "beam",
+        "rayon",
+        "travel",
+        "wrap",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/liane_epineuse_rayon/liane_epineuse_rayon_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 150,
+        "playbackMode": "once",
+        "headingRad": 0
       },
       "compatibility": {
         "uses": [
