@@ -1,3 +1,14 @@
+## 2026-10-29 — Réconciliation de main Combat avec le Showcase auteur publié
+
+- Base : `main@2e18bda047eb8f4f91115c2198dcc3ec4e02312c`; START : `checkpoint/lab-start-author-showcase-main-reconcile-2026-10-29`; travail : `work/lab-author-showcase-main-reconcile-2026-10-29`.
+- Cause : l'éditeur auteur actif sur `gh-pages@256328e8c3177ed75548fbdabf470fc8fae5ee8c` possédait 13 créatures Showcase et 59 capacités transférées, alors que main ne contenait que 12 créatures et 56 capacités. Les mécaniques natives `life_steal`, conditions de sommeil et projectiles avaient aussi divergé entre les branches ; une simple copie JSON aurait brisé le contrat Combat.
+- Correction : promouvoir les contenus exacts de transferts validés, les mécanismes propriétaires correspondants, les archives sources, les règles de présentation et les tests originaux, sans écraser les corrections main plus récentes (Kitsune 8 frames et déplacement natif instantané).
+- Gate : CI Laboratoire #40861728361, tous les 5 jobs **SUCCESS** (Fondation + 4 navigateurs) ; 2350+ tests Foundation, prévisualisation éditeur actuelle conservée. Checkpoint GREEN à fixer sur SHA final du journal, PR vers main uniquement après GREEN. 
+- Consommateurs : Exploration n'utilisera plus les 102 fiches de rencontre septembre ; Combat main gère les règles et `gh-pages` reste le propriétaire des nouveaux transferts auteur, fusionnés par un stage build contractuel. Pas de synchronisation de sauvegardes utilisateur dans ce lot.
+- Contre-régression : le manifeste Showcase est une liste active unique ; la projection Exploration est un dérivé en lecture seule, sans seconde bibliothèque manuelle ; incompatibilité future = CI rouge et ancienne preview publiée conservée, jamais un fallback silencieux.
+
+---
+
 ## 2026-10-29 — Compatibilité du moteur Combat officiel avec les approches natives instantanées (raccord Exploration)
 - **Base stable** : main `92e2f75ff6e9b3e03d460115d53b5604adf0e718` ; START `checkpoint/lab-start-native-instant-locomotion-2026-10-29` ; branche `work/lab-native-instant-locomotion-2026-10-29`.
 - **Cause racine** : les compétences Capture historiques ont un déplacement natif autorisé à 0 ms ; le présentateur visuel transmet 1 ms à Animation Core, mais la quantification des phases de locomotion autorise plusieurs phases à la même milliseconde et lève `locomotion duration is too short for configured phases` en vrai combat.
