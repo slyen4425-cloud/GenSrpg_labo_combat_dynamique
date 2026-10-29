@@ -1,3 +1,12 @@
+## 2026-10-29 — Moussados : réaction Défense auteur (lot indépendant)
+- Base auteur `gh-pages@05aba3e71b5b2124529af9ef9b9a94f23f3daa32` ; START `checkpoint/lab-start-moussados-defense-reaction-2026-10-29` ; branche `work/lab-moussados-defense-reaction-2026-10-29`.
+- Reproduction : `crea_mossback` a bien `lib_earth_guard` en emplacement 2, mais aucun `combat.reaction` ; Combat bascule alors sur l'Esquive globale. Carapace minérale et réaction Défense sont deux mécanismes distincts.
+- Propriétaire unique : `draft.combat.reaction` sur le seul transfert auteur Moussados ; `capture-creature-defensive-reaction-v1` et Combat Runtime restent les seuls contrats et moteur. Aucun patch UI, aucun changement dans Exploration ni dans main.
+- Correction limitée : `type:defense`, valeurs par défaut contractuelles explicites : 2 charges, recharge 30 000 ms, fenêtre 250 ms, réduction 50 %. Pas de modification de capacité, visuel, animation ou stat.
+- RED : `tests/integration/moussados-defense-reaction-2026-10-29.test.mjs` ; GREEN uniquement après CI de la branche, checkpoint dédié et validation utilisateur. Tests de compatibilité avec les exports, la vitrine et les interactions mobiles exigés.
+
+---
+
 ## 2026-10-29 — Grainou r5 + Explosion florale, deux exports auteur
 - Base gh-pages 9d5aff42447b3d3af71caca3d166206a6018b5e5 ; global-assets 2bdc782aa256271f5dc4675a4f6da65faf74073b protégé. START checkpoint/lab-start-grainou-explosion-florale-author-r5-2026-10-29 ; WORK work/lab-grainou-explosion-florale-author-r5-2026-10-29.
 - Sources exactes : crea_nat_1(4).json SHA256 d9545f76bd143330558e527f282abc2f3341ed68fa8253546cf671c96514e24a et explosion_florale.json SHA256 5d5848c128f97682f8c632522f67832d1934d6164b04fa5aa15afee5d1daa97e. Nouvelles archives immuables, anciennes préservées.
