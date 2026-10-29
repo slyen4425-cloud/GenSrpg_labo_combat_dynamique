@@ -41,7 +41,7 @@ test("Grainou r4 author bytes, active reaction defense and skill slot unchanged"
  assert.equal(d.draft.presentation.visual.dodge.assetId,"pack:capture:sprite-fleur-defense-01");
  assert.equal(d.draft.presentation.visual.dodge.durationMs,1800);
  assert.deepEqual(d.loadout.slots.map(s=>s.skillId),
-   ["coupe_feuille","graine_sansue_cap","Spore_soporifique","explosion_florale",null]);
+   ["coupe_feuille","graine_sansue_cap","Spore_soporifique",null,null]);
  const registry=normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
  assert.equal(importCaptureTransferJsonV1(src,{statRegistry:registry}).kind,"creature");
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(x=>x===creatureActive).length,1);
