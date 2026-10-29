@@ -1,3 +1,12 @@
+## 2026-10-29 — Moussados : réaction Défense auteur (lot indépendant)
+- Base auteur `gh-pages@05aba3e71b5b2124529af9ef9b9a94f23f3daa32` ; START `checkpoint/lab-start-moussados-defense-reaction-2026-10-29` ; branche `work/lab-moussados-defense-reaction-2026-10-29`.
+- Reproduction : `crea_mossback` a bien `lib_earth_guard` en emplacement 2, mais aucun `combat.reaction` ; Combat bascule alors sur l'Esquive globale. Carapace minérale et réaction Défense sont deux mécanismes distincts.
+- Propriétaire unique : `draft.combat.reaction` sur le seul transfert auteur Moussados ; `capture-creature-defensive-reaction-v1` et Combat Runtime restent les seuls contrats et moteur. Aucun patch UI, aucun changement dans Exploration ni dans main.
+- Correction limitée : `type:defense`, valeurs par défaut contractuelles explicites : 2 charges, recharge 30 000 ms, fenêtre 250 ms, réduction 50 %. Pas de modification de capacité, visuel, animation ou stat.
+- RED : `tests/integration/moussados-defense-reaction-2026-10-29.test.mjs` ; GREEN uniquement après CI de la branche, checkpoint dédié et validation utilisateur. Tests de compatibilité avec les exports, la vitrine et les interactions mobiles exigés.
+
+---
+
 ## 2026-10-29 — Correction contact au sol versus retour aérien
 - BASE gh-pages 05aba3e71b5b2124529af9ef9b9a94f23f3daa32 et global-assets 4b727fe47693dd083c39e500ea66ace8d073e86d ; START checkpoint/lab-start-ground-aerial-contact-authority-2026-10-29, WORK work/lab-ground-aerial-contact-authority-2026-10-29.
 - Cause : CombatPresence considère une cible aérienne pendant la totalité de la phase nominale, même si un vrai contact de silhouettes est détecté. La résolution au délai nominal peut annoncer un raté pendant la trajectoire visible.

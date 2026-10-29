@@ -1956,8 +1956,12 @@ const server = createServer(async (req, res) => {
             if(!q("[data-creature-library-state]").textContent.includes("mise à jour"))
               throw Error("real update refused: "+q("[data-editor-status]")?.textContent?.slice(0,120));
             selectCreature("crea_mossback");
-            if(field("type").value!=="legacy" || field("icon").value!=="")
-              throw Error("Foudrillon icon/settings leaked to another creature");
+            // Moussados now owns an authored Defense (not the legacy Dodge).
+            // Test exact independent values and reject cross-creature icon leakage.
+            if(field("type").value!=="defense" || field("icon").value!=="" ||
+               field("charges").value!=="2" || field("recharge").value!=="30" ||
+               field("window").value!=="0.25" || field("reduction").value!=="50")
+              throw Error("Moussados independent Defense or Foudrillon icon/settings leaked");
             selectCreature("crea_foudrillon");
             if(field("type").value!=="defense" || field("charges").value!=="3" ||
                field("recharge").value!=="26" || field("window").value!=="0.55" ||
