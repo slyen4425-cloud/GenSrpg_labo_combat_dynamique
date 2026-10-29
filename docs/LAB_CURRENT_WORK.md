@@ -1,3 +1,10 @@
+## 2026-10-29 — Nouvelle mécanique de remplacement forcé par capacité
+- BASE gh-pages 84c8d76eab5ec03029dc41c7fa0eecba1843a943 ; global-assets 4b727fe47693dd083c39e500ea66ace8d073e86d inchangé. START checkpoint/lab-start-force-enemy-reserve-switch-2026-10-29, WORK work/lab-force-enemy-reserve-switch-2026-10-29.
+- Périmètre : nouveau SkillEffect force_reserve_switch (réserve ennemie ciblée), remplacement RosterSession, marqueurs natifs avant entrée, vue/éditeur 2v2, UI projection, tests et documentation. Pas de nouvelle autorité de roster, aucune modification aux capacités auteur existantes.
+- TDD RED f5e5fd6 ; obligations tests CI 5 jobs, checkpoint GREEN, PR fusionnée et Pages GREEN. Ne pas annoncer le visuel liane animé sans asset auteur et test réel.
+
+---
+
 ## 2026-10-29 — Moussados : réaction Défense auteur (lot indépendant)
 - Base auteur `gh-pages@05aba3e71b5b2124529af9ef9b9a94f23f3daa32` ; START `checkpoint/lab-start-moussados-defense-reaction-2026-10-29` ; branche `work/lab-moussados-defense-reaction-2026-10-29`.
 - Reproduction : `crea_mossback` a bien `lib_earth_guard` en emplacement 2, mais aucun `combat.reaction` ; Combat bascule alors sur l'Esquive globale. Carapace minérale et réaction Défense sont deux mécanismes distincts.

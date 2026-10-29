@@ -467,6 +467,19 @@ export function normalizeSkillDefinition(input) {
     )
   );
 
+  // The single canonical owner of forced switching is RosterSession.
+  // Never route this through active-target Combat Rules or ally recall.
+  const forced = effects.filter(entry => entry.kind === "force_reserve_switch");
+  if (forced.length > 0 && (
+    forced.length !== 1 || targetLocations.length !== 1 ||
+    targetLocations[0] !== "reserve" ||
+    targetRelations.length !== 1 || targetRelations[0] !== "enemy" ||
+    effects.some(entry => entry.targetScope !== "target") ||
+    normalizedLegacyEffect.damage > 0 || normalizedLegacyEffect.heal > 0
+  )) {
+    throw new RangeError("force_reserve_switch requires exactly one enemy reserve target and target-scoped effects");
+  }
+
   if (effects.some(entry => isReserveEffectTargetScopeV2(entry.targetScope)) &&
       !targetLocations.includes("active")) {
     throw new RangeError("Reserve splash effects require an active target location");

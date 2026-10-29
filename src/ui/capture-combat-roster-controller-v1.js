@@ -2,9 +2,9 @@ import { createRosterSession } from "../core/combat/roster-session.js";
 import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
 
 export function createCaptureCombatRosterControllerV1({
-  session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals, recallCooldownMs, battleFormat = null, beforeActorChanged = () => {}, onActorChanged = () => {}
+  session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals, recallCooldownMs, battleFormat = null, beforeActorChanged = () => {}, onActorChanged = () => {}, cancelActiveActionForForcedSwitch = () => {}
 }) {
-  const roster = createRosterSession({ combatSession: session, roster: rosterDefinition, fighterConfigs, recallCooldownMs, battleFormat });
+  const roster = createRosterSession({ combatSession: session, roster: rosterDefinition, fighterConfigs, recallCooldownMs, battleFormat, cancelActiveActionForForcedSwitch });
   let disposed = false;
   function activeMember(actorId) {
     const state = roster.snapshot()[actorId];
@@ -15,7 +15,7 @@ export function createCaptureCombatRosterControllerV1({
     beforeActorChanged(actorId, result);
     if (result.outcome === "recalled" || result.outcome === "team_defeated") {
       visuals.setSlotVisible(actorId, false);
-    } else if (["summoned", "ko_replaced", "switched"].includes(result.outcome)) {
+    } else if (["summoned", "ko_replaced", "switched", "forced_switched"].includes(result.outcome)) {
       visuals.setCreatureFor(actorId, result.creatureId, { displayName: result.displayName });
       visuals.setSlotVisible(actorId, true);
     } else return result;
@@ -25,7 +25,11 @@ export function createCaptureCombatRosterControllerV1({
   return Object.freeze({
     snapshot: () => roster.snapshot(),
     previewSkillOnTarget(options) { return disposed ? {ok:false,outcome:"disposed"} : roster.previewSkillOnTarget(options); },
-    useSkillOnTarget(options) { return disposed ? {ok:false,outcome:"disposed"} : roster.useSkillOnTarget(options); },
+    useSkillOnTarget(options) {
+      if (disposed) return {ok:false,outcome:"disposed"};
+      const result = roster.useSkillOnTarget(options);
+      return result.outcome === "forced_switched" ? project(result.teamId,result) : result;
+    },
     activeMember,
     isPresent: actorId => activeMember(actorId) !== null,
     skillIdsFor(actorId) {

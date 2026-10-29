@@ -1445,7 +1445,9 @@ export async function mountCoop2v2Test({
     }
     pendingSkillId = null;
     const member = rosterController.snapshot()[targetRef.teamId]?.members.find(x=>x.id===targetRef.memberId);
-    setStatus(skill.name + " sur " + (member?.displayName ?? targetRef.memberId) + " (réserve) : effet appliqué.", "ok");
+    setStatus(result.outcome === "forced_switched"
+      ? skill.name + " : " + (member?.displayName ?? targetRef.memberId) + " entre en combat avec les effets appliqués."
+      : skill.name + " sur " + (member?.displayName ?? targetRef.memberId) + " (réserve) : effet appliqué.", "ok");
     renderState();
     queueAiDecisions();
     return true;
@@ -1888,6 +1890,7 @@ export async function mountCoop2v2Test({
       battleFormat:format,
       recallCooldownMs: gameOptions.recallCooldownMs,
       beforeActorChanged: actorId => presenter.cancelActionPresentation(actorId),
+      cancelActiveActionForForcedSwitch: actorId => runtime?.cancelActionsForActor(actorId,{reason:"forced_switch"}),
       onActorChanged(actorId, result) {
         presenter.presentRosterArrival({ actorSlot: actorId, result });
         const actor = actorMeta(actorId);
