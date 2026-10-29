@@ -4,6 +4,7 @@ import {normalizeSkillDefinition} from "../../src/contracts/skill-definition.js"
 import {normalizeSkillEffectV1} from "../../src/contracts/skill-effect-v1.js";
 import {createCombatSession} from "../../src/core/combat/combat-session.js";
 import {createRosterSession} from "../../src/core/combat/roster-session.js";
+import {createCaptureCombatRosterControllerV1} from "../../src/ui/capture-combat-roster-controller-v1.js";
 
 const marker={id:"ronce-test",name:"Ronce",polarity:"detrimental",permanent:true,maxStacks:5};
 const fx=[{kind:"force_reserve_switch",targetScope:"target"},{kind:"apply_marker",targetScope:"target",marker,charges:2}];
@@ -97,4 +98,37 @@ test("editor authoring preserves force switch without inventing amount, target r
   assert.deepEqual(built[0],fx[0]);
   assert.equal(built[1].marker.id,"ronce-test");
   assert.deepEqual(humanSkillTargetRelationsFromTacticalEffectsV1(built,{form:"beam"}),["enemy"]);
+});
+
+test("real preview controller projects incoming enemy creature, canceling its outgoing active action",()=>{
+  const configs=Object.fromEntries(["p0","p1","e0","e1"].map(id=>[id,fighter(id)]));
+  const session=createCombatSession({distance:"medium",battleFormat:format,
+    fighters:[{...configs.p0,id:"player"},{...configs.e0,id:"opponent"}]});
+  const team=(slotId,ids)=>({slotId,activeMemberId:ids[0],members:ids.map(id=>({
+    id,creatureId:id,displayName:id,fighterConfigId:id
+  }))});
+  const changes=[],cancelled=[];
+  const visuals={
+    setCreatureFor(...args){changes.push(["creature",...args]);},
+    setSlotVisible(...args){changes.push(["visible",...args]);}
+  };
+  const controller=createCaptureCombatRosterControllerV1({
+    session,battleFormat:format,visuals,fighterConfigs:configs,
+    rosterDefinition:{teams:{player:team("player",["p0","p1"]),opponent:team("opponent",["e0","e1"])}},
+    skillIdsByCreature:{p0:["capture-vine"],e0:["old"],e1:["incoming"]},
+    cancelActiveActionForForcedSwitch:slot=>cancelled.push(slot),
+    beforeActorChanged:slot=>changes.push(["before",slot]),
+    onActorChanged:(slot,result)=>changes.push(["after",slot,result.outcome])
+  });
+  const targetRef={scope:"reserve",teamId:"opponent",memberId:"e1"};
+  assert.equal(controller.previewSkillOnTarget({actorId:"player",targetRef,skill:forceSkill()}).ok,true);
+  assert.equal(changes.length,0,"preview cannot mutate visuals");
+  const result=controller.useSkillOnTarget({actorId:"player",targetRef,skill:forceSkill()});
+  assert.equal(result.outcome,"forced_switched");
+  assert.deepEqual(cancelled,["opponent"]);
+  assert.deepEqual(changes.map(x=>x[0]),["before","creature","visible","after"]);
+  assert.deepEqual(changes[1].slice(0,3),["creature","opponent","e1"]);
+  assert.deepEqual(controller.skillIdsFor("opponent"),["incoming"]);
+  assert.equal(controller.snapshot().opponent.activeMemberId,"e1");
+  controller.dispose();
 });
