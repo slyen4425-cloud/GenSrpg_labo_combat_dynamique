@@ -9394,7 +9394,7 @@
     },
     {
       "id": "pack:capture:sprite-spores-expansives-projectile-sphere-02",
-      "label": "Nuage de spores expansif — sphère autour de la créature (Nature / Poison)",
+      "label": "Projectile expansif — Nuage de spores sphérique V2 (Nature / Poison)",
       "assetType": "sprite",
       "mediaType": "image",
       "category": "skill",
@@ -9408,7 +9408,9 @@
         "radial",
         "caster-centered",
         "non-travel",
-        "animated"
+        "animated",
+        "expanding",
+        "projectile"
       ],
       "source": {
         "scope": "pack",
