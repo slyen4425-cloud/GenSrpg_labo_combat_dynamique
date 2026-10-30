@@ -7,15 +7,13 @@ const STAGE_FIELDS = Object.freeze([
   ["[data-skill-cast-playback]", "start"],
   ["[data-skill-beam-start-fx]", "start"],
   ["[data-skill-beam-start-scale]", "start"],
-  ["[data-skill-cast-audio]", "start"],
   ["[data-skill-travel-fx]", "body"],
   ["[data-skill-travel-scale]", "body"],
   ["[data-skill-travel-playback]", "body"],
-  ["[data-skill-travel-audio]", "body"],
   ["[data-skill-impact-fx]", "impact"],
   ["[data-skill-impact-scale]", "impact"],
   ["[data-skill-impact-duration]", "impact"],
-  ["[data-skill-impact-audio]", "impact"]
+  // Audio choices remain permanently visible in the Audio card for every form.
 ]);
 
 const LAYOUTS = new WeakMap();

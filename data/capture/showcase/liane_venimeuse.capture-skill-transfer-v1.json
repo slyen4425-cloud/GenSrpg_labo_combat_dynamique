@@ -116,10 +116,13 @@
     },
     "presentation": {
       "id": "skill:liane_venimeuse",
-      "version": 9,
+      "version": 2,
       "subjectType": "skill",
       "subjectId": "liane_venimeuse",
       "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-ronce-01"
+        },
         "travel": {
           "assetId": "pack:capture:sprite-liane-epineuse-rayon-01",
           "displayScale": 0.85,
@@ -130,19 +133,16 @@
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "travel-start",
-          "playbackMode": "stretch",
+          "playbackMode": "once",
           "rotationDeg": 0,
           "opacity": 1,
           "layerByView": {
             "player": "front",
             "opponent": "front"
-          },
-          "offsetMode": "same"
+          }
         }
       },
-      "audio": {},
-      "statusVisuals": {},
-      "feedback": {}
+      "audio": {}
     }
   }
 }

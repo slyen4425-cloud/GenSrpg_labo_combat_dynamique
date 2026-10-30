@@ -1,3 +1,14 @@
+## 2026-10-30 — Liane venimeuse r2 + Audio rayon : sélecteurs bloqués
+
+- **Source auteur immuable** : gensrpg-capture-skill-liane_venimeuse(1).json, 3722 octets, SHA256 fca80f26c714fe7d0f8418b9c077154c32e9c731affd562f4bc83b273a350ab0, blob Git d06db6a60fc3a7ac3b0f0119fe6055087523b70d. Archive data/capture/source-exports/gensrpg-capture-skill-liane_venimeuse-r2-2026-10-30.json. Vitrine data/capture/showcase/liane_venimeuse.capture-skill-transfer-v1.json remplacée octet pour octet, identifiant Liane inchangé; cible réserve, durée, marqueurs, réactions conservés.
+- **Cause racine audio** : CaptureBeamStageLayout déplaçait uniquement les trois labels Cast/Trajet/Impact de l'étape 8 « Audio de la capacité » vers les fieldsets visuels du rayon. Il restait uniquement « Zone/Aura » à l'emplacement Audio, perçu comme impossibilité de placer les sons. Les labels étaient physiquement ailleurs, sans panne du catalogue ni du moteur.
+- **Correction** : BeamStageLayout ne déplace plus que les 12 champs visuels. Les **4 sélecteurs audio canoniques** (cast, travel, impact, aura) et les boutons « Écouter » restent ensemble dans l'étape 8, quelle que soit la forme; lecture, export et import déjà propriétaires inchangés. Le panneau Rayon indique désormais l'emplacement des sons. Révision de modules frontend actualisée.
+- **Base** : gh-pages f728b6b613adaa9c10d61a2ab7fbadb669ee41a4, global-assets e6ef519b062e9e590faae63130ec12bfab263bac protégée, checkpoint START checkpoint/lab-start-liane-r2-audio-rayon-2026-10-30, travail work/lab-liane-r2-audio-rayon-2026-10-30. RED stage audio à 35f07d8c506444010a3571e82a9b24f290cd1f30.
+- **Contrôles** : tests Node HTML/DOM, fichier auteur exact et runtime visuel; vraie sentinelle Chromium sur Rayon, 12 champs visuels + 4 audio visibles en étape 8. Aucune modification des sons eux-mêmes ni du moteur de combat. CI Foundation + 4 Chromium avant GREEN, PR gh-pages puis Pages.
+- **Attention produit** : l'auteur a choisi playbackMode=once pour les 12 frames de liane (catalogue 150 ms/image) sur un trajet de 800 ms. Nous conservons ce choix exact, mais l'animation peut ne pas dérouler ses 12 images avant l'impact. À vérifier visuellement sur smartphone.
+
+---
+
 ## 2026-10-30 — Navigation native Lab depuis Monster Capture (onglets de l'Éditeur)
 - Base stable gh-pages@8eaaebe31de94a91a3599513842f0535a00bb4e6 (8 contrôles CI SUCCESS) ; START checkpoint/lab-start-capture-author-deep-link-2026-10-30 ; WORK work/lab-capture-author-deep-link-2026-10-30.
 - Le véritable GenSrpg doit réutiliser l'éditeur auteur actuel du Labo pour Créatures, Compétences et Règles, ainsi que le bestiaire officiel. La navigation par paramètre `?tab=creature|skills|combat` demande à l'unique contrôleur natif `mountCaptureEditorHumanV2` de sélectionner son vrai bouton seulement après `editor.ready`. Aucune source métier, éditeur ou sauvegarde GenSrpg n'entre dans le Labo.
