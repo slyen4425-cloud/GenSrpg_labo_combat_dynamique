@@ -1,3 +1,12 @@
+## 2026-10-30 — Contrat natif de difficulté PNJ, préparation sans promotion (NON GREEN produit)
+- BASE Combat main@248f718ec924106d16999d59e5dc8310f8450180 ; START checkpoint/lab-start-trainer-difficulty-native-policy-2026-10-30 ; branche work/lab-trainer-difficulty-native-policy-2026-10-30. Chantier distinct côté propriétaire Combat Lab, sans changement GenSrpg ni Exploration.
+- Périmètre : un adaptateur de projection des paramètres natifs par acteur, un test de contrat et ce journal. Protéger CombatSession, les éditeurs, les fiches auteur, les sauvegardes, les catalogues et les autres modes.
+- Cause démontrée : GenSrpg #219 ne transmet pas trainerDifficulty à buildEncounter ; la simple présence d'une liste trainerDifficultyLevels ne modifie ni PV ni dégâts. Ne jamais déclarer un dresseur jouable sur cette base.
+- Critère de ce jalon : politique entièrement renseignée par l'auteur (4 niveaux distincts sans valeurs par défaut), projection du seul acteur adverse dans le vrai format de combattant Lab, joueur intact même pour une espèce identique, refus de la réserve non prise en charge, TDD RED→GREEN, CI Fondation + navigateurs. Aucun choix de coefficients publié dans les données, aucune activation du runtime, aucune promotion main sans CI et validation.
+- Après ce jalon : brancher le contrat au constructeur natif de rencontre et à l'éditeur auteur, appliquer également la politique à chaque membre de réserve, prouver le changement effectif en CombatSession et en Playwright, puis repinner GenSrpg. Les 99 espèces manquantes restent bloquantes séparément.
+
+---
+
 ## 2026-10-30 — Lot consommateur main-only, contrats validés isolés
 - START Combat main@29b57811b5510686bbdc7efbbc58d8657862e841 ; checkpoint `checkpoint/lab-start-main-consumers-contract-2026-10-30` ; branche `work/lab-main-consumers-contract-2026-10-30`.
 - TDD RED `fab8149e8a57ec9371e3d7dcd51d581a55a0b9c5` : comportement scène `embeddedBattle`, lifecycle natif et réaction Défense Moussado requis.
