@@ -1416,8 +1416,9 @@ const server = createServer(async (req, res) => {
         'document.querySelectorAll("[data-beam-stage-fields="+x+"] label").length).join(",");' +
         'h.dataset.beamAudioCardProbe=["cast","travel","impact","zone"].every(slot=>{' +
         'const sel=document.querySelector("[data-skill-"+slot+"-audio]");' +
-        'return sel && sel.closest("article")?.querySelector("h2")?.textContent==="Audio de la capacité" &&' +
-        '!sel.closest("[hidden]") && !h.contains(sel);' +
+        'const card=sel?.closest("article");' +
+        'return card && !card.hidden && card.querySelector("h2")?.textContent?.trim()==="Audio de la capacité" &&' +
+        '!h.contains(sel) && !sel.closest("[data-beam-stage]");' +
         '})?"ok":"missing";' +
         '});</script>';
       contents = Buffer.from(html.replace("</head>", probe + "</head>"));
@@ -2281,9 +2282,9 @@ try {
   if (!/data-beam-audio-card-probe="ok"/.test(rayonDom) ||
        !/data-beam-probe="6,3,3"/.test(rayonDom) ||
       !/data-beam-active="true"/.test(rayonDom)) {
-    throw new Error("Rayon browser UI did not move the original 15 controls (including skill sounds) into 3 phases");
+    throw new Error("Rayon browser UI did not expose 12 visuals and all 4 canonical sounds in Audio: "+(rayonDom.match(/data-beam-(?:audio-card-)?probe="[^"]*"/g)??[]).join(" | "));
   }
-  console.log("Rayon browser UI: 7 + 4 + 4 canonical labels grouped successfully");
+  console.log("Rayon browser UI: 6+3+3 visuals, four audio selectors always in Audio card");
   // Optional global presentation host unavailable: creatures must still load.
   assertCreatures(await dumpDom(url, [
     "--host-resolver-rules=MAP raw.githubusercontent.com 127.0.0.1,EXCLUDE localhost"
