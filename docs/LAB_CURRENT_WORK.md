@@ -1,3 +1,11 @@
+## 2026-10-30 — Navigation native Lab depuis Monster Capture (onglets de l'Éditeur)
+- Base stable gh-pages@8eaaebe31de94a91a3599513842f0535a00bb4e6 (8 contrôles CI SUCCESS) ; START checkpoint/lab-start-capture-author-deep-link-2026-10-30 ; WORK work/lab-capture-author-deep-link-2026-10-30.
+- Le véritable GenSrpg doit réutiliser l'éditeur auteur actuel du Labo pour Créatures, Compétences et Règles, ainsi que le bestiaire officiel. La navigation par paramètre `?tab=creature|skills|combat` demande à l'unique contrôleur natif `mountCaptureEditorHumanV2` de sélectionner son vrai bouton seulement après `editor.ready`. Aucune source métier, éditeur ou sauvegarde GenSrpg n'entre dans le Labo.
+- Tests `tests/unit/capture-editor-deep-link-v1.test.mjs` sur les trois onglets natifs et le refus de sélecteurs inconnus ; `examples/dom-demo/capture-editor-v2.js` conserve intégralement son montage propriétaire. CI Fondation et navigateur obligatoire avant publication.
+- Le raccord effectif GenSrpg, la couverture des créatures historiques, les rencontres dresseurs et les données XP/drop sont traités séparément et ne doivent pas être présentés comme terminés par ce lot d'ergonomie. Ne pas fusionner sans CI de ce SHA.
+
+---
+
 ## 2026-10-30 — Liane venimeuse : temporalité native, esquive et contre (correction auteur)
 
 - Signalement smartphone : le pré-ciblage réserve appliquait immédiatement le remplacement et les marqueurs, sans préparation, trajet visible ni possibilité de réaction.

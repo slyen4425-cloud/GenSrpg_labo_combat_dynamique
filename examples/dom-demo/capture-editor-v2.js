@@ -14,6 +14,7 @@ import {
 import {
   mountCaptureEditorHumanV2
 } from "../../src/ui/capture-editor-human-v2.js?v=liane-timed-20261030";
+import {applyCaptureAuthorTabFromUrlV1} from "../../src/ui/capture-editor-deep-link-v1.js";
 import {
   createCreatorVisualAssetSessionV1
 } from "../../src/assets/creator-visual-asset-session-v1.js";
@@ -210,6 +211,18 @@ editor.ready.catch((error) => {
     creatureLibraryState.dataset.tone = "error";
   }
 });
+
+// Deep links from GenSrpg open the REAL published Lab editor, not an
+// alternate editor. Wait for the sole author controller before selecting tab.
+editor.ready.then(() => {
+  try {
+    applyCaptureAuthorTabFromUrlV1({root,href:window.location.href});
+  } catch(error) {
+    editorStatus.textContent = "Navigation de l'éditeur indisponible : "+(error?.message??String(error));
+    editorStatus.dataset.tone = "error";
+  }
+});
+
 
 let previewRuntime = null;
 const previewRuntimePromise = editor.ready
