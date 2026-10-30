@@ -28,9 +28,9 @@ class Node {
 const config=[
   ["[data-skill-socket]","start"],
   ["[data-skill-cast-fx]","start"],["[data-skill-cast-scale]","start"],["[data-skill-cast-playback]","start"],
-  ["[data-skill-beam-start-fx]","start"],["[data-skill-beam-start-scale]","start"],["[data-skill-cast-audio]","start"],
-  ["[data-skill-travel-fx]","body"],["[data-skill-travel-scale]","body"],["[data-skill-travel-playback]","body"],["[data-skill-travel-audio]","body"],
-  ["[data-skill-impact-fx]","impact"],["[data-skill-impact-scale]","impact"],["[data-skill-impact-duration]","impact"],["[data-skill-impact-audio]","impact"]
+  ["[data-skill-beam-start-fx]","start"],["[data-skill-beam-start-scale]","start"],
+  ["[data-skill-travel-fx]","body"],["[data-skill-travel-scale]","body"],["[data-skill-travel-playback]","body"],
+  ["[data-skill-impact-fx]","impact"],["[data-skill-impact-scale]","impact"],["[data-skill-impact-duration]","impact"]
 ];
 
 function testFixture(){
@@ -43,6 +43,7 @@ function testFixture(){
  const stages={};
  for(const step of ["start","body","impact"]){const stage=new Node(step,doc);host.append(stage);stages[step]=stage;selectors[`[data-beam-stage-fields="${step}"]`]=stage;}
  const labels={};
+ for(const selector of ["[data-skill-cast-audio]","[data-skill-travel-audio]","[data-skill-impact-audio]","[data-skill-zone-audio]"]){const label=new Node("label "+selector,doc),input=new Node("input "+selector,doc);label.append(input);audio.append(label);selectors[selector]=input;labels[selector]=label;}
  for(const [selector] of config){const label=new Node("label "+selector,doc);const input=new Node("input "+selector,doc);label.append(input);(selector.includes("-audio]")?audio:advanced).append(label);selectors[selector]=input;labels[selector]=label;}
  const root={ownerDocument:doc,querySelector(selector){return selectors[selector]??null;}};
  return {root,advanced,audio,host,stages,labels,form};
@@ -61,9 +62,10 @@ test("Rayon editor has one coherent three-phase section in Visuals, distinct fro
    assert.equal(html.split(`data-beam-stage-fields="${step}"`).length-1,1);
  }
  for(const [sel] of config){assert.equal(html.split(sel.slice(1,-1)).length-1,1,sel+" must remain ONE canonical control");}
+ for(const name of ["data-skill-cast-audio","data-skill-travel-audio","data-skill-impact-audio","data-skill-zone-audio"]) assert.equal(html.split(name).length-1,1,name+" must remain unique");
 });
 
-test("switching Rayon / Projectile reuses the same 15 canonical visual and audio controls, without copying values",()=>{
+test("Rayon keeps four audio controls in Audio while 12 visual controls relocate without copying values",()=>{
  const f=testFixture(),originalOrder=[...f.advanced.children],originalAudio=[...f.audio.children];
  const session=mountCaptureBeamStageLayoutV1(f.root);
  assert.deepEqual(f.advanced.children.filter(x=>x.name.startsWith("label ")),originalOrder);
@@ -72,10 +74,10 @@ test("switching Rayon / Projectile reuses the same 15 canonical visual and audio
  for(const [selector,stage] of config){
    assert.equal(f.labels[selector].parentNode,f.stages[stage]);
  }
- assert.equal(f.stages.start.children.length,7);
- assert.equal(f.stages.body.children.length,4);
- assert.equal(f.stages.impact.children.length,4);
- assert.equal(f.audio.children.filter(x=>x.name.startsWith("label ")).length,0,"audio choices must appear inside beam stages");
+ assert.equal(f.stages.start.children.length,6);
+ assert.equal(f.stages.body.children.length,3);
+ assert.equal(f.stages.impact.children.length,3);
+ assert.deepEqual(f.audio.children,originalAudio,"all four audio controls must stay in Audio even when form is beam");
  assert.equal(f.advanced.children.filter(x=>x.name.startsWith("label ")).length,0);
  f.root.querySelector("[data-skill-beam-start-fx]").value="pack:capture:test";
  f.root.querySelector("[data-skill-travel-audio]").value="gensrpg:audio:water-travel";
