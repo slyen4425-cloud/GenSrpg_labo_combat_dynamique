@@ -143,6 +143,17 @@
       "chargeTimeReductionPctPerPoint": 0,
       "maxHpPerPoint": 0,
       "damageReductionPctPerPoint": 0
+    },
+    {
+      "id": "glace",
+      "label": "Glace",
+      "damageChannel": "ice",
+      "resistanceChannel": "ice",
+      "damagePctPerPoint": 1,
+      "resistancePctPerPoint": 1,
+      "chargeTimeReductionPctPerPoint": 0,
+      "maxHpPerPoint": 0,
+      "damageReductionPctPerPoint": 0
     }
   ]
 }
