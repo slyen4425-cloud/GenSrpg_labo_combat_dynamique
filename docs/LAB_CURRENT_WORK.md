@@ -1,3 +1,14 @@
+## 2026-10-30 — Import sélectif de la base auteur Nature (Grainou + 4 compétences)
+
+- **Source auteur** : `gensrpg-capture-database-v1(5).json`, 744006 octets, SHA-256 `e9826054f33e0c0207606bad75ead1429253c739e119f2ab593e2e7a91215af5`, 104 créatures et 128 compétences. Fichier de la bibliothèque utilisateur du 30 octobre 2026 à 12 h 40 UTC. Ne pas republier la base complète ni toucher aux autres enregistrements.
+- **Diff sémantique exact contre gh-pages** : (1) `graine_sansue_cap` : audio travel+impact; (2) `Spore_soporifique` : icône et audio travel+impact; (3) `liane_venimeuse` : audio travel; (4) `explosion_florale` : icône et audio impact; (5) `crea_nat_1` Grainou : ajout liane dans `draft.skillIds` et `loadout.slots.slot-ultimate`. Tous les autres champs identiques. `coupe_feuille` identique (blob `0b516301eef8e4ccb1c5734f7649159b1434ec6a`) : laissé intact.
+- **Format et propriétaire** : cinq exports `data/capture/showcase/*.capture-{skill,creature}-transfer-v1.json`, recréés depuis les objets d'origine avec sérialisation JSON 2 espaces et saut de ligne. Les blobs Git ont été contrôlés contre des empreintes calculées indépendamment sur la base auteur. Catalogue/chargeur Showcase conservé, `fetch` en `cache:"no-store"` existant. Aucun second catalogue ou moteur.
+- **Médias** : les identifiants d'icônes sont présents dans `global-assets` et les quatre sons déjà dans les 203 entrées du catalogue audio. Aucun média ajouté ni `global-assets` modifié.
+- **Gouvernance** : départ gh-pages@e33e3aea5a9aba78f592f02e8a6b3f09c47ae9c0 ; global-assets@e6ef519b062e9e590faae63130ec12bfab263bac ; checkpoint START `checkpoint/lab-start-nature-author-base-2026-10-30` ; branche `work/lab-nature-author-base-2026-10-30`. Test RED `tests/integration/nature-author-base-2026-10-30.test.mjs`, commit 37f7d1fca013782fde6884f693671215e0b0d670, CI RED 41058323660.
+- **Validation de clôture** : contrôle Node des blobs exacts, des audio+icônes, de l'ultime Grainou et de l'intégrité de Coupe feuille ; CI Foundation + quatre Chromium, checkpoint GREEN, PR gh-pages et GitHub Pages SUCCESS. La validation sensorielle audio sur smartphone reste distincte du GREEN technique.
+
+---
+
 ## 2026-10-30 — Liane venimeuse r2 + Audio rayon : sélecteurs bloqués
 
 - **Source auteur immuable** : gensrpg-capture-skill-liane_venimeuse(1).json, 3722 octets, SHA256 fca80f26c714fe7d0f8418b9c077154c32e9c731affd562f4bc83b273a350ab0, blob Git d06db6a60fc3a7ac3b0f0119fe6055087523b70d. Archive data/capture/source-exports/gensrpg-capture-skill-liane_venimeuse-r2-2026-10-30.json. Vitrine data/capture/showcase/liane_venimeuse.capture-skill-transfer-v1.json remplacée octet pour octet, identifiant Liane inchangé; cible réserve, durée, marqueurs, réactions conservés.
