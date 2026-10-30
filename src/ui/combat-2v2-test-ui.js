@@ -18,7 +18,7 @@ import {
   isSkillTargetAllowed,
   targetRelation
 } from "../core/combat/targeting.js";
-import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
+import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=liane-venimeuse-20261029";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-native-bidirectional-20261028";
 import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
@@ -1463,6 +1463,10 @@ export async function mountCoop2v2Test({
       return false;
     }
     pendingSkillId = null;
+    // Native RosterSession remains authoritative for reserve gameplay.
+    presenter.presentReserveSkill({
+      result, skill, actorSlot: controlledActorId(), targetSlot: targetRef.teamId
+    });
     const member = rosterController.snapshot()[targetRef.teamId]?.members.find(x=>x.id===targetRef.memberId);
     setStatus(result.outcome === "forced_switched"
       ? skill.name + " : " + (member?.displayName ?? targetRef.memberId) + " entre en combat avec les effets appliqués."
