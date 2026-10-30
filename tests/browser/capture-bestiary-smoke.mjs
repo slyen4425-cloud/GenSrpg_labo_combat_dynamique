@@ -9,6 +9,9 @@ import {once} from "node:events";
 const root=process.cwd();
 const fixture=JSON.parse(readFileSync("data/capture/showcase/crea_tox_2.capture-creature-transfer-v1.json","utf8")).draft;
 const visual=fixture.presentation.visual;
+const grainou=JSON.parse(readFileSync("data/capture/showcase/crea_nat_1.capture-creature-transfer-v1.json","utf8")).draft;
+const grainouVisual=grainou.presentation.visual;
+const liane=JSON.parse(readFileSync("data/capture/showcase/liane_venimeuse.capture-skill-transfer-v1.json","utf8")).draft;
 const media=(data,file,assetType="sprite")=>({
   id:data.assetId,assetType,mediaType:"image",resource:{file}
 });
@@ -17,7 +20,11 @@ const catalog={assets:[
   media(visual.back,"capture/creatures/venombre/runtime/venombre_player.webp"),
   media(visual.icon,"capture/creatures/venombre/runtime/venombre_icon.webp","portrait"),
   {id:"pack:capture:icon-skill-toxine-01",assetType:"icon",mediaType:"image",
-    resource:{file:"capture/icons/skills/icon_skill_toxine_01.webp"}}
+    resource:{file:"capture/icons/skills/icon_skill_toxine_01.webp"}},
+  media(grainouVisual.front,"capture/creatures/heriplante/runtime/heriplante_adversaire_face.png"),
+  media(grainouVisual.back,"capture/creatures/heriplante/runtime/heriplante_joueur_dos.png"),
+  media(grainouVisual.icon,"capture/creatures/heriplante/runtime/heriplante_icone.png","portrait"),
+  media(liane.presentation.visual.icon,"capture/icons/skills/icon_skill_ronce_01.webp","icon")
 ]};
 const probe=[
   "<script>",
@@ -38,14 +45,14 @@ const probe=[
   "  });",
   "  observer.observe(portrait,{childList:true,subtree:true});",
   "  setTimeout(()=>{",
-  "    const button=document.querySelector('.creature-choice');",
+  "    const button=[...document.querySelectorAll('.creature-choice')].find(b=>b.textContent.includes('Venombre'));",
   "    if(button)button.click();",
   "  },500);",
   "  setTimeout(()=>{",
   "    try {",
   "      const name=document.querySelector('[data-bestiary-name]').textContent;",
   "      const count=document.querySelector('[data-bestiary-count]').textContent;",
-  "      if(name!=='Venombre'||count!=='1 / 1')throw Error('bad entry:'+name+'/'+count);",
+  "      if(name!=='Venombre'||count!=='2 / 2')throw Error('bad entry:'+name+'/'+count);",
   "      if(!frontSeen)throw Error('front-only image missing');",
   "      if(document.querySelector('[data-bestiary]').dataset.bestiaryView!=='detail')throw Error('gallery did not open a page');",
   "      if(document.querySelectorAll('[data-bestiary-skills] .skill').length!==5)throw Error('equipped five-slot loadout not rendered');",
@@ -70,10 +77,26 @@ const probe=[
   "      if(document.querySelector('[data-bestiary-back]'))throw Error('rear view leaked');",
   "      const input=document.querySelector('[data-bestiary-search]');",
   "      input.value='aucune';input.dispatchEvent(new Event('input',{bubbles:true}));",
-  "      if(document.querySelector('[data-bestiary-count]').textContent!=='0 / 1')throw Error('search not connected');",
+  "      if(document.querySelector('[data-bestiary-count]').textContent!=='0 / 2')throw Error('search not connected');",
   "      input.value='venombre';input.dispatchEvent(new Event('input',{bubbles:true}));",
   "      if(document.querySelectorAll('.creature-choice').length!==1)throw Error('search reset failed');",
-  "      document.body.dataset.bestiarySmoke='pass:real-transfer:icon:generated-explanation:click:stat-tiles';",
+  "      input.value='grainou';input.dispatchEvent(new Event('input',{bubbles:true}));",
+"      if(document.querySelector('[data-bestiary-count]').textContent!=='1 / 2')throw Error('Grainou search failed');",
+"      const grainouButton=[...document.querySelectorAll('.creature-choice')].find(b=>b.textContent.includes('Grainou'));",
+"      if(!grainouButton)throw Error('Grainou missing from gallery');",
+"      grainouButton.click();",
+"      if(document.querySelector('[data-bestiary-name]').textContent!=='Grainou')throw Error('Grainou details missing');",
+"      const ultimate=[...document.querySelectorAll('[data-bestiary-skills] .skill__toggle[aria-expanded]')].find(b=>b.textContent.includes('Liane venimeuse'));",
+"      if(!ultimate)throw Error('Liane venimeuse ultimate missing');",
+"      const icon=ultimate.querySelector('img.skill__icon');",
+"      if(!icon||!icon.src.includes('icon_skill_ronce_01.webp'))throw Error('Liane icon mismatch');",
+"      ultimate.click();",
+"      const details=ultimate.nextElementSibling?.textContent??'';",
+"      if(!details.includes('Force la créature ennemie choisie dans sa réserve à entrer en combat'))throw Error('forced switch prose missing');",
+"      if(!details.includes('attaque touche'))throw Error('hit condition missing');",
+"      if(details.includes('force_reserve_switch')||details.includes('Effet non encore décrit'))throw Error('technical code leaked');",
+"      if(!details.includes('2 charges de Graine sansue')||!details.includes('2 charges de Poison'))throw Error('marker explanation lost');",
+"      document.body.dataset.bestiarySmoke='pass:real-transfer:venombre:grainou:force-switch:icon:markers';",
   "    }catch(error){document.body.dataset.bestiarySmoke='error:'+error.message;}",
   "    observer.disconnect();",
   "  },1700);",
