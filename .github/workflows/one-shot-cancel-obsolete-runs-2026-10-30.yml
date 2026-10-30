@@ -51,6 +51,14 @@ jobs:
               echo "::error::Refusing active or unknown status for $run_id: $state"
               exit 1
             fi
-            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null
-            echo "Requested cancellation of obsolete queued CI $run_id ($expected_branch)."
+            if gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null; then
+              echo "Normal cancellation requested: $run_id ($expected_branch)."
+            else
+              # GitHub can return 409 "has not been queued yet" even while its
+              # own list/detail endpoints say queued for weeks. Force cancellation
+              # is a second and LAST attempt on the same strictly verified run.
+              echo "GitHub refused normal cancellation, trying scoped force-cancel on $run_id"
+              gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/force-cancel" >/dev/null
+              echo "Force cancellation requested: $run_id ($expected_branch)."
+            fi
           done
