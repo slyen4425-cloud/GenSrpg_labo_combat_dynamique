@@ -1,5 +1,10 @@
 name: Laboratory CI
 
+# Same-ref CI supersession only; no cross-branch or Pages cancellation.
+concurrency:
+  group: lab-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
   pull_request:
@@ -7,6 +12,7 @@ on:
 jobs:
   foundation:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -16,6 +22,7 @@ jobs:
 
   creature-library-browser:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -30,6 +37,7 @@ jobs:
 
   firestorm-zone-growth-browser:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -40,6 +48,7 @@ jobs:
 
   expanding-wave-2v2-browser:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -50,6 +59,7 @@ jobs:
 
   expanding-wave-mobile-preview-browser:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
