@@ -48,6 +48,7 @@ import {
 import {
   createCapturePreviewDisplayModeV1
 } from "../../src/ui/capture-preview-display-mode-v1.js";
+import {mountCaptureTrainerDifficultyAuthorV1} from "../../src/ui/capture-trainer-difficulty-author-v1.js";
 const PROFILE_URLS = Object.freeze([
   new URL("../../data/profiles/biped.profile.json", import.meta.url),
   new URL("../../data/profiles/quadruped.profile.json", import.meta.url),
@@ -134,6 +135,12 @@ for (
   arenaSelect.append(element);
 }
 arenaSelect.value = "city";
+
+// The native Combat Lab editor is the sole author of trainer difficulty.
+// Blank by design; publication requires an explicit signed author transfer.
+const trainerDifficultyAuthor = mountCaptureTrainerDifficultyAuthorV1({
+  root: root.querySelector("[data-trainer-difficulty-author]")
+});
 
 // Independent per-game soundtrack authoring. No coupling to creature drafts,
 // skill FX, test-runtime timing or user-upload storage.

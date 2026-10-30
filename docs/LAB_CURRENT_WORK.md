@@ -1,3 +1,10 @@
+## 2026-10-30 — Auteur des quatre niveaux PNJ dans le VRAI éditeur Combat (PR #155, NON PROMU)
+- Périmètre identique à la branche de politique native, sans seconde interface GenSrpg ni valeur de difficulté fictive. Dans l'onglet Combat de `capture-editor-v2.html`, quatre lignes vierges sont configurables et vérifiées par le contrat natif `capture-trainer-difficulty-policy-v1`.
+- Export JSON versionné explicite, import soumis au remplacement consenti ; aucun coefficient présaisi, aucune écriture de sauvegarde, aucun `window` global, aucun second moteur. L'export PNJ est **distinct** de l'export créatures/compétences : il doit encore être revu, ajouté au catalogue source auteur signé, transporté vers GenSrpg et testé dans la vraie CombatSession avant promotion.
+- Test TDD ciblé : champs vierges refusés, quatre niveaux distincts, valeurs invalides refusées, import sans consentement refusé, UI de l'éditeur réel vérifiée. Fondation et quatre navigateurs à contrôler sur le commit exact. Les 99 espèces sans transferts et le parcours Android restent RED.
+
+---
+
 ## 2026-10-30 — Projection difficulté PNJ branchée à l'unique CombatSession (PR #155, NON GREEN produit)
 - Suite du même START et de la même branche #155, sans toucher main ni aux valeurs auteur. La politique de difficulté ne provient jamais de l'événement World : seul le `nativeCombatSource.trainerDifficultyPolicy` du paquet Combat Lab signé peut fournir les quatre valeurs, World ne transmet que le niveau 1–4.
 - Dans `mountCoop2v2Test`, le snapshot PV est d'abord contrôlé, puis la projection native par acteur est appliquée aux combattants passés à l'unique `createCombatSession`. Le mode sauvage sans difficulté est inchangé, une politique manquante ferme l'entrée, aucune règle fictive publiée. La réserve PNJ reste explicitement refusée.
