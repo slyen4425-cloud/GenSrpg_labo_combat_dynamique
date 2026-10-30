@@ -15,6 +15,9 @@ import {
 import {
   adaptCaptureSkillPresentationBinding
 } from "./capture-skill-presentation-adapter-v1.js";
+import {
+  normalizeCaptureTrainerDifficultyPolicyV1
+} from "./capture-trainer-difficulty-policy-v1.js";
 
 export function adaptCaptureCombatExportStackV1(input) {
   const exported = normalizeCaptureCombatExportV1(input);
@@ -69,6 +72,13 @@ export function adaptCaptureCombatExportStackV1(input) {
 
   return Object.freeze({
     battleFormat: adaptCaptureExportToBattleFormat(exported),
+    // This is the sole native owner of the signed difficulty policy. It
+    // carries data only; CombatSession applies it only for a trainer event.
+    ...(exported.battle.trainerDifficultyPolicy === undefined ? {} : {
+      trainerDifficultyPolicy: normalizeCaptureTrainerDifficultyPolicyV1(
+        exported.battle.trainerDifficultyPolicy
+      )
+    }),
     skillSpeedMultiplier:
       exported.battle.skillSpeedMultiplier,
     ...(exported.battle.recallPreparationMs === undefined ? {} : { recallPreparationMs: exported.battle.recallPreparationMs }),
