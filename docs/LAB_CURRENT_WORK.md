@@ -1,3 +1,11 @@
+## 2026-10-30 — Lot consommateur main-only, contrats validés isolés
+- START Combat main@29b57811b5510686bbdc7efbbc58d8657862e841 ; checkpoint `checkpoint/lab-start-main-consumers-contract-2026-10-30` ; branche `work/lab-main-consumers-contract-2026-10-30`.
+- TDD RED `fab8149e8a57ec9371e3d7dcd51d581a55a0b9c5` : comportement scène `embeddedBattle`, lifecycle natif et réaction Défense Moussado requis.
+- Correction limitée au port officiel `mountCaptureCombatPreviewV1`, branchement `mountCoop2v2Test` sans seconde session, lifecycle déjà validé et ajout exact de la réaction Moussado. Aucun autre code de développement importé. Source globale de données demeure Combat `main` après éventuelle promotion.
+- Aucun commit sur main avant 5 CI Laboratoire GREEN, revue et autorisation de promotion appropriée ; PR de validation exclusivement.
+
+---
+
 ## 2026-10-29 — Réconciliation de main Combat avec le Showcase auteur publié
 
 - Base : `main@2e18bda047eb8f4f91115c2198dcc3ec4e02312c`; START : `checkpoint/lab-start-author-showcase-main-reconcile-2026-10-29`; travail : `work/lab-author-showcase-main-reconcile-2026-10-29`.

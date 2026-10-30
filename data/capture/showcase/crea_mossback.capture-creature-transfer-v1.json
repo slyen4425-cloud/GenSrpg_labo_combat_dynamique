@@ -89,7 +89,14 @@
       "energyChargeIntervalMs": 0,
       "movementEnergyPerStep": 0,
       "chargeTimeModifierPct": 0,
-      "approachTimeModifierPct": 25
+      "approachTimeModifierPct": 25,
+      "reaction": {
+        "type": "defense",
+        "maxCharges": 2,
+        "rechargeMs": 30000,
+        "activeWindowMs": 250,
+        "damageReductionPct": 50
+      }
     },
     "skillIds": [
       "lib_earth_guard",
