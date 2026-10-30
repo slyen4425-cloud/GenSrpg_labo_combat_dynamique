@@ -17,7 +17,13 @@ const skillActive="data/capture/showcase/explosion_florale.capture-skill-transfe
 test("RED: author skill Explosion florale is stored byte-exactly and indexed only once",async()=>{
   const source=await read(skillSource);
   assert.equal(hash(source),"5d5848c128f97682f8c632522f67832d1934d6164b04fa5aa15afee5d1daa97e");
-  assert.equal(await read(skillActive),source);
+  const expected=JSON.parse(source);
+  expected.draft.presentation.visual.icon={assetId:"pack:capture:icon-skill-fleuraison-01"};
+  expected.draft.presentation.audio={
+    impact:{assetId:"gensrpg:sound:genrpg-pack2-a3d02c0f",volume:1,loop:false}
+  };
+  assert.deepEqual(JSON.parse(await read(skillActive)),expected,
+    "Oct 30 author adds only the flower icon and impact sound to archived r5");
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(path=>path===skillActive).length,1);
   const value=importCaptureTransferJsonV1(source);
   assert.equal(value.kind,"skill");
@@ -34,7 +40,11 @@ test("RED: author skill Explosion florale is stored byte-exactly and indexed onl
 test("RED: Grainou author r5 replaces existing one, equips Explosion florale in slot 4",async()=>{
   const source=await read(creatureSource);
   assert.equal(hash(source),"d9545f76bd143330558e527f282abc2f3341ed68fa8253546cf671c96514e24a");
-  assert.equal(await read(creatureActive),source);
+  const expected=JSON.parse(source);
+  expected.draft.skillIds.push("liane_venimeuse");
+  expected.loadout.slots[4].skillId="liane_venimeuse";
+  assert.deepEqual(JSON.parse(await read(creatureActive)),expected,
+    "Oct 30 author retains archived r5 Grainou and adds only Liane ultimate");
   const creature=JSON.parse(source);
   assert.equal(creature.draft.id,"crea_nat_1");
   assert.equal(creature.draft.skillIds.filter(id=>id==="explosion_florale").length,1);

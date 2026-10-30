@@ -31,8 +31,11 @@ for(const [id,kind] of [["crea_nat_1","creature"],["coupe_feuille","skill"]]){
     const priorR4="data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r4.json";
     assert.equal(JSON.parse(await read(priorR4)).loadout.slots[3].skillId,null,"historical r4 is immutable");
     const latest="data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r5.json";
-    assert.equal(await read(live),await read(latest),
-      "active creature must equal newest author export, without erasing historical provenance");
+    const expected=JSON.parse(await read(latest));
+    expected.draft.skillIds.push("liane_venimeuse");
+    expected.loadout.slots[4].skillId="liane_venimeuse";
+    assert.deepEqual(JSON.parse(await read(live)),expected,
+      "historical r5 remains immutable; Oct 30 author added only Liane in skillIds and ultimate");
   }
   const catalog=kind==="creature"?CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1:CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1;
   assert.equal(catalog.filter(p=>p===live).length,1);
