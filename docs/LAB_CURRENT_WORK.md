@@ -6,7 +6,8 @@
 - START : `checkpoint/lab-start-bestiary-reserve-switch-2026-10-30` ; WORK : `work/lab-bestiary-reserve-switch-2026-10-30`.
 - Fichiers autorisés : `src/ui/capture-skill-explanation-v1.js`, sentinelle `tests/unit/capture-bestiary-reserve-switch-prose-2026-10-30.test.mjs`, sentinelle navigateur `tests/browser/capture-bestiary-smoke.mjs`, révision de cache des seuls modules du chemin Bestiaire (`src/ui/capture-bestiary-cards-v1.js`, `examples/dom-demo/bestiary.js`, `examples/dom-demo/bestiary.html`), documentation et ce journal. Aucun changement des règles, compétences, assets, catalogue ou GenSrpg.
 - Tests : RED→GREEN unitaires du vrai export Liane, autres compétences et descriptions de réserve ; vrai Bestiaire Chromium ; CI cinq jobs et Pages avant clôture. Décrire la cible choisie en réserve, l'échange sur coup confirmé et l'application des marqueurs à la créature amenée sur le terrain ; ne pas afficher de code interne.
-- Statut : travail en cours ; GREEN seulement après preuves des sentinelles, de la CI et du déploiement.
+- Preuves : sentinelle Node sur vrai export Liane/ultime Grainou, marqueurs et autres compétences Nature ; navigateur réel Chromium ouvrant Grainou puis Liane avec icône Ronce et affichant la nouvelle prose ; CI `Laboratory CI` 5/5 SUCCESS sur edf6a46d44d6e7ad90572cc9bafe6ab183272171 (run 41107148219). Révision de cache en chaîne du Bestiaire pour mobile ; aucune modification du gameplay, compétences, assets ou catalogue.
+- Clôture : checkpoint GREEN uniquement au SHA de validation finale, PR #157 vers gh-pages et preuve de Pages SUCCESS sur le SHA publié. Pas de validation sensorielle Pixel revendiquée.
 
 ---
 
