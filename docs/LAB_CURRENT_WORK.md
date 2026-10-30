@@ -4,7 +4,7 @@
 - Autorité unique : `src/ui/capture-skill-explanation-v1.js`, projection en lecture seule de `normalizeSkillDefinition`. Aucun texte figé sur la fiche, aucun changement au moteur ni aux JSON utilisateur.
 - Base : gh-pages@5bb179a7096443a2c18b3e5e33fe36c13e11a287 ; médias global-assets@e6ef519b062e9e590faae63130ec12bfab263bac (inchangés).
 - START : `checkpoint/lab-start-bestiary-reserve-switch-2026-10-30` ; WORK : `work/lab-bestiary-reserve-switch-2026-10-30`.
-- Fichiers autorisés : `src/ui/capture-skill-explanation-v1.js`, sentinelle `tests/unit/capture-bestiary-reserve-switch-prose-2026-10-30.test.mjs`, sentinelle navigateur `tests/browser/capture-bestiary-smoke.mjs`, documentation et ce journal. Aucun changement des règles, compétences, assets, catalogue ou GenSrpg.
+- Fichiers autorisés : `src/ui/capture-skill-explanation-v1.js`, sentinelle `tests/unit/capture-bestiary-reserve-switch-prose-2026-10-30.test.mjs`, sentinelle navigateur `tests/browser/capture-bestiary-smoke.mjs`, révision de cache des seuls modules du chemin Bestiaire (`src/ui/capture-bestiary-cards-v1.js`, `examples/dom-demo/bestiary.js`, `examples/dom-demo/bestiary.html`), documentation et ce journal. Aucun changement des règles, compétences, assets, catalogue ou GenSrpg.
 - Tests : RED→GREEN unitaires du vrai export Liane, autres compétences et descriptions de réserve ; vrai Bestiaire Chromium ; CI cinq jobs et Pages avant clôture. Décrire la cible choisie en réserve, l'échange sur coup confirmé et l'application des marqueurs à la créature amenée sur le terrain ; ne pas afficher de code interne.
 - Statut : travail en cours ; GREEN seulement après preuves des sentinelles, de la CI et du déploiement.
 
