@@ -1,3 +1,11 @@
+## 2026-10-30 — Projection difficulté PNJ branchée à l'unique CombatSession (PR #155, NON GREEN produit)
+- Suite du même START et de la même branche #155, sans toucher main ni aux valeurs auteur. La politique de difficulté ne provient jamais de l'événement World : seul le `nativeCombatSource.trainerDifficultyPolicy` du paquet Combat Lab signé peut fournir les quatre valeurs, World ne transmet que le niveau 1–4.
+- Dans `mountCoop2v2Test`, le snapshot PV est d'abord contrôlé, puis la projection native par acteur est appliquée aux combattants passés à l'unique `createCombatSession`. Le mode sauvage sans difficulté est inchangé, une politique manquante ferme l'entrée, aucune règle fictive publiée. La réserve PNJ reste explicitement refusée.
+- Tests ajoutés : même espèce joueur/adversaire, PV et dégâts mesurés dans une vraie CombatSession, absence de politique auteur refusée, source World non autorisée à fournir ses propres coefficients, garde-fou de câblage réel. CI Fondation + navigateurs exigée sur HEAD final ; aucune fusion/activation avant preuve.
+- RESTE BLOQUANT : l'éditeur auteur ne publie pas encore une politique validée et l'export Capture ne transporte pas encore ce champ ; GenSrpg doit fournir le niveau typé à embeddedBattle et recertifier le parcours vrai index. Les 99 espèces sans transfert officiel restent RED. Ce lot est un raccord natif conditionnel, PAS un dresseur jouable.
+
+---
+
 ## 2026-10-30 — Contrat natif de difficulté PNJ, préparation sans promotion (NON GREEN produit)
 - BASE Combat main@248f718ec924106d16999d59e5dc8310f8450180 ; START checkpoint/lab-start-trainer-difficulty-native-policy-2026-10-30 ; branche work/lab-trainer-difficulty-native-policy-2026-10-30. Chantier distinct côté propriétaire Combat Lab, sans changement GenSrpg ni Exploration.
 - Périmètre : un adaptateur de projection des paramètres natifs par acteur, un test de contrat et ce journal. Protéger CombatSession, les éditeurs, les fiches auteur, les sauvegardes, les catalogues et les autres modes.

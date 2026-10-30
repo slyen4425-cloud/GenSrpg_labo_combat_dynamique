@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createCombatSession} from '../../src/core/combat/combat-session.js';
-import {normalizeCaptureTrainerDifficultyPolicyV1,applyCaptureTrainerDifficultyPolicyV1} from '../../src/adapters/input/capture/capture-trainer-difficulty-policy-v1.js';
+import {normalizeCaptureTrainerDifficultyPolicyV1,applyCaptureTrainerDifficultyPolicyV1,projectCaptureEmbeddedTrainerFightersV1} from '../../src/adapters/input/capture/capture-trainer-difficulty-policy-v1.js';
 
 const policy={schema:'capture-trainer-difficulty-policy-v1',version:1,levels:[
  {level:1,hpMultiplier:1,outgoingDamagePctBonus:0},
@@ -60,4 +60,34 @@ test('the projected opponent stats reach the real native CombatSession, not just
  assert.equal(fighters.opponent.maxHp,100);
  assert.equal(fighters.opponent.outgoingDamagePct,23);
  assert.equal(fighters.opponent.hp,80);
+});
+
+test('native embedded mount uses only signed Lab policy to project trainer stats into CombatSession',()=>{
+ const base=source();
+ const withSavedHp=base.fighters.map(f=>({...f,initialHp:f.id==='player'?72:40}));
+ const args={battleFormat:base.battleFormat,fighters:withSavedHp,roster:base.roster,
+  trainerDifficultyPolicy:policy,embeddedBattle:{trainerDifficulty:3}};
+ const fighters=projectCaptureEmbeddedTrainerFightersV1(args);
+ const session=createCombatSession({distance:'medium',fighters});
+ const actual=session.snapshot().fighters;
+ assert.equal(actual.player.hp,72);
+ assert.equal(actual.player.maxHp,100);
+ assert.equal(actual.opponent.hp,60);
+ assert.equal(actual.opponent.maxHp,75);
+ assert.equal(actual.opponent.outgoingDamagePct,13);
+ assert.equal(withSavedHp[1].maxHp,50);
+ const wild=projectCaptureEmbeddedTrainerFightersV1({...args,embeddedBattle:{initialHpByActor:{player:72,opponent:40}}});
+ assert.equal(wild,withSavedHp,'wild remains byte-identical without NPC level');
+ assert.throws(()=>projectCaptureEmbeddedTrainerFightersV1({
+  ...args,trainerDifficultyPolicy:null,
+  embeddedBattle:{trainerDifficulty:3,trainerDifficultyPolicy:policy}
+ }),/Signed Combat Lab author/i,'World cannot inject fake modifiers');
+});
+test('the real native Combat mount wires the authored NPC projection before createCombatSession',async()=>{
+ const fs=await import('node:fs');
+ const ui=fs.readFileSync(new URL('../../src/ui/combat-2v2-test-ui.js',import.meta.url),'utf8');
+ const call=ui.indexOf('const nativeFighters = projectCaptureEmbeddedTrainerFightersV1(');
+ const session=ui.indexOf('const session = createCombatSession(');
+ assert.ok(call>=0&&session>call,'NPC modifiers must reach the real session, not a display-only view');
+ assert.match(ui,/trainerDifficultyPolicy: input\.trainerDifficultyPolicy \?\? null/);
 });

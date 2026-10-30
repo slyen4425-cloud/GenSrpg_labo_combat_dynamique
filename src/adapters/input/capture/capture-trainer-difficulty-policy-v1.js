@@ -103,3 +103,25 @@ export function applyCaptureTrainerDifficultyPolicyV1({nativeCombatSource,traine
   })
  });
 }
+
+/**
+ * Native embedded-session seam. The consumer may select the NPC's difficulty
+ * level, but the four actual modifiers come ONLY from the signed Lab combat
+ * source. No consumer-supplied policy, second session, or implicit defaults.
+ * Called after the original saved-HP snapshot is validated and attached, so
+ * enemy HP and damage are projected into the real CombatSession fighters.
+ */
+export function projectCaptureEmbeddedTrainerFightersV1({
+ battleFormat,fighters,roster,trainerDifficultyPolicy,embeddedBattle
+}={}) {
+ if (embeddedBattle==null ||
+     !Object.prototype.hasOwnProperty.call(embeddedBattle,'trainerDifficulty'))
+  return fighters;
+ if (!trainerDifficultyPolicy)
+  throw new TypeError('Signed Combat Lab author trainer difficulty policy is required');
+ return applyCaptureTrainerDifficultyPolicyV1({
+  nativeCombatSource:{battleFormat,fighters,roster},
+  trainerDifficulty:embeddedBattle.trainerDifficulty,
+  policy:trainerDifficultyPolicy
+ }).nativeCombatSource.fighters;
+}
