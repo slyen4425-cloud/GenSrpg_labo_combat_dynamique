@@ -31,6 +31,7 @@ export async function mountCaptureCombatPreviewV1({
   nativeVisualSource,
   presentationAssets = null,
   arenaLight = null,
+  embeddedBattle = null,
   mountVisuals = mountCombatDemo,
   mountCombat = mountCoop2v2Test
 }) {
@@ -59,6 +60,7 @@ export async function mountCaptureCombatPreviewV1({
         root,
         visuals,
         nativeCombatSource,
+        embeddedBattle,
         presentationAssets
       }),
       "mountCombat"
