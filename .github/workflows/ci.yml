@@ -27,6 +27,8 @@ jobs:
         run: node tests/browser/shadow-light-real-render-smoke.mjs
       - name: Real Chromium Capture Bestiaire (front only)
         run: node tests/browser/capture-bestiary-smoke.mjs
+      - name: Real Chromium Lab editor author deep-link creature skills combat
+        run: node tests/browser/capture-author-tab-deeplink-smoke.mjs
 
   firestorm-zone-growth-browser:
     runs-on: ubuntu-latest
