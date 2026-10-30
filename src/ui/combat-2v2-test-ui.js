@@ -9,7 +9,7 @@ import {
 import { captureCreatureReactionActionIdV1 } from "../contracts/capture-creature-defensive-reaction-v1.js";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-definition.js";
-import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js";
+import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js?v=liane-timed-20261030";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createEmbeddedCombatLifecycleV1 } from "./embedded-combat-lifecycle-v1.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js";
@@ -18,7 +18,7 @@ import {
   isSkillTargetAllowed,
   targetRelation
 } from "../core/combat/targeting.js";
-import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=liane-venimeuse-20261029";
+import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=liane-timed-20261030";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-native-bidirectional-20261028";
 import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
@@ -800,6 +800,9 @@ export async function mountCoop2v2Test({
   let disposed = false;
   let selectedTargetId = previewFormat.initialTargetId;
   let pendingSkillId = null;
+  // Only the selected reserve reference lives in UI; CombatRuntime owns the
+  // entire clock/reactions, and RosterSession owns all applied bench effects.
+  const pendingTimedReserveByActor = new Map();
   let runtime = null;
   let rosterController = null;
   let rosterPanel = null;
@@ -1456,23 +1459,30 @@ export async function mountCoop2v2Test({
       renderAvailability();
       return false;
     }
-    const result = rosterController.useSkillOnTarget({actorId:controlledActorId(),targetRef,skill});
+    const actorId=controlledActorId();
+    const staged=rosterController.prepareSkillOnTarget({actorId,targetRef,skill});
+    if (!staged.ok) {
+      setStatus(skill.name + " : " + staged.outcome + ".", "warn");
+      renderAvailability();
+      return false;
+    }
+    // Register the selected bench member before starting: a zero-duration
+    // skill can be resolved synchronously by the canonical Runtime.
+    const intent={skill,targetRef,expectedActiveMemberId:staged.expectedActiveMemberId,
+      targetId:staged.targetId};
+    pendingTimedReserveByActor.set(actorId,intent);
+    const result=runtime.startSkill({actorId,targetId:staged.targetId,skill:staged.skill});
     if (!result.ok) {
+      if (pendingTimedReserveByActor.get(actorId)===intent)pendingTimedReserveByActor.delete(actorId);
       setStatus(skill.name + " : " + result.outcome + ".", "warn");
       renderAvailability();
       return false;
     }
-    pendingSkillId = null;
-    // Native RosterSession remains authoritative for reserve gameplay.
-    presenter.presentReserveSkill({
-      result, skill, actorSlot: controlledActorId(), targetSlot: targetRef.teamId
-    });
-    const member = rosterController.snapshot()[targetRef.teamId]?.members.find(x=>x.id===targetRef.memberId);
-    setStatus(result.outcome === "forced_switched"
-      ? skill.name + " : " + (member?.displayName ?? targetRef.memberId) + " entre en combat avec les effets appliqués."
-      : skill.name + " sur " + (member?.displayName ?? targetRef.memberId) + " (réserve) : effet appliqué.", "ok");
-    renderState();
-    queueAiDecisions();
+    pendingSkillId=null;
+    const member=rosterController.snapshot()[targetRef.teamId]?.members.find(x=>x.id===targetRef.memberId);
+    setStatus(skill.name + " se prépare : liane vers " +
+      (member?.displayName ?? targetRef.memberId) + ". L'adversaire peut esquiver ou contrer.", "accent");
+    renderAvailability();
     return true;
   }
 
@@ -1806,6 +1816,30 @@ export async function mountCoop2v2Test({
         queueAiDecisions();
         return;
       }
+      const reserveIntent=pendingTimedReserveByActor.get(resolution.actorId);
+      if (reserveIntent && reserveIntent.skill.id===resolution.skillId &&
+          reserveIntent.targetId===resolution.targetId) {
+        pendingTimedReserveByActor.delete(resolution.actorId);
+        if (resolution.ok && resolution.outcome==="hit") {
+          const result=rosterController.completeTimedSkillOnTarget({
+            actorId:resolution.actorId,targetRef:reserveIntent.targetRef,
+            skill:reserveIntent.skill,expectedActiveMemberId:reserveIntent.expectedActiveMemberId,
+            completedResolution:resolution
+          });
+          if (result.ok) {
+            const member=rosterController.snapshot()[reserveIntent.targetRef.teamId]?.members.find(
+              x=>x.id===reserveIntent.targetRef.memberId);
+            setStatus(reserveIntent.skill.name + " : " +
+              (member?.displayName ?? reserveIntent.targetRef.memberId) +
+              (result.outcome==="forced_switched" ? " capturée par la liane et forcée d'entrer en combat." : " touchée en réserve."), "ok");
+          } else {
+            setStatus(reserveIntent.skill.name + " : " + result.outcome + ".", "warn");
+          }
+        } else {
+          setStatus(reserveIntent.skill.name + " : " + resolution.outcome +
+            " — aucun remplacement ni marqueur appliqué.", "warn");
+        }
+      }
       const presentation = presenter.presentOutcome({
         resolution,
         actorSlot: resolution.actorId,
@@ -1854,6 +1888,7 @@ export async function mountCoop2v2Test({
     },
     onInterrupted(result) {
       const actorId = result.action?.actorId;
+      if (actorId) pendingTimedReserveByActor.delete(actorId);
       if (actorId && actionRefs[actorId]) {
         actionRefs[actorId].textContent = "Interrompu";
         setCharge(actorId);

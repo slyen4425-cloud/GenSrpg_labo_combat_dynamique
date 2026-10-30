@@ -83,6 +83,8 @@ export function createRosterSession({
   }
 
   const teams = new Map();
+  // Runtime resolutions are consumable once; roster effects never execute twice.
+  const consumedTimedReserveResolutions = new WeakSet();
 
   for (const [teamId, rawTeam] of Object.entries(roster.teams)) {
     const slotId = requiredString(rawTeam.slotId, `${teamId}.slotId`);
@@ -637,7 +639,9 @@ export function createRosterSession({
     actorId,
     targetRef: targetRefInput,
     skill,
-    preview = false
+    preview = false,
+    completedResolution = null,
+    expectedActiveMemberId = null
   }) {
     const targetRef =
       normalizeCombatTargetRefV1(
@@ -701,6 +705,23 @@ export function createRosterSession({
       });
     }
 
+    // Timed reserve casts are paid and resolved by CombatRuntime against the
+    // active opponent. RosterSession alone settles the bench effects on hit.
+    // A missed, dodged, blocked, reflected or interrupted cast does nothing.
+    if (completedResolution !== null) {
+      if (preview || typeof completedResolution !== "object" ||
+          !completedResolution.ok || completedResolution.outcome !== "hit" ||
+          completedResolution.actionType !== "skill" ||
+          completedResolution.actorId !== actorId ||
+          completedResolution.targetId !== team.slotId ||
+          completedResolution.skillId !== skill.id ||
+          consumedTimedReserveResolutions.has(completedResolution)) {
+        return Object.freeze({ok:false,outcome:"unconfirmed_reserve_hit",targetRef});
+      }
+      if (expectedActiveMemberId !== null && team.activeMemberId !== expectedActiveMemberId)
+        return Object.freeze({ok:false,outcome:"reserve_target_changed",targetRef});
+    }
+
     const forced = skill.effects?.some(effect => effect.kind === "force_reserve_switch") === true;
     if (forced && relation !== "enemy") {
       return Object.freeze({ok:false,outcome:"force_switch_enemy_only",targetRef});
@@ -746,7 +767,7 @@ export function createRosterSession({
           targetRelations: Object.freeze([...new Set([...skill.targetRelations, "self"])])
         })
       : stagedSkill;
-    const started = resolveSkillStart({
+    const started = completedResolution === null ? resolveSkillStart({
       state: currentState,
       actorId,
       targetId: team.slotId,
@@ -754,7 +775,7 @@ export function createRosterSession({
       skillSpeedMultiplier:
         combatSession.skillSpeedMultiplier,
       battleFormat
-    });
+    }) : Object.freeze({ok:true,action:completedResolution,events:Object.freeze([]),state:currentState});
     if (!started.ok) {
       return started;
     }
@@ -852,6 +873,7 @@ export function createRosterSession({
       );
 
     const forcedResult = forced ? forceSwitchMemberBySkill(team, member) : null;
+    if (completedResolution !== null) consumedTimedReserveResolutions.add(completedResolution);
     return Object.freeze({
       ok: true,
       outcome: forcedResult ? "forced_switched" : "resolved",
@@ -875,6 +897,24 @@ export function createRosterSession({
 
   function previewSkillOnTarget(options) {
     return useSkillOnTarget({...options,preview:true});
+  }
+
+  // The reserve selection is validated by RosterSession, but the cast against
+  // the currently visible defender uses the existing Combat Runtime clock,
+  // native reaction/dodge/counter and standard beam FX pipeline.
+  function prepareSkillOnTarget({actorId,targetRef,skill}) {
+    const preview = previewSkillOnTarget({actorId,targetRef,skill});
+    if (!preview.ok) return preview;
+    const team = teamOf(targetRef.teamId);
+    const staged = zeroEffectSkill(skill);
+    const relation = relationToReserveTeam(actorId,team);
+    return Object.freeze({
+      ok:true,outcome:"ready",targetId:team.slotId,
+      expectedActiveMemberId:team.activeMemberId,
+      skill:team.slotId === actorId && relation === "ally"
+        ? Object.freeze({...staged,targetRelations:Object.freeze([...new Set([...skill.targetRelations,"self"])])})
+        : staged
+    });
   }
 
   function applyCommandResolution(teamId, resolution) {
@@ -904,6 +944,7 @@ export function createRosterSession({
     reserveMemberSnapshot,
     useSkillOnTarget,
     previewSkillOnTarget,
+    prepareSkillOnTarget,
     selectReserve,
     recall,
     summon,

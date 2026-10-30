@@ -13,7 +13,7 @@ import {
 } from "../../src/adapters/audio/combat-soundtrack-preview-bridge-v1.js";
 import {
   mountCaptureEditorHumanV2
-} from "../../src/ui/capture-editor-human-v2.js?v=liane-venimeuse-20261029";
+} from "../../src/ui/capture-editor-human-v2.js?v=liane-timed-20261030";
 import {
   createCreatorVisualAssetSessionV1
 } from "../../src/assets/creator-visual-asset-session-v1.js";
@@ -25,11 +25,11 @@ import {
 } from "../../src/ui/capture-editor-preview-session-v2.js";
 import {
   loadCaptureEditorPreviewRuntimeV1
-} from "../../src/ui/capture-editor-preview-runtime-loader-v1.js?v=liane-venimeuse-20261029";
+} from "../../src/ui/capture-editor-preview-runtime-loader-v1.js?v=liane-timed-20261030";
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../../src/assets/global-visual-library.js?v=liane-venimeuse-20261029";
+} from "../../src/assets/global-visual-library.js?v=liane-timed-20261030";
 import {
   demoPresentationAssets
 } from "./demo-assets.js";

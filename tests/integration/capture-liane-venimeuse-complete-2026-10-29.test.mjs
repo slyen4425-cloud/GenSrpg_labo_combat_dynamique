@@ -36,18 +36,19 @@ test("RED: faithful original export, single beam-authoring preset and actual ass
   assert.equal(active.presentation.visual.travel.trigger,"travel-start");
 });
 
-test("RED: reserve result uses the existing presenter beam renderer once, never on failure",()=>{
-  const played=[];
+test("native beam is planned at release, not projected after an already completed swap",async()=>{
+  const {planSkillReleaseFx}=await import("../../src/core/fx/skill-fx-plan.js");
+  const released=planSkillReleaseFx({action:{
+    skill:{id:"liane_venimeuse",form:"beam",element:"nature",projectileClash:{power:0}},
+    travelMs:800
+  },actorSlot:"player",targetSlot:"opponent"});
+  assert.equal(released.length,1);
+  assert.equal(released[0].type,"beam");
+  assert.equal(released[0].durationMs,800);
   const presenter=createCombatResolutionPresenter({
-    visuals:{playEventFor:()=>Promise.resolve({status:"finished"}),cancelFor:()=>{}},
-    fx:{play:args=>{played.push(args);return {status:"running",finished:Promise.resolve({status:"finished"})};}}
+    visuals:{playEventFor:()=>Promise.resolve({status:"finished"}),cancelFor:()=>{}}
   });
-  const skill={id:"liane_venimeuse",form:"beam",element:"nature",travelMs:800};
-  assert.equal(presenter.presentReserveSkill({result:{ok:false},skill,actorSlot:"player",targetSlot:"opponent"}).status,"rejected");
-  assert.equal(played.length,0);
-  assert.equal(presenter.presentReserveSkill({result:{ok:true,outcome:"forced_switched"},skill,actorSlot:"player",targetSlot:"opponent"}).status,"running");
-  assert.equal(played.length,1);
-  assert.deepEqual(played[0],{type:"beam",skillId:"liane_venimeuse",element:"nature",actorSlot:"player",fromSlot:"player",targetSlot:"opponent",durationMs:800});
+  assert.equal("presentReserveSkill" in presenter,false,"no post-swap cosmetic double authority");
   presenter.dispose();
 });
 
@@ -56,7 +57,7 @@ test("RED: author editor cache loads new Liane preset and latest canonical globa
   assert.match(GLOBAL_VISUAL_LIBRARY.revision,/2026-10-29.*liane/);
   assert.ok(GLOBAL_VISUAL_LIBRARY.catalogUrl.includes("global-assets/data/assets/catalog/global-visual-assets"));
   assert.ok(globalVisualAssetUrl("capture/sprites/skills/liane_epineuse_rayon/liane_epineuse_rayon_atlas_12f.webp").includes("liane_epineuse_rayon_atlas_12f.webp?v="));
-  const expected="liane-venimeuse-20261029";
+  const expected="liane-timed-20261030";
   for (const file of [
     "examples/dom-demo/capture-editor-v2.html",
     "examples/dom-demo/capture-editor-v2.js",
