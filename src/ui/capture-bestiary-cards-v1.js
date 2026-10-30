@@ -1,6 +1,6 @@
 import {normalizeCaptureActiveSkillLoadoutV1} from "../contracts/capture-active-skill-loadout-v1.js";
 import {captureStatEffectSummaryV1} from "./capture-stat-effect-summary-v1.js";
-import {describeCaptureSkillV1} from "./capture-skill-explanation-v1.js";
+import {describeCaptureSkillV1} from "./capture-skill-explanation-v1.js?v=reserve-switch-prose-20261030";
 
 // The existing Capture loadout owns equipment; the Bestiary is read-only.
 const ELEMENT_LABELS = Object.freeze({
