@@ -165,6 +165,9 @@ function effectSentence(e,{perCharge=false}={}){
     case "life_steal":return [finish("Récupère "+num(e.percent)+" % des dégâts infligés sous forme de PV"+
       (e.maxHeal!=null?" (maximum "+num(e.maxHeal)+" PV)":""))];
     case "knockout":return [finish("Met "+subject(e.targetScope)+" K.O.")];
+    case "force_reserve_switch":return [
+      "Force la créature ennemie choisie dans sa réserve à entrer en combat à la place de la créature adverse active, si l'attaque touche."
+    ];
     case "apply_status":return statusSentence(e);
     case "cleanse":return [finish(e.statusTags.length===0?
       (e.targetScope==="target"?"Supprime tous les effets et marqueurs négatifs de la cible":
