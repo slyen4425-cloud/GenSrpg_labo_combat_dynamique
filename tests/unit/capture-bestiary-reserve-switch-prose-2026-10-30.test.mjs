@@ -16,8 +16,8 @@ test("Liane venimeuse describes the native enemy reserve forced switch, not a ra
   assert.doesNotMatch(out.join(" "),/Effet non encore décrit|force_reserve_switch|réserve alliée/i);
   assert.match(out.join(" "),/2 charges de Graine sansue à la cible/);
   assert.match(out.join(" "),/2 charges de Poison à la cible/);
-  assert.match(out.join(" "),/toutes les 3 secondes.*5 dégâts de Nature par charge/);
-  assert.match(out.join(" "),/toutes les 5 secondes.*5 dégâts de Physique/);
+  assert.match(out.join(" "),/[Tt]outes les 3 secondes.*5 dégâts de Nature par charge/);
+  assert.match(out.join(" "),/[Tt]outes les 5 secondes.*5 dégâts de Physique/);
   assert.match(out.join(" "),/Utilisable une fois par combat\./);
 });
 
