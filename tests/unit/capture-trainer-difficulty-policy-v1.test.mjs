@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {createCombatSession} from '../../src/core/combat/combat-session.js';
 import {normalizeCaptureTrainerDifficultyPolicyV1,applyCaptureTrainerDifficultyPolicyV1} from '../../src/adapters/input/capture/capture-trainer-difficulty-policy-v1.js';
 
 const policy={schema:'capture-trainer-difficulty-policy-v1',version:1,levels:[
@@ -49,4 +50,14 @@ test('fail closed on missing policy, invalid level, NPC reserves, malformed acto
  assert.throws(()=>applyCaptureTrainerDifficultyPolicyV1({nativeCombatSource:reserved,trainerDifficulty:2,policy}),/reserve|roster/i);
  const bad=source();bad.fighters[1].maxHp=Infinity;
  assert.throws(()=>applyCaptureTrainerDifficultyPolicyV1({nativeCombatSource:bad,trainerDifficulty:2,policy}),/maxHp|finite/i);
+});
+
+test('the projected opponent stats reach the real native CombatSession, not just a display model',()=>{
+ const projection=applyCaptureTrainerDifficultyPolicyV1({nativeCombatSource:source(),trainerDifficulty:4,policy});
+ const session=createCombatSession({distance:'medium',fighters:projection.nativeCombatSource.fighters});
+ const fighters=session.snapshot().fighters;
+ assert.equal(fighters.player.maxHp,100);
+ assert.equal(fighters.opponent.maxHp,100);
+ assert.equal(fighters.opponent.outgoingDamagePct,23);
+ assert.equal(fighters.opponent.hp,80);
 });

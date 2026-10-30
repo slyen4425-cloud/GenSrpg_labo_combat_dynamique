@@ -3,6 +3,7 @@
 - Périmètre : un adaptateur de projection des paramètres natifs par acteur, un test de contrat et ce journal. Protéger CombatSession, les éditeurs, les fiches auteur, les sauvegardes, les catalogues et les autres modes.
 - Cause démontrée : GenSrpg #219 ne transmet pas trainerDifficulty à buildEncounter ; la simple présence d'une liste trainerDifficultyLevels ne modifie ni PV ni dégâts. Ne jamais déclarer un dresseur jouable sur cette base.
 - Critère de ce jalon : politique entièrement renseignée par l'auteur (4 niveaux distincts sans valeurs par défaut), projection du seul acteur adverse dans le vrai format de combattant Lab, joueur intact même pour une espèce identique, refus de la réserve non prise en charge, TDD RED→GREEN, CI Fondation + navigateurs. Aucun choix de coefficients publié dans les données, aucune activation du runtime, aucune promotion main sans CI et validation.
+- TDD local RED (module absent), puis 4/4 unitaires GREEN. Une sentinelle supplémentaire vérifie la projection dans la vraie `createCombatSession`, à certifier en CI sur le SHA de branche ; aucune politique n'est encore active en jeu.
 - Après ce jalon : brancher le contrat au constructeur natif de rencontre et à l'éditeur auteur, appliquer également la politique à chaque membre de réserve, prouver le changement effectif en CombatSession et en Playwright, puis repinner GenSrpg. Les 99 espèces manquantes restent bloquantes séparément.
 
 ---
