@@ -39,8 +39,12 @@ const server = createServer(async (req, res) => {
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-editor-preview-heading")) {
       const html=contents.toString("utf8");
+      // Intercept the actual public module requested by the HTML.
+      // Never hardcode an obsolete versioned script URL in the browser probe.
+      const currentScript = html.match(/src="\.\/capture-editor-v2\.js\?v=[^"]+"/)?.[0];
+      if (!currentScript) throw Error("Public editor has no revisioned entry script");
       contents=Buffer.from(html.replace(
-        'src="./capture-editor-v2.js?v=sleep-conditions-20261028"',
+        currentScript,
         'src="./capture-editor-v2.js?verify-editor-preview-heading=1"'
       ));
     }
@@ -77,8 +81,12 @@ const server = createServer(async (req, res) => {
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-sleep-author-ui")) {
       const html=contents.toString("utf8");
+      // Intercept the actual public module requested by the HTML.
+      // Never hardcode an obsolete versioned script URL in the browser probe.
+      const currentScript = html.match(/src="\.\/capture-editor-v2\.js\?v=[^"]+"/)?.[0];
+      if (!currentScript) throw Error("Public editor has no revisioned entry script");
       contents=Buffer.from(html.replace(
-        'src="./capture-editor-v2.js?v=sleep-conditions-20261028"',
+        currentScript,
         'src="./capture-editor-v2.js?verify-sleep-author-ui=1"'
       ));
     }
