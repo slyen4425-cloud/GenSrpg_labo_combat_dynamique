@@ -1,3 +1,13 @@
+## 2026-10-30 — Contrat natif Combat embeddedBattle pour consommateurs main (RED → GREEN en cours)
+
+- **Déclencheur GenSrpg :** PR #220 et issue #150. Combat `main@29b57811b5510686bbdc7efbbc58d8657862e841` ne contient pas `embeddedBattle` ; GenSrpg main-only échoue sur la véritable arène malgré les tests Core verts. `gh-pages` contient un contrat natif, mais ne peut être consommé comme source autoritaire par les intégrations.
+- **Charte et gouvernance** : §1 (autonomie), §§3, 10–20 et LAB_CHECKPOINT_POLICY. START `checkpoint/lab-start-embedded-battle-main-contract-2026-10-30` créé exactement sur `main@29b57811b5510686bbdc7efbbc58d8657862e841`. Branche dédiée `work/lab-embedded-battle-main-contract-2026-10-30`. `main` et `gh-pages` inchangés en attendant validation explicite du propriétaire.
+- **Portée** : porter seulement le contrat `embeddedBattle` déjà implémenté sur `gh-pages` dans les propriétaires `src/ui/capture-combat-preview-v1.js` et `src/ui/combat-2v2-test-ui.js`, et sa logique pure `src/ui/embedded-combat-lifecycle-v1.js`. Unicité du `CombatSession` et du `CombatRuntime`, HP initiaux validés, complétion `victory/defeat/flee` à partir du véritable état natif, `dispose`, sans second combat ni stockage ni changement des règles / modèles / autres modules.
+- **Tests** : TDD RED puis GREEN sur le cycle de vie 1v1/2v2, snapshot initial, victoire/défaite/fuite, rejets d'entrées invalides, contrat UI ; `npm test` + `check:structure`, CI Foundation et navigateurs, plus scénario consommateur GenSrpg Chromium/Firefox et SHA source uniquement après promotion. Les données auteur des 100 créatures et la difficulté dresseur sont d'autres contrats, pas des valeurs à inventer ici.
+- **Risques/critères** : différences entre les versions `gh-pages` et `main` ; recopier uniquement les hunk du contrat déjà validé, sans les modifications parallèles en attente. Aucun checkpoint GREEN avant tests exacts et vraie scène ; ne pas fusionner `main` sans autorisation explicite et nouvelle preuve.
+
+---
+
 ## 2026-10-29 — Réconciliation de main Combat avec le Showcase auteur publié
 
 - Base : `main@2e18bda047eb8f4f91115c2198dcc3ec4e02312c`; START : `checkpoint/lab-start-author-showcase-main-reconcile-2026-10-29`; travail : `work/lab-author-showcase-main-reconcile-2026-10-29`.
