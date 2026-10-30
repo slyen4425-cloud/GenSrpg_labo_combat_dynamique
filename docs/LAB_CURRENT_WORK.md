@@ -1,3 +1,12 @@
+## 2026-10-30 — Deep-link des onglets auteur pour GenSrpg (NON PROMU)
+- **BASE immuable**: Combat main@248f718ec924106d16999d59e5dc8310f8450180 ; checkpoint `checkpoint/lab-start-author-tab-deeplink-2026-10-30` ; branche `work/lab-author-tab-deeplink-2026-10-30`.
+- **Périmètre**: entrée officielle `examples/dom-demo/capture-editor-v2.js`, propriétaire UI `src/ui/capture-editor-human-v2.js`, test `tests/unit/capture-editor-initial-tab-owner-20261030.test.mjs`, ce journal. Les règles de combat, les transferts, sauvegardes, assets, autres modes, GenSrpg et main restent intacts.
+- **Cause racine**: GenSrpg consomme les pages auteur épinglées avec `?tab=creature/skills/combat`, mais le propriétaire UI réinitialisait toujours `setTab(root,"creature")`; un raccourci vers les capacités/règles présentait donc le mauvais onglet.
+- **Correction propriétaire**: l'entrée native passe `initialTab` issu de l'URL au seul `mountCaptureEditorHumanV2`, qui refuse toute valeur hors `creature|skills|combat|music`, et sélectionne directement le panneau. Aucun clic simulé GenSrpg ni nouvel éditeur.
+- **Test**: TDD RED `9306ff468d89d944743a7188a796b5f5dce50e9a`; code `c5a224ace9c0359486f7e39360fa56bedfc7c513`. CI complète Laboratoire (fondation et 4 navigateurs) sur HEAD à vérifier avant checkpoint GREEN. Réconciliation future avec le lot éditeur PNJ #155 ; aucune fusion main sans preuve ni accord de promotion, GenSrpg reste strictement main-only.
+
+---
+
 ## 2026-10-30 — Lot consommateur main-only, contrats validés isolés
 - START Combat main@29b57811b5510686bbdc7efbbc58d8657862e841 ; checkpoint `checkpoint/lab-start-main-consumers-contract-2026-10-30` ; branche `work/lab-main-consumers-contract-2026-10-30`.
 - TDD RED `fab8149e8a57ec9371e3d7dcd51d581a55a0b9c5` : comportement scène `embeddedBattle`, lifecycle natif et réaction Défense Moussado requis.
