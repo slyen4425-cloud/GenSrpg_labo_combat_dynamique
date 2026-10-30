@@ -91,6 +91,9 @@
       "subjectType": "skill",
       "subjectId": "explosion_florale",
       "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-fleuraison-01"
+        },
         "impact": {
           "assetId": "pack:capture:sprite-spores-expansives-projectile-sphere-02",
           "displayScale": 1.6,
@@ -111,7 +114,13 @@
           "offsetMode": "same"
         }
       },
-      "audio": {},
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-a3d02c0f",
+          "volume": 1,
+          "loop": false
+        }
+      },
       "statusVisuals": {},
       "feedback": {
         "glow": null,

@@ -94,6 +94,9 @@
       "subjectType": "skill",
       "subjectId": "Spore_soporifique",
       "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-spore-soporifique-01"
+        },
         "travel": {
           "assetId": "pack:capture:sprite-spores-expansives-projectile-sphere-02",
           "displayScale": 1,
@@ -113,7 +116,18 @@
           }
         }
       },
-      "audio": {},
+      "audio": {
+        "travel": {
+          "assetId": "gensrpg:sound:genrpg-pack2-879fc11a",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:tower-ccc16d37",
+          "volume": 1,
+          "loop": false
+        }
+      },
       "statusVisuals": {
         "status-1": {
           "mode": "sprite",

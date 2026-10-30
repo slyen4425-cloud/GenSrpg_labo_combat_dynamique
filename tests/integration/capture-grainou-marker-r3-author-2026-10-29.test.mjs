@@ -28,7 +28,7 @@ test("exact author creature r3 source, one canonical Grainou and Spore equipped 
  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(x=>x==="data/capture/showcase/Spore_soporifique.capture-skill-transfer-v1.json").length,1);
  assert.equal(active.draft.combat.reaction.activeWindowMs,800);
  assert.ok(active.draft.skillIds.includes("Spore_soporifique"));
- assert.deepEqual(active.loadout.slots.map(x=>x.skillId),["coupe_feuille","graine_sansue_cap","Spore_soporifique","explosion_florale",null]);
+ assert.deepEqual(active.loadout.slots.map(x=>x.skillId),["coupe_feuille","graine_sansue_cap","Spore_soporifique","explosion_florale","liane_venimeuse"]);
  assert.equal(active.draft.presentation.visual.front.assetId,"pack:capture:creature-heriplante-opponent-01");
  assert.equal(active.draft.presentation.visual.back.assetId,"pack:capture:creature-heriplante-player-01");
 });

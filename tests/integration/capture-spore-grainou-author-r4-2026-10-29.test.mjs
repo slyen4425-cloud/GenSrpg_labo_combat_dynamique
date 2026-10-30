@@ -15,7 +15,14 @@ const creatureActive="data/capture/showcase/crea_nat_1.capture-creature-transfer
 test("Spore soporifique r2 author bytes, canonical active identity and true expansion media",async()=>{
  const src=await read(skillSrc);
  assert.equal(sha(src),"45deeb29b981dd33d54b378b09a619d9efeb7ef8d9804b72a8a45550594b0a63");
- assert.equal(await read(skillActive),src);
+ const expected=JSON.parse(src);
+ expected.draft.presentation.visual.icon={assetId:"pack:capture:icon-skill-spore-soporifique-01"};
+ expected.draft.presentation.audio={
+   travel:{assetId:"gensrpg:sound:genrpg-pack2-879fc11a",volume:1,loop:true},
+   impact:{assetId:"gensrpg:sound:tower-ccc16d37",volume:1,loop:false}
+ };
+ assert.deepEqual(JSON.parse(await read(skillActive)),expected,
+   "archive r2 is immutable; Oct 30 author adds only icon and two sounds");
  const d=JSON.parse(src).draft;
  assert.equal(d.id,"Spore_soporifique");
  assert.equal(d.definition.projectileTargeting,"expanding_wave");

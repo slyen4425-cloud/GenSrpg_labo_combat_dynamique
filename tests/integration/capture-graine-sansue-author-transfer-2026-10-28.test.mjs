@@ -25,7 +25,11 @@ test("Graine sansue has one canonical registered skill and preserves the full au
   const active=JSON.parse(await read(skillPath));
   const expected=structuredClone(original);
   expected.draft.definition.effects[0].marker.maxStacks=2;
-  assert.deepEqual(active,expected,"active skill changes only the marker limit explicitly supplied by the newer author library");
+  expected.draft.presentation.audio={
+    travel:{assetId:"gensrpg:sound:genrpg-pack2-3e95d6c6",volume:1,loop:true},
+    impact:{assetId:"gensrpg:sound:genrpg-pack2-a3d02c0f",volume:1,loop:false}
+  };
+  assert.deepEqual(active,expected,"historical marker update and Oct 30 author sounds are the only changes");
   const transfer=importCaptureTransferJsonV1(await read(skillPath));
   assert.equal(transfer.kind,"skill");
   const d=transfer.value.draft;

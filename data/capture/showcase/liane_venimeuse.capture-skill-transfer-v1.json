@@ -142,7 +142,13 @@
           }
         }
       },
-      "audio": {}
+      "audio": {
+        "travel": {
+          "assetId": "gensrpg:sound:genrpg-pack2-879fc11a",
+          "volume": 1,
+          "loop": true
+        }
+      }
     }
   }
 }

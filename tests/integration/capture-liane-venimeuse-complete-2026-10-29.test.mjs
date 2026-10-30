@@ -79,11 +79,17 @@ test("author r2 export is archived byte-exact and active as sole Liane skill wit
   assert.equal(Buffer.byteLength(archiveText),3722);
   assert.equal(createHash("sha256").update(archiveText).digest("hex"),"fca80f26c714fe7d0f8418b9c077154c32e9c731affd562f4bc83b273a350ab0");
   const activeText=await read(activePath);
-  assert.equal(activeText,archiveText,"the active Liane must match the last author upload byte for byte");
+  const expected=JSON.parse(archiveText);
+  expected.draft.presentation.audio={
+    travel:{assetId:"gensrpg:sound:genrpg-pack2-879fc11a",volume:1,loop:true}
+  };
+  assert.deepEqual(JSON.parse(activeText),expected,
+    "the archived r2 stays immutable; Oct 30 author adds only travel audio");
   const draft=importCaptureTransferJsonV1(activeText).value.draft;
   assert.equal(draft.presentation.version,2);
   assert.equal(draft.definition.form,"beam");
   assert.equal(draft.presentation.visual.icon.assetId,"pack:capture:icon-skill-ronce-01");
   assert.equal(draft.presentation.visual.travel.playbackMode,"once");
-  assert.deepEqual(draft.presentation.audio,{});
+  assert.deepEqual(draft.presentation.audio,
+    {travel:{assetId:"gensrpg:sound:genrpg-pack2-879fc11a",volume:1,loop:true}});
 });
