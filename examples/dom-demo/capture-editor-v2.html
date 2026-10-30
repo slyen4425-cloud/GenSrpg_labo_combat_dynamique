@@ -1741,7 +1741,7 @@
         <section class="beam-visual-editor" data-skill-beam-stage-editor data-beam-active="false">
         <div class="beam-visual-editor__heading">
           <h3>Rayon continu — 3 phases</h3>
-          <p>Un clic prépare les 3 phases : départ / charge à la bouche, corps continu et impact. Ensuite, choisis tes propres sprites, tailles et sons ci-dessous. Le même modèle reste accessible même si la capacité est actuellement de style Projectile.</p>
+          <p>Un clic prépare les 3 phases : départ / charge à la bouche, corps continu et impact. Choisis ici les sprites et tailles ; les quatre sons Cast, Trajet, Impact et Zone / Aura restent accessibles ensemble dans « Audio de la capacité » (étape 8). Le même modèle reste accessible même si la capacité est actuellement de style Projectile.</p>
         </div>
         <p class="note">Pour un rayon personnalisé sans modèle Eau, choisis simplement « Rayon » à l'étape 2 : les trois phases apparaîtront ici. Dans les deux cas, les dégâts, l'énergie et le cooldown sont inchangés.</p>
         <div data-skill-beam-pack>
@@ -1760,7 +1760,7 @@
           </fieldset>
           <fieldset class="editor-choice-group" data-beam-stage="body" hidden>
             <legend>2 — Corps continu du rayon</legend>
-            <p class="note">Il s’étire automatiquement de la source jusqu’à la cible, sans projectile qui se déplace. Le son du corps peut tourner pendant le tir, puis s’arrête au contact.</p>
+            <p class="note">Il s’étire automatiquement de la source jusqu’à la cible, sans projectile qui se déplace. Le son de trajet se règle dans « Audio de la capacité », avec une seule sélection partagée pour les projectiles et rayons ; il s'arrête au contact.</p>
             <div class="grid two" data-beam-stage-fields="body"></div>
           </fieldset>
           <fieldset class="editor-choice-group" data-beam-stage="impact" hidden>
@@ -2533,6 +2533,6 @@
     </template>
   </section>
 
-  <script type="module" src="./capture-editor-v2.js?v=liane-timed-20261030"></script>
+  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030"></script>
 </body>
 </html>

@@ -1,0 +1,148 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "liane_venimeuse",
+    "description": "Na",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "liane_venimeuse",
+      "name": "Liane venimeuse",
+      "category": "offensive",
+      "form": "beam",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "ultimate",
+      "element": "nature",
+      "approachMode": "none",
+      "energyCost": 6,
+      "preparationMs": 2200,
+      "travelMs": 800,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "reserve"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "force_reserve_switch",
+          "targetScope": "target"
+        },
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "graine-sansue",
+            "name": "Graine sansue",
+            "polarity": "detrimental",
+            "durationMs": 20000,
+            "maxStacks": 2,
+            "iconAssetId": "pack:capture:icon-skill-sangsue-01",
+            "periodic": {
+              "kind": "life_steal",
+              "amount": 5,
+              "intervalMs": 3000,
+              "damageMode": "combat",
+              "channel": "nature",
+              "percent": 100
+            }
+          },
+          "charges": 2
+        },
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "poison",
+            "name": "Poison",
+            "polarity": "detrimental",
+            "durationMs": 25000,
+            "maxStacks": 30,
+            "iconAssetId": "pack:capture:icon-skill-poison-01",
+            "periodic": {
+              "kind": "damage",
+              "amount": 5,
+              "intervalMs": 5000,
+              "damageMode": "combat",
+              "channel": "physical"
+            }
+          },
+          "charges": 2
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:liane_venimeuse",
+      "version": 2,
+      "subjectType": "skill",
+      "subjectId": "liane_venimeuse",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-ronce-01"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-liane-epineuse-rayon-01",
+          "displayScale": 0.85,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        }
+      },
+      "audio": {}
+    }
+  }
+}

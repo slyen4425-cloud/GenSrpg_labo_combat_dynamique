@@ -34,6 +34,9 @@ test("RED: faithful original export, single beam-authoring preset and actual ass
   assert.equal(active.presentation.visual.travel.assetId,"pack:capture:sprite-liane-epineuse-rayon-01");
   assert.equal(active.presentation.visual.travel.attachment,"trajectory");
   assert.equal(active.presentation.visual.travel.trigger,"travel-start");
+  assert.equal(active.presentation.visual.icon.assetId,"pack:capture:icon-skill-ronce-01");
+  assert.equal(active.presentation.visual.travel.playbackMode,"once");
+  assert.equal(active.presentation.version,2);
 });
 
 test("native beam is planned at release, not projected after an already completed swap",async()=>{
@@ -57,7 +60,7 @@ test("RED: author editor cache loads new Liane preset and latest canonical globa
   assert.match(GLOBAL_VISUAL_LIBRARY.revision,/2026-10-29.*liane/);
   assert.ok(GLOBAL_VISUAL_LIBRARY.catalogUrl.includes("global-assets/data/assets/catalog/global-visual-assets"));
   assert.ok(globalVisualAssetUrl("capture/sprites/skills/liane_epineuse_rayon/liane_epineuse_rayon_atlas_12f.webp").includes("liane_epineuse_rayon_atlas_12f.webp?v="));
-  const expected="liane-timed-20261030";
+  const expected="liane-audio-r2-20261030";
   for (const file of [
     "examples/dom-demo/capture-editor-v2.html",
     "examples/dom-demo/capture-editor-v2.js",
@@ -69,4 +72,18 @@ test("RED: author editor cache loads new Liane preset and latest canonical globa
     const text=await read(file);
     assert.ok(text.includes(expected),"stale module version in "+file);
   }
+});
+
+test("author r2 export is archived byte-exact and active as sole Liane skill without altering mechanics", async()=>{
+  const archiveText=await read("data/capture/source-exports/gensrpg-capture-skill-liane_venimeuse-r2-2026-10-30.json");
+  assert.equal(Buffer.byteLength(archiveText),3722);
+  assert.equal(createHash("sha256").update(archiveText).digest("hex"),"fca80f26c714fe7d0f8418b9c077154c32e9c731affd562f4bc83b273a350ab0");
+  const activeText=await read(activePath);
+  assert.equal(activeText,archiveText,"the active Liane must match the last author upload byte for byte");
+  const draft=importCaptureTransferJsonV1(activeText).value.draft;
+  assert.equal(draft.presentation.version,2);
+  assert.equal(draft.definition.form,"beam");
+  assert.equal(draft.presentation.visual.icon.assetId,"pack:capture:icon-skill-ronce-01");
+  assert.equal(draft.presentation.visual.travel.playbackMode,"once");
+  assert.deepEqual(draft.presentation.audio,{});
 });
