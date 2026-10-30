@@ -47,7 +47,13 @@ test("the new Impact rocheux author JSON is exact, unique, has its preserved FX 
 
 test("Moussados author JSON is exact, unique, imports views without changing stats, sockets or loadout", async () => {
   const raw = await load(creaturePath);
-  assert.equal(raw,await load("data/capture/source-exports/gensrpg-capture-creature-crea_mossback-2026-10-22.json"),"V9 is exact authored export");
+  assert.equal(raw,await load("data/capture/source-exports/gensrpg-capture-creature-crea_mossback-2026-10-30-defense-approved.json"),"current approved Defense revision is byte-exact");
+  const historical=JSON.parse(await load("data/capture/source-exports/gensrpg-capture-creature-crea_mossback-2026-10-22.json"));
+  const current=JSON.parse(raw);
+  assert.equal(historical.draft.combat.reaction,undefined,"historic export stays unmodified");
+  assert.deepEqual({...current,draft:{...current.draft,combat:{...current.draft.combat,reaction:undefined}}},
+    {...historical,draft:{...historical.draft,combat:{...historical.draft.combat,reaction:undefined}}},
+    "Defense is the ONLY change to author data; other stats, visuals and loadout are identical");
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(p => p === creaturePath).length, 1);
   const registry = normalizeCaptureStatRegistryV1(JSON.parse(await load("data/capture/monster-capture-stat-registry.v1.json")));
   const imported = importCaptureTransferJsonV1(raw, {statRegistry:registry});
