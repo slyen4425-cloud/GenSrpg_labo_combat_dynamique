@@ -44,6 +44,7 @@ test("showcase preset catalog discovers authored transfer files without duplicat
       "data/capture/showcase/crea_tox_2.capture-creature-transfer-v1.json",
       "data/capture/showcase/kitsune_lunaire.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea-loup.capture-creature-transfer-v1.json",
+      "data/capture/showcase/gorice.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea_maraileron.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea_ailevent.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea_voltik.capture-creature-transfer-v1.json",
