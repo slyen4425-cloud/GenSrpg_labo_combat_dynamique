@@ -4,7 +4,7 @@ import {applyCaptureAuthorTabFromUrlV1} from '../../src/ui/capture-editor-deep-l
 test('official editor selects its existing native Creature, Skill and Combat tabs by safe URL',()=>{
  const clicked=[];
  const root={querySelector(selector){
-  const match=/^\\[data-editor-tab="(creature|skills|combat)"\\]$/.exec(selector);
+  const match=/^\[data-editor-tab="(creature|skills|combat)"\]$/.exec(selector);
   return match?{click(){clicked.push(match[1]);}}:null;
  }};
  for(const tab of ['creature','skills','combat']){
