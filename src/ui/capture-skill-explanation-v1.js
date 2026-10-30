@@ -165,6 +165,10 @@ function effectSentence(e,{perCharge=false}={}){
     case "life_steal":return [finish("Récupère "+num(e.percent)+" % des dégâts infligés sous forme de PV"+
       (e.maxHeal!=null?" (maximum "+num(e.maxHeal)+" PV)":""))];
     case "knockout":return [finish("Met "+subject(e.targetScope)+" K.O.")];
+    case "force_reserve_switch":return [
+      "Si l'attaque touche, la créature ennemie choisie dans la réserve remplace de force la créature adverse actuellement au combat.",
+      "Si l'attaque ne touche pas, aucun échange ni effet supplémentaire n'a lieu."
+    ];
     case "apply_status":return statusSentence(e);
     case "cleanse":return [finish(e.statusTags.length===0?
       (e.targetScope==="target"?"Supprime tous les effets et marqueurs négatifs de la cible":
@@ -275,6 +279,14 @@ function descriptions(effects,{perCharge=false}={}){
         }
       }
       out.push(...groupZones(same.map(j=>list[j])));
+    }else if(e.kind==="force_reserve_switch"){
+      const lines=effectSentence(e);
+      // The same normalized skill definition owns the follow-on effects:
+      // never claim that additional effects exist if the forced swap stands alone.
+      if(list.some(other=>other!==e && other.kind!=="force_reserve_switch")){
+        lines.splice(1,0,"Les effets suivants s'appliquent à cette créature lorsqu'elle entre sur le terrain.");
+      }
+      out.push(...lines);
     }else if(e.kind==="apply_marker"){
       // A single marker applied both on the field and to reserves is one
       // gameplay effect with two recipient groups, not two repetitions.
