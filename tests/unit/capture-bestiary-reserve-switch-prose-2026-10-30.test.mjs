@@ -24,7 +24,7 @@ test("Liane venimeuse describes the native enemy reserve forced switch, not a ra
 test("Grainou Bestiary ultimate uses the same normalized explanation and its real skill icon",()=>{
   const visual=grainou.draft.presentation.visual;
   const icon=liane.draft.presentation.visual.icon.assetId;
-  const mock=(assetId,assetType="sprite")=>({id:assetId,assetType,mediaType:"image",resource:{file:assetId.replaceAll(":","/")+".webp"}});
+  const mock=(assetId,assetType="sprite")=>({id:assetId,assetType,mediaType:"image",resource:{file:"capture/fixtures/"+assetId.replaceAll(":","_")+".webp"}});
   const catalog={assets:[
     mock(visual.front.assetId),mock(visual.back.assetId),
     mock(visual.icon.assetId,"portrait"),mock(icon,"icon")
