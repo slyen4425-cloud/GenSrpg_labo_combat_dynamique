@@ -25,9 +25,15 @@ export function createCaptureCombatRosterControllerV1({
   return Object.freeze({
     snapshot: () => roster.snapshot(),
     previewSkillOnTarget(options) { return disposed ? {ok:false,outcome:"disposed"} : roster.previewSkillOnTarget(options); },
+    prepareSkillOnTarget(options) { return disposed ? {ok:false,outcome:"disposed"} : roster.prepareSkillOnTarget(options); },
     useSkillOnTarget(options) {
       if (disposed) return {ok:false,outcome:"disposed"};
       const result = roster.useSkillOnTarget(options);
+      return result.outcome === "forced_switched" ? project(result.teamId,result) : result;
+    },
+    completeTimedSkillOnTarget(options) {
+      if (disposed) return {ok:false,outcome:"disposed"};
+      const result=roster.useSkillOnTarget(options);
       return result.outcome === "forced_switched" ? project(result.teamId,result) : result;
     },
     activeMember,

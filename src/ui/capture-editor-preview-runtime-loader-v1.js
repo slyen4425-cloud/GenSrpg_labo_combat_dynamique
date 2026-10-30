@@ -13,7 +13,7 @@ async function defaultImportVisualAdapter() {
 
 async function defaultImportCombatPreview() {
   return import(
-    "./capture-combat-preview-v1.js?v=liane-venimeuse-20261029"
+    "./capture-combat-preview-v1.js?v=liane-timed-20261030"
   );
 }
 

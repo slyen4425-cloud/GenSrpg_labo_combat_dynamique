@@ -1,3 +1,14 @@
+## 2026-10-30 — Liane venimeuse : temporalité native, esquive et contre (correction auteur)
+
+- Signalement smartphone : le pré-ciblage réserve appliquait immédiatement le remplacement et les marqueurs, sans préparation, trajet visible ni possibilité de réaction.
+- Cause racine : l'UI 2v2 appelle directement RosterSession.useSkillOnTarget, qui résout l'ensemble sans CombatRuntime. L'ancien presenter jouait le rayon APRES le changement.
+- Propriétaires : CombatRuntime pilote la préparation/travel et la réaction de la cible active. Presenter présente le cast + beam au release natif. RosterSession prépare une compétence sans effet actif et applique les effets sur la réserve uniquement après une résolution native *hit*, sans deuxième dépense. UI coordonne uniquement la référence à la réserve sélectionnée et abandonne la requête sur interruption.
+- Attendus : 2200 ms préparation puis 800 ms de rayon selon modificateurs de vitesse natifs; défense active peut esquiver/contrer/renvoyer. Aucun échange/poison/graine sur esquive, interruption, blocage, reflet ou miss. La compétence conserve son unique usage et son paiement au lancement; une résolution ne peut être appliquée deux fois.
+- Base gh-pages 60d8cbf22aabb794197c96287158ce83a45dbe34; médias global-assets e6ef519b062e9e590faae63130ec12bfab263bac inchangés. START checkpoint/lab-start-reserve-skill-native-timed-2026-10-30; WORK work/lab-reserve-skill-native-timed-2026-10-30; RED test 55a06248a9179def816ba33f0942758a9d0983d1.
+- Gates : Node/Chromium cinq jobs, preuve rendu réel, checkpoint GREEN au commit testé, PR vers gh-pages, CI et Pages post-fusion. Aucun masquage de test.
+
+---
+
 ## 2026-10-29 — Ultime Liane venimeuse, import et rayon réserve (reprise)
 
 - Base: gh-pages@4fd0821545eaa41ce1d3115e56f3574db6273426, CI et Pages vertes. Checkpoint START checkpoint/lab-start-liane-venimeuse-complete-2026-10-29. Branche work/lab-liane-venimeuse-complete-2026-10-29. Test RED 1ac3a4be6a950be6730bc473d8a4a9a2d6b617c1.
