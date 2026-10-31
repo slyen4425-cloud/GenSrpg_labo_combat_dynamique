@@ -1,3 +1,19 @@
+## 2026-10-31 — Réconciliation des deux responsabilités auteur sur PR #155 (NON GREEN produit)
+- Combat main a intégré la PR #156 deep-link natif au SHA `81ad362a401b7b2eb9faa811528aced9f2d6384a` après 5/5 jobs GREEN sur la branche source; CI post-fusion à vérifier. La PR #155 récupère **par merge à deux parents** cette version de l'unique éditeur, conserve les quatre niveaux PNJ auteur et la réserve native sans copier un éditeur ni basculer GenSrpg sur une branche de développement.
+- START réconciliation : `checkpoint/lab-trainer-before-native-deeplink-reconcile-2026-10-31` = `447382e579a60672ddb1404dcd83813723c07c79`. Les tests deep-link Chromium et contrat unitaire sont repris de main. Pas de modification des coefficients auteur, catalogue ou sauvegardes. CI complète à vérifier sur ce merge; PR #155 reste DRAFT jusqu'à GREEN et validation.
+
+---
+
+## 2026-10-30 — Deep-link des onglets auteur pour GenSrpg (PROMU MAIN 31/10)
+- **BASE immuable**: Combat main@248f718ec924106d16999d59e5dc8310f8450180 ; checkpoint `checkpoint/lab-start-author-tab-deeplink-2026-10-30` ; branche `work/lab-author-tab-deeplink-2026-10-30`.
+- **Périmètre**: entrée officielle `examples/dom-demo/capture-editor-v2.js`, propriétaire UI `src/ui/capture-editor-human-v2.js`, test `tests/unit/capture-editor-initial-tab-owner-20261030.test.mjs`, ce journal. Les règles de combat, les transferts, sauvegardes, assets, autres modes, GenSrpg et main restent intacts.
+- **Cause racine**: GenSrpg consomme les pages auteur épinglées avec `?tab=creature/skills/combat`, mais le propriétaire UI réinitialisait toujours `setTab(root,"creature")`; un raccourci vers les capacités/règles présentait donc le mauvais onglet.
+- **Correction propriétaire**: l'entrée native passe `initialTab` issu de l'URL au seul `mountCaptureEditorHumanV2`, qui refuse toute valeur hors `creature|skills|combat|music`, et sélectionne directement le panneau. Aucun clic simulé GenSrpg ni nouvel éditeur.
+- **Test**: TDD RED `9306ff468d89d944743a7188a796b5f5dce50e9a` puis GREEN. Le nouveau smoke de vrai éditeur `tests/browser/capture-author-tab-deeplink-smoke.mjs` vérifie les onglets actifs Creature/Skills/Combat, non un simple lien. [Laboratory CI #41106896500](https://github.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/actions/runs/41106896500) : **5/5 jobs SUCCESS** sur SHA `b7e34c9278352c7a5f2097aa2cbb828d06fb1927` après relance ciblée d'un timeout Chromium Firestorm (autre run sur même SHA avait réussi ce job ; l'unique échec autre job fut un contrôle préexistant de réaction Moussados, réussi sur le run final). Le jalon deep-link auteur peut obtenir un checkpoint GREEN exact après CI du présent journal. **Produit GenSrpg toujours NON GREEN** ; réconciliation future avec l'éditeur PNJ #155, aucune fusion main sans autorisation de promotion, GenSrpg strictement main-only.
+
+
+---
+
 ## 2026-10-31 — Difficulté native PNJ étendue à la réserve (PR #155, NON PROMUE)
 - TDD RED sur `9da6cf2efad7a068b53326d6b075fb6ddbbd2249`, Laboratory CI #41153629249 : la Fondation échoue sur le nouveau contrat de projection de réserve; les navigateurs déjà terminés restent verts. Deux tests ajoutés exigent la projection de chaque membre PNJ lors du vrai switch natif et le maintien strict de l'espèce partagée du joueur.
 - Correction à la SOURCE Combat Lab : la même politique auteur 1–4 projette les combattants adverses actifs et les configurations de chaque membre de réserve PNJ par **slot et membre**, sans modifier les configurations par espèce partagées avec le joueur. Le moteur de rappel/KO existant consomme ces configurations, sans second moteur ni modification des sauvegardes. L'entrée sauvage conserve les références natives originales. Les identités et configurations de réserve invalides sont refusées.
