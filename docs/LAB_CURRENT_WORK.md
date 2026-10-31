@@ -1,8 +1,8 @@
-## 2026-10-31 — Amplificateur des effets reçus : négatifs, positifs ou les deux (RED avant implémentation)
+## 2026-10-31 — Amplificateur des effets reçus : négatifs, positifs ou les deux (moteur et navigateur validés sur branche)
 - Base gh-pages@489f90337db928b94f2d62e6df542ccf537c55e6 ; START checkpoint/lab-start-incoming-effect-amplifier-2026-10-31 ; branche work/lab-incoming-effect-amplifier-2026-10-31.
 - Contrat unique StatusEffectV1 kind incoming_effect_modifier : modifierPct signé et affectedPolarity detrimental/beneficial/both. Affecte la quantité de PV de tous dégâts (y compris DoT, fixes, zones, renvois) et tous soins (directs, périodiques, vol de vie), sans changer la Défense, les résistances, les immunités, les durées de statut ou la puissance des autres buffs/debuffs ; ce dernier aspect reste un autre contrat et ne doit pas être simulé.
 - Autorité combat : Combat Damage Application pour tout delta de PV, Status Runtime pour le temps/stack ; éditeur natif Effets tactiques et zone persistante ; bestiaire et fiche statut. Aucun changement des capacités auteur existantes ou de main.
-- TDD RED, CI 5 jobs, navigateur et checkpoint GREEN avant promotion de gh-pages.
+- Test RED au commit `0b81235d4471fcb34b77baa6518a388ae2160501` ; CI sur code `ea85f91246064d7f44e5ce829cae4959d2a6091b` run `41210956372` : **5/5 jobs SUCCESS**, **2423 tests Node PASS, 0 FAIL** ; Chromium réel `pass:damage130:heal65:scope-separated` et éditeur `pass:author:effect:add:scope:percent`. Checkpoint GREEN et PR vers gh-pages à matérialiser sur SHA final ; `main` inchangée.
 
 ---
 
