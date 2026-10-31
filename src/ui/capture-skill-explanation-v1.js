@@ -381,6 +381,14 @@ function specialRules(d){
 export function describeCaptureSkillV1(input) {
   const d=normalizeSkillDefinition(input);
   const phrases=[];
+  if(d.chargedAttack){
+    const c=d.chargedAttack;
+    const maxDamage=c.baseDamage+(c.maxCharges-1)*c.bonusDamagePerCharge;
+    phrases.push(finish("Inflige "+num(c.baseDamage)+" dégâts de base. Chaque nouvelle activation dans les "+duration(c.reactivationWindowMs)+
+      " suivant la précédente, avant le départ du projectile, ajoute "+num(c.bonusDamagePerCharge)+
+      " dégâts supplémentaires et augmente sa taille de "+num(c.sizeIncreasePct)+
+      " %, jusqu'à "+num(c.maxCharges)+" activations ("+num(maxDamage)+" dégâts maximum)."));
+  }
   if(d.effect.damage>0)phrases.push(finish("Inflige "+num(d.effect.damage)+" dégâts"));
   if(d.effect.heal>0)phrases.push(finish("Rend "+num(d.effect.heal)+" PV"));
   if(d.effect.stunMs>0)phrases.push(finish("Étourdit pendant "+duration(d.effect.stunMs)));
