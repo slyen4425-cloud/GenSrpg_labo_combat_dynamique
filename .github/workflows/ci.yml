@@ -32,6 +32,8 @@ jobs:
         run: node tests/browser/capture-creature-library-smoke.mjs
       - name: Real Chromium snowball selectors and official WebP atlas previews
         run: node tests/browser/capture-snowball-asset-editor-smoke.mjs
+      - name: Real Chromium Ice VFX zone floor spike fog selectors and 3 actual WebP images
+        run: node tests/browser/capture-ice-ground-spike-fog-editor-smoke.mjs
       - name: Real Chromium charged projectile author fields
         run: node tests/browser/capture-charged-projectile-editor-smoke.mjs
       - name: Real Chromium charged buff-debuff editor
