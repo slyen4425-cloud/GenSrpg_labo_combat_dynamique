@@ -1238,7 +1238,7 @@ export async function mountCombatTest({
       }
 
       if (progress.phase === "preparation" && progress.chargeCount) {
-        presenter.presentChargeAmplification({actorSlot:progress.actorId,sizeMultiplier:progress.sizeMultiplier});
+        presenter.presentChargeAmplification({actorSlot:progress.actorId,sizeMultiplier:progress.sizeMultiplier,durationMs:progress.preparationMs});
       }
       setCharge({
         slotId: progress.actorId,
