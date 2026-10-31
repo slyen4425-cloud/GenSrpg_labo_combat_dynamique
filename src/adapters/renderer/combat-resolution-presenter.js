@@ -307,6 +307,7 @@ export function createCombatResolutionPresenter({
     if (action?.actionType === "skill" &&
         ["projectile", "beam", "area"].includes(action.skill?.form) &&
         (action.skill?.approachMode ?? "none") === "none" &&
+        !action.chargeState &&
         Number(action.travelMs) === 0 &&
         Number(action.preparationMs) > 0 &&
         instantAttackAnticipationMs > 0) {
@@ -388,9 +389,11 @@ export function createCombatResolutionPresenter({
 
   // Presentation-only update on the one native cast. Combat Runtime owns
   // charge count and scale; this does not create another animation/timer.
-  function presentChargeAmplification({actorSlot = "player", sizeMultiplier}) {
+  function presentChargeAmplification({actorSlot = "player", sizeMultiplier, durationMs = null}) {
     if (disposed || !Number.isFinite(sizeMultiplier) || sizeMultiplier <= 0) return false;
-    return preparationFxByActor.get(actorSlot)?.setSizeMultiplier?.(sizeMultiplier) ?? false;
+    const cast=preparationFxByActor.get(actorSlot);
+    if (durationMs !== null) cast?.setDuration?.(durationMs);
+    return cast?.setSizeMultiplier?.(sizeMultiplier) ?? false;
   }
 
   function presentRelease({
