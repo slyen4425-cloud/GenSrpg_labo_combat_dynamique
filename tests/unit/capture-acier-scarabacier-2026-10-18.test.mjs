@@ -20,7 +20,7 @@ const statSource="data/capture/source-exports/gensrpg-capture-database-stat-acie
 test("Acier 2026-10-18 preserved; Nature 2026-10-21 appended without changing earlier stat IDs",async()=>{
  const current=JSON.parse(await read(registryPath));
  const ids=current.stats.map(x=>x.id);
- assert.deepEqual(ids,["health","speed","physical","defense","fire","water","earth","air","electric","light","shadow","poison","acier","nature","esprit"]);
+ assert.deepEqual(ids,["health","speed","physical","defense","fire","water","earth","air","electric","light","shadow","poison","acier","nature","esprit","glace"]);
  const authorStat=JSON.parse(await read(statSource));
  assert.deepEqual(current.stats.find(x=>x.id==="acier"),authorStat);
  assert.equal(authorStat.label,"Acier");
@@ -29,14 +29,14 @@ test("Acier 2026-10-18 preserved; Nature 2026-10-21 appended without changing ea
  assert.equal(authorStat.damagePctPerPoint,1);
  assert.equal(authorStat.resistancePctPerPoint,1);
  assert.equal(authorStat.damageReductionPctPerPoint,0);
- assert.equal(new Set(ids).size,15);
- assert.equal(normalizeCaptureStatRegistryV1(current).stats.length,15);
+ assert.equal(new Set(ids).size,16);
+ assert.equal(normalizeCaptureStatRegistryV1(current).stats.length,16);
  assert.deepEqual(ids.slice(0,13),["health","speed","physical","defense","fire","water","earth","air","electric","light","shadow","poison","acier"]);
  assert.equal(current.stats.find(x=>x.id==="nature")?.damageChannel,"nature");
 });
 
 test("Scarabacier author preset and immutable historical archive remain unique",async()=>{
- assert.equal(catalog.length,13);
+ assert.equal(catalog.length,14);
  assert.equal(catalog.filter(p=>p.endsWith('/crea_nat_1.capture-creature-transfer-v1.json')).length,1);
  assert.equal(new Set(catalog).size,catalog.length);
  assert.equal(catalog.filter(p=>p===scaraPath).length,1);

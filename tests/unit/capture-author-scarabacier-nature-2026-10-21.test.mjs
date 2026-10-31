@@ -27,7 +27,7 @@ const scar=JSON.parse(read(activePath));
 
 test("Nature is one new stat appended to canonical registry, keeping Acier and old channels untouched",()=>{
   assert.deepEqual(registry.stats.slice(0,13).map(x=>x.id),beforeIds);
-  assert.deepEqual(registry.stats.map(x=>x.id),[...beforeIds,"nature","esprit"]);
+  assert.deepEqual(registry.stats.map(x=>x.id),[...beforeIds,"nature","esprit","glace"]);
   const n=captureStatDefinitionForIdV1(registry,"nature");
   assert.equal(n.label,"Nature");
   assert.equal(n.damageChannel,"nature");

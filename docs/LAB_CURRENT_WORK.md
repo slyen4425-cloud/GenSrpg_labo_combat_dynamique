@@ -1,3 +1,13 @@
+## 2026-10-30 — Gorice (nouvel auteur) + caractéristique Glace (lot distinct)
+- **Base** : gh-pages@f3a7583f3dd19932ded9c97ad30fe0d57ea34239 ; START : `checkpoint/lab-start-gorice-glace-author-2026-10-30` ; travail : `work/lab-gorice-glace-author-2026-10-30`.
+- **Objectif** : importer exactement l'export auteur Gorice sans remplacement de Loup volcanique ; définir la seule statistique `glace` dans le registre officiel, canal de combat `ice`, +1 % dégâts / +1 % résistance par point.
+- **Propriétaire unique** : registre `data/capture/monster-capture-stat-registry.v1.json` ; catalogue Showcase existant et importeur de transferts natif. Aucune copie en base historique, aucun changement du moteur de combat, des éditeurs ou de `main`.
+- **Fichiers autorisés** : registre, nouveau transfert actif Gorice, archive source identique, manifeste des créatures Showcase, tests ciblés et tests de catalogue, journal et rapport dédié.
+- **Protection** : Loup original `crea-loup` et sa source d'archive strictement inchangés (SHA/égalité de contenu vérifiés) ; aucune modification à Liane venimeuse ni compétences ; aucune création d'identifiants visuels.
+- **Tests** : RED avant données ; import réel et unicité `gorice`/`crea-loup`, projection Glace, actifs visuels, comparaison du Loup et catalogue, suite Node et cinq jobs CI navigateur. GREEN/publication uniquement après preuves ; ne pas promouvoir sur `main` sans validation.
+
+---
+
 ## 2026-10-30 — Bestiaire : décrire l'échange forcé de réserve ennemie (lot ciblé)
 - **État initial : NON GREEN.** Base publiée `gh-pages@5bb179a7096443a2c18b3e5e33fe36c13e11a287` ; checkpoint `checkpoint/lab-start-bestiary-force-reserve-prose-2026-10-30` ; branche `work/lab-bestiary-reserve-text-20261030`.
 - Retour auteur : Grainou > ultime Liane venimeuse affiche « Effet non encore décrit : force_reserve_switch » dans la fiche. Contrat/moteur ont déjà une mécanique fonctionnelle de ciblage réserve ennemie, échange à l'impact si hit, et marqueurs appliqués à la créature appelée. Cause : branche de présentation manquante dans l'unique projecteur `src/ui/capture-skill-explanation-v1.js`.
