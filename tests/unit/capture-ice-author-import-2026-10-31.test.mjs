@@ -63,3 +63,20 @@ test("Boule de neige r2 author updates visuals without changing native charge/en
  assert.equal(draft.presentation.visual.travel.assetId,"pack:capture:sprite-boule-de-neige-projectile-01");
  assert.equal(draft.presentation.feedback.cameraShake.amplitudePx,9);
 });
+
+test("public editor import and preview modules use the new single module cache revision",async()=>{
+ const paths=[
+  "examples/dom-demo/capture-editor-v2.html",
+  "examples/dom-demo/capture-editor-v2.js",
+  "src/ui/capture-editor-human-v2.js",
+  "src/ui/capture-editor-preview-runtime-loader-v1.js",
+  "src/ui/capture-combat-preview-v1.js",
+  "src/ui/combat-2v2-test-ui.js"
+ ];
+ for(const path of paths){
+  const text=(await file(path)).toString("utf8");
+  assert.ok(text.includes("?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031"),"stale public module path: "+path);
+ }
+ const catalog=(await file("src/catalogs/capture-showcase-skill-presets-v1.js")).toString("utf8");
+ assert.ok(catalog.includes("data/capture/showcase/poing_givrant.capture-skill-transfer-v1.json"));
+});
