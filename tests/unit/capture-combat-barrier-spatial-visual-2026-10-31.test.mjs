@@ -88,7 +88,11 @@ test("nominal projectile timeout without observed barrier geometry never invents
  assert.equal(observed.absorbedByEntity,35,"the native observed geometry still protects the hero");
  assert.equal(observed.state.combatEntities[0].hp,wall.hp-35);
  assert.equal(observed.state.fighters.hero.hp,100);
- const beam=applyCombatDamageV1({state,sourceActorId:"enemy",targetActorId:"hero",
+ const beamMiss=applyCombatDamageV1({state,sourceActorId:"enemy",targetActorId:"hero",
    damage:35,incomingKind:"beam"});
- assert.equal(beam.absorbedByEntity,35,"beam behavior remains unchanged until independent spatial sensor lot");
+ assert.equal(beamMiss.absorbedByEntity,0,"beam may not intercept without observed visual geometry");
+ assert.equal(beamMiss.state.fighters.hero.hp,65);
+ const beamHit=applyCombatDamageV1({state,sourceActorId:"enemy",targetActorId:"hero",
+   damage:35,incomingKind:"beam",contactedEntityId:wall.id});
+ assert.equal(beamHit.absorbedByEntity,35,"observed beam collision is still intercepted natively");
 });
