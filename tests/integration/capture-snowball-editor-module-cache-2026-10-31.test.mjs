@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 const read=path=>readFileSync(new URL("../../"+path,import.meta.url),"utf8");
 test("snowball catalog v46 busts every public editor entry and dynamic preview module cache",()=>{
- const token="liane-audio-r2-20261030-snowball-v46-20261031";
+ const token="liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031";
  const paths=[
   "examples/dom-demo/capture-editor-v2.html",
   "examples/dom-demo/capture-editor-v2.js",
