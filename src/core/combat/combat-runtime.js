@@ -30,6 +30,7 @@ export function createCombatRuntime({
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer,
   readZoneSpatialContext = null,
+  readBarrierContact = null,
   enableExpandingWaveMultiTarget = false,
   groundContactResolution = "timed",
   onState = () => {},
@@ -51,6 +52,7 @@ export function createCombatRuntime({
     throw new RangeError("tickMs must be greater than 0");
   }
   if (readZoneSpatialContext !== null && typeof readZoneSpatialContext !== "function") throw new TypeError("readZoneSpatialContext must be a function");
+  if (readBarrierContact !== null && typeof readBarrierContact !== "function") throw new TypeError("readBarrierContact must be a function");
 
   let disposed = false;
   let running = false;
@@ -934,10 +936,23 @@ export function createCombatRuntime({
          effectiveAction.skill?.projectileTargeting === "expanding_wave" &&
          !visibleContact ? "evaded" : null)));
 
+    // One spatial observation at the existing semantic impact. Never infer a
+    // wall from the attack kind or expiry clock. Projectile evidence comes
+    // from its own swept sprite sensor; beam/contact from the same FX adapter.
+    const physicalKind=effectiveAction.actionType==="skill"
+      ? effectiveAction.skill?.form : null;
+    const spatialBarrierId=["beam","contact"].includes(physicalKind)
+      ? readBarrierContact?.({sourceActorId:effectiveAction.actorId,
+          targetActorId:effectiveAction.targetId,kind:physicalKind,
+          skillId:effectiveAction.skill.id})?.entityId??null
+      : null;
+    const barrierContactId=physicalKind==="projectile"
+      ? (visibleContact?combatEntityId??null:null) : spatialBarrierId;
+    const resolvedAction=["projectile","beam","contact"].includes(physicalKind)
+      ? Object.freeze({...effectiveAction,barrierContactId})
+      : effectiveAction;
     const resolution = session.completeAction({
-      action: visibleContact && effectiveAction.skill?.form === "projectile"
-        ? Object.freeze({...effectiveAction,barrierContactId:combatEntityId??null})
-        : effectiveAction,
+      action: resolvedAction,
       forcedOutcome,
       confirmedVisibleBodyContact: visibleContact &&
         effectiveAction.actionType === "skill" &&
