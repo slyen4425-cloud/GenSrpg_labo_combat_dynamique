@@ -1,3 +1,12 @@
+## 2026-10-31 — Boule de neige Glace : 3 sprites 12f (import médias, CI avant publication)
+- Source utilisateur vérifiée sur `global-assets` : `_incoming/boule_de_neige_pack_complet_36_frames.zip`, 20 516 596 octets, SHA256 `a00b6b8272fc2dd960088c6814c0c6d193f063608e2183ab8ec94b6bc01d5abb`, blob Git `44b98ca229b569d3a64b63359fdad90f6b02e064`.
+- Base médias `global-assets@51112a3143671c4d84aa2863fe4a83c2800ecef9`, base éditeur publiée `gh-pages@fd547799d318ce168a4a7ff00c445db7d6a5160a`, checkpoint START `checkpoint/lab-start-snowball-sprites-2026-10-31`, branche `work/lab-snowball-sprites-2026-10-31`.
+- Périmètre : 3 animations `cast`, `projectile`, `impact` de 12 frames transparentes 512×512, 3 atlas WebP horizontaux 6144×512, séquences, previews, provenance et trois `assetId` dans le seul catalogue `data/assets/catalog/global-visual-assets.v1.json`. Aucun pouvoir d'import sur main, aucune capacité ni créature modifiée.
+- Protocole : test RED `tests/unit/capture-snowball-sprites-2026-10-31.test.mjs`, vérification ZIP intégral/CRC/hash/36 PNG et 36 WebP, assemblage sans perte des 3 atlas, contrôle de la résolution et aperçu, puis CI obligatoire. Aucun GREEN ni publication sans contrôles complets.
+- Livraison à achever : générer les médias physiques via workflow GitHub, PR vers `global-assets`, vérifier accès aux trois URL brutes, inspecter la révision de cache et le sélecteur public `gh-pages`, CI + preview, checkpoint final.
+
+---
+
 ## 2026-10-29 — Liane épineuse : rayon 12f validé, extension puis enroulement
 
 - **Demande / origine** : liane végétale épineuse sortant de la créature, se tendant vers la cible puis s'enroulant autour d'elle. Sprite de type rayon/beam ; le choix d'un ennemi dans sa réserve et son remplacement sont des règles de gameplay déjà distinctes et **non modifiées dans ce lot**.
