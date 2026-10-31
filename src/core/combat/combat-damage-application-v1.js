@@ -7,6 +7,7 @@ import {
 import {
   isStatusEffectRuntimeInstanceActiveV1
 } from "./status-effect-instance-v1.js";
+import {interceptCombatBarrierV1} from "./combat-entity-v1.js";
 import {
   combatProtectionForIncomingV1
 } from "./combat-protection-v1.js";
@@ -106,6 +107,12 @@ export function applyCombatDamageV1({
         protection.protectingStatusIds
     });
   }
+  // A real combat entity intercepts a configured physical/direct attack
+  // before fighter shields. Remaining damage spills into the original owner.
+  const intercepted=interceptCombatBarrierV1({state:nextState,sourceActorId,targetActorId,
+    damage:remaining,incomingKind});
+  nextState=intercepted.state;
+  remaining=intercepted.remainingDamage;
   const statuses = [
     ...(target.statusEffects ?? [])
   ];
@@ -240,6 +247,11 @@ export function applyCombatDamageV1({
     state: nextState,
     requestedDamage: requested,
     absorbedByShield,
+    absorbedByEntity:intercepted.absorbedByEntity,
+    entityId:intercepted.entityId,
+    destroyedEntityId:intercepted.destroyedEntityId,
+    entityHpBefore:intercepted.entityHpBefore,
+    entityHpAfter:intercepted.entityHpAfter,
     immuneDamage: 0,
     appliedDamage,
     reflection,

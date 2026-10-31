@@ -166,6 +166,13 @@ function effectSentence(e,{perCharge=false}={}){
     case "life_steal":return [finish("Récupère "+num(e.percent)+" % des dégâts infligés sous forme de PV"+
       (e.maxHeal!=null?" (maximum "+num(e.maxHeal)+" PV)":""))];
     case "knockout":return [finish("Met "+subject(e.targetScope)+" K.O.")];
+    case "summon_entity":return [finish("Invoque une barrière destructible protégeant "+
+      (e.targetScope==="self"?"la créature":"sa cible")+
+      " : "+num(e.hpPerStatPoint)+" PV par point de la statistique "+
+      (e.statId==="glace"?"Glace":e.statId)+
+      " du lanceur au moment de l'invocation. Intercepte : "+
+      words(e.interceptKinds.map(k=>k==="contact"?"contact":k==="beam"?"rayons":"projectiles"))+
+      " ; les dégâts excédentaires touchent leur cible.")];
     case "force_reserve_switch":return [
       "Force la créature ennemie choisie dans sa réserve à entrer en combat à la place de la créature adverse active, si l'attaque touche."
     ];
