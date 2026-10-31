@@ -1,3 +1,11 @@
+## 2026-10-31 — Boule de neige : invalidation cache de la chaîne publique (après publication du média)
+- Base `gh-pages@4e23cc506d8a7a764c1310234c9ed21eb73d279a` ; médias `global-assets@0a778fd3cbc270e4a6234a5c2ca3eef19a2709e4` ; START `checkpoint/lab-start-snowball-editor-cache-2026-10-31`, travail `work/lab-snowball-editor-cache-2026-10-31`.
+- Cause : le catalogue interne a bien progressé à v46, mais les six imports de modules de l'éditeur public restaient épinglés à la même query v du 30 octobre, ce qui pouvait garder l'ancien `global-visual-library.js` en cache sur smartphone.
+- Correction de la cause : conserver un seul catalogue et ajouter le suffixe `-snowball-v46-20261031` à la chaîne de révisions d'import existante (HTML, entrée, éditeur, preview/2v2) sans toucher aux autres versions ni au contenu des capacités ; la sentinelle RED vérifie les six entrées.
+- Avant GREEN : CI complète cinq jobs, PR vers `gh-pages`, Pages au SHA fusionné. Ne pas promouvoir `main`.
+
+---
+
 ## 2026-10-31 — Boule de neige : raccorder les trois médias officiels à l'éditeur public
 - Médias livrés sur `global-assets@0a778fd3cbc270e4a6234a5c2ca3eef19a2709e4` par PR #161, CI du lot de médias réussie et 3 atlas WebP 6144×512 physiquement présents ; catalogue canonique 284 ressources dont 3 nouveaux IDs `pack:capture:sprite-boule-de-neige-{cast,projectile,impact}-01`.
 - Base éditeur `gh-pages@fd547799d318ce168a4a7ff00c445db7d6a5160a`, START `checkpoint/lab-start-snowball-editor-catalog-2026-10-31`, branche `work/lab-snowball-editor-catalog-2026-10-31`.
