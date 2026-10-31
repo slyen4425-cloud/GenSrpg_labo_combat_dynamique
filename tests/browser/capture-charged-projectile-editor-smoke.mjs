@@ -20,6 +20,10 @@ document.addEventListener("DOMContentLoaded",()=>{
       const effectButton=document.querySelector("[data-skill-effect-add]");
       if(!effectChoice||!effectButton||!effectChoice.closest("article")?.textContent.includes("Effets tactiques"))
         throw Error("charged must be offered from tactical effects > add effect");
+      // The default Fireball authors its own damage row: the charge owner
+      // deliberately rejects that duplicate instead of deleting author data.
+      // Start a genuinely new skill before adding the charged effect.
+      document.querySelector("[data-skill-new]").click();
       effectChoice.value="charged";effectButton.click();
       if(!enabled.checked||settings.hidden||getComputedStyle(settings).display==="none"||
           document.querySelector("[data-skill-form]").value!=="projectile")
