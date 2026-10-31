@@ -51,6 +51,6 @@ test("1v1 physical wall geometry decides real native interception rather than ti
 test("public 1v1 entry refreshes the exact editor module, without touching 2v2",()=>{
   const demo=readFileSync(new URL("../../examples/dom-demo/demo.js",import.meta.url),"utf8");
   const html=readFileSync(new URL("../../examples/dom-demo/index.html",import.meta.url),"utf8");
-  assert.match(demo,/combat-test-ui\\.js\\?v=wall-1v1-sensor-parity-20261031/);
-  assert.match(html,/demo\\.js\\?v=wall-1v1-sensor-parity-20261031/);
+  assert.match(demo,/combat-test-ui\.js\?v=wall-1v1-sensor-parity-20261031/);
+  assert.match(html,/demo\.js\?v=wall-1v1-sensor-parity-20261031/);
 });
