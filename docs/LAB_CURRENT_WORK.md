@@ -1,3 +1,11 @@
+## 2026-10-31 — Amplificateur des effets reçus : négatifs, positifs ou les deux (RED avant implémentation)
+- Base gh-pages@489f90337db928b94f2d62e6df542ccf537c55e6 ; START checkpoint/lab-start-incoming-effect-amplifier-2026-10-31 ; branche work/lab-incoming-effect-amplifier-2026-10-31.
+- Contrat unique StatusEffectV1 kind incoming_effect_modifier : modifierPct signé et affectedPolarity detrimental/beneficial/both. Affecte la quantité de PV de tous dégâts (y compris DoT, fixes, zones, renvois) et tous soins (directs, périodiques, vol de vie), sans changer la Défense, les résistances, les immunités, les durées de statut ou la puissance des autres buffs/debuffs ; ce dernier aspect reste un autre contrat et ne doit pas être simulé.
+- Autorité combat : Combat Damage Application pour tout delta de PV, Status Runtime pour le temps/stack ; éditeur natif Effets tactiques et zone persistante ; bestiaire et fiche statut. Aucun changement des capacités auteur existantes ou de main.
+- TDD RED, CI 5 jobs, navigateur et checkpoint GREEN avant promotion de gh-pages.
+
+---
+
 ## 2026-10-31 — Correction charges spam + paiement énergie + import Boule de neige (en cours)
 - Base `gh-pages@6ef6eea366aacac42986baa07c10ebd64d6a17d0`; START `checkpoint/lab-start-charge-stage-energy-snowball-2026-10-31`, travail `work/lab-charge-stage-energy-snowball-2026-10-31`.
 - Problème auteur : appuis successifs acceptés sans préparation (taille 10 charges instantanées) ; énergie déduite seulement à l'entrée du sort. Refonte causale : par charge, préparation effective (une étape) puis fenêtre de réactivation, coût énergétique payé atomiquement par CombatSession pour chaque activation acceptée; une seule action/projectile/cooldown.
