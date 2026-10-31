@@ -30,6 +30,8 @@ jobs:
           node-version: 22
       - name: Real Chromium creature library startup smoke
         run: node tests/browser/capture-creature-library-smoke.mjs
+      - name: Real Chromium snowball selectors and official WebP atlas previews
+        run: node tests/browser/capture-snowball-asset-editor-smoke.mjs
       - name: Real Chromium charged projectile author fields
         run: node tests/browser/capture-charged-projectile-editor-smoke.mjs
       - name: Real Chromium 2.5D arena shadow and flying light projection
