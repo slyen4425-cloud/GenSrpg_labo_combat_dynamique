@@ -1,3 +1,10 @@
+## 2026-10-31 — Charged Attack : fenêtre de réactivation indépendante de la préparation (CI en attente)
+- Base `gh-pages@c44082a9a8e88acfef7f0957526481cc9de4d30d`, START `checkpoint/lab-start-charged-release-window-2026-10-31`, travail `work/lab-charged-release-window-2026-10-31` ; TDD RED `772531901f4a87adc5d6a7b2d63dc2a19d9c8a4c`.
+- Cause racine : contrat exigeait fenêtre <= préparation et Runtime lançait le projectile à la fin de la préparation. Nouveau modèle : préparation = plancher, fenêtre glissante depuis la dernière activation, tir au maximum de charges dès que préparation minimum accomplie. Le cast reste visible et grossit sans nouveau timer ; le projectile hérite du même scale. Formulaire et bestiaire clarifiés, aucune deuxième source de vérité.
+- CI et navigateur à vérifier ; rapport `docs/LAB_CHARGE_RELEASE_WINDOW_2026-10-31.md`. Aucun changement sur main/GenSrpg/Exploration.
+
+---
+
 ## 2026-10-31 — Suite attaque chargée : Effets tactiques + cast grossissant (en validation CI)
 - Base `gh-pages@4fd62cb798ba0eb382d20d4c34b03f57a4559f34`. START `checkpoint/lab-start-charged-cast-scale-2026-10-31`, travail `work/lab-charged-cast-scale-2026-10-31`, RED `decd788c4d17b62c2b115c86c9cebe71c4bedcc7`.
 - Retour auteur : configuration introuvable dans Effets / Ajouter un effet ; le cast doit grossir à chaque activation, puis le projectile conserve la même amplification. Choix sous Effets tactiques, définition native unique ; même animation de cast redimensionnée sans replay ; runtime seul propriétaire charge/taille ; test navigateur réel + CI à confirmer.
