@@ -5,7 +5,8 @@ const roles=["cast","projectile","impact"];
 test("The published editor reads the sole global-assets repository and new snowball cache revision",()=>{
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
  assert.equal(GLOBAL_VISUAL_LIBRARY.repository,"slyen4425-cloud/GenSrpg_labo_combat_dynamique");
- assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-10-31-v46-boule-de-neige-3x12");
+ const version=GLOBAL_VISUAL_LIBRARY.revision.match(/^2026-\d\d-\d\d-v(\d+)-[a-z0-9-]+$/);
+ assert.ok(version && Number(version[1])>=46,"Snowball media requires catalog revision v46 or newer");
  const catalog=new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl);
  assert.ok(catalog.pathname.endsWith("/global-assets/data/assets/catalog/global-visual-assets.v1.json"));
  assert.equal(catalog.searchParams.get("v"),GLOBAL_VISUAL_LIBRARY.revision);
