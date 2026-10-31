@@ -1,3 +1,10 @@
+## 2026-10-31 — Charge des effets tactiques V1 (NON GREEN avant CI)
+- Départ gh-pages@73da6929a388892737f3bc1a65cd99a6d70e9fef ; START checkpoint/lab-start-charged-effects-2026-10-31 ; WORK work/lab-charged-effects-2026-10-31. Test RED 4e5301fcdfaf8e1a3ac46effee8c052995beca92.
+- Propriétaires SkillDefinition / Combat Runtime / Combat Session / ActionResolver / Human Editor / Bestiaire ; contrat chargedEffects distinct du chargedAttack ancien ; statuts numériques et soins sans modifier durées. Protéger main, assets, données auteur, GenSrpg et Exploration.
+- Tests ciblés, suite CI 5/5, test vrai moteur et navigateur obligatoires avant checkpoint GREEN. Références et backlog invocations/canalisation dans docs/LAB_CHARGED_EFFECTS_2026-10-31.md.
+
+---
+
 ## 2026-10-31 — Import auteur Glace : Poing givrant + Boule de neige r2 (CI pré-clôture 5/5)
 - Base gh-pages@5b22b78c0537c6fb83e09a034456e080e2193c3c ; START `checkpoint/lab-start-ice-author-import-2026-10-31` ; WORK `work/lab-ice-author-import-2026-10-31` ; main/global-assets intacts.
 - Deux fichiers utilisateur importés à l'octet sous leurs IDs d'origine : Poing givrant nouvel ID, Boule de neige r2 remplace la version active. Source-exports archivent les deux fichiers sans devenir des autorités. Un catalogue unique (`CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1`) ; cache ESM mobile révisé, aucune capacité tierce modifiée.

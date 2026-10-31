@@ -2735,6 +2735,7 @@ export function humanSkillEditorFieldsFromDraftV1(
     energyCost: definition.energyCost,
     preparationMs: definition.preparationMs,
     chargedAttack: definition.chargedAttack ?? null,
+    chargedEffects: definition.chargedEffects ?? null,
     travelMs: definition.travelMs,
     recoveryMs: definition.recoveryMs,
     cooldownMs: definition.cooldownMs ?? 0,
@@ -3084,6 +3085,12 @@ export function buildHumanSkillDraftV1(fields) {
         maxCharges:finiteNumber(fields.chargedAttack.maxCharges,"Activations maximum"),
         reactivationWindowMs:finiteNumber(fields.chargedAttack.reactivationWindowMs,"Fenêtre de réactivation"),
         sizeIncreasePct:finiteNumber(fields.chargedAttack.sizeIncreasePct,"Taille par charge")
+      }}),
+      ...(fields.chargedEffects == null ? {} : {chargedEffects:{
+        maxCharges:finiteNumber(fields.chargedEffects.maxCharges,"Maximum charges des effets"),
+        reactivationWindowMs:finiteNumber(fields.chargedEffects.reactivationWindowMs,"Fenêtre de charge des effets"),
+        potencyIncreasePct:finiteNumber(fields.chargedEffects.potencyIncreasePct,"Puissance des effets par charge"),
+        sizeIncreasePct:finiteNumber(fields.chargedEffects.sizeIncreasePct,"Taille du cast par charge")
       }}),
       travelMs: finiteNumber(
         fields.travelMs,
@@ -3707,6 +3714,10 @@ function writeSkillDraftFields(
     ["[data-skill-charged-max-charges]", fields.chargedAttack?.maxCharges ?? 3],
     ["[data-skill-charged-window]", fields.chargedAttack?.reactivationWindowMs ?? 450],
     ["[data-skill-charged-size-pct]", fields.chargedAttack?.sizeIncreasePct ?? 10],
+    ["[data-skill-charged-effects-max-charges]", fields.chargedEffects?.maxCharges ?? 3],
+    ["[data-skill-charged-effects-window]", fields.chargedEffects?.reactivationWindowMs ?? 450],
+    ["[data-skill-charged-effects-potency]", fields.chargedEffects?.potencyIncreasePct ?? 50],
+    ["[data-skill-charged-effects-size-pct]", fields.chargedEffects?.sizeIncreasePct ?? 10],
     [
       "[data-skill-travel-time]",
       fields.travelMs
@@ -3844,6 +3855,8 @@ function writeSkillDraftFields(
   syncCaptureBeamStageLayoutV1(root);
   one(root,"[data-skill-charged-enabled]").checked = fields.chargedAttack !== null;
   one(root,"[data-skill-charged-config]").hidden = fields.chargedAttack === null;
+  one(root,"[data-skill-charged-effects-enabled]").checked = fields.chargedEffects !== null;
+  one(root,"[data-skill-charged-effects-config]").hidden = fields.chargedEffects === null;
 
   one(
     root,
@@ -3985,6 +3998,8 @@ function prepareNewSkillDraftFields(
   syncCaptureBeamStageLayoutV1(root);
   one(root,"[data-skill-charged-enabled]").checked = false;
   one(root,"[data-skill-charged-config]").hidden = true;
+  one(root,"[data-skill-charged-effects-enabled]").checked = false;
+  one(root,"[data-skill-charged-effects-config]").hidden = true;
 
   one(
     root,
@@ -9315,6 +9330,12 @@ function readSkillFields(root) {
       reactivationWindowMs:numericValue(root,"[data-skill-charged-window]"),
       sizeIncreasePct:numericValue(root,"[data-skill-charged-size-pct]")
     } : null,
+    chargedEffects: one(root,"[data-skill-charged-effects-enabled]").checked ? {
+      maxCharges:numericValue(root,"[data-skill-charged-effects-max-charges]"),
+      reactivationWindowMs:numericValue(root,"[data-skill-charged-effects-window]"),
+      potencyIncreasePct:numericValue(root,"[data-skill-charged-effects-potency]"),
+      sizeIncreasePct:numericValue(root,"[data-skill-charged-effects-size-pct]")
+    } : null,
     travelMs: numericValue(
       root,
       "[data-skill-travel-time]"
@@ -10574,9 +10595,21 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     "[data-skill-update]"
   );
   const chargedEnabled = root.querySelector("[data-skill-charged-enabled]");
+  const chargedEffectsEnabled = root.querySelector("[data-skill-charged-effects-enabled]");
   if (chargedEnabled) listen(chargedEnabled,"change",()=>{
-    const config = root.querySelector("[data-skill-charged-config]");
-    if (config) config.hidden = !chargedEnabled.checked;
+    const config=root.querySelector("[data-skill-charged-config]");
+    if(config)config.hidden=!chargedEnabled.checked;
+    if(chargedEnabled.checked&&chargedEffectsEnabled){
+      chargedEffectsEnabled.checked=false;
+      one(root,"[data-skill-charged-effects-config]").hidden=true;
+    }
+  });
+  if(chargedEffectsEnabled)listen(chargedEffectsEnabled,"change",()=>{
+    one(root,"[data-skill-charged-effects-config]").hidden=!chargedEffectsEnabled.checked;
+    if(chargedEffectsEnabled.checked&&chargedEnabled){
+      chargedEnabled.checked=false;
+      one(root,"[data-skill-charged-config]").hidden=true;
+    }
   });
   const skillActivationEnabled = one(
     root,
@@ -12515,6 +12548,15 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
 
   listen(skillEffectAddButton, "click", () => {
     const choice = one(root, "[data-skill-effect-add-kind]");
+    if (choice.value === "charged-effects") {
+      chargedEffectsEnabled.checked=true;
+      one(root,"[data-skill-charged-effects-config]").hidden=false;
+      chargedEnabled.checked=false;
+      one(root,"[data-skill-charged-config]").hidden=true;
+      choice.value="standard";
+      setStatus(root,"Charge d'effets activée : ajoute un soin ou un statut numérique puis règle la puissance par activation.","ok");
+      return;
+    }
     if (choice.value === "charged") {
       // One author control, one chargedAttack contract: never insert a
       // second normal damage effect alongside the projectile's base damage.
@@ -12530,6 +12572,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       one(root,"[data-skill-trajectory-mode]").value = "linear";
       beamStageLayout.sync();
       chargedEnabled.checked = true;
+      chargedEffectsEnabled.checked=false;
+      one(root,"[data-skill-charged-effects-config]").hidden=true;
       one(root,"[data-skill-charged-config]").hidden = false;
       choice.value="standard";
       setStatus(root,"Attaque chargée ajoutée : règle les dégâts, charges et taille ici, puis choisis tes sprites Cast et Projectile.", "ok");

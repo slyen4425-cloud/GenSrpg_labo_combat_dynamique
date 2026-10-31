@@ -390,6 +390,13 @@ export function describeCaptureSkillV1(input) {
       " dégâts supplémentaires et augmente la taille du cast et du projectile de "+num(c.sizeIncreasePct)+
       " %, jusqu'à "+num(c.maxCharges)+" activations ("+num(maxDamage)+" dégâts maximum). Chaque activation exige une préparation complète et consomme "+num(d.energyCost)+" énergie. La fenêtre pour réactiver commence après chaque préparation ; à la charge maximale, le tir part une fois la dernière préparation terminée."));
   }
+  if(d.chargedEffects){
+    const c=d.chargedEffects;
+    phrases.push(finish("Charge les soins, buffs ou debuffs : chaque activation après une préparation complète augmente leur intensité de "+num(c.potencyIncreasePct)+
+      " % (maximum "+num(c.maxCharges)+" activations), sans changer leurs durées. Chaque activation consomme "+num(d.energyCost)+
+      " énergie et peut agrandir le cast de "+num(c.sizeIncreasePct)+" %. Nouvelle activation possible pendant "+duration(c.reactivationWindowMs)+
+      " après la préparation. Une seule application à l'impact, immunités conservées."));
+  }
   if(d.effect.damage>0)phrases.push(finish("Inflige "+num(d.effect.damage)+" dégâts"));
   if(d.effect.heal>0)phrases.push(finish("Rend "+num(d.effect.heal)+" PV"));
   if(d.effect.stunMs>0)phrases.push(finish("Étourdit pendant "+duration(d.effect.stunMs)));
