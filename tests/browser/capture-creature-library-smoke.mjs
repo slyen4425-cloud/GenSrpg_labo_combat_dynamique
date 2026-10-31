@@ -2054,7 +2054,7 @@ function assertCreatures(dom, scenario) {
   if (!select) throw new Error(scenario + ": creature library <select> missing");
   const options = [...select[1].matchAll(/<option\b[^>]*value="([^"]+)"/g)]
     .map((match) => match[1]).filter(Boolean);
-  const required = ["crea_maraileron", "crea_mossback", "crea-loup", "kitsune_lunaire"];
+  const required = ["crea_maraileron", "crea_mossback", "crea-loup", "kitsune_lunaire", "gorice"];
   for (const id of required) {
     if (!options.includes(id)) {
       const libraryStatus = dom.match(/data-creature-library-state[^>]*>([^<]*)/i)?.[1]?.trim() ?? "not mounted";
@@ -2065,8 +2065,8 @@ function assertCreatures(dom, scenario) {
         "; jsError=" + error.slice(0,600));
     }
   }
-  if (options.length !== 104 || new Set(options).size !== 104) {
-    throw new Error(scenario + ": expected 104 unique creature ids; got " + options.length);
+  if (options.length !== 105 || new Set(options).size !== 105) {
+    throw new Error(scenario + ": expected 105 unique creature ids; got " + options.length);
   }
   console.log(scenario + ": " + options.length + " active creatures, all required IDs present");
 }
