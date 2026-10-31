@@ -1,13 +1,13 @@
-import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js";
+import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-geometry-20261031";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
 import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
 import { normalizeOpponentAiPolicy } from "../contracts/opponent-ai-policy.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
-import { createCombatRuntime } from "../core/combat/combat-runtime.js?v=wall-state-20261031";
+import { createCombatRuntime } from "../core/combat/combat-runtime.js?v=wall-state-20261031-wall-geometry-20261031";
 import { createRosterSession } from "../core/combat/roster-session.js";
 import { createOpponentDecisionController } from "../core/combat/opponent-decision-controller.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
-import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-facing-grainou-20261028";
+import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-facing-grainou-20261028-wall-geometry-20261031";
 import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
