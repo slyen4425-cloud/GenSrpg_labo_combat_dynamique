@@ -57,6 +57,9 @@ try {
     durationMs:5000,sizeMultiplier:1});
   const sprite=arena.querySelector('[data-skill-fx="cast"]');
   if(!sprite||sprite.style.scale!=="1")throw Error("initial cast sprite missing");
+  if(!playback.setDuration?.(9000)||
+     ![...sprite.getAnimations()].some(a=>a.effect?.getTiming?.().duration===9000))
+    throw Error("cast release window was not extended on the existing WAAPI animation");
   if(!playback.setSizeMultiplier?.(1.1)||sprite.style.scale!=="1.1")
     throw Error("first charge not scaled during cast");
   if(!playback.setSizeMultiplier?.(1.2)||sprite.style.scale!=="1.2"||
@@ -64,7 +67,7 @@ try {
     throw Error("cast restarted or second charge scale incorrect");
   if(getComputedStyle(sprite).scale!=="1.2")
     throw Error("real Chromium render does not compose charge scale");
-  document.body.dataset.chargedCastSmoke="pass:cast:1.0:1.1:1.2:one-sprite";
+  document.body.dataset.chargedCastSmoke="pass:cast:1.0:1.1:1.2:one-sprite:extended-window";
   fx.cancelAll();arena.remove();
 }catch(e){document.body.dataset.chargedCastSmoke="error:"+e.message;}
 </script>`;
