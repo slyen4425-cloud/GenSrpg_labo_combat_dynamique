@@ -1,4 +1,4 @@
-import {sweptSegmentRectContactV1} from "../../core/combat/combat-barrier-spatial-v1.js";
+import {sweptSegmentRectContactV1,nearestBarrierSegmentContactV1} from "../../core/combat/combat-barrier-spatial-v1.js";
 import { sweptPointHitsOpaqueMask, sweptPointHitsSpriteEllipseV1, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1, sweptExpandingWaveMeetsProjectileV1 } from "./dom-visible-model-contact.js";
 
 function defaultAnimate(element, keyframes, options) {
@@ -2929,6 +2929,7 @@ export function createDomSkillFxRenderer({
         targetVisual, "target", "100%", presentation?.impactLayer
       );
 
+      let beamSegment = null;
       function positionBeam() {
         const currentArena = arena.getBoundingClientRect();
         const from = centerRelativeTo(
@@ -2975,6 +2976,11 @@ export function createDomSkillFxRenderer({
         node.style.width = `${distancePx}px`;
         node.style.transform =
           `translateY(-50%) rotate(${rotationRad}rad)`;
+        // Source and target are the actual rendered beam anchors, including
+        // authored offsets. This is observation only, never HP resolution.
+        beamSegment = Object.freeze({from:Object.freeze({
+          x:startX+currentArena.left,y:startY+currentArena.top
+        }),to:Object.freeze({x:endX+currentArena.left,y:endY+currentArena.top})});
       }
       positionBeam();
       applyPresentationGlow(node, presentation?.feedback?.glow);
@@ -2994,6 +3000,7 @@ export function createDomSkillFxRenderer({
         skillId,
         fromSlot,
         targetSlot,
+        barrierSegment: beamSegment,
         contactFrameId: null,
         contactReported: false
       };
@@ -3003,6 +3010,7 @@ export function createDomSkillFxRenderer({
         record.contactFrameId = null;
         if (disposed || !active.has(record)) return;
         positionBeam();
+        record.barrierSegment = beamSegment;
         record.contactFrameId = requestFrame(followAnchors);
       }
       record.contactFrameId = requestFrame(followAnchors);
@@ -3295,6 +3303,23 @@ export function createDomSkillFxRenderer({
     });
   }
 
+  // Synchronous visual query on the authoritative Runtime impact tick.
+  // No second RAF, hit logic or entity HP authority. An active beam supplies
+  // its exact rendered endpoints; contact uses the moving fighter and target.
+  function barrierContactFor({sourceActorId,targetActorId,kind,skillId=null}){
+    if(disposed||!["beam","contact"].includes(kind)||barrierCollisionRectsFor===null)return null;
+    const barriers=barrierCollisionRectsFor({sourceActorId,targetActorId,kind})??[];
+    if(!Array.isArray(barriers)||barriers.length===0)return null;
+    const activeBeam=kind==="beam"?[...active].find(record=>
+      record.type==="beam"&&record.fromSlot===sourceActorId&&
+      record.targetSlot===targetActorId&&
+      (skillId===null||String(record.skillId)===String(skillId))) : null;
+    const observed=activeBeam?.barrierSegment??null;
+    const source=observed?.from??rectCenter(sourceRect(sourceActorId));
+    const target=observed?.to??rectCenter(projectileTargetRect(targetActorId));
+    return nearestBarrierSegmentContactV1({from:source,to:target,barriers});
+  }
+
   function sampleZoneSpatialContext(zones) {
     if (disposed || !zones.length) return null;
     // Reproject moving sources before sampling on the Runtime's existing tick.
@@ -3397,6 +3422,7 @@ export function createDomSkillFxRenderer({
     },
     syncPersistentZones,
     sampleZoneSpatialContext,
+    barrierContactFor,
     cancelProjectileFor,
     cancelAll,
     dispose,
