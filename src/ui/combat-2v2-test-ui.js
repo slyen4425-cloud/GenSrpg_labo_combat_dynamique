@@ -1728,6 +1728,9 @@ export async function mountCoop2v2Test({
     session,
     groundContactResolution: "visible",
     enableExpandingWaveMultiTarget: previewFormat.enemyActorIds.length === 2,
+    readBarrierContact({sourceActorId,targetActorId,kind,skillId}) {
+      return fx.barrierContactFor({sourceActorId,targetActorId,kind,skillId});
+    },
     readZoneSpatialContext: state => fx.sampleZoneSpatialContext(state.persistentZones ?? []),
     onState(state) {
       impactHealthCue.clear();
