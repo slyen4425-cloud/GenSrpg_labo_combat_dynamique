@@ -1598,6 +1598,26 @@
         </p>
 
 
+        <section class="projectile-clash-config" aria-label="Attaque chargée">
+          <h3>Attaque chargée — réactiver avant le tir</h3>
+          <label class="switch-line"><input type="checkbox" data-skill-charged-enabled>
+            <span>Activer l'attaque chargée (projectile direct uniquement)</span>
+          </label>
+          <div class="timing-grid" data-skill-charged-config hidden>
+            <label>Puissance de base (dégâts)
+              <input type="number" min="0" step="1" data-skill-charged-base-damage value="5"></label>
+            <label>Dégâts supplémentaires par activation
+              <input type="number" min="0" step="1" data-skill-charged-bonus-damage value="5"></label>
+            <label>Nombre d'activations maximum (premier tir inclus)
+              <input type="number" min="2" max="20" step="1" data-skill-charged-max-charges value="3"></label>
+            <label>Intervalle max entre deux activations (ms)
+              <input type="number" min="1" step="1" data-skill-charged-window value="450"></label>
+            <label>Augmentation de taille par activation (%)
+              <input type="number" min="0" max="100" step="1" data-skill-charged-size-pct value="10"></label>
+          </div>
+          <p class="note">Le temps « Préparation » ci-dessus détermine le départ du projectile. Avant ce départ, appuie de nouveau sur la même capacité dans la fenêtre indiquée pour renforcer un unique tir. Chaque pression ajoute des dégâts et agrandit le projectile. L'énergie et la recharge ne sont engagées qu'au premier appui. Aucun effet « Dégâts » supplémentaire ne doit être ajouté dans les effets tactiques de cette capacité.</p>
+        </section>
+
         <div class="projectile-clash-config">
           <h3>Collision entre projectiles et rayons</h3>
           <label>Puissance de collision (projectile / rayon)
