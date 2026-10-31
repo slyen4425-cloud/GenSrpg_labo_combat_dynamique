@@ -41,3 +41,79 @@ test("native beam and melee cannot steal wall HP without exact geometric evidenc
     assert.equal(observed.state.combatEntities[0].hp,45);
   }
 });
+
+test("native CombatSession keeps contact-hold tick damage on the observed wall, not behind it",async()=>{
+  const {createCombatSession}=await import("../../src/core/combat/combat-session.js");
+  const {normalizeSkillDefinition}=await import("../../src/contracts/skill-definition.js");
+  const {readFileSync}=await import("node:fs");
+  const base=JSON.parse(readFileSync(new URL("../../data/combat/skills/fireball.skill.json",import.meta.url),"utf8"));
+  const session=createCombatSession({fighters:[
+    {id:"hero",maxHp:100,maxEnergy:10,initialEnergy:10,statValuesById:{glace:80}},
+    {id:"enemy",maxHp:100,maxEnergy:10,initialEnergy:10}
+  ]});
+  const wallSkill=normalizeSkillDefinition({...base,id:"wall-for-hold",form:"self",
+    category:"defensive",energyCost:0,preparationMs:0,travelMs:0,
+    effect:{damage:0,heal:0,stunMs:0,interruptsPreparation:false,tags:[]},
+    targetRelations:["self"],targetLocations:["active"],projectileClash:{power:0},
+    effects:[effect]});
+  const start=session.startSkill({actorId:"hero",targetId:"hero",skill:wallSkill});
+  assert.equal(start.ok,true);
+  assert.equal(session.completeSkill({action:start.action}).ok,true);
+  const id=session.snapshot().combatEntities[0].id;
+  const skill={id:"native-hold",category:"offensive",form:"contact",element:"ice",
+    contactHold:{tickIntervalMs:1000,effects:[
+      {kind:"damage",targetScope:"target",amount:12,channel:"ice"}]}};
+  const tick=session.applyContactHoldTickV1({actorId:"enemy",targetId:"hero",skill,
+    atMs:session.snapshot().elapsedMs,contactedEntityId:id});
+  assert.equal(tick.ok,true);
+  assert.equal(session.snapshot().combatEntities[0].hp,68);
+  assert.equal(session.snapshot().fighters.hero.hp,100);
+  const noContact=session.applyContactHoldTickV1({actorId:"enemy",targetId:"hero",skill,
+    atMs:session.snapshot().elapsedMs,contactedEntityId:null});
+  assert.equal(noContact.ok,true);
+  assert.equal(session.snapshot().combatEntities[0].hp,68);
+  assert.equal(session.snapshot().fighters.hero.hp,88);
+});
+
+test("real CombatRuntime routes the beam visual evidence to the only native damage owner",async()=>{
+  const {createCombatSession}=await import("../../src/core/combat/combat-session.js");
+  const {createCombatRuntime}=await import("../../src/core/combat/combat-runtime.js");
+  const {normalizeSkillDefinition}=await import("../../src/contracts/skill-definition.js");
+  const {readFileSync}=await import("node:fs");
+  const base=JSON.parse(readFileSync(new URL("../../data/combat/skills/fireball.skill.json",import.meta.url),"utf8"));
+  const wallSkill=normalizeSkillDefinition({...base,id:"wall-beam-path",form:"self",category:"defensive",
+    energyCost:0,preparationMs:0,travelMs:0,projectileClash:{power:0},
+    effect:{damage:0,heal:0,stunMs:0,interruptsPreparation:false,tags:[]},
+    targetRelations:["self"],targetLocations:["active"],effects:[effect]});
+  const beam=normalizeSkillDefinition({...base,id:"native-beam-test",form:"beam",
+    preparationMs:100,travelMs:200,recoveryMs:0,projectileClash:{power:0}});
+  for(const observed of [false,true]){
+    const session=createCombatSession({fighters:[
+      {id:"hero",maxHp:100,maxEnergy:10,initialEnergy:10,statValuesById:{glace:80}},
+      {id:"enemy",maxHp:100,maxEnergy:10,initialEnergy:10}
+    ]});
+    const wallStart=session.startSkill({actorId:"hero",targetId:"hero",skill:wallSkill});
+    assert.equal(wallStart.ok,true);
+    assert.equal(session.completeSkill({action:wallStart.action}).ok,true);
+    const id=session.snapshot().combatEntities[0].id;
+    let clock=0,tick=null,queries=0;
+    const runtime=createCombatRuntime({session,now:()=>clock,
+      setTimer:fn=>(tick=fn,1),clearTimer:()=>{},
+      readBarrierContact:({sourceActorId,targetActorId,kind})=>{
+        queries++;
+        assert.equal(sourceActorId,"enemy");
+        assert.equal(targetActorId,"hero");
+        assert.equal(kind,"beam");
+        return observed?{entityId:id}:null;
+      }});
+    runtime.start();
+    assert.equal(runtime.startSkill({actorId:"enemy",targetId:"hero",skill:beam}).ok,true);
+    clock=350;
+    assert.equal(typeof tick,"function");
+    tick();
+    assert.equal(queries,1,"geometry queried once at semantic impact");
+    assert.equal(session.snapshot().fighters.hero.hp,observed?100:70);
+    assert.equal(session.snapshot().combatEntities[0].hp,observed?50:80);
+    runtime.dispose();
+  }
+});
