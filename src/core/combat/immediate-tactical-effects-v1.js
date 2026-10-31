@@ -1,12 +1,12 @@
 import {
-  withFighterEnergy,
-  withFighterHp
+  withFighterEnergy
 } from "./combat-state.js";
 import {
   computeCombatDamageV1
 } from "./combat-damage-v1.js";
 import {
-  applyCombatDamageV1
+  applyCombatDamageV1,
+  applyCombatHealV1
 } from "./combat-damage-application-v1.js";
 import {
   resolveTacticalEffectTargetIdsV1
@@ -425,19 +425,10 @@ export function applyImmediateTacticalEffectsV1({
       }
 
       if (effect.kind === "heal") {
-        const before = fighterOf(
-          nextState,
-          affectedId
-        ).hp;
-        nextState = withFighterHp(
-          nextState,
-          affectedId,
-          before + effect.amount
-        );
-        const after = fighterOf(
-          nextState,
-          affectedId
-        ).hp;
+        const healed=applyCombatHealV1({state:nextState,targetActorId:affectedId,amount:effect.amount,atMs:combatAtMs});
+        nextState=healed.state;
+        const before=healed.hpBefore;
+        const after=healed.hpAfter;
         events.push(Object.freeze({
           type: "heal",
           atMs,
@@ -445,7 +436,7 @@ export function applyImmediateTacticalEffectsV1({
           sourceActorId: actorId,
           skillId: skill.id,
           requested: effect.amount,
-          applied: after - before,
+          applied: healed.applied,
           hpBefore: before,
           hpAfter: after
         }));
@@ -703,14 +694,15 @@ export function applyImmediateTacticalEffectsV1({
         Math.round(lifeStealDamage * effect.percent) / 100
       );
       if (requested <= 0) continue;
-      const before = fighterOf(nextState, actorId).hp;
-      nextState = withFighterHp(nextState, actorId, before + requested);
-      const after = fighterOf(nextState, actorId).hp;
+      const healed=applyCombatHealV1({state:nextState,targetActorId:actorId,amount:requested,atMs:combatAtMs});
+      nextState=healed.state;
+      const before=healed.hpBefore;
+      const after=healed.hpAfter;
       events.push(Object.freeze({
         type: "heal", lifeSteal: true, atMs, actorId,
         sourceActorId: actorId, skillId: skill.id,
         damageBasis: lifeStealDamage, requested,
-        applied: after - before, hpBefore: before, hpAfter: after
+        applied: healed.applied, hpBefore: before, hpAfter: after
       }));
     }
   }
