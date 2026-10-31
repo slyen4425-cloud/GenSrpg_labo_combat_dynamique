@@ -111,6 +111,47 @@ try {
  runtime.dispose();
 }catch(e){document.body.dataset.chargedRuntimeSmoke="error:"+e.message;}
 </script>`;
+const incomingProbe=`<script type="module">
+import {createCombatState} from "../../src/core/combat/combat-state.js";
+import {normalizeStatusEffectV1} from "../../src/contracts/status-effect-v1.js";
+import {applyStatusEffectV1} from "../../src/core/combat/status-effect-runtime-v1.js";
+import {applyCombatDamageV1,applyCombatHealV1} from "../../src/core/combat/combat-damage-application-v1.js";
+try {
+ const status=normalizeStatusEffectV1({id:"frozen-vulnerability",kind:"incoming_effect_modifier",polarity:"detrimental",
+   durationMs:10000,stacking:"refresh",tags:[],affectedPolarity:"detrimental",modifierPct:30});
+ const base=createCombatState({fighters:[{id:"attacker",maxHp:300,initialHp:300,maxEnergy:10,initialEnergy:10},
+   {id:"victim",maxHp:300,initialHp:200,maxEnergy:10,initialEnergy:10}]});
+ const applied=applyStatusEffectV1({state:base,targetActorId:"victim",sourceActorId:"attacker",sourceSkillId:"freeze",status});
+ const damaged=applyCombatDamageV1({state:applied,sourceActorId:"attacker",targetActorId:"victim",damage:100});
+ const unboostedHeal=applyCombatHealV1({state:applied,targetActorId:"victim",amount:50});
+ if(damaged.appliedDamage!==130||unboostedHeal.applied!==50)throw Error("negative scope damage-only failed");
+ const healStatus=normalizeStatusEffectV1({...status,id:"regen-amplified",polarity:"beneficial",affectedPolarity:"beneficial"});
+ const healedState=applyStatusEffectV1({state:base,targetActorId:"victim",sourceActorId:"attacker",sourceSkillId:"boon",status:healStatus});
+ if(applyCombatHealV1({state:healedState,targetActorId:"victim",amount:50}).applied!==65)
+   throw Error("positive scope healing failed");
+ document.body.dataset.incomingRuntimeSmoke="pass:damage130:heal65:scope-separated";
+}catch(e){document.body.dataset.incomingRuntimeSmoke="error:"+e.message;}
+setTimeout(()=>{
+ try {
+   document.querySelector("[data-skill-new]").click();
+   document.querySelector("[data-skill-effect-add-kind]").value="standard";
+   document.querySelector("[data-skill-effect-add]").click();
+   const row=[...document.querySelectorAll("[data-skill-effects-host] [data-skill-effect-row]")].at(-1);
+   if(!row)throw Error("effect editor row missing");
+   const kind=row.querySelector("[data-skill-effect-kind]");
+   kind.value="apply_status";kind.dispatchEvent(new Event("change",{bubbles:true}));
+   const statusKind=row.querySelector("[data-skill-status-kind]");
+   statusKind.value="incoming_effect_modifier";statusKind.dispatchEvent(new Event("change",{bubbles:true}));
+   const group=row.querySelector('[data-skill-status-config-kind="incoming_effect_modifier"]');
+   const pct=row.querySelector("[data-skill-status-incoming-effect-modifier-pct]");
+   const affected=row.querySelector("[data-skill-status-incoming-effect-polarity]");
+   if(!group||group.hidden||!pct||!affected)throw Error("new incoming effect controls not visible");
+   pct.value="30";affected.value="beneficial";
+   if(pct.value!=="30"||affected.value!=="beneficial")throw Error("incoming effect author controls not editable");
+   document.body.dataset.incomingEditorSmoke="pass:author:effect:add:scope:percent";
+ }catch(e){document.body.dataset.incomingEditorSmoke="error:"+e.message;}
+},2600);
+</script>`;
 const server=createServer(async(req,res)=>{
  try {
   const pathname=decodeURIComponent(new URL(req.url,"http://localhost").pathname);
@@ -118,7 +159,7 @@ const server=createServer(async(req,res)=>{
   if(!file.startsWith(root+sep))return void res.writeHead(403).end("Forbidden");
   let content=await readFile(file);
   if(pathname.endsWith("/capture-editor-v2.html"))
-    content=Buffer.from(content.toString("utf8").replace("</head>",probe+castProbe+stageEnergyProbe+"</head>"));
+    content=Buffer.from(content.toString("utf8").replace("</head>",probe+castProbe+stageEnergyProbe+incomingProbe+"</head>"));
   res.writeHead(200,{"Content-Type":mime[extname(pathname)]??"application/octet-stream"}).end(content);
  }catch(e){res.writeHead(404).end(String(e));}
 });
@@ -142,9 +183,13 @@ try {
  const result=html.match(/data-charged-editor-smoke="([^"]*)"/)?.[1]??"missing";
  const castResult=html.match(/data-charged-cast-smoke="([^"]*)"/)?.[1]??"missing";
  const runtimeResult=html.match(/data-charged-runtime-smoke="([^"]*)"/)?.[1]??"missing";
- if(code!==0||!result.startsWith("pass:")||!castResult.startsWith("pass:")||!runtimeResult.startsWith("pass:"))
-   throw Error("Real charged editor/cast Chromium smoke failed: "+result+" / "+castResult+" / "+runtimeResult+"\n"+Buffer.concat(stderr).toString("utf8").slice(-500));
+ const incomingRuntime=html.match(/data-incoming-runtime-smoke="([^"]*)"/)?.[1]??"missing";
+ const incomingEditor=html.match(/data-incoming-editor-smoke="([^"]*)"/)?.[1]??"missing";
+ if(code!==0||!result.startsWith("pass:")||!castResult.startsWith("pass:")||!runtimeResult.startsWith("pass:")||!incomingRuntime.startsWith("pass:")||!incomingEditor.startsWith("pass:"))
+   throw Error("Real charged editor/cast Chromium smoke failed: "+result+" / "+castResult+" / "+runtimeResult+" / "+incomingRuntime+" / "+incomingEditor+"\n"+Buffer.concat(stderr).toString("utf8").slice(-500));
  console.log("Real charged author editor:",result);
  console.log("Real charged runtime: "+runtimeResult);
  console.log("Real charged cast scale:",castResult);
+ console.log("Real incoming effect runtime:",incomingRuntime);
+ console.log("Real incoming effect author:",incomingEditor);
 }finally{server.close();}
