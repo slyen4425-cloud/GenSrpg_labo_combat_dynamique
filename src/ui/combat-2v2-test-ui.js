@@ -1787,6 +1787,9 @@ export async function mountCoop2v2Test({
       const preparing =
         Boolean(progress.actionId) &&
         progress.phase === "preparation";
+      if (preparing && progress.chargeCount) {
+        presenter.presentChargeAmplification({actorSlot:progress.actorId,sizeMultiplier:progress.sizeMultiplier});
+      }
 
       setCharge(progress.actorId, {
         value: preparing ? progress.chargeProgress : 0,
