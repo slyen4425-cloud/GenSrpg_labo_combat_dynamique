@@ -1828,3 +1828,6 @@ html {
 }
 
 .creature-animation-chapter label[hidden] { display: none !important; }
+
+/* Optional charged-projectile controls obey the same editor disclosure state. */
+[data-skill-charged-config][hidden] { display:none !important; }
