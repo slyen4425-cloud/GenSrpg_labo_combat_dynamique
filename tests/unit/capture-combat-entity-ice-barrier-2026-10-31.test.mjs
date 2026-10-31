@@ -14,7 +14,7 @@ const wallEffect={kind:"summon_entity",targetScope:"self",entityKind:"barrier",s
  hpPerStatPoint:1,interceptKinds:["projectile","beam","contact"]};
 const wallSkill=()=>normalizeSkillDefinition({...data("data/combat/skills/fireball.skill.json"),
  id:"ice-wall-test",name:"Mur de glace",form:"self",category:"defensive",element:"ice",
- preparationMs:500,travelMs:0,energyCost:2,
+ preparationMs:500,travelMs:0,energyCost:2,projectileClash:{power:0},
  effect:{damage:0,heal:0,stunMs:0,interruptsPreparation:false,tags:[]},
  effects:[wallEffect],targetRelations:["self"],targetLocations:["active"]});
 function state(points=80){
