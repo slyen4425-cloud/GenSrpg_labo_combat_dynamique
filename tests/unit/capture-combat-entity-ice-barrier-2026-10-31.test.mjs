@@ -55,7 +55,7 @@ test("barrier intercepts actual incoming contact/beam/projectile damage, is dest
  assert.equal(hit.appliedDamage,0);assert.equal(hit.absorbedByEntity,30);
  assert.equal(hit.state.combatEntities[0].hp,50);assert.equal(hit.state.fighters.hero.hp,100);
  hit=applyCombatDamageV1({state:hit.state,sourceActorId:"enemy",targetActorId:"hero",
-   damage:65,incomingKind:"beam"});
+   damage:65,incomingKind:"beam",contactedEntityId:starting.combatEntities[0].id});
  assert.equal(hit.absorbedByEntity,50);assert.equal(hit.appliedDamage,15);
  assert.equal(hit.state.combatEntities.length,0);
  assert.equal(hit.state.fighters.hero.hp,85);
