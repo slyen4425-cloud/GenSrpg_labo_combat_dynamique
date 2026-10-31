@@ -60,9 +60,9 @@ test("native CombatSession keeps contact-hold tick damage on the observed wall, 
   assert.equal(start.ok,true);
   assert.equal(session.completeSkill({action:start.action}).ok,true);
   const id=session.snapshot().combatEntities[0].id;
-  const skill={id:"native-hold",category:"offensive",form:"contact",element:"ice",
+  const skill={id:"native-hold",category:"offensive",form:"contact",element:"fire",
     contactHold:{tickIntervalMs:1000,effects:[
-      {kind:"damage",targetScope:"target",amount:12,channel:"ice"}]}};
+      {kind:"damage",targetScope:"target",amount:12,channel:"fire"}]}};
   const tick=session.applyContactHoldTickV1({actorId:"enemy",targetId:"hero",skill,
     atMs:session.snapshot().elapsedMs,contactedEntityId:id});
   assert.equal(tick.ok,true);
