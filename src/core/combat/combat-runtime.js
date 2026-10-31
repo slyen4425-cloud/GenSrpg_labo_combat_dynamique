@@ -704,6 +704,21 @@ export function createCombatRuntime({
 
     record.released = true;
 
+    if (!earlyCounter && record.action.chargeState) {
+      const config = record.action.skill.chargedAttack;
+      const count = record.action.chargeState.chargeCount;
+      const damage = config.baseDamage + (count - 1) * config.bonusDamagePerCharge;
+      const sizeMultiplier = 1 + (count - 1) * config.sizeIncreasePct / 100;
+      record.action = Object.freeze({
+        ...record.action,
+        chargeState: Object.freeze({...record.action.chargeState,damage,sizeMultiplier}),
+        skill: Object.freeze({
+          ...record.action.skill,
+          effect: Object.freeze({...record.action.skill.effect,damage})
+        })
+      });
+    }
+
     if (!earlyCounter) {
       // One combat-owned movement gate, not a sprite timer or HUD guess.
       const action = record.action;
@@ -1258,7 +1273,18 @@ export function createCombatRuntime({
 
     const current = now();
     const record = {
-      action: result.action,
+      action: result.action.skill?.chargedAttack
+        ? Object.freeze({
+            ...result.action,
+            chargeState: Object.freeze({
+              chargeCount:1,
+              maxCharges:result.action.skill.chargedAttack.maxCharges,
+              lastTapAtMs:current,
+              damage:result.action.skill.chargedAttack.baseDamage,
+              sizeMultiplier:1
+            })
+          })
+        : result.action,
       reaction: null,
       startedAtClockMs: current,
       startedAtCombatMs:
@@ -1296,7 +1322,50 @@ export function createCombatRuntime({
     });
   }
 
+  function previewChargedSkillRetrigger({actorId,skillId}) {
+    const record = activeByActor.get(actorId);
+    if (!record || record.action.actionType !== "skill" ||
+        record.action.actionId !== skillId || !record.action.chargeState ||
+        record.resolved) {
+      return Object.freeze({ok:false,outcome:"action_in_progress"});
+    }
+    const config = record.action.skill.chargedAttack;
+    const charge = record.action.chargeState;
+    const elapsed = elapsedFor(record,now());
+    if (record.released || elapsed >= record.action.releaseAtMs) {
+      return Object.freeze({ok:false,outcome:"charge_released"});
+    }
+    if (charge.chargeCount >= config.maxCharges) {
+      return Object.freeze({ok:false,outcome:"charge_max"});
+    }
+    if (now() - charge.lastTapAtMs > config.reactivationWindowMs) {
+      return Object.freeze({ok:false,outcome:"charge_window_expired"});
+    }
+    return Object.freeze({ok:true,outcome:"charge_ready",
+      chargeCount:charge.chargeCount,maxCharges:config.maxCharges,
+      remainingWindowMs:Math.min(record.action.releaseAtMs-elapsed,
+        config.reactivationWindowMs-(now()-charge.lastTapAtMs))});
+  }
+
   function startSkill({ actorId, targetId, skill }) {
+    const active = activeByActor.get(actorId);
+    if (active && active.action.actionType === "skill" &&
+        active.action.actionId === skill?.id && active.action.chargeState) {
+      const preview = previewChargedSkillRetrigger({actorId,skillId:skill.id});
+      if (!preview.ok) return preview;
+      if (active.action.targetId !== targetId) {
+        return Object.freeze({ok:false,outcome:"charge_target_locked"});
+      }
+      const previous = active.action.chargeState;
+      const next = Object.freeze({
+        ...previous,chargeCount:previous.chargeCount+1,lastTapAtMs:now()
+      });
+      active.action = Object.freeze({...active.action,chargeState:next});
+      onProgress(progressSnapshot(active,elapsedFor(active,now())));
+      emitStateIfChanged({force:true});
+      return Object.freeze({ok:true,outcome:"charged",chargeCount:next.chargeCount,
+        maxCharges:next.maxCharges,action:active.action});
+    }
     const rejected = canStartAction(actorId);
     if (rejected) {
       return rejected;
@@ -2019,6 +2088,7 @@ export function createCombatRuntime({
   return Object.freeze({
     start,
     startSkill,
+    previewChargedSkillRetrigger,
     startCommand,
     previewReaction,
     react,
