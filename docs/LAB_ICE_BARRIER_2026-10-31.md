@@ -29,3 +29,9 @@
 - CI `41226833119` sur `4980df65de9d9036b409c46ca21aec9f24e6b218` : **5/5 SUCCESS**, ajout du vrai parcours CombatSession self-cast (pas de mur avant la résolution) et protection via Combat Damage.
 - Preuve finale requise : CI 5/5 sur le dernier commit de documentation avant checkpoint GREEN et PR, puis CI/Pages au SHA de fusion.
 - Rendu sur smartphone physique non validé par l'utilisateur ; art final, collisions spatiales et familiers hors périmètre de ce jalon.
+
+## Synchronisation inter-chantiers sur gh-pages (VFX Glace)
+- Pendant le développement du mur, la PR #172 a publié les médias « zone gelée / pointe de glace / brouillard » sur `gh-pages@0196809ab88488047c59b5b9be487ca475cff06b` (CI et Pages verts).
+- La PR #173 du mur a détecté un vrai conflit dans les six points de cache ESM, le workflow CI et CURRENT_WORK. **Aucune fusion forcée ni écrasement.**
+- Résolution causale : arbre Git reconstruit depuis le HEAD VFX, 13 fichiers propres au mur repris à l'identique, quatre puis quatre fichiers partagés fusionnés en conservant à la fois le suffixe `ice-ground-spike-fog-20261031` et `barrier-20261031-hud-20261031`. Workflow conserve les deux smokes et les sentinelles de la bibliothèque d'assets. Les médias et tests de la PR #172 restent inchangés.
+- Commit de fusion de synchronisation à deux parents : branche du mur et HEAD VFX. Nouveau résultat à valider sur GitHub CI avant checkpoint GREEN ; le HEAD gh-pages ne doit jamais être remplacé directement.
