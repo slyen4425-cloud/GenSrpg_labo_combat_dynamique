@@ -1,3 +1,14 @@
+## 2026-10-31 — Quatre icônes de glace Monster Capture — lot visuel
+
+- **Demande** : publier Poing de givre, Brouillard givrant, Armure de glace et Barrière de glace, quatre icônes originales déjà générées dans le fil, dans le sélecteur officiel de compétences du labo combat.
+- **Gouvernance** : autorité exclusive `global-assets` et catalogue unique `data/assets/catalog/global-visual-assets.v1.json`. Base `b3764c86cbcc3472dcf4dba2bf67c28f7e8d1a17` (CI SUCCESS `41225618676`), checkpoint départ `checkpoint/lab-start-ice-skill-four-icons-2026-10-31`, branche `work/lab-ice-skill-four-icons-2026-10-31`.
+- **Sources réelles** : quatre fichiers images PNG 1254×1254 originaux, distincts, dont le quatrième « Barrière de glace » récupéré depuis l'original imagegen de la conversation. Export sans nouvelle génération, masters PNG 512×512 et runtime WebP RGB 128×128 q84 LANCZOS ; SHA256 individuels tracés au manifeste.
+- **Portée** : ajouter exclusivement les 4 vrais `assets/library/capture/icons/skills/icon_skill_{poing_de_givre,brouillard_givrant,armure_de_glace,barriere_de_glace}_01.webp`, 4 IDs de catalogue `pack:capture:icon-skill-{poing-de-givre,brouillard-givrant,armure-de-glace,barriere-de-glace}-01`, provenance, sentinelle TDD, documentation et cette déclaration.
+- **Protections** : toutes les autres ressources, notamment les sprites de glace déjà en chantier, compétences `configuredSkills`, loadouts et créatures, `main`, `gh-pages`, moteur et éditeur. Pas de double autorité, aucun auto-binding sans ID fiable de capacité ; les 4 icônes sont sélectionnables dans le sélecteur alimenté directement par le catalogue officiel.
+- **Protocole** : RED prouvé avant inclusion médias, comparaison octet par octet des vraies images, RIFF/WEBP 128px, SHA256+SHA Git, vérification des 4 IDs uniques et de la résolution catalogue→ressource, CI complète, revue du diff, checkpoint GREEN sur SHA testé, fast-forward protégé de `global-assets` après contrôle de concurrence. Test visuel mobile utilisateur distinct.
+
+---
+
 ## 2026-10-31 — Glace : zone gelée / pointe de glace / brouillard gelant (lot médias)
 - Source ZIP originale déjà déposée par l'auteur : `_incoming/pack_sprites_glace_suite_36_frames.zip` (13 489 375 octets ; SHA256 `33f5dce30a96a52990f53e652b21ec0c840f1ab4917c756d2ccfc01135dc1506`, Git blob `7fdd00d190a9c8fd142b465ba7c1befd39602ae6`).
 - Base médias `global-assets@92c4af94aa64eee1a1d3d1179a0eb67b851cacdf`, éditeur référence `gh-pages@73da6929a388892737f3bc1a65cd99a6d70e9fef`, START `checkpoint/lab-start-ice-ground-spike-fog-2026-10-31`, lot `work/lab-ice-ground-spike-fog-2026-10-31`.
