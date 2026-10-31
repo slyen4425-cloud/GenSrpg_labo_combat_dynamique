@@ -125,6 +125,8 @@ export function createCombatRuntime({
           hold.nextTickClockMs<=until){
         const result=session.applyContactHoldTickV1({
           actorId:hold.actorId,targetId:hold.targetId,skill:hold.skill,
+          contactedEntityId:readBarrierContact?.({sourceActorId:hold.actorId,
+            targetActorId:hold.targetId,kind:"contact",skillId:hold.skill.id})?.entityId??null,
           atMs:Math.max(0,Number(session.snapshot().elapsedMs)-
             (atNowMs-hold.nextTickClockMs))
         });
