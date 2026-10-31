@@ -2121,6 +2121,9 @@ export function createDomSkillFxRenderer({
       }
       node.dataset.skillFx = "cast";
       node.dataset.skillId = skillId ?? "";
+      // The independent CSS scale composes with the authored cast keyframe
+      // transform. The ongoing sprite animation is never restarted per tap.
+      node.style.scale = String(Number.isFinite(sizeMultiplier) && sizeMultiplier > 0 ? sizeMultiplier : 1);
       if (castAnchor) {
         node.dataset.fxAnchor = castAnchor;
       }
@@ -2211,7 +2214,12 @@ export function createDomSkillFxRenderer({
       return Object.freeze({
         status: "running",
         animation,
-        finished
+        finished,
+        setSizeMultiplier(next) {
+          if (!active.has(record) || !Number.isFinite(next) || next <= 0) return false;
+          node.style.scale = String(next);
+          return true;
+        }
       });
     }
 
