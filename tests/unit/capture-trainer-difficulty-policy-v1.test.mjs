@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createCombatSession} from '../../src/core/combat/combat-session.js';
-import {normalizeCaptureTrainerDifficultyPolicyV1,applyCaptureTrainerDifficultyPolicyV1,projectCaptureEmbeddedTrainerFightersV1} from '../../src/adapters/input/capture/capture-trainer-difficulty-policy-v1.js';
+import {createRosterSession} from '../../src/core/combat/roster-session.js';
+import {normalizeCaptureTrainerDifficultyPolicyV1,applyCaptureTrainerDifficultyPolicyV1,projectCaptureEmbeddedTrainerFightersV1,projectCaptureEmbeddedTrainerSourceV1} from '../../src/adapters/input/capture/capture-trainer-difficulty-policy-v1.js';
 
 const policy={schema:'capture-trainer-difficulty-policy-v1',version:1,levels:[
  {level:1,hpMultiplier:1,outgoingDamagePctBonus:0},
@@ -90,4 +91,65 @@ test('the real native Combat mount wires the authored NPC projection before crea
  const session=ui.indexOf('const session = createCombatSession(');
  assert.ok(call>=0&&session>call,'NPC modifiers must reach the real session, not a display-only view');
  assert.match(ui,/trainerDifficultyPolicy: input\.trainerDifficultyPolicy \?\? null/);
+});
+
+
+test('trainer reserve members inherit the same native Lab policy after a real roster switch, without modifying the player species',()=>{
+ const base=source();
+ const fighterConfigs={
+  'crea-shared':{id:'crea-shared',maxHp:50,initialHp:50,maxEnergy:10},
+  'crea-reserve':{id:'crea-reserve',maxHp:30,initialHp:30,maxEnergy:10}
+ };
+ const roster={teams:{
+  player:{slotId:'player',activeMemberId:'p',members:[{id:'p',creatureId:'crea-shared',displayName:'Joueur',fighterConfigId:'crea-shared'}]},
+  opponent:{slotId:'opponent',activeMemberId:'o',members:[
+   {id:'o',creatureId:'crea-shared',displayName:'PNJ',fighterConfigId:'crea-shared'},
+   {id:'o2',creatureId:'crea-reserve',displayName:'Réserve PNJ',fighterConfigId:'crea-reserve'}
+  ]}
+ }};
+ const native=projectCaptureEmbeddedTrainerSourceV1({
+  battleFormat:base.battleFormat,fighters:base.fighters,roster,fighterConfigs,
+  trainerDifficultyPolicy:policy,embeddedBattle:{trainerDifficulty:3}
+ });
+ assert.equal(native.fighters[0].maxHp,100);
+ assert.equal(native.fighters[1].maxHp,75);
+ assert.equal(fighterConfigs['crea-shared'].maxHp,50,'the shared species source remains untouched');
+ assert.equal(native.roster.teams.player,roster.teams.player,'local roster must retain original identity');
+ const active=native.roster.teams.opponent.members[0];
+ const reserve=native.roster.teams.opponent.members[1];
+ assert.notEqual(active.fighterConfigId,'crea-shared');
+ assert.notEqual(reserve.fighterConfigId,'crea-reserve');
+ assert.equal(native.fighterConfigs[active.fighterConfigId].maxHp,75);
+ assert.equal(native.fighterConfigs[reserve.fighterConfigId].maxHp,45);
+ assert.equal(native.fighterConfigs[reserve.fighterConfigId].outgoingDamagePct,10);
+ const session=createCombatSession({distance:'medium',fighters:native.fighters});
+ const rosterSession=createRosterSession({
+  combatSession:session,roster:native.roster,fighterConfigs:native.fighterConfigs,
+  battleFormat:base.battleFormat,recallCooldownMs:45000
+ });
+ assert.equal(rosterSession.snapshot().opponent.members[1].maxHp,45);
+ assert.equal(rosterSession.switchMember('opponent','o2').ok,true);
+ assert.equal(session.snapshot().fighters.opponent.maxHp,45);
+ assert.equal(session.snapshot().fighters.opponent.outgoingDamagePct,10);
+ assert.equal(session.snapshot().fighters.player.maxHp,100);
+});
+
+test('trainer reserve refuses missing native configs; wild retains exact native references',()=>{
+ const base=source();
+ const wild=projectCaptureEmbeddedTrainerSourceV1({
+  battleFormat:base.battleFormat,fighters:base.fighters,roster:base.roster,
+  fighterConfigs:base.fighterConfigs,embeddedBattle:{}
+ });
+ assert.equal(wild.fighters,base.fighters);
+ assert.equal(wild.roster,base.roster);
+ assert.equal(wild.fighterConfigs,base.fighterConfigs);
+ const roster={teams:{opponent:{slotId:'opponent',activeMemberId:'o',members:[
+  {id:'o',creatureId:'same',displayName:'PNJ',fighterConfigId:'same'},
+  {id:'bench',creatureId:'unknown',displayName:'Réserve',fighterConfigId:'unknown'}
+ ]}}};
+ assert.throws(()=>projectCaptureEmbeddedTrainerSourceV1({
+  battleFormat:base.battleFormat,fighters:base.fighters,roster,
+  fighterConfigs:base.fighterConfigs,trainerDifficultyPolicy:policy,
+  embeddedBattle:{trainerDifficulty:2}
+ }),/config|unknown|reserve/i);
 });
