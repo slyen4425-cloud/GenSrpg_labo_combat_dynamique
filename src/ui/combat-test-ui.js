@@ -884,9 +884,14 @@ export async function mountCombatTest({
           })
         : { ok: false };
 
-      const canCharge = runtime.previewChargedSkillRetrigger({
+      const chargedPreview = runtime.previewChargedSkillRetrigger({
         actorId:"player",skillId:skill.id
-      }).ok;
+      });
+      const canCharge = chargedPreview.ok;
+      button.title = chargedPreview.outcome === "charge_preparing"
+        ? `Charge en cours : ${(chargedPreview.remainingCastMs/1000).toFixed(1)} s`
+        : chargedPreview.outcome === "insufficient_energy" ? "Énergie insuffisante pour renforcer"
+        : skill.name;
       button.disabled =
         koTransitionPending ||
         (!canCharge && (runtime.hasActiveActionFor("player") || !preview.ok));
