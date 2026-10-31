@@ -1,3 +1,15 @@
+## 2026-10-31 — Mur destructible : réactivité de l'état invoqué (lot isolé)
+- Objectif : garantir que chaque variation de combatEntities (apparition, baisse de PV, destruction) provoque le rafraîchissement du rendu et de sa jauge via la seule émission de Combat Runtime, même lorsque les PV du combattant restent inchangés.
+- Base exacte gh-pages@8ec222b72d053e20297aa8fc89094ac8b8f5f056 ; départ checkpoint/lab-start-wall-state-signal-2026-10-31 ; branche work/lab-wall-state-signal-2026-10-31 ; issue #167.
+- Propriétaires : Combat State = vérité PV des entités, Combat Damage = dégâts, Combat Runtime = signal d'état, Render Adapter = projection. Aucun second timer ou état UI.
+- Fichiers autorisés : src/core/combat/combat-runtime.js, tests/unit/capture-combat-wall-state-signal-2026-10-31.test.mjs, docs/LAB_CURRENT_WORK.md, docs/LAB_WALL_STATE_SIGNAL_2026-10-31.md ; cache public versionné dans la chaîne HTML → preview → Combat UI → Combat Runtime si nécessaire (six imports ciblés), sans nouvelle autorité.
+- Domaines protégés : autres effets de compétences, dégâts/protections, roster, Combat Session, touch, animations et assets, import/export.
+- Test RED avant correction : session réelle de dégâts au mur, un seul callback onState sur changement, pas de callback pour état inchangé, destruction à zéro, pas de confusion avec les retours santé du fighter.
+- GREEN attendu : npm run ci (Foundation) + 4 Chromium, checkpoint final seulement après la CI du HEAD code + docs, PR vers gh-pages et Pages. Android réel distinct.
+- Risques : absence de réémission visuelle lors d'une perte de PV sur le mur; événements inutiles si on sérialise les champs d'horloge. Hors périmètre : placements libres, rayons/contact géométriques, familiers et canalisation, traités dans des lots distincts. `main` inchangée.
+
+---
+
 ## 2026-10-31 — Mur de glace : collision physique des projectiles, sprite persistant, barème et placement éditables (révision publique ESM à revalider)
 - Base `gh-pages@b7260388a81df97e5b0c24344996435da8be598d`, START `checkpoint/lab-start-barrier-spatial-visual-2026-10-31` ; WORK `work/lab-barrier-spatial-visual-2026-10-31`; RED `daff5f788d03362e0d9a452e4eecd91d21fc6732`/run `41232575629`.
 - `summon_entity` préserve le coefficient libre PV/stat, ajoute choix du sprite officiel sans ID manuel, échelle 0,25–4 et offsets. `CombatEntity` porte la même configuration ; rendu DOM persistant, impact visuel ; contact projectile = vrai rectangle visible + trajet balayé. `CombatRuntime` transmet le contact confirmé à Combat Damage, sans autorité concurrente ni toucher le roster.
