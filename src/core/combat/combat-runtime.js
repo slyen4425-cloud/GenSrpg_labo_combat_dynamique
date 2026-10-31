@@ -83,7 +83,12 @@ export function createCombatRuntime({
         })
       ),
       persistentZones:
-        state.persistentZones ?? []
+        state.persistentZones ?? [],
+      // Combat State owns summoned entities. A wall can be created, damaged
+      // or destroyed without changing any fighter HP; never suppress that
+      // state projection merely because the roster is unchanged.
+      combatEntities:
+        state.combatEntities ?? []
     });
   }
 
