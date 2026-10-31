@@ -57,7 +57,8 @@ test("native beam is planned at release, not projected after an already complete
 
 test("RED: author editor cache loads new Liane preset and latest canonical global-assets", async()=>{
   const {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl}=await import("../../src/assets/global-visual-library.js");
-  assert.match(GLOBAL_VISUAL_LIBRARY.revision,/2026-10-29.*liane/);
+  const revision = GLOBAL_VISUAL_LIBRARY.revision.match(/^2026-\d\d-\d\d-v(\d+)-[a-z0-9-]+$/);
+  assert.ok(revision && Number(revision[1]) >= 45, "Liane must not regress to a pre-v45 media catalog");
   assert.ok(GLOBAL_VISUAL_LIBRARY.catalogUrl.includes("global-assets/data/assets/catalog/global-visual-assets"));
   assert.ok(globalVisualAssetUrl("capture/sprites/skills/liane_epineuse_rayon/liane_epineuse_rayon_atlas_12f.webp").includes("liane_epineuse_rayon_atlas_12f.webp?v="));
   const expected="liane-audio-r2-20261030";
