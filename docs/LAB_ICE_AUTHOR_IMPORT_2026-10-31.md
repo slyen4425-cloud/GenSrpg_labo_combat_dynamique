@@ -19,5 +19,5 @@
 - RED : test `tests/unit/capture-ice-author-import-2026-10-31.test.mjs`, commit `8cb7673316eb8264cd9c5f556f9532834a138159`, exécution GitHub Actions `41216111587` (Foundation FAIL attendu avant import).
 - Implémentation exacte : commit `c430bdd152dab376b0f6901ce66b8b22274ccefa` (archives, active, catalogue, anti-cache).
 - Sentinelles : octets SHA256, importeur Capture officiel, unicité du registre, paramètres métier, médias, et chaîne ESM.
-- Finalisation requise : CI Foundation + quatre Chromium sur le SHA final, checkpoint GREEN exact, fusion PR sur gh-pages, CI fusionnée et Pages réussi. Test Android physique distinct.
+- CI pré-clôture : run `41216320074`, SHA `32c1769a7f448a96df6c7123dce96ff4241d7dda`, 5/5 SUCCESS (Foundation + quatre Chromium) ; test initial RED run `41216111587`. Exiger de nouveau 5/5 SUCCESS au SHA documentaire final avant checkpoint GREEN, puis fusion PR gh-pages, CI et Pages au SHA de fusion. Test Android physique distinct.
 - Aucun changement sur `main`, `global-assets`, GenSrpg ou Exploration.
