@@ -1,3 +1,11 @@
+## 2026-10-31 — Charge des effets tactiques V1 (CI intégrale GREEN, publication en cours)
+- Départ gh-pages@73da6929a388892737f3bc1a65cd99a6d70e9fef ; START checkpoint/lab-start-charged-effects-2026-10-31 ; WORK work/lab-charged-effects-2026-10-31. Test RED 4e5301fcdfaf8e1a3ac46effee8c052995beca92.
+- Propriétaires SkillDefinition / Combat Runtime / Combat Session / ActionResolver / Human Editor / Bestiaire. Contrat chargedEffects distinct du chargedAttack original. Amplifie la puissance des soins, dégâts et statuts numériques à chaque activation, sans modifier durées ni contourner immunités ; pas de second moteur.
+- CI 41222296600 (tentative 2) au code 4307fe58a892d4d5533d44fef3ed52e9be0c32b3 : Foundation + 4 Chromium **5/5 SUCCESS**. Test Chromium spécifique charged-effects-smoke réussi. Test navigateur initial repère CSS (panneau qui ne se replie pas) corrigé dans la règle [hidden] ; un timeout non déterministe de l'ancien test de démarrage a nécessité un rerun sans court-circuit.
+- Changement CSS explicite, révision des 6 imports publics ESM, TDD et smoke inclus dans la CI ; données auteur, global-assets, main et GenSrpg inchangés. Android physique à vérifier séparément.
+- Preuves et futurs chantiers : docs/LAB_CHARGED_EFFECTS_2026-10-31.md ; issues #167 (entités invoquées) et #168 (canalisation). Checkpoint GREEN et publication ne sont autorisés qu'après CI sur SHA de clôture.
+
+---
 ## 2026-10-31 — Import auteur Glace : Poing givrant + Boule de neige r2 (CI pré-clôture 5/5)
 - Base gh-pages@5b22b78c0537c6fb83e09a034456e080e2193c3c ; START `checkpoint/lab-start-ice-author-import-2026-10-31` ; WORK `work/lab-ice-author-import-2026-10-31` ; main/global-assets intacts.
 - Deux fichiers utilisateur importés à l'octet sous leurs IDs d'origine : Poing givrant nouvel ID, Boule de neige r2 remplace la version active. Source-exports archivent les deux fichiers sans devenir des autorités. Un catalogue unique (`CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1`) ; cache ESM mobile révisé, aucune capacité tierce modifiée.

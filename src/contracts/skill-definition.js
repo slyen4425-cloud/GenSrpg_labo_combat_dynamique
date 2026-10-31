@@ -484,6 +484,26 @@ export function normalizeSkillDefinition(input) {
     chargedAttack = Object.freeze({baseDamage,bonusDamagePerCharge,maxCharges,reactivationWindowMs,sizeIncreasePct});
   }
 
+  let chargedEffects=null;
+  if(input.chargedEffects!=null){
+    const config=input.chargedEffects;
+    if(!config||typeof config!=="object"||Array.isArray(config))throw new TypeError("chargedEffects must be an object");
+    if(chargedAttack)throw new RangeError("chargedEffects and chargedAttack are mutually exclusive");
+    for(const key of Object.keys(config)){
+      if(!["maxCharges","reactivationWindowMs","sizeIncreasePct","potencyIncreasePct"].includes(key))
+        throw new TypeError("Unknown chargedEffects field: "+key);
+    }
+    if(contactHold||projectileTargeting==="expanding_wave")throw new RangeError("chargedEffects cannot combine with contactHold or expanding_wave");
+    const maxCharges=Number(config.maxCharges),reactivationWindowMs=Number(config.reactivationWindowMs);
+    const sizeIncreasePct=Number(config.sizeIncreasePct??0),potencyIncreasePct=Number(config.potencyIncreasePct);
+    if(!Number.isInteger(maxCharges)||maxCharges<2||maxCharges>20)throw new RangeError("chargedEffects.maxCharges must be 2..20");
+    if(!Number.isFinite(Number(input.preparationMs))||Number(input.preparationMs)<=0)throw new RangeError("chargedEffects requires positive preparationMs");
+    if(!Number.isFinite(reactivationWindowMs)||reactivationWindowMs<=0)throw new RangeError("chargedEffects.reactivationWindowMs must be positive");
+    if(!Number.isFinite(sizeIncreasePct)||sizeIncreasePct<0||sizeIncreasePct>100)throw new RangeError("chargedEffects.sizeIncreasePct must be 0..100");
+    if(!Number.isFinite(potencyIncreasePct)||potencyIncreasePct<0||potencyIncreasePct>500)throw new RangeError("chargedEffects.potencyIncreasePct must be 0..500");
+    chargedEffects=Object.freeze({maxCharges,reactivationWindowMs,sizeIncreasePct,potencyIncreasePct});
+  }
+
   const effect = input.effect ?? {};
   if (typeof effect !== "object" || Array.isArray(effect)) {
     throw new TypeError("effect must be an object");
@@ -506,6 +526,20 @@ export function normalizeSkillDefinition(input) {
       normalizeSkillEffectV1(entry)
     )
   );
+
+  if(chargedEffects){
+    if(normalizedLegacyEffect.damage||normalizedLegacyEffect.heal||
+       normalizedLegacyEffect.stunMs||normalizedLegacyEffect.interruptsPreparation||
+       effects.length===0)throw new RangeError("chargedEffects needs modern numeric effects only");
+    const numeric=new Set(["incoming_effect_modifier","outgoing_damage_modifier","approach_time_modifier",
+      "energy_regen_modifier","skill_cooldown_rate_modifier","stat_modifier",
+      "damage_over_time","heal_over_time","shield"]);
+    for(const item of effects){
+      if(["heal","damage"].includes(item.kind))continue;
+      if(item.kind!=="apply_status"||!numeric.has(item.status.kind))
+        throw new RangeError("chargedEffects supports heals, damage and numeric buff/debuff statuses only");
+    }
+  }
 
   // The single canonical owner of forced switching is RosterSession.
   // Never route this through active-target Combat Rules or ally recall.
@@ -555,6 +589,7 @@ export function normalizeSkillDefinition(input) {
     form,
     projectileTargeting,
     ...(chargedAttack ? {chargedAttack} : {}),
+    ...(chargedEffects ? {chargedEffects} : {}),
     ...(projectileTargeting === "expanding_wave" ? { expandingWave: Object.freeze({startRadiusPct,endRadiusPct,thicknessPct}) } : {}),
     loadoutSlot,
     element,

@@ -34,6 +34,8 @@ jobs:
         run: node tests/browser/capture-snowball-asset-editor-smoke.mjs
       - name: Real Chromium charged projectile author fields
         run: node tests/browser/capture-charged-projectile-editor-smoke.mjs
+      - name: Real Chromium charged buff-debuff editor
+        run: node tests/browser/capture-charged-effects-smoke.mjs
       - name: Real Chromium 2.5D arena shadow and flying light projection
         run: node tests/browser/shadow-light-real-render-smoke.mjs
       - name: Real Chromium Capture Bestiaire (front only)

@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="./capture-editor-v2.css">
   <style>
     [data-creature-view-settings][hidden] { display: none; }
+    [data-skill-charged-effects-config][hidden] { display: none !important; }
     .editor-tabs a.bestiary-link {
       display: grid; gap: .08rem; align-content: center;
       min-height: 3.6rem; padding: .58rem .65rem; border-radius: .65rem;
@@ -1410,6 +1411,7 @@
           <select data-skill-effect-add-kind>
             <option value="standard" selected>Effet tactique classique</option>
             <option value="charged">Attaque chargée — projectile renforcé</option>
+            <option value="charged-effects">Charge d’effets — buffs, debuffs, soins</option>
           </select>
         </label>
 
@@ -1435,6 +1437,23 @@
               <input type="number" min="0" max="100" step="1" data-skill-charged-size-pct value="10"></label>
           </div>
           <p class="note">« Préparation » (section Timing) est le temps de préparation de CHAQUE charge. Une pression trop rapide ne donne aucun bonus. Après chaque préparation, une fenêtre s'ouvre pour appuyer de nouveau. Chaque activation validée consomme l'énergie définie dans Timing : sans énergie, aucune nouvelle charge. Un seul projectile part après la dernière préparation et l'expiration de la fenêtre, ou dès que la préparation de la charge maximale est finie. Le cast grossit après chaque activation valide ; le cooldown et le nombre d'utilisations ne sont engagés qu'au premier appui.</p>
+        </section>
+
+        <section class="projectile-clash-config" aria-label="Charge des effets tactiques">
+          <h3>Charge de buffs, debuffs et soins</h3>
+          <label class="switch-line"><input type="checkbox" data-skill-charged-effects-enabled>
+            <span>Renforcer les effets à chaque activation</span></label>
+          <div class="timing-grid" data-skill-charged-effects-config hidden>
+            <label>Activations maximum
+              <input type="number" min="2" max="20" step="1" value="3" data-skill-charged-effects-max-charges></label>
+            <label>Fenêtre après chaque préparation (ms)
+              <input type="number" min="1" step="1" value="450" data-skill-charged-effects-window></label>
+            <label>Puissance supplémentaire par activation (%)
+              <input type="number" min="0" max="500" step="1" value="50" data-skill-charged-effects-potency></label>
+            <label>Agrandissement du cast par activation (%)
+              <input type="number" min="0" max="100" step="1" value="10" data-skill-charged-effects-size-pct></label>
+          </div>
+          <p class="note">Mêmes coûts, préparation et fenêtre que l'attaque chargée. Amplifie uniquement dégâts, soins et puissance des statuts numériques ; ne prolonge pas les durées et ne contourne pas les immunités.</p>
         </section>
 
         <section class="skill-contact-hold" data-skill-contact-hold aria-label="Maintien au contact">
@@ -2562,6 +2581,6 @@
     </template>
   </section>
 
-  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031"></script>
+  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031"></script>
 </body>
 </html>

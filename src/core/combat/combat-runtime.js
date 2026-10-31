@@ -1,3 +1,4 @@
+import {amplifyChargedEffectSkillV1} from "./charged-effects-v1.js";
 import {
   combatHealthDeltaEventsV1
 } from "./combat-health-feedback-v1.js";
@@ -713,18 +714,16 @@ export function createCombatRuntime({
     record.released = true;
 
     if (!earlyCounter && record.action.chargeState) {
-      const config = record.action.skill.chargedAttack;
-      const count = record.action.chargeState.chargeCount;
-      const damage = config.baseDamage + (count - 1) * config.bonusDamagePerCharge;
-      const sizeMultiplier = record.action.chargeState.sizeMultiplier;
-      record.action = Object.freeze({
-        ...record.action,
-        chargeState: Object.freeze({...record.action.chargeState,damage,sizeMultiplier}),
-        skill: Object.freeze({
-          ...record.action.skill,
-          effect: Object.freeze({...record.action.skill.effect,damage})
-        })
-      });
+      const skill=record.action.skill,config=skill.chargedAttack??skill.chargedEffects;
+      const count=record.action.chargeState.chargeCount;
+      const damage=skill.chargedAttack?config.baseDamage+(count-1)*config.bonusDamagePerCharge:null;
+      const sizeMultiplier=record.action.chargeState.sizeMultiplier;
+      record.action=Object.freeze({...record.action,
+        chargeState:Object.freeze({...record.action.chargeState,...(damage===null?{}:{damage}),sizeMultiplier}),
+        skill:skill.chargedAttack
+          ?Object.freeze({...skill,effect:Object.freeze({...skill.effect,damage})})
+          :amplifyChargedEffectSkillV1(skill,count)});
+
     }
 
     if (!earlyCounter) {
@@ -1281,19 +1280,21 @@ export function createCombatRuntime({
 
     const current = now();
     const record = {
-      action: result.action.skill?.chargedAttack
+      action: (result.action.skill?.chargedAttack || result.action.skill?.chargedEffects)
         ? Object.freeze({
             ...result.action,
             // Each successful activation owns a COMPLETE cast stage, then an
             // optional reactivation window. The first paid stage starts now.
-            releaseAtMs:result.action.preparationMs+result.action.skill.chargedAttack.reactivationWindowMs,
-            impactAtMs:result.action.preparationMs+result.action.skill.chargedAttack.reactivationWindowMs+result.action.travelMs,
-            chargeState: Object.freeze({
+            releaseAtMs:result.action.preparationMs+
+              (result.action.skill.chargedAttack??result.action.skill.chargedEffects).reactivationWindowMs,
+            impactAtMs:result.action.preparationMs+
+              (result.action.skill.chargedAttack??result.action.skill.chargedEffects).reactivationWindowMs+result.action.travelMs,
+            chargeState:Object.freeze({
               chargeCount:1,
-              maxCharges:result.action.skill.chargedAttack.maxCharges,
+              maxCharges:(result.action.skill.chargedAttack??result.action.skill.chargedEffects).maxCharges,
               lastTapAtMs:current,
               chargeReadyAtMs:current+result.action.preparationMs,
-              damage:result.action.skill.chargedAttack.baseDamage,
+              ...(result.action.skill.chargedAttack?{damage:result.action.skill.chargedAttack.baseDamage}:{}),
               sizeMultiplier:1
             })
           })
@@ -1342,7 +1343,7 @@ export function createCombatRuntime({
         record.resolved) {
       return Object.freeze({ok:false,outcome:"action_in_progress"});
     }
-    const config = record.action.skill.chargedAttack;
+    const config = record.action.skill.chargedAttack ?? record.action.skill.chargedEffects;
     const charge = record.action.chargeState;
     const elapsed = elapsedFor(record,now());
     if (record.released || elapsed >= record.action.releaseAtMs) {
@@ -1386,13 +1387,13 @@ export function createCombatRuntime({
       const next = Object.freeze({
         ...previous,chargeCount:previous.chargeCount+1,lastTapAtMs:now(),
         chargeReadyAtMs:now()+active.action.preparationMs,
-        sizeMultiplier:1 + previous.chargeCount * active.action.skill.chargedAttack.sizeIncreasePct / 100
+        sizeMultiplier:1 + previous.chargeCount * (active.action.skill.chargedAttack??active.action.skill.chargedEffects).sizeIncreasePct / 100
       });
       // Every activation must finish its OWN preparation, even the final one.
       // The optional window starts AFTER that cast stage has finished.
       const elapsed = elapsedFor(active,now());
       const releaseAtMs = elapsed+active.action.preparationMs+
-        (next.chargeCount >= next.maxCharges ? 0 : active.action.skill.chargedAttack.reactivationWindowMs);
+        (next.chargeCount >= next.maxCharges ? 0 : (active.action.skill.chargedAttack??active.action.skill.chargedEffects).reactivationWindowMs);
       active.action = Object.freeze({...active.action,
         releaseAtMs,impactAtMs:releaseAtMs+active.action.travelMs,chargeState:next});
       onProgress(progressSnapshot(active,elapsedFor(active,now())));
