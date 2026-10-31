@@ -1034,7 +1034,8 @@ export function resolveSkillCompletion({
           damage: damage.damage,
           atMs: combatImpactAtMs,
           hitsIntangible: skill.hitsIntangible === true,
-          incomingKind: skill.form
+          incomingKind: skill.form,
+          contactedEntityId: action.barrierContactId
         });
       nextState = applied.state;
 
@@ -1102,6 +1103,7 @@ export function resolveSkillCompletion({
           battleFormat,
           // No lifesteal from the return leg of a mirrored projectile.
           directDamageApplied: action.mirrorReturn ? 0 : applied.appliedDamage,
+          contactedEntityId: action.barrierContactId,
           allowLifeSteal: !action.mirrorReturn
         });
       nextState = tactical.state;

@@ -1,3 +1,4 @@
+import {sweptSegmentRectContactV1} from "../../core/combat/combat-barrier-spatial-v1.js";
 import { sweptPointHitsOpaqueMask, sweptPointHitsSpriteEllipseV1, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1, sweptExpandingWaveMeetsProjectileV1 } from "./dom-visible-model-contact.js";
 
 function defaultAnimate(element, keyframes, options) {
@@ -363,6 +364,7 @@ export function createDomSkillFxRenderer({
   onProjectileContact = null,
   onProjectileClashContact = null,
   targetCollisionModelFor = null,
+  barrierCollisionRectsFor = null,
   waveTargetsFor = null,
   playCameraFx = null
 }) {
@@ -401,6 +403,9 @@ export function createDomSkillFxRenderer({
   if (onProjectileClashContact !== null &&
       typeof onProjectileClashContact !== "function") {
     throw new TypeError("onProjectileClashContact must be a function");
+  }
+  if (barrierCollisionRectsFor !== null && typeof barrierCollisionRectsFor !== "function") {
+    throw new TypeError("barrierCollisionRectsFor must be a function");
   }
   if (waveTargetsFor !== null && typeof waveTargetsFor !== "function") {
     throw new TypeError("waveTargetsFor must be a function when supplied");
@@ -553,6 +558,21 @@ export function createDomSkillFxRenderer({
             rect: mirrorRect
           })
         : null;
+      const barrierContacts=(barrierCollisionRectsFor?.({
+        sourceActorId:record.fromSlot,targetActorId:record.targetSlot
+      })??[]).map(entry=>({entityId:entry.entityId,
+        point:sweptSegmentRectContactV1({from:record.previousProjectilePoint,to:projectilePoint,rect:entry.rect})
+      })).filter(entry=>entry.point!==null);
+      barrierContacts.sort((a,b)=>
+        Math.hypot(a.point.x-record.previousProjectilePoint.x,a.point.y-record.previousProjectilePoint.y)-
+        Math.hypot(b.point.x-record.previousProjectilePoint.x,b.point.y-record.previousProjectilePoint.y));
+      if(barrierContacts.length){
+        record.contactReported=true;
+        onProjectileContact(Object.freeze({actorId:record.fromSlot,targetId:record.targetSlot,
+          skillId:record.skillId??null,contactPoint:barrierContacts[0].point,
+          combatEntityId:barrierContacts[0].entityId}));
+        return;
+      }
       const contacted =
         spriteContactPoint !== null ||
         (targetFrame !== null &&
