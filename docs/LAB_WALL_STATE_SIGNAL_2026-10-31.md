@@ -11,5 +11,8 @@ Départ : `gh-pages@8ec222b72d053e20297aa8fc89094ac8b8f5f056` ; checkpoint `chec
 Test RED commit `6d07370ce2c395864a2dbfed51939671ddd4f7d5`, run `41239833849`, Foundation FAIL attendu : « spawn must refresh wall overlay » ; les autres quatre jobs navigateur étaient déjà verts ou en cours au moment de la preuve.
 Code correctif `806991867e328ec6be9a502bdb47ea6b43392b88`. Le test utilise un vrai `createCombatBarrierV1` puis `applyCombatDamageV1`, et vérifie spawn, absorption partielle, destruction, absence de faux retours dégâts sur la créature et absence de réémission inutile.
 
+## Publication ESM cohérente
+Les sentinelles de cache exigent que le jeton HTML soit propagé sans exception vers les imports ESM de l'entrée, de l'éditeur humain, de la preview et du combat. Le premier SHA de livraison comportait deux incohérences, détectées par le run 41240065177 (Foundation, 2 tests de cache). Tous les imports canoniques correspondants sont maintenant alignés, sans relâcher les tests.
+
 ## Portée / limites
 Pas de collision géométrique libre rayon/mêlée, pas de placement libre, pas de familiers actifs, pas de canalisation dans ce micro-lot. Tous restent sur les issues #167 et #168. `main`, autres dépôts et `global-assets` non modifiés. Checkpoint GREEN uniquement si CI Foundation et quatre Chromium verts sur le dernier SHA et PR `gh-pages`, puis Pages vert. Smartphone à valider séparément.

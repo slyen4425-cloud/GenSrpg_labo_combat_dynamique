@@ -13,7 +13,7 @@ import {
 } from "../../src/adapters/audio/combat-soundtrack-preview-bridge-v1.js";
 import {
   mountCaptureEditorHumanV2
-} from "../../src/ui/capture-editor-human-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031";
+} from "../../src/ui/capture-editor-human-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031";
 import {applyCaptureAuthorTabFromUrlV1} from "../../src/ui/capture-editor-deep-link-v1.js";
 import {
   createCreatorVisualAssetSessionV1
@@ -30,13 +30,13 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../../src/assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031";
+} from "../../src/assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031";
 import {
   demoPresentationAssets
 } from "./demo-assets.js";
 import {
   createCaptureSkillPresentationAssetsV2
-} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js?v=wall-spatial-20261031";
+} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js?v=wall-spatial-20261031-wall-state-20261031";
 import {
   createGlobalPresentationAssetResolverV1
 } from "../../src/assets/global-presentation-asset-resolver-v1.js";
