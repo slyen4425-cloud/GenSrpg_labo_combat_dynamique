@@ -1,3 +1,10 @@
+## 2026-10-31 — Suite attaque chargée : Effets tactiques + cast grossissant (en validation CI)
+- Base `gh-pages@4fd62cb798ba0eb382d20d4c34b03f57a4559f34`. START `checkpoint/lab-start-charged-cast-scale-2026-10-31`, travail `work/lab-charged-cast-scale-2026-10-31`, RED `decd788c4d17b62c2b115c86c9cebe71c4bedcc7`.
+- Retour auteur : configuration introuvable dans Effets / Ajouter un effet ; le cast doit grossir à chaque activation, puis le projectile conserve la même amplification. Choix sous Effets tactiques, définition native unique ; même animation de cast redimensionnée sans replay ; runtime seul propriétaire charge/taille ; test navigateur réel + CI à confirmer.
+- Rapport : `docs/LAB_CHARGED_CAST_SCALE_2026-10-31.md`. Aucune promotion automatique sur `main`.
+
+---
+
 ## 2026-10-31 — Attaque chargée par réactivation d'un projectile (branche isolée, NON GREEN avant CI)
 - Base `gh-pages@c196971fe524c2a0442316c29ccc66cf4ff4bf7c`, START `checkpoint/lab-start-charged-projectile-2026-10-31`, branche `work/lab-charged-projectile-2026-10-31`.
 - Nouveau champ optionnel `chargedAttack` des projectiles directs, à autorité unique du Combat Runtime : `baseDamage`, `bonusDamagePerCharge`, `maxCharges` (première activation comprise), `reactivationWindowMs`, `sizeIncreasePct`. `preparationMs` reste la durée avant départ.
