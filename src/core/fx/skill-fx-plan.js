@@ -38,6 +38,7 @@ export function planSkillReleaseFx({
       element: action.skill.element ?? null,
       fromSlot: actorSlot,
       targetSlot,
+      ...(action.chargeState ? {sizeMultiplier:action.chargeState.sizeMultiplier} : {}),
       ...(Number(action.skill.projectileClash?.power) > 0
         ? { projectilePower: action.skill.projectileClash.power }
         : {}),
