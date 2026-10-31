@@ -1,3 +1,13 @@
+## 2026-10-31 — Glace : zone gelée / pointe de glace / brouillard gelant (lot médias)
+- Source ZIP originale déjà déposée par l'auteur : `_incoming/pack_sprites_glace_suite_36_frames.zip` (13 489 375 octets ; SHA256 `33f5dce30a96a52990f53e652b21ec0c840f1ab4917c756d2ccfc01135dc1506`, Git blob `7fdd00d190a9c8fd142b465ba7c1befd39602ae6`).
+- Base médias `global-assets@92c4af94aa64eee1a1d3d1179a0eb67b851cacdf`, éditeur référence `gh-pages@73da6929a388892737f3bc1a65cd99a6d70e9fef`, START `checkpoint/lab-start-ice-ground-spike-fog-2026-10-31`, lot `work/lab-ice-ground-spike-fog-2026-10-31`.
+- ZIP complet 43 fichiers : 36 PNG RGBA 512x512, 3 GIF 12 frames, 3 manifests, aperçu regroupé. Réutiliser l'importeur de médias GitHub Actions sous `scripts/import_ice_ground_spike_fog.py` (même flux que la Boule de neige), générer 3 vrais atlas WebP horizontaux sans perte (6144x512) et introduire exactement 3 entrées dans le catalogue unique `global-assets`.
+- IDs cibles : `pack:capture:sprite-zone-gelee-01` (zone au sol, once + hold), `pack:capture:sprite-pointe-glace-01` (impact, once + hold), `pack:capture:sprite-brouillard-gelant-01` (zone, once + hold). Aucun changement de compétences ou stats, aucune autorité ajoutée.
+- TDD RED : `tests/unit/capture-ice-ground-spike-fog-2026-10-31.test.mjs` (source, IDs et média) ; CI source et import ; ensuite publier `global-assets`, invalider la révision cache de l'éditeur `gh-pages`, tester trois sélecteurs et trois atlas WebP réels dans Chromium, CI et Pages GREEN au SHA final.
+- Statut initial : en cours, ne pas annoncer GREEN sans preuves.
+
+---
+
 ## 2026-10-31 — Boule de neige Glace : 3 sprites 12f (import médias, CI avant publication)
 - Source utilisateur vérifiée sur `global-assets` : `_incoming/boule_de_neige_pack_complet_36_frames.zip`, 20 516 596 octets, SHA256 `a00b6b8272fc2dd960088c6814c0c6d193f063608e2183ab8ec94b6bc01d5abb`, blob Git `44b98ca229b569d3a64b63359fdad90f6b02e064`.
 - Base médias `global-assets@51112a3143671c4d84aa2863fe4a83c2800ecef9`, base éditeur publiée `gh-pages@fd547799d318ce168a4a7ff00c445db7d6a5160a`, checkpoint START `checkpoint/lab-start-snowball-sprites-2026-10-31`, branche `work/lab-snowball-sprites-2026-10-31`.
