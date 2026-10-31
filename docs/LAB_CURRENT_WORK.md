@@ -1,3 +1,11 @@
+## 2026-10-31 — Attaque chargée par réactivation d'un projectile (branche isolée, NON GREEN avant CI)
+- Base `gh-pages@c196971fe524c2a0442316c29ccc66cf4ff4bf7c`, START `checkpoint/lab-start-charged-projectile-2026-10-31`, branche `work/lab-charged-projectile-2026-10-31`.
+- Nouveau champ optionnel `chargedAttack` des projectiles directs, à autorité unique du Combat Runtime : `baseDamage`, `bonusDamagePerCharge`, `maxCharges` (première activation comprise), `reactivationWindowMs`, `sizeIncreasePct`. `preparationMs` reste la durée avant départ.
+- Réactivation du même bouton pendant la préparation seulement ; dépense et cooldown uniques ; un seul projectile lancé avec dégâts calculés au départ et taille visuelle multipliée, bestiaire issu de la définition, UI existante 1v1/2v2. Aucun preset, média, autre capacité, ni consommateur principal modifié.
+- TDD RED au commit `d5a6c5aaf1ae6792bdf732813b9027c999184036`, sentinelle `tests/unit/capture-charged-projectile-2026-10-31.test.mjs`. CI + test navigateur réel à vérifier ; aucune promotion automatique. Rapport `docs/LAB_CHARGED_PROJECTILE_2026-10-31.md`.
+
+---
+
 ## 2026-10-30 — Gorice (nouvel auteur) + caractéristique Glace (lot distinct)
 - **Base** : gh-pages@f3a7583f3dd19932ded9c97ad30fe0d57ea34239 ; START : `checkpoint/lab-start-gorice-glace-author-2026-10-30` ; travail : `work/lab-gorice-glace-author-2026-10-30`.
 - **Objectif** : importer exactement l'export auteur Gorice sans remplacement de Loup volcanique ; définir la seule statistique `glace` dans le registre officiel, canal de combat `ice`, +1 % dégâts / +1 % résistance par point.
