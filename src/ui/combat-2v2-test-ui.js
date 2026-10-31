@@ -1225,8 +1225,18 @@ export async function mountCoop2v2Test({
         String(cooldownProgress)
       );
 
+      const canCharge = runtime.previewChargedSkillRetrigger({
+        actorId:controlledActorId(),skillId:skill.id
+      }).ok;
+      if (canCharge) {
+        const charge = runtime.activeActionFor(controlledActorId())?.chargeState;
+        cooldown.textContent = `Renforcer ${charge?.chargeCount ?? 1}/${charge?.maxCharges ?? 1}`;
+        cooldown.hidden = false;
+        button.dataset.cooldownActive = "false";
+      }
       button.disabled =
-        !localAlive || lockedByAction || (options.availableIds.length === 0 && reserveOptions.length === 0);
+        !localAlive || (!canCharge && (lockedByAction ||
+          (options.availableIds.length === 0 && reserveOptions.length === 0)));
     }
 
     if (dodgeButton) {
@@ -1578,6 +1588,17 @@ export async function mountCoop2v2Test({
     button.append(label, cooldown);
 
     const onClick = () => {
+      const active = runtime.activeActionFor(controlledActorId());
+      if (active?.actionId === skill.id && active.chargeState) {
+        const next = runtime.startSkill({
+          actorId:controlledActorId(),targetId:active.targetId,skill
+        });
+        setStatus(next.ok
+          ? `${skill.name} renforcée : ${next.chargeCount}/${next.maxCharges} activations.`
+          : `${skill.name} : ${next.outcome}.`,next.ok?"accent":"warn");
+        renderAvailability();
+        return;
+      }
       const options = skillTargetOptions(skill);
       const reserveOptions = reserveSkillTargetOptions(skill);
       if (reserveOptions.length > 0) {
@@ -1778,7 +1799,7 @@ export async function mountCoop2v2Test({
         ref.textContent = "Prêt";
       } else if (preparing) {
         ref.textContent =
-          `${progress.actionName} · ${(progress.remainingPreparationMs / 1000).toFixed(1)} s`;
+          `${progress.actionName} · ${(progress.remainingPreparationMs / 1000).toFixed(1)} s${progress.chargeCount ? ` · ${progress.chargeCount}/${progress.chargeMax} charges` : ""}`;
       } else {
         ref.textContent =
           `${progress.actionName} · ${progress.phase}`;
