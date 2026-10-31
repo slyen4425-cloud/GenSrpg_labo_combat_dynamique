@@ -444,7 +444,7 @@ export function normalizeSkillDefinition(input) {
       { form }
     );
 
-  // One optional native owner for repeated taps during the PREPARATION phase.
+  // One optional native owner for repeated taps and the sliding charge window.
   // Its direct damage replaces legacy/tactical damage; no second damage authority.
   let chargedAttack = null;
   if (input.chargedAttack != null) {
@@ -472,9 +472,8 @@ export function normalizeSkillDefinition(input) {
     if (!Number.isInteger(maxCharges) || maxCharges < 2 || maxCharges > 20) {
       throw new RangeError("chargedAttack.maxCharges must be 2..20 total activations");
     }
-    if (!Number.isFinite(reactivationWindowMs) || reactivationWindowMs <= 0 ||
-        reactivationWindowMs > Number(input.preparationMs)) {
-      throw new RangeError("chargedAttack.reactivationWindowMs requires a positive preparationMs and a window <= preparation");
+    if (!Number.isFinite(reactivationWindowMs) || reactivationWindowMs <= 0) {
+      throw new RangeError("chargedAttack.reactivationWindowMs must be positive");
     }
     if (!Number.isFinite(sizeIncreasePct) || sizeIncreasePct < 0 || sizeIncreasePct > 100) {
       throw new RangeError("chargedAttack.sizeIncreasePct must be 0..100");
