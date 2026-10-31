@@ -47,3 +47,16 @@ test("spatially observed projectile cannot damage a wall it did not collide with
  incomingKind:"projectile",contactedEntityId:"barrier:foreign"});
  assert.equal(fake.absorbedByEntity,0);
 });
+
+
+test("a protected hero's vulnerability or immunity cannot silently change a wall's HP",()=>{
+ const s=active(),id=s.combatEntities[0].id;
+ const vulnerable={...s,fighters:Object.freeze({...s.fighters,hero:Object.freeze({...s.fighters.hero,
+  statusEffects:[Object.freeze({definition:{id:"test-vulnerable",kind:"incoming_effect_modifier",
+   modifierPct:100,affectedPolarity:"detrimental"},appliedAtMs:0,expiresAtMs:20000,stacks:1})]})})};
+ const wallHit=applyCombatDamageV1({state:vulnerable,sourceActorId:"enemy",targetActorId:"hero",
+  damage:30,incomingKind:"projectile",contactedEntityId:id});
+ assert.equal(wallHit.absorbedByEntity,30,"wall must take raw incoming damage");
+ assert.equal(wallHit.state.combatEntities[0].hp,170);
+ assert.equal(wallHit.appliedDamage,0);
+});

@@ -68,52 +68,29 @@ export function applyCombatDamageV1({
   incomingKind = "other",
   contactedEntityId = undefined
 }) {
-  const requested = Math.round(Math.max(0,Number(damage)||0) *
-    incomingEffectMultiplierV1({state,targetActorId,affectedPolarity:"detrimental",atMs}) * 100) / 100;
-  const time = Number(atMs);
-  if (!Number.isFinite(time) || time < 0) {
-    throw new RangeError(
-      "atMs must be a non-negative finite number"
-    );
+  const time=Number(atMs);
+  if(!Number.isFinite(time)||time<0)throw new RangeError("atMs must be a non-negative finite number");
+  const target=fighterOf(state,targetActorId);
+  // The visible obstacle is in front of the fighter. It takes the raw physical
+  // hit first; a fighter's immunity/debuffs must never protect or amplify it.
+  const intercepted=interceptCombatBarrierV1({state,sourceActorId,targetActorId,
+    damage:Math.round(Math.max(0,Number(damage)||0)*100)/100,incomingKind,contactedEntityId});
+  let nextState=intercepted.state;
+  const remainingAfterBarrier=Math.round(intercepted.remainingDamage*
+    incomingEffectMultiplierV1({state:nextState,targetActorId,affectedPolarity:"detrimental",atMs})*100)/100;
+  const requested=Math.round((intercepted.absorbedByEntity+remainingAfterBarrier)*100)/100;
+  let remaining=remainingAfterBarrier;
+  let absorbedByShield=0;
+  const protection=combatProtectionForIncomingV1({state:nextState,targetActorId,
+    domain:"damage",atMs:time,hitsIntangible});
+  if(protection.protected){
+    return Object.freeze({state:nextState,requestedDamage:requested,absorbedByShield:0,
+      absorbedByEntity:intercepted.absorbedByEntity,entityId:intercepted.entityId,
+      destroyedEntityId:intercepted.destroyedEntityId,entityHpBefore:intercepted.entityHpBefore,
+      entityHpAfter:intercepted.entityHpAfter,
+      immuneDamage:remaining,appliedDamage:0,reflection:null,hpBefore:target.hp,hpAfter:target.hp,
+      protectingStatusIds:protection.protectingStatusIds});
   }
-
-  let nextState = state;
-  let remaining = requested;
-  let absorbedByShield = 0;
-
-  const target = fighterOf(
-    nextState,
-    targetActorId
-  );
-  const protection =
-    combatProtectionForIncomingV1({
-      state: nextState,
-      targetActorId,
-      domain: "damage",
-      atMs: time,
-      hitsIntangible
-    });
-
-  if (protection.protected) {
-    return Object.freeze({
-      state: nextState,
-      requestedDamage: requested,
-      absorbedByShield: 0,
-      immuneDamage: requested,
-      appliedDamage: 0,
-      reflection: null,
-      hpBefore: target.hp,
-      hpAfter: target.hp,
-      protectingStatusIds:
-        protection.protectingStatusIds
-    });
-  }
-  // A real combat entity intercepts a configured physical/direct attack
-  // before fighter shields. Remaining damage spills into the original owner.
-  const intercepted=interceptCombatBarrierV1({state:nextState,sourceActorId,targetActorId,
-    damage:remaining,incomingKind,contactedEntityId});
-  nextState=intercepted.state;
-  remaining=intercepted.remainingDamage;
   const statuses = [
     ...(target.statusEffects ?? [])
   ];
