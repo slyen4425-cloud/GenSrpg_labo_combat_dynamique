@@ -2102,6 +2102,9 @@ try {
   // Validates the complete browser module graph and real Human Editor DOM projection.
   const normalDom = await dumpDom(url);
   assertCreatures(normalDom, "normal browser bootstrap");
+  if (!/data-stat-definition="glace"/.test(normalDom)) {
+    throw new Error("normal browser bootstrap: Glace stat absent from real rendered editor");
+  }
   assertAquaHealSkill(normalDom, "normal browser bootstrap");
   const soundtrackDom=await dumpDom(url+"?verify-soundtrack-authoring=1");
   assertCreatures(soundtrackDom,"soundtrack authoring real Chrome");
