@@ -1,0 +1,25 @@
+{
+  "name": "brouillard_gelant",
+  "frames": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "transparent": true,
+  "recommendedFrameDurationMs": 100,
+  "files": [
+    "png/brouillard_gelant_01.png",
+    "png/brouillard_gelant_02.png",
+    "png/brouillard_gelant_03.png",
+    "png/brouillard_gelant_04.png",
+    "png/brouillard_gelant_05.png",
+    "png/brouillard_gelant_06.png",
+    "png/brouillard_gelant_07.png",
+    "png/brouillard_gelant_08.png",
+    "png/brouillard_gelant_09.png",
+    "png/brouillard_gelant_10.png",
+    "png/brouillard_gelant_11.png",
+    "png/brouillard_gelant_12.png"
+  ],
+  "sourceSheet": "a_high_resolution_transparent_background_sprite_sh_3_batch_3.png"
+}

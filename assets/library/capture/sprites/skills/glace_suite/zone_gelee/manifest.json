@@ -1,0 +1,25 @@
+{
+  "name": "zone_gelee",
+  "frames": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "transparent": true,
+  "recommendedFrameDurationMs": 100,
+  "files": [
+    "png/zone_gelee_01.png",
+    "png/zone_gelee_02.png",
+    "png/zone_gelee_03.png",
+    "png/zone_gelee_04.png",
+    "png/zone_gelee_05.png",
+    "png/zone_gelee_06.png",
+    "png/zone_gelee_07.png",
+    "png/zone_gelee_08.png",
+    "png/zone_gelee_09.png",
+    "png/zone_gelee_10.png",
+    "png/zone_gelee_11.png",
+    "png/zone_gelee_12.png"
+  ],
+  "sourceSheet": "a_clean_transparent_background_sprite_sheet_game_1_batch_1.png"
+}
