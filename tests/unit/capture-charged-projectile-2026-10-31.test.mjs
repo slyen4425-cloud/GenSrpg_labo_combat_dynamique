@@ -4,7 +4,7 @@ import {readFileSync} from "node:fs";
 import {normalizeSkillDefinition} from "../../src/contracts/skill-definition.js";
 import {createCombatSession} from "../../src/core/combat/combat-session.js";
 import {createCombatRuntime} from "../../src/core/combat/combat-runtime.js";
-import {planSkillReleaseFx} from "../../src/core/fx/skill-fx-plan.js";
+import {planSkillPreparationFx,planSkillReleaseFx} from "../../src/core/fx/skill-fx-plan.js";
 import {describeCaptureSkillV1} from "../../src/ui/capture-skill-explanation-v1.js";
 import {buildHumanSkillDraftV1,humanSkillEditorFieldsFromDraftV1} from "../../src/ui/capture-editor-human-v2.js";
 const json=p=>JSON.parse(readFileSync(new URL("../../"+p,import.meta.url),"utf8"));
