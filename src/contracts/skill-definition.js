@@ -444,6 +444,44 @@ export function normalizeSkillDefinition(input) {
       { form }
     );
 
+  // One optional native owner for repeated taps during the PREPARATION phase.
+  // Its direct damage replaces legacy/tactical damage; no second damage authority.
+  let chargedAttack = null;
+  if (input.chargedAttack != null) {
+    const config = input.chargedAttack;
+    if (!config || typeof config !== "object" || Array.isArray(config)) {
+      throw new TypeError("chargedAttack must be an object");
+    }
+    for (const key of Object.keys(config)) {
+      if (!["baseDamage","bonusDamagePerCharge","maxCharges","reactivationWindowMs","sizeIncreasePct"].includes(key)) {
+        throw new TypeError("Unknown chargedAttack field: " + key);
+      }
+    }
+    if (form !== "projectile" || projectileTargeting !== "direct" || contactHold) {
+      throw new RangeError("chargedAttack requires a direct projectile without contact hold");
+    }
+    const baseDamage = Number(config.baseDamage);
+    const bonusDamagePerCharge = Number(config.bonusDamagePerCharge);
+    const maxCharges = Number(config.maxCharges);
+    const reactivationWindowMs = Number(config.reactivationWindowMs);
+    const sizeIncreasePct = Number(config.sizeIncreasePct ?? 10);
+    if (!Number.isFinite(baseDamage) || baseDamage < 0 ||
+        !Number.isFinite(bonusDamagePerCharge) || bonusDamagePerCharge < 0) {
+      throw new RangeError("chargedAttack damage values must be nonnegative finite numbers");
+    }
+    if (!Number.isInteger(maxCharges) || maxCharges < 2 || maxCharges > 20) {
+      throw new RangeError("chargedAttack.maxCharges must be 2..20 total activations");
+    }
+    if (!Number.isFinite(reactivationWindowMs) || reactivationWindowMs <= 0 ||
+        reactivationWindowMs > Number(input.preparationMs)) {
+      throw new RangeError("chargedAttack.reactivationWindowMs requires a positive preparationMs and a window <= preparation");
+    }
+    if (!Number.isFinite(sizeIncreasePct) || sizeIncreasePct < 0 || sizeIncreasePct > 100) {
+      throw new RangeError("chargedAttack.sizeIncreasePct must be 0..100");
+    }
+    chargedAttack = Object.freeze({baseDamage,bonusDamagePerCharge,maxCharges,reactivationWindowMs,sizeIncreasePct});
+  }
+
   const effect = input.effect ?? {};
   if (typeof effect !== "object" || Array.isArray(effect)) {
     throw new TypeError("effect must be an object");
@@ -503,12 +541,18 @@ export function normalizeSkillDefinition(input) {
     );
   }
 
+  if (chargedAttack && (normalizedLegacyEffect.damage !== 0 ||
+      effects.some(entry => ["damage","life_steal"].includes(entry.kind)))) {
+    throw new RangeError("chargedAttack must be the only direct damage authority");
+  }
+
   return Object.freeze({
     id,
     name,
     category,
     form,
     projectileTargeting,
+    ...(chargedAttack ? {chargedAttack} : {}),
     ...(projectileTargeting === "expanding_wave" ? { expandingWave: Object.freeze({startRadiusPct,endRadiusPct,thicknessPct}) } : {}),
     loadoutSlot,
     element,
