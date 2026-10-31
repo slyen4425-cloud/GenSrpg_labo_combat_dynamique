@@ -1284,14 +1284,15 @@ export function createCombatRuntime({
       action: result.action.skill?.chargedAttack
         ? Object.freeze({
             ...result.action,
-            // A short authored wind-up must not launch the projectile while
-            // the author-configured first reactivation window is still open.
-            releaseAtMs:Math.max(result.action.releaseAtMs,result.action.skill.chargedAttack.reactivationWindowMs),
-            impactAtMs:Math.max(result.action.releaseAtMs,result.action.skill.chargedAttack.reactivationWindowMs)+result.action.travelMs,
+            // Each successful activation owns a COMPLETE cast stage, then an
+            // optional reactivation window. The first paid stage starts now.
+            releaseAtMs:result.action.preparationMs+result.action.skill.chargedAttack.reactivationWindowMs,
+            impactAtMs:result.action.preparationMs+result.action.skill.chargedAttack.reactivationWindowMs+result.action.travelMs,
             chargeState: Object.freeze({
               chargeCount:1,
               maxCharges:result.action.skill.chargedAttack.maxCharges,
               lastTapAtMs:current,
+              chargeReadyAtMs:current+result.action.preparationMs,
               damage:result.action.skill.chargedAttack.baseDamage,
               sizeMultiplier:1
             })
@@ -1350,12 +1351,20 @@ export function createCombatRuntime({
     if (charge.chargeCount >= config.maxCharges) {
       return Object.freeze({ok:false,outcome:"charge_max"});
     }
-    if (now() - charge.lastTapAtMs > config.reactivationWindowMs) {
+    const remainingCastMs=Math.max(0,charge.chargeReadyAtMs-now());
+    if (remainingCastMs>0) {
+      return Object.freeze({ok:false,outcome:"charge_preparing",remainingCastMs,
+        chargeCount:charge.chargeCount,maxCharges:config.maxCharges});
+    }
+    const remainingWindowMs=record.action.releaseAtMs-elapsed;
+    if (remainingWindowMs<=0) {
       return Object.freeze({ok:false,outcome:"charge_window_expired"});
     }
+    const cost=record.action.skill.energyCost;
+    const energy=session.snapshot().fighters[actorId]?.energy ?? 0;
+    if (energy<cost) return Object.freeze({ok:false,outcome:"insufficient_energy",cost,availableEnergy:energy});
     return Object.freeze({ok:true,outcome:"charge_ready",
-      chargeCount:charge.chargeCount,maxCharges:config.maxCharges,
-      remainingWindowMs:config.reactivationWindowMs-(now()-charge.lastTapAtMs)});
+      chargeCount:charge.chargeCount,maxCharges:config.maxCharges,remainingWindowMs});
   }
 
   function startSkill({ actorId, targetId, skill }) {
@@ -1367,25 +1376,27 @@ export function createCombatRuntime({
       if (active.action.targetId !== targetId) {
         return Object.freeze({ok:false,outcome:"charge_target_locked"});
       }
+      // Recheck and commit energy atomically BEFORE changing damage or size.
+      // A rejected spam tap or an empty energy bar is never an amplification.
+      const payment=session.payChargedActivationEnergy({
+        actorId,cost:active.action.skill.energyCost
+      });
+      if (!payment.ok) return payment;
       const previous = active.action.chargeState;
       const next = Object.freeze({
         ...previous,chargeCount:previous.chargeCount+1,lastTapAtMs:now(),
+        chargeReadyAtMs:now()+active.action.preparationMs,
         sizeMultiplier:1 + previous.chargeCount * active.action.skill.chargedAttack.sizeIncreasePct / 100
       });
-      // The window is measured since the LAST accepted tap. Every tap
-      // extends the same single paid cast; it never starts another action.
-      // Reaching the maximum releases as soon as authored wind-up permits.
+      // Every activation must finish its OWN preparation, even the final one.
+      // The optional window starts AFTER that cast stage has finished.
       const elapsed = elapsedFor(active,now());
-      const releaseAtMs = next.chargeCount >= active.action.skill.chargedAttack.maxCharges
-        ? Math.max(active.action.preparationMs,elapsed)
-        : Math.max(active.action.preparationMs,elapsed+active.action.skill.chargedAttack.reactivationWindowMs);
+      const releaseAtMs = elapsed+active.action.preparationMs+
+        (next.chargeCount >= next.maxCharges ? 0 : active.action.skill.chargedAttack.reactivationWindowMs);
       active.action = Object.freeze({...active.action,
         releaseAtMs,impactAtMs:releaseAtMs+active.action.travelMs,chargeState:next});
       onProgress(progressSnapshot(active,elapsedFor(active,now())));
       emitStateIfChanged({force:true});
-      if (next.chargeCount >= next.maxCharges && elapsed >= active.action.preparationMs) {
-        settleDue(now());
-      }
       return Object.freeze({ok:true,outcome:"charged",chargeCount:next.chargeCount,
         maxCharges:next.maxCharges,action:active.action});
     }

@@ -3,6 +3,7 @@ import {
   addChargeTimeEffect,
   advanceCombatTime,
   createCombatState,
+  withFighterEnergy,
   withFighterMovementActiveV1,
   replaceFighter as replaceCombatFighter
 } from "./combat-state.js";
@@ -77,6 +78,21 @@ export function createCombatSession({
 
   function snapshot() {
     return state;
+  }
+
+  // One transaction owner for incremental charged-attack energy payments.
+  // Normal skill-start cost/use/cooldown remains owned by resolveSkillStart.
+  function payChargedActivationEnergy({actorId,cost}) {
+    const fighter=state.fighters[actorId];
+    const amount=Number(cost);
+    if (!fighter || !Number.isFinite(amount) || amount < 0) {
+      return Object.freeze({ok:false,outcome:"invalid_charge_payment"});
+    }
+    if (fighter.energy < amount) {
+      return Object.freeze({ok:false,outcome:"insufficient_energy",cost:amount,availableEnergy:fighter.energy});
+    }
+    if (amount > 0) state=withFighterEnergy(state,actorId,fighter.energy-amount);
+    return Object.freeze({ok:true,outcome:"charge_energy_paid",cost:amount,remainingEnergy:state.fighters[actorId].energy});
   }
 
   function setMovementActiveV1(actorId, active) {
@@ -566,6 +582,7 @@ export function createCombatSession({
     },
     snapshot,
     setMovementActiveV1,
+    payChargedActivationEnergy,
     registerReserveSkillResolver,
     previewMovement,
     previewSkill,

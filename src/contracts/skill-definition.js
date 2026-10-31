@@ -472,6 +472,9 @@ export function normalizeSkillDefinition(input) {
     if (!Number.isInteger(maxCharges) || maxCharges < 2 || maxCharges > 20) {
       throw new RangeError("chargedAttack.maxCharges must be 2..20 total activations");
     }
+    if (!Number.isFinite(Number(input.preparationMs)) || Number(input.preparationMs) <= 0) {
+      throw new RangeError("chargedAttack requires a positive preparationMs for each charge stage");
+    }
     if (!Number.isFinite(reactivationWindowMs) || reactivationWindowMs <= 0) {
       throw new RangeError("chargedAttack.reactivationWindowMs must be positive");
     }

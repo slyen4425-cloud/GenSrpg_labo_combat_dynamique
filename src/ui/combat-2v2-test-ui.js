@@ -9,7 +9,7 @@ import {
 import { captureCreatureReactionActionIdV1 } from "../contracts/capture-creature-defensive-reaction-v1.js";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-definition.js";
-import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031";
+import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createEmbeddedCombatLifecycleV1 } from "./embedded-combat-lifecycle-v1.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js";
@@ -18,7 +18,7 @@ import {
   isSkillTargetAllowed,
   targetRelation
 } from "../core/combat/targeting.js";
-import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=liane-audio-r2-20261030-snowball-v46-20261031";
+import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031";
 import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-native-bidirectional-20261028";
 import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
@@ -1225,12 +1225,18 @@ export async function mountCoop2v2Test({
         String(cooldownProgress)
       );
 
-      const canCharge = runtime.previewChargedSkillRetrigger({
+      const chargePreview = runtime.previewChargedSkillRetrigger({
         actorId:controlledActorId(),skillId:skill.id
-      }).ok;
-      if (canCharge) {
-        const charge = runtime.activeActionFor(controlledActorId())?.chargeState;
-        cooldown.textContent = `Renforcer ${charge?.chargeCount ?? 1}/${charge?.maxCharges ?? 1}`;
+      });
+      const canCharge = chargePreview.ok;
+      const owned = runtime.activeActionFor(controlledActorId());
+      const charge = owned?.actionId === skill.id ? owned.chargeState : null;
+      if (charge && !owned.released) {
+        cooldown.textContent = chargePreview.outcome === "charge_preparing"
+          ? `Charge ${charge.chargeCount}/${charge.maxCharges} · ${(chargePreview.remainingCastMs/1000).toFixed(1)} s`
+          : canCharge ? `Renforcer ${charge.chargeCount}/${charge.maxCharges}`
+          : chargePreview.outcome === "insufficient_energy" ? "Énergie insuffisante"
+          : `Charge ${charge.chargeCount}/${charge.maxCharges}`;
         cooldown.hidden = false;
         button.dataset.cooldownActive = "false";
       }

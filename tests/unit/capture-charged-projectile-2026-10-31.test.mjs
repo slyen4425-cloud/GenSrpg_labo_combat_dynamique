@@ -20,13 +20,13 @@ function clock(){let t=0;let queue=[];let id=0;return {now:()=>t,
 test("charged Attack contract has one damage authority and only direct projectiles",()=>{
   assert.equal(skill().chargedAttack.baseDamage,5);
   assert.throws(()=>normalizeSkillDefinition({...skill(),form:"beam"}),/chargedAttack|projectile/i);
-  assert.equal(normalizeSkillDefinition({...skill(),preparationMs:0}).chargedAttack.reactivationWindowMs,450);
+  assert.throws(()=>normalizeSkillDefinition({...skill(),preparationMs:0}),/preparationMs/);
   assert.throws(()=>normalizeSkillDefinition({...skill(),effects:[{kind:"damage",targetScope:"target",amount:5}]}),/chargedAttack|damage/i);
   assert.throws(()=>normalizeSkillDefinition({...skill(),chargedAttack:{...skill().chargedAttack,maxCharges:0}}),/maxCharges/i);
 });
 test("same button press charges ONE paid projectile, bounded by tap interval and release",()=>{
   const session=createCombatSession({distance:"medium",fighters:[
-    {...json("data/combat/fighters/maraileron.combat.json"),initialEnergy:10,initialHp:100},
+    {...json("data/combat/fighters/maraileron.combat.json"),initialEnergy:10,initialHp:100,energyChargeIntervalMs:1000000},
     {...json("data/combat/fighters/braisombre.combat.json"),initialEnergy:10,initialHp:100}]});
   const c=clock(), released=[],resolved=[],progress=[];
   const runtime=createCombatRuntime({session,now:c.now,setTimer:c.setTimer,clearTimer:c.clearTimer,tickMs:50,
@@ -35,15 +35,15 @@ test("same button press charges ONE paid projectile, bounded by tap interval and
   const original=skill(), first=runtime.startSkill({actorId:"maraileron",targetId:"braisombre",skill:original});
   assert.equal(first.outcome,"started");
   const energy=session.snapshot().fighters.maraileron.energy;
-  c.advance(150);
+  c.advance(1000);
   assert.equal(runtime.previewChargedSkillRetrigger({actorId:"maraileron",skillId:original.id}).ok,true);
   assert.equal(runtime.startSkill({actorId:"maraileron",targetId:"braisombre",skill:original}).chargeCount,2);
-  c.advance(150);
+  c.advance(1000);
   assert.equal(runtime.startSkill({actorId:"maraileron",targetId:"braisombre",skill:original}).chargeCount,3);
   assert.equal(runtime.startSkill({actorId:"maraileron",targetId:"braisombre",skill:original}).outcome,"charge_max");
-  assert.equal(session.snapshot().fighters.maraileron.energy,energy,"only one energy spend");
+  assert.equal(session.snapshot().fighters.maraileron.energy,energy-2*original.energyCost,"each accepted amplification has its own energy payment");
   assert.equal(session.snapshot().fighters.maraileron.skillUses?.[original.id]??1,1);
-  c.advance(700);
+  c.advance(1000);
   assert.equal(released.length,1);
   assert.equal(released[0].action.chargeState.damage,15);
   assert.equal(released[0].action.chargeState.sizeMultiplier,1.2);
@@ -62,7 +62,9 @@ test("late repeat fails, preserves charges, and cannot sneak a new cooldown paym
   runtime.start();
   runtime.startSkill({actorId:"maraileron",targetId:"braisombre",skill:s});
   c.advance(500);
-  assert.equal(runtime.startSkill({actorId:"maraileron",targetId:"braisombre",skill:s}).outcome,"charge_window_expired");
+  assert.equal(runtime.startSkill({actorId:"maraileron",targetId:"braisombre",skill:s}).outcome,"charge_preparing");
+  c.advance(1000);
+  assert.equal(runtime.startSkill({actorId:"maraileron",targetId:"braisombre",skill:s}).outcome,"charge_released");
   assert.equal(runtime.activeActionFor("maraileron").chargeState.chargeCount,1);
   runtime.dispose();
 });

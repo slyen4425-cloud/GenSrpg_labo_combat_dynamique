@@ -384,10 +384,10 @@ export function describeCaptureSkillV1(input) {
   if(d.chargedAttack){
     const c=d.chargedAttack;
     const maxDamage=c.baseDamage+(c.maxCharges-1)*c.bonusDamagePerCharge;
-    phrases.push(finish("Inflige "+num(c.baseDamage)+" dégâts de base. Chaque nouvelle activation dans les "+duration(c.reactivationWindowMs)+
-      " suivant la précédente, avant le départ du projectile, ajoute "+num(c.bonusDamagePerCharge)+
+    phrases.push(finish("Inflige "+num(c.baseDamage)+" dégâts de base. Après chaque préparation, une nouvelle activation pendant la fenêtre de "+duration(c.reactivationWindowMs)+
+      " ajoute "+num(c.bonusDamagePerCharge)+
       " dégâts supplémentaires et augmente la taille du cast et du projectile de "+num(c.sizeIncreasePct)+
-      " %, jusqu'à "+num(c.maxCharges)+" activations ("+num(maxDamage)+" dégâts maximum). Le tir attend au minimum la préparation configurée et reste retenu pendant la fenêtre suivant la dernière activation, sauf si la charge maximale est atteinte."));
+      " %, jusqu'à "+num(c.maxCharges)+" activations ("+num(maxDamage)+" dégâts maximum). Chaque activation exige une préparation complète et consomme "+num(d.energyCost)+" énergie. La fenêtre pour réactiver commence après chaque préparation ; à la charge maximale, le tir part une fois la dernière préparation terminée."));
   }
   if(d.effect.damage>0)phrases.push(finish("Inflige "+num(d.effect.damage)+" dégâts"));
   if(d.effect.heal>0)phrases.push(finish("Rend "+num(d.effect.heal)+" PV"));
