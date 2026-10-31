@@ -5,7 +5,7 @@
 - START `checkpoint/lab-start-wall-1v1-sensor-parity-2026-10-31`.
 - RED `checkpoint/lab-red-wall-1v1-sensor-parity-2026-10-31`, test sentinelle `tests/unit/capture-wall-1v1-sensor-parity-2026-10-31.test.mjs`.
 - Problème : le renderer du 1v1 montait un `CombatEntityOverlay` sans résolution des sprites de la bibliothèque officielle, et ne lui demandait jamais de rectangles de collision pour `DomSkillFxRenderer`. Le 2v2 transmettait déjà ces deux capacités. Conséquence : une entité pouvait exister en Combat State, mais le projectile 1v1 ne pouvait pas produire l'ID d'une collision confirmée.
-- Correctif minimal : 1v1 transmet `assetForId: presentationAssets.visualAsset` et `barrierCollisionRectsFor: combatEntityOverlay.collisionRectsFor` au même moteur DOM. Aucun nouveau propriétaire d'asset, collision, dégâts, PV ni horloge.
+- Correctif minimal : 1v1 transmet `assetForId` via `presentationAssets.visualAsset` (Capture moderne), sinon `presentationAssets.asset` (démo autonome, même catalogue déjà existant), et `barrierCollisionRectsFor: combatEntityOverlay.collisionRectsFor` au même moteur DOM. Aucun nouveau propriétaire d'asset, collision, dégâts, PV ni horloge.
 
 - Publication : les deux entrées `examples/dom-demo/demo.js` et `index.html` portent la même révision d'import ESM `wall-1v1-sensor-parity-20261031`, vérifiée par une sentinelle Node ; cela évite de charger l'ancien 1v1 en cache après Pages.
 
