@@ -13,3 +13,21 @@ export function sweptSegmentRectContactV1({from,to,rect}){
   const round=n=>Math.round(n*1000)/1000;
   return Object.freeze({x:round(x0+enter*dx),y:round(y0+enter*dy)});
 }
+
+
+// The only pure segment-vs-visible-wall geometry query, shared by all visual
+// attack forms. Choose the first obstacle crossed, not array/DOM order.
+export function nearestBarrierSegmentContactV1({from,to,barriers=[]}){
+  if(!Array.isArray(barriers)||!from||!to)return null;
+  const distance=Math.hypot(Number(to.x)-Number(from.x),Number(to.y)-Number(from.y));
+  if(!Number.isFinite(distance)||distance<=0)return null;
+  let nearest=null,first=Infinity;
+  for(const entry of barriers){
+    if(typeof entry?.entityId!=="string"||!entry.entityId)continue;
+    const point=sweptSegmentRectContactV1({from,to,rect:entry.rect});
+    if(!point)continue;
+    const travelled=Math.hypot(point.x-Number(from.x),point.y-Number(from.y));
+    if(travelled<first){first=travelled;nearest=Object.freeze({entityId:entry.entityId,point});}
+  }
+  return nearest;
+}
