@@ -1,3 +1,14 @@
+## 2026-10-31 — Mur : exiger une preuve de collision spatiale pour l'interception projectile
+- Base `gh-pages@5e0c23f69d399aa81b140c64e7c4f48e9fe637e6` (CI 5/5 et Pages GREEN), START `checkpoint/lab-start-wall-projectile-evidence-2026-10-31`, WORK `work/lab-wall-projectile-evidence-2026-10-31`. Issue #167.
+- Objectif : supprimer la fausse interception d'un projectile ayant seulement atteint son délai d'impact ; seule la collision observée par le capteur spatial, signalée via l'ID exact de l'entité au Runtime/Combat Damage, doit absorber ses dégâts.
+- Autorités préservées : Render Adapter = observation géométrique uniquement, Runtime = validation contact, Combat Damage = absorption et reliquat, Combat State = PV. Aucun second moteur ni timer.
+- Fichiers autorisés : `src/core/combat/combat-entity-v1.js`, `tests/unit/capture-combat-barrier-spatial-visual-2026-10-31.test.mjs`, `tests/unit/capture-combat-entity-ice-barrier-2026-10-31.test.mjs`, `docs/LAB_CURRENT_WORK.md`, `docs/LAB_WALL_PROJECTILE_EVIDENCE_2026-10-31.md`. API, renderer et autres contrats protégés.
+- TDD RED : à impact nominal sans `contactedEntityId`, mur intact et combattant touché ; contact ID exact = interception, faux ID et `null` = aucune interception, tests d'overflow inchangés.
+- Fin : CI Foundation + 4 Chromium GREEN sur HEAD final, checkpoint GREEN et PR `gh-pages`, Pages GREEN. Ne pas toucher `main`, GenSrpg, Exploration et global-assets.
+- Hors périmètre : géométrie libre des rayons/mêlée, déplacement du mur, familiers, canalisation (issue #168).
+
+---
+
 ## 2026-10-31 — Mur destructible : réactivité de l'état invoqué (lot isolé)
 - Objectif : garantir que chaque variation de combatEntities (apparition, baisse de PV, destruction) provoque le rafraîchissement du rendu et de sa jauge via la seule émission de Combat Runtime, même lorsque les PV du combattant restent inchangés.
 - Base exacte gh-pages@8ec222b72d053e20297aa8fc89094ac8b8f5f056 ; départ checkpoint/lab-start-wall-state-signal-2026-10-31 ; branche work/lab-wall-state-signal-2026-10-31 ; issue #167.
