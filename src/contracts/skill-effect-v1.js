@@ -110,7 +110,7 @@ const FIELDS_BY_KIND = Object.freeze({
     "effects"
   ]),
   summon_entity: new Set([
-    ...COMMON_FIELDS, "entityKind", "statId", "hpPerStatPoint", "interceptKinds"
+    ...COMMON_FIELDS, "entityKind", "statId", "hpPerStatPoint", "interceptKinds", "spriteAssetId"
   ])
 });
 
@@ -311,6 +311,7 @@ export function normalizeSkillEffectV1(input) {
       throw new RangeError("summon_entity.interceptKinds must list distinct projectile/beam/contact");
     }
     output.interceptKinds=Object.freeze([...kinds]);
+    if(value.spriteAssetId != null) output.spriteAssetId=requiredString(value.spriteAssetId,"summon_entity.spriteAssetId");
   }
 
   if (kind === "apply_marker") {

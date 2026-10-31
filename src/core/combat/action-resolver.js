@@ -1034,7 +1034,8 @@ export function resolveSkillCompletion({
           damage: damage.damage,
           atMs: combatImpactAtMs,
           hitsIntangible: skill.hitsIntangible === true,
-          incomingKind: skill.form
+          incomingKind: skill.form,
+          contactedEntityId: action.barrierContactId
         });
       nextState = applied.state;
 

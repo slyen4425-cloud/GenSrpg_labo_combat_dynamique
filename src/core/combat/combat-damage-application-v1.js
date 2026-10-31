@@ -65,7 +65,8 @@ export function applyCombatDamageV1({
   atMs = state.elapsedMs,
   allowReflection = true,
   hitsIntangible = false,
-  incomingKind = "other"
+  incomingKind = "other",
+  contactedEntityId = undefined
 }) {
   const requested = Math.round(Math.max(0,Number(damage)||0) *
     incomingEffectMultiplierV1({state,targetActorId,affectedPolarity:"detrimental",atMs}) * 100) / 100;
@@ -110,7 +111,7 @@ export function applyCombatDamageV1({
   // A real combat entity intercepts a configured physical/direct attack
   // before fighter shields. Remaining damage spills into the original owner.
   const intercepted=interceptCombatBarrierV1({state:nextState,sourceActorId,targetActorId,
-    damage:remaining,incomingKind});
+    damage:remaining,incomingKind,contactedEntityId});
   nextState=intercepted.state;
   remaining=intercepted.remainingDamage;
   const statuses = [

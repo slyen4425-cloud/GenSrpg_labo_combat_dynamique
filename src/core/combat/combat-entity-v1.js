@@ -17,18 +17,19 @@ export function createCombatBarrierV1({state,sourceActorId,protectedActorId,sour
   const id=previous?.id??("barrier:"+sourceActorId+":"+sourceSkillId+":"+protectedActorId);
   const record=frozen({id,kind:"barrier",ownerActorId:sourceActorId,protectedActorId,sourceSkillId,
     statId:effect.statId,statPoints,hpPerStatPoint:effect.hpPerStatPoint,hp:maxHp,maxHp,
-    interceptKinds:effect.interceptKinds,createdAtMs:atMs});
+    interceptKinds:effect.interceptKinds,...(effect.spriteAssetId?{spriteAssetId:effect.spriteAssetId}:{}),createdAtMs:atMs});
   return frozen({outcome:previous?"refreshed":"created",record,
     state:frozen({...state,combatEntities:frozen([...current.filter(entry=>!same(entry)),record])})});
 }
-export function interceptCombatBarrierV1({state,sourceActorId,targetActorId,damage,incomingKind}){
+export function interceptCombatBarrierV1({state,sourceActorId,targetActorId,damage,incomingKind,contactedEntityId=undefined}){
   const amount=Math.max(0,Number(damage)||0);
   const empty=frozen({state,remainingDamage:amount,absorbedByEntity:0,entityId:null,destroyedEntityId:null,
     entityHpBefore:null,entityHpAfter:null});
   if(amount<=0||sourceActorId===targetActorId)return empty;
   const found=(state.combatEntities??[]).find(entry=>entry.kind==="barrier"&&entry.hp>0&&
     entry.protectedActorId===targetActorId&&entry.ownerActorId!==sourceActorId&&
-    entry.interceptKinds.includes(incomingKind));
+    entry.interceptKinds.includes(incomingKind)&&
+    (incomingKind!=="projectile"||contactedEntityId===undefined||contactedEntityId===entry.id));
   if(!found)return empty;
   const absorbed=Math.min(found.hp,amount);
   const after=Math.round((found.hp-absorbed)*100)/100;
