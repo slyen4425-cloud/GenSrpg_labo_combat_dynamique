@@ -1429,12 +1429,12 @@
               <input type="number" min="0" step="1" data-skill-charged-bonus-damage value="5"></label>
             <label>Nombre d'activations maximum (premier tir inclus)
               <input type="number" min="2" max="20" step="1" data-skill-charged-max-charges value="3"></label>
-            <label>Intervalle max entre deux activations (ms)
+            <label>Fenêtre pour appuyer à nouveau, après chaque activation (ms)
               <input type="number" min="1" step="1" data-skill-charged-window value="450"></label>
             <label>Augmentation de taille par activation (%)
               <input type="number" min="0" max="100" step="1" data-skill-charged-size-pct value="10"></label>
           </div>
-          <p class="note">Le temps « Préparation » dans la section Timing détermine le départ du projectile. Avant ce départ, appuie de nouveau sur la même capacité dans la fenêtre indiquée pour renforcer un unique tir. Chaque pression ajoute des dégâts et agrandit immédiatement le sprite de cast ; le projectile part avec exactement la même amplification de taille. L'énergie et la recharge ne sont engagées qu'au premier appui. Aucun effet « Dégâts » supplémentaire ne doit être ajouté dans les effets tactiques de cette capacité.</p>
+          <p class="note">« Préparation » (section Timing) est le délai minimum avant le tir. « Intervalle max entre deux activations » est le temps dont tu disposes pour appuyer encore une fois : le projectile reste retenu pendant cette fenêtre, même si la préparation est plus courte. Chaque nouvelle activation prolonge cette fenêtre ; à la charge maximale, le tir part dès que la préparation minimum est terminée. Le cast grossit à chaque appui et le projectile conserve le même multiplicateur. L'énergie et le cooldown ne sont payés qu'une seule fois. N'ajoute pas un deuxième effet Dégâts classique.</p>
         </section>
 
         <section class="skill-contact-hold" data-skill-contact-hold aria-label="Maintien au contact">
