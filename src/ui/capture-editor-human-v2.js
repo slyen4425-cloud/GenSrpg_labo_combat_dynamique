@@ -12483,6 +12483,30 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   );
 
   listen(skillEffectAddButton, "click", () => {
+    const choice = one(root, "[data-skill-effect-add-kind]");
+    if (choice.value === "charged") {
+      // One author control, one chargedAttack contract: never insert a
+      // second normal damage effect alongside the projectile's base damage.
+      const hasOtherDamage = [...skillEffectsHost.querySelectorAll("[data-skill-effect-kind]")]
+        .some(select => ["damage", "life_steal"].includes(select.value));
+      if (hasOtherDamage) {
+        setStatus(root,
+          "Retire d'abord l'effet Dégâts ou Drain de vie classique : Attaque chargée possède déjà ses dégâts de base.",
+          "warn");
+        return;
+      }
+      one(root,"[data-skill-form]").value = "projectile";
+      one(root,"[data-skill-trajectory-mode]").value = "linear";
+      beamStageLayout.sync();
+      const preparation=one(root,"[data-skill-preparation]");
+      const windowMs=one(root,"[data-skill-charged-window]");
+      if (Number(preparation.value)<Number(windowMs.value)) preparation.value=String(Math.max(900,Number(windowMs.value)));
+      chargedEnabled.checked = true;
+      one(root,"[data-skill-charged-config]").hidden = false;
+      choice.value="standard";
+      setStatus(root,"Attaque chargée ajoutée : règle les dégâts, charges et taille ici, puis choisis tes sprites Cast et Projectile.", "ok");
+      return;
+    }
     appendHumanSkillEffectV1(root, null, statRegistry);
   });
   listen(contactHoldEnabled, "change", () => {
