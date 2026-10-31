@@ -1,3 +1,11 @@
+## 2026-10-31 — Correction charges spam + paiement énergie + import Boule de neige (en cours)
+- Base `gh-pages@6ef6eea366aacac42986baa07c10ebd64d6a17d0`; START `checkpoint/lab-start-charge-stage-energy-snowball-2026-10-31`, travail `work/lab-charge-stage-energy-snowball-2026-10-31`.
+- Problème auteur : appuis successifs acceptés sans préparation (taille 10 charges instantanées) ; énergie déduite seulement à l'entrée du sort. Refonte causale : par charge, préparation effective (une étape) puis fenêtre de réactivation, coût énergétique payé atomiquement par CombatSession pour chaque activation acceptée; une seule action/projectile/cooldown.
+- Fichier auteur fourni `gensrpg-capture-skill-boule_neige.json` (ID `boule_neige`, charge 3+3, 10 max, fenêtre 700 ms, préparation 800 ms, énergie 1). Le déposer en preset canonique si absent et le raccorder à la liste officielle sans seconde source; préserver ses médias et réglages exacts.
+- RED test, CI 5 jobs, smoke navigateur et checkpoint GREEN exigés; aucune promotion main.
+
+---
+
 ## 2026-10-31 — Boule de neige : invalidation cache de la chaîne publique (après publication du média)
 - Base `gh-pages@4e23cc506d8a7a764c1310234c9ed21eb73d279a` ; médias `global-assets@0a778fd3cbc270e4a6234a5c2ca3eef19a2709e4` ; START `checkpoint/lab-start-snowball-editor-cache-2026-10-31`, travail `work/lab-snowball-editor-cache-2026-10-31`.
 - Cause : le catalogue interne a bien progressé à v46, mais les six imports de modules de l'éditeur public restaient épinglés à la même query v du 30 octobre, ce qui pouvait garder l'ancien `global-visual-library.js` en cache sur smartphone.
