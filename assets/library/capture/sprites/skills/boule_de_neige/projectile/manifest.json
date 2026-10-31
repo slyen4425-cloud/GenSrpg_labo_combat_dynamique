@@ -1,0 +1,28 @@
+{
+  "name": "Boule de neige",
+  "effect": "projectile",
+  "frames": 12,
+  "frameOrder": "01-12",
+  "frameSize": [
+    512,
+    512
+  ],
+  "transparent": true,
+  "recommendedFrameDurationMs": 90,
+  "recommendedLoop": true,
+  "files": [
+    "webp/boule_de_neige_projectile_01.webp",
+    "webp/boule_de_neige_projectile_02.webp",
+    "webp/boule_de_neige_projectile_03.webp",
+    "webp/boule_de_neige_projectile_04.webp",
+    "webp/boule_de_neige_projectile_05.webp",
+    "webp/boule_de_neige_projectile_06.webp",
+    "webp/boule_de_neige_projectile_07.webp",
+    "webp/boule_de_neige_projectile_08.webp",
+    "webp/boule_de_neige_projectile_09.webp",
+    "webp/boule_de_neige_projectile_10.webp",
+    "webp/boule_de_neige_projectile_11.webp",
+    "webp/boule_de_neige_projectile_12.webp"
+  ],
+  "sourceSheet": "animation_de_boule_de_neige_magique_glacée.png"
+}
