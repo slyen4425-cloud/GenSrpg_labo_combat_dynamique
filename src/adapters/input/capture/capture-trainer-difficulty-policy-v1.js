@@ -72,11 +72,6 @@ export function applyCaptureTrainerDifficultyPolicyV1({nativeCombatSource,traine
      new Set(source.fighters.map(f=>f?.id)).size!==expected.size ||
      source.fighters.some(f=>!expected.has(f?.id)))
   throw new TypeError('Native Combat Lab fighters do not match the signed battle actors');
- for (const id of opponentIds) {
-  const roster=source.roster?.teams?.[id];
-  if (roster && (!Array.isArray(roster.members) || roster.members.length!==1))
-   throw new TypeError('Trainer reserve requires native Lab roster difficulty support');
- }
  const rule=rules.levels[trainerDifficulty-1];
  const fighters=Object.freeze(source.fighters.map(fighter=>{
   object(fighter,'native fighter');
@@ -93,8 +88,58 @@ export function applyCaptureTrainerDifficultyPolicyV1({nativeCombatSource,traine
    throw new RangeError('Native trainer difficulty projection overflow');
   return Object.freeze({...fighter,maxHp,initialHp,outgoingDamagePct});
  }));
+ // A reserve member is materialized by the ORIGINAL native roster engine from
+ // fighterConfigs on recall/switch/KO. Project the opponent's member configs
+ // by actor slot, not by species, or a player sharing the species is buffed.
+ let projectedRoster=source.roster;
+ let projectedFighterConfigs=source.fighterConfigs;
+ const reserveSlots=[...opponentIds].filter(id=>{
+  const team=source.roster?.teams?.[id];
+  if (!team) return false;
+  if (team.slotId!==id || !Array.isArray(team.members))
+   throw new TypeError('Native trainer roster must identify the opponent slot');
+  return team.members.length>1;
+ });
+ if (reserveSlots.length) {
+  const originalConfigs=object(source.fighterConfigs,'native trainer fighterConfigs');
+  const teams={...source.roster.teams};
+  const configs={...originalConfigs};
+  for (const actorId of reserveSlots) {
+   const team=teams[actorId];
+   const memberIds=new Set();
+   if (!team.activeMemberId || !team.members.some(member=>member?.id===team.activeMemberId))
+    throw new TypeError('Native trainer roster requires a declared active opponent member');
+   const members=team.members.map(member=>{
+    const memberId=member?.id;
+    if (typeof memberId!=='string' || !memberId || memberIds.has(memberId))
+     throw new TypeError('Native trainer roster member IDs must be unique');
+    memberIds.add(memberId);
+    if (typeof member.fighterConfigId!=='string' || !Object.hasOwn(originalConfigs,member.fighterConfigId))
+     throw new TypeError('Native trainer reserve fighter config is missing');
+    const original=object(originalConfigs[member.fighterConfigId],'native trainer reserve fighter config');
+    const baseHp=finite(original.maxHp,'native trainer reserve maxHp');
+    const baseInitial=finite(original.initialHp??baseHp,'native trainer reserve initialHp');
+    const baseDamage=finite(original.outgoingDamagePct??0,'native trainer reserve outgoingDamagePct');
+    if (baseHp<=0 || baseInitial<0 || baseInitial>baseHp)
+     throw new RangeError('Native trainer reserve HP must be valid');
+    const maxHp=Math.max(1,Math.round(baseHp*rule.hpMultiplier));
+    const initialHp=Math.min(maxHp,Math.max(0,Math.round(baseInitial*rule.hpMultiplier)));
+    const outgoingDamagePct=baseDamage+rule.outgoingDamagePctBonus;
+    if (!Number.isSafeInteger(maxHp) || !Number.isFinite(outgoingDamagePct))
+     throw new RangeError('Native trainer reserve difficulty projection overflow');
+    const configId='trainer-difficulty:'+encodeURIComponent(actorId)+':'+encodeURIComponent(memberId);
+    if (Object.hasOwn(configs,configId))
+     throw new RangeError('Native trainer reserve fighter config collision');
+    configs[configId]=Object.freeze({...original,maxHp,initialHp,outgoingDamagePct});
+    return Object.freeze({...member,fighterConfigId:configId});
+   });
+   teams[actorId]=Object.freeze({...team,members:Object.freeze(members)});
+  }
+  projectedRoster=Object.freeze({...source.roster,teams:Object.freeze(teams)});
+  projectedFighterConfigs=Object.freeze(configs);
+ }
  return Object.freeze({
-  nativeCombatSource:Object.freeze({...source,fighters}),
+  nativeCombatSource:Object.freeze({...source,fighters,roster:projectedRoster,fighterConfigs:projectedFighterConfigs}),
   appliedTrainerDifficulty:Object.freeze({
    schema:rules.schema,version:rules.version,level:trainerDifficulty,
    opponentActorIds:Object.freeze([...opponentIds]),
@@ -111,17 +156,28 @@ export function applyCaptureTrainerDifficultyPolicyV1({nativeCombatSource,traine
  * Called after the original saved-HP snapshot is validated and attached, so
  * enemy HP and damage are projected into the real CombatSession fighters.
  */
-export function projectCaptureEmbeddedTrainerFightersV1({
- battleFormat,fighters,roster,trainerDifficultyPolicy,embeddedBattle
+export function projectCaptureEmbeddedTrainerSourceV1({
+ battleFormat,fighters,roster,fighterConfigs,trainerDifficultyPolicy,embeddedBattle
 }={}) {
  if (embeddedBattle==null ||
      !Object.prototype.hasOwnProperty.call(embeddedBattle,'trainerDifficulty'))
-  return fighters;
+  return Object.freeze({fighters,roster,fighterConfigs});
  if (!trainerDifficultyPolicy)
   throw new TypeError('Signed Combat Lab author trainer difficulty policy is required');
- return applyCaptureTrainerDifficultyPolicyV1({
-  nativeCombatSource:{battleFormat,fighters,roster},
+ const projected=applyCaptureTrainerDifficultyPolicyV1({
+  nativeCombatSource:{battleFormat,fighters,roster,fighterConfigs},
   trainerDifficulty:embeddedBattle.trainerDifficulty,
   policy:trainerDifficultyPolicy
- }).nativeCombatSource.fighters;
+ }).nativeCombatSource;
+ return Object.freeze({
+  fighters:projected.fighters,
+  roster:projected.roster,
+  fighterConfigs:projected.fighterConfigs
+ });
+}
+
+// Compatibility for native callers without roster changes. Reserve-capable
+// consumers MUST use the complete source projection, never fighters alone.
+export function projectCaptureEmbeddedTrainerFightersV1(args={}) {
+ return projectCaptureEmbeddedTrainerSourceV1(args).fighters;
 }

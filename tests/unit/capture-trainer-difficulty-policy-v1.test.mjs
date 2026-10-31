@@ -87,10 +87,12 @@ test('native embedded mount uses only signed Lab policy to project trainer stats
 test('the real native Combat mount wires the authored NPC projection before createCombatSession',async()=>{
  const fs=await import('node:fs');
  const ui=fs.readFileSync(new URL('../../src/ui/combat-2v2-test-ui.js',import.meta.url),'utf8');
- const call=ui.indexOf('const nativeFighters = projectCaptureEmbeddedTrainerFightersV1(');
+ const call=ui.indexOf('const nativeTrainerSource = projectCaptureEmbeddedTrainerSourceV1(');
  const session=ui.indexOf('const session = createCombatSession(');
  assert.ok(call>=0&&session>call,'NPC modifiers must reach the real session, not a display-only view');
  assert.match(ui,/trainerDifficultyPolicy: input\.trainerDifficultyPolicy \?\? null/);
+ assert.match(ui,/rosterDefinition:nativeTrainerSource\.roster/);
+ assert.match(ui,/fighterConfigs:nativeTrainerSource\.fighterConfigs/);
 });
 
 

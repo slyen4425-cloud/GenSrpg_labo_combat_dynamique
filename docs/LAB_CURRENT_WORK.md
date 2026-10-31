@@ -1,3 +1,10 @@
+## 2026-10-31 — Difficulté native PNJ étendue à la réserve (PR #155, NON PROMUE)
+- TDD RED sur `9da6cf2efad7a068b53326d6b075fb6ddbbd2249`, Laboratory CI #41153629249 : la Fondation échoue sur le nouveau contrat de projection de réserve; les navigateurs déjà terminés restent verts. Deux tests ajoutés exigent la projection de chaque membre PNJ lors du vrai switch natif et le maintien strict de l'espèce partagée du joueur.
+- Correction à la SOURCE Combat Lab : la même politique auteur 1–4 projette les combattants adverses actifs et les configurations de chaque membre de réserve PNJ par **slot et membre**, sans modifier les configurations par espèce partagées avec le joueur. Le moteur de rappel/KO existant consomme ces configurations, sans second moteur ni modification des sauvegardes. L'entrée sauvage conserve les références natives originales. Les identités et configurations de réserve invalides sont refusées.
+- Tests unitaires et sentinelle de montage de la vraie CombatSession à certifier sur le SHA final. Aucune valeur auteur préremplie, aucun transfert signé des 99 espèces, aucune fusion main, aucun déploiement GenSrpg/Pages/Android. Produit toujours NON GREEN.
+
+---
+
 ## 2026-10-30 — Transport du contrat PNJ auteur jusqu'à l'adaptateur natif (PR #155, NON PROMU)
 - **TDD RED** : nouveau test `tests/unit/capture-trainer-difficulty-export-v1.test.mjs` au commit `6475b9bae7d0d4ed7106cf30225031454e6a7171`, exigeant une politique explicite, versionnée, conservée à travers le contrat export et l'adaptateur natif, sans coefficient implicite. CI RED à certifier sur le run associé.
 - **Correction source** : `capture-combat-export-v1.js` conserve facultativement `battle.trainerDifficultyPolicy` en JSON ; `capture-editor-exporter-v3.js` accepte uniquement un champ auteur explicite et le valide par le propriétaire Lab `normalizeCaptureTrainerDifficultyPolicyV1` ; `capture-export-adapter-stack-v1.js` vérifie et expose cette même politique pour la vraie CombatSession. Les exports sauvages sans politique restent inchangés. Aucun coefficient, media, profil ou règle World inventé.
