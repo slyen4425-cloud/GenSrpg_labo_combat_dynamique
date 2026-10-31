@@ -11,7 +11,7 @@ import {createCombatBarrierV1} from "../../src/core/combat/combat-entity-v1.js";
 import {applyCombatDamageV1} from "../../src/core/combat/combat-damage-application-v1.js";
 import {createCombatEntityOverlayV1} from "../../src/adapters/renderer/combat-entity-overlay-v1.js";
 import {createCaptureSkillPresentationAssetsV2} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
-import {sweptSegmentRectContactV1} from "../../src/core/combat/combat-barrier-spatial-v1.js";
+import {sweptSegmentRectContactV1,nearestBarrierSegmentContactV1} from "../../src/core/combat/combat-barrier-spatial-v1.js";
 try{
  const state=createCombatState({fighters:[
    {id:"player",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,statValuesById:{glace:80}},
@@ -43,6 +43,26 @@ try{
    targetActorId:"player",damage:25,incomingKind:"projectile",contactedEntityId:null});
  if(bypass.absorbedByEntity!==0||bypass.state.fighters.player.hp!==75)
    throw Error("projectile missing sprite must bypass obstacle");
+ // Real Chromium sprite rectangle is authoritative for rays and melee too.
+ for(const kind of ["beam","contact"]){
+   const segment=nearestBarrierSegmentContactV1({
+     from:{x:rect.left-100,y:centerY},to:{x:rect.left+rect.width+100,y:centerY},
+     barriers:overlay.collisionRectsFor({sourceActorId:"opponent",targetActorId:"player",kind})
+   });
+   if(segment?.entityId!==summoned.record.id)throw Error(kind+" failed real DOM wall contact");
+   const avoid=nearestBarrierSegmentContactV1({
+     from:{x:rect.left-100,y:rect.top-15},to:{x:rect.left+rect.width+100,y:rect.top-15},
+     barriers:overlay.collisionRectsFor({sourceActorId:"opponent",targetActorId:"player",kind})
+   });
+   if(avoid!==null)throw Error(kind+" false-positive lateral wall contact");
+   const noProof=applyCombatDamageV1({state:summoned.state,sourceActorId:"opponent",
+     targetActorId:"player",damage:25,incomingKind:kind});
+   if(noProof.absorbedByEntity!==0)throw Error(kind+" auto-intercept without visible evidence");
+   const realHit=applyCombatDamageV1({state:summoned.state,sourceActorId:"opponent",
+     targetActorId:"player",damage:25,incomingKind:kind,contactedEntityId:segment.entityId});
+   if(realHit.absorbedByEntity!==25||realHit.state.fighters.player.hp!==100)
+     throw Error(kind+" native damage failed after visual geometry");
+ }
  const hit=applyCombatDamageV1({state:summoned.state,sourceActorId:"opponent",
    targetActorId:"player",damage:25,incomingKind:"projectile",contactedEntityId:summoned.record.id});
  overlay.render(hit.state);
