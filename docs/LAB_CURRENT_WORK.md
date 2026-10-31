@@ -1,3 +1,14 @@
+## 2026-10-31 — Mur 1v1 : capteur projectile et sprite via le même propriétaire que 2v2 (lot de reprise)
+- Base stable `gh-pages@12ef00c407f8038f0f33dc4c4006beb16b306247` (Laboratory CI et Pages GREEN). Checkpoint de départ `checkpoint/lab-start-wall-1v1-sensor-parity-2026-10-31`, branche `work/lab-wall-1v1-sensor-parity-2026-10-31`. Issue #167.
+- Audit causal : `combat-test-ui.js` monte un overlay sans `assetForId` officiel et crée `DomSkillFxRenderer` sans `barrierCollisionRectsFor`. Le chemin 2v2 a déjà les deux branchements ; un projectile 1v1 n'observe donc aucun mur et ne peut pas envoyer son ID confirmé au même Combat Runtime.
+- Périmètre autorisé : `src/ui/combat-test-ui.js`, `tests/unit/capture-wall-1v1-sensor-parity-2026-10-31.test.mjs`, `docs/LAB_CURRENT_WORK.md`, `docs/LAB_WALL_1V1_SENSOR_PARITY_2026-10-31.md`. Changement de version ESM d'entrée uniquement si la publication le nécessite. Contrats, Combat State/Damage, géométrie partagée, renderers, données auteur et 2v2 protégés.
+- Invariant : une seule autorité de média `CaptureSkillPresentationAssetsV2.visualAsset`, une seule observation `combatEntityOverlay.collisionRectsFor`, et `DomSkillFxRenderer` transmet son ID au runtime natif ; aucune interception basée sur l'horloge, aucun mur fictif ni second capteur.
+- TDD RED : test de la connexion 1v1 (elle manque actuellement), puis test d'un segment visuel passant dans/hors du vrai rectangle et du résultat natif du dommage. Pas de régression 2v2.
+- GREEN seulement après npm run ci complet, 4 jobs Chromium, checkpoint sur SHA final code + docs, revue, PR vers gh-pages, CI/Pages après fusion. Test Android utilisateur distinct. `main`, GenSrpg, Exploration, global-assets inchangés.
+- Hors périmètre : placement libre, géométrie des rayons/mêlée, familiarités actives, canalisation #168.
+
+---
+
 ## 2026-10-31 — Mur : exiger une preuve de collision spatiale pour l'interception projectile
 - Base `gh-pages@5e0c23f69d399aa81b140c64e7c4f48e9fe637e6` (CI 5/5 et Pages GREEN), START `checkpoint/lab-start-wall-projectile-evidence-2026-10-31`, WORK `work/lab-wall-projectile-evidence-2026-10-31`. Issue #167.
 - Objectif : supprimer la fausse interception d'un projectile ayant seulement atteint son délai d'impact ; seule la collision observée par le capteur spatial, signalée via l'ID exact de l'entité au Runtime/Combat Damage, doit absorber ses dégâts.
