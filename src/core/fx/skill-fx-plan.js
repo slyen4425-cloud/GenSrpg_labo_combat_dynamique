@@ -14,7 +14,7 @@ export function planSkillPreparationFx({
       ...(action.chargeState ? {sizeMultiplier:action.chargeState.sizeMultiplier} : {}),
       durationMs: Math.max(
         0,
-        Number(action.preparationMs) || 0
+        Number(action.chargeState ? action.releaseAtMs : action.preparationMs) || 0
       )
     })
   ]);
