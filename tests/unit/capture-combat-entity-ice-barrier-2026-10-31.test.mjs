@@ -51,7 +51,7 @@ test("native effect creates one barrier with stat-snapshotted HP from official g
 test("barrier intercepts actual incoming contact/beam/projectile damage, is destroyed and spills remainder to fighter",()=>{
  const starting=summon().state;
  let hit=applyCombatDamageV1({state:starting,sourceActorId:"enemy",targetActorId:"hero",
-   damage:30,incomingKind:"projectile"});
+   damage:30,incomingKind:"projectile",contactedEntityId:starting.combatEntities[0].id});
  assert.equal(hit.appliedDamage,0);assert.equal(hit.absorbedByEntity,30);
  assert.equal(hit.state.combatEntities[0].hp,50);assert.equal(hit.state.fighters.hero.hp,100);
  hit=applyCombatDamageV1({state:hit.state,sourceActorId:"enemy",targetActorId:"hero",
@@ -102,7 +102,7 @@ test("full CombatSession skill start -> impact creates only one real wall entity
  assert.equal(session.snapshot().combatEntities.length,1,"only Combat State owns entity");
  assert.equal(session.snapshot().combatEntities[0].maxHp,80);
  const impacted=applyCombatDamageV1({state:session.snapshot(),sourceActorId:"enemy",
-  targetActorId:"hero",damage:45,incomingKind:"projectile"});
+  targetActorId:"hero",damage:45,incomingKind:"projectile",contactedEntityId:session.snapshot().combatEntities[0].id});
  assert.equal(impacted.state.fighters.hero.hp,100);
  assert.equal(impacted.state.combatEntities[0].hp,35);
 });
