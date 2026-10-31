@@ -206,7 +206,10 @@ export function createCombatRuntime({
   }
 
   function progressSnapshot(record, elapsedMs) {
-    const preparationMs = record.action.preparationMs;
+    // For a charged attack, the cast stays in preparation until the actual
+    // projectile release. The authored wind-up is a minimum, not a deadline.
+    const preparationMs = record.action.chargeState
+      ? record.action.releaseAtMs : record.action.preparationMs;
     const chargeProgress =
       preparationMs <= 0 ? 1 : Math.min(1, elapsedMs / preparationMs);
 
@@ -1281,6 +1284,10 @@ export function createCombatRuntime({
       action: result.action.skill?.chargedAttack
         ? Object.freeze({
             ...result.action,
+            // A short authored wind-up must not launch the projectile while
+            // the author-configured first reactivation window is still open.
+            releaseAtMs:Math.max(result.action.releaseAtMs,result.action.skill.chargedAttack.reactivationWindowMs),
+            impactAtMs:Math.max(result.action.releaseAtMs,result.action.skill.chargedAttack.reactivationWindowMs)+result.action.travelMs,
             chargeState: Object.freeze({
               chargeCount:1,
               maxCharges:result.action.skill.chargedAttack.maxCharges,
@@ -1314,7 +1321,7 @@ export function createCombatRuntime({
     emitStateIfChanged({ force: true });
     onProgress(progressSnapshot(record, 0));
 
-    if (result.action.releaseAtMs === 0) {
+    if (record.action.releaseAtMs === 0) {
       processRelease(record);
     }
 
@@ -1323,7 +1330,7 @@ export function createCombatRuntime({
     return Object.freeze({
       ok: true,
       outcome: "started",
-      action: result.action
+      action: record.action
     });
   }
 
@@ -1348,8 +1355,7 @@ export function createCombatRuntime({
     }
     return Object.freeze({ok:true,outcome:"charge_ready",
       chargeCount:charge.chargeCount,maxCharges:config.maxCharges,
-      remainingWindowMs:Math.min(record.action.releaseAtMs-elapsed,
-        config.reactivationWindowMs-(now()-charge.lastTapAtMs))});
+      remainingWindowMs:config.reactivationWindowMs-(now()-charge.lastTapAtMs)});
   }
 
   function startSkill({ actorId, targetId, skill }) {
@@ -1366,9 +1372,20 @@ export function createCombatRuntime({
         ...previous,chargeCount:previous.chargeCount+1,lastTapAtMs:now(),
         sizeMultiplier:1 + previous.chargeCount * active.action.skill.chargedAttack.sizeIncreasePct / 100
       });
-      active.action = Object.freeze({...active.action,chargeState:next});
+      // The window is measured since the LAST accepted tap. Every tap
+      // extends the same single paid cast; it never starts another action.
+      // Reaching the maximum releases as soon as authored wind-up permits.
+      const elapsed = elapsedFor(active,now());
+      const releaseAtMs = next.chargeCount >= active.action.skill.chargedAttack.maxCharges
+        ? Math.max(active.action.preparationMs,elapsed)
+        : Math.max(active.action.preparationMs,elapsed+active.action.skill.chargedAttack.reactivationWindowMs);
+      active.action = Object.freeze({...active.action,
+        releaseAtMs,impactAtMs:releaseAtMs+active.action.travelMs,chargeState:next});
       onProgress(progressSnapshot(active,elapsedFor(active,now())));
       emitStateIfChanged({force:true});
+      if (next.chargeCount >= next.maxCharges && elapsed >= active.action.preparationMs) {
+        settleDue(now());
+      }
       return Object.freeze({ok:true,outcome:"charged",chargeCount:next.chargeCount,
         maxCharges:next.maxCharges,action:active.action});
     }
