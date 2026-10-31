@@ -1,3 +1,12 @@
+## 2026-10-31 — Import auteur Glace : Poing givrant + Boule de neige (START, NON GREEN)
+- Base protégée gh-pages@5b22b78c0537c6fb83e09a034456e080e2193c3c ; checkpoint `checkpoint/lab-start-ice-author-import-2026-10-31` ; branche `work/lab-ice-author-import-2026-10-31`.
+- Objectif : installer exactement les deux fichiers auteur (IDs `poing_givrant` et `boule_neige`) dans la seule bibliothèque active Showcase. Nouveau Poing givrant +50 % dégâts reçus pendant 20 s, deux charges ; nouvelle Boule de neige remplace son entrée existante sans doublon. Conserver tous les réglages, sprites, sockets, timings, FX et contrats auteur à l'octet.
+- Autorités : Capture Transfer Importer pour validation ; `data/capture/showcase` + registre `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` comme seule source active ; archives de provenance hors runtime. Aucun moteur alternatif ni changement des capacités non concernées.
+- Fichiers prévus : les deux JSON actifs ; leurs deux archives exactes sous `data/capture/source-exports` ; `src/catalogs/capture-showcase-skill-presets-v1.js` ; test de contrat `tests/unit/capture-ice-author-import-2026-10-31.test.mjs` ; journal et rapport ; si nécessaire, seuls les modules déjà revisionnés de chargement éditeur/preview afin d'invalider les caches smartphone.
+- Tests : TDD RED avant données, conformité de SHA256 et source/active byte exact, normalisation par importeur officiel, unicité du catalogue, identification et valeurs des effets (notamment polarité, stack, charge), IDs médias, compatibilité test existant Boule de neige ; CI complète Foundation + quatre Chromium, puis checkpoint GREEN sur SHA vérifié, PR vers gh-pages et CI/Pages après fusion. Main et global-assets protégés, test Android auteur distinct.
+
+---
+
 ## 2026-10-31 — Amplificateur des effets reçus : négatifs, positifs ou les deux (moteur et navigateur validés sur branche)
 - Base gh-pages@489f90337db928b94f2d62e6df542ccf537c55e6 ; START checkpoint/lab-start-incoming-effect-amplifier-2026-10-31 ; branche work/lab-incoming-effect-amplifier-2026-10-31.
 - Contrat unique StatusEffectV1 kind incoming_effect_modifier : modifierPct signé et affectedPolarity detrimental/beneficial/both. Affecte la quantité de PV de tous dégâts (y compris DoT, fixes, zones, renvois) et tous soins (directs, périodiques, vol de vie), sans changer la Défense, les résistances, les immunités, les durées de statut ou la puissance des autres buffs/debuffs ; ce dernier aspect reste un autre contrat et ne doit pas être simulé.
