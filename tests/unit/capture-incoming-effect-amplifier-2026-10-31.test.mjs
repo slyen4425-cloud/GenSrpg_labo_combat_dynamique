@@ -16,7 +16,7 @@ function status(affectedPolarity,modifierPct=30,stacking="refresh"){
 const apply=(s,st)=>applyStatusEffectV1({state:s,targetActorId:"victim",sourceActorId:"caster",
  sourceSkillId:"freeze",status:st});
 const damage=s=>applyCombatDamageV1({state:s,sourceActorId:"caster",targetActorId:"victim",damage:100});
-const heal=(s,amount=100)=>applyCombatHealV1({state:s,targetActorId:"victim",amount});
+const heal=(s,amount=100,atMs=s.elapsedMs)=>applyCombatHealV1({state:s,targetActorId:"victim",amount,atMs});
 test("incoming amplifier is a native signed status with selectable negative positive or both",()=>{
  for(const affectedPolarity of ["detrimental","beneficial","both"]){
   const s=status(affectedPolarity);
@@ -42,11 +42,11 @@ test("positive target takes normal damage but 30% more healing",()=>{
  assert.equal(heal(s,100).state.fighters.victim.hp,230);
 });
 test("both affects damage and healing; stacked debuffs, expiration and signed reductions",()=>{
- let s=apply(state(100),status("both",30,"stack"));
+ let s=apply(state(200),status("both",30,"stack"));
  s=apply(s,status("both",30,"stack"));
  assert.equal(damage(s).appliedDamage,160);
- assert.equal(heal(s,100).applied,160);
- assert.equal(heal(s,100,1001).applied,100);
+ assert.equal(heal(apply(apply(state(100),status("both",30,"stack")),status("both",30,"stack")),100).applied,160);
+ assert.equal(heal(apply(state(100),status("both",30)),100,1001).applied,100);
  let reverse=apply(state(100),status("both",-25));
  assert.equal(damage(reverse).appliedDamage,75);
  assert.equal(heal(reverse,100).applied,75);
