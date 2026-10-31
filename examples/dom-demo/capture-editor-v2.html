@@ -1434,7 +1434,7 @@
             <label>Augmentation de taille par activation (%)
               <input type="number" min="0" max="100" step="1" data-skill-charged-size-pct value="10"></label>
           </div>
-          <p class="note">« Préparation » (section Timing) est le délai minimum avant le tir. « Intervalle max entre deux activations » est le temps dont tu disposes pour appuyer encore une fois : le projectile reste retenu pendant cette fenêtre, même si la préparation est plus courte. Chaque nouvelle activation prolonge cette fenêtre ; à la charge maximale, le tir part dès que la préparation minimum est terminée. Le cast grossit à chaque appui et le projectile conserve le même multiplicateur. L'énergie et le cooldown ne sont payés qu'une seule fois. N'ajoute pas un deuxième effet Dégâts classique.</p>
+          <p class="note">« Préparation » (section Timing) est le temps de préparation de CHAQUE charge. Une pression trop rapide ne donne aucun bonus. Après chaque préparation, une fenêtre s'ouvre pour appuyer de nouveau. Chaque activation validée consomme l'énergie définie dans Timing : sans énergie, aucune nouvelle charge. Un seul projectile part après la dernière préparation et l'expiration de la fenêtre, ou dès que la préparation de la charge maximale est finie. Le cast grossit après chaque activation valide ; le cooldown et le nombre d'utilisations ne sont engagés qu'au premier appui.</p>
         </section>
 
         <section class="skill-contact-hold" data-skill-contact-hold aria-label="Maintien au contact">
