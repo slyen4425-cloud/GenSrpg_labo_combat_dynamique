@@ -322,7 +322,8 @@ export async function mountCombatTest({
 
   const combatEntityOverlay=createCombatEntityOverlayV1({fighterContainers,
     // The same author-selected visual asset resolver used by the 2v2 scene.
-    assetForId:assetId=>presentationAssets?.visualAsset?.(assetId)??null
+    assetForId:assetId=>presentationAssets?.visualAsset?.(assetId)
+      ??presentationAssets?.asset?.(assetId)??null
   });
 
   const hpRefs = {
