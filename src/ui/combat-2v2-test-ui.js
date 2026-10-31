@@ -1,4 +1,4 @@
-import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-spatial-20261031-wall-state-20261031";
+import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031";
 import { captureReactionRechargeClockV1 } from "./capture-reaction-recharge-clock-v1.js";
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
@@ -13,14 +13,14 @@ import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-def
 import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createEmbeddedCombatLifecycleV1 } from "./embedded-combat-lifecycle-v1.js";
-import { createCombatRuntime } from "../core/combat/combat-runtime.js?v=wall-state-20261031";
+import { createCombatRuntime } from "../core/combat/combat-runtime.js?v=wall-state-20261031-wall-geometry-20261031";
 import { createBattleActorAiController, CAPTURE_AI_TACTICS_V1_DEFAULT } from "../core/combat/battle-actor-ai-controller.js";
 import {
   isSkillTargetAllowed,
   targetRelation
 } from "../core/combat/targeting.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031";
-import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-native-bidirectional-20261028-wall-spatial-20261031-wall-state-20261031";
+import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-native-bidirectional-20261028-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031";
 import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
