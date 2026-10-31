@@ -386,6 +386,13 @@ export function createCombatResolutionPresenter({
     });
   }
 
+  // Presentation-only update on the one native cast. Combat Runtime owns
+  // charge count and scale; this does not create another animation/timer.
+  function presentChargeAmplification({actorSlot = "player", sizeMultiplier}) {
+    if (disposed || !Number.isFinite(sizeMultiplier) || sizeMultiplier <= 0) return false;
+    return preparationFxByActor.get(actorSlot)?.setSizeMultiplier?.(sizeMultiplier) ?? false;
+  }
+
   function presentRelease({
     action,
     actorSlot = "player",
@@ -820,6 +827,7 @@ export function createCombatResolutionPresenter({
   return Object.freeze({
     present,
     presentPreparation,
+    presentChargeAmplification,
     presentRosterArrival,
      presentRelease,
     presentOutcome,
