@@ -1,0 +1,93 @@
+{
+  "packId": "pack:capture:ice-ground-spike-fog-2026-10-31",
+  "sourceArchive": "pack_sprites_glace_suite_36_frames.zip",
+  "sourceArchiveSha256": "33f5dce30a96a52990f53e652b21ec0c840f1ab4917c756d2ccfc01135dc1506",
+  "sourceGitBlob": "7fdd00d190a9c8fd142b465ba7c1befd39602ae6",
+  "frameSize": [
+    512,
+    512
+  ],
+  "sequences": {
+    "zone_gelee": {
+      "id": "pack:capture:sprite-zone-gelee-01",
+      "frameSize": [
+        512,
+        512
+      ],
+      "frameCount": 12,
+      "frameMs": 100,
+      "playbackMode": "once",
+      "holdLastFrame": true,
+      "atlas": "zone_gelee/zone_gelee_atlas_12f.webp",
+      "preview": "zone_gelee/preview_zone_gelee.gif",
+      "sourceFrames": [
+        "zone_gelee/png/zone_gelee_01.png",
+        "zone_gelee/png/zone_gelee_02.png",
+        "zone_gelee/png/zone_gelee_03.png",
+        "zone_gelee/png/zone_gelee_04.png",
+        "zone_gelee/png/zone_gelee_05.png",
+        "zone_gelee/png/zone_gelee_06.png",
+        "zone_gelee/png/zone_gelee_07.png",
+        "zone_gelee/png/zone_gelee_08.png",
+        "zone_gelee/png/zone_gelee_09.png",
+        "zone_gelee/png/zone_gelee_10.png",
+        "zone_gelee/png/zone_gelee_11.png",
+        "zone_gelee/png/zone_gelee_12.png"
+      ]
+    },
+    "pointe_glace": {
+      "id": "pack:capture:sprite-pointe-glace-01",
+      "frameSize": [
+        512,
+        512
+      ],
+      "frameCount": 12,
+      "frameMs": 90,
+      "playbackMode": "once",
+      "holdLastFrame": true,
+      "atlas": "pointe_glace/pointe_glace_atlas_12f.webp",
+      "preview": "pointe_glace/preview_pointe_glace.gif",
+      "sourceFrames": [
+        "pointe_glace/png/pointe_glace_01.png",
+        "pointe_glace/png/pointe_glace_02.png",
+        "pointe_glace/png/pointe_glace_03.png",
+        "pointe_glace/png/pointe_glace_04.png",
+        "pointe_glace/png/pointe_glace_05.png",
+        "pointe_glace/png/pointe_glace_06.png",
+        "pointe_glace/png/pointe_glace_07.png",
+        "pointe_glace/png/pointe_glace_08.png",
+        "pointe_glace/png/pointe_glace_09.png",
+        "pointe_glace/png/pointe_glace_10.png",
+        "pointe_glace/png/pointe_glace_11.png",
+        "pointe_glace/png/pointe_glace_12.png"
+      ]
+    },
+    "brouillard_gelant": {
+      "id": "pack:capture:sprite-brouillard-gelant-01",
+      "frameSize": [
+        512,
+        512
+      ],
+      "frameCount": 12,
+      "frameMs": 100,
+      "playbackMode": "once",
+      "holdLastFrame": true,
+      "atlas": "brouillard_gelant/brouillard_gelant_atlas_12f.webp",
+      "preview": "brouillard_gelant/preview_brouillard_gelant.gif",
+      "sourceFrames": [
+        "brouillard_gelant/png/brouillard_gelant_01.png",
+        "brouillard_gelant/png/brouillard_gelant_02.png",
+        "brouillard_gelant/png/brouillard_gelant_03.png",
+        "brouillard_gelant/png/brouillard_gelant_04.png",
+        "brouillard_gelant/png/brouillard_gelant_05.png",
+        "brouillard_gelant/png/brouillard_gelant_06.png",
+        "brouillard_gelant/png/brouillard_gelant_07.png",
+        "brouillard_gelant/png/brouillard_gelant_08.png",
+        "brouillard_gelant/png/brouillard_gelant_09.png",
+        "brouillard_gelant/png/brouillard_gelant_10.png",
+        "brouillard_gelant/png/brouillard_gelant_11.png",
+        "brouillard_gelant/png/brouillard_gelant_12.png"
+      ]
+    }
+  }
+}

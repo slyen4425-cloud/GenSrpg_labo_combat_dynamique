@@ -1,0 +1,25 @@
+{
+  "name": "pointe_glace",
+  "frames": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "transparent": true,
+  "recommendedFrameDurationMs": 90,
+  "files": [
+    "png/pointe_glace_01.png",
+    "png/pointe_glace_02.png",
+    "png/pointe_glace_03.png",
+    "png/pointe_glace_04.png",
+    "png/pointe_glace_05.png",
+    "png/pointe_glace_06.png",
+    "png/pointe_glace_07.png",
+    "png/pointe_glace_08.png",
+    "png/pointe_glace_09.png",
+    "png/pointe_glace_10.png",
+    "png/pointe_glace_11.png",
+    "png/pointe_glace_12.png"
+  ],
+  "sourceSheet": "a_clean_digital_graphic_asset_sheet_with_a_transpa_2_batch_2.png"
+}
