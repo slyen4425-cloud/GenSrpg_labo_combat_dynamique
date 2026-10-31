@@ -6,6 +6,8 @@
 - **Portée** : ajouter exclusivement les 4 vrais `assets/library/capture/icons/skills/icon_skill_{poing_de_givre,brouillard_givrant,armure_de_glace,barriere_de_glace}_01.webp`, 4 IDs de catalogue `pack:capture:icon-skill-{poing-de-givre,brouillard-givrant,armure-de-glace,barriere-de-glace}-01`, provenance, sentinelle TDD, documentation et cette déclaration.
 - **Protections** : toutes les autres ressources, notamment les sprites de glace déjà en chantier, compétences `configuredSkills`, loadouts et créatures, `main`, `gh-pages`, moteur et éditeur. Pas de double autorité, aucun auto-binding sans ID fiable de capacité ; les 4 icônes sont sélectionnables dans le sélecteur alimenté directement par le catalogue officiel.
 - **Protocole** : RED prouvé avant inclusion médias, comparaison octet par octet des vraies images, RIFF/WEBP 128px, SHA256+SHA Git, vérification des 4 IDs uniques et de la résolution catalogue→ressource, CI complète, revue du diff, checkpoint GREEN sur SHA testé, fast-forward protégé de `global-assets` après contrôle de concurrence. Test visuel mobile utilisateur distinct.
+- **Correctif sentinelle inter-lots (cause racine)** : la CI du commit d'import `2108bfada5d84659bed07520e375cd6058f13529` a détecté un `assert.equal(cat.assets.length,287)` dans `tests/unit/capture-ice-ground-spike-fog-2026-10-31.test.mjs`, qui interdisait tout nouvel asset légitime. Remplacé sur la branche par un contrôle exact des trois IDs du pack `glace_suite/` et par ses vérifications médias existantes, sans modifier les trois sprites. Ce fichier de test est exceptionnellement ajouté au périmètre du lot pour débloquer les évolutions du catalogue unique, sans masquer de régression.
+
 
 ---
 
