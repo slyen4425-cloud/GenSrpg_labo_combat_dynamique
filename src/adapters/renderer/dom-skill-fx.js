@@ -2065,6 +2065,7 @@ export function createDomSkillFxRenderer({
     amount = null,
     expandingWave = null,
     projectilePower = 0,
+    sizeMultiplier = 1,
     durationMs,
     delayMs = 0
   }) {
@@ -3075,7 +3076,7 @@ export function createDomSkillFxRenderer({
     const deltaY = to.y - from.y;
     const travelDisplayScale = Math.min(
       8,
-      Math.max(0.25, Number(travelVisual?.displayScale) || 1)
+      Math.max(0.25, (Number(travelVisual?.displayScale) || 1) * (Number.isFinite(sizeMultiplier) && sizeMultiplier > 0 ? sizeMultiplier : 1))
     );
     // The only depth authority is this projectile visual. Its shell remains
     // centered on the exact same trajectory/contact core; the scaling is
