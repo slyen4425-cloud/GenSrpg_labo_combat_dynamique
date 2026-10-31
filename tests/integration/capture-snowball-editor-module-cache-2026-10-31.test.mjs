@@ -19,5 +19,6 @@ test("snowball catalog v46 busts every public editor entry and dynamic preview m
  }
  const owner=read("src/assets/global-visual-library.js");
  assert.match(owner,/const BRANCH = "global-assets"/);
- assert.match(owner,/2026-10-31-v46-boule-de-neige-3x12/);
+ const rev=owner.match(/const REVISION = "2026-\d\d-\d\d-v(\d+)-[a-z0-9-]+"/);
+ assert.ok(rev&&Number(rev[1])>=46,"Snowball assets require canonical catalog v46 or newer");
 });
