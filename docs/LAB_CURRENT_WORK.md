@@ -1,3 +1,12 @@
+## 2026-10-31 — Boule de neige : raccorder les trois médias officiels à l'éditeur public
+- Médias livrés sur `global-assets@0a778fd3cbc270e4a6234a5c2ca3eef19a2709e4` par PR #161, CI du lot de médias réussie et 3 atlas WebP 6144×512 physiquement présents ; catalogue canonique 284 ressources dont 3 nouveaux IDs `pack:capture:sprite-boule-de-neige-{cast,projectile,impact}-01`.
+- Base éditeur `gh-pages@fd547799d318ce168a4a7ff00c445db7d6a5160a`, START `checkpoint/lab-start-snowball-editor-catalog-2026-10-31`, branche `work/lab-snowball-editor-catalog-2026-10-31`.
+- Révision anti-cache sur le propriétaire unique `src/assets/global-visual-library.js` : `2026-10-31-v46-boule-de-neige-3x12`, pour les médias **et** le catalogue ; aucun doublon ni référence directe de capacité.
+- TDD : `tests/unit/capture-snowball-global-library-2026-10-31.test.mjs` sentinelle de l'URL publiée ; `tests/browser/capture-snowball-asset-editor-smoke.mjs` vérifie vrai catalogue `global-assets`, 3 sélecteurs de capacités, 3 WebP réellement chargés en Chromium à 6144×512.
+- Publication en attente : suite complète cinq jobs, PR vers `gh-pages`, CI au SHA fusionné et Pages; contrôler le sélecteur dans l'URL officielle; ne pas promouvoir `main`.
+
+---
+
 ## 2026-10-31 — Charged Attack : fenêtre de réactivation indépendante de la préparation (CI en attente)
 - Base `gh-pages@c44082a9a8e88acfef7f0957526481cc9de4d30d`, START `checkpoint/lab-start-charged-release-window-2026-10-31`, travail `work/lab-charged-release-window-2026-10-31` ; TDD RED `772531901f4a87adc5d6a7b2d63dc2a19d9c8a4c`.
 - Cause racine : contrat exigeait fenêtre <= préparation et Runtime lançait le projectile à la fin de la préparation. Nouveau modèle : préparation = plancher, fenêtre glissante depuis la dernière activation, tir au maximum de charges dès que préparation minimum accomplie. Le cast reste visible et grossit sans nouveau timer ; le projectile hérite du même scale. Formulaire et bestiaire clarifiés, aucune deuxième source de vérité.

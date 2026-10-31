@@ -31,7 +31,8 @@ test("public editor reloads the actual Capture skill manifest and global assets 
   assert.match(media,/const BRANCH = "global-assets"/);
   const revision = media.match(/const REVISION = "([^"]+)"/)?.[1];
   assert.ok(revision && revision !== "2026-10-28-v44-projectile-native-bidirectional", "media cache must advance with published catalog");
-  assert.match(revision,/^2026-10-29-v45-liane-epineuse-rayon$/, "new liane atlas needs the released catalog revision");
+  const version = revision.match(/^2026-\d\d-\d\d-v(\d+)-[a-z0-9-]+$/);
+  assert.ok(version && Number(version[1]) >= 45, "Liane media requires catalog revision v45 or newer");
 });
 
 test("every active Capture Showcase skill path and author id is unique", async () => {
