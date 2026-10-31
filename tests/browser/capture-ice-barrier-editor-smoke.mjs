@@ -68,7 +68,10 @@ document.addEventListener("DOMContentLoaded",()=>{
    stat.value="glace";ratio.value="1.5";
    const kinds=[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
      .filter(x=>x.checked).map(x=>x.value);
-   if(ratio.value!=="1.5"||kinds.length!==3||!row.querySelector("[data-skill-barrier-sprite-asset-id]"))
+   if(ratio.value!=="1.5"||kinds.length!==3||!row.querySelector("[data-skill-barrier-sprite-asset-id]")||
+     !row.querySelector("[data-skill-barrier-visual-scale]")||
+     !row.querySelector("[data-skill-barrier-offset-forward]")||
+     !row.querySelector("[data-skill-barrier-offset-up]"))
      throw Error("wall HP and sprite options not editable");
    document.body.dataset.barrierEditorSmoke="pass:real-editor:glace:1.5:intercepts";
   }catch(e){document.body.dataset.barrierEditorSmoke="error:"+e.message;}

@@ -7,7 +7,8 @@ import {applyCombatDamageV1} from "../../src/core/combat/combat-damage-applicati
 import {normalizeSkillEffectV1} from "../../src/contracts/skill-effect-v1.js";
 
 const effect={kind:"summon_entity",targetScope:"self",entityKind:"barrier",statId:"glace",hpPerStatPoint:2.5,
- interceptKinds:["projectile","beam","contact"],spriteAssetId:"pack:capture:fx-ice-wall-author"};
+ interceptKinds:["projectile","beam","contact"],spriteAssetId:"pack:capture:fx-ice-wall-author",
+ visualScale:1.4,offsetForwardPx:25,offsetUpPx:6};
 function active(){const state=createCombatState({fighters:[
  {id:"hero",maxHp:100,maxEnergy:10,initialEnergy:10,statValuesById:{glace:80}},
  {id:"enemy",maxHp:100,maxEnergy:10,initialEnergy:10}
@@ -21,6 +22,10 @@ test("real wall contract retains editable HP coefficient and an authored sprite 
  assert.equal(wall.maxHp,200);
  assert.equal(wall.spriteAssetId,effect.spriteAssetId);
  assert.equal(wall.hpPerStatPoint,2.5);
+ assert.equal(wall.visualScale,1.4);
+ assert.equal(wall.offsetForwardPx,25);
+ assert.throws(()=>normalizeSkillEffectV1({...effect,visualScale:5}),/visualScale/);
+ assert.throws(()=>normalizeSkillEffectV1({...effect,offsetUpPx:300}),/offsetUpPx/);
 });
 
 test("actual swept projectile intersects persistent wall rectangle before body",()=>{

@@ -52,7 +52,12 @@ export function createCombatEntityOverlayV1({fighterContainers,teamOf=null,asset
       const existing=nodes.get(entity.id);
       const item=existing??newNode(entity,hosts[entity.protectedActorId]);
       const side=frontSideFor(entity.protectedActorId);
-      item.node.style.left=side==="right"?"110%":"-10%";
+      item.node.style.left=side==="right"
+        ? "calc(110% + "+entity.offsetForwardPx+"px)"
+        : "calc(-10% - "+entity.offsetForwardPx+"px)";
+      item.node.style.bottom="calc(10% + "+entity.offsetUpPx+"px)";
+      item.sprite.style.width=Math.round(70*(entity.visualScale??1))+"px";
+      item.sprite.style.height=Math.round(92*(entity.visualScale??1))+"px";
       item.label.textContent="🧊 Mur "+formatHp(entity);
       item.node.setAttribute("role","status");
       item.node.setAttribute("aria-label","Mur destructible, "+entity.hp+" PV sur "+entity.maxHp);

@@ -110,7 +110,8 @@ const FIELDS_BY_KIND = Object.freeze({
     "effects"
   ]),
   summon_entity: new Set([
-    ...COMMON_FIELDS, "entityKind", "statId", "hpPerStatPoint", "interceptKinds", "spriteAssetId"
+    ...COMMON_FIELDS, "entityKind", "statId", "hpPerStatPoint", "interceptKinds", "spriteAssetId",
+    "visualScale", "offsetForwardPx", "offsetUpPx"
   ])
 });
 
@@ -312,6 +313,18 @@ export function normalizeSkillEffectV1(input) {
     }
     output.interceptKinds=Object.freeze([...kinds]);
     if(value.spriteAssetId != null) output.spriteAssetId=requiredString(value.spriteAssetId,"summon_entity.spriteAssetId");
+    if(value.visualScale != null){
+      const scale=positiveNumber(value.visualScale,"summon_entity.visualScale");
+      if(scale<0.25||scale>4)throw new RangeError("summon_entity.visualScale must be 0.25 to 4");
+      output.visualScale=scale;
+    }
+    for(const name of ["offsetForwardPx","offsetUpPx"]){
+      if(value[name]==null)continue;
+      const displacement=Number(value[name]);
+      if(!Number.isFinite(displacement)||Math.abs(displacement)>150)
+        throw new RangeError("summon_entity."+name+" must be between -150 and 150");
+      output[name]=displacement;
+    }
   }
 
   if (kind === "apply_marker") {

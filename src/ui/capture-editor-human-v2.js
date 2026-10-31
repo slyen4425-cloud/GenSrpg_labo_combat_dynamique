@@ -6329,6 +6329,9 @@ function appendHumanSkillEffectV1(
    if(effect?.spriteAssetId && ![...barrierSprite.options].some(o=>o.value===effect.spriteAssetId))
      createOption(barrierSprite,effect.spriteAssetId,effect.spriteAssetId);
    barrierSprite.value=effect?.spriteAssetId??"";
+   const wallScale=tacticalNumberInputV1("skillBarrierVisualScale",effect?.visualScale??1,{min:0.25,max:4,step:0.05});
+   const wallForward=tacticalNumberInputV1("skillBarrierOffsetForward",effect?.offsetForwardPx??0,{min:-150,max:150,step:1});
+   const wallUp=tacticalNumberInputV1("skillBarrierOffsetUp",effect?.offsetUpPx??0,{min:-150,max:150,step:1});
    const barrierKinds=document.createElement("fieldset");
   barrierKinds.className="editor-choice-group";
   const barrierLegend=document.createElement("legend");
@@ -6344,7 +6347,10 @@ function appendHumanSkillEffectV1(
   barrierHelp.textContent="Mur défensif réel avec ses propres PV : les points de la statistique sélectionnée du lanceur sont multipliés par le coefficient. 0 point = aucune invocation. Le mur absorbe les attaques choisies avant les PV de la créature, puis disparaît quand il est détruit. Il n'intercepte ni DoT ni dégâts de zone. Un nouveau mur de la même compétence remplace l'ancien.";
   barrierBox.append(tacticalFieldV1("Statistique de l'invocation",barrierStatId),
     tacticalFieldV1("PV par point de stat (coefficient libre)",barrierHpRatio),
-     tacticalFieldV1("Sprite du mur (bibliothèque de zones)",barrierSprite),barrierKinds,barrierHelp);
+     tacticalFieldV1("Sprite du mur (bibliothèque de zones)",barrierSprite),
+     tacticalFieldV1("Taille visuelle et collision du mur",wallScale),
+     tacticalFieldV1("Avancée vers l’ennemi (px)",wallForward),
+     tacticalFieldV1("Décalage en hauteur (px)",wallUp),barrierKinds,barrierHelp);
 
   const scheduledBox =
     document.createElement("div");
@@ -6839,6 +6845,9 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
       kind,targetScope,entityKind:"barrier",
       statId:row.querySelector("[data-skill-barrier-stat-id]").value,
       hpPerStatPoint:Number(row.querySelector("[data-skill-barrier-hp-ratio]").value),
+      visualScale:Number(row.querySelector("[data-skill-barrier-visual-scale]").value),
+      offsetForwardPx:Number(row.querySelector("[data-skill-barrier-offset-forward]").value),
+      offsetUpPx:Number(row.querySelector("[data-skill-barrier-offset-up]").value),
       ...(row.querySelector("[data-skill-barrier-sprite-asset-id]")?.value
         ? {spriteAssetId:row.querySelector("[data-skill-barrier-sprite-asset-id]").value}:{}),
       interceptKinds:[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
