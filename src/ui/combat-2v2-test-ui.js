@@ -738,7 +738,10 @@ export async function mountCoop2v2Test({
     ])
   );
 
-  const combatEntityOverlay=createCombatEntityOverlayV1({fighterContainers});
+  const combatEntityOverlay=createCombatEntityOverlayV1({fighterContainers,
+    teamOf:actorId=>format.teamOf(actorId),
+    assetForId:assetId=>presentationAssets?.asset?.(assetId)??null
+  });
 
   const motionAnchors = Object.fromEntries(
     format.actors.map((actor) => [
@@ -888,6 +891,9 @@ export async function mountCoop2v2Test({
     },
     targetCollisionModelFor(slotId) {
       return visuals.getCollisionModelFor(slotId);
+    },
+    barrierCollisionRectsFor({sourceActorId,targetActorId}) {
+      return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId});
     },
     waveTargetsFor(fromSlot) {
       // This is only a list of visible opponent models. The Runtime
