@@ -19,6 +19,9 @@ import {
 import {
   projectCapturePlannedLoadoutsToCombatV1
 } from "./capture-planned-loadout-to-combat-v1.js";
+import {
+  normalizeCaptureTrainerDifficultyPolicyV1
+} from "./capture-trainer-difficulty-policy-v1.js";
 
 const INPUT_FIELDS = new Set([
   "battleSetup",
@@ -28,6 +31,7 @@ const INPUT_FIELDS = new Set([
   "statRegistry",
   "statValues",
   "progressionRules",
+  "trainerDifficultyPolicy",
   "metadata"
 ]);
 
@@ -360,6 +364,16 @@ export function exportCaptureEditorDraftsToCombatExportV3(input) {
 
   return normalizeCaptureCombatExportV1({
     ...exportedV2,
+    // The Lab author may attach its reviewed policy, but no default exists.
+    // Never synthesize a policy from the World trainer's selected level.
+    battle: {
+      ...exportedV2.battle,
+      ...(value.trainerDifficultyPolicy === undefined ? {} : {
+        trainerDifficultyPolicy: normalizeCaptureTrainerDifficultyPolicyV1(
+          value.trainerDifficultyPolicy
+        )
+      })
+    },
     creatures,
     presentation: {
       ...exportedV2.presentation,

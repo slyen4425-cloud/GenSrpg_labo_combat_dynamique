@@ -348,6 +348,14 @@ export function normalizeCaptureCombatExportV1(input) {
       gameOptions: normalizeCaptureGameOptionsV1(
         battleRaw.gameOptions
       )
+    }),
+    // Transport only an explicitly supplied author policy. The single Lab
+    // policy owner validates its gameplay semantics in the native adapter.
+    ...(battleRaw.trainerDifficultyPolicy === undefined ? {} : {
+      trainerDifficultyPolicy: jsonCompatible(
+        objectValue(battleRaw.trainerDifficultyPolicy, "battle.trainerDifficultyPolicy"),
+        "battle.trainerDifficultyPolicy"
+      )
     })
   });
 

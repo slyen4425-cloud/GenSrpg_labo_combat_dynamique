@@ -12,6 +12,7 @@ import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-def
 import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createEmbeddedCombatLifecycleV1 } from "./embedded-combat-lifecycle-v1.js";
+import { projectCaptureEmbeddedTrainerSourceV1 } from "../adapters/input/capture/capture-trainer-difficulty-policy-v1.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js";
 import { createBattleActorAiController, CAPTURE_AI_TACTICS_V1_DEFAULT } from "../core/combat/battle-actor-ai-controller.js";
 import {
@@ -361,6 +362,7 @@ function normalizedInjectedCombatSource(input) {
     skillIdsByActor,
     roster: input.roster ?? null,
     fighterConfigs: input.fighterConfigs ?? null,
+    trainerDifficultyPolicy: input.trainerDifficultyPolicy ?? null,
     skillIdsByCreature: input.skillIdsByCreature ?? null,
     ...(input.recallPreparationMs === undefined ? {} : { recallPreparationMs: input.recallPreparationMs }),
     gameOptions:
@@ -592,7 +594,7 @@ export async function mountCoop2v2Test({
     skills,
     skillsById,
     skillIdsByActor,
-    roster: rosterDefinition, fighterConfigs, skillIdsByCreature,
+    roster: rosterDefinition, fighterConfigs, skillIdsByCreature, trainerDifficultyPolicy,
     skillSpeedMultiplier, recallPreparationMs, gameOptions
   } = await loadCoop2v2CombatSource({
     nativeCombatSource,
@@ -613,8 +615,19 @@ export async function mountCoop2v2Test({
         initialHpByActor[fighter.id] > fighter.maxHp))) {
     throw new TypeError("Embedded native Combat HP snapshot must match every active Lab fighter");
   }
-  const nativeFighters = initialHpByActor === null ? fighters :
+  const savedHpFighters = initialHpByActor === null ? fighters :
     fighters.map(fighter => ({...fighter,initialHp:initialHpByActor[fighter.id]}));
+  // Only the signed Lab source can provide the actual trainer modifiers.
+  // World may select the authored level but cannot supply a gameplay policy.
+  const nativeTrainerSource = projectCaptureEmbeddedTrainerSourceV1({
+    battleFormat: format,
+    fighters: savedHpFighters,
+    roster: rosterDefinition,
+    fighterConfigs,
+    trainerDifficultyPolicy,
+    embeddedBattle
+  });
+  const nativeFighters = nativeTrainerSource.fighters;
   const session = createCombatSession({
     distance: "medium",
     battleFormat: format,
@@ -1894,13 +1907,13 @@ export async function mountCoop2v2Test({
     });
   }
 
-  if (rosterDefinition && Object.keys(rosterDefinition.teams ?? {}).length > 0) {
+  if (nativeTrainerSource.roster && Object.keys(nativeTrainerSource.roster.teams ?? {}).length > 0) {
     const commands = configureCombatRecallCommandsV1(
       Object.fromEntries(await Promise.all(Object.entries(DATA_URLS.commands).map(async ([kind, url]) => [kind, await fetchJson(url, fetchImpl)]))),
       recallPreparationMs
     );
     rosterController = createCaptureCombatRosterControllerV1({
-      session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals,
+      session, rosterDefinition:nativeTrainerSource.roster, fighterConfigs:nativeTrainerSource.fighterConfigs, skillIdsByCreature, visuals,
       battleFormat:format,
       recallCooldownMs: gameOptions.recallCooldownMs,
       beforeActorChanged: actorId => presenter.cancelActionPresentation(actorId),

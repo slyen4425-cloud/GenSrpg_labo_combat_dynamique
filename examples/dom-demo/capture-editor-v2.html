@@ -837,6 +837,42 @@
     </section>
 
     <section class="editor-panel" data-editor-panel="combat" hidden>
+      <article class="card" data-trainer-difficulty-author>
+        <div class="card-title">
+          <span class="step">PNJ</span>
+          <div>
+            <h2>Difficulté des dresseurs — politique auteur</h2>
+            <p>Configure quatre niveaux distincts. Ces coefficients viennent exclusivement du Labo Combat, jamais du World. Aucun coefficient n'est présaisi.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <fieldset data-trainer-difficulty-row><legend>Niveau 1</legend>
+            <label>Multiplicateur de PV adverses<input type="number" min="0.01" step="0.01" data-trainer-difficulty-hp aria-label="Multiplicateur PV dresseur niveau 1"></label>
+            <label>Bonus de dégâts sortants (%)<input type="number" min="0" step="0.1" data-trainer-difficulty-damage aria-label="Bonus dégâts dresseur niveau 1"></label>
+          </fieldset>
+          <fieldset data-trainer-difficulty-row><legend>Niveau 2</legend>
+            <label>Multiplicateur de PV adverses<input type="number" min="0.01" step="0.01" data-trainer-difficulty-hp aria-label="Multiplicateur PV dresseur niveau 2"></label>
+            <label>Bonus de dégâts sortants (%)<input type="number" min="0" step="0.1" data-trainer-difficulty-damage aria-label="Bonus dégâts dresseur niveau 2"></label>
+          </fieldset>
+          <fieldset data-trainer-difficulty-row><legend>Niveau 3</legend>
+            <label>Multiplicateur de PV adverses<input type="number" min="0.01" step="0.01" data-trainer-difficulty-hp aria-label="Multiplicateur PV dresseur niveau 3"></label>
+            <label>Bonus de dégâts sortants (%)<input type="number" min="0" step="0.1" data-trainer-difficulty-damage aria-label="Bonus dégâts dresseur niveau 3"></label>
+          </fieldset>
+          <fieldset data-trainer-difficulty-row><legend>Niveau 4</legend>
+            <label>Multiplicateur de PV adverses<input type="number" min="0.01" step="0.01" data-trainer-difficulty-hp aria-label="Multiplicateur PV dresseur niveau 4"></label>
+            <label>Bonus de dégâts sortants (%)<input type="number" min="0" step="0.1" data-trainer-difficulty-damage aria-label="Bonus dégâts dresseur niveau 4"></label>
+          </fieldset>
+        </div>
+        <div class="skill-save-actions">
+          <button type="button" class="primary-action" data-trainer-difficulty-export>Exporter la politique PNJ JSON</button>
+        </div>
+        <div class="grid two">
+          <label>Importer une politique PNJ validée<input type="file" accept=".json,application/json" data-trainer-difficulty-import></label>
+          <label class="switch-line"><input type="checkbox" data-trainer-difficulty-replace><span>Remplacer explicitement les valeurs en cours</span></label>
+        </div>
+        <p class="note" data-trainer-difficulty-status data-tone="info" role="status"></p>
+        <p class="note">Cet export versionné est distinct de l'export de créatures/compétences. Il ne devient une règle du jeu qu'après revue, intégration au catalogue auteur signé, publication sur Combat main et transfert contrôlé dans GenSrpg. Aucun changement automatique des sauvegardes.</p>
+      </article>
       <article class="card hero-card">
         <div class="card-title">
           <span class="step">1</span>

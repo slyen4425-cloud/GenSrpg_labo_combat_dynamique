@@ -1,9 +1,56 @@
-## 2026-10-30 — Deep-link des onglets auteur pour GenSrpg (NON PROMU)
+## 2026-10-31 — Réconciliation des deux responsabilités auteur sur PR #155 (NON GREEN produit)
+- Combat main a intégré la PR #156 deep-link natif au SHA `81ad362a401b7b2eb9faa811528aced9f2d6384a` après 5/5 jobs GREEN sur la branche source; CI post-fusion à vérifier. La PR #155 récupère **par merge à deux parents** cette version de l'unique éditeur, conserve les quatre niveaux PNJ auteur et la réserve native sans copier un éditeur ni basculer GenSrpg sur une branche de développement.
+- START réconciliation : `checkpoint/lab-trainer-before-native-deeplink-reconcile-2026-10-31` = `447382e579a60672ddb1404dcd83813723c07c79`. Les tests deep-link Chromium et contrat unitaire sont repris de main. Pas de modification des coefficients auteur, catalogue ou sauvegardes. CI complète à vérifier sur ce merge; PR #155 reste DRAFT jusqu'à GREEN et validation.
+
+---
+
+## 2026-10-30 — Deep-link des onglets auteur pour GenSrpg (PROMU MAIN 31/10)
 - **BASE immuable**: Combat main@248f718ec924106d16999d59e5dc8310f8450180 ; checkpoint `checkpoint/lab-start-author-tab-deeplink-2026-10-30` ; branche `work/lab-author-tab-deeplink-2026-10-30`.
 - **Périmètre**: entrée officielle `examples/dom-demo/capture-editor-v2.js`, propriétaire UI `src/ui/capture-editor-human-v2.js`, test `tests/unit/capture-editor-initial-tab-owner-20261030.test.mjs`, ce journal. Les règles de combat, les transferts, sauvegardes, assets, autres modes, GenSrpg et main restent intacts.
 - **Cause racine**: GenSrpg consomme les pages auteur épinglées avec `?tab=creature/skills/combat`, mais le propriétaire UI réinitialisait toujours `setTab(root,"creature")`; un raccourci vers les capacités/règles présentait donc le mauvais onglet.
 - **Correction propriétaire**: l'entrée native passe `initialTab` issu de l'URL au seul `mountCaptureEditorHumanV2`, qui refuse toute valeur hors `creature|skills|combat|music`, et sélectionne directement le panneau. Aucun clic simulé GenSrpg ni nouvel éditeur.
 - **Test**: TDD RED `9306ff468d89d944743a7188a796b5f5dce50e9a` puis GREEN. Le nouveau smoke de vrai éditeur `tests/browser/capture-author-tab-deeplink-smoke.mjs` vérifie les onglets actifs Creature/Skills/Combat, non un simple lien. [Laboratory CI #41106896500](https://github.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/actions/runs/41106896500) : **5/5 jobs SUCCESS** sur SHA `b7e34c9278352c7a5f2097aa2cbb828d06fb1927` après relance ciblée d'un timeout Chromium Firestorm (autre run sur même SHA avait réussi ce job ; l'unique échec autre job fut un contrôle préexistant de réaction Moussados, réussi sur le run final). Le jalon deep-link auteur peut obtenir un checkpoint GREEN exact après CI du présent journal. **Produit GenSrpg toujours NON GREEN** ; réconciliation future avec l'éditeur PNJ #155, aucune fusion main sans autorisation de promotion, GenSrpg strictement main-only.
+
+
+---
+
+## 2026-10-31 — Difficulté native PNJ étendue à la réserve (PR #155, NON PROMUE)
+- TDD RED sur `9da6cf2efad7a068b53326d6b075fb6ddbbd2249`, Laboratory CI #41153629249 : la Fondation échoue sur le nouveau contrat de projection de réserve; les navigateurs déjà terminés restent verts. Deux tests ajoutés exigent la projection de chaque membre PNJ lors du vrai switch natif et le maintien strict de l'espèce partagée du joueur.
+- Correction à la SOURCE Combat Lab : la même politique auteur 1–4 projette les combattants adverses actifs et les configurations de chaque membre de réserve PNJ par **slot et membre**, sans modifier les configurations par espèce partagées avec le joueur. Le moteur de rappel/KO existant consomme ces configurations, sans second moteur ni modification des sauvegardes. L'entrée sauvage conserve les références natives originales. Les identités et configurations de réserve invalides sont refusées.
+- Tests unitaires et sentinelle de montage de la vraie CombatSession à certifier sur le SHA final. Aucune valeur auteur préremplie, aucun transfert signé des 99 espèces, aucune fusion main, aucun déploiement GenSrpg/Pages/Android. Produit toujours NON GREEN.
+
+---
+
+## 2026-10-30 — Transport du contrat PNJ auteur jusqu'à l'adaptateur natif (PR #155, NON PROMU)
+- **TDD RED** : nouveau test `tests/unit/capture-trainer-difficulty-export-v1.test.mjs` au commit `6475b9bae7d0d4ed7106cf30225031454e6a7171`, exigeant une politique explicite, versionnée, conservée à travers le contrat export et l'adaptateur natif, sans coefficient implicite. CI RED à certifier sur le run associé.
+- **Correction source** : `capture-combat-export-v1.js` conserve facultativement `battle.trainerDifficultyPolicy` en JSON ; `capture-editor-exporter-v3.js` accepte uniquement un champ auteur explicite et le valide par le propriétaire Lab `normalizeCaptureTrainerDifficultyPolicyV1` ; `capture-export-adapter-stack-v1.js` vérifie et expose cette même politique pour la vraie CombatSession. Les exports sauvages sans politique restent inchangés. Aucun coefficient, media, profil ou règle World inventé.
+- **Périmètre** : même START `checkpoint/lab-start-trainer-difficulty-native-policy-2026-10-30`, même branche PR #155. Aucune publication main/Pages ; aucun changement GenSrpg, Android ou Exploration. Cette brique rend le transport **possible**, mais aucun auteur n'a encore fourni ni publié les quatre valeurs ; GenSrpg #219 ne transmet pas encore le niveau au montage et refuse toujours les PNJ sans politique signée. Les 99 espèces non transférées restent un blocage indépendant.
+- **Validation requise** : CI Fondation + quatre navigateurs sur le SHA final, preuve export → adaptateur → vraie CombatSession, revue des champs auteur et transport GenSrpg signé, TDD de PV adverses projetés et conservation des sauvegardes, puis Playwright du vrai index et Android. Ne pas déclarer GREEN produit ni fusionner cette PR.
+
+---
+
+## 2026-10-30 — Auteur des quatre niveaux PNJ dans le VRAI éditeur Combat (PR #155, NON PROMU)
+- Périmètre identique à la branche de politique native, sans seconde interface GenSrpg ni valeur de difficulté fictive. Dans l'onglet Combat de `capture-editor-v2.html`, quatre lignes vierges sont configurables et vérifiées par le contrat natif `capture-trainer-difficulty-policy-v1`.
+- Export JSON versionné explicite, import soumis au remplacement consenti ; aucun coefficient présaisi, aucune écriture de sauvegarde, aucun `window` global, aucun second moteur. L'export PNJ est **distinct** de l'export créatures/compétences : il doit encore être revu, ajouté au catalogue source auteur signé, transporté vers GenSrpg et testé dans la vraie CombatSession avant promotion.
+- Test TDD ciblé : champs vierges refusés, quatre niveaux distincts, valeurs invalides refusées, import sans consentement refusé, UI de l'éditeur réel vérifiée. Fondation et quatre navigateurs à contrôler sur le commit exact. Les 99 espèces sans transferts et le parcours Android restent RED.
+
+---
+
+## 2026-10-30 — Projection difficulté PNJ branchée à l'unique CombatSession (PR #155, NON GREEN produit)
+- Suite du même START et de la même branche #155, sans toucher main ni aux valeurs auteur. La politique de difficulté ne provient jamais de l'événement World : seul le `nativeCombatSource.trainerDifficultyPolicy` du paquet Combat Lab signé peut fournir les quatre valeurs, World ne transmet que le niveau 1–4.
+- Dans `mountCoop2v2Test`, le snapshot PV est d'abord contrôlé, puis la projection native par acteur est appliquée aux combattants passés à l'unique `createCombatSession`. Le mode sauvage sans difficulté est inchangé, une politique manquante ferme l'entrée, aucune règle fictive publiée. La réserve PNJ reste explicitement refusée.
+- Tests ajoutés : même espèce joueur/adversaire, PV et dégâts mesurés dans une vraie CombatSession, absence de politique auteur refusée, source World non autorisée à fournir ses propres coefficients, garde-fou de câblage réel. CI Fondation + navigateurs exigée sur HEAD final ; aucune fusion/activation avant preuve.
+- RESTE BLOQUANT : l'éditeur auteur ne publie pas encore une politique validée et l'export Capture ne transporte pas encore ce champ ; GenSrpg doit fournir le niveau typé à embeddedBattle et recertifier le parcours vrai index. Les 99 espèces sans transfert officiel restent RED. Ce lot est un raccord natif conditionnel, PAS un dresseur jouable.
+
+---
+
+## 2026-10-30 — Contrat natif de difficulté PNJ, préparation sans promotion (NON GREEN produit)
+- BASE Combat main@248f718ec924106d16999d59e5dc8310f8450180 ; START checkpoint/lab-start-trainer-difficulty-native-policy-2026-10-30 ; branche work/lab-trainer-difficulty-native-policy-2026-10-30. Chantier distinct côté propriétaire Combat Lab, sans changement GenSrpg ni Exploration.
+- Périmètre : un adaptateur de projection des paramètres natifs par acteur, un test de contrat et ce journal. Protéger CombatSession, les éditeurs, les fiches auteur, les sauvegardes, les catalogues et les autres modes.
+- Cause démontrée : GenSrpg #219 ne transmet pas trainerDifficulty à buildEncounter ; la simple présence d'une liste trainerDifficultyLevels ne modifie ni PV ni dégâts. Ne jamais déclarer un dresseur jouable sur cette base.
+- Critère de ce jalon : politique entièrement renseignée par l'auteur (4 niveaux distincts sans valeurs par défaut), projection du seul acteur adverse dans le vrai format de combattant Lab, joueur intact même pour une espèce identique, refus de la réserve non prise en charge, TDD RED→GREEN, CI Fondation + navigateurs. Aucun choix de coefficients publié dans les données, aucune activation du runtime, aucune promotion main sans CI et validation.
+- TDD local RED (module absent), puis 4/4 unitaires GREEN. Une sentinelle supplémentaire vérifie la projection dans la vraie `createCombatSession`, à certifier en CI sur le SHA de branche ; aucune politique n'est encore active en jeu.
+- Après ce jalon : brancher le contrat au constructeur natif de rencontre et à l'éditeur auteur, appliquer également la politique à chaque membre de réserve, prouver le changement effectif en CombatSession et en Playwright, puis repinner GenSrpg. Les 99 espèces manquantes restent bloquantes séparément.
 
 ---
 
