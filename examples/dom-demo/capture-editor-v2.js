@@ -189,7 +189,9 @@ try {
   editor = mountCaptureEditorHumanV2({
     root,
     creatorVisualAssets,
-    creatorAudioAssets
+    creatorAudioAssets,
+    // First-class native author deep link; never installed by the consumer.
+    initialTab: new URLSearchParams(globalThis.location?.search ?? "").get("tab") ?? "creature"
   });
 } catch (error) {
   editorStatus.textContent =
