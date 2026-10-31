@@ -20,7 +20,14 @@ test("three 12-frame ice sprites are unique, ready and in only canonical global-
  assert.equal(cat.counts.assets,cat.assets.length);
  assert.equal(cat.counts.sprites,cat.assets.filter(x=>x.assetType==="sprite").length);
  assert.equal(new Set(cat.assets.map(x=>x.id)).size,cat.assets.length);
- assert.equal(cat.assets.length,287);
+ const actualIcePackIds=cat.assets
+  .filter(a=>a.resource?.file?.startsWith("capture/sprites/skills/glace_suite/"))
+  .map(a=>a.id).sort();
+ assert.deepEqual(actualIcePackIds,[
+  "pack:capture:sprite-brouillard-gelant-01",
+  "pack:capture:sprite-pointe-glace-01",
+  "pack:capture:sprite-zone-gelee-01"
+ ]);
  const rootDir="assets/library/capture/sprites/skills/glace_suite/";
  const sequence=JSON.parse(read(rootDir+"sequence.json"));
  assert.equal(sequence.sourceArchiveSha256,"33f5dce30a96a52990f53e652b21ec0c840f1ab4917c756d2ccfc01135dc1506");
