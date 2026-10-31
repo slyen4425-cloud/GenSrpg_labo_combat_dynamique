@@ -660,6 +660,11 @@ export async function mountCombatTest({
         }
 
         closeMenus();
+        if (result.outcome === "charged") {
+          setStatus(`${skill.name} : ${result.chargeCount}/${result.maxCharges} activations — projectile renforcé.`,"accent");
+          render();
+          return;
+        }
 
         const reactionDecision =
           opponentAi?.maybeReactToActiveAction();
@@ -879,10 +884,12 @@ export async function mountCombatTest({
           })
         : { ok: false };
 
+      const canCharge = runtime.previewChargedSkillRetrigger({
+        actorId:"player",skillId:skill.id
+      }).ok;
       button.disabled =
         koTransitionPending ||
-        runtime.hasActiveActionFor("player") ||
-        !preview.ok;
+        (!canCharge && (runtime.hasActiveActionFor("player") || !preview.ok));
     }
 
     const itemRef = commandRefs.get("item");
