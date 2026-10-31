@@ -60,7 +60,7 @@ test("barrier intercepts actual incoming contact/beam/projectile damage, is dest
  assert.equal(hit.state.fighters.hero.hp,85);
  assert.equal(hit.destroyedEntityId!=null,true);
 });
-test("wall cannot intercept internal DoT, zone, self-hit or allied source; no wall when ice is zero",()=>{
+test("wall does not intercept DoT or self-hit; no wall when glace is zero",()=>{
  const withWall=summon().state;
  let hit=applyCombatDamageV1({state:withWall,sourceActorId:"enemy",targetActorId:"hero",damage:10,incomingKind:"dot"});
  assert.equal(hit.appliedDamage,10);assert.equal(hit.state.combatEntities[0].hp,80);
@@ -74,4 +74,16 @@ test("bestiary explains per-point math explicitly, while other skill effects rem
  const desc=describeCaptureSkillV1(wallSkill()).sentences.join(" ");
  assert.match(desc,/glace/i);assert.match(desc,/PV/i);assert.match(desc,/1/);
  assert.equal(normalizeSkillEffectV1({kind:"heal",targetScope:"self",amount:9}).amount,9);
+});
+
+test("official Mur de glace sample is a single canonically imported skill",async()=>{
+ const {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1}=await import("../../src/catalogs/capture-showcase-skill-presets-v1.js");
+ const {importCaptureTransferJsonV1}=await import("../../src/adapters/input/capture/capture-entity-transfer-v1.js");
+ const path="data/capture/showcase/mur_de_glace.capture-skill-transfer-v1.json";
+ assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===path).length,1);
+ const result=importCaptureTransferJsonV1(readFileSync(new URL("../../"+path,import.meta.url),"utf8"));
+ assert.equal(result.kind,"skill");assert.equal(result.value.draft.id,"mur_de_glace");
+ const effect=result.value.draft.definition.effects[0];
+ assert.equal(effect.kind,"summon_entity");assert.equal(effect.statId,"glace");
+ assert.equal(effect.hpPerStatPoint,1);
 });

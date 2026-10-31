@@ -12628,6 +12628,9 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     listen(effectsHost, "change", event => {
       const row = event.target?.closest?.("[data-skill-effect-row]");
       if (!row) return;
+      if (event.target.matches("[data-skill-effect-kind]") && event.target.value === "summon_entity") {
+        row.querySelector("[data-skill-effect-scope]").value="self";
+      }
       if (event.target.matches("[data-skill-effect-kind]") && event.target.value === "force_reserve_switch") {
         // Author-only convenience: an enemy bench target must never be an
         // active target. These are the existing canonical location controls.
