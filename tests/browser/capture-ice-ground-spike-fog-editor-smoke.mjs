@@ -67,7 +67,7 @@ try{
  const exit=await Promise.race([once(child,"close").then(([code])=>code),
   new Promise((_,reject)=>{const timer=setTimeout(()=>{child.kill("SIGKILL");reject(Error("iceVfx browser probe timed out"));},65000);timer.unref();child.once("close",()=>clearTimeout(timer));})]);
  const html=Buffer.concat(out).toString("utf8");
- const result=html.match(/data-iceVfx-assets-smoke="([^"]*)"/)?.[1]??"missing";
+ const result=html.match(/data-ice-vfx-assets-smoke="([^"]*)"/)?.[1]??"missing";
  if(exit!==0||!result.startsWith("pass:"))
   throw Error("Ice VFX real Chromium browser: "+result+"; "+Buffer.concat(errors).toString("utf8").slice(-600));
  console.log("Ice VFX editor browser: "+result);
