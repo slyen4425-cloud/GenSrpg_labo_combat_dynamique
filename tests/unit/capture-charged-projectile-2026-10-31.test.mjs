@@ -41,7 +41,7 @@ test("same button press charges ONE paid projectile, bounded by tap interval and
   c.advance(1000);
   assert.equal(runtime.startSkill({actorId:"maraileron",targetId:"braisombre",skill:original}).chargeCount,3);
   assert.equal(runtime.startSkill({actorId:"maraileron",targetId:"braisombre",skill:original}).outcome,"charge_max");
-  assert.equal(session.snapshot().fighters.maraileron.energy,energy-2,"each accepted amplification has its own energy payment");
+  assert.equal(session.snapshot().fighters.maraileron.energy,energy-2*original.energyCost,"each accepted amplification has its own energy payment");
   assert.equal(session.snapshot().fighters.maraileron.skillUses?.[original.id]??1,1);
   c.advance(1000);
   assert.equal(released.length,1);
