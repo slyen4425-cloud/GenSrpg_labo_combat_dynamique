@@ -304,7 +304,11 @@ export function createCombatRuntime({
       chargeProgress,
       phase,
       released: record.released,
-      reaction
+      reaction,
+      ...(record.action.chargeState ? {
+        chargeCount:record.action.chargeState.chargeCount,
+        chargeMax:record.action.chargeState.maxCharges
+      } : {})
     });
   }
 
