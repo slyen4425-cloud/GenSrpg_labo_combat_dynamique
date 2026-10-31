@@ -1788,7 +1788,7 @@ export async function mountCoop2v2Test({
         Boolean(progress.actionId) &&
         progress.phase === "preparation";
       if (preparing && progress.chargeCount) {
-        presenter.presentChargeAmplification({actorSlot:progress.actorId,sizeMultiplier:progress.sizeMultiplier});
+        presenter.presentChargeAmplification({actorSlot:progress.actorId,sizeMultiplier:progress.sizeMultiplier,durationMs:progress.preparationMs});
       }
 
       setCharge(progress.actorId, {
