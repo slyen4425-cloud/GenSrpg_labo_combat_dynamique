@@ -1,0 +1,70 @@
+{
+  "schema": "capture-ice-four-skill-icons-v1",
+  "date": "2026-10-31",
+  "owner": "global-assets",
+  "branch": "work/lab-ice-skill-four-icons-2026-10-31",
+  "sourceType": "Four original generated and pictured ice ability icons, fourth recovered from original conversation image bytes (not regenerated)",
+  "format": {
+    "master": "PNG RGB 512x512",
+    "runtime": "WebP RGB lossy 128x128",
+    "method": "Pillow LANCZOS, WebP quality84 method6"
+  },
+  "sourceOriginalSize": [
+    1254,
+    1254
+  ],
+  "runtimeDimensions": [
+    128,
+    128
+  ],
+  "assets": [
+    {
+      "slug": "poing_de_givre",
+      "label": "Poing de givre",
+      "assetId": "pack:capture:icon-skill-poing-de-givre-01",
+      "sourceFile": "poing_de_glace_déchaîné.png",
+      "originalSha256": "8b7a38329b350292ef2219648ed442799f5c06afff14f431d8f52bd5a835596e",
+      "master512Sha256": "10e04688b6061fc39db2b9ba3eee05fcad8725e0857ab7ddc43dc94220d1f1a8",
+      "resource": "capture/icons/skills/icon_skill_poing_de_givre_01.webp",
+      "webpSha256": "e0d5368c9b0ffa855e9c9ba5b4075247794205cca3fc403ddc800ced19ab3426",
+      "bytes": 9450,
+      "gitBlobSHA": "3be036d05c42ea7ecfa3770ccf2fa97a770f1fe2"
+    },
+    {
+      "slug": "brouillard_givrant",
+      "label": "Brouillard givrant",
+      "assetId": "pack:capture:icon-skill-brouillard-givrant-01",
+      "sourceFile": "icône_de_blizzard_de_givre.png",
+      "originalSha256": "68b088c82fc2735d086beedbaa4cb7300613eb1297f5119faca6f0f9c57910ec",
+      "master512Sha256": "f0ff4b74663cb18012c270c364123367a08b55bfcedea603e743d11e9ec3e01c",
+      "resource": "capture/icons/skills/icon_skill_brouillard_givrant_01.webp",
+      "webpSha256": "0ac02e7fa3e43d1d68f47993496c9d1eb98927396c25350abb67cd1325057f2d",
+      "bytes": 8606,
+      "gitBlobSHA": "78617136bcb3fb8677d27e97126c9676dd5b30c8"
+    },
+    {
+      "slug": "armure_de_glace",
+      "label": "Armure de glace",
+      "assetId": "pack:capture:icon-skill-armure-de-glace-01",
+      "sourceFile": "armure_de_glace_cristalline_enchantée.png",
+      "originalSha256": "efd798ee3dccac181f15009a264d4721224446e8c7fcac57ebb83aff5d05f90d",
+      "master512Sha256": "378e9b9639ebda466593a8ab71860593fca996736244e401e1164eb6aa514870",
+      "resource": "capture/icons/skills/icon_skill_armure_de_glace_01.webp",
+      "webpSha256": "2d57602163ce7c66d7d82e193817a2db65f08c143596a2b6749ac4358a083d5f",
+      "bytes": 9778,
+      "gitBlobSHA": "1feda3f4194dd5e6ea118e577ae4738469139cb2"
+    },
+    {
+      "slug": "barriere_de_glace",
+      "label": "Barrière de glace",
+      "assetId": "pack:capture:icon-skill-barriere-de-glace-01",
+      "sourceFile": "imagegen.png (quatrième génération)",
+      "originalSha256": "98077d45aa395bd91b0a2ae894dfcf28f8de946ddfbd32c444ee4068f6ff42bb",
+      "master512Sha256": "d71655edcc719cbb775477b4ce75d676a23e4cf9720bdfeae39cb0c32b530872",
+      "resource": "capture/icons/skills/icon_skill_barriere_de_glace_01.webp",
+      "webpSha256": "b98969839a0b9c635bbe96faf8d023543befde45db4a8341a8e40b0ed5055f6c",
+      "bytes": 9470,
+      "gitBlobSHA": "ee950af8bb3a576e978ae2082b844f9b162abaca"
+    }
+  ]
+}
