@@ -1,3 +1,13 @@
+## 2026-10-31 — Glace suite : éditeur public pour 3 effets nouveaux
+- Médias publiés sur `global-assets@b3764c86cbcc3472dcf4dba2bf67c28f7e8d1a17` (PR #170, 3 sprites supplémentaires, 287 ressources). ZIP source original sha256 `33f5dce30a96a52990f53e652b21ec0c840f1ab4917c756d2ccfc01135dc1506`.
+- Base éditeur `gh-pages@73da6929a388892737f3bc1a65cd99a6d70e9fef`, checkpoint START `checkpoint/lab-start-ice-ground-spike-fog-editor-2026-10-31`, branche `work/lab-ice-ground-spike-fog-editor-2026-10-31`.
+- Révision du propriétaire unique `src/assets/global-visual-library.js` à v47 ; bust du cache de six modules de l'éditeur et previews conservant les versions précédentes.
+- Test TDD RED : `tests/integration/capture-ice-vfx-editor-publish-2026-10-31.test.mjs` ; CI avec test Chromium réel `tests/browser/capture-ice-ground-spike-fog-editor-smoke.mjs` (catalogue unique, choix dans deux menus Zone et Impact, 3 images WebP 6144x512 réellement chargées). Sentinelle Boule de neige rendue compatible avec futures révisions sans retirer ses exigences.
+- Aucune nouvelle mécanique ni compétence attribuée, uniquement trois sprites disponibles pour configuration ; ne pas modifier `main`.
+- Restant : CI 5 jobs GREEN, fusion PR gh-pages, Pages GREEN au SHA, vérification des 3 sélecteurs et du cache mobile.
+
+---
+
 ## 2026-10-31 — Import auteur Glace : Poing givrant + Boule de neige r2 (CI pré-clôture 5/5)
 - Base gh-pages@5b22b78c0537c6fb83e09a034456e080e2193c3c ; START `checkpoint/lab-start-ice-author-import-2026-10-31` ; WORK `work/lab-ice-author-import-2026-10-31` ; main/global-assets intacts.
 - Deux fichiers utilisateur importés à l'octet sous leurs IDs d'origine : Poing givrant nouvel ID, Boule de neige r2 remplace la version active. Source-exports archivent les deux fichiers sans devenir des autorités. Un catalogue unique (`CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1`) ; cache ESM mobile révisé, aucune capacité tierce modifiée.
