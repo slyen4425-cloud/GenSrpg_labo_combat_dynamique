@@ -32,6 +32,30 @@ function activeShield(instance, atMs) {
   );
 }
 
+// The one incoming HP quantity modifier, evaluated against the target's active statuses.
+// Detrimental = damage; beneficial = healing. Never adjusts shields, defense,
+// immunity, energy, or arbitrary status durations/strength.
+export function incomingEffectMultiplierV1({state,targetActorId,affectedPolarity,atMs=state.elapsedMs}) {
+  const target=fighterOf(state,targetActorId);
+  const pct=(target.statusEffects ?? []).reduce((sum,instance)=>{
+    const d=instance.definition;
+    if (d.kind !== "incoming_effect_modifier" ||
+        !["both",affectedPolarity].includes(d.affectedPolarity) ||
+        !isStatusEffectRuntimeInstanceActiveV1(instance,atMs)) return sum;
+    return sum+d.modifierPct*instance.stacks;
+  },0);
+  return Math.max(0,1+pct/100);
+}
+
+export function applyCombatHealV1({state,targetActorId,amount,atMs=state.elapsedMs}) {
+  const before=fighterOf(state,targetActorId).hp;
+  const requested=Math.max(0,Number(amount)||0);
+  const adjusted=Math.round(requested*incomingEffectMultiplierV1({state,targetActorId,affectedPolarity:"beneficial",atMs})*100)/100;
+  const nextState=withFighterHp(state,targetActorId,before+adjusted);
+  const after=fighterOf(nextState,targetActorId).hp;
+  return Object.freeze({state:nextState,requested,adjusted,applied:after-before,hpBefore:before,hpAfter:after});
+}
+
 export function applyCombatDamageV1({
   state,
   sourceActorId,
@@ -42,10 +66,8 @@ export function applyCombatDamageV1({
   hitsIntangible = false,
   incomingKind = "other"
 }) {
-  const requested = Math.max(
-    0,
-    Number(damage) || 0
-  );
+  const requested = Math.round(Math.max(0,Number(damage)||0) *
+    incomingEffectMultiplierV1({state,targetActorId,affectedPolarity:"detrimental",atMs}) * 100) / 100;
   const time = Number(atMs);
   if (!Number.isFinite(time) || time < 0) {
     throw new RangeError(

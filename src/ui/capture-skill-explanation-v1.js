@@ -50,6 +50,7 @@ function simpleChange(s){
     return modifier(stat(s.statId),(s.modifierMode==="percent"?s.percent:s.deltaPoints),unit);
   }
   if(s.kind==="outgoing_damage_modifier")return modifier("les dégâts infligés",s.modifierPct,"%");
+  if(s.kind==="incoming_effect_modifier")return modifier(s.affectedPolarity==="beneficial"?"les soins reçus":s.affectedPolarity==="both"?"les dégâts et soins reçus":"les dégâts reçus",s.modifierPct,"%");
   if(s.kind==="energy_regen_modifier")return modifier("la régénération d'énergie",s.modifierPct,"%");
   if(s.kind==="skill_cooldown_rate_modifier")return modifier("la vitesse de recharge des compétences",s.modifierPct,"%");
   if(s.kind==="approach_time_modifier")return modifier("le temps d'approche",s.modifierPct,"%");

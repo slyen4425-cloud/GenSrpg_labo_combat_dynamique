@@ -247,6 +247,12 @@ function effectLinesFor(
   elapsedMs
 ) {
   switch (definition.kind) {
+    case "incoming_effect_modifier": {
+      const scope=definition.affectedPolarity==="both"?"Dégâts et soins reçus":
+        definition.affectedPolarity==="beneficial"?"Soins reçus":"Dégâts reçus";
+      return Object.freeze([variationLine(scope,finiteNumber(definition.modifierPct)*
+        Math.max(1,finiteNumber(instance.stacks,1))) ?? scope+" inchangés"]);
+    }
     case "outgoing_damage_modifier": {
       const modifierPct =
         finiteNumber(definition.modifierPct) *

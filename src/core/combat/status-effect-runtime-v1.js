@@ -1,12 +1,12 @@
 import {
-  withFighterHp,
   withFighterStatusEffects
 } from "./combat-state.js";
 import {
   computeCombatDamageV1
 } from "./combat-damage-v1.js";
 import {
-  applyCombatDamageV1
+  applyCombatDamageV1,
+  applyCombatHealV1
 } from "./combat-damage-application-v1.js";
 import {
   createStatusEffectRuntimeInstanceV1,
@@ -557,25 +557,8 @@ function updateRemainingActionEnds(
   );
 }
 
-function applyHotTick({
-  state,
-  targetActorId,
-  amount
-}) {
-  const before =
-    fighterOf(state, targetActorId).hp;
-  const nextState = withFighterHp(
-    state,
-    targetActorId,
-    before + amount
-  );
-  const after =
-    fighterOf(nextState, targetActorId).hp;
-
-  return Object.freeze({
-    state: nextState,
-    applied: after - before
-  });
+function applyHotTick({state,targetActorId,amount,atMs=state.elapsedMs}) {
+  return applyCombatHealV1({state,targetActorId,amount,atMs});
 }
 
 function applyDotTick({
@@ -686,7 +669,8 @@ export function advanceStatusEffectsOnOwnerActionEndV1({
       nextState = applyHotTick({
         state: nextState,
         targetActorId: fighterId,
-        amount
+        amount,
+        atMs: nextState.elapsedMs
       }).state;
     }
 
@@ -800,7 +784,8 @@ export function advanceStatusEffectsV1({
               nextState = applyHotTick({
                 state: nextState,
                 targetActorId: instance.sourceActorId,
-                amount: requested
+                amount: requested,
+                atMs: tickAt
               }).state;
             }
           }
@@ -808,7 +793,8 @@ export function advanceStatusEffectsV1({
           nextState = applyHotTick({
             state: nextState,
             targetActorId: fighterId,
-            amount
+            amount,
+            atMs: tickAt
           }).state;
         }
 
