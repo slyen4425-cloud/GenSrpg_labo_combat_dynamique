@@ -1,0 +1,28 @@
+{
+  "name": "Boule de neige",
+  "effect": "cast",
+  "frames": 12,
+  "frameOrder": "01-12",
+  "frameSize": [
+    512,
+    512
+  ],
+  "transparent": true,
+  "recommendedFrameDurationMs": 100,
+  "recommendedLoop": false,
+  "files": [
+    "webp/boule_de_neige_cast_01.webp",
+    "webp/boule_de_neige_cast_02.webp",
+    "webp/boule_de_neige_cast_03.webp",
+    "webp/boule_de_neige_cast_04.webp",
+    "webp/boule_de_neige_cast_05.webp",
+    "webp/boule_de_neige_cast_06.webp",
+    "webp/boule_de_neige_cast_07.webp",
+    "webp/boule_de_neige_cast_08.webp",
+    "webp/boule_de_neige_cast_09.webp",
+    "webp/boule_de_neige_cast_10.webp",
+    "webp/boule_de_neige_cast_11.webp",
+    "webp/boule_de_neige_cast_12.webp"
+  ],
+  "sourceSheet": "animation_de_boule_de_neige_magique_givrée.png"
+}

@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 281,
+    "assets": 284,
     "icons": 90,
-    "sprites": 167,
+    "sprites": 170,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
@@ -9565,6 +9565,124 @@
         "frameMs": 150,
         "playbackMode": "once",
         "headingRad": 0
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-boule-de-neige-cast-01",
+      "label": "Boule de neige — cast (Glace, 12f)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "capture",
+        "skill",
+        "ice",
+        "glace",
+        "snow",
+        "snowball",
+        "boule-de-neige",
+        "cast",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (author-approved visuals)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/boule_de_neige/cast/boule_de_neige_cast_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 100,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-boule-de-neige-projectile-01",
+      "label": "Boule de neige — projectile (Glace, 12f)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "capture",
+        "skill",
+        "ice",
+        "glace",
+        "snow",
+        "snowball",
+        "boule-de-neige",
+        "projectile",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (author-approved visuals)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/boule_de_neige/projectile/boule_de_neige_projectile_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 90,
+        "playbackMode": "loop",
+        "headingRad": 0
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-boule-de-neige-impact-01",
+      "label": "Boule de neige — impact (Glace, 12f)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "capture",
+        "skill",
+        "ice",
+        "glace",
+        "snow",
+        "snowball",
+        "boule-de-neige",
+        "impact",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (author-approved visuals)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/boule_de_neige/impact/boule_de_neige_impact_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 90,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [

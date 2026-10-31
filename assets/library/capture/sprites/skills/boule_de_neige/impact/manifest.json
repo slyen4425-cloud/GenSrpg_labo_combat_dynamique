@@ -1,0 +1,28 @@
+{
+  "name": "Boule de neige",
+  "effect": "impact",
+  "frames": 12,
+  "frameOrder": "01-12",
+  "frameSize": [
+    512,
+    512
+  ],
+  "transparent": true,
+  "recommendedFrameDurationMs": 90,
+  "recommendedLoop": false,
+  "files": [
+    "webp/boule_de_neige_impact_01.webp",
+    "webp/boule_de_neige_impact_02.webp",
+    "webp/boule_de_neige_impact_03.webp",
+    "webp/boule_de_neige_impact_04.webp",
+    "webp/boule_de_neige_impact_05.webp",
+    "webp/boule_de_neige_impact_06.webp",
+    "webp/boule_de_neige_impact_07.webp",
+    "webp/boule_de_neige_impact_08.webp",
+    "webp/boule_de_neige_impact_09.webp",
+    "webp/boule_de_neige_impact_10.webp",
+    "webp/boule_de_neige_impact_11.webp",
+    "webp/boule_de_neige_impact_12.webp"
+  ],
+  "sourceSheet": "explosion_glacée_en_12_images.png"
+}

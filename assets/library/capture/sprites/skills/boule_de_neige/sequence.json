@@ -1,0 +1,90 @@
+{
+  "packId": "pack:capture:boule-de-neige-2026-10-31",
+  "frameSize": [
+    512,
+    512
+  ],
+  "sourceArchive": "boule_de_neige_pack_complet_36_frames.zip",
+  "sourceArchiveSha256": "a00b6b8272fc2dd960088c6814c0c6d193f063608e2183ab8ec94b6bc01d5abb",
+  "sourceGitBlob": "44b98ca229b569d3a64b63359fdad90f6b02e064",
+  "sequences": {
+    "cast": {
+      "id": "pack:capture:sprite-boule-de-neige-cast-01",
+      "frameCount": 12,
+      "frameSize": [
+        512,
+        512
+      ],
+      "frameMs": 100,
+      "playbackMode": "once",
+      "atlas": "cast/boule_de_neige_cast_atlas_12f.webp",
+      "preview": "cast/preview_boule_de_neige_cast.webp",
+      "sourceFrames": [
+        "cast/webp/boule_de_neige_cast_01.webp",
+        "cast/webp/boule_de_neige_cast_02.webp",
+        "cast/webp/boule_de_neige_cast_03.webp",
+        "cast/webp/boule_de_neige_cast_04.webp",
+        "cast/webp/boule_de_neige_cast_05.webp",
+        "cast/webp/boule_de_neige_cast_06.webp",
+        "cast/webp/boule_de_neige_cast_07.webp",
+        "cast/webp/boule_de_neige_cast_08.webp",
+        "cast/webp/boule_de_neige_cast_09.webp",
+        "cast/webp/boule_de_neige_cast_10.webp",
+        "cast/webp/boule_de_neige_cast_11.webp",
+        "cast/webp/boule_de_neige_cast_12.webp"
+      ]
+    },
+    "projectile": {
+      "id": "pack:capture:sprite-boule-de-neige-projectile-01",
+      "frameCount": 12,
+      "frameSize": [
+        512,
+        512
+      ],
+      "frameMs": 90,
+      "playbackMode": "loop",
+      "atlas": "projectile/boule_de_neige_projectile_atlas_12f.webp",
+      "preview": "projectile/preview_boule_de_neige_projectile.webp",
+      "sourceFrames": [
+        "projectile/webp/boule_de_neige_projectile_01.webp",
+        "projectile/webp/boule_de_neige_projectile_02.webp",
+        "projectile/webp/boule_de_neige_projectile_03.webp",
+        "projectile/webp/boule_de_neige_projectile_04.webp",
+        "projectile/webp/boule_de_neige_projectile_05.webp",
+        "projectile/webp/boule_de_neige_projectile_06.webp",
+        "projectile/webp/boule_de_neige_projectile_07.webp",
+        "projectile/webp/boule_de_neige_projectile_08.webp",
+        "projectile/webp/boule_de_neige_projectile_09.webp",
+        "projectile/webp/boule_de_neige_projectile_10.webp",
+        "projectile/webp/boule_de_neige_projectile_11.webp",
+        "projectile/webp/boule_de_neige_projectile_12.webp"
+      ]
+    },
+    "impact": {
+      "id": "pack:capture:sprite-boule-de-neige-impact-01",
+      "frameCount": 12,
+      "frameSize": [
+        512,
+        512
+      ],
+      "frameMs": 90,
+      "playbackMode": "once",
+      "atlas": "impact/boule_de_neige_impact_atlas_12f.webp",
+      "preview": "impact/preview_boule_de_neige_impact.webp",
+      "sourceFrames": [
+        "impact/webp/boule_de_neige_impact_01.webp",
+        "impact/webp/boule_de_neige_impact_02.webp",
+        "impact/webp/boule_de_neige_impact_03.webp",
+        "impact/webp/boule_de_neige_impact_04.webp",
+        "impact/webp/boule_de_neige_impact_05.webp",
+        "impact/webp/boule_de_neige_impact_06.webp",
+        "impact/webp/boule_de_neige_impact_07.webp",
+        "impact/webp/boule_de_neige_impact_08.webp",
+        "impact/webp/boule_de_neige_impact_09.webp",
+        "impact/webp/boule_de_neige_impact_10.webp",
+        "impact/webp/boule_de_neige_impact_11.webp",
+        "impact/webp/boule_de_neige_impact_12.webp"
+      ]
+    }
+  }
+}
