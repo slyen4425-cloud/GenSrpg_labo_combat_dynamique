@@ -30,7 +30,9 @@ export function interceptCombatBarrierV1({state,sourceActorId,targetActorId,dama
   const found=(state.combatEntities??[]).find(entry=>entry.kind==="barrier"&&entry.hp>0&&
     entry.protectedActorId===targetActorId&&entry.ownerActorId!==sourceActorId&&
     entry.interceptKinds.includes(incomingKind)&&
-    (incomingKind!=="projectile"||contactedEntityId===undefined||contactedEntityId===entry.id));
+    // A projectile is intercepted only after the visible sensor confirms the exact wall.
+    // Absence of evidence is not evidence of a collision at nominal impact time.
+    (incomingKind!=="projectile"||contactedEntityId===entry.id));
   if(!found)return empty;
   const absorbed=Math.min(found.hp,amount);
   const after=Math.round((found.hp-absorbed)*100)/100;

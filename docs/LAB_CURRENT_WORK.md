@@ -3,7 +3,8 @@
 - Objectif : supprimer la fausse interception d'un projectile ayant seulement atteint son délai d'impact ; seule la collision observée par le capteur spatial, signalée via l'ID exact de l'entité au Runtime/Combat Damage, doit absorber ses dégâts.
 - Autorités préservées : Render Adapter = observation géométrique uniquement, Runtime = validation contact, Combat Damage = absorption et reliquat, Combat State = PV. Aucun second moteur ni timer.
 - Fichiers autorisés : `src/core/combat/combat-entity-v1.js`, `tests/unit/capture-combat-barrier-spatial-visual-2026-10-31.test.mjs`, `tests/unit/capture-combat-entity-ice-barrier-2026-10-31.test.mjs`, `docs/LAB_CURRENT_WORK.md`, `docs/LAB_WALL_PROJECTILE_EVIDENCE_2026-10-31.md`. API, renderer et autres contrats protégés.
-- TDD RED : à impact nominal sans `contactedEntityId`, mur intact et combattant touché ; contact ID exact = interception, faux ID et `null` = aucune interception, tests d'overflow inchangés.
+- TDD RED confirmé : à impact nominal sans `contactedEntityId`, mur intact et combattant touché ; contact ID exact = interception, faux ID et `null` = aucune interception, tests d'overflow inchangés.
+- RED SHA `8d0e60f98d519009894ec5505144ec0083e35e00` ; run `41240589424`, Foundation FAIL attendu : 35 PV du mur absorbés alors que la collision n'était pas observée.
 - Fin : CI Foundation + 4 Chromium GREEN sur HEAD final, checkpoint GREEN et PR `gh-pages`, Pages GREEN. Ne pas toucher `main`, GenSrpg, Exploration et global-assets.
 - Hors périmètre : géométrie libre des rayons/mêlée, déplacement du mur, familiers, canalisation (issue #168).
 
