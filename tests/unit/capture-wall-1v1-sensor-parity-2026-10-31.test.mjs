@@ -13,6 +13,8 @@ test("1v1 must resolve wall sprites through the same canonical asset binding as 
   assert.ok(setup,"native overlay is mounted before 1v1 HUD");
   assert.match(setup[1],/assetForId:\s*assetId\s*=>\s*presentationAssets\?\.visualAsset\?\.\(assetId\)/,
     "1v1 overlay must resolve selected real wall asset via CaptureSkillPresentationAssetsV2");
+  assert.match(setup[1],/\?\?presentationAssets\?\.asset\?\.\(assetId\)/,
+    "standalone demo still resolves the same asset through its historical adapter method");
 });
 
 test("1v1 must pass visible native wall collision geometry to the existing projectile renderer",()=>{
