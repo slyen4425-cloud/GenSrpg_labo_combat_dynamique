@@ -20,7 +20,7 @@ function clock(){let t=0;let queue=[];let id=0;return {now:()=>t,
 test("charged Attack contract has one damage authority and only direct projectiles",()=>{
   assert.equal(skill().chargedAttack.baseDamage,5);
   assert.throws(()=>normalizeSkillDefinition({...skill(),form:"beam"}),/chargedAttack|projectile/i);
-  assert.throws(()=>normalizeSkillDefinition({...skill(),preparationMs:0}),/chargedAttack|preparation/i);
+  assert.equal(normalizeSkillDefinition({...skill(),preparationMs:0}).chargedAttack.reactivationWindowMs,450);
   assert.throws(()=>normalizeSkillDefinition({...skill(),effects:[{kind:"damage",targetScope:"target",amount:5}]}),/chargedAttack|damage/i);
   assert.throws(()=>normalizeSkillDefinition({...skill(),chargedAttack:{...skill().chargedAttack,maxCharges:0}}),/maxCharges/i);
 });
