@@ -1,10 +1,12 @@
-## 2026-10-31 — Entité de combat : mur destructible basé sur Glace (EN COURS)
-- Départ `gh-pages@df4c9f8d7da63f7b3f2d94e770d7d7f1e363e570` ; START `checkpoint/lab-start-combat-ice-barrier-2026-10-31` ; WORK `work/lab-combat-ice-barrier-2026-10-31`.
-- Issue #167 ; V1 entité défensive, hors Roster ; HP basés sur la statistique officielle `glace` du lanceur. Un seul propriétaire HP (Combat Damage), simulation d'interception contact/rayon/projectile, débordement après destruction. Zéro Glace = pas de PV, pas de mur.
-- RED sentinelle `76295d24195ffc76a921c41ba3d71c3909b8d3e8`. Contrat, simulation, rendu HP 1v1/2v2, réglages éditeur et exemple officiel ajoutés ; CI complète à confirmer. **Ne pas déclarer GREEN avant CI, preuve moteur + navigateur et publication**. main/global-assets/GenSrpg/Exploration intacts.
+## 2026-10-31 — Entité de combat : Mur de glace V1 (technique validée, publication à clôturer)
+- Base `gh-pages@df4c9f8d7da63f7b3f2d94e770d7d7f1e363e570`; START `checkpoint/lab-start-combat-ice-barrier-2026-10-31`; WORK `work/lab-combat-ice-barrier-2026-10-31`. Issue #167.
+- Contrat unique `SkillEffectV1/summon_entity`, propriétaire `Combat State.combatEntities`, dégâts via `Combat Damage Application` ; la stat officielle `glace` du lanceur détermine les PV. Interception des formes choisies, HP distincts, overflow réel, suppression à 0. Aucune confusion avec shield ou roster.
+- Editeur natif, catalogue officiel `mur_de_glace`, bestiaire, affichage réel 1v1/2v2 avec HP. Aucun asset falsifié ni doublon. La collision spatiale libre, les familiers actifs et leur IA restent hors jalon.
+- TDD sentinelle depuis `76295d24195ffc76a921c41ba3d71c3909b8d3e8` ; tests du chemin complet `CombatSession.startSkill -> completeSkill -> Combat Damage` ajoutés avant validation. Test-fixture de collision pour self-cast corrigé ; aucune modification du moteur pour le masquer.
+- CI `41226833119` au code `4980df65de9d9036b409c46ca21aec9f24e6b218` : Foundation + 4 Chromium **5/5 SUCCESS**. Smoke réel `capture-ice-barrier-editor-smoke.mjs` (éditeur Glace et coefficient, 80→55 PV). Checkpoint GREEN sur SHA final de documentation soumis à revalidation de la CI, puis fusion uniquement sur gh-pages et Pages ; Android utilisateur différé.
+- Main, global-assets, GenSrpg, Exploration non modifiés. Rapport : `docs/LAB_ICE_BARRIER_2026-10-31.md`. Suite familiers issue #167, canalisation issue #168.
 
 ---
-
 ## 2026-10-31 — Charge des effets tactiques V1 (CI intégrale GREEN, publication en cours)
 - Départ gh-pages@73da6929a388892737f3bc1a65cd99a6d70e9fef ; START checkpoint/lab-start-charged-effects-2026-10-31 ; WORK work/lab-charged-effects-2026-10-31. Test RED 4e5301fcdfaf8e1a3ac46effee8c052995beca92.
 - Propriétaires SkillDefinition / Combat Runtime / Combat Session / ActionResolver / Human Editor / Bestiaire. Contrat chargedEffects distinct du chargedAttack original. Amplifie la puissance des soins, dégâts et statuts numériques à chaque activation, sans modifier durées ni contourner immunités ; pas de second moteur.

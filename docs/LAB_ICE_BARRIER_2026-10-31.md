@@ -21,3 +21,11 @@
 - Test `tests/unit/capture-combat-entity-ice-barrier-2026-10-31.test.mjs` : contrat, Glace 80 → 80 PV, mur unique, absence à 0, 30 dégâts interceptés, 65 suivants → 50 mur et 15 créature, DoT/self conservés, bestiaire et import du preset.
 - Test Chromium réel `tests/browser/capture-ice-barrier-editor-smoke.mjs` : auteur Glace et coefficient dans l'éditeur, rendu de 80 PV puis 55 après vraie application de 25 dégâts par Combat Damage.
 - CI Foundation + 4 navigateurs, puis checkpoint GREEN final et PR gh-pages. Test physique smartphone différé à la demande utilisateur.
+
+## Résultats de validation du code
+- Implantation Combat State / Combat Damage / contrats / catalogue et éditeur sur la branche dédiée.
+- CI `41226517243` sur `a34ee01d7ac6301cd8ec05a9d236df83a1bd224c` : **5/5 SUCCESS**, avec vérification Chromium de l'édition mur et du HUD réel 80→55 PV.
+- CI `41226707762` sur `412dc6883b257f4e245a3d5c4b26ab28000c9818` : **5/5 SUCCESS**, preset ajouté au catalogue.
+- CI `41226833119` sur `4980df65de9d9036b409c46ca21aec9f24e6b218` : **5/5 SUCCESS**, ajout du vrai parcours CombatSession self-cast (pas de mur avant la résolution) et protection via Combat Damage.
+- Preuve finale requise : CI 5/5 sur le dernier commit de documentation avant checkpoint GREEN et PR, puis CI/Pages au SHA de fusion.
+- Rendu sur smartphone physique non validé par l'utilisateur ; art final, collisions spatiales et familiers hors périmètre de ce jalon.
