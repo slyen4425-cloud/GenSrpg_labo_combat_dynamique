@@ -28,7 +28,7 @@
       "approachMode": "none",
       "energyCost": 1,
       "preparationMs": 800,
-      "travelMs": 0,
+      "travelMs": 1100,
       "recoveryMs": 0,
       "cooldownMs": 0,
       "maxUsesPerCombat": null,
@@ -56,7 +56,7 @@
         "incomingForms": []
       },
       "projectileClash": {
-        "power": 0
+        "power": 1
       },
       "reaction": {
         "blockForms": [],
@@ -91,21 +91,23 @@
           "displayScaleY": 1,
           "attachment": "source",
           "anchor": null,
-          "offsetX": 20,
-          "offsetY": 0,
+          "offsetX": 85,
+          "offsetY": 15,
           "trigger": "preparation-start",
-          "playbackMode": "once",
+          "playbackMode": "loop",
           "rotationDeg": 0,
           "opacity": 1,
           "layerByView": {
-            "player": "front",
+            "player": "behind",
             "opponent": "front"
           },
-          "offsetMode": "same"
+          "offsetMode": "custom",
+          "opponentOffsetX": -70,
+          "opponentOffsetY": 15
         },
         "travel": {
           "assetId": "pack:capture:sprite-boule-de-neige-projectile-01",
-          "displayScale": 0.8,
+          "displayScale": 1.5,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "trajectory",
@@ -113,7 +115,7 @@
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "travel-start",
-          "playbackMode": "stretch",
+          "playbackMode": "loop",
           "rotationDeg": 0,
           "opacity": 1,
           "layerByView": {

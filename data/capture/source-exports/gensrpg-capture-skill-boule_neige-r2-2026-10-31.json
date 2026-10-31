@@ -1,0 +1,198 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "boule_neige",
+    "description": "NA",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "boule_neige",
+      "name": "Boule de neige",
+      "category": "offensive",
+      "form": "projectile",
+      "projectileTargeting": "direct",
+      "chargedAttack": {
+        "baseDamage": 3,
+        "bonusDamagePerCharge": 3,
+        "maxCharges": 10,
+        "reactivationWindowMs": 700,
+        "sizeIncreasePct": 10
+      },
+      "loadoutSlot": "standard",
+      "element": "ice",
+      "approachMode": "none",
+      "energyCost": 1,
+      "preparationMs": 800,
+      "travelMs": 1100,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 1
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": []
+    },
+    "presentation": {
+      "id": "skill:boule_neige",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "boule_neige",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-gel-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-boule-de-neige-cast-01",
+          "displayScale": 0.8,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 85,
+          "offsetY": 15,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "behind",
+            "opponent": "front"
+          },
+          "offsetMode": "custom",
+          "opponentOffsetX": -70,
+          "opponentOffsetY": 15
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-boule-de-neige-projectile-01",
+          "displayScale": 1.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-boule-de-neige-impact-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": {
+          "color": "#ffffff",
+          "strength": 0.85,
+          "radiusPx": 32
+        },
+        "impactFlash": null,
+        "cameraShake": {
+          "amplitudePx": 9,
+          "durationMs": 140
+        },
+        "projectileTrail": {
+          "color": "#ffffff",
+          "count": 7,
+          "lengthPx": 56,
+          "sizePx": 7,
+          "opacity": 0.8,
+          "anchorX": 0.5,
+          "anchorY": 0.5
+        },
+        "impactBurst": {
+          "color": "#ffffff",
+          "count": 12,
+          "spreadPx": 72,
+          "sizePx": 9,
+          "durationMs": 380,
+          "opacity": 0.9
+        },
+        "aftermathSmoke": {
+          "color": "#594943",
+          "count": 6,
+          "spreadPx": 58,
+          "sizePx": 36,
+          "risePx": 56,
+          "durationMs": 1250,
+          "opacity": 0.64
+        },
+        "castBurst": {
+          "color": "#ffffff",
+          "count": 7,
+          "spreadPx": 48,
+          "sizePx": 7,
+          "risePx": 34,
+          "durationMs": 580,
+          "opacity": 0.8
+        }
+      }
+    }
+  }
+}
