@@ -12498,9 +12498,6 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       one(root,"[data-skill-form]").value = "projectile";
       one(root,"[data-skill-trajectory-mode]").value = "linear";
       beamStageLayout.sync();
-      const preparation=one(root,"[data-skill-preparation]");
-      const windowMs=one(root,"[data-skill-charged-window]");
-      if (Number(preparation.value)<Number(windowMs.value)) preparation.value=String(Math.max(900,Number(windowMs.value)));
       chargedEnabled.checked = true;
       one(root,"[data-skill-charged-config]").hidden = false;
       choice.value="standard";
