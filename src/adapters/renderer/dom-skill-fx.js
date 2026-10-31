@@ -2215,6 +2215,13 @@ export function createDomSkillFxRenderer({
         status: "running",
         animation,
         finished,
+        setDuration(nextDurationMs) {
+          if (!active.has(record) || !Number.isFinite(nextDurationMs) || nextDurationMs < 0) return false;
+          // One WAAPI timeline, extended in place when the last charge tap
+          // holds the release. No new sprite and no second playback owner.
+          spriteAnimation?.effect?.updateTiming?.({duration:Math.max(1,nextDurationMs)});
+          return true;
+        },
         setSizeMultiplier(next) {
           if (!active.has(record) || !Number.isFinite(next) || next <= 0) return false;
           node.style.scale = String(next);
