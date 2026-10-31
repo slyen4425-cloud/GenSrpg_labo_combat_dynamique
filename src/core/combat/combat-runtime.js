@@ -307,7 +307,8 @@ export function createCombatRuntime({
       reaction,
       ...(record.action.chargeState ? {
         chargeCount:record.action.chargeState.chargeCount,
-        chargeMax:record.action.chargeState.maxCharges
+        chargeMax:record.action.chargeState.maxCharges,
+        sizeMultiplier:record.action.chargeState.sizeMultiplier
       } : {})
     });
   }
@@ -712,7 +713,7 @@ export function createCombatRuntime({
       const config = record.action.skill.chargedAttack;
       const count = record.action.chargeState.chargeCount;
       const damage = config.baseDamage + (count - 1) * config.bonusDamagePerCharge;
-      const sizeMultiplier = 1 + (count - 1) * config.sizeIncreasePct / 100;
+      const sizeMultiplier = record.action.chargeState.sizeMultiplier;
       record.action = Object.freeze({
         ...record.action,
         chargeState: Object.freeze({...record.action.chargeState,damage,sizeMultiplier}),
@@ -1362,7 +1363,8 @@ export function createCombatRuntime({
       }
       const previous = active.action.chargeState;
       const next = Object.freeze({
-        ...previous,chargeCount:previous.chargeCount+1,lastTapAtMs:now()
+        ...previous,chargeCount:previous.chargeCount+1,lastTapAtMs:now(),
+        sizeMultiplier:1 + previous.chargeCount * active.action.skill.chargedAttack.sizeIncreasePct / 100
       });
       active.action = Object.freeze({...active.action,chargeState:next});
       onProgress(progressSnapshot(active,elapsedFor(active,now())));
