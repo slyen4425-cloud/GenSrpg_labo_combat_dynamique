@@ -1,3 +1,4 @@
+import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
 import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
 import { normalizeOpponentAiPolicy } from "../contracts/opponent-ai-policy.js";
@@ -318,6 +319,8 @@ export async function mountCombatTest({
     player: requiredElement(root, '[data-demo-slot="player"]'),
     opponent: requiredElement(root, '[data-demo-slot="opponent"]')
   };
+
+  const combatEntityOverlay=createCombatEntityOverlayV1({fighterContainers});
 
   const hpRefs = {
     player: {
@@ -945,6 +948,7 @@ export async function mountCombatTest({
       return;
     }
     lastState = state;
+    combatEntityOverlay.render(state);
     renderHp(state);
     renderEnergy(state);
     zoneAudio.sync(
@@ -1450,6 +1454,7 @@ export async function mountCombatTest({
       }
       runtime.dispose();
       presenter.dispose();
+      combatEntityOverlay.dispose();
       statusFx?.dispose();
       damageFeedback?.dispose();
       combatAudio.dispose();

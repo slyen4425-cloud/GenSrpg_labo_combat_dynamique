@@ -25,6 +25,7 @@ import {
   scheduleSkillEffectV1
 } from "./scheduled-effect-runtime-v1.js";
 import { markerStatusDefinitionV1 } from "../../contracts/capture-marker-v1.js";
+import {createCombatBarrierV1} from "./combat-entity-v1.js";
 
 const SUPPORTED_KINDS = new Set([
   "damage",
@@ -39,7 +40,8 @@ const SUPPORTED_KINDS = new Set([
   "cleanse",
   "dispel",
   "persistent_zone",
-  "scheduled_effect"
+  "scheduled_effect",
+  "summon_entity"
 ]);
 
 const MULTI_TARGET_SCOPES = new Set([
@@ -375,6 +377,17 @@ export function applyImmediateTacticalEffectsV1({
           }
           continue;
         }
+      }
+      if (effect.kind === "summon_entity") {
+        const summoned=createCombatBarrierV1({state:nextState,sourceActorId:actorId,
+          protectedActorId:affectedId,sourceSkillId:skill.id,effect,atMs:combatAtMs});
+        nextState=summoned.state;
+        events.push(Object.freeze({type:summoned.record?"combat-entity-created":"combat-entity-rejected",
+          atMs,actorId:affectedId,sourceActorId:actorId,skillId:skill.id,
+          entityId:summoned.record?.id??null,
+          maxHp:summoned.record?.maxHp??0,
+          reason:summoned.record?null:summoned.outcome}));
+        continue;
       }
       if (effect.kind === "knockout") {
         const victim=fighterOf(nextState,affectedId);

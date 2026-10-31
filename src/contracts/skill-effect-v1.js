@@ -17,7 +17,8 @@ export const SKILL_EFFECT_V1_KINDS = Object.freeze([
   "cleanse",
   "dispel",
   "persistent_zone",
-  "scheduled_effect"
+  "scheduled_effect",
+  "summon_entity"
 ]);
 
 export const SKILL_EFFECT_V1_TARGET_SCOPES =
@@ -107,6 +108,9 @@ const FIELDS_BY_KIND = Object.freeze({
     ...COMMON_FIELDS,
     "trigger",
     "effects"
+  ]),
+  summon_entity: new Set([
+    ...COMMON_FIELDS, "entityKind", "statId", "hpPerStatPoint", "interceptKinds"
   ])
 });
 
@@ -264,6 +268,9 @@ export function normalizeSkillEffectV1(input) {
     throw new RangeError("force_reserve_switch requires target scope");
   }
 
+  if (kind === "summon_entity" && !["self","target"].includes(targetScope)) {
+    throw new RangeError("summon_entity.targetScope must be self or target");
+  }
   if (kind === "life_steal" && targetScope !== "self") {
     throw new RangeError("SkillEffectV1.life_steal targetScope must be self");
   }
@@ -289,6 +296,21 @@ export function normalizeSkillEffectV1(input) {
       throw new RangeError("Conditions apply to immediate active-target effects only");
     output.condition=Object.freeze({type,...(ref===null?{}:{value:ref}),minimum,
       ...(c.invert===true?{invert:true}:{})});
+  }
+
+  if (kind === "summon_entity") {
+    if (value.condition != null) throw new RangeError("summon_entity conditions are unsupported");
+    if (value.entityKind !== "barrier") throw new RangeError("summon_entity.entityKind only supports barrier in V1");
+    output.entityKind = "barrier";
+    output.statId = requiredString(value.statId, "summon_entity.statId");
+    output.hpPerStatPoint = positiveNumber(value.hpPerStatPoint, "summon_entity.hpPerStatPoint");
+    const kinds=value.interceptKinds??["projectile","beam","contact"];
+    if (!Array.isArray(kinds) || kinds.length===0 ||
+        kinds.some(kind=>!["projectile","beam","contact"].includes(kind)) ||
+        new Set(kinds).size!==kinds.length) {
+      throw new RangeError("summon_entity.interceptKinds must list distinct projectile/beam/contact");
+    }
+    output.interceptKinds=Object.freeze([...kinds]);
   }
 
   if (kind === "apply_marker") {

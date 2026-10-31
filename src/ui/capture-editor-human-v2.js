@@ -7,7 +7,7 @@ import { captureEditorElementChannelChoicesV1, captureEditorGeneratedStatIdV1 } 
 import {
   mountCaptureBeamStageLayoutV1,
   syncCaptureBeamStageLayoutV1
-} from "./capture-editor-beam-stage-layout-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031";
+} from "./capture-editor-beam-stage-layout-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031";
 import {
   captureBeamVisualPackV1,
   applyCaptureBeamVisualPackV1,
@@ -73,7 +73,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -117,7 +117,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -491,7 +491,7 @@ export function buildHumanTacticalSkillEffectsV1(
       "Cible d’effet tactique"
     );
 
-    if (kind === "apply_marker" || kind === "consume_marker" || kind === "knockout" || kind === "force_reserve_switch") {
+    if (kind === "apply_marker" || kind === "consume_marker" || kind === "knockout" || kind === "force_reserve_switch" || kind === "summon_entity") {
       return normalizeSkillEffectV1(effect);
     }
 
@@ -4801,7 +4801,8 @@ function tacticalEffectKindLabelV1(kind) {
     cleanse: "Nettoyage",
     dispel: "Dissipation",
     persistent_zone: "Zone persistante",
-    scheduled_effect: "Effet différé"
+    scheduled_effect: "Effet différé",
+    summon_entity: "Invoquer un mur / obstacle destructible"
   }[kind] ?? kind;
 }
 
@@ -5501,7 +5502,7 @@ function appendHumanSkillEffectV1(
   }
   if (hostSelector === "[data-skill-contact-hold-effects-host]") {
     for (const option of kind.options) {
-      if (["persistent_zone", "scheduled_effect", "force_reserve_switch"].includes(option.value)) option.disabled = true;
+      if (["persistent_zone", "scheduled_effect", "force_reserve_switch", "summon_entity"].includes(option.value)) option.disabled = true;
     }
   }
 
@@ -6313,6 +6314,30 @@ function appendHumanSkillEffectV1(
     statusVisualBox
   );
 
+  const barrierBox=document.createElement("div");
+  barrierBox.className="skill-status-config skill-status-config__grid";
+  barrierBox.dataset.skillEffectConfigKind="summon_entity";
+  const barrierStatId=document.createElement("select");
+  barrierStatId.dataset.skillBarrierStatId="true";
+  fillStatusStatSelectV1(barrierStatId,statRegistry,effect?.statId??"glace");
+  const barrierHpRatio=tacticalNumberInputV1("skillBarrierHpRatio",effect?.hpPerStatPoint??1,
+    {min:0.01,step:"0.1"});
+  const barrierKinds=document.createElement("fieldset");
+  barrierKinds.className="editor-choice-group";
+  const barrierLegend=document.createElement("legend");
+  barrierLegend.textContent="Types d'attaque interceptés";
+  barrierKinds.append(barrierLegend);
+  for(const [value,label] of [["projectile","Projectiles"],["beam","Rayons"],["contact","Corps à corps"]]){
+    const wrap=document.createElement("label"),check=document.createElement("input");
+    check.type="checkbox";check.value=value;check.dataset.skillBarrierInterceptKind="true";
+    check.checked=(effect?.interceptKinds??["projectile","beam","contact"]).includes(value);
+    wrap.append(check,document.createTextNode(label));barrierKinds.append(wrap);
+  }
+  const barrierHelp=document.createElement("small");barrierHelp.className="note";
+  barrierHelp.textContent="Mur défensif réel avec ses propres PV : les points de la statistique sélectionnée du lanceur sont multipliés par le coefficient. 0 point = aucune invocation. Le mur absorbe les attaques choisies avant les PV de la créature, puis disparaît quand il est détruit. Il n'intercepte ni DoT ni dégâts de zone. Un nouveau mur de la même compétence remplace l'ancien.";
+  barrierBox.append(tacticalFieldV1("Statistique de l'invocation",barrierStatId),
+    tacticalFieldV1("PV par point de stat",barrierHpRatio),barrierKinds,barrierHelp);
+
   const scheduledBox =
     document.createElement("div");
   scheduledBox.className =
@@ -6690,6 +6715,7 @@ function appendHumanSkillEffectV1(
     filterTagsField,
     statusBox,
     scheduledBox,
+    barrierBox,
     zoneBox,
     markerFields.applyBox,
     markerFields.consumeBox
@@ -6764,7 +6790,7 @@ function refreshHumanSkillEffectStatOptionsV1(
   refreshHumanElementChannelSelectsV1(root,statRegistry);
   for (
     const select of root.querySelectorAll(
-      "[data-skill-status-stat-id]"
+      "[data-skill-status-stat-id], [data-skill-barrier-stat-id]"
     )
   ) {
     fillStatusStatSelectV1(
@@ -6801,6 +6827,13 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
       return readCaptureMarkerEffectFieldsV1(root,row,kind,targetScope);
     }
     if (kind === "knockout" || kind === "force_reserve_switch") return {kind,targetScope};
+    if (kind === "summon_entity") return {
+      kind,targetScope,entityKind:"barrier",
+      statId:row.querySelector("[data-skill-barrier-stat-id]").value,
+      hpPerStatPoint:Number(row.querySelector("[data-skill-barrier-hp-ratio]").value),
+      interceptKinds:[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
+        .filter(input=>input.checked).map(input=>input.value)
+    };
 
     if (kind === "persistent_zone") {
       const zoneEffectKind=row.querySelector("[data-skill-zone-effect-kind]").value;
@@ -12595,6 +12628,9 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     listen(effectsHost, "change", event => {
       const row = event.target?.closest?.("[data-skill-effect-row]");
       if (!row) return;
+      if (event.target.matches("[data-skill-effect-kind]") && event.target.value === "summon_entity") {
+        row.querySelector("[data-skill-effect-scope]").value="self";
+      }
       if (event.target.matches("[data-skill-effect-kind]") && event.target.value === "force_reserve_switch") {
         // Author-only convenience: an enemy bench target must never be an
         // active target. These are the existing canonical location controls.
