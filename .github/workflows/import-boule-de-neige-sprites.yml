@@ -1,0 +1,38 @@
+name: Import approved Boule de neige Capture sprite pack (3x12)
+on:
+  push:
+    branches:
+      - work/lab-snowball-sprites-2026-10-31
+    paths:
+      - scripts/import_boule_de_neige_sprites.py
+      - .github/workflows/import-boule-de-neige-sprites.yml
+permissions:
+  contents: write
+concurrency:
+  group: import-boule-de-neige-sprites-2026-10-31
+  cancel-in-progress: false
+jobs:
+  verify-and-import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install image verification library
+        run: python -m pip install 'Pillow>=10,<13'
+      - name: Validate uploaded original ZIP and create verified lossless strips
+        run: python scripts/import_boule_de_neige_sprites.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Full source CI including live 3-sequence catalog sentinel
+        run: npm run ci
+      - name: Commit only real validated Capture snowball media to work branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- assets/library/capture/sprites/skills/boule_de_neige data/assets/catalog/global-visual-assets.v1.json
+          git diff --cached --quiet && { echo "Expected generated media diff"; exit 1; }
+          git commit -m 'assets(capture): import verified Boule de neige cast projectile impact 3x12 sprites'
+          git push origin HEAD:work/lab-snowball-sprites-2026-10-31
