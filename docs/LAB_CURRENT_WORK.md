@@ -1,3 +1,10 @@
+## 2026-10-31 — Mur de glace : collision physique des projectiles, sprite persistant, barème et placement éditables (branche validée, documentation en cours)
+- Base `gh-pages@b7260388a81df97e5b0c24344996435da8be598d`, START `checkpoint/lab-start-barrier-spatial-visual-2026-10-31` ; WORK `work/lab-barrier-spatial-visual-2026-10-31`; RED `daff5f788d03362e0d9a452e4eecd91d21fc6732`/run `41232575629`.
+- `summon_entity` préserve le coefficient libre PV/stat, ajoute choix du sprite officiel sans ID manuel, échelle 0,25–4 et offsets. `CombatEntity` porte la même configuration ; rendu DOM persistant, impact visuel ; contact projectile = vrai rectangle visible + trajet balayé. `CombatRuntime` transmet le contact confirmé à Combat Damage, sans autorité concurrente ni toucher le roster.
+- L'immunité/bonus de dégâts reçus par la créature ne protège pas le mur ; dégâts bruts au mur, reliquat aux protections de la créature. Tests de collision/saut de mur/éditeur et rendu Chromium ajoutés ; CI `41232650713` au SHA `dc6145b7...` : 5/5 GREEN avant la documentation finale.
+- Limites explicites : placement devant le porteur avec offsets (pas placement libre), rayons/contact encore sans géométrie indépendante, pas de vrai asset artistique mur fourni, pas de collision universelle 2v2, test smartphone différé. Suite #167. Rapport `docs/LAB_BARRIER_SPATIAL_VISUAL_2026-10-31.md`. Checkpoint GREEN uniquement après CI complète du SHA documentaire final, puis PR vers gh-pages ; `main` reste séparée.
+
+---
 ## 2026-10-31 — Entité de combat : Mur de glace V1 (technique validée, publication à clôturer)
 - Base `gh-pages@df4c9f8d7da63f7b3f2d94e770d7d7f1e363e570`; START `checkpoint/lab-start-combat-ice-barrier-2026-10-31`; WORK `work/lab-combat-ice-barrier-2026-10-31`. Issue #167.
 - Contrat unique `SkillEffectV1/summon_entity`, propriétaire `Combat State.combatEntities`, dégâts via `Combat Damage Application` ; la stat officielle `glace` du lanceur détermine les PV. Interception des formes choisies, HP distincts, overflow réel, suppression à 0. Aucune confusion avec shield ou roster.
