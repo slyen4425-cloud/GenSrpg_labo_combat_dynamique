@@ -160,7 +160,8 @@ function applyDamageEffect({
   skill,
   effect,
   atMs,
-  combatAtMs
+  combatAtMs,
+  contactedEntityId = undefined
 }) {
   const damage = computeCombatDamageV1({
     state,
@@ -185,7 +186,8 @@ function applyDamageEffect({
     damage: damage.damage,
     atMs: combatAtMs,
     hitsIntangible: skill.hitsIntangible === true,
-    incomingKind: skill.form ?? "scheduled"
+    incomingKind: skill.form ?? "scheduled",
+    contactedEntityId
   });
 
   return Object.freeze({
@@ -242,6 +244,7 @@ export function applyImmediateTacticalEffectsV1({
   battleFormat = null,
   thresholdDepth = 0,
   directDamageApplied = 0,
+  contactedEntityId = undefined,
   allowLifeSteal = true
 }) {
   const unsupported =
@@ -424,7 +427,8 @@ export function applyImmediateTacticalEffectsV1({
           skill,
           effect,
           atMs,
-          combatAtMs
+          combatAtMs,
+          contactedEntityId
         });
         nextState = applied.state;
         // Only damage dealt by this immediate skill to its designated enemy

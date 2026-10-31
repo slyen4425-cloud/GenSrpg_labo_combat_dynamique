@@ -7,7 +7,7 @@ import { captureEditorElementChannelChoicesV1, captureEditorGeneratedStatIdV1 } 
 import {
   mountCaptureBeamStageLayoutV1,
   syncCaptureBeamStageLayoutV1
-} from "./capture-editor-beam-stage-layout-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031";
+} from "./capture-editor-beam-stage-layout-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031";
 import {
   captureBeamVisualPackV1,
   applyCaptureBeamVisualPackV1,
@@ -73,7 +73,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -117,7 +117,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -6322,7 +6322,17 @@ function appendHumanSkillEffectV1(
   fillStatusStatSelectV1(barrierStatId,statRegistry,effect?.statId??"glace");
   const barrierHpRatio=tacticalNumberInputV1("skillBarrierHpRatio",effect?.hpPerStatPoint??1,
     {min:0.01,step:"0.1"});
-  const barrierKinds=document.createElement("fieldset");
+  const barrierSprite=document.createElement("select");
+   barrierSprite.dataset.skillBarrierSpriteAssetId="true";
+   barrierSprite.dataset.assetRole="zone";
+   populateSelect(barrierSprite,EDITOR_VISUAL_ASSETS_BY_ROOT.get(root)??[],"zone");
+   if(effect?.spriteAssetId && ![...barrierSprite.options].some(o=>o.value===effect.spriteAssetId))
+     createOption(barrierSprite,effect.spriteAssetId,effect.spriteAssetId);
+   barrierSprite.value=effect?.spriteAssetId??"";
+   const wallScale=tacticalNumberInputV1("skillBarrierVisualScale",effect?.visualScale??1,{min:0.25,max:4,step:0.05});
+   const wallForward=tacticalNumberInputV1("skillBarrierOffsetForward",effect?.offsetForwardPx??0,{min:-150,max:150,step:1});
+   const wallUp=tacticalNumberInputV1("skillBarrierOffsetUp",effect?.offsetUpPx??0,{min:-150,max:150,step:1});
+   const barrierKinds=document.createElement("fieldset");
   barrierKinds.className="editor-choice-group";
   const barrierLegend=document.createElement("legend");
   barrierLegend.textContent="Types d'attaque interceptés";
@@ -6336,7 +6346,11 @@ function appendHumanSkillEffectV1(
   const barrierHelp=document.createElement("small");barrierHelp.className="note";
   barrierHelp.textContent="Mur défensif réel avec ses propres PV : les points de la statistique sélectionnée du lanceur sont multipliés par le coefficient. 0 point = aucune invocation. Le mur absorbe les attaques choisies avant les PV de la créature, puis disparaît quand il est détruit. Il n'intercepte ni DoT ni dégâts de zone. Un nouveau mur de la même compétence remplace l'ancien.";
   barrierBox.append(tacticalFieldV1("Statistique de l'invocation",barrierStatId),
-    tacticalFieldV1("PV par point de stat",barrierHpRatio),barrierKinds,barrierHelp);
+    tacticalFieldV1("PV par point de stat (coefficient libre)",barrierHpRatio),
+     tacticalFieldV1("Sprite du mur (bibliothèque de zones)",barrierSprite),
+     tacticalFieldV1("Taille visuelle et collision du mur",wallScale),
+     tacticalFieldV1("Avancée vers l’ennemi (px)",wallForward),
+     tacticalFieldV1("Décalage en hauteur (px)",wallUp),barrierKinds,barrierHelp);
 
   const scheduledBox =
     document.createElement("div");
@@ -6831,6 +6845,11 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
       kind,targetScope,entityKind:"barrier",
       statId:row.querySelector("[data-skill-barrier-stat-id]").value,
       hpPerStatPoint:Number(row.querySelector("[data-skill-barrier-hp-ratio]").value),
+      visualScale:Number(row.querySelector("[data-skill-barrier-visual-scale]").value),
+      offsetForwardPx:Number(row.querySelector("[data-skill-barrier-offset-forward]").value),
+      offsetUpPx:Number(row.querySelector("[data-skill-barrier-offset-up]").value),
+      ...(row.querySelector("[data-skill-barrier-sprite-asset-id]")?.value
+        ? {spriteAssetId:row.querySelector("[data-skill-barrier-sprite-asset-id]").value}:{}),
       interceptKinds:[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
         .filter(input=>input.checked).map(input=>input.value)
     };

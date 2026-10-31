@@ -820,7 +820,7 @@ export function createCombatRuntime({
     record,
     atNowMs,
     { impactAtMs = null, visibleContact = false, contactPoint = null,
-      mirrorSpritePresent = false, mirrorSpriteContact = false,
+      combatEntityId = undefined, mirrorSpritePresent = false, mirrorSpriteContact = false,
       forcedOutcomeOverride = null } = {}
   ) {
     if (
@@ -930,7 +930,9 @@ export function createCombatRuntime({
          !visibleContact ? "evaded" : null)));
 
     const resolution = session.completeAction({
-      action: effectiveAction,
+      action: visibleContact && effectiveAction.skill?.form === "projectile"
+        ? Object.freeze({...effectiveAction,barrierContactId:combatEntityId??null})
+        : effectiveAction,
       forcedOutcome,
       confirmedVisibleBodyContact: visibleContact &&
         effectiveAction.actionType === "skill" &&
@@ -1942,6 +1944,7 @@ export function createCombatRuntime({
     targetId,
     skillId = null,
     contactPoint = null,
+    combatEntityId = null,
     mirrorSpritePresent = false,
     mirrorSpriteContact = false
   }) {
@@ -2047,7 +2050,7 @@ export function createCombatRuntime({
       record,
       current,
       { impactAtMs: contactImpactAtMs, visibleContact: true, contactPoint: visualPoint,
-        mirrorSpritePresent, mirrorSpriteContact }
+        combatEntityId, mirrorSpritePresent, mirrorSpriteContact }
     );
 
     if (!resolution) {
