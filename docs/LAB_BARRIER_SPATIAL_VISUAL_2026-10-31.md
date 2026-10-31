@@ -23,3 +23,7 @@
 - Tests unitaires `tests/unit/capture-combat-barrier-spatial-visual-2026-10-31.test.mjs` : ratio 2,5, échelle/offsets, intersection segment–rectangle, projectile hors rectangle et collision autorisée, PV du mur distincts des amplificateurs sur le combattant.
 - Vrai Chromium : `tests/browser/capture-ice-barrier-editor-smoke.mjs` : acteur et asset DOM persistants, image sélectionnable, rectangle non vide, collision, projectile contournant, perte réelle 80 → 55 PV et contrôles auteur. Les autres sentinelles 1v1/2v2 et UI mobile du workflow restent en place.
 - CI avant documentation au commit `dc6145b7de5a1e761b32783631395efb1a959f37`, run `41232650713` : **5/5 SUCCESS**, Foundation 2442 tests Node, 4 jobs navigateur. Ce n'est pas encore la CI du SHA final documentaire, donc checkpoint GREEN et fusion conditionnés à sa revalidation.
+
+## Cache public / reproductibilité
+- Le HTML public, son bootstrap, l'éditeur, le chargeur de preview, la preview Combat et le contrôleur 1v1/2v2 partagent désormais une nouvelle révision ESM `wall-spatial-20261031`; le renderer d'entités et celui des projectiles ont eux-mêmes une révision dédiée. Aucun asset `global-assets` n'a été modifié. La sentinelle Ice VFX existante exige le même jeton sur ces six entrées.
+- Après cette modification de livraison, **toute CI précédente est indicative seulement** ; ne pas créer le checkpoint GREEN ni fusionner avant CI 5/5 sur le commit final et CI/Pages au SHA de fusion. Le comportement sur appareil réel demeure à tester par l'utilisateur.
