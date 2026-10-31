@@ -2730,6 +2730,7 @@ export function humanSkillEditorFieldsFromDraftV1(
       [...(definition.targetLocations ?? ["active"])],
     energyCost: definition.energyCost,
     preparationMs: definition.preparationMs,
+    chargedAttack: definition.chargedAttack ?? null,
     travelMs: definition.travelMs,
     recoveryMs: definition.recoveryMs,
     cooldownMs: definition.cooldownMs ?? 0,
@@ -3073,6 +3074,13 @@ export function buildHumanSkillDraftV1(fields) {
         fields.preparationMs,
         "Temps de préparation"
       ),
+      ...(fields.chargedAttack == null ? {} : {chargedAttack:{
+        baseDamage:finiteNumber(fields.chargedAttack.baseDamage,"Puissance de base chargée"),
+        bonusDamagePerCharge:finiteNumber(fields.chargedAttack.bonusDamagePerCharge,"Bonus de charge"),
+        maxCharges:finiteNumber(fields.chargedAttack.maxCharges,"Activations maximum"),
+        reactivationWindowMs:finiteNumber(fields.chargedAttack.reactivationWindowMs,"Fenêtre de réactivation"),
+        sizeIncreasePct:finiteNumber(fields.chargedAttack.sizeIncreasePct,"Taille par charge")
+      }}),
       travelMs: finiteNumber(
         fields.travelMs,
         "Temps pour atteindre la cible"
@@ -3690,6 +3698,11 @@ function writeSkillDraftFields(
       "[data-skill-preparation]",
       fields.preparationMs
     ],
+    ["[data-skill-charged-base-damage]", fields.chargedAttack?.baseDamage ?? 5],
+    ["[data-skill-charged-bonus-damage]", fields.chargedAttack?.bonusDamagePerCharge ?? 5],
+    ["[data-skill-charged-max-charges]", fields.chargedAttack?.maxCharges ?? 3],
+    ["[data-skill-charged-window]", fields.chargedAttack?.reactivationWindowMs ?? 450],
+    ["[data-skill-charged-size-pct]", fields.chargedAttack?.sizeIncreasePct ?? 10],
     [
       "[data-skill-travel-time]",
       fields.travelMs
@@ -3825,6 +3838,8 @@ function writeSkillDraftFields(
       String(value ?? "");
   }
   syncCaptureBeamStageLayoutV1(root);
+  one(root,"[data-skill-charged-enabled]").checked = fields.chargedAttack !== null;
+  one(root,"[data-skill-charged-config]").hidden = fields.chargedAttack === null;
 
   one(
     root,
@@ -3908,6 +3923,11 @@ function prepareNewSkillDraftFields(
     ["[data-skill-required-level]", 1],
     ["[data-skill-approach]", "none"],
     ["[data-skill-preparation]", 0],
+    ["[data-skill-charged-base-damage]", 5],
+    ["[data-skill-charged-bonus-damage]", 5],
+    ["[data-skill-charged-max-charges]", 3],
+    ["[data-skill-charged-window]", 450],
+    ["[data-skill-charged-size-pct]", 10],
     ["[data-skill-travel-time]", 0],
     ["[data-skill-recovery]", 0],
     ["[data-skill-cooldown]", 0],
@@ -9255,6 +9275,13 @@ function readSkillFields(root) {
       root,
       "[data-skill-preparation]"
     ),
+    chargedAttack: one(root,"[data-skill-charged-enabled]").checked ? {
+      baseDamage:numericValue(root,"[data-skill-charged-base-damage]"),
+      bonusDamagePerCharge:numericValue(root,"[data-skill-charged-bonus-damage]"),
+      maxCharges:numericValue(root,"[data-skill-charged-max-charges]"),
+      reactivationWindowMs:numericValue(root,"[data-skill-charged-window]"),
+      sizeIncreasePct:numericValue(root,"[data-skill-charged-size-pct]")
+    } : null,
     travelMs: numericValue(
       root,
       "[data-skill-travel-time]"
@@ -10513,6 +10540,11 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     root,
     "[data-skill-update]"
   );
+  const chargedEnabled = root.querySelector("[data-skill-charged-enabled]");
+  if (chargedEnabled) listen(chargedEnabled,"change",()=>{
+    const config = root.querySelector("[data-skill-charged-config]");
+    if (config) config.hidden = !chargedEnabled.checked;
+  });
   const skillActivationEnabled = one(
     root,
     "[data-skill-activation-enabled]"
