@@ -1,3 +1,12 @@
+## 2026-10-31 — Glace suite : publication VFX 3x12 (portage sans régression sur Charged Effects)
+- Source originale `pack_sprites_glace_suite_36_frames.zip` SHA256 `33f5dce30a96a52990f53e652b21ec0c840f1ab4917c756d2ccfc01135dc1506`, média `global-assets@b3764c86cbcc3472dcf4dba2bf67c28f7e8d1a17`, PR #170 GREEN.
+- L’éditeur a avancé entre temps sur `gh-pages@df4c9f8d7da63f7b3f2d94e770d7d7f1e363e570` (nouveau moteur Charged Effects). Le chantier initial PR #171 est conflictuel : ne pas l’écraser ; portage ciblé sur START `checkpoint/lab-start-ice-ground-spike-fog-rebase-2026-10-31`, branche `work/lab-ice-ground-spike-fog-editor-rebased-2026-10-31`.
+- Seules adaptations : catalogue source unique v47, cache ESM versionné hérite du suffixe Charged Effects puis reçoit suffixe Glace, 3 ressources disponibles dans sélecteurs `zone` et `impact`, tests de chargement d’images WebP réelles 6144×512.
+- TDD source : test `tests/integration/capture-ice-vfx-editor-publish-2026-10-31.test.mjs` ; navigateur `tests/browser/capture-ice-ground-spike-fog-editor-smoke.mjs` ; ancienne sentinelle Boule de neige conservée avec version minimale pour permettre les nouveaux médias.
+- Ne change aucune capacité ni définition de combat. Restant : CI cinq jobs + PR vers gh-pages + publication Pages au SHA exact, checkpoint GREEN.
+
+---
+
 ## 2026-10-31 — Charge des effets tactiques V1 (CI intégrale GREEN, publication en cours)
 - Départ gh-pages@73da6929a388892737f3bc1a65cd99a6d70e9fef ; START checkpoint/lab-start-charged-effects-2026-10-31 ; WORK work/lab-charged-effects-2026-10-31. Test RED 4e5301fcdfaf8e1a3ac46effee8c052995beca92.
 - Propriétaires SkillDefinition / Combat Runtime / Combat Session / ActionResolver / Human Editor / Bestiaire. Contrat chargedEffects distinct du chargedAttack original. Amplifie la puissance des soins, dégâts et statuts numériques à chaque activation, sans modifier durées ni contourner immunités ; pas de second moteur.
