@@ -3979,6 +3979,8 @@ function prepareNewSkillDraftFields(
     one(root, selector).value = String(value);
   }
   syncCaptureBeamStageLayoutV1(root);
+  one(root,"[data-skill-charged-enabled]").checked = false;
+  one(root,"[data-skill-charged-config]").hidden = true;
 
   one(
     root,
