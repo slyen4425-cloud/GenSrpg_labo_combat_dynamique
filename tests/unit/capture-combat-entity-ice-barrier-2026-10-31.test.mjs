@@ -4,6 +4,7 @@ import {readFileSync} from "node:fs";
 import {normalizeSkillEffectV1} from "../../src/contracts/skill-effect-v1.js";
 import {normalizeSkillDefinition} from "../../src/contracts/skill-definition.js";
 import {createCombatState} from "../../src/core/combat/combat-state.js";
+import {createCombatSession} from "../../src/core/combat/combat-session.js";
 import {applyImmediateTacticalEffectsV1} from "../../src/core/combat/immediate-tactical-effects-v1.js";
 import {applyCombatDamageV1} from "../../src/core/combat/combat-damage-application-v1.js";
 import {describeCaptureSkillV1} from "../../src/ui/capture-skill-explanation-v1.js";
@@ -86,4 +87,22 @@ test("official Mur de glace sample is a single canonically imported skill",async
  const effect=result.value.draft.definition.effects[0];
  assert.equal(effect.kind,"summon_entity");assert.equal(effect.statId,"glace");
  assert.equal(effect.hpPerStatPoint,1);
+});
+
+test("full CombatSession skill start -> impact creates only one real wall entity, without a second session",()=>{
+ const session=createCombatSession({fighters:[
+  {id:"hero",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,statValuesById:{glace:80}},
+  {id:"enemy",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10}
+ ]});
+ const started=session.startSkill({actorId:"hero",targetId:"hero",skill:wallSkill()});
+ assert.equal(started.ok,true,"native defensive skill must be accepted");
+ assert.equal(session.snapshot().combatEntities.length,0,"no spawn before actual resolution");
+ const ended=session.completeSkill({action:started.action});
+ assert.equal(ended.ok,true,"native defensive skill must complete");
+ assert.equal(session.snapshot().combatEntities.length,1,"only Combat State owns entity");
+ assert.equal(session.snapshot().combatEntities[0].maxHp,80);
+ const impacted=applyCombatDamageV1({state:session.snapshot(),sourceActorId:"enemy",
+  targetActorId:"hero",damage:45,incomingKind:"projectile"});
+ assert.equal(impacted.state.fighters.hero.hp,100);
+ assert.equal(impacted.state.combatEntities[0].hp,35);
 });
