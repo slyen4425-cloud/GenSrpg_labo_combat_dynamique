@@ -13,7 +13,7 @@ import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-def
 import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createEmbeddedCombatLifecycleV1 } from "./embedded-combat-lifecycle-v1.js";
-import { createCombatRuntime } from "../core/combat/combat-runtime.js";
+import { createCombatRuntime } from "../core/combat/combat-runtime.js?v=wall-state-20261031";
 import { createBattleActorAiController, CAPTURE_AI_TACTICS_V1_DEFAULT } from "../core/combat/battle-actor-ai-controller.js";
 import {
   isSkillTargetAllowed,

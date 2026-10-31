@@ -2,7 +2,7 @@
 - Objectif : garantir que chaque variation de combatEntities (apparition, baisse de PV, destruction) provoque le rafraîchissement du rendu et de sa jauge via la seule émission de Combat Runtime, même lorsque les PV du combattant restent inchangés.
 - Base exacte gh-pages@8ec222b72d053e20297aa8fc89094ac8b8f5f056 ; départ checkpoint/lab-start-wall-state-signal-2026-10-31 ; branche work/lab-wall-state-signal-2026-10-31 ; issue #167.
 - Propriétaires : Combat State = vérité PV des entités, Combat Damage = dégâts, Combat Runtime = signal d'état, Render Adapter = projection. Aucun second timer ou état UI.
-- Fichiers autorisés : src/core/combat/combat-runtime.js, tests/unit/capture-combat-wall-state-signal-2026-10-31.test.mjs, docs/LAB_CURRENT_WORK.md, docs/LAB_WALL_STATE_SIGNAL_2026-10-31.md ; cache public uniquement si l'audit démontre le besoin.
+- Fichiers autorisés : src/core/combat/combat-runtime.js, tests/unit/capture-combat-wall-state-signal-2026-10-31.test.mjs, docs/LAB_CURRENT_WORK.md, docs/LAB_WALL_STATE_SIGNAL_2026-10-31.md ; cache public versionné dans la chaîne HTML → preview → Combat UI → Combat Runtime si nécessaire (six imports ciblés), sans nouvelle autorité.
 - Domaines protégés : autres effets de compétences, dégâts/protections, roster, Combat Session, touch, animations et assets, import/export.
 - Test RED avant correction : session réelle de dégâts au mur, un seul callback onState sur changement, pas de callback pour état inchangé, destruction à zéro, pas de confusion avec les retours santé du fighter.
 - GREEN attendu : npm run ci (Foundation) + 4 Chromium, checkpoint final seulement après la CI du HEAD code + docs, PR vers gh-pages et Pages. Android réel distinct.

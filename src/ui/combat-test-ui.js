@@ -3,7 +3,7 @@ import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
 import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
 import { normalizeOpponentAiPolicy } from "../contracts/opponent-ai-policy.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
-import { createCombatRuntime } from "../core/combat/combat-runtime.js";
+import { createCombatRuntime } from "../core/combat/combat-runtime.js?v=wall-state-20261031";
 import { createRosterSession } from "../core/combat/roster-session.js";
 import { createOpponentDecisionController } from "../core/combat/opponent-decision-controller.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
