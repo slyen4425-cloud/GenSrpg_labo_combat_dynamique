@@ -96,9 +96,14 @@ export function applyCaptureTrainerDifficultyPolicyV1({nativeCombatSource,traine
  const reserveSlots=[...opponentIds].filter(id=>{
   const team=source.roster?.teams?.[id];
   if (!team) return false;
-  if (team.slotId!==id || !Array.isArray(team.members))
-   throw new TypeError('Native trainer roster must identify the opponent slot');
-  return team.members.length>1;
+  if (!Array.isArray(team.members))
+   throw new TypeError('Native trainer roster members must be declared');
+  // One-member legacy fixtures never materialize a bench; only a real
+  // reserve requires slot metadata for native per-member projection.
+  if (team.members.length<=1) return false;
+  if (team.slotId!==id)
+   throw new TypeError('Native trainer reserve must identify the opponent slot');
+  return true;
  });
  if (reserveSlots.length) {
   const originalConfigs=object(source.fighterConfigs,'native trainer fighterConfigs');
