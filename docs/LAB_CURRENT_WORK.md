@@ -1,3 +1,15 @@
+## 2026-10-31 — Mur : interception spatiale native des rayons et de la mêlée (reprise #167)
+- Base GREEN `gh-pages@671f164f2e5b3f43d2922eb1513155db19d5dec9`, START `checkpoint/lab-start-wall-beam-contact-geometry-2026-10-31`, WORK `work/lab-wall-beam-contact-geometry-2026-10-31`.
+- Objectif : supprimer l'interception automatique du mur pour les formes beam et contact. Seul le vrai segment visuel observé peut donner un `combatEntityId` natif, comme le projectile. Tir manqué = mur intact ; mur traversé = absorption brute puis reliquat.
+- Propriétaires : géométrie pure `combat-barrier-spatial-v1`, Render Adapter et overlay = lecture des surfaces visibles, Combat Runtime = unique ordonnanceur, Combat Damage/State = unique autorité de dégâts et PV.
+- Fichiers permis : `src/core/combat/combat-barrier-spatial-v1.js`, `src/core/combat/combat-entity-v1.js`, `src/core/combat/combat-runtime.js`, `src/adapters/renderer/combat-entity-overlay-v1.js`, `src/adapters/renderer/dom-skill-fx.js`, `src/ui/combat-test-ui.js`, `src/ui/combat-2v2-test-ui.js`, tests `capture-combat-barrier-spatial-visual-2026-10-31`, `capture-combat-entity-ice-barrier-2026-10-31` et nouvelle sentinelle `capture-wall-beam-contact-geometry-2026-10-31`, plus modules/bootstrap de publication ESM si indispensables, ces docs.
+- Protégés : catalogue/exports auteur, coûts et timers, FX de projectile, roster, status, dommages de zone et DoT, main et autres dépôts. Pas de nouvelle boucle RAF. Pour les rayons, réutiliser les ancrages actuellement rendus ; pour la mêlée, lire les modèles visibles lors de l'impact natif.
+- TDD RED : segment court/long, trajet latéral hors mur, sélection du premier mur, ID faux, équipe 1v1/2v2, dégâts/reliquat, collision au même timestamp, comportement sans capteur géométrique. Pas de validation factice si la CI est rouge.
+- GREEN : Foundation + quatre Chromium sur SHA final code/docs, checkpoint exact, PR vers gh-pages puis CI/Pages publiées ; validation sur téléphone distincte.
+- Hors périmètre : mur placé librement et blocage des déplacements, murs collatéraux étrangers à la cible, familiers actifs (#167), canalisation (#168).
+
+---
+
 ## 2026-10-31 — Mur 1v1 : capteur projectile et sprite via le même propriétaire que 2v2 (lot de reprise)
 - Base stable `gh-pages@12ef00c407f8038f0f33dc4c4006beb16b306247` (Laboratory CI et Pages GREEN). Checkpoint de départ `checkpoint/lab-start-wall-1v1-sensor-parity-2026-10-31`, branche `work/lab-wall-1v1-sensor-parity-2026-10-31`. Issue #167.
 - Audit causal : `combat-test-ui.js` monte un overlay sans `assetForId` officiel et crée `DomSkillFxRenderer` sans `barrierCollisionRectsFor`. Le chemin 2v2 a déjà les deux branchements ; un projectile 1v1 n'observe donc aucun mur et ne peut pas envoyer son ID confirmé au même Combat Runtime.
