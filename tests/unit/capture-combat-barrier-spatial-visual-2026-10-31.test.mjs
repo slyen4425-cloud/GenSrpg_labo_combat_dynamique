@@ -75,3 +75,20 @@ test("wall sprite is resolved through the exact same canonical skill presentatio
  assert.strictEqual(presentations.visualAsset(effect.spriteAssetId),asset);
  assert.equal(presentations.visualAsset("nonexistent"),null);
 });
+
+test("nominal projectile timeout without observed barrier geometry never invents wall collision",()=>{
+ const state=active(),wall=state.combatEntities[0];
+ const nominal=applyCombatDamageV1({state,sourceActorId:"enemy",targetActorId:"hero",
+   damage:35,incomingKind:"projectile"});
+ assert.equal(nominal.absorbedByEntity,0,"only exact observed wall contact may intercept");
+ assert.equal(nominal.state.combatEntities[0].hp,wall.hp);
+ assert.equal(nominal.state.fighters.hero.hp,65,"nominal hit reaches the fighter when no wall was crossed");
+ const observed=applyCombatDamageV1({state,sourceActorId:"enemy",targetActorId:"hero",
+   damage:35,incomingKind:"projectile",contactedEntityId:wall.id});
+ assert.equal(observed.absorbedByEntity,35,"the native observed geometry still protects the hero");
+ assert.equal(observed.state.combatEntities[0].hp,wall.hp-35);
+ assert.equal(observed.state.fighters.hero.hp,100);
+ const beam=applyCombatDamageV1({state,sourceActorId:"enemy",targetActorId:"hero",
+   damage:35,incomingKind:"beam"});
+ assert.equal(beam.absorbedByEntity,35,"beam behavior remains unchanged until independent spatial sensor lot");
+});
