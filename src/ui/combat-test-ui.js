@@ -1196,6 +1196,9 @@ export async function mountCombatTest({
   runtime = createCombatRuntime({
     session,
     groundContactResolution: "visible",
+    readBarrierContact({sourceActorId,targetActorId,kind,skillId}) {
+      return fx.barrierContactFor({sourceActorId,targetActorId,kind,skillId});
+    },
     readZoneSpatialContext: state => fx.sampleZoneSpatialContext(state.persistentZones ?? []),
     onState(state) {
       impactHealthCue.clear();
