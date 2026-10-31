@@ -1,5 +1,5 @@
 import { mountCombatDemo } from "../../src/ui/demo-app.js";
-import { mountCombatTest } from "../../src/ui/combat-test-ui.js";
+import { mountCombatTest } from "../../src/ui/combat-test-ui.js?v=wall-1v1-sensor-parity-20261031";
 import { demoPresentationAssets } from "./demo-assets.js";
 
 const root = document.querySelector("[data-combat-demo]");

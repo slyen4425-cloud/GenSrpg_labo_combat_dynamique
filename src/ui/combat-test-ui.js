@@ -320,7 +320,11 @@ export async function mountCombatTest({
     opponent: requiredElement(root, '[data-demo-slot="opponent"]')
   };
 
-  const combatEntityOverlay=createCombatEntityOverlayV1({fighterContainers});
+  const combatEntityOverlay=createCombatEntityOverlayV1({fighterContainers,
+    // The same author-selected visual asset resolver used by the 2v2 scene.
+    assetForId:assetId=>presentationAssets?.visualAsset?.(assetId)
+      ??presentationAssets?.asset?.(assetId)??null
+  });
 
   const hpRefs = {
     player: {
@@ -424,6 +428,11 @@ export async function mountCombatTest({
     },
     targetCollisionModelFor(slotId) {
       return visuals.getCollisionModelFor(slotId);
+    },
+    barrierCollisionRectsFor({sourceActorId,targetActorId}) {
+      // Read only the visible wall sprite's live rectangle. Combat Damage
+      // alone decides whether an observed ID absorbs an incoming projectile.
+      return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId});
     },
     anchors: {
       player: requiredElement(
