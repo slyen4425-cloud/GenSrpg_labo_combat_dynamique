@@ -17,4 +17,5 @@
 - START `checkpoint/lab-start-incoming-effect-amplifier-2026-10-31` ;
   branche `work/lab-incoming-effect-amplifier-2026-10-31`.
 - Test RED `tests/unit/capture-incoming-effect-amplifier-2026-10-31.test.mjs` commit `0b81235d4471fcb34b77baa6518a388ae2160501`.
-- GREEN : tests et vrai navigateur au SHA final, puis checkpoint si tous réussissent ; ne pas prétendre validé sur Android sans essai utilisateur.
+- CI probante pré-documentation : run `41210956372` au SHA `ea85f91246064d7f44e5ce829cae4959d2a6091b` ; 5/5 jobs SUCCESS, 2423 tests Node réussis, 0 échec ; Chromium réel : dégâts 100 → 130, soin 50 → 65, sélecteur et pourcentage fonctionnels.
+- GREEN final : à confirmer au SHA de clôture après documentation et PR/Pages. Pas de validation Android directe : à faire côté auteur.
