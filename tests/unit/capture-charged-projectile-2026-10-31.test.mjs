@@ -99,3 +99,42 @@ test("author skill draft retains charge values through canonical editor roundtri
   assert.deepEqual(exportedAgain.definition.chargedAttack,charge);
   assert.equal(exportedAgain.definition.preparationMs,1200);
 });
+
+test("charged cast plan and release use the same authoritative size",()=>{
+  const initial={skill:skill(),preparationMs:1000,chargeState:{chargeCount:1,sizeMultiplier:1}};
+  assert.equal(planSkillPreparationFx({action:initial})[0].sizeMultiplier,1);
+  const amplified={...initial,chargeState:{chargeCount:3,sizeMultiplier:1.2}};
+  assert.equal(planSkillReleaseFx({action:amplified})[0].sizeMultiplier,1.2);
+});
+
+test("charge amplification updates ONE playing cast without restarting it",async()=>{
+  const {createCombatResolutionPresenter}=await import("../../src/adapters/renderer/combat-resolution-presenter.js");
+  const calls=[],changes=[],cancelled=[];
+  const handle={status:"running",animation:{cancel:()=>cancelled.push("cast")},finished:new Promise(()=>{}),
+    setSizeMultiplier:multiplier=>changes.push(multiplier)};
+  const fx={play:plan=>{calls.push(plan);return handle;},cancelProjectileFor:()=>0};
+  const visuals={playEventFor:()=>Promise.resolve(),cancelFor:()=>{}};
+  const presenter=createCombatResolutionPresenter({visuals,fx});
+  const action={actionType:"skill",actorId:"player",targetId:"opponent",preparationMs:1000,
+    releaseAtMs:1000,travelMs:300,skill:skill(),chargeState:{chargeCount:1,sizeMultiplier:1}};
+  presenter.presentPreparation({action,actorSlot:"player"});
+  assert.equal(calls.length,1);
+  presenter.presentChargeAmplification({actorSlot:"player",sizeMultiplier:1.1});
+  presenter.presentChargeAmplification({actorSlot:"player",sizeMultiplier:1.2});
+  assert.deepEqual(changes,[1.1,1.2]);
+  assert.equal(calls.length,1,"do not restart the animated cast");
+  presenter.presentRelease({action:{...action,chargeState:{chargeCount:3,sizeMultiplier:1.2}},actorSlot:"player",targetSlot:"opponent"});
+  assert.equal(calls[1].sizeMultiplier,1.2);
+  assert.equal(cancelled.length,1,"the original cast ends once on release");
+  presenter.dispose();
+});
+
+test("author adds charged attack from Effets > Ajouter un effet, not Timing",()=>{
+  const editor=readFileSync(new URL("../../examples/dom-demo/capture-editor-v2.html",import.meta.url),"utf8");
+  const effects=editor.indexOf("<h2>Effets tactiques</h2>");
+  const timing=editor.indexOf("<h2>Timing</h2>");
+  const charged=editor.indexOf('aria-label="Attaque chargée"');
+  assert.ok(effects>=0 && effects<charged && charged<timing,"charged controls belong to tactical effects");
+  assert.match(editor,/data-skill-effect-add-kind/);
+  assert.match(editor,/<option value="charged">Attaque chargée/);
+});
