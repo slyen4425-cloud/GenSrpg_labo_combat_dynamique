@@ -1225,12 +1225,18 @@ export async function mountCoop2v2Test({
         String(cooldownProgress)
       );
 
-      const canCharge = runtime.previewChargedSkillRetrigger({
+      const chargePreview = runtime.previewChargedSkillRetrigger({
         actorId:controlledActorId(),skillId:skill.id
-      }).ok;
-      if (canCharge) {
-        const charge = runtime.activeActionFor(controlledActorId())?.chargeState;
-        cooldown.textContent = `Renforcer ${charge?.chargeCount ?? 1}/${charge?.maxCharges ?? 1}`;
+      });
+      const canCharge = chargePreview.ok;
+      const owned = runtime.activeActionFor(controlledActorId());
+      const charge = owned?.actionId === skill.id ? owned.chargeState : null;
+      if (charge && !owned.released) {
+        cooldown.textContent = chargePreview.outcome === "charge_preparing"
+          ? `Charge ${charge.chargeCount}/${charge.maxCharges} · ${(chargePreview.remainingCastMs/1000).toFixed(1)} s`
+          : canCharge ? `Renforcer ${charge.chargeCount}/${charge.maxCharges}`
+          : chargePreview.outcome === "insufficient_energy" ? "Énergie insuffisante"
+          : `Charge ${charge.chargeCount}/${charge.maxCharges}`;
         cooldown.hidden = false;
         button.dataset.cooldownActive = "false";
       }
