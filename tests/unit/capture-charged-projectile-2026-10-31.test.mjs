@@ -83,3 +83,19 @@ test("real editor exposes charged configuration through native draft, no second 
   assert.match(editor,/data-skill-charged-window/);
   assert.match(editor,/data-skill-charged-size-pct/);
 });
+
+test("author skill draft retains charge values through canonical editor roundtrip",()=>{
+  const exported=json("data/capture/showcase/lib_light_bolt.capture-skill-transfer-v1.json").draft;
+  const loaded=humanSkillEditorFieldsFromDraftV1(exported);
+  const charge={baseDamage:5,bonusDamagePerCharge:7,maxCharges:4,reactivationWindowMs:350,sizeIncreasePct:15};
+  const authored=buildHumanSkillDraftV1({
+    ...loaded,preparationMs:1200,chargedAttack:charge,effects:[],damage:0,
+    presentation:{...loaded.presentation,travelTrajectoryMode:"linear"}
+  });
+  assert.deepEqual(authored.definition.chargedAttack,charge);
+  const restored=humanSkillEditorFieldsFromDraftV1(authored);
+  assert.deepEqual(restored.chargedAttack,charge);
+  const exportedAgain=buildHumanSkillDraftV1(restored);
+  assert.deepEqual(exportedAgain.definition.chargedAttack,charge);
+  assert.equal(exportedAgain.definition.preparationMs,1200);
+});
