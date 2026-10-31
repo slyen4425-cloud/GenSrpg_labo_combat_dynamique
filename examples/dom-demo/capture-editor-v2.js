@@ -36,7 +36,7 @@ import {
 } from "./demo-assets.js";
 import {
   createCaptureSkillPresentationAssetsV2
-} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
+} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js?v=wall-spatial-20261031";
 import {
   createGlobalPresentationAssetResolverV1
 } from "../../src/assets/global-presentation-asset-resolver-v1.js";

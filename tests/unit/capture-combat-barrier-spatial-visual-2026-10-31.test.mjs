@@ -65,3 +65,13 @@ test("a protected hero's vulnerability or immunity cannot silently change a wall
  assert.equal(wallHit.state.combatEntities[0].hp,170);
  assert.equal(wallHit.appliedDamage,0);
 });
+
+
+test("wall sprite is resolved through the exact same canonical skill presentation asset authority",async()=>{
+ const {createCaptureSkillPresentationAssetsV2}=await import("../../src/adapters/renderer/capture-skill-presentation-assets-v2.js");
+ const asset={url:"https://example.test/real-asset.webp",frameCount:12,frameMs:90};
+ const presentations=createCaptureSkillPresentationAssetsV2({skillPresentations:{},
+  assetForId:id=>id===effect.spriteAssetId?asset:null});
+ assert.strictEqual(presentations.visualAsset(effect.spriteAssetId),asset);
+ assert.equal(presentations.visualAsset("nonexistent"),null);
+});

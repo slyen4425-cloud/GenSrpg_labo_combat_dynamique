@@ -10,6 +10,7 @@ import {createCombatState} from "../../src/core/combat/combat-state.js";
 import {createCombatBarrierV1} from "../../src/core/combat/combat-entity-v1.js";
 import {applyCombatDamageV1} from "../../src/core/combat/combat-damage-application-v1.js";
 import {createCombatEntityOverlayV1} from "../../src/adapters/renderer/combat-entity-overlay-v1.js";
+import {createCaptureSkillPresentationAssetsV2} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
 import {sweptSegmentRectContactV1} from "../../src/core/combat/combat-barrier-spatial-v1.js";
 try{
  const state=createCombatState({fighters:[
@@ -22,8 +23,10 @@ try{
   sourceSkillId:"wall",effect});
  const host=document.createElement("div");document.body.append(host);
  const wallArt="data:image/svg+xml,"+encodeURIComponent(\`<svg xmlns="http://www.w3.org/2000/svg" width="70" height="92"><path fill="#8ddaf4" d="M15 0H58L70 90H0Z"/></svg>\`);
- const overlay=createCombatEntityOverlayV1({fighterContainers:{player:host},
+ const presentationAssets=createCaptureSkillPresentationAssetsV2({skillPresentations:{},
   assetForId:id=>id==="test:wall-art"?{url:wallArt,frameCount:1}:null});
+ const overlay=createCombatEntityOverlayV1({fighterContainers:{player:host},
+  assetForId:id=>presentationAssets.visualAsset(id)});
  overlay.render(summoned.state);
  const stableWall=host.querySelector("[data-combat-entity-id]");
  if(!stableWall?.textContent.includes("80 / 80 PV"))

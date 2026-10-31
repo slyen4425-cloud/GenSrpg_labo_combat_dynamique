@@ -494,6 +494,11 @@ export function createCaptureSkillPresentationAssetsV2({
   return Object.freeze({
     presentationForSkill,
     statusPresentationFor,
+    // Share the canonical catalog resolver with persistent CombatEntity visuals.
+    // No duplicate asset registry or ID-to-URL translation in the battle UI.
+    visualAsset(assetId) {
+      return resolveAsset(assetId);
+    },
     audioAsset(assetId) {
       return resolveAudio(assetId);
     }

@@ -27,3 +27,7 @@
 ## Cache public / reproductibilité
 - Le HTML public, son bootstrap, l'éditeur, le chargeur de preview, la preview Combat et le contrôleur 1v1/2v2 partagent désormais une nouvelle révision ESM `wall-spatial-20261031`; le renderer d'entités et celui des projectiles ont eux-mêmes une révision dédiée. Aucun asset `global-assets` n'a été modifié. La sentinelle Ice VFX existante exige le même jeton sur ces six entrées.
 - Après cette modification de livraison, **toute CI précédente est indicative seulement** ; ne pas créer le checkpoint GREEN ni fusionner avant CI 5/5 sur le commit final et CI/Pages au SHA de fusion. Le comportement sur appareil réel demeure à tester par l'utilisateur.
+
+## Raccord final du sprite à la seule bibliothèque
+- Audit de la preview : `CaptureSkillPresentationAssetsV2` exposait `audioAsset` mais pas `visualAsset`, si bien que la projection de mur ne pouvait pas résoudre le vrai sprite malgré la sélection dans l'éditeur. Cause racine corrigée : la même instance du résolveur canonique fournit désormais `visualAsset`, consommé par l'overlay ; aucun catalogue doublon ni URL fabriquée. La couverture du vrai chemin de cette méthode figure désormais dans les tests unitaire et Chromium.
+- Les imports publics versionnés de la présentation sont rafraîchis à nouveau. Le SHA documentaire précédent ne suffit pas comme preuve de livraison : CI intégrale finale requise.

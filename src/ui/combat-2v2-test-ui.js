@@ -740,7 +740,7 @@ export async function mountCoop2v2Test({
 
   const combatEntityOverlay=createCombatEntityOverlayV1({fighterContainers,
     teamOf:actorId=>format.teamOf(actorId),
-    assetForId:assetId=>presentationAssets?.asset?.(assetId)??null
+    assetForId:assetId=>presentationAssets?.visualAsset?.(assetId)??null
   });
 
   const motionAnchors = Object.fromEntries(
