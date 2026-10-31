@@ -51,7 +51,7 @@ test("the projectile waits for each new tap instead of firing at initial prepara
   assert.equal(released[0].action.chargeState.damage,15);
   assert.equal(released[0].action.chargeState.sizeMultiplier,1.2);
   assert.equal(released[0].action.impactAtMs,1500);
-  assert.equal(session.snapshot().fighters.maraileron.energy,energy-2,"each reinforcement is paid");
+  assert.equal(session.snapshot().fighters.maraileron.energy,energy-2*s.energyCost,"each reinforcement is paid");
   c.advance(300);assert.equal(resolved.length,1);
   runtime.dispose();
 });
