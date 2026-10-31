@@ -372,6 +372,10 @@ function humanTacticalStatusToContractV1(
   if(output.kind==="outgoing_damage_modifier"){
     output.modifierPct=finiteNumber(status.modifierPct,"Variation dégâts infligés (%)");
   }
+  if(output.kind==="incoming_effect_modifier"){
+    output.modifierPct=finiteNumber(status.modifierPct,"Variation effets reçus (%)");
+    output.affectedPolarity=requiredText(status.affectedPolarity,"Nature des effets reçus");
+  }
   if (output.kind === "stat_modifier") {
     if (status.activationCondition === "moving") output.activationCondition = "moving";
     output.statId = requiredText(
@@ -4803,6 +4807,7 @@ function tacticalStatusKindLabelV1(kind) {
   return {
     stat_modifier: "Modification de stat",
     outgoing_damage_modifier:"Dégâts infligés (tous types, %)",
+    incoming_effect_modifier:"Effets reçus (dégâts et soins, %)",
     stack_counter: "Compteur de charges (sans effet avant le seuil)",
     approach_time_modifier: "Temps de trajet de la créature",
     energy_regen_modifier: "Régénération d’énergie (%)",
@@ -5789,6 +5794,19 @@ function appendHumanSkillEffectV1(
   outgoingDamageConfig.className="skill-status-config__specific";
   outgoingDamageConfig.dataset.skillStatusConfigKind="outgoing_damage_modifier";
   outgoingDamageConfig.append(tacticalFieldV1("Dégâts infligés, tous éléments (%) — négatif = malus",outgoingDamagePctInput));
+  const incomingEffectPct=tacticalNumberInputV1("skillStatusIncomingEffectModifierPct",status.modifierPct??30,{step:"1"});
+  const incomingEffectScope=document.createElement("select");
+  incomingEffectScope.dataset.skillStatusIncomingEffectPolarity="true";
+  for(const [id,label] of [["detrimental","Négatifs — dégâts reçus"],["beneficial","Positifs — soins reçus"],["both","Les deux — dégâts et soins reçus"]]) createOption(incomingEffectScope,id,label);
+  incomingEffectScope.value=status.affectedPolarity??"detrimental";
+  const incomingEffectConfig=document.createElement("div");
+  incomingEffectConfig.className="skill-status-config__specific";
+  incomingEffectConfig.dataset.skillStatusConfigKind="incoming_effect_modifier";
+  incomingEffectConfig.append(tacticalFieldV1("Variation de puissance reçue (%) — positif = amplification",incomingEffectPct),
+    tacticalFieldV1("Effets concernés",incomingEffectScope));
+  const incomingNote=document.createElement("small");incomingNote.className="note";
+  incomingNote.textContent="Affecte les dégâts et/ou les soins PV reçus (directs, périodiques, zones et drain), indépendamment des défenses. N'amplifie pas la durée des autres statuts.";
+  incomingEffectConfig.append(incomingNote);
   const approachPct = tacticalNumberInputV1(
     "skillStatusApproachModifierPct", status.modifierPct ?? 50, { step: "1" }
   );
@@ -6267,6 +6285,7 @@ function appendHumanSkillEffectV1(
     triggeredBuffBox,
     statConfig,
     outgoingDamageConfig,
+    incomingEffectConfig,
     approachConfig,
     energyRegenConfig,
     skillCooldownConfig,
@@ -6581,6 +6600,12 @@ function appendHumanSkillEffectV1(
     })(),
     zoneStatusNumber("Dégâts infligés, tous types (%) — positif = bonus","skillZoneStatusOutgoingDamageModifierPct",
       zs.modifierPct ?? 0,{step:"1"},"outgoing_damage_modifier"),
+    zoneStatusNumber("Variation dégâts / soins reçus (%)","skillZoneStatusIncomingEffectModifierPct",
+      zs.modifierPct ?? 30,{step:"1"},"incoming_effect_modifier"),
+    (() => {const s=document.createElement("select");s.dataset.skillZoneStatusIncomingEffectPolarity="true";
+      for(const [v,label] of [["detrimental","Négatifs — dégâts"],["beneficial","Positifs — soins"],["both","Les deux"]])createOption(s,v,label);
+      s.value=zs.affectedPolarity??"detrimental";const f=tacticalFieldV1("Effets reçus concernés",s);
+      f.dataset.skillZoneStatusConfigKind="incoming_effect_modifier";return f;})(),
     zoneStatusNumber("Temps de trajet (%)","skillZoneStatusApproachModifierPct",
       zs.modifierPct ?? 50,{step:"1"},"approach_time_modifier"),
     zoneStatusNumber("Régénération d'énergie (%)","skillZoneStatusEnergyRegenModifierPct",
@@ -6776,6 +6801,9 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
       };
       if(zsKind==="outgoing_damage_modifier"){
         zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-outgoing-damage-modifier-pct]").value);
+      } else if(zsKind==="incoming_effect_modifier"){
+        zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-incoming-effect-modifier-pct]").value);
+        zs.affectedPolarity=row.querySelector("[data-skill-zone-status-incoming-effect-polarity]").value;
       } else if(zsKind==="stat_modifier"){
         zs.statId=row.querySelector("[data-skill-zone-status-stat-id]").value;
         zs.deltaPoints=Number(row.querySelector("[data-skill-zone-status-delta-points]").value);
@@ -6909,6 +6937,9 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
         );
       } else if(statusKind==="outgoing_damage_modifier"){
         status.modifierPct=Number(row.querySelector("[data-skill-status-outgoing-damage-modifier-pct]").value);
+      } else if(statusKind==="incoming_effect_modifier"){
+        status.modifierPct=Number(row.querySelector("[data-skill-status-incoming-effect-modifier-pct]").value);
+        status.affectedPolarity=row.querySelector("[data-skill-status-incoming-effect-polarity]").value;
       } else if (statusKind === "approach_time_modifier") {
         status.modifierPct = Number(row.querySelector("[data-skill-status-approach-modifier-pct]").value);
       } else if (statusKind === "energy_regen_modifier") {
