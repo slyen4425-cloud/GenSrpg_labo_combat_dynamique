@@ -6332,6 +6332,13 @@ function appendHumanSkillEffectV1(
    const wallScale=tacticalNumberInputV1("skillBarrierVisualScale",effect?.visualScale??1,{min:0.25,max:4,step:0.05});
    const wallForward=tacticalNumberInputV1("skillBarrierOffsetForward",effect?.offsetForwardPx??0,{min:-150,max:150,step:1});
    const wallUp=tacticalNumberInputV1("skillBarrierOffsetUp",effect?.offsetUpPx??0,{min:-150,max:150,step:1});
+   const wallPlacement=document.createElement("select");
+   wallPlacement.dataset.skillBarrierPlacementMode="true";
+   createOption(wallPlacement,"protected","Devant la créature protégée");
+   createOption(wallPlacement,"arena","Position libre dans l'arène");
+   wallPlacement.value=effect?.placementMode??"protected";
+   const wallArenaX=tacticalNumberInputV1("skillBarrierArenaX",effect?.arenaXPct??50,{min:0,max:100,step:1});
+   const wallArenaY=tacticalNumberInputV1("skillBarrierArenaY",effect?.arenaYPct??50,{min:0,max:100,step:1});
    const barrierKinds=document.createElement("fieldset");
   barrierKinds.className="editor-choice-group";
   const barrierLegend=document.createElement("legend");
@@ -6349,6 +6356,9 @@ function appendHumanSkillEffectV1(
     tacticalFieldV1("PV par point de stat (coefficient libre)",barrierHpRatio),
      tacticalFieldV1("Sprite du mur (bibliothèque de zones)",barrierSprite),
      tacticalFieldV1("Taille visuelle et collision du mur",wallScale),
+     tacticalFieldV1("Placement du mur",wallPlacement),
+     tacticalFieldV1("Position X dans l'arène (%) si libre",wallArenaX),
+     tacticalFieldV1("Position Y dans l'arène (%) si libre",wallArenaY),
      tacticalFieldV1("Avancée vers l’ennemi (px)",wallForward),
      tacticalFieldV1("Décalage en hauteur (px)",wallUp),barrierKinds,barrierHelp);
 
@@ -6848,6 +6858,11 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
       visualScale:Number(row.querySelector("[data-skill-barrier-visual-scale]").value),
       offsetForwardPx:Number(row.querySelector("[data-skill-barrier-offset-forward]").value),
       offsetUpPx:Number(row.querySelector("[data-skill-barrier-offset-up]").value),
+      ...(row.querySelector("[data-skill-barrier-placement-mode]").value==="arena"?{
+        placementMode:"arena",
+        arenaXPct:Number(row.querySelector("[data-skill-barrier-arena-x]").value),
+        arenaYPct:Number(row.querySelector("[data-skill-barrier-arena-y]").value)
+      }:{}),
       ...(row.querySelector("[data-skill-barrier-sprite-asset-id]")?.value
         ? {spriteAssetId:row.querySelector("[data-skill-barrier-sprite-asset-id]").value}:{}),
       interceptKinds:[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]

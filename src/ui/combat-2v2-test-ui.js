@@ -738,7 +738,7 @@ export async function mountCoop2v2Test({
     ])
   );
 
-  const combatEntityOverlay=createCombatEntityOverlayV1({fighterContainers,
+  const combatEntityOverlay=createCombatEntityOverlayV1({fighterContainers,arenaHost:arena,
     teamOf:actorId=>format.teamOf(actorId),
     assetForId:assetId=>presentationAssets?.visualAsset?.(assetId)??null
   });

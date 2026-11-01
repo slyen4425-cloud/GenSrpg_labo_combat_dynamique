@@ -320,7 +320,7 @@ export async function mountCombatTest({
     opponent: requiredElement(root, '[data-demo-slot="opponent"]')
   };
 
-  const combatEntityOverlay=createCombatEntityOverlayV1({fighterContainers,
+  const combatEntityOverlay=createCombatEntityOverlayV1({fighterContainers,arenaHost:arena,
     // The same author-selected visual asset resolver used by the 2v2 scene.
     assetForId:assetId=>presentationAssets?.visualAsset?.(assetId)
       ??presentationAssets?.asset?.(assetId)??null

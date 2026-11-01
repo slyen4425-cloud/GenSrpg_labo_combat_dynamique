@@ -18,6 +18,9 @@ export function createCombatBarrierV1({state,sourceActorId,protectedActorId,sour
   const record=frozen({id,kind:"barrier",ownerActorId:sourceActorId,protectedActorId,sourceSkillId,
     statId:effect.statId,statPoints,hpPerStatPoint:effect.hpPerStatPoint,hp:maxHp,maxHp,
     visualScale:effect.visualScale??1,offsetForwardPx:effect.offsetForwardPx??0,offsetUpPx:effect.offsetUpPx??0,
+    ...(effect.placementMode==="arena"?{
+      placementMode:"arena",arenaXPct:effect.arenaXPct,arenaYPct:effect.arenaYPct
+    }:{}),
     interceptKinds:effect.interceptKinds,...(effect.spriteAssetId?{spriteAssetId:effect.spriteAssetId}:{}),createdAtMs:atMs});
   return frozen({outcome:previous?"refreshed":"created",record,
     state:frozen({...state,combatEntities:frozen([...current.filter(entry=>!same(entry)),record])})});

@@ -172,7 +172,8 @@ function effectSentence(e,{perCharge=false}={}){
       (e.statId==="glace"?"Glace":e.statId)+
       " du lanceur au moment de l'invocation. Intercepte : "+
       words(e.interceptKinds.map(k=>k==="contact"?"contact":k==="beam"?"rayons":"projectiles"))+
-      " ; les dégâts excédentaires touchent leur cible.")];
+      " ; les dégâts excédentaires touchent leur cible."+
+      (e.placementMode==="arena"?" Position libre : X "+num(e.arenaXPct)+" %, Y "+num(e.arenaYPct)+" %.":""))];
     case "force_reserve_switch":return [
       "Force la créature ennemie choisie dans sa réserve à entrer en combat à la place de la créature adverse active, si l'attaque touche."
     ];
