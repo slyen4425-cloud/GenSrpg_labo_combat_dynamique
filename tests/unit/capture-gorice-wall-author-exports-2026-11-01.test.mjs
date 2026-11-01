@@ -10,7 +10,8 @@ const load=path=>readFileSync(new URL("../../"+path,import.meta.url),"utf8");
 const creatureFile="data/capture/showcase/gorice.capture-creature-transfer-v1.json";
 const skillFile="data/capture/showcase/mur_de_glace.capture-skill-transfer-v1.json";
 const creatureSource="data/capture/source-exports/gensrpg-capture-creature-gorice-author-2026-11-01.json";
-const skillSource="data/capture/source-exports/gensrpg-capture-skill-mur_de_glace-author-2026-11-01.json";
+const skillSource="data/capture/source-exports/gensrpg-capture-skill-mur_de_glace-author-2026-11-01-v2.json";
+const historicalSkillSource="data/capture/source-exports/gensrpg-capture-skill-mur_de_glace-author-2026-11-01.json";
 const registry=normalizeCaptureStatRegistryV1(JSON.parse(load("data/capture/monster-capture-stat-registry.v1.json")));
 const importRecord=(path)=>importCaptureTransferJsonV1(load(path),{statRegistry:registry});
 test("Gorice: preserve exact author export and one authoritative vitrine ID",()=>{
@@ -30,16 +31,18 @@ test("Gorice: preserve exact author export and one authoritative vitrine ID",()=
 });
 test("Mur de glace: exact author source, valid skill and no extra entry",()=>{
  const source=load(skillSource),live=load(skillFile);
- assert.equal(createHash("sha256").update(source).digest("hex"),"5e87c01a0f53112fbb803604a5a5cc8a2caf0ade8f3dd75e046e6537e51a52b0");
+ assert.equal(createHash("sha256").update(load(historicalSkillSource)).digest("hex"),"5e87c01a0f53112fbb803604a5a5cc8a2caf0ade8f3dd75e046e6537e51a52b0");
+ assert.equal(createHash("sha256").update(source).digest("hex"),"48bed1db51ee649e95dcc20ab6aff2c4e46229ac33445bcb1a31508283a05872");
  assert.deepEqual(JSON.parse(live),JSON.parse(source));
  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(x=>x===skillFile).length,1);
  const v=importRecord(skillFile);assert.equal(v.kind,"skill");
  assert.equal(v.value.draft.id,"mur_de_glace");assert.equal(v.value.draft.requiredLevel,10);
  const e=v.value.draft.definition.effects[0];
  assert.equal(e.spriteAssetId,"pack:capture:sprite-mur-glace-arcanique-01");
- assert.equal(e.visualScale,1);assert.equal(e.offsetForwardPx,80);assert.equal(e.offsetUpPx,50);
- assert.deepEqual(e.interceptKinds,["projectile","beam"]);
- assert.equal(e.placementMode??"protected","protected");
+ assert.equal(e.visualScale,4);assert.equal(e.visualScaleX,1.5);
+ assert.equal(e.offsetForwardPx,0);assert.equal(e.offsetUpPx,50);
+ assert.deepEqual(e.interceptKinds,["projectile","beam","contact"]);
+ assert.equal(e.placementMode,"arena");assert.equal(e.arenaXPct,47);assert.equal(e.arenaYPct,55);
  const round=importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(v.value.draft),{statRegistry:registry});
  assert.deepEqual(round.value.draft.definition.effects,v.value.draft.definition.effects);
 });
