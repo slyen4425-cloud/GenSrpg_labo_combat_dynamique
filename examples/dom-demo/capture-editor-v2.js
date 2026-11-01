@@ -433,6 +433,9 @@ function buildPreviewPresentationAssets(
 
   return Object.freeze({
     asset(assetId) { return resolvePreviewPresentationAsset(assetId); },
+    // The same native asset resolver must reach persistent wall overlays in
+    // both 1v1 and 2v2. 2v2 reads visualAsset, not the legacy asset alias.
+    visualAsset(assetId) { return native.visualAsset(assetId); },
     presentationForArena(arenaId) {
       return demoPresentationAssets.presentationForArena(
         arenaId
