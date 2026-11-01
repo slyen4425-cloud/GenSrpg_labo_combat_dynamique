@@ -725,6 +725,7 @@ export async function mountCombatDemo({
       targetSlot = null,
       onPhase = null,
       onContact = null,
+      obstacleRectsFor = null,
       onFootfall = null,
       holdOnContact = false,
       burrowTerrainSprites = null
@@ -888,12 +889,16 @@ export async function mountCombatDemo({
             sourceModel: slot.collisionModel,
             targetModel: target.collisionModel,
             continuous: approachMode !== "teleport",
-            onContact() {
+            // The same actor-body watcher checks live CombatEntityOverlay
+            // wall bounds, not a second RAF or an inferred hit at timeout.
+            obstacleRectsFor: approachMode === "ground" ? obstacleRectsFor : null,
+            sourceRectFor: () => slot.motion.getBoundingClientRect(),
+            onContact(contact) {
               // Aerial contact resolves damage once through CombatRuntime,
               // but the creature must complete its planned dive and normal
               // home phase. Only ground contact can stop outbound travel.
               if (approachMode === "aerial") {
-                onContact();
+                onContact(contact);
                 return;
               }
               if (
@@ -911,7 +916,7 @@ export async function mountCombatDemo({
                 const paused = holdOnContact === true &&
                   typeof slot.renderer.pauseActive === "function" &&
                   slot.renderer.pauseActive();
-                const contactResult = onContact();
+                const contactResult = onContact(contact);
                 if (paused && contactResult?.outcome === "contact_held") {
                   heldAtContact = true;
                   contactWatcher?.cancel();
@@ -922,7 +927,7 @@ export async function mountCombatDemo({
                 return;
               }
 
-              onContact();
+              onContact(contact);
             }
           })
         : null;
