@@ -206,6 +206,30 @@ try{
  contactWatch.cancel();
  if(wallContact?.combatEntityId!==summoned.record.id||observations>3)
    throw Error("real DOM wall failed to stop the moving-model contact observer");
+ // Real Chromium impact must appear at the SAME contacted wall, not at the
+ // protected fighter's centre; the existing FX renderer owns both paths.
+ const impactFx=createDomSkillFxRenderer({arena:battlefield,
+   anchors:{player:hero,opponent:foe},targetAnchors:{player:hero,opponent:foe},
+   presentationForSkill:()=>({impact:{url:wallArt,displayScale:1,opacity:1}}),
+   animate:()=>({finished:new Promise(()=>{}),cancel(){}})
+ });
+ const impactPoint=contacts[0].contactPoint;
+ impactFx.play({type:"impact",skillId:"poing_givrant",targetSlot:"player",
+   impactPoint,combatEntityId:summoned.record.id,durationMs:420});
+ const wallImpact=battlefield.querySelector('[data-combat-entity-impact-id]');
+ if(!wallImpact||wallImpact.dataset.combatEntityImpactId!==summoned.record.id)
+   throw Error("wall did not receive the skill impact sprite");
+ const left=parseFloat(wallImpact.style.left),top=parseFloat(wallImpact.style.top);
+ const arenaBounds=battlefield.getBoundingClientRect();
+ if(Math.abs(left-(impactPoint.x-arenaBounds.left))>1||
+    Math.abs(top-(impactPoint.y-arenaBounds.top))>1)
+   throw Error("impact sprite remained on protected fighter rather than wall contact");
+ const prevCount=battlefield.querySelectorAll('[data-skill-fx="impact"]').length;
+ impactFx.play({type:"impact",skillId:"poing_givrant",targetSlot:"player",
+   combatEntityId:"nonexistent-wall",durationMs:420});
+ if(battlefield.querySelectorAll('[data-skill-fx="impact"]').length!==prevCount)
+   throw Error("missing wall must not paint fake impact on protected creature");
+ impactFx.dispose();
  attackFx.dispose();liveOverlay.dispose();battlefield.remove();
  document.body.dataset.barrierOverlaySmoke="pass:persistent-sprite:geometry:ground-stop:80hp:hit25:55hp";
 }catch(e){document.body.dataset.barrierOverlaySmoke="error:"+e.message;}
