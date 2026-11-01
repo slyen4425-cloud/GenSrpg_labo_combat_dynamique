@@ -74,6 +74,10 @@ try{
  const arenaOverlay=createCombatEntityOverlayV1({fighterContainers:{player:host},arenaHost:stage,
    assetForId:id=>presentationAssets.visualAsset(id)});
  arenaOverlay.render(arenaPlaced.state);
+  const wallPlane=stage.querySelector("[data-combat-entities-arena-host]");
+  if(!wallPlane||getComputedStyle(wallPlane).zIndex!=="3"||
+     stage.dataset.combatEntityArenaActive!=="true")
+    throw Error("arena wall must paint between enemy (3) and player (4)");
  const spriteRect=arenaOverlay.collisionRectsFor({sourceActorId:"opponent",targetActorId:"player"})[0]?.rect;
  const arenaRect=stage.getBoundingClientRect();
  if(!spriteRect||Math.abs((spriteRect.left+spriteRect.width/2-arenaRect.left)/arenaRect.width-.25)>.07||
@@ -83,8 +87,29 @@ try{
    to:{x:spriteRect.right+40,y:spriteRect.top+spriteRect.height/2},
    barriers:arenaOverlay.collisionRectsFor({sourceActorId:"opponent",targetActorId:"player"})});
  if(arenaSegment?.entityId!==arenaPlaced.record.id)throw Error("arena wall has no real collision");
- arenaOverlay.dispose();stage.remove();
- // Chromium projection: wall behind the defender, with the same sprite rect.
+ arenaOverlay.dispose();
+  if(stage.dataset.combatEntityArenaActive)throw Error("arena-layer flag not removed on dispose");
+  stage.remove();
+ // Author width and height must change the same visible art + collision rectangle.
+  const stretchStage=document.createElement("div");
+  stretchStage.style.cssText="position:relative;width:400px;height:220px;";
+  document.body.append(stretchStage);
+  const stretching=createCombatBarrierV1({state,sourceActorId:"player",protectedActorId:"player",
+    sourceSkillId:"stretch-test",effect:{...effect,placementMode:"arena",arenaXPct:25,arenaYPct:65,
+      visualScale:2,visualScaleX:1.75,visualScaleY:0.5}});
+  const stretchOverlay=createCombatEntityOverlayV1({fighterContainers:{player:host},arenaHost:stretchStage,
+    assetForId:id=>presentationAssets.visualAsset(id)});
+  stretchOverlay.render(stretching.state);
+  const wallBox=stretchStage.querySelector("[data-combat-entity-sprite]").getBoundingClientRect();
+  const wallViewport=stretchStage.querySelector("[data-combat-entity-visual-viewport]").getBoundingClientRect();
+  if(Math.abs(wallBox.width-245)>1||Math.abs(wallBox.height-92)>1||
+     Math.abs(wallViewport.width-245)>1||Math.abs(wallViewport.height-70)>1)
+    throw Error("independent X/Y scales resized collision wrapper but not actual atlas art");
+  const hitBox=stretchOverlay.collisionRectsFor({sourceActorId:"opponent",targetActorId:"player"})[0]?.rect;
+  if(!hitBox||Math.abs(hitBox.width-245)>1||Math.abs(hitBox.height-92)>1)
+    throw Error("wall collision geometry does not use X/Y scales");
+  stretchOverlay.dispose();stretchStage.remove();
+  // Chromium projection: wall behind the defender, with the same sprite rect.
  const rearStage=document.createElement("div");
  rearStage.style.cssText="position:relative;width:600px;height:250px;";
  const rearHero=document.createElement("div"),rearFoe=document.createElement("div");
@@ -246,7 +271,13 @@ document.addEventListener("DOMContentLoaded",()=>{
       !coordinateGuide.textContent.includes("0 bord gauche")||
       !coordinateGuide.textContent.includes("100 en bas"))
      throw Error("free placement has no understandable coordinate guide");
-   const kinds=[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
+   const scale=row.querySelector("[data-skill-barrier-visual-scale]");
+    const scaleX=row.querySelector("[data-skill-barrier-visual-scale-x]");
+    const scaleY=row.querySelector("[data-skill-barrier-visual-scale-y]");
+    if(!scale||!scaleX||!scaleY||scale.max!=="12"||scaleX.max!=="8"||scaleY.max!=="8")
+      throw Error("wall editor missing independent X/Y scale and greater uniform scale");
+    scale.value="7";scaleX.value="1.75";scaleY.value="0.65";
+    const kinds=[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
      .filter(x=>x.checked).map(x=>x.value);
    if(ratio.value!=="1.5"||kinds.length!==3||!row.querySelector("[data-skill-barrier-sprite-asset-id]")||
      !row.querySelector("[data-skill-barrier-visual-scale]")||

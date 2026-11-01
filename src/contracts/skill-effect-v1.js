@@ -111,7 +111,7 @@ const FIELDS_BY_KIND = Object.freeze({
   ]),
   summon_entity: new Set([
     ...COMMON_FIELDS, "entityKind", "statId", "hpPerStatPoint", "interceptKinds", "spriteAssetId",
-    "visualScale", "offsetForwardPx", "offsetUpPx", "placementMode", "arenaXPct", "arenaYPct"
+    "visualScale", "visualScaleX", "visualScaleY", "offsetForwardPx", "offsetUpPx", "placementMode", "arenaXPct", "arenaYPct"
   ])
 });
 
@@ -330,8 +330,14 @@ export function normalizeSkillEffectV1(input) {
     if(value.spriteAssetId != null) output.spriteAssetId=requiredString(value.spriteAssetId,"summon_entity.spriteAssetId");
     if(value.visualScale != null){
       const scale=positiveNumber(value.visualScale,"summon_entity.visualScale");
-      if(scale<0.25||scale>4)throw new RangeError("summon_entity.visualScale must be 0.25 to 4");
+      if(scale<0.25||scale>12)throw new RangeError("summon_entity.visualScale must be 0.25 to 12");
       output.visualScale=scale;
+    }
+    for(const axis of ["visualScaleX","visualScaleY"]){
+      if(value[axis]==null)continue;
+      const scale=positiveNumber(value[axis],"summon_entity."+axis);
+      if(scale<0.25||scale>8)throw new RangeError("summon_entity."+axis+" must be 0.25 to 8");
+      output[axis]=scale;
     }
     for(const name of ["offsetForwardPx","offsetUpPx"]){
       if(value[name]==null)continue;

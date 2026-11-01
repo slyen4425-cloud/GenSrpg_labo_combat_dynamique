@@ -24,7 +24,8 @@ test("real wall contract retains editable HP coefficient and an authored sprite 
  assert.equal(wall.hpPerStatPoint,2.5);
  assert.equal(wall.visualScale,1.4);
  assert.equal(wall.offsetForwardPx,25);
- assert.throws(()=>normalizeSkillEffectV1({...effect,visualScale:5}),/visualScale/);
+ assert.equal(normalizeSkillEffectV1({...effect,visualScale:5}).visualScale,5);
+ assert.throws(()=>normalizeSkillEffectV1({...effect,visualScale:13}),/visualScale/);
  assert.throws(()=>normalizeSkillEffectV1({...effect,offsetUpPx:300}),/offsetUpPx/);
 });
 

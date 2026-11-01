@@ -25,7 +25,9 @@ export function createCombatBarrierV1({state,sourceActorId,protectedActorId,sour
   const id=previous?.id??("barrier:"+sourceActorId+":"+sourceSkillId+":"+protectedActorId);
   const record=frozen({id,kind:"barrier",ownerActorId:sourceActorId,protectedActorId,sourceSkillId,
     statId:effect.statId,statPoints,hpPerStatPoint:effect.hpPerStatPoint,hp:maxHp,maxHp,
-    visualScale:effect.visualScale??1,offsetForwardPx:effect.offsetForwardPx??0,offsetUpPx:effect.offsetUpPx??0,
+    visualScale:effect.visualScale??1,
+    visualScaleX:effect.visualScaleX??1,visualScaleY:effect.visualScaleY??1,
+    offsetForwardPx:effect.offsetForwardPx??0,offsetUpPx:effect.offsetUpPx??0,
     ...(effect.placementMode==="arena"?{
       placementMode:"arena",arenaXPct:effect.arenaXPct,arenaYPct:effect.arenaYPct
     }:effect.placementMode==="behind"?{placementMode:"behind"}:{}),
