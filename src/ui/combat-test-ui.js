@@ -101,6 +101,13 @@ const ELEMENT_LABELS = Object.freeze({
   shadow: "Ombre"
 });
 
+// Self-only abilities follow the same Skill Contract in 1v1 as in 2v2.
+export function combat1v1SkillTargetIdV1(actorId,skill) {
+  if ((skill?.targetRelations ?? []).includes("self") &&
+      !(skill?.targetRelations ?? []).includes("enemy")) return actorId;
+  return actorId === "player" ? "opponent" : "player";
+}
+
 const OUTCOME_LABELS = Object.freeze({
   hit: "touche",
   reflected: "renvoyée",
@@ -112,6 +119,7 @@ const OUTCOME_LABELS = Object.freeze({
   interrupted: "interrompue",
   out_of_range: "hors portée",
   insufficient_energy: "énergie insuffisante",
+  no_stat_points: "Invocation impossible : statistique requise à 0",
   action_in_progress: "action déjà en cours",
   no_active_member: "aucun monstre actif",
   active_member_present: "rappelle d'abord ton monstre",
@@ -657,7 +665,7 @@ export async function mountCombatTest({
 
         const result = runtime.startSkill({
           actorId: "player",
-          targetId: "opponent",
+          targetId: combat1v1SkillTargetIdV1("player",skill),
           skill
         });
 
@@ -891,7 +899,7 @@ export async function mountCombatTest({
       const preview = hasActive && hasOpponent
         ? session.previewSkill({
             actorId: "player",
-            targetId: "opponent",
+            targetId: combat1v1SkillTargetIdV1("player",skill),
             skill
           })
         : { ok: false };
@@ -900,10 +908,20 @@ export async function mountCombatTest({
         actorId:"player",skillId:skill.id
       });
       const canCharge = chargedPreview.ok;
-      button.title = chargedPreview.outcome === "charge_preparing"
-        ? `Charge en cours : ${(chargedPreview.remainingCastMs/1000).toFixed(1)} s`
-        : chargedPreview.outcome === "insufficient_energy" ? "Énergie insuffisante pour renforcer"
-        : skill.name;
+      const statMissing = preview.outcome === "no_stat_points";
+      const help = button.querySelector("[data-combat-rejection-help]") ??
+        root.ownerDocument.createElement("small");
+      help.dataset.combatRejectionHelp = "true";
+      if (!help.parentNode) button.append(help);
+      help.hidden = !statMissing;
+      help.textContent = statMissing
+        ? `Invocation impossible : ${preview.statId} = 0 point`
+        : "";
+      button.title = statMissing ? help.textContent :
+        chargedPreview.outcome === "charge_preparing"
+          ? `Charge en cours : ${(chargedPreview.remainingCastMs/1000).toFixed(1)} s`
+          : chargedPreview.outcome === "insufficient_energy" ? "Énergie insuffisante pour renforcer"
+          : skill.name;
       button.disabled =
         koTransitionPending ||
         (!canCharge && (runtime.hasActiveActionFor("player") || !preview.ok));
