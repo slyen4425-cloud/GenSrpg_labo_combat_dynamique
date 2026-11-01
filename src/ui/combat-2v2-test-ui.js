@@ -1767,6 +1767,20 @@ export async function mountCoop2v2Test({
       renderState();
       queueAiDecisions();
     },
+    // Same native Runtime tick as 1v1; no second scheduler or damage owner.
+    onChannelStart({actorId}) {
+      if (actionRefs[actorId]) actionRefs[actorId].textContent = "Canalisation";
+    },
+    onChannelTick({actorId,targetId,skillId,tick}) {
+      fx.play({type:"impact",skillId,actorSlot:actorId,targetSlot:targetId});
+      combatAudio.play({type:"impact",skillId,actorSlot:actorId,targetSlot:targetId,loop:false});
+      if (actionRefs[actorId]) actionRefs[actorId].textContent = "Canalisation · " + tick;
+    },
+    onChannelEnd({actorId}) {
+      if (actionRefs[actorId]) actionRefs[actorId].textContent = "Prêt";
+      renderState();
+      queueAiDecisions();
+    },
     onClock(state) {
       statusFx?.syncCountdowns(state);
       renderAvailability();
