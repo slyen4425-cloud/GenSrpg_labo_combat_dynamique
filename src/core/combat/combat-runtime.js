@@ -43,7 +43,10 @@ export function createCombatRuntime({
   onInterrupted = () => {},
   onContactHoldStart = () => {},
   onContactHoldTick = () => {},
-  onContactHoldEnd = () => {}
+  onContactHoldEnd = () => {},
+  onChannelStart = () => {},
+  onChannelTick = () => {},
+  onChannelEnd = () => {}
 }) {
   if (!session || typeof session.advanceMs !== "function") {
     throw new TypeError("session with advanceMs() is required");
@@ -98,8 +101,10 @@ export function createCombatRuntime({
     const record = contactHoldsByActor.get(actorId);
     if (!record) return false;
     contactHoldsByActor.delete(actorId);
-    onContactHoldEnd(Object.freeze({ actorId, targetId:record.targetId,
-      skillId:record.skill.id, reason }));
+    const info=Object.freeze({ actorId, targetId:record.targetId,
+      skillId:record.skill.id, reason });
+    if(record.kind==="channeling")onChannelEnd(info);
+    else onContactHoldEnd(info);
     return true;
   }
   function syncContactHoldsWithState(state) {
@@ -110,35 +115,57 @@ export function createCombatRuntime({
         endContactHold(hold.actorId,"ko_or_absent");
       else if(!Number.isFinite(taken)||taken<hold.damageTakenTotalAtStart)
         endContactHold(hold.actorId,"actor_replaced");
-      else if(taken>hold.damageTakenTotalAtStart)
+      else if(hold.kind==="channeling"&&
+          hold.skill.channeling.stopOnStun&&hasActiveStatusKindV1(state,hold.actorId,"stun"))
+        endContactHold(hold.actorId,"stun");
+      else if(hold.kind==="channeling"&&
+          hold.skill.channeling.stopOnSilence&&hasActiveStatusKindV1(state,hold.actorId,"silence"))
+        endContactHold(hold.actorId,"silence");
+      else if(taken>hold.damageTakenTotalAtStart&&
+          (hold.kind!=="channeling"||hold.skill.channeling.stopOnDamage))
         endContactHold(hold.actorId,"damage_taken");
     }
   }
   function pulseContactHolds(atNowMs) {
     for(const hold of [...contactHoldsByActor.values()]){
       if(contactHoldsByActor.get(hold.actorId)!==hold)continue;
-      const duration=hold.skill.contactHold.maxDurationMs;
+      const config=hold.kind==="channeling"?hold.skill.channeling:hold.skill.contactHold;
+      const duration=config.maxDurationMs;
       const endAt=duration?hold.startedAtClockMs+duration:Infinity;
       const until=Math.min(endAt,atNowMs);
       let count=0;
       while(contactHoldsByActor.get(hold.actorId)===hold &&
           hold.nextTickClockMs<=until){
-        const result=session.applyContactHoldTickV1({
-          actorId:hold.actorId,targetId:hold.targetId,skill:hold.skill,
-          contactedEntityId:readBarrierContact?.({sourceActorId:hold.actorId,
-            targetActorId:hold.targetId,kind:"contact",skillId:hold.skill.id})?.entityId??null,
-          atMs:Math.max(0,Number(session.snapshot().elapsedMs)-
-            (atNowMs-hold.nextTickClockMs))
-        });
+        if(hold.kind==="channeling"&&config.maxTicks!==null&&hold.ticks>=config.maxTicks){
+          endContactHold(hold.actorId,"max_ticks");break;
+        }
+        const tickAtMs=Math.max(0,Number(session.snapshot().elapsedMs)-
+          (atNowMs-hold.nextTickClockMs));
+        const result=hold.kind==="channeling"
+          ?session.applyChannelingTickV1({
+              actorId:hold.actorId,targetId:hold.targetId,skill:hold.skill,atMs:tickAtMs
+            })
+          :session.applyContactHoldTickV1({
+              actorId:hold.actorId,targetId:hold.targetId,skill:hold.skill,
+              contactedEntityId:readBarrierContact?.({sourceActorId:hold.actorId,
+                targetActorId:hold.targetId,kind:"contact",skillId:hold.skill.id})?.entityId??null,
+              atMs:tickAtMs
+            });
         if(!result.ok){endContactHold(hold.actorId,result.outcome);break;}
-        hold.nextTickClockMs+=hold.skill.contactHold.tickIntervalMs;
-        onContactHoldTick(Object.freeze({actorId:hold.actorId,targetId:hold.targetId,
-          skillId:hold.skill.id,events:result.events}));
+        hold.ticks=(hold.ticks??0)+1;
+        hold.nextTickClockMs+=config.tickIntervalMs;
+        const event=Object.freeze({actorId:hold.actorId,targetId:hold.targetId,
+          skillId:hold.skill.id,tick:hold.ticks,events:result.events});
+        if(hold.kind==="channeling")onChannelTick(event);
+        else onContactHoldTick(event);
         syncContactHoldsWithState(session.snapshot());
         if(++count>2000)throw new Error("contactHold max pulse safety exceeded");
       }
       if(contactHoldsByActor.get(hold.actorId)===hold&&atNowMs>=endAt)
         endContactHold(hold.actorId,"duration_expired");
+      else if(hold.kind==="channeling"&&contactHoldsByActor.get(hold.actorId)===hold&&
+        config.maxTicks!==null&&hold.ticks>=config.maxTicks)
+        endContactHold(hold.actorId,"max_ticks");
     }
   }
 
@@ -1002,6 +1029,22 @@ export function createCombatRuntime({
     }
 
     onResolved(resolution);
+    if(resolution.ok&&resolution.outcome==="hit"&&
+        effectiveAction.actionType==="skill"&&effectiveAction.skill?.channeling&&
+        Number(session.snapshot().fighters[effectiveAction.actorId]?.hp)>0&&
+        Number(session.snapshot().fighters[effectiveAction.targetId]?.hp)>0&&
+        !contactHoldsByActor.has(effectiveAction.actorId)){
+      const hold={
+        kind:"channeling",actorId:effectiveAction.actorId,targetId:effectiveAction.targetId,
+        skill:effectiveAction.skill,startedAtClockMs:atNowMs,
+        nextTickClockMs:atNowMs+effectiveAction.skill.channeling.tickIntervalMs,
+        ticks:0,damageTakenTotalAtStart:
+          Number(session.snapshot().fighters[effectiveAction.actorId]?.damageTakenTotal)||0
+      };
+      contactHoldsByActor.set(hold.actorId,hold);
+      onChannelStart(Object.freeze({actorId:hold.actorId,targetId:hold.targetId,
+        skillId:hold.skill.id}));
+    }
     if (mirrorContact) {
       returnMirroredProjectile(effectiveAction, atNowMs, contactPoint);
     }
@@ -1263,7 +1306,8 @@ export function createCombatRuntime({
       });
     }
     if (contactHoldsByActor.has(actorId))
-      return Object.freeze({ok:false,outcome:"contact_hold_active"});
+      return Object.freeze({ok:false,outcome:contactHoldsByActor.get(actorId).kind==="channeling"
+        ?"channeling_active":"contact_hold_active"});
     if (activeByActor.has(actorId)) {
       const record =
         activeByActor.get(actorId);

@@ -1,4 +1,5 @@
 import { isReserveEffectTargetScopeV2 } from "../../contracts/skill-effect-v1.js";
+import {hasActiveStatusKindV1} from "./status-effect-runtime-v1.js";
 import {
   addChargeTimeEffect,
   advanceCombatTime,
@@ -543,6 +544,34 @@ export function createCombatSession({
       events: result.events });
   }
 
+  // Channeling uses the existing tactical effects and fighter energy owner.
+  // Invalid ticks must leave both energy and targets untouched atomically.
+  function applyChannelingTickV1({actorId,targetId,skill,atMs}){
+    const config=skill?.channeling;
+    const source=state.fighters[actorId],target=state.fighters[targetId];
+    if(!config)return Object.freeze({ok:false,outcome:"not_channeling",state});
+    if(!source||!target||source.hp<=0||target.hp<=0)
+      return Object.freeze({ok:false,outcome:"channel_ko_or_absent",state});
+    if(config.stopOnStun&&hasActiveStatusKindV1(state,actorId,"stun"))
+      return Object.freeze({ok:false,outcome:"stun",state});
+    if(config.stopOnSilence&&hasActiveStatusKindV1(state,actorId,"silence"))
+      return Object.freeze({ok:false,outcome:"silence",state});
+    const cost=config.energyCostPerTick;
+    if(source.energy<cost)
+      return Object.freeze({ok:false,outcome:"insufficient_energy",state});
+    const paid=cost>0?withFighterEnergy(state,actorId,source.energy-cost):state;
+    const effects=applyImmediateTacticalEffectsV1({
+      state:paid,actorId,targetId,
+      skill:{id:skill.id,category:skill.category,form:skill.form,
+        element:skill.element,hitsIntangible:skill.hitsIntangible,
+        effects:config.effects},
+      atMs,combatAtMs:atMs,battleFormat
+    });
+    state=effects.state;
+    return Object.freeze({ok:true,outcome:"channel_tick",state,
+      energyPaid:cost,events:effects.events});
+  }
+
   function addChargeEffect(fighterId, effect) {
     state = addChargeTimeEffect(state, fighterId, effect);
     return state;
@@ -606,6 +635,7 @@ export function createCombatSession({
     advanceMs,
     advance,
     applyContactHoldTickV1,
+    applyChannelingTickV1,
     addChargeEffect,
     replaceFighter,
     departFighter,
