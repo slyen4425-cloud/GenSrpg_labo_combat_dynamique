@@ -976,6 +976,7 @@ export function resolveSkillCompletion({
     mobilityEvasion?.outcome ??
     "hit";
   let nextState = state;
+  let barrierIntercepted = false;
   const events = [
     event("skill-start", 0, {
       actorId,
@@ -1053,7 +1054,15 @@ export function resolveSkillCompletion({
           contactedEntityId: action.barrierContactId
         });
       nextState = applied.state;
+      barrierIntercepted = applied.entityId !== null;
 
+      if (barrierIntercepted) {
+        events.push(event("combat-entity-hit", impactAtMs, {
+          actorId: targetId, sourceActorId: actorId, skillId: skill.id,
+          entityId: applied.entityId, absorbedByEntity: applied.absorbedByEntity,
+          destroyedEntityId: applied.destroyedEntityId
+        }));
+      } else {
       events.push(event("hit", impactAtMs, {
         actorId: targetId,
         sourceActorId: actorId,
@@ -1070,10 +1079,11 @@ export function resolveSkillCompletion({
         hpBefore: applied.hpBefore,
         hpAfter: applied.hpAfter
       }));
+      }
 
       // A confirmed melee hit can trigger spikes even when its HP damage
       // was zero or shielded. Evades and mirror interceptions do not hit.
-      if (skill.form === "contact") {
+      if (skill.form === "contact" && !barrierIntercepted) {
         const thorns = applyCombatContactRetaliationV1({
           state: nextState, attackerId: actorId, defenderId: targetId,
           atMs: combatImpactAtMs
@@ -1090,7 +1100,7 @@ export function resolveSkillCompletion({
         }
       }
 
-      if (skill.effect.interruptsPreparation && !combatProtectionForIncomingV1({
+      if (!barrierIntercepted && skill.effect.interruptsPreparation && !combatProtectionForIncomingV1({
         state: nextState, targetActorId: targetId,
         domain: "negative_status", atMs: combatImpactAtMs,
         hitsIntangible: skill.hitsIntangible === true
@@ -1119,6 +1129,7 @@ export function resolveSkillCompletion({
           // No lifesteal from the return leg of a mirrored projectile.
           directDamageApplied: action.mirrorReturn ? 0 : applied.appliedDamage,
           contactedEntityId: action.barrierContactId,
+          blockedByBarrierTargetId: barrierIntercepted ? targetId : null,
           allowLifeSteal: !action.mirrorReturn
         });
       nextState = tactical.state;
@@ -1295,6 +1306,7 @@ export function resolveSkillCompletion({
     outcome,
     persistentZoneOnly:
       isPurePersistentZoneSkill(skill),
+    barrierIntercepted,
     state: nextState,
     reactionApplied: reaction?.skillId ?? null,
     evasionApplied:
