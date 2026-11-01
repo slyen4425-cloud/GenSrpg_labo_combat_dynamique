@@ -680,6 +680,12 @@ export function createCombatResolutionPresenter({
 
     switch (resolution.outcome) {
       case "hit": {
+        // The native combat-entity-hit event proves the wall intercepted
+        // this strike. No fighter body contact: no hit, recoil or KO pose.
+        // Its impact sprite/audio are handled by the existing FX plan.
+        if (resolution.events?.some(event=>event.type==="combat-entity-hit")) {
+          break;
+        }
         const hitEvent = resolution.events?.find(
           (item) =>
             item.type === "hit" &&
