@@ -37,7 +37,7 @@ test("RED: author skill transfer preserves unequal X/Y scale, no second wall",()
  const actual=round.value.draft.definition.effects[0];
  assert.equal(actual.visualScale,7);assert.equal(actual.visualScaleX,1.5);assert.equal(actual.visualScaleY,0.75);
  assert.equal(actual.placementMode,"arena");assert.equal(round.value.draft.definition.effects.length,1);
- assert.equal(original.draft.definition.effects[0].visualScaleX,undefined);
+ assert.equal(original.draft.definition.effects[0].visualScaleX,1.5);
 });
 test("RED: one arena wall renderer exposes cross-team layering, x/y geometry and authored editor fields",()=>{
  const renderer=source("src/adapters/renderer/combat-entity-overlay-v1.js");
