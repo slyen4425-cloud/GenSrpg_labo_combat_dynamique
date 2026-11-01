@@ -437,10 +437,10 @@ export async function mountCombatTest({
     targetCollisionModelFor(slotId) {
       return visuals.getCollisionModelFor(slotId);
     },
-    barrierCollisionRectsFor({sourceActorId,targetActorId}) {
+    barrierCollisionRectsFor({sourceActorId,targetActorId,kind}) {
       // Read only the visible wall sprite's live rectangle. Combat Damage
       // alone decides whether an observed ID absorbs an incoming projectile.
-      return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId});
+      return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId,kind});
     },
     anchors: {
       player: requiredElement(
