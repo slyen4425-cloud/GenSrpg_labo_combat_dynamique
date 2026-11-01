@@ -1994,6 +1994,94 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
+    // Real-browser sentinel: the native capture editor, not a parallel test form,
+    // saves and exports channeled effects using the existing skill contract.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-channeling-editor")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+      document.addEventListener("DOMContentLoaded",()=>{
+        const native=URL.createObjectURL.bind(URL);
+        URL.createObjectURL=blob=>{
+          if(blob.type.includes("json"))blob.text().then(content=>{
+            try{
+              const skill=JSON.parse(content).draft;
+              const ch=skill.definition.channeling;
+              const ok=skill.id==="lib_aqua_heal" &&
+                skill.definition.effects.length===0 &&
+                ch?.tickIntervalMs===750 && ch.maxDurationMs===3500 &&
+                ch.maxTicks===4 && ch.energyCostPerTick===3 &&
+                ch.stopOnDamage===false && ch.stopOnStun===true &&
+                ch.stopOnSilence===false && ch.effects.length===1 &&
+                ch.effects[0].kind==="heal" && ch.effects[0].amount===12 &&
+                ch.effects[0].targetScope==="self";
+              document.body.dataset.channelingEditorProbe=ok
+                ? "ok:750:3500:4:3:heal:self":"fail:export:"+JSON.stringify(ch);
+            }catch(e){document.body.dataset.channelingEditorProbe="fail:json:"+e.message;}
+          });
+          return native(blob);
+        };
+        let attempts=0;
+        const timer=setInterval(()=>{
+          const library=document.querySelector("[data-skill-library-select]");
+          if(!document.querySelector("[data-creature-library-state]")?.textContent?.includes("3 modèles vitrine chargés") ||
+             !library?.querySelector(\'option[value="lib_aqua_heal"]\')){
+            if(++attempts>65){clearInterval(timer);document.body.dataset.channelingEditorProbe="fail:startup";}
+            return;
+          }
+          clearInterval(timer);
+          try{
+            library.value="lib_aqua_heal";
+            library.dispatchEvent(new Event("change",{bubbles:true}));
+            for(const row of document.querySelectorAll("[data-skill-effects-host] [data-skill-effect-row]"))
+              row.querySelector("[data-skill-effect-remove]").click();
+            const root=document;
+            const set=(selector,value)=>{
+              const node=root.querySelector(selector);
+              if(!node)throw Error("missing "+selector);
+              node.value=String(value);node.dispatchEvent(new Event("change",{bubbles:true}));
+            };
+            set("[data-skill-form]","beam");
+            set("[data-skill-approach]","none");
+            set("[data-skill-travel-time]",0);
+            const toggle=root.querySelector("[data-skill-channeling-enabled]");
+            if(!toggle)throw Error("no native channel switch");
+            toggle.checked=true;toggle.dispatchEvent(new Event("change",{bubbles:true}));
+            if(root.querySelector("[data-skill-channeling-settings]").hidden)
+              throw Error("channel settings still hidden");
+            set("[data-skill-channeling-interval]",750);
+            set("[data-skill-channeling-duration]",3500);
+            set("[data-skill-channeling-max-ticks]",4);
+            set("[data-skill-channeling-energy]",3);
+            root.querySelector("[data-skill-channeling-stop-damage]").checked=false;
+            root.querySelector("[data-skill-channeling-stop-silence]").checked=false;
+            root.querySelector("[data-skill-channeling-effect-add]").click();
+            const row=root.querySelector("[data-skill-channeling-effects-host] [data-skill-effect-row]");
+            if(!row)throw Error("no shared tactical pulse row");
+            for(const selector of ["[data-skill-effect-kind]","[data-skill-effect-scope]"]){
+              const list=row.querySelector(selector);
+              if([...list.options].filter(o=>!o.disabled).some(o=>
+                selector.includes("kind")
+                ? !["damage","heal","apply_status","apply_marker"].includes(o.value)
+                : !["target","self"].includes(o.value)))
+                throw Error("forbidden channel pulse option exposed");
+            }
+            const edit=(selector,value)=>{
+              const input=row.querySelector(selector);
+              if(!input)throw Error("missing pulse "+selector);
+              input.value=String(value);input.dispatchEvent(new Event("change",{bubbles:true}));
+            };
+            edit("[data-skill-effect-kind]","heal");
+            edit("[data-skill-effect-scope]","self");
+            edit("[data-skill-effect-amount]",12);
+            root.querySelector("[data-skill-update]").click();
+            root.querySelector("[data-export-current-skill]").click();
+          }catch(e){document.body.dataset.channelingEditorProbe="fail:ui:"+e.message;}
+        },200);
+      });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
     res.writeHead(200, {
       "Content-Type": types[extname(filepath)] ?? "application/octet-stream",
       "Cache-Control": "no-store"
@@ -2106,6 +2194,13 @@ try {
     throw new Error("normal browser bootstrap: Glace stat absent from real rendered editor");
   }
   assertAquaHealSkill(normalDom, "normal browser bootstrap");
+  const channeledDom=await dumpDom(url+"?verify-channeling-editor=1");
+  assertCreatures(channeledDom,"channeling authoring browser bootstrap");
+  const channelProbe=channeledDom.match(/data-channeling-editor-probe="([^"]+)"/)?.[1]??"missing";
+  if(channelProbe!=="ok:750:3500:4:3:heal:self")
+    throw Error("Real channeling author UI/export failed: "+channelProbe+
+      " JS="+(channeledDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
+  console.log("Native channeling editor real Chrome: author, paid heal ticks and JSON export preserved");
   const soundtrackDom=await dumpDom(url+"?verify-soundtrack-authoring=1");
   assertCreatures(soundtrackDom,"soundtrack authoring real Chrome");
   const soundtrackProbe=soundtrackDom.match(/data-soundtrack-authoring-probe="([^"]+)"/)?.[1]??"missing";
