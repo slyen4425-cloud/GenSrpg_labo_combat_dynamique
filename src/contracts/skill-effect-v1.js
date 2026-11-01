@@ -313,16 +313,19 @@ export function normalizeSkillEffectV1(input) {
     }
     output.interceptKinds=Object.freeze([...kinds]);
     const placementMode=value.placementMode??"protected";
-    if(!["protected","arena"].includes(placementMode))
-      throw new RangeError("summon_entity.placementMode must be protected or arena");
+    if(!["protected","behind","arena"].includes(placementMode))
+      throw new RangeError("summon_entity.placementMode must be protected, behind or arena");
     if(placementMode==="arena"){
       const x=Number(value.arenaXPct),y=Number(value.arenaYPct);
       for(const [name,n] of [["arenaXPct",x],["arenaYPct",y]])
         if(!Number.isFinite(n)||n<0||n>100)
           throw new RangeError("summon_entity."+name+" must be between 0 and 100");
       output.placementMode="arena";output.arenaXPct=x;output.arenaYPct=y;
-    } else if(value.arenaXPct!=null||value.arenaYPct!=null){
-      throw new RangeError("arenaXPct and arenaYPct require placementMode arena");
+    } else {
+      if(value.arenaXPct!=null||value.arenaYPct!=null)
+        throw new RangeError("arenaXPct and arenaYPct require placementMode arena");
+      // Older author exports omit placementMode and still mean front.
+      if(placementMode==="behind")output.placementMode="behind";
     }
     if(value.spriteAssetId != null) output.spriteAssetId=requiredString(value.spriteAssetId,"summon_entity.spriteAssetId");
     if(value.visualScale != null){
