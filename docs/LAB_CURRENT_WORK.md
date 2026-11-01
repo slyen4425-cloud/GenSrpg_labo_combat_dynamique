@@ -1,3 +1,11 @@
+## 2026-11-01 — Mur invocable utilisateur : activation et auteur sans piège de forme
+- Base `gh-pages@2afe898b20b9a5061fa8687eaf5d2f679bfe4ff2` ; START `checkpoint/lab-start-wall-zero-stat-feedback-2026-11-01`, WORK `work/lab-wall-zero-stat-feedback-2026-11-01`.
+- Export fourni : `mur_de_glace` niveau 10 vs preset existant niveau 1 ; l'import refuse par défaut le conflit d'ID, sans appliquer le fichier. Explicitation en français de l'ancien/nouveau niveau, remplacement uniquement avec consentement utilisateur, aucune duplication.
+- Stat0 : `createCombatBarrierV1` connaissait `no_stat_points` après coût/cooldown ; `previewCombatBarrierStatsV1` partage le même calcul, `resolveSkillStart` refuse avant paiement. Refus visible en 1v1/2v2.
+- Ciblage : l'UI 1v1 ciblait systématiquement l'adversaire ; une compétence self-only se cible désormais elle-même selon le Skill Contract.
+- Auteur : menu « Invoquer un mur destructible » auto-configure une compétence mur isolée en défensif/sur soi ; pas de masquage des compétences mixtes. Tests RED, unitaire et navigateur réel, puis CI 5/5 exigée avant checkpoint GREEN/fusion/déploiement.
+- Rapport : `docs/LAB_WALL_ACTIVATION_FEEDBACK_2026-11-01.md`. Aucun changement à `main`, GenSrpg, Exploration, global-assets ni aux branches canalisation.
+
 ## 2026-11-01 — Reprise du core canalisé : horloge et régénération (validation de livraison)
 - Branche `work/lab-channeling-core-2026-11-01` ; base officielle inchangée `gh-pages@d0bfecf724f6f3ed70c1ae9bdd2d07289c713b83`, START `checkpoint/lab-start-channeling-core-2026-11-01`.
 - La sentinelle de timing était incorrecte : la résolution immédiate est à t=0, le premier tick doit être à t=1000, pas t=1100. La régénération native +1/2000 ms biaisait ensuite la sentinelle d'épuisement. Correction exclusivement dans le test fixture, sans modifier les propriétaires gameplay ni les réglages du jeu : `35ceeaf`, `e512728`.
