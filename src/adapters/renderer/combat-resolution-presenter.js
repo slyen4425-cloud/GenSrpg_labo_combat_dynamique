@@ -22,6 +22,7 @@ export function createCombatResolutionPresenter({
   audio = null,
   onActionContact = null,
   onActionTravelEnd = null,
+  barrierRectsFor = null,
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer,
   instantAttackAnticipationMs = DEFAULT_INSTANT_ATTACK_ANTICIPATION_MS
@@ -49,6 +50,9 @@ export function createCombatResolutionPresenter({
   }
   if (onActionTravelEnd !== null && typeof onActionTravelEnd !== "function") {
     throw new TypeError("onActionTravelEnd must be a function");
+  }
+  if (barrierRectsFor !== null && typeof barrierRectsFor !== "function") {
+    throw new TypeError("barrierRectsFor must be a function");
   }
   if (typeof setTimer !== "function" || typeof clearTimer !== "function") {
     throw new TypeError("timer functions are required");
@@ -450,6 +454,13 @@ export function createCombatResolutionPresenter({
           // duration: use a 1ms visual-only envelope, never mutate action.
           travelMs: Math.max(1, Number(action.travelMs) || 0),
           holdOnContact: Boolean(action.skill?.contactHold),
+          obstacleRectsFor: approachMode === "ground" &&
+            action.skill?.form === "contact" && barrierRectsFor
+              ? () => barrierRectsFor({
+                  sourceActorId: actorSlot, targetActorId: targetSlot,
+                  kind: "contact", skillId
+                })
+              : null,
           burrowTerrainSprites: approachMode === "burrow"
             ? fx?.burrowTerrainForSkill?.(skillId,actorSlot,targetSlot) ?? null
             : null,
@@ -461,12 +472,16 @@ export function createCombatResolutionPresenter({
             approachMode !== "burrow" &&
             action.skill?.form === "contact" &&
             typeof onActionContact === "function"
-              ? () =>
+              ? contact =>
                   onActionContact(
                     Object.freeze({
                       actorId: actorSlot,
                       targetId: targetSlot,
-                      skillId
+                      skillId,
+                      ...(contact?.combatEntityId ? {
+                        combatEntityId: contact.combatEntityId,
+                        contactPoint: contact.contactPoint ?? null
+                      } : {})
                     })
                   )
               : null,
