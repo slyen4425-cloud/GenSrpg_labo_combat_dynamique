@@ -6,6 +6,19 @@ import {extname,resolve,sep} from "node:path";
 import {spawn,spawnSync} from "node:child_process";
 import {once} from "node:events";
 const root=process.cwd(),mime={".html":"text/html",".js":"text/javascript",".mjs":"text/javascript",".css":"text/css",".json":"application/json"};
+// Pull exact bytes from the one canonical branch before starting virtual-clock Chrome.
+const media=new Map();
+for(const role of ["mur_glace","mur_glace_herisse","mur_glace_arcanique"]){
+ const file="capture/sprites/skills/murs_glace/"+role+"/"+role+"_atlas_12f.webp";
+ const remote="https://raw.githubusercontent.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/global-assets/assets/library/"+file;
+ const request=spawnSync("curl",["--fail","--location","--silent","--show-error","--retry","3","--retry-delay","1","--max-time","45",remote],
+   {encoding:null,maxBuffer:25*1024*1024,timeout:90000});
+ if(request.status!==0||request.error)throw Error("Cannot fetch canonical wall atlas "+remote+": "+String(request.error||request.stderr));
+ const bytes=request.stdout;
+ if(bytes.length<100||bytes.toString("ascii",0,4)!=="RIFF"||bytes.toString("ascii",8,12)!=="WEBP")
+   throw Error("Invalid remote WebP "+remote);
+ media.set(role+".webp",bytes);
+}
 const probe = `<script type="module">
 import {createCombatState} from "../../src/core/combat/combat-state.js";
 import {createCombatBarrierV1} from "../../src/core/combat/combat-entity-v1.js";
@@ -24,8 +37,15 @@ try{
    const asset=items[0];
    if(asset.resource?.frameCount!==12||asset.resource?.holdLastFrame!==true||asset.resource?.playbackMode!=="once")
       throw Error("wall animation metadata wrong "+id);
+   const canonical=globalVisualAssetUrl(asset.resource.file);
+   if(!canonical.startsWith("https://raw.githubusercontent.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/global-assets/"))
+     throw Error("wall is outside official library "+id);
+   const role=id==="pack:capture:sprite-mur-glace-01"?"mur_glace":
+     id==="pack:capture:sprite-mur-glace-herisse-01"?"mur_glace_herisse":"mur_glace_arcanique";
+   if(!canonical.includes("/murs_glace/"+role+"/"+role+"_atlas_12f.webp"))
+     throw Error("wrong wall atlas registration "+id);
    const imageAsset={
-     url:globalVisualAssetUrl(asset.resource.file),
+     url:"/__official_wall/"+role+".webp",
      frameCount:asset.resource.frameCount,frameMs:asset.resource.frameMs,
      playbackMode:asset.resource.playbackMode,holdLastFrame:asset.resource.holdLastFrame
    };
@@ -74,6 +94,11 @@ try{
 const server=createServer(async(req,res)=>{
  try{
   const path=decodeURIComponent(new URL(req.url,"http://localhost").pathname);
+  if(path.startsWith("/__official_wall/")){
+    const filename=path.slice("/__official_wall/".length),bytes=media.get(filename);
+    if(!bytes)return void res.writeHead(404).end("Unknown official wall atlas");
+    return void res.writeHead(200,{"Content-Type":"image/webp","Cache-Control":"no-store"}).end(bytes);
+  }
   const file=resolve(root,"."+path);if(!file.startsWith(root+sep))return void res.writeHead(403).end("Forbidden");
   let body=await readFile(file);
   if(path.endsWith("/capture-editor-v2.html"))body=Buffer.from(body.toString("utf8").replace("</head>",probe+"</head>"));
@@ -87,7 +112,7 @@ try{
  if(!bin)throw Error("Chromium binary required");
  const url="http://127.0.0.1:"+server.address().port+"/examples/dom-demo/capture-editor-v2.html";
  const child=spawn(bin,["--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage",
-   "--no-first-run","--virtual-time-budget=120000","--dump-dom",url],{stdio:["ignore","pipe","pipe"]});
+   "--no-first-run","--virtual-time-budget=50000","--dump-dom",url],{stdio:["ignore","pipe","pipe"]});
  const out=[],err=[];child.stdout.on("data",x=>out.push(x));child.stderr.on("data",x=>err.push(x));
  const exit=await Promise.race([once(child,"close").then(([code])=>code),
   new Promise((_,fail)=>{const t=setTimeout(()=>{child.kill("SIGKILL");fail(Error("persistent wall real browser timeout"));},110000);t.unref();child.once("close",()=>clearTimeout(t));})]);
