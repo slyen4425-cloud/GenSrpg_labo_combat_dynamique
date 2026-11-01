@@ -68,6 +68,14 @@ try{
    // The outer real-time job watchdog handles genuine stalls instead.
    await img.decode();
    if(img.naturalWidth!==6144||img.naturalHeight!==512)throw Error("wrong real atlas "+id);
+   // Verify actual final artwork (not merely a CSS transform to a blank tile).
+   // This is the frame that remains on screen until Combat Damage removes the wall.
+   const canvas=document.createElement("canvas");canvas.width=512;canvas.height=512;
+   const ctx=canvas.getContext("2d",{willReadFrequently:true});
+   ctx.drawImage(img,11*512,0,512,512,0,0,512,512);
+   const pixels=ctx.getImageData(0,0,512,512).data;
+   let visible=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>15)visible++;
+   if(visible<100)throw Error("final constructed wall frame is transparent or empty "+id);
    const plays=img.getAnimations();
    if(plays.length!==1)throw Error("wall construction was not animated "+id+" "+plays.length);
    const animation=plays[0];
