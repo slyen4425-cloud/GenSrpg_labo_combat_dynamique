@@ -12,8 +12,10 @@ const skill=()=>normalizeSkillDefinition({
     stopOnDamage:true,effects:[{kind:"damage",targetScope:"target",amount:12}]}
 });
 const session=()=>createCombatSession({fighters:[
-  {id:"hero",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10},
-  {id:"enemy",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10}
+  // Disable the normal +1 energy / 2 s regeneration only in this fixture:
+  // energy exhaustion must depend on channel tick payments alone.
+  {id:"hero",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,energyChargeAmount:0},
+  {id:"enemy",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,energyChargeAmount:0}
 ]});
 test("channeling is a normalized skill contract with strict tick budget and effects",()=>{
  const s=skill();assert.equal(s.channeling.tickIntervalMs,1000);
