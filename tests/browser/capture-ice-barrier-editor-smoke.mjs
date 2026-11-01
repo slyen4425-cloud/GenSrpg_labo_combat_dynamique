@@ -120,7 +120,7 @@ try{
  liveProjectile.style.left=(liveWall.rect.left-battlefield.getBoundingClientRect().left-25)+"px";
  queued.shift()();
  if(contacts.length!==1||contacts[0].combatEntityId!==summoned.record.id)
-   throw Error("late fighter model allowed projectile to bypass authored wall");
+   throw Error("late fighter model allowed projectile to bypass authored wall: "+JSON.stringify({contacts,wall:{left:liveWall.rect.left,top:liveWall.rect.top,right:liveWall.rect.right,bottom:liveWall.rect.bottom},projectile:{left:liveProjectile.getBoundingClientRect().left,top:liveProjectile.getBoundingClientRect().top,right:liveProjectile.getBoundingClientRect().right,bottom:liveProjectile.getBoundingClientRect().bottom},queued:queued.length}));
  const intercepted=applyCombatDamageV1({state:summoned.state,sourceActorId:"opponent",
    targetActorId:"player",damage:23,incomingKind:"projectile",contactedEntityId:contacts[0].combatEntityId});
  if(intercepted.absorbedByEntity!==23||intercepted.appliedDamage!==0||
