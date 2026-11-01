@@ -29,6 +29,7 @@ import {
   applyCombatContactRetaliationV1
 } from "./combat-damage-application-v1.js";
 import { combatProtectionForIncomingV1 } from "./combat-protection-v1.js";
+import { previewCombatBarrierStatsV1 } from "./combat-entity-v1.js";
 import {
   projectStatusStatEffectsV1
 } from "./status-effect-projection-v1.js";
@@ -540,6 +541,20 @@ export function resolveSkillStart({
             unsupportedTacticalEffect
         })
       ])
+    });
+  }
+
+  // Reject zero-HP summons before spending the skill's energy or registering
+  // cooldown/use. The barrier's own native stat budget is the only authority.
+  for (const effect of skill.effects ?? []) {
+    if (effect.kind !== "summon_entity") continue;
+    const budget = previewCombatBarrierStatsV1({state,sourceActorId:actorId,effect});
+    if (budget.canCreate) continue;
+    return Object.freeze({
+      ok:false,outcome:"no_stat_points",statId:effect.statId,skillId:skill.id,
+      state,events:Object.freeze([event("skill-rejected",0,{
+        actorId,skillId:skill.id,reason:"no_stat_points",statId:effect.statId
+      })])
     });
   }
 

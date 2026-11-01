@@ -1,14 +1,22 @@
 // Passive CombatEntity V1: one native combat-state authority, not a status
 // and not a fighter/roster replacement. Combat Damage owns every HP reduction.
 const frozen=value=>Object.freeze(value);
-export function createCombatBarrierV1({state,sourceActorId,protectedActorId,sourceSkillId,effect,atMs=state.elapsedMs}){
-  const source=state.fighters[sourceActorId],target=state.fighters[protectedActorId];
-  if(!source||!target)throw new RangeError("Unknown barrier owner or protected fighter");
+// The same calculation is used BEFORE payment and AT creation: no duplicated
+// HP rules, no invisible zero-HP wall with an already consumed cooldown.
+export function previewCombatBarrierStatsV1({state,sourceActorId,effect}){
+  const source=state.fighters[sourceActorId];
+  if(!source)throw new RangeError("Unknown barrier owner");
   if(effect.kind!=="summon_entity"||effect.entityKind!=="barrier")
     throw new RangeError("Expected summon_entity barrier effect");
   const statPoints=Number(source.statValuesById?.[effect.statId]??0);
   if(!Number.isFinite(statPoints)||statPoints<0)throw new RangeError("Invalid native stat for barrier");
   const maxHp=Math.round(statPoints*effect.hpPerStatPoint*100)/100;
+  return frozen({statPoints,maxHp,canCreate:maxHp>0});
+}
+export function createCombatBarrierV1({state,sourceActorId,protectedActorId,sourceSkillId,effect,atMs=state.elapsedMs}){
+  const target=state.fighters[protectedActorId];
+  if(!target)throw new RangeError("Unknown protected fighter");
+  const {statPoints,maxHp}=previewCombatBarrierStatsV1({state,sourceActorId,effect});
   if(maxHp<=0)return frozen({state,record:null,outcome:"no_stat_points"});
   const current=state.combatEntities??[];
   const same=entry=>entry.ownerActorId===sourceActorId&&entry.sourceSkillId===sourceSkillId&&

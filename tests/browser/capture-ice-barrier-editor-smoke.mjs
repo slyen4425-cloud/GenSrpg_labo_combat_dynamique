@@ -102,6 +102,11 @@ document.addEventListener("DOMContentLoaded",()=>{
    if(!row)throw Error("native effect row missing");
    const kind=row.querySelector("[data-skill-effect-kind]");
    kind.value="summon_entity";kind.dispatchEvent(new Event("change",{bubbles:true}));
+   if(document.querySelector("[data-skill-category]").value!=="defensive"||
+      document.querySelector("[data-skill-form]").value!=="self"||
+      document.querySelector("[data-skill-approach]").value!=="none"||
+      row.querySelector("[data-skill-effect-scope]").value!=="self")
+     throw Error("wall authoring did not auto-select defensive self-cast");
    const box=row.querySelector('[data-skill-effect-config-kind="summon_entity"]');
    if(!box||box.hidden||getComputedStyle(box).display==="none")throw Error("wall options hidden");
    const stat=row.querySelector("[data-skill-barrier-stat-id]");
@@ -128,7 +133,20 @@ document.addEventListener("DOMContentLoaded",()=>{
      !row.querySelector("[data-skill-barrier-offset-forward]")||
      !row.querySelector("[data-skill-barrier-offset-up]"))
      throw Error("wall HP and sprite options not editable");
-   document.body.dataset.barrierEditorSmoke="pass:real-editor:glace:1.5:intercepts:arena-x25-y65";
+   // Dedicated one-click wall authoring must use the same controls and
+   // not require the player to guess a melee/defense form.
+   document.querySelector("[data-skill-new]").click();
+   const addKind=document.querySelector("[data-skill-effect-add-kind]");
+   if(![...addKind.options].some(x=>x.value==="wall"))throw Error("wall shortcut missing");
+   addKind.value="wall";document.querySelector("[data-skill-effect-add]").click();
+   const shortcutRows=[...document.querySelectorAll("[data-skill-effects-host] [data-skill-effect-row]")];
+   if(shortcutRows.length!==1||
+      shortcutRows[0].querySelector("[data-skill-effect-kind]").value!=="summon_entity"||
+      shortcutRows[0].querySelector("[data-skill-effect-scope]").value!=="self"||
+      document.querySelector("[data-skill-form]").value!=="self"||
+      document.querySelector("[data-skill-category]").value!=="defensive")
+     throw Error("wall shortcut produced ambiguous skill form, target or multiple effects");
+   document.body.dataset.barrierEditorSmoke="pass:real-editor:glace:1.5:intercepts:arena-x25-y65:auto-self-shortcut";
   }catch(e){document.body.dataset.barrierEditorSmoke="error:"+e.message;}
  },2400);
 });

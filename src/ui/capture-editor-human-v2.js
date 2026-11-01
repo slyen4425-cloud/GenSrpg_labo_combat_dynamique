@@ -12621,8 +12621,48 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
   );
 
+  function autoConfigureStandaloneWallV1() {
+    const rows=[...skillEffectsHost.querySelectorAll("[data-skill-effect-row]")];
+    const onlyWall=rows.length===1 &&
+      rows[0].querySelector("[data-skill-effect-kind]")?.value==="summon_entity";
+    const otherMechanics=chargedEnabled?.checked||chargedEffectsEnabled?.checked||
+      contactHoldEnabled.checked;
+    if(!onlyWall||otherMechanics){
+      setStatus(root,
+        "Mur ajouté. Cette capacité comporte d'autres effets ou mécaniques : vérifie la forme et les cibles dans les réglages avancés.",
+        "warn");
+      return false;
+    }
+    // A standalone wall is a defensive self-cast, never a melee strike.
+    // SkillEffect still owns the summoned entity, and targetRelations are
+    // inferred by the existing author exporter (no duplicate authority).
+    one(root,"[data-skill-category]").value="defensive";
+    one(root,"[data-skill-form]").value="self";
+    one(root,"[data-skill-approach]").value="none";
+    one(root,"[data-skill-travel-time]").value="0";
+    rows[0].querySelector("[data-skill-effect-scope]").value="self";
+    for(const box of root.querySelectorAll("[data-skill-location-scope]"))
+      box.checked=box.value==="active";
+    beamStageLayout.sync();
+    updateBurrowStageVisibilityV1(root);
+    setStatus(root,
+      "Mur configuré automatiquement : Protection · Sur soi · Aucun déplacement. Choisis la statistique, le coefficient de PV et le sprite. Pour qu'il apparaisse, la créature doit avoir des points dans cette statistique.",
+      "ok");
+    return true;
+  }
   listen(skillEffectAddButton, "click", () => {
     const choice = one(root, "[data-skill-effect-add-kind]");
+    if (choice.value === "wall") {
+      appendHumanSkillEffectV1(root,{
+        kind:"summon_entity",targetScope:"self",entityKind:"barrier",
+        statId:"glace",hpPerStatPoint:1,
+        interceptKinds:["projectile","beam","contact"],
+        visualScale:1,offsetForwardPx:0,offsetUpPx:0
+      },statRegistry);
+      choice.value="standard";
+      autoConfigureStandaloneWallV1();
+      return;
+    }
     if (choice.value === "charged-effects") {
       chargedEffectsEnabled.checked=true;
       one(root,"[data-skill-charged-effects-config]").hidden=false;
@@ -12672,6 +12712,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       if (!row) return;
       if (event.target.matches("[data-skill-effect-kind]") && event.target.value === "summon_entity") {
         row.querySelector("[data-skill-effect-scope]").value="self";
+        if(effectsHost===skillEffectsHost)autoConfigureStandaloneWallV1();
       }
       if (event.target.matches("[data-skill-effect-kind]") && event.target.value === "force_reserve_switch") {
         // Author-only convenience: an enemy bench target must never be an
@@ -13582,12 +13623,30 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           importReplaceExisting.checked
             ? "replace"
             : "reject";
-        const plan =
-          planCaptureTransferImportV1({
+        let plan;
+        try {
+          plan = planCaptureTransferImportV1({
             currentDatabase,
             transfer,
             mode
           });
+        } catch (error) {
+          // A catalog preset can already occupy this exact skill ID.
+          // Preserve explicit replacement approval, but never leave the player
+          // thinking that the incoming required level was imported.
+          if (transfer.kind === "skill" &&
+              error.message.startsWith("Capture import conflict for existing skill:")) {
+            const incoming = transfer.value.draft;
+            const existing = configuredSkills.get(incoming.id);
+            throw new Error(
+              "Import refusé : « " + incoming.definition.name +
+              " » existe déjà (niveau " + (existing?.requiredLevel ?? "?") +
+              "). Ton fichier demande le niveau " + incoming.requiredLevel +
+              ". Pour conserver la version du fichier, coche « Remplacer explicitement les IDs existants », puis importe-le à nouveau."
+            );
+          }
+          throw error;
+        }
         const applyResult =
           applyCaptureTransferPlanToEditorStateV1({
             plan,
