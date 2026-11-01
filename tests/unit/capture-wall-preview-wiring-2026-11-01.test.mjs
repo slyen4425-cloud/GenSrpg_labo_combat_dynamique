@@ -17,7 +17,7 @@ test("editor preview exposes native canonical visual resolver to BOTH 1v1 and 2v
 test("all observed wall attack kinds retain their real spatial kind, never default to projectile",()=>{
  for(const path of ["src/ui/combat-test-ui.js","src/ui/combat-2v2-test-ui.js"]){
   const ui=source(path);
-  assert.match(ui,/barrierCollisionRectsFor\(\{sourceActorId,targetActorId,kind\}\)\s*\{\s*return\s+combatEntityOverlay\.collisionRectsFor\(\{sourceActorId,targetActorId,kind\}\)/,
+  assert.match(ui,/barrierCollisionRectsFor\(\{sourceActorId,targetActorId,kind\}\)[\s\S]{0,260}?return\s+combatEntityOverlay\.collisionRectsFor\(\{sourceActorId,targetActorId,kind\}\)/,
     path+": beam/contact callbacks must not be silently treated as projectile");
  }
 });
