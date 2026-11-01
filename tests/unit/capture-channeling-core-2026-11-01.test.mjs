@@ -59,13 +59,16 @@ test("one CombatRuntime clock starts, ticks and exhausts a channeled beam withou
  try{
   h.start();assert.equal(h.started.length,1);
   assert.equal(h.runtime.startSkill({actorId:"hero",targetId:"enemy",skill:skill()}).outcome,"channeling_active");
-  h.step(1099);assert.equal(h.ticks.length,0);
-  h.step(1100);assert.equal(h.ticks.length,1);
+  // The immediate cast resolves at clock 0; step(100) in start() only
+  // advances the fixture's clock and must NOT postpone the first channel tick.
+  h.step(999);assert.equal(h.ticks.length,0);
+  h.step(1000);assert.equal(h.ticks.length,1);
   assert.equal(h.combat.snapshot().fighters.hero.energy,7);
-  h.step(3100);assert.equal(h.ticks.length,3);
+  h.step(2999);assert.equal(h.ticks.length,2);
+  h.step(3000);assert.equal(h.ticks.length,3);
   assert.equal(h.combat.snapshot().fighters.hero.energy,1);
   const hp=h.combat.snapshot().fighters.enemy.hp;
-  h.step(4100);assert.equal(h.ticks.length,3);
+  h.step(4000);assert.equal(h.ticks.length,3);
   assert.equal(h.ended[0].reason,"insufficient_energy");
   assert.equal(h.combat.snapshot().fighters.enemy.hp,hp);
   h.step(5500);assert.equal(h.ticks.length,3);
