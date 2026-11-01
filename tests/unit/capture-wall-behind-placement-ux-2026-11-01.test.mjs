@@ -40,18 +40,20 @@ test("RED: Combat State snapshots a rear wall without changing HP, sprite or def
 test("RED: skill export/import survives behind placement without duplicate wall or legacy mutation",()=>{
  const src=JSON.parse(readFileSync(new URL("../../data/capture/showcase/mur_de_glace.capture-skill-transfer-v1.json",import.meta.url),"utf8"));
  const original=src.draft.definition.effects[0];
- const back=normalizeSkillEffectV1({...original,placementMode:"behind"});
+ const {arenaXPct,arenaYPct,...noArenaCoords}=original;
+ const back=normalizeSkillEffectV1({...noArenaCoords,placementMode:"behind"});
  const draft={...src.draft,definition:{...src.draft.definition,effects:[back]}};
  const imported=importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(draft));
  assert.equal(imported.value.draft.definition.effects.length,1);
  assert.equal(imported.value.draft.definition.effects[0].placementMode,"behind");
  assert.equal(imported.value.draft.definition.effects[0].statId,"glace");
- assert.equal(src.draft.definition.effects[0].placementMode,undefined);
+ assert.equal(src.draft.definition.effects[0].placementMode,"arena");
+ assert.equal(src.draft.definition.effects[0].arenaXPct,47);
 });
 test("RED: bestiary correctly explains a rear wall and that one strike never spills onto the fighter",()=>{
  const src=JSON.parse(readFileSync(new URL("../../data/capture/showcase/mur_de_glace.capture-skill-transfer-v1.json",import.meta.url),"utf8"));
  const skill=normalizeSkillDefinition({...src.draft.definition,
-   effects:[{...src.draft.definition.effects[0],placementMode:"behind"}]});
+   effects:[{...src.draft.definition.effects[0],arenaXPct:undefined,arenaYPct:undefined,placementMode:"behind"}]});
  const explanation=describeCaptureSkillV1(skill).sentences.join(" ");
  assert.match(explanation,/derrière/i);
  assert.match(explanation,/arrêt|bloqu|intercept/i);
