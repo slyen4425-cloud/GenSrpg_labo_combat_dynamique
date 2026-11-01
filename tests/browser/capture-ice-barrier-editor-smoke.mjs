@@ -95,6 +95,23 @@ try{
 document.addEventListener("DOMContentLoaded",()=>{
  setTimeout(()=>{
   try {
+   // The editor must hydrate the published skill automatically: no manual
+   // JSON import, no duplicate ID, and the player's approved sprite visible.
+   const library=document.querySelector("[data-skill-library-select]");
+   const matches=[...library.options].filter(o=>o.value==="mur_de_glace");
+   if(matches.length!==1)throw Error("one official Mur de glace library entry required");
+   library.value="mur_de_glace";
+   library.dispatchEvent(new Event("change",{bubbles:true}));
+   if(document.querySelector("[data-skill-required-level]").value!=="10"||
+      document.querySelector("[data-skill-energy-cost]").value!=="5"||
+      document.querySelector("[data-skill-preparation]").value!=="900"||
+      document.querySelector("[data-skill-form]").value!=="self")
+      throw Error("published Mur de glace configuration not loaded automatically");
+   const officialWallRow=document.querySelector("[data-skill-effects-host] [data-skill-effect-row]");
+   if(!officialWallRow||
+      officialWallRow.querySelector("[data-skill-effect-kind]").value!=="summon_entity"||
+      officialWallRow.querySelector("[data-skill-barrier-sprite-asset-id]").value!=="pack:capture:sprite-status-stone-shell-01")
+      throw Error("published Mur de glace has lost the player's provisional sprite");
    document.querySelector("[data-skill-new]").click();
    document.querySelector("[data-skill-effect-add-kind]").value="standard";
    document.querySelector("[data-skill-effect-add]").click();

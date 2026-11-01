@@ -1,3 +1,12 @@
+## 2026-11-01 — Mur de glace : source officielle remplacée par la configuration joueur (sans import répétitif)
+- Base `gh-pages@f5586947930a9a06ef250256c0f66bfb26d05397`, START `checkpoint/lab-start-wall-official-preset-2026-11-01`, WORK `work/lab-wall-official-preset-2026-11-01`.
+- Le seul preset `data/capture/showcase/mur_de_glace.capture-skill-transfer-v1.json` devient la version demandée : niveau 10, Défensif/Sur soi, énergie 5, préparation 900 ms, recharge 45 s, 1 PV/par point de Glace, sprite provisoire original. Métadonnées de présentation existantes conservées. Aucun clone ni nouveau catalogue.
+- Chargeur vitrine existant : fetch no-store + import unique `replace` dans le cache de session de l'éditeur au démarrage ; pas de manipulation manuelle d'ID/import.
+- RED réel `tests/unit/capture-wall-official-preset-2026-11-01.test.mjs` / Foundation run `41301148364` (ancien lvl 1 et coût 3). Sentinelles état Combat natif, export/import et navigateur réel d'hydratation du preset exigées.
+- Périmètre : JSON vitrine, tests unitaires du mur et browser smoke, ce fichier et `docs/LAB_WALL_OFFICIAL_PRESET_2026-11-01.md`. Contrats/règles moteur, global-assets, main, GenSrpg et Exploration inchangés. CI Foundation + 4 Chromium / GREEN final + PR gh-pages + Pages postmerge obligatoires.
+
+---
+
 ## 2026-11-01 — Mur invocable utilisateur : activation et auteur sans piège de forme
 - Base `gh-pages@2afe898b20b9a5061fa8687eaf5d2f679bfe4ff2` ; START `checkpoint/lab-start-wall-zero-stat-feedback-2026-11-01`, WORK `work/lab-wall-zero-stat-feedback-2026-11-01`.
 - Export fourni : `mur_de_glace` niveau 10 vs preset existant niveau 1 ; l'import refuse par défaut le conflit d'ID, sans appliquer le fichier. Explicitation en français de l'ancien/nouveau niveau, remplacement uniquement avec consentement utilisateur, aucune duplication.
