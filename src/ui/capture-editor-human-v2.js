@@ -2723,6 +2723,7 @@ export function humanSkillEditorFieldsFromDraftV1(
     approachMode:
       definition.approachMode ?? "none",
     contactHold: definition.contactHold ?? null,
+    channeling: definition.channeling ?? null,
     hitPresenceStates:
       definition.hitPresenceStates == null
         ? null
@@ -3054,6 +3055,21 @@ export function buildHumanSkillDraftV1(fields) {
           tickIntervalMs: finiteNumber(fields.contactHold.tickIntervalMs, "Intervalle maintien au contact"),
           maxDurationMs: finiteNumber(fields.contactHold.maxDurationMs ?? 0, "Durée maximale au contact"),
           effects: buildHumanTacticalSkillEffectsV1(fields.contactHold.effects ?? [], {
+            defaultDamageChannel: fields.element ?? null
+          })
+        }
+      } : {}),
+      ...(fields.channeling ? {
+        channeling: {
+          tickIntervalMs: finiteNumber(fields.channeling.tickIntervalMs, "Intervalle canalisation"),
+          maxDurationMs: finiteNumber(fields.channeling.maxDurationMs ?? 0, "Durée canalisation"),
+          maxTicks: fields.channeling.maxTicks == null || Number(fields.channeling.maxTicks) === 0
+            ? null : finiteNumber(fields.channeling.maxTicks, "Pulsations maximales"),
+          energyCostPerTick: finiteNumber(fields.channeling.energyCostPerTick ?? 0, "Énergie par pulsation"),
+          stopOnDamage: fields.channeling.stopOnDamage !== false,
+          stopOnStun: fields.channeling.stopOnStun !== false,
+          stopOnSilence: fields.channeling.stopOnSilence !== false,
+          effects: buildHumanTacticalSkillEffectsV1(fields.channeling.effects ?? [], {
             defaultDamageChannel: fields.element ?? null
           })
         }
@@ -3596,6 +3612,21 @@ function writeHumanContactHoldFieldsV1(root, hold, statRegistry = null, statusVi
     "[data-skill-contact-hold-effects-host]");
 }
 
+function writeHumanChannelingFieldsV1(root, channeling, statRegistry = null, statusVisuals = {}) {
+  const enabled = channeling != null;
+  one(root, "[data-skill-channeling-enabled]").checked = enabled;
+  one(root, "[data-skill-channeling-settings]").hidden = !enabled;
+  one(root, "[data-skill-channeling-interval]").value = String(channeling?.tickIntervalMs ?? 1000);
+  one(root, "[data-skill-channeling-duration]").value = String(channeling?.maxDurationMs ?? 5000);
+  one(root, "[data-skill-channeling-max-ticks]").value = String(channeling?.maxTicks ?? (enabled ? 0 : 5));
+  one(root, "[data-skill-channeling-energy]").value = String(channeling?.energyCostPerTick ?? 1);
+  one(root, "[data-skill-channeling-stop-damage]").checked = channeling?.stopOnDamage !== false;
+  one(root, "[data-skill-channeling-stop-stun]").checked = channeling?.stopOnStun !== false;
+  one(root, "[data-skill-channeling-stop-silence]").checked = channeling?.stopOnSilence !== false;
+  renderHumanSkillEffectsV1(root, channeling?.effects ?? [], statRegistry, statusVisuals,
+    "[data-skill-channeling-effects-host]");
+}
+
 function writeSkillTemplateFields(
   root,
   fields,
@@ -3915,6 +3946,8 @@ function writeSkillDraftFields(
   );
   writeHumanContactHoldFieldsV1(root, fields.contactHold, statRegistry,
     fields.presentation.statusVisuals);
+  writeHumanChannelingFieldsV1(root, fields.channeling, statRegistry,
+    fields.presentation.statusVisuals);
   renderHumanProjectilePowerV1(
     root,
     fields.projectileClash
@@ -4053,6 +4086,7 @@ function prepareNewSkillDraftFields(
     statRegistry
   );
   writeHumanContactHoldFieldsV1(root, null, statRegistry);
+  writeHumanChannelingFieldsV1(root, null, statRegistry);
   writeSkillFeedbackControlsV1(
     root,
     {}
@@ -5505,6 +5539,11 @@ function appendHumanSkillEffectV1(
       if (["persistent_zone", "scheduled_effect", "force_reserve_switch", "summon_entity"].includes(option.value)) option.disabled = true;
     }
   }
+  if (hostSelector === "[data-skill-channeling-effects-host]") {
+    for (const option of kind.options) {
+      if (!["damage", "heal", "apply_status", "apply_marker"].includes(option.value)) option.disabled = true;
+    }
+  }
 
   const scope = document.createElement("select");
   scope.dataset.skillEffectScope = "true";
@@ -5517,6 +5556,11 @@ function appendHumanSkillEffectV1(
       value,
       tacticalTargetScopeLabelV1(value)
     );
+  }
+  if (hostSelector === "[data-skill-channeling-effects-host]") {
+    for (const option of scope.options) {
+      if (!["target", "self"].includes(option.value)) option.disabled = true;
+    }
   }
 
   const remove = document.createElement("button");
@@ -9369,6 +9413,18 @@ function readSkillFields(root) {
           effects: readHumanSkillEffectsV1(root, "[data-skill-contact-hold-effects-host]")
         }
       : null,
+    channeling: one(root, "[data-skill-channeling-enabled]").checked
+      ? {
+          tickIntervalMs: numericValue(root, "[data-skill-channeling-interval]"),
+          maxDurationMs: numericValue(root, "[data-skill-channeling-duration]"),
+          maxTicks: numericValue(root, "[data-skill-channeling-max-ticks]") || null,
+          energyCostPerTick: numericValue(root, "[data-skill-channeling-energy]"),
+          stopOnDamage: one(root, "[data-skill-channeling-stop-damage]").checked,
+          stopOnStun: one(root, "[data-skill-channeling-stop-stun]").checked,
+          stopOnSilence: one(root, "[data-skill-channeling-stop-silence]").checked,
+          effects: readHumanSkillEffectsV1(root, "[data-skill-channeling-effects-host]")
+        }
+      : null,
     hitPresenceStates:
       one(
         root,
@@ -10671,9 +10727,17 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   );
   const chargedEnabled = root.querySelector("[data-skill-charged-enabled]");
   const chargedEffectsEnabled = root.querySelector("[data-skill-charged-effects-enabled]");
+  const channelingEnabled = one(root, "[data-skill-channeling-enabled]");
+  const channelingSettings = one(root, "[data-skill-channeling-settings]");
+  const channelingEffectsHost = one(root, "[data-skill-channeling-effects-host]");
+  const channelingEffectAddButton = one(root, "[data-skill-channeling-effect-add]");
   if (chargedEnabled) listen(chargedEnabled,"change",()=>{
     const config=root.querySelector("[data-skill-charged-config]");
     if(config)config.hidden=!chargedEnabled.checked;
+    if(chargedEnabled.checked&&channelingEnabled.checked){
+      channelingEnabled.checked=false;
+      channelingSettings.hidden=true;
+    }
     if(chargedEnabled.checked&&chargedEffectsEnabled){
       chargedEffectsEnabled.checked=false;
       one(root,"[data-skill-charged-effects-config]").hidden=true;
@@ -10681,6 +10745,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   });
   if(chargedEffectsEnabled)listen(chargedEffectsEnabled,"change",()=>{
     one(root,"[data-skill-charged-effects-config]").hidden=!chargedEffectsEnabled.checked;
+    if(chargedEffectsEnabled.checked&&channelingEnabled.checked){
+      channelingEnabled.checked=false;
+      channelingSettings.hidden=true;
+    }
     if(chargedEffectsEnabled.checked&&chargedEnabled){
       chargedEnabled.checked=false;
       one(root,"[data-skill-charged-config]").hidden=true;
@@ -12658,6 +12726,25 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   });
   listen(contactHoldEnabled, "change", () => {
     contactHoldSettings.hidden = !contactHoldEnabled.checked;
+    if (contactHoldEnabled.checked && channelingEnabled.checked) {
+      channelingEnabled.checked = false;
+      channelingSettings.hidden = true;
+    }
+  });
+  listen(channelingEnabled, "change", () => {
+    channelingSettings.hidden = !channelingEnabled.checked;
+    if (!channelingEnabled.checked) return;
+    chargedEnabled.checked = false;
+    one(root,"[data-skill-charged-config]").hidden = true;
+    chargedEffectsEnabled.checked = false;
+    one(root,"[data-skill-charged-effects-config]").hidden = true;
+    contactHoldEnabled.checked = false;
+    contactHoldSettings.hidden = true;
+    setStatus(root, "Canalisation activée : ajoute ses effets répétés et retire tout effet d'impact immédiat, sinon le contrat natif rejettera l'export.", "ok");
+  });
+  listen(channelingEffectAddButton, "click", () => {
+    appendHumanSkillEffectV1(root, null, statRegistry, null,
+      "[data-skill-channeling-effects-host]");
   });
   listen(contactHoldEffectAddButton, "click", () => {
     appendHumanSkillEffectV1(root, null, statRegistry, null,
@@ -12666,7 +12753,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   // The same tactical row owner handles both lists, but each host is a
   // separate explicit source. A repeated effect cannot silently become an
   // immediate impact effect (or vice versa).
-  for (const effectsHost of [skillEffectsHost, contactHoldEffectsHost]) {
+  for (const effectsHost of [skillEffectsHost, contactHoldEffectsHost, channelingEffectsHost]) {
     listen(effectsHost, "change", event => {
       const row = event.target?.closest?.("[data-skill-effect-row]");
       if (!row) return;
