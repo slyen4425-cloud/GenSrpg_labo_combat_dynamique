@@ -1,3 +1,13 @@
+## 2026-11-01 — Mur destructible : sprite choisi + impacts réels 1v1/2v2
+- BASE `gh-pages@b713f3f72a3d57413a818cf4f07f772223899394`, START `checkpoint/lab-start-wall-runtime-sprite-collision-2026-11-01`, WORK `work/lab-wall-runtime-sprite-collision-2026-11-01`.
+- Trois régressions identifiées : `buildPreviewPresentationAssets` ne déléguait pas `visualAsset` au Combat 2v2 (carré/placeholder) ; `barrierCollisionRectsFor` perdait le `kind` des rayons et du contact (forçait projectile) ; `watchProjectileContact` arrêtait le suivi de murs quand le masque opaque de la cible n'était pas encore chargé.
+- Corrections sur les autorités en place : façade d'assets vers `native.visualAsset`, transmission native du `kind` en 1v1 et 2v2, balayage du projectile indépendant de la texture adverse ; et correction de l'ancre visuelle du mur. Le premier vrai test Chromium montrait le rectangle du mur jusqu'à Y=5757 tandis que le centre du projectile était à Y≈5764 : le projectile passait sous le mur. L'overlay centre maintenant le mur sur la piste réelle (ancre 50% du combattant). Aucun changement aux PV, aux contacts fictifs ni à `global-assets`.
+- Taille déjà éditable via `visualScale` de 0,25 à 4 : libellé explicite « Échelle du mur (scale) », même rectangle de sprite et de collision.
+- Tests TDD `tests/unit/capture-wall-preview-wiring-2026-11-01.test.mjs` (RED Foundation run `41316727584`, 3 cas) et navigateur réel `capture-ice-barrier-editor-smoke` (mur 80→57 PV face à projectile ; cible sans masque prêt). Cache ESM editor→preview→Combat FX bump `wall-live-r2-20261101`.
+- Rapport `docs/LAB_WALL_RUNTIME_SPRITE_COLLISION_2026-11-01.md`. Attendre CI 5/5 sur HEAD final, checkpoint GREEN, PR, CI+Pages post-merge. `main` / GenSrpg / Exploration / source globale des sprites restent protégés.
+
+---
+
 ## 2026-11-01 — Murs invocables : images animées + cadre final conservé jusqu'à 0 PV
 - Livraison médias : PR #184 fusionnée sur `global-assets@d83a15b00e8990a33264e44b040607a4048e821e`, CI postmerge verte ; source ZIP artiste SHA256 `4cf5ac450117c0111079d0cf32caa26acd3d786e5d8d1e022c6d68d197bd03d1` ; 3 atlas 12 images, 512×512, 3 identifiants uniques.
 - Base éditeur `gh-pages@4e825e466a9943ad43b4663fe0ae253bfb153fe9` ; checkpoint START `checkpoint/lab-start-persistent-wall-visual-playback-2026-11-01` ; branche `work/lab-persistent-wall-visual-playback-2026-11-01`. `main` / Exploration / GenSrpg inchangés.

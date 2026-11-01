@@ -97,9 +97,14 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
         item.node.style.left=side==="right"
           ? "calc(110% + "+entity.offsetForwardPx+"px)"
           : "calc(-10% - "+entity.offsetForwardPx+"px)";
-        item.node.style.top="auto";
-        item.node.style.bottom="calc(10% + "+entity.offsetUpPx+"px)";
-        item.node.style.transform="translateX(-50%)";
+        // Center the persistent wall sprite in the actual attack lane,
+        // relative to the fighter's visible container. The former 10%-from-
+        // bottom anchor put the entire wall too HIGH: a projectile travelling
+        // through the fighter's center could slip under its real rectangle.
+        // Transform centers the wall + PV label; scale remains fully native.
+        item.node.style.top="calc(50% - "+entity.offsetUpPx+"px)";
+        item.node.style.bottom="auto";
+        item.node.style.transform="translate(-50%, -50%)";
       }
       item.sprite.style.width=Math.round(70*(entity.visualScale??1))+"px";
       item.sprite.style.height=Math.round(92*(entity.visualScale??1))+"px";
