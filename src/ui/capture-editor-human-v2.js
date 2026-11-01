@@ -13623,12 +13623,30 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           importReplaceExisting.checked
             ? "replace"
             : "reject";
-        const plan =
-          planCaptureTransferImportV1({
+        let plan;
+        try {
+          plan = planCaptureTransferImportV1({
             currentDatabase,
             transfer,
             mode
           });
+        } catch (error) {
+          // A catalog preset can already occupy this exact skill ID.
+          // Preserve explicit replacement approval, but never leave the player
+          // thinking that the incoming required level was imported.
+          if (transfer.kind === "skill" &&
+              error.message.startsWith("Capture import conflict for existing skill:")) {
+            const incoming = transfer.value.draft;
+            const existing = configuredSkills.get(incoming.id);
+            throw new Error(
+              "Import refusé : « " + incoming.definition.name +
+              " » existe déjà (niveau " + (existing?.requiredLevel ?? "?") +
+              "). Ton fichier demande le niveau " + incoming.requiredLevel +
+              ". Pour conserver la version du fichier, coche « Remplacer explicitement les IDs existants », puis importe-le à nouveau."
+            );
+          }
+          throw error;
+        }
         const applyResult =
           applyCaptureTransferPlanToEditorStateV1({
             plan,
