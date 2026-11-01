@@ -1,5 +1,5 @@
-import { mountCombatDemo } from "../../src/ui/demo-app.js";
-import { mountCombatTest } from "../../src/ui/combat-test-ui.js?v=wall-1v1-sensor-parity-20261031-wall-live-r2-20261101-wall-geometry-20261031";
+import { mountCombatDemo } from "../../src/ui/demo-app.js?v=wall-ground-stop-20261101";
+import { mountCombatTest } from "../../src/ui/combat-test-ui.js?v=wall-1v1-sensor-parity-20261031-wall-live-r2-20261101-wall-geometry-20261031-wall-ground-stop-20261101";
 import { demoPresentationAssets } from "./demo-assets.js";
 
 const root = document.querySelector("[data-combat-demo]");
