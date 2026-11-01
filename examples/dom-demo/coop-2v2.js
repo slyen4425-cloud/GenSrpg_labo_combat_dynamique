@@ -1,5 +1,5 @@
 import { mountCombatDemo } from "../../src/ui/demo-app.js?v=wall-ground-stop-20261101";
-import { mountCoop2v2Test } from "../../src/ui/combat-2v2-test-ui.js?v=wall-ground-stop-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101";
+import { mountCoop2v2Test } from "../../src/ui/combat-2v2-test-ui.js?v=wall-ground-stop-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101";
 import { demoPresentationAssets } from "./demo-assets.js";
 
 const root = document.querySelector("[data-combat-demo]");
