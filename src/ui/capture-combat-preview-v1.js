@@ -3,7 +3,7 @@ import {
 } from "./demo-app.js";
 import {
   mountCoop2v2Test
-} from "./combat-2v2-test-ui.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031";
+} from "./combat-2v2-test-ui.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031";
 
 function requiredFunction(value, field) {
   if (typeof value !== "function") {

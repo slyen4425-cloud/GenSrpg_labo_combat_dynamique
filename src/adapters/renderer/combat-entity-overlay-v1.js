@@ -72,12 +72,12 @@ export function createCombatEntityOverlayV1({fighterContainers,teamOf=null,asset
   }
   // Only the actual visible sprite rectangle can request an early projectile
   // collision. No gameplay action is decided by this visual-only sensor.
-  function collisionRectsFor({sourceActorId,targetActorId}){
+  function collisionRectsFor({sourceActorId,targetActorId,kind="projectile"}){
     if(typeof teamOf==="function"&&teamOf(sourceActorId)===teamOf(targetActorId))return [];
     return (snapshot?.combatEntities??[]).filter(entity=>
       entity.kind==="barrier"&&entity.protectedActorId===targetActorId&&
       entity.ownerActorId!==sourceActorId&&entity.hp>0&&
-      entity.interceptKinds?.includes("projectile")&&nodes.has(entity.id))
+      entity.interceptKinds?.includes(kind)&&nodes.has(entity.id))
       .map(entity=>Object.freeze({entityId:entity.id,rect:nodes.get(entity.id).sprite.getBoundingClientRect()}));
   }
   function dispose(){for(const host of Object.values(hosts))host.remove();nodes.clear();snapshot=null;}
