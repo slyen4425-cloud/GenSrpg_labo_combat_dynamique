@@ -429,6 +429,18 @@ export function describeCaptureSkillV1(input) {
         (hold.maxDurationMs>0?" pendant "+duration(hold.maxDurationMs):"")));
     }
   }
+  if(d.channeling){
+    const c=d.channeling, repeated=descriptions(c.effects);
+    const stop=[];
+    if(c.stopOnDamage)stop.push("dégâts reçus");
+    if(c.stopOnStun)stop.push("étourdissement");
+    if(c.stopOnSilence)stop.push("silence");
+    phrases.push(finish("Canalisation : "+(repeated.length?repeated.map(lowerSentence).join(" et "):"effets réguliers")+
+      " "+frequency(c.tickIntervalMs)+", coût de "+num(c.energyCostPerTick)+
+      " énergie par pulsation"+(c.maxTicks!=null?", maximum "+num(c.maxTicks)+" pulsations":"")+
+      (c.maxDurationMs>0?", au plus "+duration(c.maxDurationMs):"")+
+      ". Arrêt sur K.O., rappel, énergie insuffisante"+(stop.length?" ou "+stop.join(", "):"")+"."));
+  }
   phrases.push(...specialRules(d),...conditions(d));
   if(d.maxUsesPerCombat!=null)phrases.push(finish("Utilisable "+
     (d.maxUsesPerCombat===1?"une fois":num(d.maxUsesPerCombat)+" fois")+" par combat"));
