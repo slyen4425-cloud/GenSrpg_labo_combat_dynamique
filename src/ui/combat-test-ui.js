@@ -1229,6 +1229,22 @@ export async function mountCombatTest({
         : "Maintien au contact terminé.", "info");
       render();
     },
+    // The Runtime is the sole clock. These callbacks only project the
+    // already-accepted channel pulse into canonical Impact FX and audio.
+    onChannelStart({actorId}) {
+      setStatus(actorId === "player"
+        ? "Votre créature canalise sa compétence."
+        : "La créature adverse canalise sa compétence.", "accent");
+    },
+    onChannelTick({actorId,targetId,skillId,tick}) {
+      fx.play({type:"impact",skillId,actorSlot:actorId,targetSlot:targetId});
+      combatAudio.play({type:"impact",skillId,actorSlot:actorId,targetSlot:targetId,loop:false});
+      setStatus("Canalisation : pulsation " + tick + ".", "accent");
+    },
+    onChannelEnd({reason}) {
+      setStatus("Canalisation terminée (" + reason + ").", "info");
+      render();
+    },
     onHealthDelta(feedback) {
       if (!["damage", "heal"].includes(feedback.kind)) return;
       const delayMs = impactHealthCue.delayFor(feedback);
