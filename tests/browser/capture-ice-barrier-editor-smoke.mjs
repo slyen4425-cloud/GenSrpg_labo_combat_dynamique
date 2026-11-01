@@ -63,6 +63,25 @@ try{
    if(realHit.absorbedByEntity!==25||realHit.state.fighters.player.hp!==100)
      throw Error(kind+" native damage failed after visual geometry");
  }
+ // Arena placement uses the same sprite, collision rectangle and native HP.
+ const stage=document.createElement("div");
+ stage.style.cssText="position:relative;width:400px;height:220px;";
+ document.body.append(stage);
+ const arenaPlaced=createCombatBarrierV1({state,sourceActorId:"player",protectedActorId:"player",
+   sourceSkillId:"free-wall",effect:{...effect,placementMode:"arena",arenaXPct:25,arenaYPct:65}});
+ const arenaOverlay=createCombatEntityOverlayV1({fighterContainers:{player:host},arenaHost:stage,
+   assetForId:id=>presentationAssets.visualAsset(id)});
+ arenaOverlay.render(arenaPlaced.state);
+ const spriteRect=arenaOverlay.collisionRectsFor({sourceActorId:"opponent",targetActorId:"player"})[0]?.rect;
+ const arenaRect=stage.getBoundingClientRect();
+ if(!spriteRect||Math.abs((spriteRect.left+spriteRect.width/2-arenaRect.left)/arenaRect.width-.25)>.07||
+    Math.abs((spriteRect.top+spriteRect.height/2-arenaRect.top)/arenaRect.height-.65)>.09)
+   throw Error("arena wall sprite not placed at authored X/Y");
+ const arenaSegment=nearestBarrierSegmentContactV1({from:{x:spriteRect.left-40,y:spriteRect.top+spriteRect.height/2},
+   to:{x:spriteRect.right+40,y:spriteRect.top+spriteRect.height/2},
+   barriers:arenaOverlay.collisionRectsFor({sourceActorId:"opponent",targetActorId:"player"})});
+ if(arenaSegment?.entityId!==arenaPlaced.record.id)throw Error("arena wall has no real collision");
+ arenaOverlay.dispose();stage.remove();
  const hit=applyCombatDamageV1({state:summoned.state,sourceActorId:"opponent",
    targetActorId:"player",damage:25,incomingKind:"projectile",contactedEntityId:summoned.record.id});
  overlay.render(hit.state);
@@ -89,6 +108,19 @@ document.addEventListener("DOMContentLoaded",()=>{
    const ratio=row.querySelector("[data-skill-barrier-hp-ratio]");
    if(![...stat.options].some(x=>x.value==="glace"))throw Error("official glace stat missing");
    stat.value="glace";ratio.value="1.5";
+   const placement=row.querySelector("[data-skill-barrier-placement-mode]");
+   const x=row.querySelector("[data-skill-barrier-arena-x]"),y=row.querySelector("[data-skill-barrier-arena-y]");
+   if(!placement||!x||!y)throw Error("arena placement author controls missing");
+   placement.value="arena";placement.dispatchEvent(new Event("change",{bubbles:true}));
+   x.value="25";y.value="65";
+   if(x.closest("label")?.hidden||y.closest("label")?.hidden||
+      !row.querySelector("[data-skill-barrier-offset-forward]").closest("label").hidden)
+     throw Error("arena author position fields are not mutually exclusive with fighter offsets");
+   placement.value="protected";placement.dispatchEvent(new Event("change",{bubbles:true}));
+   if(!x.closest("label")?.hidden||!y.closest("label")?.hidden||
+      row.querySelector("[data-skill-barrier-offset-forward]").closest("label").hidden)
+     throw Error("legacy fighter-front author fields did not restore");
+   placement.value="arena";placement.dispatchEvent(new Event("change",{bubbles:true}));
    const kinds=[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
      .filter(x=>x.checked).map(x=>x.value);
    if(ratio.value!=="1.5"||kinds.length!==3||!row.querySelector("[data-skill-barrier-sprite-asset-id]")||
@@ -96,7 +128,7 @@ document.addEventListener("DOMContentLoaded",()=>{
      !row.querySelector("[data-skill-barrier-offset-forward]")||
      !row.querySelector("[data-skill-barrier-offset-up]"))
      throw Error("wall HP and sprite options not editable");
-   document.body.dataset.barrierEditorSmoke="pass:real-editor:glace:1.5:intercepts";
+   document.body.dataset.barrierEditorSmoke="pass:real-editor:glace:1.5:intercepts:arena-x25-y65";
   }catch(e){document.body.dataset.barrierEditorSmoke="error:"+e.message;}
  },2400);
 });

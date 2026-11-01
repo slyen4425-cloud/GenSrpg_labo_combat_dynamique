@@ -3,13 +3,22 @@
 const round=n=>Math.round(n*100)/100;
 const formatHp=e=>round(e.hp)+" / "+round(e.maxHp)+" PV";
 
-export function createCombatEntityOverlayV1({fighterContainers,teamOf=null,assetForId=()=>null}){
+export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,teamOf=null,assetForId=()=>null}){
   const hosts={},nodes=new Map();let snapshot=null;
   for(const [actorId,container] of Object.entries(fighterContainers)){
     const host=document.createElement("div");
     host.dataset.combatEntitiesHost=actorId;
     host.style.cssText="position:absolute;inset:0;pointer-events:none;z-index:12;overflow:visible;";
     container.append(host);hosts[actorId]=host;
+  }
+  // The arena host is presentation-only. The entity placement and HP remain
+  // immutable Combat State data, shared across 1v1 and 2v2.
+  let arenaOverlay=null;
+  if(arenaHost){
+    arenaOverlay=document.createElement("div");
+    arenaOverlay.dataset.combatEntitiesArenaHost="true";
+    arenaOverlay.style.cssText="position:absolute;inset:0;pointer-events:none;z-index:12;overflow:visible;";
+    arenaHost.append(arenaOverlay);
   }
   function newNode(entity,host){
     const node=document.createElement("div");node.dataset.combatEntityId=entity.id;
@@ -50,12 +59,25 @@ export function createCombatEntityOverlayV1({fighterContainers,teamOf=null,asset
       if(entity.kind!=="barrier"||!(Number(entity.hp)>0)||!hosts[entity.protectedActorId])continue;
       living.add(entity.id);
       const existing=nodes.get(entity.id);
-      const item=existing??newNode(entity,hosts[entity.protectedActorId]);
-      const side=frontSideFor(entity.protectedActorId);
-      item.node.style.left=side==="right"
-        ? "calc(110% + "+entity.offsetForwardPx+"px)"
-        : "calc(-10% - "+entity.offsetForwardPx+"px)";
-      item.node.style.bottom="calc(10% + "+entity.offsetUpPx+"px)";
+      const arenaMode=entity.placementMode==="arena";
+      if(arenaMode&&!arenaOverlay)throw new Error("arenaHost is required for arena wall placement");
+      const parent=arenaMode?arenaOverlay:hosts[entity.protectedActorId];
+      const item=existing??newNode(entity,parent);
+      if(item.node.parentNode!==parent)parent.append(item.node);
+      if(arenaMode){
+        item.node.style.left=entity.arenaXPct+"%";
+        item.node.style.top=entity.arenaYPct+"%";
+        item.node.style.bottom="auto";
+        item.node.style.transform="translate(-50%, -50%)";
+      }else{
+        const side=frontSideFor(entity.protectedActorId);
+        item.node.style.left=side==="right"
+          ? "calc(110% + "+entity.offsetForwardPx+"px)"
+          : "calc(-10% - "+entity.offsetForwardPx+"px)";
+        item.node.style.top="auto";
+        item.node.style.bottom="calc(10% + "+entity.offsetUpPx+"px)";
+        item.node.style.transform="translateX(-50%)";
+      }
       item.sprite.style.width=Math.round(70*(entity.visualScale??1))+"px";
       item.sprite.style.height=Math.round(92*(entity.visualScale??1))+"px";
       item.label.textContent="🧊 Mur "+formatHp(entity);
@@ -80,6 +102,6 @@ export function createCombatEntityOverlayV1({fighterContainers,teamOf=null,asset
       entity.interceptKinds?.includes(kind)&&nodes.has(entity.id))
       .map(entity=>Object.freeze({entityId:entity.id,rect:nodes.get(entity.id).sprite.getBoundingClientRect()}));
   }
-  function dispose(){for(const host of Object.values(hosts))host.remove();nodes.clear();snapshot=null;}
+  function dispose(){for(const host of Object.values(hosts))host.remove();arenaOverlay?.remove();nodes.clear();snapshot=null;}
   return Object.freeze({render,collisionRectsFor,dispose});
 }

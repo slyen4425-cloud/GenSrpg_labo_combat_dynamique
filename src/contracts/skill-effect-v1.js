@@ -111,7 +111,7 @@ const FIELDS_BY_KIND = Object.freeze({
   ]),
   summon_entity: new Set([
     ...COMMON_FIELDS, "entityKind", "statId", "hpPerStatPoint", "interceptKinds", "spriteAssetId",
-    "visualScale", "offsetForwardPx", "offsetUpPx"
+    "visualScale", "offsetForwardPx", "offsetUpPx", "placementMode", "arenaXPct", "arenaYPct"
   ])
 });
 
@@ -312,6 +312,18 @@ export function normalizeSkillEffectV1(input) {
       throw new RangeError("summon_entity.interceptKinds must list distinct projectile/beam/contact");
     }
     output.interceptKinds=Object.freeze([...kinds]);
+    const placementMode=value.placementMode??"protected";
+    if(!["protected","arena"].includes(placementMode))
+      throw new RangeError("summon_entity.placementMode must be protected or arena");
+    if(placementMode==="arena"){
+      const x=Number(value.arenaXPct),y=Number(value.arenaYPct);
+      for(const [name,n] of [["arenaXPct",x],["arenaYPct",y]])
+        if(!Number.isFinite(n)||n<0||n>100)
+          throw new RangeError("summon_entity."+name+" must be between 0 and 100");
+      output.placementMode="arena";output.arenaXPct=x;output.arenaYPct=y;
+    } else if(value.arenaXPct!=null||value.arenaYPct!=null){
+      throw new RangeError("arenaXPct and arenaYPct require placementMode arena");
+    }
     if(value.spriteAssetId != null) output.spriteAssetId=requiredString(value.spriteAssetId,"summon_entity.spriteAssetId");
     if(value.visualScale != null){
       const scale=positiveNumber(value.visualScale,"summon_entity.visualScale");
