@@ -42,7 +42,6 @@ test("RED: observed wall hit suppresses enemy secondary damage, stun and energy 
   form:"projectile",category:"offensive",
   effect:{damage:40,heal:0,stunMs:1500,interruptsPreparation:true,tags:[]},
   effects:[
-   {kind:"damage",targetScope:"target",amount:7,channel:"fire"},
    {kind:"energy_drain",targetScope:"target",amount:3},
    {kind:"apply_status",targetScope:"target",status:{id:"ice-stun-red",
     kind:"stun",polarity:"detrimental",durationMs:2000,stacking:"refresh",tags:[]}}
@@ -70,4 +69,34 @@ test("no spatial wall evidence keeps normal hit and debuff; ally self effects re
  assert.ok(session.snapshot().fighters.hero.hp<100);
  assert.equal(session.snapshot().fighters.hero.energy,9);
  assert.equal(session.snapshot().combatEntities[0].hp,6);
+});
+
+test("a zero-damage projectile that only applies a detrimental status is intercepted by the same observed wall",()=>{
+ const {session,wallId}=combat();
+ const statusOnly=skill("status-only-wall-hit",{
+  form:"projectile",category:"offensive",
+  effects:[{kind:"apply_status",targetScope:"target",status:{id:"frost-only",
+   kind:"stun",polarity:"detrimental",durationMs:2000,stacking:"refresh",tags:[]}}]
+ });
+ const started=session.startSkill({actorId:"enemy",targetId:"hero",skill:statusOnly});
+ assert.equal(started.ok,true);
+ const finished=session.completeSkill({action:{...started.action,barrierContactId:wallId}});
+ assert.equal(finished.ok,true);
+ assert.equal(session.snapshot().fighters.hero.statusEffects.length,0,
+  "observed geometry must stop a non-damaging hostile payload as well");
+ assert.equal(session.snapshot().combatEntities[0].hp,6);
+});
+test("a tactical-only damaging projectile is also stopped by the observed wall",()=>{
+ const {session,wallId}=combat();
+ const tactical=skill("damage-only-wall-hit",{
+  form:"projectile",category:"offensive",
+  effects:[{kind:"damage",targetScope:"target",amount:20,channel:"fire"}]
+ });
+ const started=session.startSkill({actorId:"enemy",targetId:"hero",skill:tactical});
+ assert.equal(started.ok,true);
+ const result=session.completeSkill({action:{...started.action,barrierContactId:wallId}});
+ assert.equal(result.ok,true);
+ assert.equal(session.snapshot().fighters.hero.hp,100);
+ assert.equal(session.snapshot().combatEntities[0].hp,6,
+  "blocking a tactical payload must not synthesize a second contact/damage event");
 });
