@@ -1,3 +1,9 @@
+## 2026-11-01 — Reprise du core canalisé : horloge et régénération (validation de livraison)
+- Branche `work/lab-channeling-core-2026-11-01` ; base officielle inchangée `gh-pages@d0bfecf724f6f3ed70c1ae9bdd2d07289c713b83`, START `checkpoint/lab-start-channeling-core-2026-11-01`.
+- La sentinelle de timing était incorrecte : la résolution immédiate est à t=0, le premier tick doit être à t=1000, pas t=1100. La régénération native +1/2000 ms biaisait ensuite la sentinelle d'épuisement. Correction exclusivement dans le test fixture, sans modifier les propriétaires gameplay ni les réglages du jeu : `35ceeaf`, `e512728`.
+- Preuve Foundation PASS sur `e512728` ; vérification des quatre navigateurs et CI complète sur SHA final documentaire exigées avant checkpoint GREEN, PR et publication. L'éditeur et les FX par tick restent un **prochain lot**, sans annonce de disponibilité prématurée.
+- Détail et limites : `docs/LAB_CHANNELING_CORE_2026-11-01.md`.
+
 ## 2026-11-01 — Canalisation V1 : contrat et ticks natifs sous l'horloge du Combat Runtime (#168)
 - Base stable `gh-pages@d0bfecf724f6f3ed70c1ae9bdd2d07289c713b83` (CI + Pages 5/5 GREEN après PR #179). START `checkpoint/lab-start-channeling-core-2026-11-01`, WORK `work/lab-channeling-core-2026-11-01`.
 - Objectif : contrat `SkillDefinition.channeling` opt-in, ticks à intervalle configurable ; paiement énergétique unique par tick, effects `SkillEffectV1` natifs, arrêt durée/nombre de ticks/énergie/KO/stun/silence/dégâts subis/rappel, jamais de tick fantôme.

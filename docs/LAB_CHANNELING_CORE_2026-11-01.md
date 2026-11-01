@@ -30,3 +30,10 @@
 - Ce lot pose le **socle moteur uniquement**. Il ne représente pas une fonctionnalité déjà utilisable depuis l'éditeur, et il ne déclenche pas encore les sprites/sons auteur à chaque tick. Ces éléments doivent suivre sur une branche distincte après la validation de ce socle.
 - Les conditions avancées de portée/visée à chaque tick et les esquives/réflections multi-cibles restent à cadrer et tester, sans changer le contrat historique.
 - Aucun changement de `main`, GenSrpg, Exploration ni global-assets. Essai smartphone réel à réaliser après raccordement de l'éditeur/FX.
+
+## Reprise du 1er novembre — diagnostic de la sentinelle temporelle
+- Première CI sur `58d428d8` : 2459/2460 tests Foundation, échec de la sentinelle de tick (1 observé au lieu de 0 à 1099 ms) ; quatre navigateurs verts. Échec conservé, aucune fausse validation.
+- Cause vérifiée dans l'unique `Combat Runtime` : l'action instantanée résout à t=0 et crée son maintien à t=0. Le `step(100)` du *harness* ne retarde pas le lancement ; la première échéance est exactement t=1000, pas t=1100. Correction de la sentinelle aux bornes t=999/1000 puis t=2999/3000, commit `35ceeaf`.
+- Deuxième CI : l'attente d'énergie absolue du scénario échoue (2 observé contre 1 attendu), car la régénération **native** +1/2000 ms est active dans le combattant de test. Ce n'est pas une erreur de décompte des paiements : elle doit rester active dans le jeu. Le fixture d'épuisement la désactive localement (`energyChargeAmount: 0`), commit `e512728`. Pas de changement du moteur ni des réglages joueur.
+- Sentinelles conservées : un seul paiement par tick accepté, pas d'effet avant échéance, arrêt sur énergie insuffisante sans tick fantôme, arrêt sur dégâts/retrait, anciens `contactHold`, charges et 1v1/2v2 protégés. La Fondation sur `e512728` passe ; confirmer les quatre navigateurs et refaire la CI cinq jobs sur ce **SHA documentaire final** avant checkpoint GREEN.
+- Suivant : checkpoint GREEN exact, PR `gh-pages`, tests CI et Pages post-fusion. Puis nouveau lot éditeur/FX (répétition des visuels et sons à chaque tick) ; aucune promesse de jouabilité auteur dans le présent lot natif.
