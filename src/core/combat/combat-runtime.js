@@ -976,14 +976,16 @@ export function createCombatRuntime({
           skillId:effectiveAction.skill.id})?.entityId??null
       : null;
     const barrierContactId=physicalKind==="projectile"
-      ? (visibleContact?combatEntityId??null:null) : spatialBarrierId;
+      ? (visibleContact?combatEntityId??null:null)
+      : physicalKind==="contact" && visibleContact && combatEntityId
+        ? combatEntityId : spatialBarrierId;
     const resolvedAction=["projectile","beam","contact"].includes(physicalKind)
       ? Object.freeze({...effectiveAction,barrierContactId})
       : effectiveAction;
     const resolution = session.completeAction({
       action: resolvedAction,
       forcedOutcome,
-      confirmedVisibleBodyContact: visibleContact &&
+      confirmedVisibleBodyContact: visibleContact && !combatEntityId &&
         effectiveAction.actionType === "skill" &&
         effectiveAction.skill?.form === "contact" &&
         effectiveAction.skill?.approachMode === "ground",
@@ -1033,7 +1035,8 @@ export function createCombatRuntime({
         effectiveAction.actionType==="skill"&&effectiveAction.skill?.channeling&&
         Number(session.snapshot().fighters[effectiveAction.actorId]?.hp)>0&&
         Number(session.snapshot().fighters[effectiveAction.targetId]?.hp)>0&&
-        !contactHoldsByActor.has(effectiveAction.actorId)){
+        !contactHoldsByActor.has(effectiveAction.actorId) &&
+        !resolution.events?.some(event=>event.type==="combat-entity-hit")){
       const hold={
         kind:"channeling",actorId:effectiveAction.actorId,targetId:effectiveAction.targetId,
         skill:effectiveAction.skill,startedAtClockMs:atNowMs,
@@ -2090,8 +2093,12 @@ export function createCombatRuntime({
 
     if (record.action.skill.approachMode === "ground") {
       const spatial = zoneSpatialContext({ state: session.snapshot(), intervalStartClockMs: current });
+      // A visible wall is not body-to-body contact: movement-zone crossings
+      // still update, but the defender's body is not falsely reached.
       session.advanceMs(0, { zoneSpatialContext: Object.freeze({ ...spatial,
-        contacts: Object.freeze([Object.freeze({ actorId, targetId, approachMode: "ground" })])
+        contacts: combatEntityId
+          ? Object.freeze([])
+          : Object.freeze([Object.freeze({ actorId, targetId, approachMode: "ground" })])
       }) });
       for (const fighter of Object.values(session.snapshot().fighters)) {
         if (fighter.hp <= 0) cancelActionsForActor(fighter.id, { includeTargeted: true, reason: "ko" });
@@ -2130,7 +2137,8 @@ export function createCombatRuntime({
         record.action.skill?.contactHold &&
         Number(session.snapshot().fighters[actorId]?.hp) > 0 &&
         Number(session.snapshot().fighters[targetId]?.hp) > 0 &&
-        !contactHoldsByActor.has(actorId)) {
+        !contactHoldsByActor.has(actorId) &&
+        !resolution.events?.some(event=>event.type==="combat-entity-hit")) {
       const hold = {
         actorId, targetId, skill: record.action.skill,
         startedAtClockMs: current,
