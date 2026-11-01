@@ -988,6 +988,9 @@ export async function mountCoop2v2Test({
     visuals,
     fx,
     audio: combatAudio,
+    barrierRectsFor({sourceActorId,targetActorId,kind}) {
+      return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId,kind});
+    },
     onActionContact(contact) {
       return runtime?.reportActionContact(contact) ?? null;
     },
