@@ -1,3 +1,14 @@
+## 2026-11-01 — Murs invocables : images animées + cadre final conservé jusqu'à 0 PV
+- Livraison médias : PR #184 fusionnée sur `global-assets@d83a15b00e8990a33264e44b040607a4048e821e`, CI postmerge verte ; source ZIP artiste SHA256 `4cf5ac450117c0111079d0cf32caa26acd3d786e5d8d1e022c6d68d197bd03d1` ; 3 atlas 12 images, 512×512, 3 identifiants uniques.
+- Base éditeur `gh-pages@4e825e466a9943ad43b4663fe0ae253bfb153fe9` ; checkpoint START `checkpoint/lab-start-persistent-wall-visual-playback-2026-11-01` ; branche `work/lab-persistent-wall-visual-playback-2026-11-01`. `main` / Exploration / GenSrpg inchangés.
+- Cause racine : `CombatEntityOverlayV1` traitait les médias de mur en atlas comme une image statique ; le provisoire du mur avait en plus un fond coloré et un clipping forcé, incompatible avec le nouvel art transparent. Une seule autorité de rendu overlay ; animation CSS Web Animations `steps(11,end)` en 1100ms pour 12f à 100ms, déplacement jusqu'à la frame n°12 seulement, `fill:forwards`, sans boucle ni modification de Combat State.
+- Le nœud DOM n'est pas recréé à chaque dégât, donc aucun restart de l'animation. A 0 PV Combat Damage retire l'entité, overlay retire le nœud. Fallback sans Web Animations : dernier cadre directement visible. Géométrie de collision et HUD PV inchangés.
+- Contrat auteur : le preset officiel unique `mur_de_glace` conserve niveau 10, Glace 1 PV/point, récupération et réglages, remplace uniquement le sprite provisoire `pack:capture:sprite-status-stone-shell-01` par `pack:capture:sprite-mur-glace-01`. Les autres fiches non modifiées, deux autres variantes proposées dans la bibliothèque/choix `Sprite du mur`.
+- Anti-cache : seul `src/assets/global-visual-library.js` v48 et six imports ESM actualisés. TDD RED `tests/browser/capture-ice-wall-persistent-atlas-smoke.mjs` (3 vraies URL et 3 animations, maintien final, dommage et destruction), tests officiels existants recalés, CI cinq jobs et Pages au SHA fusionné exigés.
+- En attente des preuves CI / navigateur / publication. Interdiction de déclarer GREEN sans toutes ces vérifications.
+
+---
+
 ## 2026-11-01 — Mur de glace : source officielle remplacée par la configuration joueur (sans import répétitif)
 - Base `gh-pages@f5586947930a9a06ef250256c0f66bfb26d05397`, START `checkpoint/lab-start-wall-official-preset-2026-11-01`, WORK `work/lab-wall-official-preset-2026-11-01`.
 - Le seul preset `data/capture/showcase/mur_de_glace.capture-skill-transfer-v1.json` devient la version demandée : niveau 10, Défensif/Sur soi, énergie 5, préparation 900 ms, recharge 45 s, 1 PV/par point de Glace, sprite provisoire original. Métadonnées de présentation existantes conservées. Aucun clone ni nouveau catalogue.
