@@ -1,3 +1,5 @@
+import {readFileSync} from "node:fs";
+import {exportCaptureSkillTransferJsonV1,importCaptureTransferJsonV1} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {normalizeSkillEffectV1} from "../../src/contracts/skill-effect-v1.js";
@@ -32,4 +34,21 @@ test("summon snapshots arena coordinates without changing statistics, roster or 
  assert.equal(free.record.arenaXPct,24);assert.equal(free.record.arenaYPct,71);
  assert.equal(free.state.fighters.hero.hp,100);
  assert.equal(free.state.combatEntities.length,2);
+});
+
+test("official skill JSON transfer preserves arena positions without mutating legacy preset",()=>{
+ const source=JSON.parse(readFileSync(new URL("../../data/capture/showcase/mur_de_glace.capture-skill-transfer-v1.json",import.meta.url),"utf8"));
+ const originalEffect=source.draft.definition.effects[0];
+ assert.equal(originalEffect.placementMode,undefined);
+ const authored={...source.draft,definition:{...source.draft.definition,
+   effects:[normalizeSkillEffectV1({...originalEffect,placementMode:"arena",arenaXPct:24,arenaYPct:71})]}};
+ const exported=exportCaptureSkillTransferJsonV1(authored);
+ const imported=importCaptureTransferJsonV1(exported);
+ assert.equal(imported.kind,"skill");
+ assert.equal(imported.value.draft.definition.effects[0].placementMode,"arena");
+ assert.equal(imported.value.draft.definition.effects[0].arenaXPct,24);
+ assert.equal(imported.value.draft.definition.effects[0].arenaYPct,71);
+ assert.equal(imported.value.draft.definition.effects[0].hpPerStatPoint,1);
+ const unmodified=importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(source.draft));
+ assert.equal(unmodified.value.draft.definition.effects[0].placementMode,undefined);
 });
