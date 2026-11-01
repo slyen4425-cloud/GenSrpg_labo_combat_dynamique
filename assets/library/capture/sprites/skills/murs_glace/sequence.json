@@ -1,0 +1,102 @@
+{
+  "packId": "pack:capture:ice-persistent-walls-2026-11-01",
+  "sourceArchive": "pack_murs_glace_suite_36_frames.zip",
+  "sourceArchiveSha256": "4cf5ac450117c0111079d0cf32caa26acd3d786e5d8d1e022c6d68d197bd03d1",
+  "sourceGitBlob": "29e729c96d23b2988c985cea94b139e8fc7c8458",
+  "frameSize": [
+    512,
+    512
+  ],
+  "sequences": {
+    "mur_glace": {
+      "id": "pack:capture:sprite-mur-glace-01",
+      "frameCount": 12,
+      "frameSize": [
+        512,
+        512
+      ],
+      "constructionDurationMs": 1200,
+      "frameMs": 100,
+      "playbackMode": "once",
+      "holdLastFrame": true,
+      "persistentFrameIndex": 11,
+      "atlas": "mur_glace/mur_glace_atlas_12f.webp",
+      "preview": "mur_glace/preview_mur_glace.gif",
+      "sourceFrames": [
+        "mur_glace/png/mur_glace_01.png",
+        "mur_glace/png/mur_glace_02.png",
+        "mur_glace/png/mur_glace_03.png",
+        "mur_glace/png/mur_glace_04.png",
+        "mur_glace/png/mur_glace_05.png",
+        "mur_glace/png/mur_glace_06.png",
+        "mur_glace/png/mur_glace_07.png",
+        "mur_glace/png/mur_glace_08.png",
+        "mur_glace/png/mur_glace_09.png",
+        "mur_glace/png/mur_glace_10.png",
+        "mur_glace/png/mur_glace_11.png",
+        "mur_glace/png/mur_glace_12.png"
+      ],
+      "note": "Construction plays once and finishes on an intact wall. Combat Barrier Runtime controls lifetime from HP, not this animation."
+    },
+    "mur_glace_herisse": {
+      "id": "pack:capture:sprite-mur-glace-herisse-01",
+      "frameCount": 12,
+      "frameSize": [
+        512,
+        512
+      ],
+      "constructionDurationMs": 1200,
+      "frameMs": 100,
+      "playbackMode": "once",
+      "holdLastFrame": true,
+      "persistentFrameIndex": 11,
+      "atlas": "mur_glace_herisse/mur_glace_herisse_atlas_12f.webp",
+      "preview": "mur_glace_herisse/preview_mur_glace_herisse.gif",
+      "sourceFrames": [
+        "mur_glace_herisse/png/mur_glace_herisse_01.png",
+        "mur_glace_herisse/png/mur_glace_herisse_02.png",
+        "mur_glace_herisse/png/mur_glace_herisse_03.png",
+        "mur_glace_herisse/png/mur_glace_herisse_04.png",
+        "mur_glace_herisse/png/mur_glace_herisse_05.png",
+        "mur_glace_herisse/png/mur_glace_herisse_06.png",
+        "mur_glace_herisse/png/mur_glace_herisse_07.png",
+        "mur_glace_herisse/png/mur_glace_herisse_08.png",
+        "mur_glace_herisse/png/mur_glace_herisse_09.png",
+        "mur_glace_herisse/png/mur_glace_herisse_10.png",
+        "mur_glace_herisse/png/mur_glace_herisse_11.png",
+        "mur_glace_herisse/png/mur_glace_herisse_12.png"
+      ],
+      "note": "Construction plays once and finishes on an intact wall. Combat Barrier Runtime controls lifetime from HP, not this animation."
+    },
+    "mur_glace_arcanique": {
+      "id": "pack:capture:sprite-mur-glace-arcanique-01",
+      "frameCount": 12,
+      "frameSize": [
+        512,
+        512
+      ],
+      "constructionDurationMs": 1200,
+      "frameMs": 100,
+      "playbackMode": "once",
+      "holdLastFrame": true,
+      "persistentFrameIndex": 11,
+      "atlas": "mur_glace_arcanique/mur_glace_arcanique_atlas_12f.webp",
+      "preview": "mur_glace_arcanique/preview_mur_glace_arcanique.gif",
+      "sourceFrames": [
+        "mur_glace_arcanique/png/mur_glace_arcanique_01.png",
+        "mur_glace_arcanique/png/mur_glace_arcanique_02.png",
+        "mur_glace_arcanique/png/mur_glace_arcanique_03.png",
+        "mur_glace_arcanique/png/mur_glace_arcanique_04.png",
+        "mur_glace_arcanique/png/mur_glace_arcanique_05.png",
+        "mur_glace_arcanique/png/mur_glace_arcanique_06.png",
+        "mur_glace_arcanique/png/mur_glace_arcanique_07.png",
+        "mur_glace_arcanique/png/mur_glace_arcanique_08.png",
+        "mur_glace_arcanique/png/mur_glace_arcanique_09.png",
+        "mur_glace_arcanique/png/mur_glace_arcanique_10.png",
+        "mur_glace_arcanique/png/mur_glace_arcanique_11.png",
+        "mur_glace_arcanique/png/mur_glace_arcanique_12.png"
+      ],
+      "note": "Construction plays once and finishes on an intact wall. Combat Barrier Runtime controls lifetime from HP, not this animation."
+    }
+  }
+}

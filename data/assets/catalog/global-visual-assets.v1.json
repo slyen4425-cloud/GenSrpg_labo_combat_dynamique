@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 291,
+    "assets": 294,
     "icons": 94,
-    "sprites": 173,
+    "sprites": 176,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
@@ -9940,6 +9940,147 @@
       "resource": {
         "file": "capture/icons/skills/icon_skill_barriere_de_glace_01.webp",
         "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-mur-glace-01",
+      "label": "Mur de glace — barrière cristalline (12 images, état final persistant)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "summon",
+        "summoned",
+        "persistent",
+        "construct",
+        "ice",
+        "glace",
+        "wall",
+        "barrier",
+        "animated",
+        "ice",
+        "glace",
+        "wall",
+        "barrier",
+        "defense"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (author-approved visuals)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/murs_glace/mur_glace/mur_glace_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 100,
+        "playbackMode": "once",
+        "holdLastFrame": true
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-mur-glace-herisse-01",
+      "label": "Mur de glace hérissé — pointes (12 images, état final persistant)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "summon",
+        "summoned",
+        "persistent",
+        "construct",
+        "ice",
+        "glace",
+        "wall",
+        "barrier",
+        "animated",
+        "ice",
+        "glace",
+        "wall",
+        "spikes",
+        "barrier"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (author-approved visuals)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/murs_glace/mur_glace_herisse/mur_glace_herisse_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 100,
+        "playbackMode": "once",
+        "holdLastFrame": true
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-mur-glace-arcanique-01",
+      "label": "Mur de glace arcanique — protection (12 images, état final persistant)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "summon",
+        "summoned",
+        "persistent",
+        "construct",
+        "ice",
+        "glace",
+        "wall",
+        "barrier",
+        "animated",
+        "ice",
+        "glace",
+        "wall",
+        "arcane",
+        "barrier"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / ChatGPT (author-approved visuals)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/murs_glace/mur_glace_arcanique/mur_glace_arcanique_atlas_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 100,
+        "playbackMode": "once",
+        "holdLastFrame": true
       },
       "compatibility": {
         "uses": [
