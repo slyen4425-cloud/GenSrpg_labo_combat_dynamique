@@ -71,5 +71,5 @@ test("the official player-authored level-10 wall round-trips transfer and editor
  const fields=humanSkillEditorFieldsFromDraftV1(transfer.value.draft);
  assert.equal(fields.requiredLevel,10);
  assert.equal(fields.form,"self");
- assert.equal(fields.effects[0].spriteAssetId,"pack:capture:sprite-status-stone-shell-01");
+ assert.equal(fields.effects[0].spriteAssetId,"pack:capture:sprite-mur-glace-01");
 });
