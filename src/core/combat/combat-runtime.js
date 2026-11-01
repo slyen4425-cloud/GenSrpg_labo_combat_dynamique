@@ -1034,13 +1034,13 @@ export function createCombatRuntime({
         Number(session.snapshot().fighters[effectiveAction.actorId]?.hp)>0&&
         Number(session.snapshot().fighters[effectiveAction.targetId]?.hp)>0&&
         !contactHoldsByActor.has(effectiveAction.actorId)){
-      const hold=Object.freeze({
+      const hold={
         kind:"channeling",actorId:effectiveAction.actorId,targetId:effectiveAction.targetId,
         skill:effectiveAction.skill,startedAtClockMs:atNowMs,
         nextTickClockMs:atNowMs+effectiveAction.skill.channeling.tickIntervalMs,
         ticks:0,damageTakenTotalAtStart:
           Number(session.snapshot().fighters[effectiveAction.actorId]?.damageTakenTotal)||0
-      });
+      };
       contactHoldsByActor.set(hold.actorId,hold);
       onChannelStart(Object.freeze({actorId:hold.actorId,targetId:hold.targetId,
         skillId:hold.skill.id}));
