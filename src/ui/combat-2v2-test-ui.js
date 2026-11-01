@@ -1197,8 +1197,10 @@ export async function mountCoop2v2Test({
           ? "true" : "false";
       button.dataset.targeting =
         pendingSkillId === skill.id ? "true" : "false";
-      button.title =
-        button.dataset.targetRequired === "true"
+      const statMissing = preview?.outcome === "no_stat_points";
+      button.title = statMissing
+        ? `Invocation impossible : ${preview.statId} = 0 point`
+        : button.dataset.targetRequired === "true"
           ? skill.name + " — choisir une cible autorisée"
           : skill.name;
 
@@ -1219,11 +1221,12 @@ export async function mountCoop2v2Test({
             )
           : 1;
 
-      cooldown.textContent =
-        remainingCooldownMs > 0
+      cooldown.textContent = statMissing
+        ? `${preview.statId} : 0 point — mur impossible`
+        : remainingCooldownMs > 0
           ? `Recharge ${(remainingCooldownMs / 1000).toFixed(1)} s`
           : "";
-      cooldown.hidden = remainingCooldownMs <= 0;
+      cooldown.hidden = !statMissing && remainingCooldownMs <= 0;
       button.dataset.combatCooldown =
         remainingCooldownMs > 0
           ? String(Math.ceil(remainingCooldownMs))
