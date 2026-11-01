@@ -1,4 +1,4 @@
-import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031";
+import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-wall-placement-ux-20261101";
 import { captureReactionRechargeClockV1 } from "./capture-reaction-recharge-clock-v1.js";
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
