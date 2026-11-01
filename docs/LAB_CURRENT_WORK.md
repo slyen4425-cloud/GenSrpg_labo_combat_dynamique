@@ -1,3 +1,9 @@
+## 2026-11-01 — Canalisation : raccord éditeur et FX (lot isolé depuis main jouable GREEN)
+- Source `gh-pages@2afe898b20b9a5061fa8687eaf5d2f679bfe4ff2` CI 5/5 + Pages SUCCESS, checkpoint `checkpoint/lab-start-channeling-author-fx-2026-11-01`, branche `work/lab-channeling-author-fx-2026-11-01`.
+- Autorité unique : `SkillDefinition.channeling` et propriétaire UI Human Editor pour import/export, `Combat Runtime` pour `onChannelTick`, FX/audio existants pour sprites et sons. Pas de second ordonnanceur, ID manuel, pas de toucher au moteur stable.
+- Périmètre : `examples/dom-demo/capture-editor-v2.html`, `src/ui/capture-editor-human-v2.js`, `src/ui/capture-skill-explanation-v1.js`, présentateurs 1v1/2v2 seulement après preuve, nouvelles sentinelles, doc `docs/LAB_CHANNELING_AUTHOR_FX_2026-11-01.md`.
+- TDD RED, puis vraie chaîne sauvegarde/relecture, descriptions, son et sprite à chaque tick, CI Foundation + quatre Chromium sur SHA final, checkpoint GREEN, PR `gh-pages`, CI+Pages après fusion. `main`, Exploration, GenSrpg, assets, contactHold et charges protégés. Android réel distinct.
+
 ## 2026-11-01 — Reprise du core canalisé : horloge et régénération (validation de livraison)
 - Branche `work/lab-channeling-core-2026-11-01` ; base officielle inchangée `gh-pages@d0bfecf724f6f3ed70c1ae9bdd2d07289c713b83`, START `checkpoint/lab-start-channeling-core-2026-11-01`.
 - La sentinelle de timing était incorrecte : la résolution immédiate est à t=0, le premier tick doit être à t=1000, pas t=1100. La régénération native +1/2000 ms biaisait ensuite la sentinelle d'épuisement. Correction exclusivement dans le test fixture, sans modifier les propriétaires gameplay ni les réglages du jeu : `35ceeaf`, `e512728`.
