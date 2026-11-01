@@ -48,7 +48,7 @@ test("native effect creates one barrier with stat-snapshotted HP from official g
  assert.equal(summon(spawn.state).state.combatEntities.length,1,"recast replaces wall rather than stacking invisible duplicates");
  assert.equal(summon(state(0)).state.combatEntities.length,0,"zero glace does not invent HP");
 });
-test("barrier intercepts actual incoming contact/beam/projectile damage, is destroyed and spills remainder to fighter",()=>{
+test("barrier intercepts actual incoming contact/beam/projectile damage, is destroyed without spilling the same hit into the fighter",()=>{
  const starting=summon().state;
  let hit=applyCombatDamageV1({state:starting,sourceActorId:"enemy",targetActorId:"hero",
    damage:30,incomingKind:"projectile",contactedEntityId:starting.combatEntities[0].id});
@@ -56,9 +56,9 @@ test("barrier intercepts actual incoming contact/beam/projectile damage, is dest
  assert.equal(hit.state.combatEntities[0].hp,50);assert.equal(hit.state.fighters.hero.hp,100);
  hit=applyCombatDamageV1({state:hit.state,sourceActorId:"enemy",targetActorId:"hero",
    damage:65,incomingKind:"beam",contactedEntityId:starting.combatEntities[0].id});
- assert.equal(hit.absorbedByEntity,50);assert.equal(hit.appliedDamage,15);
+ assert.equal(hit.absorbedByEntity,50);assert.equal(hit.appliedDamage,0);
  assert.equal(hit.state.combatEntities.length,0);
- assert.equal(hit.state.fighters.hero.hp,85);
+ assert.equal(hit.state.fighters.hero.hp,100);
  assert.equal(hit.destroyedEntityId!=null,true);
 });
 test("wall does not intercept DoT or self-hit; no wall when glace is zero",()=>{
