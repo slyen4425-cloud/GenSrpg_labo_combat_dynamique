@@ -15,3 +15,9 @@ RED confirmé : run GitHub Actions 41328441094, Foundation FAIL sur anciens tran
 
 ## Régression historique diagnostiquée
 La CI du code exact importé (`41328554447`) a obtenu quatre navigateurs en succès et une sentinelle Foundation en échec : le test historique du 30 octobre exigeait le transfert actif identique à l'ancienne archive Gorice avec `glace=0`, `skillIds=[fireball]`, slots vides. L'archive 2026-10-30 est protégée intacte et sa vérification est conservée ; seul le test de la fiche active vise désormais le nouvel export utilisateur. Aucun ajustement moteur, sprite, ou données auteur n'est effectué pour ce test.
+
+## Validation intermédiaire et livraison
+- Test rouge initial : run GitHub Actions `41328441094` (le nouveau fichier source diffère de l'ancien preset actif).
+- Après remplacement des deux transferts, la CI `41328554447` a détecté uniquement la sentinelle historique Gorice : les anciennes valeurs du 30 octobre ne sont plus les valeurs actives. L'archive du 30 octobre n'a pas été modifiée.
+- Après adaptation de ce test de provenance, **Foundation et quatre Chromium 5/5 SUCCESS** sur `45f4b903f4f3089d8c2d30a5b14ac9ac91ab7f3d` : https://github.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/actions/runs/41328688205 .
+- Cette note fait partie d'un nouveau SHA documentaire : revalider les cinq jobs sur ce SHA final, créer ensuite le checkpoint GREEN et fusionner seulement vers `gh-pages`. Ne pas confondre tests Chromium et validation tactile Android par l'utilisateur.
