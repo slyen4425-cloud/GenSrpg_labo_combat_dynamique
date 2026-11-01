@@ -1,3 +1,5 @@
+import { nearestBarrierSegmentContactV1 } from "../../core/combat/combat-barrier-spatial-v1.js";
+
 const OPAQUE_ALPHA_THRESHOLD = 0;
 const maskCache = new Map();
 
@@ -764,6 +766,8 @@ export function watchVisibleModelContact({
   targetModel,
   continuous = true,
   onContact,
+  obstacleRectsFor = null,
+  sourceRectFor = null,
   requestFrame = defaultRequestFrame,
   cancelFrame = defaultCancelFrame
 }) {
@@ -780,6 +784,12 @@ export function watchVisibleModelContact({
   if (typeof onContact !== "function") {
     throw new TypeError("onContact must be a function");
   }
+  if (obstacleRectsFor !== null && typeof obstacleRectsFor !== "function") {
+    throw new TypeError("obstacleRectsFor must be a function");
+  }
+  if (sourceRectFor !== null && typeof sourceRectFor !== "function") {
+    throw new TypeError("sourceRectFor must be a function");
+  }
   if (
     typeof requestFrame !== "function" ||
     typeof cancelFrame !== "function"
@@ -793,6 +803,7 @@ export function watchVisibleModelContact({
   let frameId = null;
   let previousSource = sourceModel.snapshot();
   let previousTarget = targetModel.snapshot();
+  let previousSourceRect = visibleModelOpaqueRect(previousSource) ?? sourceRectFor?.() ?? null;
 
   const schedule = () => {
     if (!active) {
@@ -810,6 +821,35 @@ export function watchVisibleModelContact({
 
     const source = sourceModel.snapshot();
     const target = targetModel.snapshot();
+    const sourceRect = visibleModelOpaqueRect(source) ?? sourceRectFor?.() ?? null;
+
+    // Use this EXISTING contact RAF for wall interception too. Widen the
+    // actual wall rectangle by the moving actor's visible half-bounds so its
+    // leading edge stops at the obstacle instead of its body center crossing.
+    // The reported entity ID is evidence only; Combat Runtime/Damage own the
+    // semantic collision and HP, never this observer.
+    let obstacle = null;
+    const before = pointFromRect(previousSourceRect);
+    const after = pointFromRect(sourceRect);
+    if (obstacleRectsFor && before && after && sourceRect) {
+      const radiusX = Math.max(0, Number(sourceRect.width) || 0) / 2;
+      const radiusY = Math.max(0, Number(sourceRect.height) || 0) / 2;
+      const obstacles = (obstacleRectsFor() ?? []).map(item => {
+        const rect = item?.rect;
+        return rect ? {
+          entityId: item.entityId,
+          rect: {
+            left: Number(rect.left) - radiusX,
+            top: Number(rect.top) - radiusY,
+            width: Number(rect.width) + radiusX * 2,
+            height: Number(rect.height) + radiusY * 2
+          }
+        } : null;
+      }).filter(Boolean);
+      obstacle = nearestBarrierSegmentContactV1({
+        from: before, to: after, barriers: obstacles
+      });
+    }
 
     const contacted =
       source !== null &&
@@ -823,8 +863,19 @@ export function watchVisibleModelContact({
       });
 
     previousSource = source;
+    previousSourceRect = sourceRect;
     previousTarget = target;
 
+    // First obstacle takes precedence when actor-body and wall contacts fall
+    // in the same animation frame. No inferred interception for a missed wall.
+    if (obstacle) {
+      active = false;
+      onContact(Object.freeze({
+        combatEntityId: obstacle.entityId,
+        contactPoint: obstacle.point
+      }));
+      return;
+    }
     if (contacted) {
       active = false;
       onContact();

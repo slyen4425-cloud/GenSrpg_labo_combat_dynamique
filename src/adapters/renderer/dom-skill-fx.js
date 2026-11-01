@@ -1,5 +1,5 @@
 import {sweptSegmentRectContactV1,nearestBarrierSegmentContactV1} from "../../core/combat/combat-barrier-spatial-v1.js";
-import { sweptPointHitsOpaqueMask, sweptPointHitsSpriteEllipseV1, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1, sweptExpandingWaveMeetsProjectileV1 } from "./dom-visible-model-contact.js";
+import { sweptPointHitsOpaqueMask, sweptPointHitsSpriteEllipseV1, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1, sweptExpandingWaveMeetsProjectileV1 } from "./dom-visible-model-contact.js?v=wall-ground-stop-20261101";
 
 function defaultAnimate(element, keyframes, options) {
   if (typeof element.animate !== "function") {
