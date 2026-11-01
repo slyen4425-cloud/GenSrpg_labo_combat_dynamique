@@ -6339,6 +6339,17 @@ function appendHumanSkillEffectV1(
    wallPlacement.value=effect?.placementMode??"protected";
    const wallArenaX=tacticalNumberInputV1("skillBarrierArenaX",effect?.arenaXPct??50,{min:0,max:100,step:1});
    const wallArenaY=tacticalNumberInputV1("skillBarrierArenaY",effect?.arenaYPct??50,{min:0,max:100,step:1});
+   const wallXField=tacticalFieldV1("Position X dans l'arène (%)",wallArenaX);
+   const wallYField=tacticalFieldV1("Position Y dans l'arène (%)",wallArenaY);
+   const wallForwardField=tacticalFieldV1("Avancée vers l’ennemi (px)",wallForward);
+   const wallUpField=tacticalFieldV1("Décalage en hauteur (px)",wallUp);
+   function syncWallPlacementFields(){
+     const arenaPlacement=wallPlacement.value==="arena";
+     wallXField.hidden=!arenaPlacement;wallYField.hidden=!arenaPlacement;
+     wallForwardField.hidden=arenaPlacement;wallUpField.hidden=arenaPlacement;
+   }
+   wallPlacement.addEventListener("change",syncWallPlacementFields);
+   syncWallPlacementFields();
    const barrierKinds=document.createElement("fieldset");
   barrierKinds.className="editor-choice-group";
   const barrierLegend=document.createElement("legend");
@@ -6357,10 +6368,7 @@ function appendHumanSkillEffectV1(
      tacticalFieldV1("Sprite du mur (bibliothèque de zones)",barrierSprite),
      tacticalFieldV1("Taille visuelle et collision du mur",wallScale),
      tacticalFieldV1("Placement du mur",wallPlacement),
-     tacticalFieldV1("Position X dans l'arène (%) si libre",wallArenaX),
-     tacticalFieldV1("Position Y dans l'arène (%) si libre",wallArenaY),
-     tacticalFieldV1("Avancée vers l’ennemi (px)",wallForward),
-     tacticalFieldV1("Décalage en hauteur (px)",wallUp),barrierKinds,barrierHelp);
+     wallXField,wallYField,wallForwardField,wallUpField,barrierKinds,barrierHelp);
 
   const scheduledBox =
     document.createElement("div");
