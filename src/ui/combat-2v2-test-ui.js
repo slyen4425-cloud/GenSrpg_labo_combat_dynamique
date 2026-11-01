@@ -892,8 +892,8 @@ export async function mountCoop2v2Test({
     targetCollisionModelFor(slotId) {
       return visuals.getCollisionModelFor(slotId);
     },
-    barrierCollisionRectsFor({sourceActorId,targetActorId}) {
-      return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId});
+    barrierCollisionRectsFor({sourceActorId,targetActorId,kind}) {
+      return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId,kind});
     },
     waveTargetsFor(fromSlot) {
       // This is only a list of visible opponent models. The Runtime
