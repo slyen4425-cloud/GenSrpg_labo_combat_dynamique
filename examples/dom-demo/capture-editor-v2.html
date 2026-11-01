@@ -1456,6 +1456,34 @@
           <p class="note">Mêmes coûts, préparation et fenêtre que l'attaque chargée. Amplifie uniquement dégâts, soins et puissance des statuts numériques ; ne prolonge pas les durées et ne contourne pas les immunités.</p>
         </section>
 
+        <section class="skill-contact-hold" data-skill-channeling aria-label="Canalisation de capacité">
+          <h3>Canalisation — effets répétés pendant l'action</h3>
+          <label class="switch-line"><input type="checkbox" data-skill-channeling-enabled>
+            <span>Activer une capacité canalisée (rayon, aura ou contact)</span>
+          </label>
+          <p class="note">La créature lance la capacité puis maintient les effets par pulsations. Les dégâts, soins ou statuts sont appliqués uniquement aux pulsations ; aucun dégât initial supplémentaire. Incompatible avec les deux charges, le maintien sangsue et la forme projectile. Pour cette première version, les effets visuels et les sons ne se rejouent pas encore à chaque pulsation.</p>
+          <div data-skill-channeling-settings hidden>
+            <div class="grid two">
+              <label>Intervalle entre deux pulsations (ms)
+                <input type="number" data-skill-channeling-interval min="100" max="60000" step="50" value="1000"></label>
+              <label>Durée maximale (ms ; 0 = sans limite de durée)
+                <input type="number" data-skill-channeling-duration min="0" max="120000" step="100" value="5000"></label>
+              <label>Nombre maximal de pulsations (0 = pas de limite)
+                <input type="number" data-skill-channeling-max-ticks min="0" max="500" step="1" value="5"></label>
+              <label>Énergie consommée à chaque pulsation
+                <input type="number" data-skill-channeling-energy min="0" step="any" value="1"></label>
+            </div>
+            <div class="grid two">
+              <label class="switch-line"><input type="checkbox" data-skill-channeling-stop-damage checked>Arrêt si la créature subit des dégâts</label>
+              <label class="switch-line"><input type="checkbox" data-skill-channeling-stop-stun checked>Arrêt si elle est étourdie</label>
+              <label class="switch-line"><input type="checkbox" data-skill-channeling-stop-silence checked>Arrêt si elle est réduite au silence</label>
+            </div>
+            <p class="note">Ajoute au moins un effet par pulsation : Dégâts, Soin, Appliquer un statut ou Appliquer un marqueur, ciblant soi-même ou la cible. Les limites de durée, d'énergie et de ticks sont contrôlées par le moteur de combat natif.</p>
+            <div class="skill-effects-list" data-skill-channeling-effects-host></div>
+            <button type="button" class="secondary-action" data-skill-channeling-effect-add>Ajouter un effet par pulsation</button>
+          </div>
+        </section>
+
         <section class="skill-contact-hold" data-skill-contact-hold aria-label="Maintien au contact">
           <h3>Sangsue / Maintien au contact</h3>
           <label><input type="checkbox" data-skill-contact-hold-enabled>
