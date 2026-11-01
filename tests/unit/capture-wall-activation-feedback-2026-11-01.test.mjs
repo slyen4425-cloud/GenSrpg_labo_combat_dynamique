@@ -54,14 +54,13 @@ test("1v1 button and preview select caster for self-only skills; enemy attacks r
    {...authored,targetRelations:["enemy"]}),"opponent");
 });
 
-// The user's version collides with the official Mur de glace preset at level 1.
-// Transfer and editor fields must preserve level 10; importing without explicit
-// replacement cannot silently rewrite the stored official entry.
-test("an authored level-10 wall round-trips transfer and editor without reverting to preset level 1",()=>{
+// The official preset now matches the user's approved level-10 export.
+// Transfer and editor fields must preserve that level without a manual import.
+test("the official player-authored level-10 wall round-trips transfer and editor",()=>{
  const old=JSON.parse(readFileSync(new URL(
    "../../data/capture/showcase/mur_de_glace.capture-skill-transfer-v1.json",import.meta.url
  ),"utf8")).draft;
- assert.equal(old.requiredLevel,1,"official preset is level 1");
+ assert.equal(old.requiredLevel,10,"official player preset must be level 10");
  const edited={...old,requiredLevel:10,
    definition:{...old.definition,form:"self",energyCost:5,preparationMs:900,
      effects:[...authored.effects]}};
