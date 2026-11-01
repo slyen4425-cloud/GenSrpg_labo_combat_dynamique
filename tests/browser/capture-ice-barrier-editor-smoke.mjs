@@ -10,6 +10,7 @@ import {createCombatState} from "../../src/core/combat/combat-state.js";
 import {createCombatBarrierV1} from "../../src/core/combat/combat-entity-v1.js";
 import {applyCombatDamageV1} from "../../src/core/combat/combat-damage-application-v1.js";
 import {createCombatEntityOverlayV1} from "../../src/adapters/renderer/combat-entity-overlay-v1.js";
+import {createDomSkillFxRenderer} from "../../src/adapters/renderer/dom-skill-fx.js";
 import {createCaptureSkillPresentationAssetsV2} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
 import {sweptSegmentRectContactV1,nearestBarrierSegmentContactV1} from "../../src/core/combat/combat-barrier-spatial-v1.js";
 try{
@@ -90,6 +91,42 @@ try{
  if(!stableWall.textContent.includes("55 / 80 PV"))
    throw Error("barrier HP did not update after real damage");
  overlay.dispose();host.remove();
+ // Late opponent textures must NOT disarm wall collision: exercise the
+ // real FX observer with a moving projectile and a null fighter mask.
+ const battlefield=document.createElement("div");
+ battlefield.style.cssText="position:relative;width:520px;height:270px;";
+ const hero=document.createElement("div"),foe=document.createElement("div");
+ hero.style.cssText="position:absolute;left:25px;top:95px;width:90px;height:90px;";
+ foe.style.cssText="position:absolute;left:400px;top:95px;width:90px;height:90px;";
+ battlefield.append(hero,foe);document.body.append(battlefield);
+ const liveOverlay=createCombatEntityOverlayV1({fighterContainers:{player:hero,opponent:foe}});
+ liveOverlay.render(summoned.state);
+ const liveWall=liveOverlay.collisionRectsFor({sourceActorId:"opponent",targetActorId:"player"})[0];
+ if(!liveWall)throw Error("late model fixture wall rectangle missing");
+ const queued=[],contacts=[];
+ const attackFx=createDomSkillFxRenderer({arena:battlefield,
+   anchors:{player:hero,opponent:foe},targetAnchors:{player:hero,opponent:foe},
+   targetCollisionModelFor:()=>null,
+   barrierCollisionRectsFor:args=>liveOverlay.collisionRectsFor(args),
+   onProjectileContact:contact=>{contacts.push(contact);return {ok:true};},
+   requestFrame:callback=>{queued.push(callback);return queued.length;},
+   cancelFrame:()=>{},
+   animate:()=>({finished:new Promise(()=>{}),cancel(){}})
+ });
+ attackFx.play({type:"projectile",skillId:"late-texture-test",fromSlot:"opponent",targetSlot:"player",durationMs:1200});
+ const liveProjectile=battlefield.querySelector('[data-skill-fx="projectile"]');
+ if(!liveProjectile||queued.length===0)throw Error("projectile wall observer not scheduled without opaque target");
+ // One actual, swept DOM frame crosses the visible rectangle before impact.
+ liveProjectile.style.left=(liveWall.rect.left-battlefield.getBoundingClientRect().left-25)+"px";
+ queued.shift()();
+ if(contacts.length!==1||contacts[0].combatEntityId!==summoned.record.id)
+   throw Error("late fighter model allowed projectile to bypass authored wall");
+ const intercepted=applyCombatDamageV1({state:summoned.state,sourceActorId:"opponent",
+   targetActorId:"player",damage:23,incomingKind:"projectile",contactedEntityId:contacts[0].combatEntityId});
+ if(intercepted.absorbedByEntity!==23||intercepted.appliedDamage!==0||
+    intercepted.state.combatEntities[0].hp!==57)
+   throw Error("real projectile hit did not reduce native wall HP");
+ attackFx.dispose();liveOverlay.dispose();battlefield.remove();
  document.body.dataset.barrierOverlaySmoke="pass:persistent-sprite:geometry:80hp:hit25:55hp";
 }catch(e){document.body.dataset.barrierOverlaySmoke="error:"+e.message;}
 document.addEventListener("DOMContentLoaded",()=>{
