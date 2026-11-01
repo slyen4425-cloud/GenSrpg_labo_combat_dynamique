@@ -29,11 +29,11 @@ test("one official Mur de glace preset replaces level-one example with actual co
  assert.equal(skill.effects[0].entityKind,"barrier");
  assert.equal(skill.effects[0].statId,"glace");
  assert.equal(skill.effects[0].hpPerStatPoint,1);
- assert.deepEqual(skill.effects[0].interceptKinds,["projectile","beam","contact"]);
- assert.equal(skill.effects[0].spriteAssetId,"pack:capture:sprite-mur-glace-01");
+ assert.deepEqual(skill.effects[0].interceptKinds,["projectile","beam"]);
+ assert.equal(skill.effects[0].spriteAssetId,"pack:capture:sprite-mur-glace-arcanique-01");
  assert.equal(skill.effects[0].visualScale,1);
- assert.equal(skill.effects[0].offsetForwardPx,0);
- assert.equal(skill.effects[0].offsetUpPx,0);
+ assert.equal(skill.effects[0].offsetForwardPx,80);
+ assert.equal(skill.effects[0].offsetUpPx,50);
  assert.ok(draft.description.includes("Glace"),"meaningful description is required, not the author's earlier placeholder");
  const fields=humanSkillEditorFieldsFromDraftV1(draft);
  assert.equal(fields.form,"self");assert.equal(fields.requiredLevel,10);
@@ -58,5 +58,5 @@ test("official preset can launch through the native combat session and creates o
  assert.equal(valid.snapshot().combatEntities.length,1);
  assert.equal(valid.snapshot().combatEntities[0].hp,12);
  assert.equal(valid.snapshot().combatEntities[0].spriteAssetId,
-   "pack:capture:sprite-mur-glace-01");
+   "pack:capture:sprite-mur-glace-arcanique-01");
 });

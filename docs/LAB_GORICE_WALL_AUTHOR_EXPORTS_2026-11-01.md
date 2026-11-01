@@ -11,4 +11,4 @@ Source Mur : 2212 octets, SHA256 `5e87c01a0f53112fbb803604a5a5cc8a2caf0ade8f3dd7
 **Hors périmètre :** correction/recadrage des sprites en cours dans un autre chantier. Aucun pixel ou assetId automatiquement changé.
 
 ## Sentinelles
-RED attendu sur ancien transfert vitrine contre sources fournies, suivi du commit minimal des deux transferts et de l'adaptation des anciennes attentes codées en dur. Tests complets obligatoires avant toute livraison GREEN, puis validation Android distincte.
+RED confirmé : run GitHub Actions 41328441094, Foundation FAIL sur anciens transferts vitrine face aux deux sources fournies, suivi du commit minimal des deux transferts et de l'adaptation des anciennes attentes codées en dur. Tests complets obligatoires avant toute livraison GREEN, puis validation Android distincte.
