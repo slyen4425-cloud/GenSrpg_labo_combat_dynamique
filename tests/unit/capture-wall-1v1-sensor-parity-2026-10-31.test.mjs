@@ -20,7 +20,7 @@ test("1v1 must resolve wall sprites through the same canonical asset binding as 
 test("1v1 must pass visible native wall collision geometry to the existing projectile renderer",()=>{
   const setup=ui.match(/const fx = createDomSkillFxRenderer\(\{([\s\S]*?)\n  \}\);/);
   assert.ok(setup,"1v1 uses the canonical FX renderer");
-  assert.match(setup[1],/barrierCollisionRectsFor\(\{sourceActorId,targetActorId\}\)\s*\{[\s\S]*?return combatEntityOverlay\.collisionRectsFor\(\{sourceActorId,targetActorId\}\);\s*\}/,
+  assert.match(setup[1],/barrierCollisionRectsFor\(\{sourceActorId,targetActorId,kind\}\)\s*\{[\s\S]*?return combatEntityOverlay\.collisionRectsFor\(\{sourceActorId,targetActorId,kind\}\);\s*\}/,
     "1v1 must use the same sensor and runtime contact path as 2v2");
   assert.match(setup[1],/onProjectileContact\(contact\)\s*\{\s*runtime\?\.reportActionContact\(contact\);\s*\}/);
 });
