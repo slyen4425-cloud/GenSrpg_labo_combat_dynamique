@@ -1,3 +1,13 @@
+## 2026-11-01 — Canalisation V1 : contrat et ticks natifs sous l'horloge du Combat Runtime (#168)
+- Base stable `gh-pages@d0bfecf724f6f3ed70c1ae9bdd2d07289c713b83` (CI + Pages 5/5 GREEN après PR #179). START `checkpoint/lab-start-channeling-core-2026-11-01`, WORK `work/lab-channeling-core-2026-11-01`.
+- Objectif : contrat `SkillDefinition.channeling` opt-in, ticks à intervalle configurable ; paiement énergétique unique par tick, effects `SkillEffectV1` natifs, arrêt durée/nombre de ticks/énergie/KO/stun/silence/dégâts subis/rappel, jamais de tick fantôme.
+- Un seul propriétaire : `Skill Contract` valide, `Combat Session` paie l'énergie et applique l'effet dans la même transaction, `Combat Runtime` organise les ticks sur sa propre horloge en réutilisant le système de maintien, `Combat State` et `Combat Damage` restent autorités. Pas de boucle de timers.
+- Périmètre : `src/contracts/channeling-v1.js` (nouveau), `src/contracts/skill-definition.js`, `src/core/combat/combat-session.js`, `src/core/combat/combat-runtime.js`, sentinelle `tests/unit/capture-channeling-core-2026-11-01.test.mjs`, docs. N'affecte pas `contactHold` ni l'attaque chargée.
+- TDD RED exigé, y compris paiement atomique, 0/N ticks, arrêt au même instant, consommation non dupliquée, ciblage du bon combattant. GREEN seulement après Foundation + 4 Chromium et checkpoint + PR + Pages ; validation Android distincte.
+- Hors périmètre de ce lot natif : éditeur accessible, écran bestiaire, sprites/sons répétés par tick et blocages spatiaux complémentaires (prochain lot propre une fois moteur natif prouvé) ; ne pas annoncer la canalisation jouable avant leur raccord. `main`, GenSrpg, Exploration, global-assets protégés.
+
+---
+
 ## 2026-11-01 — Mur : placement explicite dans l'arène, sans seconde autorité (#167)
 - Source GREEN `gh-pages@b9f4421afc99ae2217d84511f387192a862410b1` ; Laboratory CI `41256624907` 5/5 et Pages `41256624577` SUCCESS. Départ `checkpoint/lab-start-wall-arena-placement-2026-11-01`, travail `work/lab-wall-arena-placement-2026-11-01`.
 - Objectif : offrir deux positions auteur : `protected` (ancien comportement près du combattant) et `arena` (X/Y 0–100 % de l'arène affichée). Placement enregistré dans le même `SkillEffectV1.summon_entity` et figé dans `Combat State.combatEntities`, sans ID saisi.
