@@ -15,6 +15,7 @@
       "name": "Mur de glace",
       "category": "defensive",
       "form": "self",
+      "projectileTargeting": "direct",
       "loadoutSlot": "standard",
       "element": "ice",
       "approachMode": "none",
@@ -38,6 +39,7 @@
       ],
       "hitPresenceStates": null,
       "dodgeable": false,
+      "hitsIntangible": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": []
@@ -73,26 +75,15 @@
           "hpPerStatPoint": 1,
           "interceptKinds": [
             "projectile",
-            "beam",
-            "contact"
+            "beam"
           ],
-          "spriteAssetId": "pack:capture:sprite-mur-glace-01",
+          "spriteAssetId": "pack:capture:sprite-mur-glace-arcanique-01",
           "visualScale": 1,
-          "offsetForwardPx": 0,
-          "offsetUpPx": 0
+          "offsetForwardPx": 80,
+          "offsetUpPx": 50
         }
-      ],
-      "projectileTargeting": "direct",
-      "hitsIntangible": false
+      ]
     },
-    "presentation": {
-      "id": "skill:mur_de_glace",
-      "version": 3,
-      "subjectType": "skill",
-      "subjectId": "mur_de_glace",
-      "visual": {},
-      "audio": {},
-      "statusVisuals": {}
-    }
+    "presentation": null
   }
 }

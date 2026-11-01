@@ -202,8 +202,8 @@ document.addEventListener("DOMContentLoaded",()=>{
    const officialWallRow=document.querySelector("[data-skill-effects-host] [data-skill-effect-row]");
    if(!officialWallRow||
       officialWallRow.querySelector("[data-skill-effect-kind]").value!=="summon_entity"||
-      officialWallRow.querySelector("[data-skill-barrier-sprite-asset-id]").value!=="pack:capture:sprite-mur-glace-01")
-      throw Error("published Mur de glace has lost the player's provisional sprite");
+      officialWallRow.querySelector("[data-skill-barrier-sprite-asset-id]").value!=="pack:capture:sprite-mur-glace-arcanique-01")
+      throw Error("published Mur de glace must keep the latest arcanique sprite binding");
    document.querySelector("[data-skill-new]").click();
    document.querySelector("[data-skill-effect-add-kind]").value="standard";
    document.querySelector("[data-skill-effect-add]").click();

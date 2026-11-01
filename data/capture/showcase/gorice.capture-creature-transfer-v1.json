@@ -99,7 +99,10 @@
       }
     },
     "skillIds": [
-      "fireball"
+      "fireball",
+      "boule_neige",
+      "poing_givrant",
+      "mur_de_glace"
     ],
     "presentation": {
       "id": "creature:gorice",
@@ -179,7 +182,7 @@
       "acier": 0,
       "nature": 0,
       "esprit": 0,
-      "glace": 0
+      "glace": 15
     }
   },
   "loadout": {
@@ -188,15 +191,15 @@
     "slots": [
       {
         "id": "slot-1",
-        "skillId": null
+        "skillId": "boule_neige"
       },
       {
         "id": "slot-2",
-        "skillId": null
+        "skillId": "poing_givrant"
       },
       {
         "id": "slot-3",
-        "skillId": null
+        "skillId": "mur_de_glace"
       },
       {
         "id": "slot-4",
