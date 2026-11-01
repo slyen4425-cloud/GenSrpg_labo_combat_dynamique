@@ -1,3 +1,12 @@
+## 2026-11-01 — Deux exports auteur + impact physique sur le mur, pas sur la créature
+- BASE gh-pages@7b2b1b6c5db9e380d64367eba34ce8c39a9ee427; START checkpoint/lab-start-wall-impact-routing-author-skills-2026-11-01; WORK work/lab-wall-impact-routing-author-skills-2026-11-01.
+- Demande auteur : remplacer, à IDs identiques et sans duplication, les JSON de vitrine poing_givrant et mur_de_glace par les deux nouveaux exports joints ; conserver les originaux et leur provenance en archives inertes. Le mur a hpPerStatPoint=2, interceptKinds projectile/beam/contact, arena 47/55, scale 4 et scaleX 1.5 ; le Poing givrant inflige 15 et applique incoming_effect_modifier néfaste.
+- Défaut Android : Combat Damage intercepte correctement mais le Presenter joue encore la réaction "hit" et le Skill FX impact sur le corps protégé. Même source native combat-entity-hit + point de contact du capteur existant ; aucun second calcul de dégâts, capteur, acteur ou état du mur. Les sorties sans barrière (vrais hits, soins, miroir, evasion, clash, zone) sont protégées.
+- Propriétaires autorisés : les deux transferts data/capture/showcase, archives source-exports, src/core/combat/combat-runtime.js (seule transmission du point visual observé), src/core/fx/skill-fx-plan.js, src/adapters/renderer/combat-resolution-presenter.js et src/adapters/renderer/dom-skill-fx.js (présentation), tests unitaires/Chromium existants, docs. Interdits : changements de PV/Defense, IA, contrat d'effet de compétence, global-assets, main, GenSrpg et Exploration.
+- TDD RED puis Foundation + quatre navigateurs sur SHA code+docs, checkpoint GREEN exact puis PR gh-pages et contrôle postmerge CI/Pages. Validation tactile Android distincte.
+
+---
+
 ## 2026-11-01 — Mur arène : joueur devant, ennemi derrière ; échelle X/Y avancée
 - BASE publiée `gh-pages@3ad7d636f369dfb552ef10d34a111735d99f7e2c`; START `checkpoint/lab-start-wall-layer-scale-xy-2026-11-01`; WORK `work/lab-wall-layer-scale-xy-2026-11-01`.
 - Retour Android : en placement `arena` mur z-index 12 masque Gorice, alors que le joueur doit passer devant et l'ennemi rester derrière. Le mur a un seul `visualScale` limité à 4 ; besoin d'une échelle uniforme plus grande et de facteurs X/Y indépendants.
