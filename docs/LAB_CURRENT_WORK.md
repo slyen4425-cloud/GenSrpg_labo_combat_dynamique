@@ -1,3 +1,15 @@
+## 2026-11-01 — Mur : placement explicite dans l'arène, sans seconde autorité (#167)
+- Source GREEN `gh-pages@b9f4421afc99ae2217d84511f387192a862410b1` ; Laboratory CI `41256624907` 5/5 et Pages `41256624577` SUCCESS. Départ `checkpoint/lab-start-wall-arena-placement-2026-11-01`, travail `work/lab-wall-arena-placement-2026-11-01`.
+- Objectif : offrir deux positions auteur : `protected` (ancien comportement près du combattant) et `arena` (X/Y 0–100 % de l'arène affichée). Placement enregistré dans le même `SkillEffectV1.summon_entity` et figé dans `Combat State.combatEntities`, sans ID saisi.
+- Seule autorité : contrat Skill Effect pour normaliser; Combat State pour position/PV de l'entité; overlay visuel pour la projection en pourcentage et le rectangle réel ; Combat Damage pour dégâts/collisions; le moteur ne calcule pas d'impacts depuis les coordonnées auteur.
+- Périmètre permis : `src/contracts/skill-effect-v1.js`, `src/core/combat/combat-entity-v1.js`, `src/adapters/renderer/combat-entity-overlay-v1.js`, `src/ui/combat-test-ui.js`, `src/ui/combat-2v2-test-ui.js`, `src/ui/capture-editor-human-v2.js`, `src/ui/capture-skill-explanation-v1.js`, tests unitaires dédiés et `tests/browser/capture-ice-barrier-editor-smoke.mjs`, fichiers d'import ESM public limités au cache si nécessaire, `docs/LAB_CURRENT_WORK.md` et rapport `docs/LAB_WALL_ARENA_PLACEMENT_2026-11-01.md`.
+- Protégés : Combat Runtime, ActionResolver, coûts d'énergie, roster, anciens presets/export exact, assets officiels, collision de projectile/rayon/mêlée, stat glace et coefficient PV, statuts, 1v1/2v2, `main`, GenSrpg, Exploration, global-assets.
+- TDD RED contractuel (rejet placement), tests : X/Y bornés, ancien contrat inchangé, stat au spawn, rendu persistant sans duplication, rectangles de collisions en 1v1/2v2 à la position effective, retour au mode proche lors d'un autre mur, import/export éditeur, Chrome réel.
+- Précondition GREEN : Foundation et quatre jobs Chromium sur le SHA final des docs, checkpoint final, PR vers gh-pages, CI + Pages du merge. Validation Android physique distincte.
+- Hors périmètre : blocage des déplacements et collisions sur murs collatéraux d'autres cibles, familiers actifs, contrôle tactile par glisser-déposer, compétences canalisées (#168).
+
+---
+
 ## 2026-10-31 — Mur : interception spatiale native des rayons et de la mêlée (reprise #167)
 - Base GREEN `gh-pages@671f164f2e5b3f43d2922eb1513155db19d5dec9`, START `checkpoint/lab-start-wall-beam-contact-geometry-2026-10-31`, WORK `work/lab-wall-beam-contact-geometry-2026-10-31`.
 - Objectif : supprimer l'interception automatique du mur pour les formes beam et contact. Seul le vrai segment visuel observé peut donner un `combatEntityId` natif, comme le projectile. Tir manqué = mur intact ; mur traversé = absorption brute puis reliquat.
