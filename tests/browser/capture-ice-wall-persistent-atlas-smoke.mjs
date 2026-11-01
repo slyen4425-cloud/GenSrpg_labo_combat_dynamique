@@ -63,6 +63,16 @@ try{
    const node=host.querySelector("[data-combat-entity-id]");
    const img=node?.querySelector("[data-combat-entity-image]");
    if(!img)throw Error("actual wall image missing "+id);
+   // Rendering the original 512x512 frame must never stretch into the
+   // existing 70x92 collision box, even when a different wall art is loaded.
+   const squareViewport=node.querySelector("[data-combat-entity-visual-viewport]");
+   if(!squareViewport)throw Error("square wall visual viewport missing "+id);
+   const viewportRect=squareViewport.getBoundingClientRect();
+   const collisionRect=node.querySelector("[data-combat-entity-sprite]").getBoundingClientRect();
+   if(Math.abs(viewportRect.width-viewportRect.height)>.2)
+     throw Error("ice wall frame distorted (not square) "+id);
+   if(Math.abs(collisionRect.width-70)>.2||Math.abs(collisionRect.height-92)>.2)
+     throw Error("ice wall hitbox changed by art alignment "+id);
    // Chromium virtual time advances much faster than network I/O; a 16s virtual
    // timer can reject before a perfectly healthy remote atlas finishes loading.
    // The outer real-time job watchdog handles genuine stalls instead.

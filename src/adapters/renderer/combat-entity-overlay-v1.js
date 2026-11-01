@@ -41,7 +41,15 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
       sprite.style.border="none";
       sprite.style.borderRadius="0";
       sprite.style.clipPath="none";
-      sprite.append(image);
+      // All global sprite-strip tiles are 512x512. The 70x92 outer box
+      // remains the collision/hit-feedback rectangle (unchanged contract);
+      // center a SQUARE visual viewport inside it so raw wall art is not
+      // stretched into a tall castle-like wall.
+      const visualViewport=document.createElement("div");
+      visualViewport.dataset.combatEntityVisualViewport="true";
+      visualViewport.style.cssText="position:absolute;left:0;top:50%;width:100%;aspect-ratio:1/1;transform:translateY(-50%);overflow:hidden;";
+      visualViewport.append(image);
+      sprite.append(visualViewport);
       if(frames>1){
         // Construction is a ONE-SHOT visual. Native Combat State/Damage owns
         // wall HP and removal; re-renders for damage must not restart the sprite.
