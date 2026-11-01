@@ -12,3 +12,6 @@ Source Mur : 2212 octets, SHA256 `5e87c01a0f53112fbb803604a5a5cc8a2caf0ade8f3dd7
 
 ## Sentinelles
 RED confirmé : run GitHub Actions 41328441094, Foundation FAIL sur anciens transferts vitrine face aux deux sources fournies, suivi du commit minimal des deux transferts et de l'adaptation des anciennes attentes codées en dur. Tests complets obligatoires avant toute livraison GREEN, puis validation Android distincte.
+
+## Régression historique diagnostiquée
+La CI du code exact importé (`41328554447`) a obtenu quatre navigateurs en succès et une sentinelle Foundation en échec : le test historique du 30 octobre exigeait le transfert actif identique à l'ancienne archive Gorice avec `glace=0`, `skillIds=[fireball]`, slots vides. L'archive 2026-10-30 est protégée intacte et sa vérification est conservée ; seul le test de la fiche active vise désormais le nouvel export utilisateur. Aucun ajustement moteur, sprite, ou données auteur n'est effectué pour ce test.
