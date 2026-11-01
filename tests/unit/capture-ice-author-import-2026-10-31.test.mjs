@@ -9,10 +9,13 @@ const root = new URL("../../", import.meta.url);
 const file = async path => readFile(new URL(path,root));
 const published = id => `data/capture/showcase/${id}.capture-skill-transfer-v1.json`;
 const archives = new Map([
- ["poing_givrant",["data/capture/source-exports/gensrpg-capture-skill-poing_givrant-2026-10-31.json","385d69ec3a255cde737b78b22745510dcac1d215853ba3827730843af44b164a"]],
+ ["poing_givrant",["data/capture/source-exports/gensrpg-capture-skill-poing_givrant-author-2026-11-01-v2.json","2e7e7f4a8d59a7c83af73ffed16d92880b03707427b96f5f3e864eddc2e7754f"]],
  ["boule_neige",["data/capture/source-exports/gensrpg-capture-skill-boule_neige-r2-2026-10-31.json","5c7434c2804d73173d62919aed7b3e4f00f9e651619475622390e7f0f24278b7"]]
 ]);
 test("two ice author exports are preserved byte-for-byte, imported by the canonical owner",async()=>{
+ const oldPoing=await file("data/capture/source-exports/gensrpg-capture-skill-poing_givrant-2026-10-31.json");
+ assert.equal(createHash("sha256").update(oldPoing).digest("hex"),"385d69ec3a255cde737b78b22745510dcac1d215853ba3827730843af44b164a",
+   "historical Poing givrant original remains preserved");
  const ids=[];
  for(const [id,[sourcePath,sha]] of archives){
   const original=await file(sourcePath), active=await file(published(id));

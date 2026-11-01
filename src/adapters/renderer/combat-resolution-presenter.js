@@ -3,7 +3,7 @@ import {
   planSkillOutcomeFx,
   planSkillPreparationFx,
   planSkillReleaseFx
-} from "../../core/fx/skill-fx-plan.js";
+} from "../../core/fx/skill-fx-plan.js?v=wall-impact-20261101";
 
 // Presentation anticipation only: Combat Runtime retains exclusive ownership of hit timing.
 const DEFAULT_INSTANT_ATTACK_ANTICIPATION_MS = 250;
@@ -680,6 +680,12 @@ export function createCombatResolutionPresenter({
 
     switch (resolution.outcome) {
       case "hit": {
+        // The native combat-entity-hit event proves the wall intercepted
+        // this strike. No fighter body contact: no hit, recoil or KO pose.
+        // Its impact sprite/audio are handled by the existing FX plan.
+        if (resolution.events?.some(event=>event.type==="combat-entity-hit")) {
+          break;
+        }
         const hitEvent = resolution.events?.find(
           (item) =>
             item.type === "hit" &&

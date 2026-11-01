@@ -1720,6 +1720,7 @@ export function createDomSkillFxRenderer({
     visual,
     skillId,
     point,
+    combatEntityId = null,
     durationMs,
     layer = "front",
     type = "impact",
@@ -1773,6 +1774,7 @@ export function createDomSkillFxRenderer({
     if (layer === "behind") node.className += " skill-fx--layer-behind";
     node.dataset.skillFx = type;
     node.dataset.skillId = skillId ?? "";
+    if (combatEntityId) node.dataset.combatEntityImpactId = combatEntityId;
     node.style.left = `${point.x + (Number(visual.offsetX) || 0)}px`;
     node.style.top = `${point.y + (Number(visual.offsetY) || 0)}px`;
 
@@ -2077,6 +2079,8 @@ export function createDomSkillFxRenderer({
     fromSlot,
     targetSlot,
     fromPoint = null,
+    impactPoint = null,
+    combatEntityId = null,
     phase = null,
     progress = null,
     amount = null,
@@ -2566,15 +2570,33 @@ export function createDomSkillFxRenderer({
 
     if (type === "impact") {
       const visual = presentation?.impact ?? null;
-      const point = centerRelativeTo(
-        anchor(anchors, targetSlot, "live target").getBoundingClientRect(),
-        arenaRect
-      );
+      // Reuse the physical contact point from the one native runtime sensor.
+      // The DOM fallback reads the SAME displayed wall sprite (no duplicate
+      // geometry), useful if the observed point was unavailable.
+      const worldPoint = combatEntityId && Number.isFinite(impactPoint?.x) &&
+        Number.isFinite(impactPoint?.y) ? impactPoint : null;
+      const wallSprite = combatEntityId && !worldPoint
+        ? [...arena.querySelectorAll("[data-combat-entity-id]")]
+            .find(node=>node.dataset.combatEntityId===combatEntityId)
+            ?.querySelector("[data-combat-entity-sprite]")
+        : null;
+      const point = worldPoint
+        ? {x:worldPoint.x-arenaRect.left,y:worldPoint.y-arenaRect.top}
+        : wallSprite
+          ? centerRelativeTo(wallSprite.getBoundingClientRect(),arenaRect)
+          : combatEntityId ? null
+          : centerRelativeTo(
+              anchor(anchors, targetSlot, "live target").getBoundingClientRect(),
+              arenaRect
+            );
+      // Never render a wall's impact on the protected fighter as fallback.
+      if (!point) return Object.freeze({status:"ignored",finished:Promise.resolve({status:"ignored"})});
 
       return playImpactVisual({
         visual,
         skillId,
         point,
+        combatEntityId,
         durationMs,
         layer: presentation?.impactLayer ?? "front",
         type: "impact",

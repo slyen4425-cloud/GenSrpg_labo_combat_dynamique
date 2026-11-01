@@ -86,7 +86,7 @@ test("official Mur de glace sample is a single canonically imported skill",async
  assert.equal(result.kind,"skill");assert.equal(result.value.draft.id,"mur_de_glace");
  const effect=result.value.draft.definition.effects[0];
  assert.equal(effect.kind,"summon_entity");assert.equal(effect.statId,"glace");
- assert.equal(effect.hpPerStatPoint,1);
+ assert.equal(effect.hpPerStatPoint,2);
 });
 
 test("full CombatSession skill start -> impact creates only one real wall entity, without a second session",()=>{

@@ -39,7 +39,8 @@ test("summon snapshots arena coordinates without changing statistics, roster or 
 test("official skill JSON transfer preserves arena positions without mutating legacy preset",()=>{
  const source=JSON.parse(readFileSync(new URL("../../data/capture/showcase/mur_de_glace.capture-skill-transfer-v1.json",import.meta.url),"utf8"));
  const originalEffect=source.draft.definition.effects[0];
- assert.equal(originalEffect.placementMode,undefined);
+ assert.equal(originalEffect.placementMode,"arena");
+ assert.equal(originalEffect.arenaXPct,47);assert.equal(originalEffect.arenaYPct,55);
  const authored={...source.draft,definition:{...source.draft.definition,
    effects:[normalizeSkillEffectV1({...originalEffect,placementMode:"arena",arenaXPct:24,arenaYPct:71})]}};
  const exported=exportCaptureSkillTransferJsonV1(authored);
@@ -48,7 +49,8 @@ test("official skill JSON transfer preserves arena positions without mutating le
  assert.equal(imported.value.draft.definition.effects[0].placementMode,"arena");
  assert.equal(imported.value.draft.definition.effects[0].arenaXPct,24);
  assert.equal(imported.value.draft.definition.effects[0].arenaYPct,71);
- assert.equal(imported.value.draft.definition.effects[0].hpPerStatPoint,1);
+ assert.equal(imported.value.draft.definition.effects[0].hpPerStatPoint,2);
  const unmodified=importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(source.draft));
- assert.equal(unmodified.value.draft.definition.effects[0].placementMode,undefined);
+ assert.equal(unmodified.value.draft.definition.effects[0].placementMode,"arena");
+ assert.equal(unmodified.value.draft.definition.effects[0].arenaXPct,47);
 });
