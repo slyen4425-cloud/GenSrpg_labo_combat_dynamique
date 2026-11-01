@@ -1,3 +1,14 @@
+## 2026-11-01 — 3 murs de glace invocables (source artiste et animation persistante)
+- Dépôt auteur vérifié `global-assets:_incoming/pack_murs_glace_suite_36_frames.zip` (15 386 792 octets, SHA256 `4cf5ac450117c0111079d0cf32caa26acd3d786e5d8d1e022c6d68d197bd03d1`, blob Git `29e729c96d23b2988c985cea94b139e8fc7c8458`).
+- Base médias `global-assets@30b5c0ecdf70cb59a38c31e90764ed9da59bbf38` ; checkpoint `checkpoint/lab-start-ice-persistent-walls-assets-2026-11-01`, travail `work/lab-ice-persistent-walls-assets-2026-11-01`; éditeur cible `gh-pages@4e825e466a9943ad43b4663fe0ae253bfb153fe9`.
+- 43 fichiers source conservés à l'octet (36 PNG transparents 512x512, 3 GIF animés, 3 manifests, aperçu commun) ; 3 atlas WebP sans perte 6144x512, lus pixel à pixel, prévisualisations et provenance `assets/library/capture/sprites/skills/murs_glace/`. IDs officiels `pack:capture:sprite-mur-glace-01`, `pack:capture:sprite-mur-glace-herisse-01`, `pack:capture:sprite-mur-glace-arcanique-01`, catalogue unique `global-assets`.
+- Métadonnées `playbackMode=once`, `holdLastFrame=true`, `persistentFrameIndex=11`. La fin de l'animation reste une barrière complète. Le propriétaire des PV et de la disparition est Combat State/Damage, jamais le sprite.
+- TDD RED `tests/unit/capture-persistent-ice-walls-assets-2026-11-01.test.mjs`, import GitHub Actions script versionné `scripts/import_ice_persistent_walls.py`, contrôle complet `npm run ci` vert avant commit médias.
+- Après publication médias : synchroniser éditeur gh-pages et cache v48, implémenter la lecture initiale en 12 frames puis maintien du cadre final dans `CombatEntityOverlayV1` (aujourd'hui statique), valider Chromium réellement connecté à la bibliothèque, absence de réinitialisation après impact, suppression à 0 PV et compatibilité anciens murs. Aucune promotion automatique de `main`.
+- Statut : médias prêts sur branche de travail; livraison complète en attente de PR global-assets + gh-pages / CI et Pages.
+
+---
+
 ## 2026-10-31 — Quatre icônes de glace Monster Capture — lot visuel
 
 - **Demande** : publier Poing de givre, Brouillard givrant, Armure de glace et Barrière de glace, quatre icônes originales déjà générées dans le fil, dans le sélecteur officiel de compétences du labo combat.

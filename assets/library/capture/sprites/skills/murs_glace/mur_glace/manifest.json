@@ -1,0 +1,25 @@
+{
+  "name": "mur_glace",
+  "frames": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "transparent": true,
+  "recommendedFrameDurationMs": 100,
+  "files": [
+    "png/mur_glace_01.png",
+    "png/mur_glace_02.png",
+    "png/mur_glace_03.png",
+    "png/mur_glace_04.png",
+    "png/mur_glace_05.png",
+    "png/mur_glace_06.png",
+    "png/mur_glace_07.png",
+    "png/mur_glace_08.png",
+    "png/mur_glace_09.png",
+    "png/mur_glace_10.png",
+    "png/mur_glace_11.png",
+    "png/mur_glace_12.png"
+  ],
+  "sourceSheet": "construction_d_un_mur_de_glace_magique.png"
+}
