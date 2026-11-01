@@ -43,7 +43,10 @@ try{
    const node=host.querySelector("[data-combat-entity-id]");
    const img=node?.querySelector("[data-combat-entity-image]");
    if(!img)throw Error("actual wall image missing "+id);
-   await Promise.race([img.decode(),new Promise((_,bad)=>setTimeout(()=>bad(Error("WebP timeout "+id)),16000))]);
+   // Chromium virtual time advances much faster than network I/O; a 16s virtual
+   // timer can reject before a perfectly healthy remote atlas finishes loading.
+   // The outer real-time job watchdog handles genuine stalls instead.
+   await img.decode();
    if(img.naturalWidth!==6144||img.naturalHeight!==512)throw Error("wrong real atlas "+id);
    const plays=img.getAnimations();
    if(plays.length!==1)throw Error("wall construction was not animated "+id+" "+plays.length);
@@ -84,10 +87,10 @@ try{
  if(!bin)throw Error("Chromium binary required");
  const url="http://127.0.0.1:"+server.address().port+"/examples/dom-demo/capture-editor-v2.html";
  const child=spawn(bin,["--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage",
-   "--no-first-run","--virtual-time-budget=35000","--dump-dom",url],{stdio:["ignore","pipe","pipe"]});
+   "--no-first-run","--virtual-time-budget=120000","--dump-dom",url],{stdio:["ignore","pipe","pipe"]});
  const out=[],err=[];child.stdout.on("data",x=>out.push(x));child.stderr.on("data",x=>err.push(x));
  const exit=await Promise.race([once(child,"close").then(([code])=>code),
-  new Promise((_,fail)=>{const t=setTimeout(()=>{child.kill("SIGKILL");fail(Error("persistent wall real browser timeout"));},80000);t.unref();child.once("close",()=>clearTimeout(t));})]);
+  new Promise((_,fail)=>{const t=setTimeout(()=>{child.kill("SIGKILL");fail(Error("persistent wall real browser timeout"));},110000);t.unref();child.once("close",()=>clearTimeout(t));})]);
  const html=Buffer.concat(out).toString("utf8");
  const match=html.match(/data-persistent-ice-wall-smoke="([^"]*)"/)?.[1]??"missing";
  if(exit!==0||!match.startsWith("pass:"))
