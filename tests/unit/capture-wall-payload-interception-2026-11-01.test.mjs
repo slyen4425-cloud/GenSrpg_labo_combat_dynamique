@@ -97,6 +97,6 @@ test("a tactical-only damaging projectile is also stopped by the observed wall",
  const result=session.completeSkill({action:{...started.action,barrierContactId:wallId}});
  assert.equal(result.ok,true);
  assert.equal(session.snapshot().fighters.hero.hp,100);
- assert.equal(session.snapshot().combatEntities[0].hp,6,
-  "blocking a tactical payload must not synthesize a second contact/damage event");
+ assert.equal(session.snapshot().combatEntities.length,0,
+  "tactical-only damage must hit and destroy the wall without reaching its owner");
 });
