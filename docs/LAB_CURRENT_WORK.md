@@ -1,3 +1,13 @@
+## 2026-11-01 — Mur : arrêter la frappe complète au premier contact physique (lot ciblé)
+- BASE publiée `gh-pages@b6575a9ab00e2a777a32b4d9fe686d7f7c29d6fb` (CI 5/5 et Pages vertes). START `checkpoint/lab-start-wall-hit-interception-2026-11-01` ; WORK `work/lab-wall-hit-interception-2026-11-01`. Signal utilisateur : Mur de glace perd des PV mais Gorice reçoit encore les malus et l'assaillant continue son approche.
+- Objectif limité à ce lot : quand le capteur existant a prouvé le contact d'une forme physique avec un mur, **l'attaque unique s'y termine**, même si elle détruit le mur ; aucun reliquat de dégâts, interruption, riposte de contact ou effet négatif de cette frappe sur la créature protégée. Ne pas protéger une attaque qui manque géométriquement le mur, ni les zones/DoT ; préserver les effets explicitement auto/alliés et les autres cibles.
+- Propriétaires uniques : Render Adapter observe géométrie/ID ; Combat Runtime transmet l'ID ; Combat Entity + Damage absorbent la frappe ; Action Resolver et Tactical Effects filtrent ses conséquences. Aucun capteur, timing ou état concurrent.
+- Fichiers autorisés : `src/core/combat/combat-entity-v1.js`, `src/core/combat/action-resolver.js`, `src/core/combat/immediate-tactical-effects-v1.js`, `tests/unit/capture-combat-entity-ice-barrier-2026-10-31.test.mjs`, nouvelle sentinelle `tests/unit/capture-wall-payload-interception-2026-11-01.test.mjs`, `docs/LAB_CURRENT_WORK.md` et `docs/LAB_WALL_PAYLOAD_INTERCEPTION_2026-11-01.md`. Tests 1v1/2v2/Chome si l'enchaînement peut être exécuté sur CI.
+- Protégés : placements X/Y, animation sprite/asset global, moteur de déplacement/approche, règles zones et DoT, main, GensRPG, Exploration et global-assets. Arrêt **visuel** de l'approche au mur, mode derrière/libre et découpe atlas : chantiers suivants séparés (ne pas prétendre les corriger ici).
+- TDD RED obligatoire : mur insuffisant et dégâts de reliquat ; dégâts secondaires/énergie/malus de la même frappe ; impact manqué ; effets alliés ; validation Foundation + 4 navigateurs sur SHA final avant checkpoint GREEN, PR gh-pages, CI/Pages postmerge. Validation Android utilisateur distincte.
+
+---
+
 ## 2026-11-01 — Mur destructible : sprite choisi + impacts réels 1v1/2v2
 - BASE `gh-pages@b713f3f72a3d57413a818cf4f07f772223899394`, START `checkpoint/lab-start-wall-runtime-sprite-collision-2026-11-01`, WORK `work/lab-wall-runtime-sprite-collision-2026-11-01`.
 - Trois régressions identifiées : `buildPreviewPresentationAssets` ne déléguait pas `visualAsset` au Combat 2v2 (carré/placeholder) ; `barrierCollisionRectsFor` perdait le `kind` des rayons et du contact (forçait projectile) ; `watchProjectileContact` arrêtait le suivi de murs quand le masque opaque de la cible n'était pas encore chargé.
