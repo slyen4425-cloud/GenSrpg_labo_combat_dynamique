@@ -3,7 +3,7 @@ import {
   planSkillOutcomeFx,
   planSkillPreparationFx,
   planSkillReleaseFx
-} from "../../core/fx/skill-fx-plan.js";
+} from "../../core/fx/skill-fx-plan.js-wall-impact-20261101";
 
 // Presentation anticipation only: Combat Runtime retains exclusive ownership of hit timing.
 const DEFAULT_INSTANT_ATTACK_ANTICIPATION_MS = 250;
