@@ -99,6 +99,9 @@
       "subjectType": "skill",
       "subjectId": "poing_givrant",
       "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-poing-de-givre-01"
+        },
         "impact": {
           "assetId": "pack:capture:sprite-frost-bolt-impact-01",
           "displayScale": 1,
