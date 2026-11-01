@@ -16,7 +16,7 @@ import {
   createDomVisibleModelCollisionModel,
   visibleModelOpaqueRect,
   watchVisibleModelContact
-} from "../adapters/renderer/dom-visible-model-contact.js";
+} from "../adapters/renderer/dom-visible-model-contact.js?v=wall-ground-stop-20261101";
 import { createDomCameraFxRenderer } from "../adapters/renderer/dom-camera-fx.js";
 import {
   playDomCreatureDodgeFxV1
