@@ -1,0 +1,40 @@
+name: Replace approved raw ice wall atlas 12f
+on:
+  push:
+    branches:
+      - work/lab-ice-wall-raw-replace-2026-11-01
+    paths:
+      - scripts/replace_mur_glace_raw_2026_11_01.py
+      - .github/workflows/replace-mur-glace-raw-2026-11-01.yml
+permissions:
+  contents: write
+concurrency:
+  group: replace-mur-glace-raw-2026-11-01
+  cancel-in-progress: false
+jobs:
+  verified-one-source-asset-import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install image verifier
+        run: python -m pip install 'Pillow>=10,<13'
+      - name: Verify source + safely replace 12 PNG, WebP, GIF and catalog in work branch
+        run: |
+          python -m py_compile scripts/replace_mur_glace_raw_2026_11_01.py
+          python scripts/replace_mur_glace_raw_2026_11_01.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: RED/GREEN asset test and repository checks
+        run: npm run ci
+      - name: Commit verified official wall media (never main)
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- assets/library/capture/sprites/skills/murs_glace/mur_glace_arcanique assets/library/capture/sprites/skills/murs_glace/sequence.json data/assets/catalog/global-visual-assets.v1.json
+          git diff --cached --quiet && { echo 'No verified media changes; importer did not replace old assets'; exit 1; }
+          git commit -m 'assets(capture): replace approved raw 2.5D ice wall at stable ID'
+          git push origin HEAD:work/lab-ice-wall-raw-replace-2026-11-01
