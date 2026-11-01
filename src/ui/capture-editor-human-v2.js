@@ -6329,7 +6329,9 @@ function appendHumanSkillEffectV1(
    if(effect?.spriteAssetId && ![...barrierSprite.options].some(o=>o.value===effect.spriteAssetId))
      createOption(barrierSprite,effect.spriteAssetId,effect.spriteAssetId);
    barrierSprite.value=effect?.spriteAssetId??"";
-   const wallScale=tacticalNumberInputV1("skillBarrierVisualScale",effect?.visualScale??1,{min:0.25,max:4,step:0.05});
+   const wallScale=tacticalNumberInputV1("skillBarrierVisualScale",effect?.visualScale??1,{min:0.25,max:12,step:0.05});
+    const wallScaleX=tacticalNumberInputV1("skillBarrierVisualScaleX",effect?.visualScaleX??1,{min:0.25,max:8,step:0.05});
+    const wallScaleY=tacticalNumberInputV1("skillBarrierVisualScaleY",effect?.visualScaleY??1,{min:0.25,max:8,step:0.05});
    const wallForward=tacticalNumberInputV1("skillBarrierOffsetForward",effect?.offsetForwardPx??0,{min:-150,max:150,step:1});
    const wallUp=tacticalNumberInputV1("skillBarrierOffsetUp",effect?.offsetUpPx??0,{min:-150,max:150,step:1});
    const wallPlacement=document.createElement("select");
@@ -6372,7 +6374,9 @@ function appendHumanSkillEffectV1(
   barrierBox.append(tacticalFieldV1("Statistique de l'invocation",barrierStatId),
     tacticalFieldV1("PV par point de stat (coefficient libre)",barrierHpRatio),
      tacticalFieldV1("Sprite du mur (bibliothèque de zones)",barrierSprite),
-     tacticalFieldV1("Échelle du mur (scale × 0,25 à × 4 ; visuel et collision)",wallScale),
+     tacticalFieldV1("Échelle générale du mur (× 0,25 à × 12)",wallScale),
+      tacticalFieldV1("Scale X — largeur (× 0,25 à × 8)",wallScaleX),
+      tacticalFieldV1("Scale Y — hauteur (× 0,25 à × 8)",wallScaleY),
      tacticalFieldV1("Placement du mur",wallPlacement),
      wallXField,wallYField,wallArenaHelp,wallForwardField,wallUpField,barrierKinds,barrierHelp);
 
@@ -6870,6 +6874,10 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
       statId:row.querySelector("[data-skill-barrier-stat-id]").value,
       hpPerStatPoint:Number(row.querySelector("[data-skill-barrier-hp-ratio]").value),
       visualScale:Number(row.querySelector("[data-skill-barrier-visual-scale]").value),
+       ...(Number(row.querySelector("[data-skill-barrier-visual-scale-x]").value)!==1?
+         {visualScaleX:Number(row.querySelector("[data-skill-barrier-visual-scale-x]").value)}:{}),
+       ...(Number(row.querySelector("[data-skill-barrier-visual-scale-y]").value)!==1?
+         {visualScaleY:Number(row.querySelector("[data-skill-barrier-visual-scale-y]").value)}:{}),
       offsetForwardPx:Number(row.querySelector("[data-skill-barrier-offset-forward]").value),
       offsetUpPx:Number(row.querySelector("[data-skill-barrier-offset-up]").value),
       ...(row.querySelector("[data-skill-barrier-placement-mode]").value==="arena"?{

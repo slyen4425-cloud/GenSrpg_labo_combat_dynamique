@@ -2336,3 +2336,14 @@ button.reserve-card {
 @media (prefers-reduced-motion: reduce) {
   .status-icon__expiry-fill { transition: none; }
 }
+
+/* One arena-wall plane: opposing sprites stay behind it, player/ally
+   sprites stay in front, even during the existing 2v2 approach animation. */
+.arena[data-combat-entity-arena-active="true"] .fighter--player,
+.arena[data-combat-entity-arena-active="true"] .fighter[data-demo-view="player"] {
+  z-index: 4;
+}
+.arena[data-combat-entity-arena-active="true"] .fighter--opponent,
+.arena[data-combat-entity-arena-active="true"] .fighter[data-demo-view="opponent"] {
+  z-index: 3;
+}

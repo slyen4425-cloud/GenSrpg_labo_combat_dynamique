@@ -17,7 +17,9 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
   if(arenaHost){
     arenaOverlay=document.createElement("div");
     arenaOverlay.dataset.combatEntitiesArenaHost="true";
-    arenaOverlay.style.cssText="position:absolute;inset:0;pointer-events:none;z-index:12;overflow:visible;";
+    arenaOverlay.style.cssText="position:absolute;inset:0;pointer-events:none;z-index:3;overflow:visible;";
+    // The wall paints after layer-3 enemies, before layer-4 player models.
+    arenaOverlay.style.zIndex="3";
     arenaHost.append(arenaOverlay);
   }
   function newNode(entity,host){
@@ -86,6 +88,12 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
   }
   function render(state){
     snapshot=state;const living=new Set();
+    if(arenaHost&&arenaOverlay){
+      const hasArenaWall=(state?.combatEntities??[]).some(entity=>
+        entity.kind==="barrier"&&entity.placementMode==="arena"&&Number(entity.hp)>0);
+      if(hasArenaWall)arenaHost.dataset.combatEntityArenaActive="true";
+      else delete arenaHost.dataset.combatEntityArenaActive;
+    }
     for(const entity of state?.combatEntities??[]){
       if(entity.kind!=="barrier"||!(Number(entity.hp)>0)||!hosts[entity.protectedActorId])continue;
       living.add(entity.id);
@@ -117,8 +125,16 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
         item.node.style.bottom="auto";
         item.node.style.transform="translate(-50%, -50%)";
       }
-      item.sprite.style.width=Math.round(70*(entity.visualScale??1))+"px";
-      item.sprite.style.height=Math.round(92*(entity.visualScale??1))+"px";
+      // Layout dimensions = visual dimensions = the single collision rectangle.
+      const scale=entity.visualScale??1;
+      item.sprite.style.width=Math.round(70*scale*(entity.visualScaleX??1))+"px";
+      item.sprite.style.height=Math.round(92*scale*(entity.visualScaleY??1))+"px";
+      const viewport=item.sprite.querySelector("[data-combat-entity-visual-viewport]");
+      if(viewport){
+        // Square source art stays square at X=Y=1, but can stretch independently.
+        viewport.style.aspectRatio="auto";
+        viewport.style.height=Math.round(70*scale*(entity.visualScaleY??1))+"px";
+      }
       item.label.textContent="🧊 Mur "+formatHp(entity);
       item.node.setAttribute("role","status");
       item.node.setAttribute("aria-label","Mur destructible, "+entity.hp+" PV sur "+entity.maxHp);
@@ -141,6 +157,6 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
       entity.interceptKinds?.includes(kind)&&nodes.has(entity.id))
       .map(entity=>Object.freeze({entityId:entity.id,rect:nodes.get(entity.id).sprite.getBoundingClientRect()}));
   }
-  function dispose(){for(const host of Object.values(hosts))host.remove();arenaOverlay?.remove();nodes.clear();snapshot=null;}
+  function dispose(){for(const host of Object.values(hosts))host.remove();arenaOverlay?.remove();if(arenaHost)delete arenaHost.dataset.combatEntityArenaActive;nodes.clear();snapshot=null;}
   return Object.freeze({render,collisionRectsFor,dispose});
 }
