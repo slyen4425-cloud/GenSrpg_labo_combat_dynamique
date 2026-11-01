@@ -7,7 +7,7 @@ import { captureEditorElementChannelChoicesV1, captureEditorGeneratedStatIdV1 } 
 import {
   mountCaptureBeamStageLayoutV1,
   syncCaptureBeamStageLayoutV1
-} from "./capture-editor-beam-stage-layout-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101";
+} from "./capture-editor-beam-stage-layout-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101";
 import {
   captureBeamVisualPackV1,
   applyCaptureBeamVisualPackV1,
@@ -73,7 +73,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -117,7 +117,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -6335,17 +6335,23 @@ function appendHumanSkillEffectV1(
    const wallPlacement=document.createElement("select");
    wallPlacement.dataset.skillBarrierPlacementMode="true";
    createOption(wallPlacement,"protected","Devant la créature protégée");
-   createOption(wallPlacement,"arena","Position libre dans l'arène");
+   createOption(wallPlacement,"behind","Derrière la créature protégée");
+   createOption(wallPlacement,"arena","Libre dans l'arène (X / Y)");
    wallPlacement.value=effect?.placementMode??"protected";
    const wallArenaX=tacticalNumberInputV1("skillBarrierArenaX",effect?.arenaXPct??50,{min:0,max:100,step:1});
    const wallArenaY=tacticalNumberInputV1("skillBarrierArenaY",effect?.arenaYPct??50,{min:0,max:100,step:1});
-   const wallXField=tacticalFieldV1("Position X dans l'arène (%)",wallArenaX);
-   const wallYField=tacticalFieldV1("Position Y dans l'arène (%)",wallArenaY);
-   const wallForwardField=tacticalFieldV1("Avancée vers l’ennemi (px)",wallForward);
+   const wallXField=tacticalFieldV1("X : position horizontale (%)",wallArenaX);
+   const wallYField=tacticalFieldV1("Y : position verticale (%)",wallArenaY);
+   const wallArenaHelp=document.createElement("small");
+   wallArenaHelp.className="note";
+   wallArenaHelp.dataset.skillBarrierArenaHelp="true";
+   wallArenaHelp.textContent="Position libre : X = 0 bord gauche, 50 centre, 100 bord droit ; Y = 0 en haut, 50 centre, 100 en bas. Le centre du mur est placé dans l'arène entière, indépendamment de la créature.";
+   const wallForwardField=tacticalFieldV1("Éloignement du mur (px ; positif = plus loin)",wallForward);
    const wallUpField=tacticalFieldV1("Décalage en hauteur (px)",wallUp);
    function syncWallPlacementFields(){
      const arenaPlacement=wallPlacement.value==="arena";
      wallXField.hidden=!arenaPlacement;wallYField.hidden=!arenaPlacement;
+     wallArenaHelp.hidden=!arenaPlacement;
      wallForwardField.hidden=arenaPlacement;wallUpField.hidden=arenaPlacement;
    }
    wallPlacement.addEventListener("change",syncWallPlacementFields);
@@ -6362,13 +6368,13 @@ function appendHumanSkillEffectV1(
     wrap.append(check,document.createTextNode(label));barrierKinds.append(wrap);
   }
   const barrierHelp=document.createElement("small");barrierHelp.className="note";
-  barrierHelp.textContent="Mur défensif réel avec ses propres PV : les points de la statistique sélectionnée du lanceur sont multipliés par le coefficient. 0 point = aucune invocation. Le mur absorbe les attaques choisies avant les PV de la créature, puis disparaît quand il est détruit. Il n'intercepte ni DoT ni dégâts de zone. Un nouveau mur de la même compétence remplace l'ancien.";
+  barrierHelp.textContent="Mur défensif réel avec ses propres PV : statistique du lanceur × coefficient (0 point = aucune invocation). Une attaque interceptée s'arrête entièrement sur le mur, même si elle le détruit ; aucun malus ne traverse. Les zones et DoT ne sont pas interceptés. Une nouvelle invocation de la même compétence remplace le mur précédent.";
   barrierBox.append(tacticalFieldV1("Statistique de l'invocation",barrierStatId),
     tacticalFieldV1("PV par point de stat (coefficient libre)",barrierHpRatio),
      tacticalFieldV1("Sprite du mur (bibliothèque de zones)",barrierSprite),
      tacticalFieldV1("Échelle du mur (scale × 0,25 à × 4 ; visuel et collision)",wallScale),
      tacticalFieldV1("Placement du mur",wallPlacement),
-     wallXField,wallYField,wallForwardField,wallUpField,barrierKinds,barrierHelp);
+     wallXField,wallYField,wallArenaHelp,wallForwardField,wallUpField,barrierKinds,barrierHelp);
 
   const scheduledBox =
     document.createElement("div");
@@ -6870,7 +6876,8 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
         placementMode:"arena",
         arenaXPct:Number(row.querySelector("[data-skill-barrier-arena-x]").value),
         arenaYPct:Number(row.querySelector("[data-skill-barrier-arena-y]").value)
-      }:{}),
+      }:row.querySelector("[data-skill-barrier-placement-mode]").value==="behind"?
+        {placementMode:"behind"}:{}),
       ...(row.querySelector("[data-skill-barrier-sprite-asset-id]")?.value
         ? {spriteAssetId:row.querySelector("[data-skill-barrier-sprite-asset-id]").value}:{}),
       interceptKinds:[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]

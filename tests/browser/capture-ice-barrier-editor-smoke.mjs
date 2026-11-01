@@ -84,6 +84,28 @@ try{
    barriers:arenaOverlay.collisionRectsFor({sourceActorId:"opponent",targetActorId:"player"})});
  if(arenaSegment?.entityId!==arenaPlaced.record.id)throw Error("arena wall has no real collision");
  arenaOverlay.dispose();stage.remove();
+ // Chromium projection: wall behind the defender, with the same sprite rect.
+ const rearStage=document.createElement("div");
+ rearStage.style.cssText="position:relative;width:600px;height:250px;";
+ const rearHero=document.createElement("div"),rearFoe=document.createElement("div");
+ rearHero.style.cssText="position:absolute;left:155px;top:75px;width:100px;height:100px;";
+ rearFoe.style.cssText="position:absolute;left:460px;top:75px;width:100px;height:100px;";
+ rearStage.append(rearHero,rearFoe);document.body.append(rearStage);
+ const rearSummon=createCombatBarrierV1({state,sourceActorId:"player",protectedActorId:"player",
+   sourceSkillId:"rear-wall",effect:{...effect,placementMode:"behind"}});
+ const rearOverlay=createCombatEntityOverlayV1({
+   fighterContainers:{player:rearHero,opponent:rearFoe},arenaHost:rearStage,
+   teamOf:actor=>actor==="player"?"heroes":"enemies",
+   assetForId:id=>presentationAssets.visualAsset(id)
+ });
+ rearOverlay.render(rearSummon.state);
+ const rearEntry=rearOverlay.collisionRectsFor({
+   sourceActorId:"opponent",targetActorId:"player",kind:"contact"
+ })[0],heroRect=rearHero.getBoundingClientRect();
+ if(!rearEntry||rearEntry.entityId!==rearSummon.record.id||
+    rearEntry.rect.left+rearEntry.rect.width/2>=heroRect.left+heroRect.width/2)
+   throw Error("wall not placed behind the defending fighter");
+ rearOverlay.dispose();rearStage.remove();
  const hit=applyCombatDamageV1({state:summoned.state,sourceActorId:"opponent",
    targetActorId:"player",damage:25,incomingKind:"projectile",contactedEntityId:summoned.record.id});
  overlay.render(hit.state);
@@ -212,7 +234,18 @@ document.addEventListener("DOMContentLoaded",()=>{
    if(!x.closest("label")?.hidden||!y.closest("label")?.hidden||
       row.querySelector("[data-skill-barrier-offset-forward]").closest("label").hidden)
      throw Error("legacy fighter-front author fields did not restore");
+   if(![...placement.options].some(option=>option.value==="behind"))
+     throw Error("rear placement absent from editor choices");
+   placement.value="behind";placement.dispatchEvent(new Event("change",{bubbles:true}));
+   if(!x.closest("label")?.hidden||!y.closest("label")?.hidden||
+      row.querySelector("[data-skill-barrier-offset-forward]").closest("label").hidden)
+     throw Error("rear placement must use fighter-relative offsets");
    placement.value="arena";placement.dispatchEvent(new Event("change",{bubbles:true}));
+   const coordinateGuide=row.querySelector("[data-skill-barrier-arena-help]");
+   if(!coordinateGuide||coordinateGuide.hidden||
+      !coordinateGuide.textContent.includes("0 bord gauche")||
+      !coordinateGuide.textContent.includes("100 en bas"))
+     throw Error("free placement has no understandable coordinate guide");
    const kinds=[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
      .filter(x=>x.checked).map(x=>x.value);
    if(ratio.value!=="1.5"||kinds.length!==3||!row.querySelector("[data-skill-barrier-sprite-asset-id]")||

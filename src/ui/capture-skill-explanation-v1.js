@@ -172,8 +172,9 @@ function effectSentence(e,{perCharge=false}={}){
       (e.statId==="glace"?"Glace":e.statId)+
       " du lanceur au moment de l'invocation. Intercepte : "+
       words(e.interceptKinds.map(k=>k==="contact"?"contact":k==="beam"?"rayons":"projectiles"))+
-      " ; les dégâts excédentaires touchent leur cible."+
-      (e.placementMode==="arena"?" Position libre : X "+num(e.arenaXPct)+" %, Y "+num(e.arenaYPct)+" %.":""))];
+      " ; la frappe s'arrête au mur même si celui-ci est détruit."+
+      (e.placementMode==="behind"?" Placement derrière la créature protégée.":
+       e.placementMode==="arena"?" Position libre : X "+num(e.arenaXPct)+" % depuis la gauche, Y "+num(e.arenaYPct)+" % depuis le haut.":""))];
     case "force_reserve_switch":return [
       "Force la créature ennemie choisie dans sa réserve à entrer en combat à la place de la créature adverse active, si l'attaque touche."
     ];
