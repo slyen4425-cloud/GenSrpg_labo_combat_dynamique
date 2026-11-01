@@ -111,7 +111,16 @@ document.addEventListener("DOMContentLoaded",()=>{
    const placement=row.querySelector("[data-skill-barrier-placement-mode]");
    const x=row.querySelector("[data-skill-barrier-arena-x]"),y=row.querySelector("[data-skill-barrier-arena-y]");
    if(!placement||!x||!y)throw Error("arena placement author controls missing");
-   placement.value="arena";x.value="25";y.value="65";
+   placement.value="arena";placement.dispatchEvent(new Event("change",{bubbles:true}));
+   x.value="25";y.value="65";
+   if(x.closest("label")?.hidden||y.closest("label")?.hidden||
+      !row.querySelector("[data-skill-barrier-offset-forward]").closest("label").hidden)
+     throw Error("arena author position fields are not mutually exclusive with fighter offsets");
+   placement.value="protected";placement.dispatchEvent(new Event("change",{bubbles:true}));
+   if(!x.closest("label")?.hidden||!y.closest("label")?.hidden||
+      row.querySelector("[data-skill-barrier-offset-forward]").closest("label").hidden)
+     throw Error("legacy fighter-front author fields did not restore");
+   placement.value="arena";placement.dispatchEvent(new Event("change",{bubbles:true}));
    const kinds=[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
      .filter(x=>x.checked).map(x=>x.value);
    if(ratio.value!=="1.5"||kinds.length!==3||!row.querySelector("[data-skill-barrier-sprite-asset-id]")||
