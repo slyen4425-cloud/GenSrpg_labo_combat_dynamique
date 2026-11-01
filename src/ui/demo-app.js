@@ -898,7 +898,7 @@ export async function mountCombatDemo({
               // but the creature must complete its planned dive and normal
               // home phase. Only ground contact can stop outbound travel.
               if (approachMode === "aerial") {
-                onContact(contact);
+                onContact();
                 return;
               }
               if (
