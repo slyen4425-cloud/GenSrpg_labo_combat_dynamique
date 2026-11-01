@@ -6366,7 +6366,7 @@ function appendHumanSkillEffectV1(
   barrierBox.append(tacticalFieldV1("Statistique de l'invocation",barrierStatId),
     tacticalFieldV1("PV par point de stat (coefficient libre)",barrierHpRatio),
      tacticalFieldV1("Sprite du mur (bibliothèque de zones)",barrierSprite),
-     tacticalFieldV1("Taille visuelle et collision du mur",wallScale),
+     tacticalFieldV1("Échelle du mur (scale × 0,25 à × 4 ; visuel et collision)",wallScale),
      tacticalFieldV1("Placement du mur",wallPlacement),
      wallXField,wallYField,wallForwardField,wallUpField,barrierKinds,barrierHelp);
 
