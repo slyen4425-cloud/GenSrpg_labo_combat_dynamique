@@ -93,7 +93,10 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
         item.node.style.bottom="auto";
         item.node.style.transform="translate(-50%, -50%)";
       }else{
-        const side=frontSideFor(entity.protectedActorId);
+        const facing=frontSideFor(entity.protectedActorId);
+        const side=entity.placementMode==="behind"
+          ? (facing==="right"?"left":"right")
+          : facing;
         item.node.style.left=side==="right"
           ? "calc(110% + "+entity.offsetForwardPx+"px)"
           : "calc(-10% - "+entity.offsetForwardPx+"px)";
