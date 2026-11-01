@@ -1,4 +1,4 @@
-import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-geometry-20261031";
+import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-geometry-20261031-wall-placement-ux-20261101";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
 import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
 import { normalizeOpponentAiPolicy } from "../contracts/opponent-ai-policy.js";
