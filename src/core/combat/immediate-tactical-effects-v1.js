@@ -245,6 +245,7 @@ export function applyImmediateTacticalEffectsV1({
   thresholdDepth = 0,
   directDamageApplied = 0,
   contactedEntityId = undefined,
+  blockedByBarrierTargetId = null,
   allowLifeSteal = true
 }) {
   const unsupported =
@@ -314,6 +315,10 @@ export function applyImmediateTacticalEffectsV1({
     }
 
     if (effect.kind === "scheduled_effect") {
+      // A target-bound payload cannot be scheduled through a wall that
+      // physically intercepted this same attack at its actual impact.
+      if (blockedByBarrierTargetId === targetId && actorId !== targetId &&
+          effect.targetScope !== "self") continue;
       const scheduled =
         scheduleSkillEffectV1({
           state: nextState,
@@ -352,6 +357,17 @@ export function applyImmediateTacticalEffectsV1({
       });
 
     for (const affectedId of affectedIds) {
+      const interceptedTarget = blockedByBarrierTargetId === affectedId && actorId !== affectedId;
+      if (interceptedTarget) {
+        if (effect.kind === "damage") {
+          // Tactical-only damage still hits the physical wall, but NEVER
+          // continues to the fighter if an earlier component destroyed it.
+          if (!(nextState.combatEntities ?? []).some(entry =>
+            entry.id === contactedEntityId && entry.hp > 0)) continue;
+        } else if (isHostileEffect(effect) || effect.kind === "consume_marker") {
+          continue;
+        }
+      }
       // The impact snapshot is immutable: an earlier hit in the same skill
       // cannot suppress its explicitly authored bonus against a sleeper.
       if(!targetMeetsEffectConditionV1({state:conditionState,targetActorId:affectedId,
@@ -437,7 +453,9 @@ export function applyImmediateTacticalEffectsV1({
             ["target", "all_enemies"].includes(effect.targetScope)) {
           lifeStealDamage += applied.event.appliedDamage;
         }
-        events.push(applied.event);
+        events.push(interceptedTarget
+          ? Object.freeze({...applied.event,type:"combat-entity-hit",entityId:contactedEntityId})
+          : applied.event);
         continue;
       }
 
