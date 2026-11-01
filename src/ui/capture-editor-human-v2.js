@@ -2976,7 +2976,8 @@ export function humanSkillHealExportWarningV1(draft) {
     return null;
   }
   if (Number(definition.effect?.heal) > 0 ||
-      definition.effects?.some(hasPositiveHealingSkillEffectV1)) {
+      definition.effects?.some(hasPositiveHealingSkillEffectV1) ||
+      definition.channeling?.effects?.some(hasPositiveHealingSkillEffectV1)) {
     return null;
   }
   return "Attention : la capacité est classée Soin mais aucun effet de récupération de PV n'est configuré. Vérifie les Effets tactiques et le Soin périodique : le fichier exporté ne restaurera aucun PV.";
@@ -3005,6 +3006,13 @@ export function buildHumanSkillDraftV1(fields) {
           }
         )
       : [];
+  // Reuse the tactical authoring conversion; the native Channeling Contract
+  // remains the only validator and the Combat Session the only tick owner.
+  const channelingEffects = fields.channeling
+    ? buildHumanTacticalSkillEffectsV1(fields.channeling.effects ?? [], {
+        defaultDamageChannel: fields.element ?? null
+      })
+    : [];
 
   return normalizeCaptureSkillEditorDraftV1({
     schema: "capture-skill-editor-draft-v1",
@@ -3069,9 +3077,7 @@ export function buildHumanSkillDraftV1(fields) {
           stopOnDamage: fields.channeling.stopOnDamage !== false,
           stopOnStun: fields.channeling.stopOnStun !== false,
           stopOnSilence: fields.channeling.stopOnSilence !== false,
-          effects: buildHumanTacticalSkillEffectsV1(fields.channeling.effects ?? [], {
-            defaultDamageChannel: fields.element ?? null
-          })
+          effects: channelingEffects
         }
       } : {}),
       hitPresenceStates:
@@ -3137,7 +3143,7 @@ export function buildHumanSkillDraftV1(fields) {
       targetRelations:
         usesTacticalEffects
           ? humanSkillTargetRelationsFromTacticalEffectsV1(
-              tacticalEffects,
+              fields.channeling ? channelingEffects : tacticalEffects,
               { form: fields.form }
             )
           : stableIds(
@@ -3674,6 +3680,9 @@ function writeSkillTemplateFields(
     fields.effects ?? [],
     statRegistry
   );
+  if (Object.prototype.hasOwnProperty.call(fields, "channeling")) {
+    writeHumanChannelingFieldsV1(root, fields.channeling ?? null, statRegistry);
+  }
 
   if (
     Object.prototype.hasOwnProperty.call(
