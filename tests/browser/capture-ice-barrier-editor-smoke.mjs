@@ -13,6 +13,7 @@ import {createCombatEntityOverlayV1} from "../../src/adapters/renderer/combat-en
 import {createDomSkillFxRenderer} from "../../src/adapters/renderer/dom-skill-fx.js";
 import {createCaptureSkillPresentationAssetsV2} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
 import {sweptSegmentRectContactV1,nearestBarrierSegmentContactV1} from "../../src/core/combat/combat-barrier-spatial-v1.js";
+import {watchVisibleModelContact} from "../../src/adapters/renderer/dom-visible-model-contact.js";
 try{
  const state=createCombatState({fighters:[
    {id:"player",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,statValuesById:{glace:80}},
@@ -126,8 +127,40 @@ try{
  if(intercepted.absorbedByEntity!==23||intercepted.appliedDamage!==0||
     intercepted.state.combatEntities[0].hp!==57)
    throw Error("real projectile hit did not reduce native wall HP");
+ // The moving actor's EXISTING contact observer must stop on the real
+ // collision rectangle of the DOM wall, before reaching the defender.
+ const standing=liveOverlay.collisionRectsFor({
+   sourceActorId:"opponent",targetActorId:"player",kind:"contact"
+ })[0];
+ if(!standing)throw Error("moving actor has no official wall sprite rectangle");
+ const mask={width:4,height:4,opaque:new Uint8Array(16).fill(1)};
+ const y=standing.rect.top+standing.rect.height/2-5;
+ const actorFrame=x=>({mask,origin:{x,y},
+   axisX:{x:x+10,y},axisY:{x,y:y+10}});
+ const steps=[
+   actorFrame(standing.rect.right+70),
+   actorFrame(standing.rect.right+25),
+   actorFrame(standing.rect.right-3)
+ ];
+ let currentFrame=steps.shift(),nextCheck=null,wallContact=null,observations=0;
+ const contactWatch=watchVisibleModelContact({
+   sourceModel:{snapshot(){currentFrame=steps.shift()??currentFrame;return currentFrame;}},
+   targetModel:{snapshot:()=>actorFrame(standing.rect.left-170)},
+   obstacleRectsFor:()=>liveOverlay.collisionRectsFor({
+     sourceActorId:"opponent",targetActorId:"player",kind:"contact"
+   }),
+   onContact:detail=>{wallContact=detail;},
+   requestFrame:fn=>{nextCheck=fn;observations++;return observations;},
+   cancelFrame:()=>{}
+ });
+ for(let tries=0;tries<4&&nextCheck&&!wallContact;tries++){
+   const callback=nextCheck;nextCheck=null;callback();
+ }
+ contactWatch.cancel();
+ if(wallContact?.combatEntityId!==summoned.record.id||observations>3)
+   throw Error("real DOM wall failed to stop the moving-model contact observer");
  attackFx.dispose();liveOverlay.dispose();battlefield.remove();
- document.body.dataset.barrierOverlaySmoke="pass:persistent-sprite:geometry:80hp:hit25:55hp";
+ document.body.dataset.barrierOverlaySmoke="pass:persistent-sprite:geometry:ground-stop:80hp:hit25:55hp";
 }catch(e){document.body.dataset.barrierOverlaySmoke="error:"+e.message;}
 document.addEventListener("DOMContentLoaded",()=>{
  setTimeout(()=>{
