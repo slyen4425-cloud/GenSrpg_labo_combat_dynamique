@@ -31,11 +31,34 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
     if(typeof url==="string"&&url.length>0){
       const image=document.createElement("img");image.dataset.combatEntityImage="true";
       image.alt="";image.decoding="async";image.src=url;
-      // A static frame is sufficient until the artist supplies a dedicated
-      // wall atlas; keep it mounted, never replay an impact as a new wall.
       const frames=Math.max(1,Math.floor(Number(asset?.frameCount??asset?.resource?.frameCount)||1));
+      const rawFrameMs=Number(asset?.frameMs??asset?.resource?.frameMs);
+      const frameMs=Number.isFinite(rawFrameMs)&&rawFrameMs>0?rawFrameMs:100;
       image.style.cssText="height:100%;max-width:none;width:"+frames*100+"%;object-fit:fill;display:block;";
+      // The fully built wall is transparent art, not a clip-shaped placeholder.
+      // Keep sprite bounds unchanged: the same DOM rectangle owns collision evidence.
+      sprite.style.background="transparent";
+      sprite.style.border="none";
+      sprite.style.borderRadius="0";
+      sprite.style.clipPath="none";
       sprite.append(image);
+      if(frames>1){
+        // Construction is a ONE-SHOT visual. Native Combat State/Damage owns
+        // wall HP and removal; re-renders for damage must not restart the sprite.
+        // For a 12-frame horizontal strip, the last offset is 11/12 of the
+        // image width. Never scroll past the final intact wall to a blank frame.
+        const lastFramePercent=(frames-1)*100/frames;
+        const finalTransform="translateX(-"+lastFramePercent+"%)";
+        if(typeof image.animate==="function"){
+          image.animate(
+            [{transform:"translateX(0%)"},{transform:finalTransform}],
+            {duration:(frames-1)*frameMs,easing:"steps("+(frames-1)+", end)",iterations:1,fill:"forwards"}
+          );
+        }else{
+          // Browsers without WAAPI still show a complete wall for its lifetime.
+          image.style.transform=finalTransform;
+        }
+      }
     }
     const label=document.createElement("div");label.dataset.combatEntityHp="true";
     label.style.cssText="border:1px solid #a1e8fb;border-radius:8px;background:rgba(14,62,101,.92);color:white;padding:3px 6px;text-align:center;font-weight:700;font-size:11px;white-space:nowrap;";
