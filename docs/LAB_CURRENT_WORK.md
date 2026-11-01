@@ -1,3 +1,12 @@
+## 2026-11-01 — Sprite Mur de glace : modèle brut 2.5D et gabarit anti-troncature +30 %
+- BASE `gh-pages@de7d5f67d898a5bfd9bbfc82a60b38cc3f037f3c`. START `checkpoint/lab-start-ice-wall-sprite-safe-gabarit-2026-11-01` ; WORK `work/lab-ice-wall-sprite-safe-gabarit-2026-11-01`. Travail limité à la **charte**, au validateur des frames, à ses tests et à la documentation ; `main`, règles, interfaces et assets `global-assets` non modifiés par ce lot documentaire.
+- L'auteur valide un nouveau Mur de glace **brut, 3/4 plongeant** (pas de piliers de château) et exige +30 % de séparation entre poses. Source 1448×1086 SHA256 `acb4e7f803da857a8d4446253478cfe27869e23f33d84da7ec838e97477bd9b3` ; les 12 composantes ont été isolées sur fond transparent, 12 × 512² RGBA ; marges réelles >= 43 px (ancienne exigence 32 px → nouvelle >= 42 px). WebP 6144×512, GIF et contact-sheet vérifiés.
+- ZIP local prêt `mur_glace_remplacement_12f_corrige.zip`, SHA256 `689de105d02c487f15e2f6184ee1bb25e650168205622033052d9b12ab4914cb`. Cible binaire future : **l'ID existant** `pack:capture:sprite-mur-glace-arcanique-01` sur `global-assets`. Ne pas déclarer remplacé en jeu avant publication réelle des images et bust de révision de cache.
+- Fichiers autorisés : `docs/LAB_CAPTURE_CHARTE_MODELES_ANIMATIONS_ICONES_V1.md`, `scripts/validate-sprite-safe-margins.mjs`, `tests/unit/capture-sprite-safe-gabarit-2026-11-01.test.mjs`, `docs/LAB_WALL_SPRITE_SAFE_GABARIT_2026-11-01.md`, ce journal. Test RED/CI et publication à vérifier sur le SHA de branche ; aucune promotion GREEN sans preuves.
+- Suite distincte après upload ZIP : audit du catalogue `global-assets`, contrôler les PNG réellement mis à jour et la frame 12, augmenter la révision cache sur la branche propriétaire du client, test de la vraie animation et de l'interception, checkpoints et Android.
+
+---
+
 ## 2026-11-01 — Remplacer Gorice et Mur de glace par les deux exports utilisateur (source exacte)
 - BASE `gh-pages@f00c8916a8f5b7d92707f946369317c130d8aa05` (PR #189 placement devant/derrière/libre fusionnée ; validation CI/Pages après fusion à contrôler). START `checkpoint/lab-start-gorice-wall-author-exports-2026-11-01`, WORK `work/lab-gorice-wall-author-exports-2026-11-01`.
 - Sources remises par le créateur : `gensrpg-capture-creature-gorice(1).json` (4350 octets, SHA256 c1191e68b1ae956222d23d58f7a0657c17a32426997e69e4859d3231aadeb854), `gensrpg-capture-skill-mur_de_glace(1).json` (2212 octets, SHA256 5e87c01a0f53112fbb803604a5a5cc8a2caf0ade8f3dd75e046e6537e51a52b0).
