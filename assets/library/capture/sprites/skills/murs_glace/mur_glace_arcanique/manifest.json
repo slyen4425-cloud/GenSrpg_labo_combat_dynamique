@@ -21,5 +21,19 @@
     "png/mur_glace_arcanique_11.png",
     "png/mur_glace_arcanique_12.png"
   ],
-  "sourceSheet": "mur_de_glace_arcanique_cristallin_en_formation.png"
+  "sourceSheet": "ice-wall-raw-angle-3q-approved-2026-11-01.png",
+  "sourceSheetSha256": "acb4e7f803da857a8d4446253478cfe27869e23f33d84da7ec838e97477bd9b3",
+  "atlas": "mur_glace_arcanique_atlas_12f.webp",
+  "preview": "preview_mur_glace_arcanique.gif",
+  "playbackMode": "once",
+  "holdLastFrame": true,
+  "persistentFrameIndex": 11,
+  "sourceSeparationPolicy": {
+    "previousMarginPx": 32,
+    "increasedByPct": 30,
+    "minimumMarginPx": 42,
+    "minimumBetweenSpritesPx": 84
+  },
+  "extractionMethod": "alpha-major-connected-component-v1",
+  "extractionSeedAlpha": 128
 }
