@@ -145,6 +145,22 @@ export function planSkillOutcomeFx({
     ]);
   }
 
+  // An intercepted strike ends on its physical wall, not the protected
+  // fighter. Preserve the existing outcome type and impact sprite.
+  const wallHit = resolution.events?.find(event=>event.type==="combat-entity-hit");
+  if (wallHit && resolution.outcome === "hit" && resolution.skillId) {
+    return Object.freeze([
+      Object.freeze({
+        type: "impact",
+        skillId: resolution.skillId,
+        targetSlot,
+        combatEntityId: wallHit.entityId,
+        ...(resolution.barrierImpactPoint?{impactPoint:resolution.barrierImpactPoint}:{}),
+        durationMs: 420
+      })
+    ]);
+  }
+
   if (
     ["hit", "blocked", "reflected", "immune", "mirrored"].includes(resolution.outcome) &&
     resolution.skillId
