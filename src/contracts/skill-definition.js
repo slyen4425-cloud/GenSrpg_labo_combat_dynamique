@@ -3,6 +3,7 @@ import {
   isReserveEffectTargetScopeV2
 } from "./skill-effect-v1.js";
 import { normalizeContactHoldV1 } from "./contact-hold-v1.js";
+import { normalizeChannelingV1 } from "./channeling-v1.js";
 import {
   normalizeProjectilePowerV1
 } from "./projectile-power-v1.js";
@@ -353,6 +354,10 @@ export function normalizeSkillDefinition(input) {
   }
 
   const contactHold = input.contactHold == null ? null : normalizeContactHoldV1(input.contactHold);
+  const channeling = input.channeling == null ? null : normalizeChannelingV1(input.channeling);
+  if(channeling&&(contactHold||["projectile"].includes(form)||projectileTargeting==="expanding_wave"||
+      input.chargedAttack!=null||input.chargedEffects!=null))
+    throw new RangeError("channeling cannot combine with contactHold/charged skills/expanding projectiles");
   if (contactHold && (form !== "contact" || approachMode !== "ground")) {
     throw new RangeError("contactHold requires contact form and ground approach");
   }
@@ -582,6 +587,10 @@ export function normalizeSkillDefinition(input) {
     throw new RangeError("chargedAttack must be the only direct damage authority");
   }
 
+  if(channeling && (normalizedLegacyEffect.damage>0||normalizedLegacyEffect.heal>0||
+     normalizedLegacyEffect.stunMs>0||normalizedLegacyEffect.interruptsPreparation||effects.length>0))
+    throw new RangeError("channeling uses one pulse-only effect authority, not initial damage/effects");
+
   return Object.freeze({
     id,
     name,
@@ -595,6 +604,7 @@ export function normalizeSkillDefinition(input) {
     element,
     approachMode,
     ...(contactHold ? { contactHold } : {}),
+    ...(channeling ? { channeling } : {}),
     energyCost: nonNegativeNumber(input.energyCost, "energyCost"),
     preparationMs: nonNegativeNumber(input.preparationMs, "preparationMs"),
     travelMs: nonNegativeNumber(input.travelMs, "travelMs"),
