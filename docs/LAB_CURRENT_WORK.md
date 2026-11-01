@@ -1,3 +1,14 @@
+## 2026-11-01 — Canalisation : raccord auteur natif, test navigateur réel et bestiaire
+- Base exacte `gh-pages@2afe898b20b9a5061fa8687eaf5d2f679bfe4ff2` (5/5 + Pages GREEN) ; START `checkpoint/lab-start-channeling-editor-2026-11-01`, WORK `work/lab-channeling-editor-2026-11-01`.
+- Contrat et runtime `SkillDefinition.channeling`, `Combat Runtime`, `Combat Session` restent propriétaires uniques, **intacts**. Ce lot expose les réglages auteur via la UI existante et les effets `SkillEffectV1` existants, sans double horloge ni moteur parallèle.
+- UI : intervalle, durée, ticks maximum, énergie par tick, arrêts sur dégâts/stun/silence, effects `damage/heal/apply_status/apply_marker` avec scopes `target/self`, exclusions des anciennes charges et `contactHold`. Rendu, chargement, export/import, description bestiaire et message Soin canalisé. Identité des cibles déduite des effets répétés réels.
+- TDD RED : `tests/unit/capture-channeling-editor-2026-11-01.test.mjs`, checkpoint `checkpoint/lab-red-channeling-editor-2026-11-01`; browser `tests/browser/capture-creature-library-smoke.mjs` valide le vrai éditeur (création, remplissage, sauvegarde, export JSON) et préservation de 105 créatures existantes. Cache public ESM versionné au niveau HTML → entrée → Human Editor.
+- Preuve GREEN impérative : 5 jobs de Laboratory CI **sur le SHA final incluant ce document**, checkpoint GREEN exact puis PR `gh-pages` ; enfin CI 5/5 + Pages success au SHA fusionné. Aucune disponibilité annoncée prématurément.
+- Exclusions explicites : déclenchement de visuels/sons **à chaque tick**, bloqueurs spatiaux supplémentaires et familiers actifs restent à traiter dans des lots distincts. Aucun changement de `main`, autres dépôts ou `global-assets`.
+- Rapport détaillé : `docs/LAB_CHANNELING_EDITOR_2026-11-01.md`.
+
+---
+
 ## 2026-11-01 — Reprise du core canalisé : horloge et régénération (validation de livraison)
 - Branche `work/lab-channeling-core-2026-11-01` ; base officielle inchangée `gh-pages@d0bfecf724f6f3ed70c1ae9bdd2d07289c713b83`, START `checkpoint/lab-start-channeling-core-2026-11-01`.
 - La sentinelle de timing était incorrecte : la résolution immédiate est à t=0, le premier tick doit être à t=1000, pas t=1100. La régénération native +1/2000 ms biaisait ensuite la sentinelle d'épuisement. Correction exclusivement dans le test fixture, sans modifier les propriétaires gameplay ni les réglages du jeu : `35ceeaf`, `e512728`.
