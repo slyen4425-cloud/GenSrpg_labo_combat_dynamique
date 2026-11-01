@@ -508,20 +508,17 @@ export function createDomSkillFxRenderer({
       return;
     }
 
+    // The opaque fighter mask may still be loading while an authored wall
+    // already exists. It must never disable the independent, visible barrier
+    // sensor: both remain observations of the SAME projectile FX frame.
     const collisionModel =
-      targetCollisionModelFor(record.targetSlot);
-    if (
-      !collisionModel ||
-      typeof collisionModel.snapshot !== "function"
-    ) {
-      return;
-    }
+      targetCollisionModelFor?.(record.targetSlot) ?? null;
 
     record.previousProjectilePoint = rectCenter(
       record.node.getBoundingClientRect()
     );
     record.previousTargetFrame =
-      collisionModel.snapshot();
+      collisionModel?.snapshot?.() ?? null;
 
     // The native status renderer already owns and mounts this live sprite.
     // Observe its actual scaled/offset screen bounds on the same FX frame.
@@ -547,7 +544,7 @@ export function createDomSkillFxRenderer({
         record.node.getBoundingClientRect()
       );
       const targetFrame =
-        collisionModel.snapshot();
+        collisionModel?.snapshot?.() ?? null;
 
       const mirrorRect = mirrorSurface()?.getBoundingClientRect?.() ?? null;
       const spriteContactPoint = mirrorRect
