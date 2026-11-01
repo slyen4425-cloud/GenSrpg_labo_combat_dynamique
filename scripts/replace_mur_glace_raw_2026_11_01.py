@@ -22,7 +22,7 @@ GIF="preview_mur_glace_arcanique.gif"
 
 def hash256(data):return hashlib.sha256(data).hexdigest()
 
-def gitblob(data):return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\\0"+data).hexdigest()
+def gitblob(data):return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
 
 def inspect_alpha(im,index):
     if im.format!="PNG" or im.mode!="RGBA" or im.size!=(512,512):
@@ -95,7 +95,7 @@ def main():
         raise ValueError("persistent animation contract changed")
     item["label"]="Mur de glace brut 2.5D — formation naturelle (12 images, état final persistant)"
     # Preserve ID, media type, lookup path, ownership and compatibility.
-    CAT.write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+    CAT.write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 
     # Source snapshot and provenance are inert metadata, not runtime sources.
     for name in ["manifest.json",WEBP,GIF,*names]:
@@ -111,7 +111,7 @@ def main():
         "persistentFrameIndex":11,"validation":"actual PNG alpha and pixel-exact lossless atlas verified",
         "replacedExistingAsset":True}
     (DEST/"approved-replacement-2026-11-01.json").write_text(
-        json.dumps(report,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+        json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     seqpath=PACK/"sequence.json"
     seq=json.loads(seqpath.read_text(encoding="utf-8"))
     entry=seq["sequences"]["mur_glace_arcanique"]
@@ -122,6 +122,6 @@ def main():
     entry["sourceSheetSha256"]=SOURCE_SHA
     entry["approvedVisual"]="brut-2.5d-angle-3q"
     entry["safeMarginPx"]=42
-    seqpath.write_text(json.dumps(seq,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+    seqpath.write_text(json.dumps(seq,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print("PASS: exact author Git blob, 12 framed PNGs (>=42px margins), 12 exact lossless atlas tiles, GIF preview and 1 canonical ID")
 if __name__=="__main__":main()
