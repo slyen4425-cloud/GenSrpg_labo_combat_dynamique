@@ -410,6 +410,24 @@ export function describeCaptureSkillV1(input) {
   if(d.effect.stunMs>0)phrases.push(finish("Étourdit pendant "+duration(d.effect.stunMs)));
   if(d.effect.interruptsPreparation)phrases.push("Interrompt l'action en préparation.");
   phrases.push(...descriptions(d.effects));
+  if(d.channeling){
+    const ch=d.channeling;
+    const actions=descriptions(ch.effects).map(x=>lowerSentence(x));
+    const limits=[
+      ch.maxDurationMs>0?"pendant au plus "+duration(ch.maxDurationMs):null,
+      ch.maxTicks!==null?"sur au plus "+num(ch.maxTicks)+" pulsations":null
+    ].filter(Boolean);
+    const stops=[
+      ch.stopOnDamage?"dégâts subis":null,
+      ch.stopOnStun?"étourdissement":null,
+      ch.stopOnSilence?"silence":null,
+      "K.O.", "rappel", "énergie insuffisante"
+    ].filter(Boolean);
+    phrases.push(finish("Canalisation : "+(actions.length?actions.join(" et "):"aucun effet configuré")+
+      " toutes les "+num(ch.tickIntervalMs)+" ms, coût de "+num(ch.energyCostPerTick)+
+      " énergie à chaque pulsation"+(limits.length?" ("+limits.join(", ")+")":"")+
+      ". S'arrête en cas de "+stops.join(", ")+". Aucun effet initial supplémentaire."));
+  }
   if(d.contactHold){
     const hold=d.contactHold,damage=hold.effects.filter(x=>x.kind==="damage");
     const steal=hold.effects.filter(x=>x.kind==="life_steal");
