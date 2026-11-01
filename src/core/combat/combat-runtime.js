@@ -970,11 +970,12 @@ export function createCombatRuntime({
     // from its own swept sprite sensor; beam/contact from the same FX adapter.
     const physicalKind=effectiveAction.actionType==="skill"
       ? effectiveAction.skill?.form : null;
-    const spatialBarrierId=["beam","contact"].includes(physicalKind)
+    const spatialBarrierContact=["beam","contact"].includes(physicalKind)
       ? readBarrierContact?.({sourceActorId:effectiveAction.actorId,
           targetActorId:effectiveAction.targetId,kind:physicalKind,
-          skillId:effectiveAction.skill.id})?.entityId??null
+          skillId:effectiveAction.skill.id})??null
       : null;
+    const spatialBarrierId=spatialBarrierContact?.entityId??null;
     const barrierContactId=physicalKind==="projectile"
       ? (visibleContact?combatEntityId??null:null)
       : physicalKind==="contact" && visibleContact && combatEntityId
@@ -1030,7 +1031,18 @@ export function createCombatRuntime({
       });
     }
 
-    onResolved(resolution);
+    // Presentation-only position from the SAME swept wall contact already
+    // observed by the runtime. Never compute new collision/HP authority.
+    // Keep it even if the strike destroys the entity in Combat State.
+    const barrierHit=resolution.events?.some(e=>e.type==="combat-entity-hit");
+    const wallPoint=combatEntityId?contactPoint:spatialBarrierContact?.point??null;
+    const presentationResolution=barrierHit&&
+      Number.isFinite(wallPoint?.x)&&Number.isFinite(wallPoint?.y)
+      ? Object.freeze({...resolution,barrierImpactPoint:Object.freeze({
+          x:wallPoint.x,y:wallPoint.y
+        })})
+      : resolution;
+    onResolved(presentationResolution);
     if(resolution.ok&&resolution.outcome==="hit"&&
         effectiveAction.actionType==="skill"&&effectiveAction.skill?.channeling&&
         Number(session.snapshot().fighters[effectiveAction.actorId]?.hp)>0&&
@@ -1052,7 +1064,7 @@ export function createCombatRuntime({
       returnMirroredProjectile(effectiveAction, atNowMs, contactPoint);
     }
     emitStateIfChanged({ force: true });
-    return resolution;
+    return presentationResolution;
   }
 
   function processProjectileClash({
