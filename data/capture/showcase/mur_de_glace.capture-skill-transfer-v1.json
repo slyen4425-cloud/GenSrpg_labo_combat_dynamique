@@ -4,8 +4,8 @@
   "draft": {
     "schema": "capture-skill-editor-draft-v1",
     "id": "mur_de_glace",
-    "description": "Mur de glace destructible. Ses PV = 1 × les points de Glace du lanceur lors de l'invocation. Intercepte contact, rayons et projectiles. Sans Glace, le mur ne peut pas apparaître.",
-    "requiredLevel": 1,
+    "description": "Invoque un mur destructible devant le lanceur. PV du mur = 1 par point de Glace. Si la créature possède 0 point de Glace, le mur ne peut pas apparaître.",
+    "requiredLevel": 10,
     "usageScopes": [
       "capture",
       "combat"
@@ -18,8 +18,8 @@
       "loadoutSlot": "standard",
       "element": "ice",
       "approachMode": "none",
-      "energyCost": 3,
-      "preparationMs": 1000,
+      "energyCost": 5,
+      "preparationMs": 900,
       "travelMs": 0,
       "recoveryMs": 0,
       "cooldownMs": 45000,
@@ -37,7 +37,7 @@
         "active"
       ],
       "hitPresenceStates": null,
-      "dodgeable": true,
+      "dodgeable": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": []
@@ -75,9 +75,15 @@
             "projectile",
             "beam",
             "contact"
-          ]
+          ],
+          "spriteAssetId": "pack:capture:sprite-status-stone-shell-01",
+          "visualScale": 1,
+          "offsetForwardPx": 0,
+          "offsetUpPx": 0
         }
-      ]
+      ],
+      "projectileTargeting": "direct",
+      "hitsIntangible": false
     },
     "presentation": {
       "id": "skill:mur_de_glace",
