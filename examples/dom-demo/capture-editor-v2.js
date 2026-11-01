@@ -26,7 +26,7 @@ import {
 } from "../../src/ui/capture-editor-preview-session-v2.js";
 import {
   loadCaptureEditorPreviewRuntimeV1
-} from "../../src/ui/capture-editor-preview-runtime-loader-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101";
+} from "../../src/ui/capture-editor-preview-runtime-loader-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101";
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
