@@ -67,7 +67,7 @@ test("incompatible approach or duplicate scheduler are rejected by core, not sil
     contactHold:{tickIntervalMs:50,effects:pulse}}));
 });
 
-test("editor keeps two separate effect hosts and one shared row serializer",()=>{
+test("editor keeps three separate effect hosts and one shared row serializer",()=>{
   const html=readFileSync("examples/dom-demo/capture-editor-v2.html","utf8");
   const js=readFileSync("src/ui/capture-editor-human-v2.js","utf8");
   for(const selector of ["data-skill-contact-hold-enabled","data-skill-contact-hold-interval",
@@ -78,7 +78,8 @@ test("editor keeps two separate effect hosts and one shared row serializer",()=>
   }
   assert.equal((html.match(/data-skill-effects-host/g)||[]).length,1);
   assert.equal((html.match(/data-skill-contact-hold-effects-host/g)||[]).length,1);
+  assert.equal((html.match(/data-skill-channel-effects-host/g)||[]).length,1);
   assert.match(js,/one\(root, hostSelector\)\.querySelectorAll/);
-  assert.match(js,/for \(const effectsHost of \[skillEffectsHost, contactHoldEffectsHost\]\)/);
+  assert.match(js,/for \(const effectsHost of \[skillEffectsHost, contactHoldEffectsHost, channelEffectsHost\]\)/);
   assert.match(js,/writeHumanContactHoldFieldsV1\(root, null, statRegistry\)/);
 });
