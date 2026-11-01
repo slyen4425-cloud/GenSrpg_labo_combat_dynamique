@@ -1,0 +1,96 @@
+{
+  "schema": "capture-wall-author-visual-replacement-v1",
+  "assetId": "pack:capture:sprite-mur-glace-arcanique-01",
+  "approvedZip": "MUR_GLACE_LABO_COMBAT.zip",
+  "zipSha256": "7e47f59f6424a7073f11670ac9424dfec5e2435fd4f1aed1e40acfb8ef9a6ad5",
+  "gitBlob": "c1812d522112dd2b2882a2ed9ca9c315b20da89a",
+  "sourceSheetSha256": "acb4e7f803da857a8d4446253478cfe27869e23f33d84da7ec838e97477bd9b3",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "safeMarginPx": 42,
+  "measuredMargins": [
+    [
+      88,
+      324,
+      88,
+      60
+    ],
+    [
+      82,
+      313,
+      83,
+      60
+    ],
+    [
+      68,
+      284,
+      68,
+      60
+    ],
+    [
+      61,
+      248,
+      62,
+      60
+    ],
+    [
+      64,
+      242,
+      65,
+      60
+    ],
+    [
+      54,
+      222,
+      55,
+      61
+    ],
+    [
+      57,
+      217,
+      57,
+      61
+    ],
+    [
+      51,
+      187,
+      51,
+      62
+    ],
+    [
+      53,
+      171,
+      54,
+      60
+    ],
+    [
+      50,
+      172,
+      51,
+      61
+    ],
+    [
+      46,
+      173,
+      45,
+      61
+    ],
+    [
+      43,
+      172,
+      43,
+      61
+    ]
+  ],
+  "atlas": "mur_glace_arcanique_atlas_12f.webp",
+  "atlasSha256": "15430cedd8a6993a8256a85b95fd3271a69beee521f974ee738eaea079356496",
+  "preview": "preview_mur_glace_arcanique.gif",
+  "playbackMode": "once",
+  "holdLastFrame": true,
+  "persistentFrameIndex": 11,
+  "validation": "actual PNG alpha and pixel-exact lossless atlas verified",
+  "replacedExistingAsset": true
+}

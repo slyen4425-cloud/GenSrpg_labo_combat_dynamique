@@ -1,3 +1,12 @@
+## 2026-11-01 — Remplacement officiel du mur de glace arcanique par le modèle brut 2.5D approuvé
+- BASE source des médias `global-assets@b724f7fbd0c9229a5874a54809546ab64d576e78` (ZIP auteur déjà dans la branche). START `checkpoint/lab-start-ice-wall-raw-replace-2026-11-01`; WORK `work/lab-ice-wall-raw-replace-2026-11-01`. Aucun changement directement sur `main` ou sur `gh-pages` dans ce lot.
+- ZIP exact GitHub : `_incoming/MUR_GLACE_LABO_COMBAT.zip`, 3 431 755 octets, SHA256 `7e47f59f6424a7073f11670ac9424dfec5e2435fd4f1aed1e40acfb8ef9a6ad5`, blob Git `c1812d522112dd2b2882a2ed9ca9c315b20da89a`. Remplacement autorisé des **médias d'une seule variante** `mur_glace_arcanique`, identifiant existant `pack:capture:sprite-mur-glace-arcanique-01`. Deux autres murs protégés, catalogue unique conservé.
+- Périmètre fichiers : `scripts/replace_mur_glace_raw_2026_11_01.py`, `.github/workflows/replace-mur-glace-raw-2026-11-01.yml`, `tests/unit/capture-ice-wall-raw-approved-2026-11-01.test.mjs`, `assets/library/capture/sprites/skills/murs_glace/mur_glace_arcanique/**`, `assets/library/capture/sprites/skills/murs_glace/sequence.json`, `data/assets/catalog/global-visual-assets.v1.json`, `docs/LAB_CURRENT_WORK.md`, rapport `docs/LAB_RAW_ICE_WALL_ASSET_REPLACEMENT_2026-11-01.md`. N'écraser aucun PNG d'autre créature ou autre mur.
+- Contrôles : 12 PNG RGBA 512², marge alpha >= 42 px pour alpha >=8, WebP lossless 6144 × 512 pixel-identique sur les 12 tuiles, source et Git blob stricts, frame finale mur complet, image persistante après construction (contrat existant); GH Actions importe et commit uniquement dans cette branche ; npm CI puis PR vers `global-assets`; postmerge CI avant promotion officielle.
+- Synchronisation distincte du consommateur `gh-pages` après cette PR : augmenter révision cache de `src/assets/global-visual-library.js`, vérifier physique l'arène et la forme du mur, CI/Pages. Pas de nouvelle autorité ni de changement des HP/collisions.
+
+---
+
 ## 2026-11-01 — 3 murs de glace invocables (source artiste et animation persistante)
 - Dépôt auteur vérifié `global-assets:_incoming/pack_murs_glace_suite_36_frames.zip` (15 386 792 octets, SHA256 `4cf5ac450117c0111079d0cf32caa26acd3d786e5d8d1e022c6d68d197bd03d1`, blob Git `29e729c96d23b2988c985cea94b139e8fc7c8458`).
 - Base médias `global-assets@30b5c0ecdf70cb59a38c31e90764ed9da59bbf38` ; checkpoint `checkpoint/lab-start-ice-persistent-walls-assets-2026-11-01`, travail `work/lab-ice-persistent-walls-assets-2026-11-01`; éditeur cible `gh-pages@4e825e466a9943ad43b4663fe0ae253bfb153fe9`.

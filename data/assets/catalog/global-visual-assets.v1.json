@@ -10045,7 +10045,7 @@
     },
     {
       "id": "pack:capture:sprite-mur-glace-arcanique-01",
-      "label": "Mur de glace arcanique — protection (12 images, état final persistant)",
+      "label": "Mur de glace brut 2.5D — formation naturelle (12 images, état final persistant)",
       "assetType": "sprite",
       "mediaType": "image",
       "category": "skill",
