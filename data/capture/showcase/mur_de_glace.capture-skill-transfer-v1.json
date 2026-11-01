@@ -72,18 +72,40 @@
           "targetScope": "self",
           "entityKind": "barrier",
           "statId": "glace",
-          "hpPerStatPoint": 1,
+          "hpPerStatPoint": 2,
           "interceptKinds": [
             "projectile",
-            "beam"
+            "beam",
+            "contact"
           ],
+          "placementMode": "arena",
+          "arenaXPct": 47,
+          "arenaYPct": 55,
           "spriteAssetId": "pack:capture:sprite-mur-glace-arcanique-01",
-          "visualScale": 1,
-          "offsetForwardPx": 80,
+          "visualScale": 4,
+          "visualScaleX": 1.5,
+          "offsetForwardPx": 0,
           "offsetUpPx": 50
         }
       ]
     },
-    "presentation": null
+    "presentation": {
+      "id": "skill:mur_de_glace",
+      "version": 2,
+      "subjectType": "skill",
+      "subjectId": "mur_de_glace",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-barriere-de-glace-01"
+        }
+      },
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:effect-2bcfd413",
+          "volume": 1,
+          "loop": false
+        }
+      }
+    }
   }
 }
