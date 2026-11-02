@@ -41,5 +41,10 @@ test("Author editor contextual help derives the same self-periodic prose as the 
     effects:userSkill.effects});
   assert.match(summary,/La créature qui utilise cette capacité subit 10 dégâts de Glace toutes les 10 secondes pendant 60 secondes/);
   assert.match(summary,/Augmente .*glace de 100 points .*pendant 60 secondes/i);
-  assert.doesNotMatch(summary,/sur soi|sur la cible .*10 dégâts de Glace/);
+  // The beneficial status really targets the selected creature, while only
+  // the harmful periodic status targets the caster. Don't conflate the two.
+  assert.match(summary,/100 points .*sur la cible/);
+  const casterCost=summary.split(" ; ").find(line=>line.includes("10 dégâts de Glace"));
+  assert.ok(casterCost,"self-damage must have its own explicit clause");
+  assert.doesNotMatch(casterCost,/sur soi|sur la cible/);
 });
