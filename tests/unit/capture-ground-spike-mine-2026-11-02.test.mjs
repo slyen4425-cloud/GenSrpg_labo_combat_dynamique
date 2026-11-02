@@ -5,6 +5,8 @@ import {normalizeSkillEffectV1} from "../../src/contracts/skill-effect-v1.js";
 import {normalizeSkillPresentationBindingV10} from "../../src/contracts/skill-presentation-binding-v10.js";
 import {scheduleSkillEffectV1} from "../../src/core/combat/scheduled-effect-runtime-v1.js";
 import {createCombatState} from "../../src/core/combat/combat-state.js";
+import {createCombatSession} from "../../src/core/combat/combat-session.js";
+import {normalizeSkillDefinition} from "../../src/contracts/skill-definition.js";
 import {planSkillOutcomeFx} from "../../src/core/fx/skill-fx-plan.js";
 const read=p=>readFileSync(new URL("../../"+p,import.meta.url),"utf8");
 test("RED: under-target projectile accepted by ONE visual contract, not added damage engine",()=>{
@@ -55,4 +57,28 @@ test("a mine or channel casts no fake instant hit; native tick/expiry owns visib
  const normal=planSkillOutcomeFx({resolution:{ok:true,outcome:"hit",skillId:"ice-spike",
   events:[]},targetSlot:"enemy"});
  assert.equal(normal[0].type,"impact");
+});
+
+test("the native mine actually deals damage once at 3000ms, with no premature hit",()=>{
+ const combat=createCombatSession({fighters:[
+  {id:"hero",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,energyChargeAmount:0},
+  {id:"enemy",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,energyChargeAmount:0}
+ ]});
+ const mine=normalizeSkillDefinition({id:"ice-ground-mine",name:"Mine de glace",
+  category:"offensive",form:"area",element:"ice",approachMode:"none",energyCost:0,
+  preparationMs:0,travelMs:0,recoveryMs:0,cooldownMs:0,targetRelations:["enemy"],
+  effect:{damage:0,heal:0,stunMs:0,interruptsPreparation:false,tags:[]},
+  effects:[{kind:"scheduled_effect",targetScope:"target",visualCue:"ground_mine",
+   trigger:{type:"after_ms",delayMs:3000},
+   effects:[{kind:"damage",targetScope:"target",amount:20,channel:"ice"}]}]});
+ assert.equal(combat.useSkill({actorId:"hero",targetId:"enemy",skill:mine}).ok,true);
+ assert.equal(combat.snapshot().fighters.enemy.hp,100);
+ assert.equal(combat.snapshot().scheduledEffects[0].visualCue,"ground_mine");
+ combat.advanceMs(2999);
+ assert.equal(combat.snapshot().fighters.enemy.hp,100);
+ combat.advanceMs(1);
+ assert.equal(combat.snapshot().fighters.enemy.hp,80);
+ assert.equal(combat.snapshot().scheduledEffects.length,0);
+ combat.advanceMs(5000);
+ assert.equal(combat.snapshot().fighters.enemy.hp,80);
 });
