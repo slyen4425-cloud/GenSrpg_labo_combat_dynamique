@@ -1777,6 +1777,7 @@ export async function mountCoop2v2Test({
       if(actionRefs[actorId])actionRefs[actorId].textContent="Canalisation · "+tick;
     },
     onChannelEnd({actorId,reason}) {
+      presenter.finishChannelPresentation(actorId);
       if(actionRefs[actorId])actionRefs[actorId].textContent="Prêt";
       renderState();queueAiDecisions();
     },
