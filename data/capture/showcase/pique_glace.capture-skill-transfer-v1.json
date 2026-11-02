@@ -23,7 +23,7 @@
         "tickIntervalMs": 1000,
         "maxDurationMs": 10000,
         "maxTicks": 10,
-        "energyCostPerTick": 3,
+        "energyCostPerTick": 1,
         "stopOnDamage": true,
         "stopOnStun": true,
         "stopOnSilence": true,
@@ -31,7 +31,7 @@
           {
             "kind": "damage",
             "targetScope": "target",
-            "amount": 5,
+            "amount": 7,
             "channel": "ice",
             "ignoreResistancePct": 0,
             "ignoreDamageReductionPct": 0
@@ -42,7 +42,7 @@
       "preparationMs": 0,
       "travelMs": 0,
       "recoveryMs": 0,
-      "cooldownMs": 0,
+      "cooldownMs": 45000,
       "maxUsesPerCombat": null,
       "interruptibleDuringPreparation": true,
       "allowedDistances": [
@@ -95,7 +95,9 @@
       "visual": {
         "travel": {
           "assetId": "pack:capture:sprite-pointe-glace-01",
-          "displayScale": 1,
+          "displayScale": 3,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
           "attachment": "trajectory",
           "anchor": null,
           "offsetX": 0,
@@ -112,7 +114,7 @@
           "trajectoryMode": "under_target",
           "groundMotion": "fixed",
           "groundOffsetXPx": 0,
-          "groundOffsetYPx": 0,
+          "groundOffsetYPx": 15,
           "groundRisePx": 80
         }
       },
