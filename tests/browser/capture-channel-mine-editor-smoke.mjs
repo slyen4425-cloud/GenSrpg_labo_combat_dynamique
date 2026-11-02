@@ -47,6 +47,12 @@ document.addEventListener("DOMContentLoaded",()=>{
    // Real Android-like author path: the normal Projectile + Channeling
    // combination was invalid. One guided click must produce a savable
    // native area channel without discarding existing media references.
+   // Use the real editor tab navigation: this panel is hidden by default
+   // while the editor starts on the Creature tab. Never force CSS/hidden
+   // or invent a second selector in a synthetic detached subtree.
+   sel('[data-editor-tab="skills"]').click();
+   if(sel('[data-editor-panel="skills"]').hidden)
+     throw Error("Skills navigation did not display its native panel");
    sel("[data-skill-new]").click();
    if(enabled.checked||sel("[data-skill-channeling-effects-host]").children.length!==0)
      throw Error("new skill inherited the previous ability's invisible channel effects");
