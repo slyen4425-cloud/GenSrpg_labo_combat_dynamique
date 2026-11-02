@@ -1,3 +1,13 @@
+## 2026-11-02 — Pose d'attaque maintenue pendant charge/canalisation (chantier en cours)
+- Demande auteur : animation d'attaque de créature avance une seule fois et reste visiblement figée sur sa DERNIÈRE image pendant la charge ou la canalisation ; retour au repos après tir/fin/interruption. Les animations normales restent inchangées.
+- BASE gh-pages@6e8cd529fc53892ea86f8d95fe2f568e07c0fa29 ; START checkpoint/lab-start-attack-pose-hold-2026-11-02 ; WORK work/lab-attack-pose-hold-2026-11-02. Aucune modification main.
+- Autorité : Combat Runtime seule horloge charge/canalisation, Animation Core seule séquence de pose, Demo Visual State unique autorité du maintien, adaptateur DOM unique lecture du sprite. Presenter coordonne les signaux de phases sans minuterie concurrente.
+- Fichiers autorisés : src/core/animation/plan-animation.js, src/ui/demo-app.js, src/adapters/renderer/combat-resolution-presenter.js, src/ui/combat-test-ui.js, src/ui/combat-2v2-test-ui.js, tests/unit/attack-pose-hold-charge-channel-2026-11-02.test.mjs, ce journal ; envisager ajustement unique et motivé dans src/adapters/renderer/dom-creature-movement-visual-v1.js si nécessaire.
+- Fonctions protégées : dégâts, énergie, horloge de tick, gameplay de charge, FX projectile/mine/mur, poses esquive/KO/retour idle et V1-V14 des compétences. Test ciblé d'abord : dernier segment sans récupération en mode maintien, sprite hold-last, maintien entre préparation et release/fin canalisation, annulation/réinitialisation, voies 1v1/2v2.
+- GREEN seulement après tests + CI complète 5/5 et revue du vrai chemin ; validation visuelle Android auteur distincte.
+
+---
+
 ## 2026-11-02 — Pique de glace : correction cause racine du sprite fixe (adaptateur de présentation)
 - Signal auteur : l'export mis à jour `pique_glace` contient `visual.travel.trajectoryMode=under_target`, `groundMotion=fixed`, `groundRisePx=80`, mais le sprite continuait à monter. Le réglage auteur est valide : `groundRisePx` doit être ignoré en mode fixe.
 - Cause démontrée : `normalizeSkillPresentationBindingV14` conserve les coordonnées/modes, mais `resolvedVisual` de `capture-skill-presentation-assets-v2.js` omettait les quatre champs `groundMotion/groundOffsetXPx/groundOffsetYPx/groundRisePx` en construisant la présentation pour `dom-skill-fx.js`. Le FX recevait `undefined` et appliquait l'animation montante par défaut (pulse). Aucun changement de calcul des dégâts ou de collision n'est nécessaire.
