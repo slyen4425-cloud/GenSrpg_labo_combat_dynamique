@@ -39,7 +39,7 @@ def main() -> None:
     raw = SOURCE.read_bytes()
     assert len(raw) == SOURCE_SIZE, "Source ZIP size changed"
     assert digest(raw) == SOURCE_SHA, "Source ZIP SHA256 mismatch"
-    git_blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\\0" + raw).hexdigest()
+    git_blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
     assert git_blob == SOURCE_GIT_SHA, "GitHub source blob mismatch"
 
     pending: dict[Path, bytes] = {}
@@ -141,7 +141,7 @@ def main() -> None:
             "notes": "Final pose held by engine during charging/channeling, not looped. No automatic binding."
         }
         pending[DEST / "attack.manifest.json"] = (json.dumps(manifest, ensure_ascii=False,
-                                                          indent=2) + "\\n").encode()
+                                                          indent=2) + "\n").encode()
 
     cat = json.loads(CAT.read_text(encoding="utf8"))
     assert len(cat["assets"]) == cat["counts"]["assets"]
@@ -170,18 +170,18 @@ def main() -> None:
     for path, data in pending.items():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(data)
-    CAT.write_text(json.dumps(cat, ensure_ascii=False, indent=2) + "\\n", encoding="utf8")
+    CAT.write_text(json.dumps(cat, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
     journal_entry = (
-        "## 2026-11-02 — Gorille des glaces : attaque chargee/canalisee joueur 12f\\n"
+        "## 2026-11-02 — Gorille des glaces : attaque chargee/canalisee joueur 12f\n"
         "- Source: global-assets:_incoming/" + SOURCE_NAME + "; source SHA256 " + SOURCE_SHA +
-        "; Git blob " + SOURCE_GIT_SHA + ".\\n"
+        "; Git blob " + SOURCE_GIT_SHA + ".\n"
         "- BASE global-assets@bef5aaed06bc823ecafc43e2249310cb4c2ccfce; "
         "checkpoint/lab-start-gorille-glaces-charge-player-2026-11-02; "
-        "work/lab-gorille-glaces-charge-player-2026-11-02.\\n"
+        "work/lab-gorille-glaces-charge-player-2026-11-02.\n"
         "- Périmètre : 12 PNG 512×512, atlas horizontal WebP lossless 6144×512, previews, manifeste, "
-        "catalogue +1 asset. Hold frame 12; autre bras en retrait. Aucun auto-binding.\\n"
+        "catalogue +1 asset. Hold frame 12; autre bras en retrait. Aucun auto-binding.\n"
         "- Protégés : runtime, autres créatures, gameplay, compétences, main et gh-pages. "
-        "Tests source réels + CI obligatoires avant GREEN.\\n\\n---\\n\\n"
+        "Tests source réels + CI obligatoires avant GREEN.\n\n---\n\n"
     )
     original = JOURNAL.read_text(encoding="utf8")
     assert not original.startswith("## 2026-11-02 — Gorille des glaces : attaque")
