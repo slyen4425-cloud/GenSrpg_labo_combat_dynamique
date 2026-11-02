@@ -287,6 +287,28 @@ try{
  const second=impactFx.syncScheduledMines({elapsedMs:3100,scheduledEffects:[]});
  if(second.triggered.length!==0)
    throw Error("mine triggered twice from same native schedule");
+ // An accepted channel tick plays the selected travel sprite at the
+ // target's FEET, not a projectile from the caster or a hit sensor.
+ const contactsBeforePulse=contacts.length;
+ const pulseFx=createDomSkillFxRenderer({arena:battlefield,
+   anchors:{player:hero,opponent:foe},targetAnchors:{player:hero,opponent:foe},
+   presentationForSkill:()=>({
+     travel:{url:wallArt,displayScale:1,opacity:1,trajectoryMode:"under_target"},
+     impact:{url:wallArt,displayScale:1,opacity:1}
+   }),
+   onProjectileContact:()=>{throw Error("visual-only channel pulse must never resolve damage");},
+   targetCollisionModelFor:()=>null,
+   animate:()=>({finished:new Promise(()=>{}),cancel(){}})
+ });
+ pulseFx.play({type:"channel-pulse",skillId:"ice-spikes",fromSlot:"opponent",targetSlot:"player",durationMs:420});
+ const pulse=battlefield.querySelector('[data-skill-fx="channel-pulse"]');
+ if(!pulse||pulse.style.transformOrigin!=="50% 100%")
+   throw Error("channel pulse did not create ground-rising native sprite");
+ const groundTop=hero.getBoundingClientRect().bottom-battlefield.getBoundingClientRect().top;
+ if(Math.abs(parseFloat(pulse.style.top)-groundTop)>1)
+   throw Error("channel spike not anchored beneath target");
+ if(contacts.length!==contactsBeforePulse)throw Error("channel pulse faked projectile hit");
+ pulseFx.dispose();
  impactFx.dispose();
  attackFx.dispose();liveOverlay.dispose();battlefield.remove();
  document.body.dataset.barrierOverlaySmoke="pass:persistent-sprite:geometry:ground-stop:80hp:hit25:55hp";
