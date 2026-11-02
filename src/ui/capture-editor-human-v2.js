@@ -509,6 +509,7 @@ export function buildHumanTacticalSkillEffectsV1(
       return normalizeSkillEffectV1({
         kind,
         targetScope,
+        ...(effect.visualCue==="ground_mine"?{visualCue:"ground_mine"}:{}),
         trigger: {
           type: "after_ms",
           delayMs
@@ -546,6 +547,7 @@ export function buildHumanTacticalSkillEffectsV1(
       return {
         kind,
         targetScope: "target",
+        ...(row.querySelector("[data-skill-scheduled-mine]")?.checked?{visualCue:"ground_mine"}:{}),
         delaySeconds: Number(
           row.querySelector(
             "[data-skill-scheduled-delay-seconds]"
@@ -6436,6 +6438,13 @@ function appendHumanSkillEffectV1(
     "skill-status-config";
   scheduledBox.dataset.skillEffectConfigKind =
     "scheduled_effect";
+  const mineCue=document.createElement("label");
+  mineCue.className="switch-line";
+  const mineCheck=document.createElement("input");
+  mineCheck.type="checkbox";mineCheck.dataset.skillScheduledMine="true";
+  mineCheck.checked=effect?.visualCue==="ground_mine";
+  mineCue.append(mineCheck,document.createTextNode(" Mine : petit cercle au sol avant explosion"));
+  scheduledBox.append(mineCue);
 
   const scheduledDelay =
     tacticalNumberInputV1(
