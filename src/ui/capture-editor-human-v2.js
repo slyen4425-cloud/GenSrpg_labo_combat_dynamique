@@ -12173,7 +12173,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       if(skillOptions.length===0)continue;
       const parent=select.closest("label")??select.parentElement;
       if(!parent)continue;
-      let filter=parent.querySelector(":scope > [data-skill-element-filter]");
+      let filter=select.previousElementSibling?.matches?.("[data-skill-element-filter]")
+        ? select.previousElementSibling : null;
       if(!filter){
         filter=document.createElement("select");
         filter.dataset.skillElementFilter="true";
