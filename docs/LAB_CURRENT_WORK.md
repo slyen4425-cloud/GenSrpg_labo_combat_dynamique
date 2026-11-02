@@ -4,6 +4,8 @@
 - Autorité : Combat Runtime seule horloge charge/canalisation, Animation Core seule séquence de pose, Demo Visual State unique autorité du maintien, adaptateur DOM unique lecture du sprite. Presenter coordonne les signaux de phases sans minuterie concurrente.
 - Fichiers autorisés : src/core/animation/plan-animation.js, src/ui/demo-app.js, src/adapters/renderer/combat-resolution-presenter.js, src/ui/combat-test-ui.js, src/ui/combat-2v2-test-ui.js, tests/unit/attack-pose-hold-charge-channel-2026-11-02.test.mjs, ce journal ; envisager ajustement unique et motivé dans src/adapters/renderer/dom-creature-movement-visual-v1.js si nécessaire.
 - Fonctions protégées : dégâts, énergie, horloge de tick, gameplay de charge, FX projectile/mine/mur, poses esquive/KO/retour idle et V1-V14 des compétences. Test ciblé d'abord : dernier segment sans récupération en mode maintien, sprite hold-last, maintien entre préparation et release/fin canalisation, annulation/réinitialisation, voies 1v1/2v2.
+- Livraison PWA : chaîne d'import versionnée dans capture-combat-preview-v1, preview-runtime-loader-v1, capture-editor-v2.js/html, coop-2v2.js/html et demo.js afin d'éviter l'ancienne ESM en cache. Ces fichiers rejoignent le périmètre autorisé (propagation uniquement, pas de logique métier).
+- RED écrit avant implémentation ; tests Foundation 2532/2532 PASS au SHA 6a0f678d. Premier navigateur vague 2v2 4/5, puis même SHA rerun exact 5/5 sans correctif de gameplay. Dernier réglage : une seule animation au tir (pas de double lecture de la pose), cache preview et CI du SHA définitif encore requis.
 - GREEN seulement après tests + CI complète 5/5 et revue du vrai chemin ; validation visuelle Android auteur distincte.
 
 ---
