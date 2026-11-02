@@ -172,9 +172,7 @@ function effectSentence(e,{perCharge=false}={}){
       (e.statId==="glace"?"Glace":e.statId)+
       " du lanceur au moment de l'invocation. Intercepte : "+
       words(e.interceptKinds.map(k=>k==="contact"?"contact":k==="beam"?"rayons":"projectiles"))+
-      " ; la frappe s'arrête au mur même si celui-ci est détruit."+
-      (e.placementMode==="behind"?" Placement derrière la créature protégée.":
-       e.placementMode==="arena"?" Position libre : X "+num(e.arenaXPct)+" % depuis la gauche, Y "+num(e.arenaYPct)+" % depuis le haut.":""))];
+      " ; la frappe s'arrête au mur même si celui-ci est détruit.")];
     case "force_reserve_switch":return [
       "Force la créature ennemie choisie dans sa réserve à entrer en combat à la place de la créature adverse active, si l'attaque touche."
     ];
@@ -373,7 +371,11 @@ function specialRules(d){
   const list=[];
   const exceptionalReach=exceptionalReachSentence(d);
   if(exceptionalReach)list.push(exceptionalReach);
-  if(d.dodgeable===false)list.push("Cette attaque ne peut pas être esquivée.");
+  // Dodgeability describes a hostile attack only; a wall or heal is not
+  // an attack, even when its SkillDefinition explicitly marks false.
+  if(d.dodgeable===false && d.category==="offensive" &&
+     d.targetRelations.includes("enemy") && d.form!=="self")
+    list.push("Cette attaque ne peut pas être esquivée.");
   if(d.reaction.reflectForms.length)list.push(finish("Renvoie les attaques "+
     words(d.reaction.reflectForms)));
   if(d.reaction.blockForms.length)list.push(finish("Bloque les attaques "+
