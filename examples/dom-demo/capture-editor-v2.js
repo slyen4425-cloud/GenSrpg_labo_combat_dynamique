@@ -13,7 +13,7 @@ import {
 } from "../../src/adapters/audio/combat-soundtrack-preview-bridge-v1.js";
 import {
   mountCaptureEditorHumanV2
-} from "../../src/ui/capture-editor-human-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102";
+} from "../../src/ui/capture-editor-human-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102";
 import {applyCaptureAuthorTabFromUrlV1} from "../../src/ui/capture-editor-deep-link-v1.js";
 import {
   createCreatorVisualAssetSessionV1
@@ -26,7 +26,7 @@ import {
 } from "../../src/ui/capture-editor-preview-session-v2.js";
 import {
   loadCaptureEditorPreviewRuntimeV1
-} from "../../src/ui/capture-editor-preview-runtime-loader-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102";
+} from "../../src/ui/capture-editor-preview-runtime-loader-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102";
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
@@ -36,7 +36,7 @@ import {
 } from "./demo-assets.js";
 import {
   createCaptureSkillPresentationAssetsV2
-} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031";
+} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-ice-channel-spikes-20261102";
 import {
   createGlobalPresentationAssetResolverV1
 } from "../../src/assets/global-presentation-asset-resolver-v1.js";
