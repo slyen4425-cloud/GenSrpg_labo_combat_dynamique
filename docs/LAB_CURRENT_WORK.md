@@ -1,3 +1,12 @@
+## 2026-11-02 — Visibilité animation Gorille des glaces chargée joueur (cache éditeur)
+- Source canonique publiée : `global-assets@a61e9f4b009000122cd82c7e04d3214189ec4727` (PR #211, CI post-fusion SUCCESS 41533117759).
+- Source gh-pages : `ea9607eb05866b1e4660b7407554a10ee2a5a719`; checkpoint `checkpoint/lab-start-gorille-charge-selector-refresh-2026-11-02`, lot `work/lab-gorille-charge-selector-refresh-2026-11-02`.
+- Seul changement runtime : revision cache officielle `v50 -> v51` de `src/assets/global-visual-library.js`. Utilise le même catalogue unique, aucune autre autorité et aucune configuration auto-affectée à Gorice.
+- Contrat : `pack:capture:creature-gorille-des-glaces-attack-player-12-charge-v1`, animation 12 PNG et atlas lossless 6144x512, `once` + maintien dernière pose.
+- Périmètre : résolveur de revision, sentinelle dédiée et journal. Protéger toute autre UI, gameplay, sprites, compétences et modèles. RED du test v51 avant correction, CI et Pages après correction, checkpoint GREEN seulement sur résultat prouvé.
+
+---
+
 ## 2026-11-02 — Trois exports auteur : Gorice, Pique de glace, Furie bestiale (chantier)
 - Demande : remplacer exactement les exports fournis Gorice (ID `gorice`), Pique de glace (ID `pique_glace`) et installer Furie bestiale (ID `furie_bestiale`) dans la bibliothèque Capture actuelle, sans réimport Android manuel. Aucun changement volontaire aux valeurs, visuels, niveaux, stats ou coûts auteurs.
 - BASE `gh-pages@1f141f01788310e5fbb6bc6f74018f33bd7d03c7` ; START `checkpoint/lab-start-gorice-pique-furie-2026-11-02` ; WORK `work/lab-gorice-pique-furie-2026-11-02`. Les archives antérieures restent intactes ; une seule entrée vitrine par ID. Pas de changement de `main`, GenSrpG, Exploration, Combat Runtime, assets ou moteur.
