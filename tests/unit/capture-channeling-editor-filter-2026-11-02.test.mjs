@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
+import {describeCaptureSkillV1} from "../../src/ui/capture-skill-explanation-v1.js";
 import {buildHumanSkillDraftV1,humanSkillEditorFieldsFromDraftV1}
  from "../../src/ui/capture-editor-human-v2.js";
 const read=p=>JSON.parse(readFileSync(new URL("../../"+p,import.meta.url),"utf8"));
@@ -31,4 +32,19 @@ test("RED: every ability selector is filterable by element without losing its se
  assert.ok(html.includes("data-skill-element-filter"));
  const ui=readFileSync(new URL("../../src/ui/capture-editor-human-v2.js",import.meta.url),"utf8");
  assert.match(ui,/function refreshHumanSkillElementFiltersV1/);
+});
+
+test("native channel Bestiary explains real tick effects, duration and interruption, not an empty skill",()=>{
+ const fields=humanSkillEditorFieldsFromDraftV1(template());
+ const saved=buildHumanSkillDraftV1({...fields,category:"offensive",form:"beam",effects:[],
+  chargedAttack:null,chargedEffects:null,contactHold:null,
+  channeling:{tickIntervalMs:1000,maxDurationMs:5000,maxTicks:4,energyCostPerTick:3,
+   stopOnDamage:true,stopOnStun:true,stopOnSilence:true,
+   effects:[{kind:"damage",targetScope:"target",amount:12,channel:"ice"}]}});
+ const result=describeCaptureSkillV1(saved.definition).sentences.join(" ");
+ assert.match(result,/12 dégâts de Glace/);
+ assert.match(result,/chaque seconde/);
+ assert.match(result,/3 énergie par pulsation/);
+ assert.match(result,/4 pulsations maximum/);
+ assert.doesNotMatch(result,/Aucun effet de combat défini/);
 });
