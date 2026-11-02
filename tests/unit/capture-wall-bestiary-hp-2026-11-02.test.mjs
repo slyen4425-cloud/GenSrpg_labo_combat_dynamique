@@ -33,7 +33,7 @@ test("non-dodgeable hostile offensive attacks still say they cannot be dodged",(
 });
 test("RED: one overlay keeps native collision geometry and positions the sole HP badge above the wall",()=>{
  const renderer=src("src/adapters/renderer/combat-entity-overlay-v1.js");
- assert.match(renderer,/data\.combatEntityHp/);
+ assert.match(renderer,/dataset\.combatEntityHp/);
  assert.match(renderer,/position:absolute.*top:/s,"badge must leave the normal flex-flow below sprite");
  assert.match(renderer,/arenaRect|visibleRect|bounds/,"badge must clamp into the visible arena at large sprite scales");
  assert.doesNotMatch(renderer,/cloneNode\(/);
