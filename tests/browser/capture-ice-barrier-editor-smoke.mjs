@@ -258,6 +258,35 @@ try{
    combatEntityId:"nonexistent-wall",durationMs:420});
  if(battlefield.querySelectorAll('[data-skill-fx="impact"]').length!==prevCount)
    throw Error("missing wall must not paint fake impact on protected creature");
+ // Actual browser mine: ONE warning pinned under the target, then ONE
+ // author sprite only when the native scheduled state expires at 3s.
+ const mineRecord={id:"native-mine-probe",sourceActorId:"opponent",
+   targetActorId:"player",sourceSkillId:"ice-mine",visualCue:"ground_mine",
+   scheduledAtMs:0,dueAtMs:3000};
+ const mineView=impactFx.syncScheduledMines({elapsedMs:0,scheduledEffects:[mineRecord]});
+ if(mineView.activeCount!==undefined&&mineView.status!=="synced")
+   throw Error("native mine projection not synced");
+ const cue=battlefield.querySelector('[data-scheduled-mine-id="native-mine-probe"]');
+ if(!cue||battlefield.querySelectorAll('[data-scheduled-mine-id]').length!==1)
+   throw Error("mine did not create one native ground telegraph");
+ const cueX=Number.parseFloat(cue.style.left),cueY=Number.parseFloat(cue.style.top);
+ const beforeExplosion=battlefield.querySelectorAll('[data-skill-fx="impact"]').length;
+ impactFx.syncScheduledMines({elapsedMs:2999,scheduledEffects:[mineRecord]});
+ if(battlefield.querySelectorAll('[data-skill-fx="impact"]').length!==beforeExplosion)
+   throw Error("mine detonated before due time");
+ const exploded=impactFx.syncScheduledMines({elapsedMs:3000,scheduledEffects:[]});
+ if(exploded.triggered.length!==1||battlefield.querySelector('[data-scheduled-mine-id]'))
+   throw Error("mine expiration did not remove telegraph and trigger impact");
+ const allImpacts=[...battlefield.querySelectorAll('[data-skill-fx="impact"]')];
+ if(allImpacts.length!==beforeExplosion+1)
+   throw Error("mine must render one authored impact at native deadline");
+ const explosion=allImpacts.at(-1);
+ if(Math.abs(Number.parseFloat(explosion.style.left)-cueX)>1||
+    Math.abs(Number.parseFloat(explosion.style.top)-cueY)>1)
+   throw Error("mine explosion did not occur at the marked ground position");
+ const second=impactFx.syncScheduledMines({elapsedMs:3100,scheduledEffects:[]});
+ if(second.triggered.length!==0)
+   throw Error("mine triggered twice from same native schedule");
  impactFx.dispose();
  attackFx.dispose();liveOverlay.dispose();battlefield.remove();
  document.body.dataset.barrierOverlaySmoke="pass:persistent-sprite:geometry:ground-stop:80hp:hit25:55hp";
