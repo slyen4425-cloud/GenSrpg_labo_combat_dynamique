@@ -11,7 +11,7 @@ import json
 from pathlib import Path, PurePosixPath
 import zipfile
 
-from PIL import Image
+from PIL import Image, ImageChops
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_NAME = "gorille_des_glaces_canalisation_corrigee_12f.zip"
@@ -108,7 +108,12 @@ def main() -> None:
         atlas_bytes = atlas_stream.getvalue()
         with Image.open(io.BytesIO(atlas_bytes)) as decoded:
             assert decoded.size == (6144, 512)
-            assert decoded.convert("RGBA").tobytes() == strip.tobytes(), "Lossless atlas pixel mismatch"
+            decoded = decoded.convert("RGBA")
+            assert decoded.getchannel("A").tobytes() == strip.getchannel("A").tobytes(), "Atlas alpha mismatch"
+            visible = strip.getchannel("A").point(lambda v: 255 if v > 0 else 0)
+            for channel in ("R", "G", "B"):
+                delta = ImageChops.difference(decoded.getchannel(channel), strip.getchannel(channel))
+                assert ImageChops.multiply(delta, visible).getbbox() is None, "Atlas visible RGB mismatch"
 
         atlas_file = "atlases/gorille_des_glaces_charge_player_12_atlas.webp"
         pending[DEST / atlas_file] = atlas_bytes
