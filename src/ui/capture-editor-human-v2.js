@@ -73,7 +73,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -117,7 +117,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -12829,7 +12829,21 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     if (choice.value.startsWith("effect:")) {
       const effectKind = choice.value.slice(7);
       if (!SKILL_EFFECT_V1_KINDS.includes(effectKind)) return;
-      const row = appendHumanSkillEffectV1(root, {kind:effectKind}, statRegistry);
+      // Channeling has one owner for tick damage; never add initial hits.
+      const onChannel=channelingEnabled.checked;
+      if(onChannel && !["damage","heal","apply_status","apply_marker"].includes(effectKind)){
+        choice.value="standard";
+        setStatus(root,"Une canalisation accepte uniquement dégâts, soins, statuts et marqueurs par pulsation. Aucun autre effet ajouté.","warn");
+        return;
+      }
+      if(chargedEnabled.checked && ["damage","life_steal"].includes(effectKind)){
+        choice.value="standard";
+        setStatus(root,"L'attaque chargée gère déjà ses dégâts ; aucun effet de dégâts supplémentaire ajouté.","warn");
+        return;
+      }
+      const row = appendHumanSkillEffectV1(root, {kind:effectKind}, statRegistry, null,
+        onChannel ? "[data-skill-channeling-effects-host]" : "[data-skill-effects-host]");
+      if(onChannel)syncGuidedEffectPanelsV1("channeling");
       row.querySelector("[data-skill-effect-kind]")?.dispatchEvent(
         new Event("change", {bubbles:true}));
       choice.value="standard";
@@ -12837,6 +12851,13 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         ". Ses réglages sont dans la nouvelle ligne ci-dessous.");
       row.scrollIntoView?.({block:"nearest"});
       row.querySelector("[data-skill-effect-kind]")?.focus?.();
+      return;
+    }
+    if(["charged","charged-effects","mine","wall"].includes(choice.value) &&
+       (channelingEnabled.checked ||
+        (contactHoldEnabled.checked && ["charged","charged-effects"].includes(choice.value)))){
+      choice.value="standard";
+      setStatus(root,"Mécanique incompatible avec la canalisation ou le maintien au contact déjà actif. Aucun réglage effacé.","warn");
       return;
     }
     if (choice.value==="channeling" || choice.value==="contact-hold") {
