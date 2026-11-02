@@ -1156,6 +1156,10 @@ export async function mountCoop2v2Test({
     fx.syncPersistentZones(
       state.persistentZones ?? []
     );
+    const mines=fx.syncScheduledMines(state);
+    for(const mine of mines.triggered)
+      combatAudio.play({type:"impact",skillId:mine.skillId,
+        actorSlot:mine.actorId,targetSlot:mine.targetId,loop:false});
     zoneAudio.sync(
       state.persistentZones ?? []
     );
