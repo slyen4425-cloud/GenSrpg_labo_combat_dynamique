@@ -1772,7 +1772,7 @@ export async function mountCoop2v2Test({
     },
     onChannelTick({actorId,targetId,skillId,tick}) {
       // Same native tick and same FX/audio adapter in 1v1 and 2v2.
-      fx.play({type:"impact",skillId,fromSlot:actorId,targetSlot:targetId,durationMs:420});
+      fx.play({type:"channel-pulse",skillId,fromSlot:actorId,targetSlot:targetId,durationMs:420});
       combatAudio.play({type:"impact",skillId,actorSlot:actorId,targetSlot:targetId,loop:false});
       if(actionRefs[actorId])actionRefs[actorId].textContent="Canalisation · "+tick;
     },
