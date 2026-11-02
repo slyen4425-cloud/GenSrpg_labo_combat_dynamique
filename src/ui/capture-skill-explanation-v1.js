@@ -102,7 +102,7 @@ function statusStory(s){
     case "triggered_buff":line="Déclenche un effet sous certaines conditions";break;
     default:{
       const change=simpleChange(s);
-      if(change)return finish((change.positive?"Augmente ":"Réduit ")+change.text+" "+end);
+      if(change)return [finish((change.positive?"Augmente ":"Réduit ")+change.text+" "+end)];
       line="Applique un effet (« "+(s.label??s.kind)+" »)";
     }
   }
