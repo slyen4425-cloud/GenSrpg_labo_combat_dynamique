@@ -1,3 +1,12 @@
+## 2026-11-02 — Sécurisation du maintien de pose contre une ancienne animation rejetée (en cours)
+- Reprise de la PR #208 publiée à gh-pages@5cbf51fbbc20c476328b2bbc7d433c5d429c08af ; CI 41485983540 et Pages 41485983849 SUCCESS ; validation Android auteur de l'animation toujours distincte.
+- Risque de concurrence asynchrone identifié dans le propriétaire `createCombatResolutionPresenter.beginAttackPose` : l'échec différé de l'ancienne promesse visuelle appelle `releaseAttackPose(actorSlot)` sans vérifier que le maintien appartient encore à cette ancienne tentative. Si une nouvelle charge/canalisation démarre entre-temps sur le même acteur, la mauvaise pose peut être libérée.
+- BASE gh-pages@5cbf51fbbc20c476328b2bbc7d433c5d429c08af ; START checkpoint/lab-start-stale-attack-pose-2026-11-02 ; WORK work/lab-stale-attack-pose-2026-11-02. Source unique inchangée : Demo Visual State = pose, Combat Runtime = événements, Presenter = projection d'un événement.
+- Portée strictement limitée : un test RED avec rejet différé A après le début B et un garde d'identité d'événement dans `src/adapters/renderer/combat-resolution-presenter.js` ; test additionnel dans `tests/unit/attack-pose-hold-charge-channel-2026-11-02.test.mjs`, ce journal. Pas de nouveaux timers, pas de moteur de maintien parallèle ; dégâts, énergie, sort Pique de glace, gestes, animations et callbacks natifs 1v1/2v2 inchangés.
+- Ordre : test RED réel avant le code, correction racine, suite Foundation+4 Chromium sur SHA final code/docs, checkpoint GREEN sur SHA exact et PR dédiée vers gh-pages ; vérifier CI/Pages postfusion. Ne pas conclure Android sans test physique.
+
+---
+
 ## 2026-11-02 — Pose d'attaque maintenue pendant charge/canalisation (validation finale)
 - Demande auteur : animation d'attaque de créature avance une seule fois et reste visiblement figée sur sa DERNIÈRE image pendant la charge ou la canalisation ; retour au repos après tir/fin/interruption. Les animations normales restent inchangées.
 - BASE gh-pages@6e8cd529fc53892ea86f8d95fe2f568e07c0fa29 ; START checkpoint/lab-start-attack-pose-hold-2026-11-02 ; WORK work/lab-attack-pose-hold-2026-11-02. Aucune modification main.
