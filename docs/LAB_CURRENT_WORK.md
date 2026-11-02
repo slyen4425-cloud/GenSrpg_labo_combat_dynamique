@@ -1,3 +1,11 @@
+## 2026-11-02 — Gorille des glaces : attaque chargee/canalisee joueur 12f
+- Source: global-assets:_incoming/gorille_des_glaces_canalisation_corrigee_12f.zip; source SHA256 379afd5861977a636059dd8453e67fb3d622fe78d52830a08f58562f6dba390b; Git blob 5891b83b944b9d7735d118fdc0e90c2367b4a91c.
+- BASE global-assets@bef5aaed06bc823ecafc43e2249310cb4c2ccfce; checkpoint/lab-start-gorille-glaces-charge-player-2026-11-02; work/lab-gorille-glaces-charge-player-2026-11-02.
+- Périmètre : 12 PNG 512×512, atlas horizontal WebP lossless 6144×512, previews, manifeste, catalogue +1 asset. Hold frame 12; autre bras en retrait. Aucun auto-binding.
+- Protégés : runtime, autres créatures, gameplay, compétences, main et gh-pages. Tests source réels + CI obligatoires avant GREEN.
+
+---
+
 ## 2026-11-01 — Remplacement officiel du mur de glace arcanique par le modèle brut 2.5D approuvé
 - BASE source des médias `global-assets@b724f7fbd0c9229a5874a54809546ab64d576e78` (ZIP auteur déjà dans la branche). START `checkpoint/lab-start-ice-wall-raw-replace-2026-11-01`; WORK `work/lab-ice-wall-raw-replace-2026-11-01`. Aucun changement directement sur `main` ou sur `gh-pages` dans ce lot.
 - ZIP exact GitHub : `_incoming/MUR_GLACE_LABO_COMBAT.zip`, 3 431 755 octets, SHA256 `7e47f59f6424a7073f11670ac9424dfec5e2435fd4f1aed1e40acfb8ef9a6ad5`, blob Git `c1812d522112dd2b2882a2ed9ca9c315b20da89a`. Remplacement autorisé des **médias d'une seule variante** `mur_glace_arcanique`, identifiant existant `pack:capture:sprite-mur-glace-arcanique-01`. Deux autres murs protégés, catalogue unique conservé.

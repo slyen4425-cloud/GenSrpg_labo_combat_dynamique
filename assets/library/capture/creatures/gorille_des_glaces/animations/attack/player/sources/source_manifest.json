@@ -1,0 +1,215 @@
+{
+  "id": "gorille_des_glaces_canalisation_corrigee_12f",
+  "creature": "gorille_des_glaces",
+  "view": "joueur_3quart_dos_profil_droite",
+  "animation": "attaque_chargee_ou_canalisee",
+  "source_sheet": "gorille_des_glaces_en_canalisation.png",
+  "source_dimensions": [
+    1448,
+    1086
+  ],
+  "frame_count": 12,
+  "format": "PNG RGBA",
+  "frame_width": 512,
+  "frame_height": 512,
+  "frame_order": "left-to-right then top-to-bottom",
+  "files": [
+    "frames/gorille_des_glaces_canalisation_corrigee_01.png",
+    "frames/gorille_des_glaces_canalisation_corrigee_02.png",
+    "frames/gorille_des_glaces_canalisation_corrigee_03.png",
+    "frames/gorille_des_glaces_canalisation_corrigee_04.png",
+    "frames/gorille_des_glaces_canalisation_corrigee_05.png",
+    "frames/gorille_des_glaces_canalisation_corrigee_06.png",
+    "frames/gorille_des_glaces_canalisation_corrigee_07.png",
+    "frames/gorille_des_glaces_canalisation_corrigee_08.png",
+    "frames/gorille_des_glaces_canalisation_corrigee_09.png",
+    "frames/gorille_des_glaces_canalisation_corrigee_10.png",
+    "frames/gorille_des_glaces_canalisation_corrigee_11.png",
+    "frames/gorille_des_glaces_canalisation_corrigee_12.png"
+  ],
+  "anchor": {
+    "x": 256,
+    "y": 462,
+    "description": "frame-space fixed ground baseline, unchanged across 12 frames"
+  },
+  "duration_ms": [
+    115,
+    105,
+    110,
+    110,
+    110,
+    100,
+    100,
+    105,
+    110,
+    115,
+    135,
+    190
+  ],
+  "channeling": {
+    "hold_last_frame": true,
+    "frame_index_zero_based": 11,
+    "preview_hold_ms": 1900,
+    "gameplay_instruction": "Stop and hold the 12th pose during charging/channeling; do not loop back to frame 1 while channeling."
+  },
+  "sprite_sheet": {
+    "file": "gorille_des_glaces_canalisation_corrigee_planche_4x3.png",
+    "columns": 4,
+    "rows": 3,
+    "cell_px": 512,
+    "gap_px": 160,
+    "outer_margin_px": 120,
+    "size_px": [
+      2768,
+      2096
+    ]
+  },
+  "atlas": {
+    "file": "gorille_des_glaces_canalisation_corrigee_atlas_4x3.png",
+    "columns": 4,
+    "rows": 3,
+    "cell_px": 512,
+    "size_px": [
+      2048,
+      1536
+    ]
+  },
+  "preview_canalisation": "gorille_des_glaces_canalisation_corrigee_preview_canalisation.webp",
+  "preview_mouvement": "gorille_des_glaces_canalisation_corrigee_preview_mouvement.webp",
+  "alpha_note": "All PNG frames contain real transparency; low-alpha generated background noise was discarded; connected central creature retained per cell.",
+  "pose_note": "No new poses generated; frames cut directly from user-approved updated 4 x 3 sheet.",
+  "technical_boxes": [
+    {
+      "frame": 1,
+      "file": "frames/gorille_des_glaces_canalisation_corrigee_01.png",
+      "content_bbox_512": [
+        53,
+        57,
+        450,
+        464
+      ],
+      "pixel_count_opaque": 103814
+    },
+    {
+      "frame": 2,
+      "file": "frames/gorille_des_glaces_canalisation_corrigee_02.png",
+      "content_bbox_512": [
+        54,
+        67,
+        439,
+        461
+      ],
+      "pixel_count_opaque": 97629
+    },
+    {
+      "frame": 3,
+      "file": "frames/gorille_des_glaces_canalisation_corrigee_03.png",
+      "content_bbox_512": [
+        50,
+        87,
+        440,
+        461
+      ],
+      "pixel_count_opaque": 90162
+    },
+    {
+      "frame": 4,
+      "file": "frames/gorille_des_glaces_canalisation_corrigee_04.png",
+      "content_bbox_512": [
+        35,
+        67,
+        430,
+        460
+      ],
+      "pixel_count_opaque": 88688
+    },
+    {
+      "frame": 5,
+      "file": "frames/gorille_des_glaces_canalisation_corrigee_05.png",
+      "content_bbox_512": [
+        40,
+        61,
+        442,
+        460
+      ],
+      "pixel_count_opaque": 88892
+    },
+    {
+      "frame": 6,
+      "file": "frames/gorille_des_glaces_canalisation_corrigee_06.png",
+      "content_bbox_512": [
+        52,
+        50,
+        450,
+        460
+      ],
+      "pixel_count_opaque": 88708
+    },
+    {
+      "frame": 7,
+      "file": "frames/gorille_des_glaces_canalisation_corrigee_07.png",
+      "content_bbox_512": [
+        46,
+        39,
+        449,
+        460
+      ],
+      "pixel_count_opaque": 89682
+    },
+    {
+      "frame": 8,
+      "file": "frames/gorille_des_glaces_canalisation_corrigee_08.png",
+      "content_bbox_512": [
+        48,
+        32,
+        478,
+        460
+      ],
+      "pixel_count_opaque": 89482
+    },
+    {
+      "frame": 9,
+      "file": "frames/gorille_des_glaces_canalisation_corrigee_09.png",
+      "content_bbox_512": [
+        52,
+        36,
+        478,
+        461
+      ],
+      "pixel_count_opaque": 89943
+    },
+    {
+      "frame": 10,
+      "file": "frames/gorille_des_glaces_canalisation_corrigee_10.png",
+      "content_bbox_512": [
+        56,
+        40,
+        480,
+        461
+      ],
+      "pixel_count_opaque": 89378
+    },
+    {
+      "frame": 11,
+      "file": "frames/gorille_des_glaces_canalisation_corrigee_11.png",
+      "content_bbox_512": [
+        60,
+        41,
+        481,
+        461
+      ],
+      "pixel_count_opaque": 88964
+    },
+    {
+      "frame": 12,
+      "file": "frames/gorille_des_glaces_canalisation_corrigee_12.png",
+      "content_bbox_512": [
+        59,
+        41,
+        481,
+        461
+      ],
+      "pixel_count_opaque": 89668
+    }
+  ]
+}
