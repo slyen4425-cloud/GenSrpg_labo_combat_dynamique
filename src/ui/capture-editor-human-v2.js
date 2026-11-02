@@ -73,7 +73,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -117,7 +117,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -1837,6 +1837,10 @@ function presentationForSkill(fields) {
   }
   if (travel !== null && presentation.travelTrajectoryMode === "under_target") {
     travel.trajectoryMode="under_target";
+    travel.groundMotion=presentation.groundMotion??"fixed";
+    travel.groundOffsetXPx=finiteNumber(presentation.groundOffsetXPx??0,"Décalage sol X");
+    travel.groundOffsetYPx=finiteNumber(presentation.groundOffsetYPx??0,"Décalage sol Y");
+    travel.groundRisePx=finiteNumber(presentation.groundRisePx??80,"Montée visuelle");
   }
   if (travel !== null && presentation.travelTrajectoryMode === "skyfall") {
     travel.trajectoryMode = "skyfall";
@@ -2004,8 +2008,9 @@ function presentationForSkill(fields) {
         fields.id,
         "ID capacité"
       ),
-    version: burrowTerrain !== null ? 13 : baseVersion,
+    version: travel?.groundMotion != null ? 14 : burrowTerrain !== null ? 13 : baseVersion,
     ...(burrowTerrain !== null ? {baseVersion} : {}),
+    ...(travel?.groundMotion != null ? {sourceVersion:burrowTerrain!==null?13:baseVersion} : {}),
     subjectType: "skill",
     subjectId: requiredText(
       fields.id,
@@ -2754,6 +2759,10 @@ export function humanSkillEditorFieldsFromDraftV1(
       travelArrivalLayer: travel?.arrivalLayer ?? "same",
       travelTrajectoryMode: definition.projectileTargeting === "expanding_wave"
         ? "expanding_wave" : travel?.trajectoryMode ?? "linear",
+      groundMotion: travel?.groundMotion ?? (travel?.trajectoryMode==="under_target"?"rise":"fixed"),
+      groundOffsetXPx: travel?.groundOffsetXPx ?? 0,
+      groundOffsetYPx: travel?.groundOffsetYPx ?? 0,
+      groundRisePx: travel?.groundRisePx ?? 80,
       waveStartRadiusPct: definition.expandingWave?.startRadiusPct ?? 3,
       waveEndRadiusPct: definition.expandingWave?.endRadiusPct ?? 65,
       waveThicknessPct: definition.expandingWave?.thicknessPct ?? 6,
@@ -3706,6 +3715,12 @@ function syncHumanGuidedSkillEffectPanelsV1(root, selected = null) {
   return mode;
 }
 
+function syncSkillGroundVisualControlsV14(root) {
+  const group=root.querySelector("[data-skill-ground-settings]");
+  if(group)group.hidden=root.querySelector("[data-skill-trajectory-mode]")?.value!=="under_target";
+  const rise=root.querySelector("[data-skill-ground-rise-px]")?.closest("label");
+  if(rise)rise.hidden=root.querySelector("[data-skill-ground-motion]")?.value!=="rise";
+}
 function writeSkillDraftFields(
   root,
   draft,
@@ -3824,6 +3839,10 @@ function writeSkillDraftFields(
     ["[data-skill-wave-thickness]", fields.presentation.waveThicknessPct],
     ["[data-skill-fall-height]", fields.presentation.fallHeightPx],
     ["[data-skill-fall-offset-x]", fields.presentation.fallOffsetXPx],
+    ["[data-skill-ground-motion]", fields.presentation.groundMotion],
+    ["[data-skill-ground-offset-x]", fields.presentation.groundOffsetXPx],
+    ["[data-skill-ground-offset-y]", fields.presentation.groundOffsetYPx],
+    ["[data-skill-ground-rise-px]", fields.presentation.groundRisePx],
     [
       "[data-skill-cast-layer-player]",
       fields.presentation.castLayerPlayer
@@ -3971,6 +3990,7 @@ function writeSkillDraftFields(
     fields.projectileClash
   );
   syncHumanGuidedSkillEffectPanelsV1(root);
+  syncSkillGroundVisualControlsV14(root);
 
   return fields;
 }
@@ -9621,6 +9641,10 @@ function readSkillFields(root) {
       waveThicknessPct: numericValue(root, "[data-skill-wave-thickness]"),
       fallHeightPx: numericValue(root, "[data-skill-fall-height]"),
       fallOffsetXPx: numericValue(root, "[data-skill-fall-offset-x]"),
+      groundMotion: selectedValue(root,"[data-skill-ground-motion]"),
+      groundOffsetXPx: numericValue(root,"[data-skill-ground-offset-x]"),
+      groundOffsetYPx: numericValue(root,"[data-skill-ground-offset-y]"),
+      groundRisePx: numericValue(root,"[data-skill-ground-rise-px]"),
       castLayerPlayer: selectedValue(
         root,
         "[data-skill-cast-layer-player]"
@@ -10479,6 +10503,10 @@ function writeCaptureFxStarterPresentationFieldsV1(
     ["[data-skill-wave-thickness]", presentation.waveThicknessPct ?? 6],
     ["[data-skill-fall-height]", presentation.fallHeightPx],
     ["[data-skill-fall-offset-x]", presentation.fallOffsetXPx],
+    ["[data-skill-ground-motion]", presentation.groundMotion ?? "fixed"],
+    ["[data-skill-ground-offset-x]", presentation.groundOffsetXPx ?? 0],
+    ["[data-skill-ground-offset-y]", presentation.groundOffsetYPx ?? 0],
+    ["[data-skill-ground-rise-px]", presentation.groundRisePx ?? 80],
     ["[data-skill-travel-layer-player]", presentation.travelLayerPlayer],
     ["[data-skill-travel-layer-opponent]", presentation.travelLayerOpponent],
     ["[data-skill-impact-fx]", presentation.impactAssetId],
@@ -10833,6 +10861,9 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     root,
     "[data-skill-effect-add]"
   );
+  listen(one(root,"[data-skill-trajectory-mode]"),"change",()=>syncSkillGroundVisualControlsV14(root));
+  listen(one(root,"[data-skill-ground-motion]"),"change",()=>syncSkillGroundVisualControlsV14(root));
+  syncSkillGroundVisualControlsV14(root);
   const channelingEnabled=one(root,"[data-skill-channeling-enabled]");
   const channelingConfig=one(root,"[data-skill-channeling-config]");
   const channelEffectsHost=one(root,"[data-skill-channeling-effects-host]");
@@ -12219,13 +12250,18 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       state.runtimeReady ? "ok" : "warning";
   }
 
+  let unfilteredLibraryChildren=[];
+  const boundSkillElementFilters=new WeakSet();
   // Every skill reference selector (the library, the five loadout slots
   // and any future selector populated with the same existing skill IDs)
   // shares ONE registry-derived filter owner. No parallel list of abilities.
   function refreshHumanSkillElementFiltersV1() {
     const available=new Set(configuredSkills.keys());
     for(const select of root.querySelectorAll("select")){
-      const options=[...select.querySelectorAll("option")];
+      const options=select===librarySelect && unfilteredLibraryChildren.length
+        ? unfilteredLibraryChildren.flatMap(node=>node.tagName==="OPTION"
+            ? [node] : [...node.querySelectorAll("option")])
+        : [...select.querySelectorAll("option")];
       const skillOptions=options.filter(opt=>available.has(opt.value));
       if(skillOptions.length===0)continue;
       const parent=select.closest("label")??select.parentElement;
@@ -12238,7 +12274,12 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         filter.setAttribute("aria-label","Filtrer les capacités par élément");
         filter.style.cssText="max-width:100%;margin:4px 0 8px;min-height:36px";
         select.before(filter);
+      }
+      // A static filter already exists in the Skills editor markup; the
+      // former implementation wired ONLY dynamically created filters.
+      if(!boundSkillElementFilters.has(filter)){
         filter.addEventListener("change",()=>applyFilter(select,filter));
+        boundSkillElementFilters.add(filter);
       }
       const prev=filter.value||"";
       const distinct=new Map();
@@ -12257,6 +12298,22 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   }
   function applyFilter(select,filter) {
     const selected=select.value;
+    if(select===librarySelect && unfilteredLibraryChildren.length){
+      // Native Android menus ignore option.hidden: rebuild the visible DOM
+      // from this same configuredSkills-derived UI list, with no new authority.
+      select.replaceChildren(...unfilteredLibraryChildren.map(node=>node.cloneNode(true)));
+      for(const opt of [...select.querySelectorAll("option")]){
+        if(!opt.value||!configuredSkills.has(opt.value))continue;
+        const meta=humanSkillSelectorElementMetaV1(configuredSkills.get(opt.value).definition.element);
+        const id=meta.element??"__neutral__";
+        if(filter.value && filter.value!==id && opt.value!==selected)opt.remove();
+      }
+      for(const group of [...select.querySelectorAll("optgroup")]){
+        if(!group.querySelector("option"))group.remove();
+      }
+      if(selected && [...select.options].some(opt=>opt.value===selected))select.value=selected;
+      return;
+    }
     for(const opt of select.querySelectorAll("option")) {
       if(!opt.value||!configuredSkills.has(opt.value)){opt.hidden=false;continue;}
       const meta=humanSkillSelectorElementMetaV1(configuredSkills.get(opt.value).definition.element);
@@ -12325,6 +12382,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     ) {
       librarySelect.value = previous;
     }
+    unfilteredLibraryChildren=[...librarySelect.children].map(node=>node.cloneNode(true));
     refreshHumanSkillElementFiltersV1();
   }
 

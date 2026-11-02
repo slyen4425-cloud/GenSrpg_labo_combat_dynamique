@@ -89,7 +89,7 @@
     },
     "presentation": {
       "id": "skill:pique_glace",
-      "version": 10,
+      "version": 14,
       "subjectType": "skill",
       "subjectId": "pique_glace",
       "visual": {
@@ -109,7 +109,11 @@
             "opponent": "front"
           },
           "offsetMode": "same",
-          "trajectoryMode": "under_target"
+          "trajectoryMode": "under_target",
+          "groundMotion": "fixed",
+          "groundOffsetXPx": 0,
+          "groundOffsetYPx": 0,
+          "groundRisePx": 80
         }
       },
       "audio": {},
@@ -122,7 +126,8 @@
         "impactBurst": null,
         "aftermathSmoke": null,
         "castBurst": null
-      }
+      },
+      "sourceVersion": 10
     }
   }
 }

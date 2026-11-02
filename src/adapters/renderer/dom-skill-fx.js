@@ -1809,12 +1809,21 @@ export function createDomSkillFxRenderer({
     // A channel pulse is the SAME authored sprite animation, but rooted
     // at the ground below the target. This visual never detects collision
     // or decides damage; native Combat Runtime already accepted the tick.
-    const groundRise = type === "channel-pulse";
-    if(groundRise) node.style.transformOrigin="50% 100%";
+    const groundPulse=type==="channel-pulse";
+    const groundFixed=groundPulse && visual.groundMotion==="fixed";
+    const groundRise=groundPulse && !groundFixed;
+    if(groundPulse) node.style.transformOrigin="50% 100%";
+    const fixedFrames=[
+      {transform:`translate(-50%, -100%) scale(${displayScale})`,opacity},
+      {transform:`translate(-50%, -100%) scale(${displayScale})`,opacity}
+    ];
+    const riseStart=visual.groundMotion==="rise" && Number.isFinite(visual.groundRisePx)
+      ? `translate(-50%, calc(-100% + ${visual.groundRisePx}px))`
+      : "translate(-50%, -4%)";
     const animation = animate(
       node,
-      groundRise ? [
-        {transform:`translate(-50%, -4%) scale(${0.3 * displayScale}, ${0.08 * displayScale})`,opacity:0.1 * opacity},
+      groundFixed ? fixedFrames : groundRise ? [
+        {transform:`${riseStart} scale(${0.3 * displayScale}, ${0.08 * displayScale})`,opacity:0.1 * opacity},
         {transform:`translate(-50%, -100%) scale(${displayScale}, ${displayScale})`,opacity,offset:0.65},
         {transform:`translate(-50%, -100%) scale(${displayScale}, ${displayScale})`,opacity:animatedSprite ? opacity : 0.45 * opacity}
       ] : [
@@ -2633,8 +2642,8 @@ export function createDomSkillFxRenderer({
         const feet=projectileTargetRect(targetSlot);
         return playImpactVisual({
           visual:groundVisual,skillId,
-          point:{x:feet.left+feet.width/2-arenaRect.left,
-                 y:feet.bottom-arenaRect.top},
+          point:{x:feet.left+feet.width/2-arenaRect.left+(Number(groundVisual.groundOffsetXPx)||0),
+                 y:feet.bottom-arenaRect.top+(Number(groundVisual.groundOffsetYPx)||0)},
           durationMs,
           layer:presentation?.travelLayer ?? "front",
           type:"channel-pulse"
@@ -3158,7 +3167,7 @@ export function createDomSkillFxRenderer({
           targetCollisionModelFor(targetSlot)?.snapshot?.() ?? null
         )
       : null;
-    const to = centerRelativeTo(
+    let to = centerRelativeTo(
       skyfall
         ? projectileTargetRect(targetSlot)
         : restingProjectileAimRectV1({
@@ -3178,10 +3187,21 @@ export function createDomSkillFxRenderer({
           }),
       arenaRect
     );
+    // V14 only changes drawing; the native Runtime still owns contact.
+    const groundConfigured=underTarget && ["fixed","rise"].includes(travelVisual?.groundMotion);
+    const feet=underTarget ? projectileTargetRect(targetSlot) : null;
+    const groundStart=groundConfigured
+      ? {x:feet.left+feet.width/2-arenaRect.left+(Number(travelVisual.groundOffsetXPx)||0),
+         y:feet.bottom-arenaRect.top+(Number(travelVisual.groundOffsetYPx)||0)}
+      : null;
+    if(groundConfigured)to={
+      x:groundStart.x,
+      y:groundStart.y-(travelVisual.groundMotion==="rise" ? (Number(travelVisual.groundRisePx)||0):0)
+    };
     // Skyfall is authored on visual.travel: the source actor never becomes
     // the origin. The same Runtime travel duration and contact sensor apply.
     const from = underTarget
-      ? {x:to.x,y:projectileTargetRect(targetSlot).bottom-arenaRect.top}
+      ? (groundConfigured ? groundStart : {x:to.x,y:projectileTargetRect(targetSlot).bottom-arenaRect.top})
       : skyfall
       ? {
           x: to.x + travelVisual.fallOffsetXPx,
@@ -3320,29 +3340,30 @@ export function createDomSkillFxRenderer({
     };
     active.add(record);
 
+    const groundedAnchor=groundConfigured ? "translate(-50%, -100%)" : "translate(-50%, -50%)";
     const keyframes = spriteBound
       ? [
           {
-            transform: `translate(-50%, -50%) translate3d(0, 0, 0) scale(${0.94 * travelDisplayScale * startDepth})`,
+            transform: `${groundedAnchor} translate3d(0, 0, 0) scale(${0.94 * travelDisplayScale * startDepth})`,
             opacity: 0.95
           },
           {
-            transform: `translate(-50%, -50%) translate3d(${deltaX * 0.5}px, ${deltaY * 0.5}px, 0) scale(${1.04 * travelDisplayScale * midwayDepth})`,
+            transform: `${groundedAnchor} translate3d(${deltaX * 0.5}px, ${deltaY * 0.5}px, 0) scale(${1.04 * travelDisplayScale * midwayDepth})`,
             opacity: 1,
             offset: 0.5
           },
           {
-            transform: `translate(-50%, -50%) translate3d(${deltaX}px, ${deltaY}px, 0) scale(${0.98 * travelDisplayScale * endDepth})`,
+            transform: `${groundedAnchor} translate3d(${deltaX}px, ${deltaY}px, 0) scale(${0.98 * travelDisplayScale * endDepth})`,
             opacity: 1
           }
         ]
       : [
           {
-            transform: "translate(-50%, -50%) translate3d(0, 0, 0) scale(0.75)",
+            transform: "${groundedAnchor} translate3d(0, 0, 0) scale(0.75)",
             opacity: 0.25
           },
           {
-            transform: `translate(-50%, -50%) translate3d(${deltaX}px, ${deltaY}px, 0) scale(1)`,
+            transform: `${groundedAnchor} translate3d(${deltaX}px, ${deltaY}px, 0) scale(1)`,
             opacity: 1
           }
         ];
@@ -3353,7 +3374,12 @@ export function createDomSkillFxRenderer({
     const startLayer = presentation?.travelLayer === "behind" ? "behind" : "front";
     const endLayer = !skyfall && ["front", "behind"].includes(presentation?.travelArrivalLayer)
       ? presentation.travelArrivalLayer : startLayer;
-    const actualKeyframes = spriteBound && startLayer !== endLayer
+    const actualKeyframes = groundConfigured && travelVisual.groundMotion==="fixed"
+      ? [
+          {transform:`${groundedAnchor} scale(${travelDisplayScale})`,opacity:1},
+          {transform:`${groundedAnchor} scale(${travelDisplayScale})`,opacity:1}
+        ]
+      : spriteBound && startLayer !== endLayer
       ? [0, 0.37, 0.38, 0.5, 1].map((ratio) => {
           const pulse = ratio <= 0.5
             ? 0.94 + 0.1 * (ratio / 0.5)

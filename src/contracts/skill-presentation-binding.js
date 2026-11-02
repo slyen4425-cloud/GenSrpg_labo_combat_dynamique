@@ -30,6 +30,7 @@ import { normalizeSkillPresentationBindingV10 } from "./skill-presentation-bindi
 import { normalizeSkillPresentationBindingV11 } from "./skill-presentation-binding-v11.js";
 import { normalizeSkillPresentationBindingV12 } from "./skill-presentation-binding-v12.js";
 import { normalizeSkillPresentationBindingV13 } from "./skill-presentation-binding-v13.js";
+import {normalizeSkillPresentationBindingV14} from "./skill-presentation-binding-v14.js";
 
 export function normalizeSkillPresentationBinding(
   input
@@ -112,6 +113,9 @@ export function normalizeSkillPresentationBinding(
 
   if (input.version === 13) {
     return normalizeSkillPresentationBindingV13(input);
+  }
+  if (input.version === 14) {
+    return normalizeSkillPresentationBindingV14(input);
   }
 
   throw new RangeError(
