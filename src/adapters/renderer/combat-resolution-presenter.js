@@ -74,7 +74,7 @@ export function createCombatResolutionPresenter({
   const outcomeByActor = new Map();
   const rosterVisualsByActor = new Map();
   const approachVisualsByActor = new Map();
-  const heldAttackPoseByActor = new Set();
+  const heldAttackPoseByActor = new Map();
 
   function presentRosterVisual(actorSlot, type, options = {}) {
     const record = { type };
@@ -273,11 +273,16 @@ export function createCombatResolutionPresenter({
   function beginAttackPose({ actorSlot, targetSlot }) {
     if (heldAttackPoseByActor.has(actorSlot) && visuals.hasHeldAttackPoseFor?.(actorSlot)) return false;
     if (typeof visuals.hasHeldAttackPoseFor !== "function") return false;
-    heldAttackPoseByActor.add(actorSlot);
+    // An old animation promise may reject after this actor has started a NEW
+    // cast; its rejection only owns this cast token, never the replacement.
+    const poseToken = {};
+    heldAttackPoseByActor.set(actorSlot, poseToken);
     Promise.resolve(visuals.playEventFor(actorSlot, "attack", {
       targetSlot,
       metadata: { useRangedAppearance: true, holdAttackPose: true }
-    })).catch(() => { releaseAttackPose(actorSlot); });
+    })).catch(() => {
+      if (heldAttackPoseByActor.get(actorSlot) === poseToken) releaseAttackPose(actorSlot);
+    });
     return true;
   }
 
@@ -895,7 +900,7 @@ export function createCombatResolutionPresenter({
       cancelTravelAudio(actorSlot);
       cancelFootfallAudio(actorSlot);
     }
-    for (const actorSlot of [...heldAttackPoseByActor]) releaseAttackPose(actorSlot);
+    for (const actorSlot of heldAttackPoseByActor.keys()) releaseAttackPose(actorSlot);
     disposed = true;
     outcomeByActor.clear();
   }

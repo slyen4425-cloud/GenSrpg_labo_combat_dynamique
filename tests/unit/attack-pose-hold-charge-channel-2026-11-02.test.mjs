@@ -101,3 +101,42 @@ test("the real visual controller and 1v1/2v2 UIs reuse a single pose owner and w
   assert.match(demo,/hasHeldAttackPoseFor/);
   for(const ui of [one,two])assert.match(ui,/presenter\.endChannelPose\(/);
 });
+
+test("a stale rejected animation never releases the NEXT channel pose of the same actor", async () => {
+  const pending = [];
+  const held = new Set();
+  const visuals = {
+    playEventFor(actorSlot, type, options = {}) {
+      if (type !== "attack" || options.metadata?.holdAttackPose !== true) {
+        return Promise.resolve({ status: "finished" });
+      }
+      held.add(actorSlot);
+      return new Promise((resolve, reject) => pending.push({ resolve, reject }));
+    },
+    hasHeldAttackPoseFor(actorSlot) { return held.has(actorSlot); },
+    releaseHeldAttackPoseFor(actorSlot) { return held.delete(actorSlot); },
+    cancelFor(actorSlot) { held.delete(actorSlot); }
+  };
+  const presenter = createCombatResolutionPresenter({ visuals });
+  try {
+    presenter.presentPreparation({ action: channelAction() }); // older cast A
+    assert.equal(pending.length, 1);
+    assert.equal(presenter.endChannelPose({ actorSlot: "player" }), true);
+    presenter.presentPreparation({ action: channelAction() }); // new cast B
+    assert.equal(pending.length, 2);
+    assert.equal(held.has("player"), true);
+
+    // Image loading/animation can fail after a previous action was cancelled.
+    pending[0].reject(new Error("old attack animation failed after replacement"));
+    await Promise.resolve();
+    await Promise.resolve();
+
+    assert.equal(held.has("player"), true, "the stale failure must not unfreeze cast B");
+    pending[1].resolve({ status: "finished" });
+    assert.equal(presenter.endChannelPose({ actorSlot: "player" }), true);
+    assert.equal(held.has("player"), false);
+  } finally {
+    pending.forEach(item => item.resolve({ status: "cancelled" }));
+    presenter.dispose();
+  }
+});
