@@ -413,6 +413,18 @@ export function describeCaptureSkillV1(input) {
   if(d.effect.stunMs>0)phrases.push(finish("Étourdit pendant "+duration(d.effect.stunMs)));
   if(d.effect.interruptsPreparation)phrases.push("Interrompt l'action en préparation.");
   phrases.push(...descriptions(d.effects));
+  if(d.channeling){
+    const ch=d.channeling;
+    const pulses=descriptions(ch.effects).map(x=>lowerSentence(x));
+    phrases.push(finish("Canalise "+(pulses.length?pulses.join(" et "):"ses effets")+
+      " "+frequency(ch.tickIntervalMs)+
+      (ch.energyCostPerTick>0?", consommant "+num(ch.energyCostPerTick)+" énergie par pulsation":"")+
+      (ch.maxTicks!=null?", pendant "+num(ch.maxTicks)+" pulsations maximum":"")+
+      (ch.maxDurationMs>0?", durant "+duration(ch.maxDurationMs)+" maximum":"")+
+      (ch.stopOnDamage?", interrompue par les dégâts reçus":"")+
+      (ch.stopOnStun?", l'étourdissement":"")+
+      (ch.stopOnSilence?", le silence":"")));
+  }
   if(d.contactHold){
     const hold=d.contactHold,damage=hold.effects.filter(x=>x.kind==="damage");
     const steal=hold.effects.filter(x=>x.kind==="life_steal");
