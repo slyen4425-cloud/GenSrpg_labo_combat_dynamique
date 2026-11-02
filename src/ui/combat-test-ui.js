@@ -1237,6 +1237,20 @@ export async function mountCombatTest({
     onClock(state) {
       statusFx?.syncCountdowns(state);
     },
+    onChannelStart({actorId,skillId}) {
+      setStatus("Canalisation en cours : "+skillId+".","accent");
+    },
+    onChannelTick({actorId,targetId,skillId,tick}) {
+      // Native Combat Runtime owns the ONLY pulse clock; the existing FX/
+      // audio adapters replay the authored impact, never apply damage.
+      fx.play({type:"impact",skillId,fromSlot:actorId,targetSlot:targetId,durationMs:420});
+      combatAudio.play({type:"impact",skillId,actorSlot:actorId,targetSlot:targetId,loop:false});
+      setStatus("Canalisation · pulsation "+tick+".","accent");
+    },
+    onChannelEnd({reason}) {
+      setStatus("Canalisation terminée ("+reason+").","info");
+      renderAvailability();
+    },
     onContactHoldStart({actorId}) {
       setStatus(actorId === "player"
         ? "Votre créature reste au contact de l'adversaire."
