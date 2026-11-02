@@ -3140,7 +3140,10 @@ export function buildHumanSkillDraftV1(fields) {
       targetRelations:
         usesTacticalEffects
           ? humanSkillTargetRelationsFromTacticalEffectsV1(
-              tacticalEffects,
+              fields.channeling
+                ? buildHumanTacticalSkillEffectsV1(fields.channeling.effects??[],
+                    {defaultDamageChannel:fields.element??null})
+                : tacticalEffects,
               { form: fields.form }
             )
           : stableIds(
@@ -3687,6 +3690,8 @@ function writeSkillTemplateFields(
   }
   if(Object.prototype.hasOwnProperty.call(fields,"markerCost"))
     renderHumanSkillMarkerCostV1(root, fields.markerCost);
+  // A legacy template must reset mechanics not owned by that template.
+  writeHumanChannelingFieldsV1(root,fields.channeling??null,statRegistry);
 
   renderHumanSkillEffectsV1(
     root,
