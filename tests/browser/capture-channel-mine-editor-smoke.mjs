@@ -62,9 +62,13 @@ document.addEventListener("DOMContentLoaded",()=>{
    if(!damage||Number(damage.value)!==12)
      throw Error("ice spike repeated native damage not configured");
    sel("[data-skill-channel-ice-sprite-jump]").click();
-   if(document.activeElement!==sel("[data-skill-travel-fx]")||
-      !sel("[data-skill-fx-advanced]").open)
-     throw Error("ice sprite shortcut does not open/focus original Trajet selector");
+   const travelPicker=sel("[data-skill-travel-fx]");
+   const visualPanel=sel("[data-skill-fx-advanced]");
+   if(!visualPanel.open||visualPanel.closest(".card").dataset.collapsed==="true"||
+      travelPicker.getClientRects().length===0)
+     throw Error("ice sprite shortcut did not display the original Trajet selector: "+
+       "advanced="+visualPanel.open+", card="+visualPanel.closest(".card").dataset.collapsed+
+       ", rects="+travelPicker.getClientRects().length);
    form.value="projectile";form.dispatchEvent(new Event("change",{bubbles:true}));
    if(form.value!=="area")throw Error("form guard left invalid projectile + channeling");
    sel("[data-skill-create]").click();
