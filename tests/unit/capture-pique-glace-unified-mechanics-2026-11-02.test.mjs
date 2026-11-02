@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
+import {normalizeCaptureSkillEditorDraftV1} from "../../src/contracts/capture-skill-editor-draft-v1.js";
 const raw = path=>readFileSync(new URL("../../"+path,import.meta.url),"utf8");
 test("Pique de glace author export is installed as canonical showcase preserving tick energy and damage",()=>{
  const manifest=raw("src/catalogs/capture-showcase-skill-presets-v1.js");
@@ -12,6 +13,10 @@ test("Pique de glace author export is installed as canonical showcase preserving
  assert.equal(t.draft.definition.channeling.energyCostPerTick,3);
  assert.deepEqual(t.draft.definition.effects,[]);
  assert.equal(t.draft.definition.channeling.effects[0].amount,5);
+ const canonical=normalizeCaptureSkillEditorDraftV1(t.draft);
+ assert.equal(canonical.definition.channeling.effects[0].amount,5);
+ assert.equal(canonical.definition.channeling.energyCostPerTick,3);
+ assert.equal(canonical.presentation.visual.travel.trajectoryMode,"under_target");
  assert.equal(t.draft.presentation.version,10);
  assert.equal(t.draft.presentation?.visual?.travel?.assetId,"pack:capture:sprite-pointe-glace-01");
  assert.equal(t.draft.presentation?.visual?.travel?.trajectoryMode,"under_target");

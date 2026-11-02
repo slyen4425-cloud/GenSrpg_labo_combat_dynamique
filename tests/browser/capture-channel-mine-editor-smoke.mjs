@@ -37,6 +37,8 @@ document.addEventListener("DOMContentLoaded",()=>{
    const filters=[...document.querySelectorAll("[data-skill-element-filter]")];
    if(filters.length<6)throw Error("skill element filters missing on all selectors: "+filters.length);
    const library=sel("[data-skill-library-select]");
+   if(![...library.options].some(o=>o.value==="pique_glace"))
+     throw Error("Pique de glace upload missing from the native saved skill list");
    if(library.options.length>1){
      const selected=library.value;
      const ice=filters.find(f=>f.parentElement?.contains(library));
@@ -71,13 +73,14 @@ document.addEventListener("DOMContentLoaded",()=>{
    sel("[data-skill-name]").value="Pique de glace";
    const panels=["[data-skill-charged-panel]","[data-skill-charged-effects-panel]",
      "[data-skill-channeling-section]","[data-skill-contact-hold]"];
-   if(panels.some(q=>!sel(q).hidden))
-     throw Error("independent mechanics panels remain visible outside the selector");
+   if(panels.some(q=>!sel(q).hidden||sel(q).getClientRects().length!==0))
+     throw Error("independent mechanics panels remain VISIBLE outside the selector");
    const chooser=sel("[data-skill-effect-add-kind]");
    chooser.value="channeling";
    chooser.dispatchEvent(new Event("change",{bubbles:true}));
    if(sel("[data-skill-channeling-section]").hidden||
-       panels.filter(q=>!sel(q).hidden).length!==1)
+       sel("[data-skill-channeling-section]").getClientRects().length===0||
+       panels.filter(q=>!sel(q).hidden||sel(q).getClientRects().length!==0).length!==1)
      throw Error("selecting channeling did not show exactly its original panel");
    const preset=sel("[data-skill-channel-ice-preset]");
    if(!preset)throw Error("guided ice-spike preset missing");

@@ -1222,6 +1222,16 @@ body[data-preview-landscape-active="true"] {
   gap: 12px;
   margin-top: 14px;
 }
+/* The original data remains in the native controls; the single effects
+   selector alone chooses which mechanics panel is visible. */
+[data-skill-charged-panel][hidden],
+[data-skill-charged-effects-panel][hidden],
+[data-skill-channeling-section][hidden],
+[data-skill-contact-hold][hidden],
+[data-skill-effects-host][hidden],
+[data-skill-effect-add][hidden] {
+  display: none !important;
+}
 
 .projectile-clash-config h3 {
   margin: 0;
