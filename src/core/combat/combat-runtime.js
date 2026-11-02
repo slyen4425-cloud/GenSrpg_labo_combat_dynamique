@@ -1044,17 +1044,16 @@ export function createCombatRuntime({
       : resolution;
     // Channeling effects begin on the first native tick, never at the
     // initial skill arrival. Signal this only to the visual presenter.
-    const authoredPresentation=resolution.ok&&effectiveAction.actionType==="skill"&&
-      effectiveAction.skill?.channeling
+    const canStartChanneling=resolution.ok&&resolution.outcome==="hit"&&
+      effectiveAction.actionType==="skill"&&Boolean(effectiveAction.skill?.channeling)&&
+      Number(session.snapshot().fighters[effectiveAction.actorId]?.hp)>0&&
+      Number(session.snapshot().fighters[effectiveAction.targetId]?.hp)>0&&
+      !contactHoldsByActor.has(effectiveAction.actorId)&&!barrierHit;
+    const authoredPresentation=canStartChanneling
       ? Object.freeze({...presentationResolution,channelingStart:true})
       : presentationResolution;
     onResolved(authoredPresentation);
-    if(resolution.ok&&resolution.outcome==="hit"&&
-        effectiveAction.actionType==="skill"&&effectiveAction.skill?.channeling&&
-        Number(session.snapshot().fighters[effectiveAction.actorId]?.hp)>0&&
-        Number(session.snapshot().fighters[effectiveAction.targetId]?.hp)>0&&
-        !contactHoldsByActor.has(effectiveAction.actorId) &&
-        !resolution.events?.some(event=>event.type==="combat-entity-hit")){
+    if(canStartChanneling){
       const hold={
         kind:"channeling",actorId:effectiveAction.actorId,targetId:effectiveAction.targetId,
         skill:effectiveAction.skill,startedAtClockMs:atNowMs,
