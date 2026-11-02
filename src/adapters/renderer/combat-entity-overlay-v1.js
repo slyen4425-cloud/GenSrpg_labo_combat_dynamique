@@ -71,7 +71,9 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
       }
     }
     const label=document.createElement("div");label.dataset.combatEntityHp="true";
-    label.style.cssText="border:1px solid #a1e8fb;border-radius:8px;background:rgba(14,62,101,.92);color:white;padding:3px 6px;text-align:center;font-weight:700;font-size:11px;white-space:nowrap;";
+    // One badge per CombatEntity. It must not participate in the wall's
+    // flex flow: a tall authored sprite used to push it below the arena.
+    label.style.cssText="position:absolute;left:50%;top:0;transform:translateX(-50%);z-index:7;border:1px solid #a1e8fb;border-radius:8px;background:rgba(14,62,101,.96);color:white;padding:3px 6px;text-align:center;font-weight:700;font-size:11px;white-space:nowrap;pointer-events:none;";
     node.append(sprite,label);host.append(node);
     nodes.set(entity.id,{node,sprite,label,hp:entity.hp,actorId:entity.protectedActorId});
     return nodes.get(entity.id);
@@ -136,6 +138,18 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
         viewport.style.height=Math.round(70*scale*(entity.visualScaleY??1))+"px";
       }
       item.label.textContent="🧊 Mur "+formatHp(entity);
+      // Place the badge ABOVE the actual wall art, then clamp into the
+      // visible arena (a scale-4 wall can extend beyond its upper edge).
+      // This only changes text placement: the sprite's original rectangle
+      // stays the sole collision/impact surface.
+      const spriteRect=item.sprite.getBoundingClientRect();
+      const visibleRect=(arenaHost??fighterContainers[entity.protectedActorId])
+        .getBoundingClientRect();
+      const labelHeight=item.label.getBoundingClientRect().height||24;
+      const preferredTop=spriteRect.top-labelHeight-8;
+      const top=Math.max(visibleRect.top+6,
+        Math.min(preferredTop,visibleRect.bottom-labelHeight-6));
+      item.label.style.top=Math.round(top-spriteRect.top)+"px";
       item.node.setAttribute("role","status");
       item.node.setAttribute("aria-label","Mur destructible, "+entity.hp+" PV sur "+entity.maxHp);
       if(existing&&entity.hp<existing.hp&&typeof item.sprite.animate==="function"){
