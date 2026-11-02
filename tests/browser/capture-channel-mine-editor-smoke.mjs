@@ -68,7 +68,8 @@ document.addEventListener("DOMContentLoaded",()=>{
       travelPicker.getClientRects().length===0)
      throw Error("ice sprite shortcut did not display the original Trajet selector: "+
        "advanced="+visualPanel.open+", card="+visualPanel.closest(".card").dataset.collapsed+
-       ", rects="+travelPicker.getClientRects().length);
+       ", rects="+travelPicker.getClientRects().length+
+       ", ancestry="+(()=>{let x=travelPicker,chain=[];while(x&&chain.length<14){const st=getComputedStyle(x);chain.push(x.tagName+"."+String(x.className||"").slice(0,50)+"[hidden="+x.hidden+",open="+x.open+",display="+st.display+",rect="+x.getClientRects().length+"]");x=x.parentElement;}return chain.join(">")})());
    form.value="projectile";form.dispatchEvent(new Event("change",{bubbles:true}));
    if(form.value!=="area")throw Error("form guard left invalid projectile + channeling");
    sel("[data-skill-create]").click();
