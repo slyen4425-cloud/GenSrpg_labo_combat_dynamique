@@ -421,11 +421,13 @@ export function planAnimation({ event, actor, profile }) {
 
     case "attack": {
       const cfg = profile.attack;
+      const holdAttackPose = event.metadata?.holdAttackPose === true;
       const anticipationMs = Math.max(60, Math.round(cfg.durationMs * 0.28));
       const strikeMs = Math.max(80, cfg.durationMs - anticipationMs);
       return createAnimationPlan({
         actorId: actor.id,
         eventType: event.type,
+        restoreBaseState: !holdAttackPose,
         segments: [
           {
             label: "anticipation",
@@ -451,7 +453,7 @@ export function planAnimation({ event, actor, profile }) {
               rotateDeg: directed(3 * intensity, sign)
             }
           },
-          {
+          ...(!holdAttackPose ? [{
             label: "recover",
             durationMs: cfg.recoveryMs,
             easing: "ease-out",
@@ -462,7 +464,7 @@ export function planAnimation({ event, actor, profile }) {
               scaleY: 1,
               rotateDeg: 0
             }
-          }
+          }] : [])
         ]
       });
     }
