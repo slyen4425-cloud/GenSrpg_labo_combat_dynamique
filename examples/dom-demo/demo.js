@@ -1,5 +1,5 @@
 import { mountCombatDemo } from "../../src/ui/demo-app.js?v=wall-ground-stop-20261101";
-import { mountCombatTest } from "../../src/ui/combat-test-ui.js?v=wall-1v1-sensor-parity-20261031-wall-live-r2-20261101-wall-geometry-20261031-wall-ground-stop-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102";
+import { mountCombatTest } from "../../src/ui/combat-test-ui.js?v=wall-1v1-sensor-parity-20261031-wall-live-r2-20261101-wall-geometry-20261031-wall-ground-stop-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102";
 import { demoPresentationAssets } from "./demo-assets.js";
 
 const root = document.querySelector("[data-combat-demo]");
