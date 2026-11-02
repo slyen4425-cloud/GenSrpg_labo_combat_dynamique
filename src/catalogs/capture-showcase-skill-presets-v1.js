@@ -3,6 +3,7 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/boule_neige.capture-skill-transfer-v1.json",
     "data/capture/showcase/poing_givrant.capture-skill-transfer-v1.json",
     "data/capture/showcase/pique_glace.capture-skill-transfer-v1.json",
+    "data/capture/showcase/furie_bestiale.capture-skill-transfer-v1.json",
     "data/capture/showcase/mur_de_glace.capture-skill-transfer-v1.json",
     "data/capture/showcase/coupe_feuille.capture-skill-transfer-v1.json",
     "data/capture/showcase/graine_sansue_cap.capture-skill-transfer-v1.json",

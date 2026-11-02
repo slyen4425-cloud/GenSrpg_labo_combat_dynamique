@@ -102,7 +102,9 @@
       "fireball",
       "boule_neige",
       "poing_givrant",
-      "mur_de_glace"
+      "mur_de_glace",
+      "pique_glace",
+      "furie_bestiale"
     ],
     "presentation": {
       "id": "creature:gorice",
@@ -203,11 +205,11 @@
       },
       {
         "id": "slot-4",
-        "skillId": null
+        "skillId": "pique_glace"
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "furie_bestiale"
       }
     ]
   }
