@@ -1,0 +1,47 @@
+name: Loup volcanique canonical source audit
+on:
+  push:
+    branches:
+      - work/global-assets-wolf-canonical-rig-2026-10-20
+    paths:
+      - scripts/audit_loup_volcanique_canonical_v1.py
+      - .github/workflows/audit-loup-volcanique-canonical-v1.yml
+permissions:
+  contents: write
+jobs:
+  audit:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install image tools
+        run: python -m pip install "Pillow>=10,<13" "numpy>=2,<3" "opencv-python-headless>=4.10,<5"
+      - name: Audit exact player and opponent masters
+        run: python scripts/audit_loup_volcanique_canonical_v1.py
+      - name: Validate no canonical image or asset catalog mutation
+        run: |
+          set -eu
+          git diff --exit-code -- assets/library/capture/creatures/loup_volcanique/runtime/ data/assets/catalog/global-visual-assets.v1.json
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path("assets/library/capture/creatures/loup_volcanique/canonical_review_v1")
+          j=json.loads((p/"audit_report.json").read_text())
+          assert len(j["records"])==2
+          for n in ("face","dos"):
+              assert (p/f"{n}_master_512.png").is_file()
+          print("GREEN exact canonical masters inspected")
+          PY
+      - name: Publish audit/review candidates to isolated work branch only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/library/capture/creatures/loup_volcanique/canonical_review_v1
+          if ! git diff --cached --quiet; then
+            git commit -m 'assets(capture): record canonical Loup volcanique pixel audit and artifact candidate'
+            git push origin HEAD:refs/heads/work/global-assets-wolf-canonical-rig-2026-10-20
+          fi
