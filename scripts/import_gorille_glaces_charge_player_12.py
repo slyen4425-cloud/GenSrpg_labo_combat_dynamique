@@ -11,7 +11,7 @@ import json
 from pathlib import Path, PurePosixPath
 import zipfile
 
-from PIL import Image, ImageChops
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_NAME = "gorille_des_glaces_canalisation_corrigee_12f.zip"
@@ -82,7 +82,7 @@ def main() -> None:
                 assert min(margins) >= 30, "Frame cropped or too close to edge"
                 tile = original_atlas.crop(((i % 4) * 512, (i // 4) * 512,
                                             ((i % 4) + 1) * 512, ((i // 4) + 1) * 512))
-                assert ImageChops.difference(tile, img).getbbox() is None, "Atlas vs frame mismatch"
+                assert tile.tobytes() == img.tobytes(), "Atlas vs frame mismatch"
                 strip.paste(img, (i * 512, 0))
             frame_name = f"frames/gorille_des_glaces_charge_player_{i+1:02}.png"
             h = digest(data)
