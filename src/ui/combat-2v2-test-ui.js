@@ -1767,7 +1767,8 @@ export async function mountCoop2v2Test({
         damageFeedback?.flash(feedback.actorId, { delayMs });
       }
     },
-    onChannelStart({actorId}) {
+    onChannelStart({actorId,targetId}) {
+      presenter.presentChannelStart({actorSlot:actorId,targetSlot:targetId});
       if(actionRefs[actorId])actionRefs[actorId].textContent="Canalisation";
     },
     onChannelTick({actorId,targetId,skillId,tick}) {
@@ -1777,6 +1778,7 @@ export async function mountCoop2v2Test({
       if(actionRefs[actorId])actionRefs[actorId].textContent="Canalisation · "+tick;
     },
     onChannelEnd({actorId,reason}) {
+      presenter.endChannelPose({actorSlot:actorId});
       if(actionRefs[actorId])actionRefs[actorId].textContent="Prêt";
       renderState();queueAiDecisions();
     },
