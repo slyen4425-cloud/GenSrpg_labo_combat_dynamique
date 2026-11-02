@@ -102,7 +102,7 @@ function statusStory(s){
     case "triggered_buff":line="Déclenche un effet sous certaines conditions";break;
     default:{
       const change=simpleChange(s);
-      if(change)return finish((change.positive?"Augmente ":"Réduit ")+change.text+" "+end);
+      if(change)return [finish((change.positive?"Augmente ":"Réduit ")+change.text+" "+end)];
       line="Applique un effet (« "+(s.label??s.kind)+" »)";
     }
   }
@@ -142,10 +142,25 @@ function statusStory(s){
 }
 function statusSentence(effect){
   const result=statusStory(effect.status);
-  if(effect.targetScope==="self"||effect.status.kind==="triggered_buff")return result;
+  if(effect.targetScope==="self") {
+    // The caster is the recipient. Harmful periodic effects must never
+    // read like attacks on the selected enemy, regardless of the skill form.
+    const verb=effect.status.kind==="damage_over_time"?"Inflige ":
+      effect.status.kind==="heal_over_time"?"Rend ":null;
+    const replacement=effect.status.kind==="damage_over_time"?
+      "La créature qui utilise cette capacité subit ":
+      "La créature qui utilise cette capacité récupère ";
+    return verb?result.map((line,i)=>i===0?line.replace(verb,replacement):line):result;
+  }
+  if(effect.status.kind==="triggered_buff")return result;
   // Present targets only when they differ from the default self-effect.
   return result.map((line,i)=>i===0?
     line.replace(/\.$/,"")+" "+(effect.targetScope==="target"?"sur la cible":"sur "+subject(effect.targetScope))+".":line);
+}
+// The skill editor and the Bestiary share this status projection; neither
+// owns a parallel translation of durations, target scopes or periodic ticks.
+export function describeCaptureStatusEffectV1(effect) {
+  return Object.freeze(statusSentence(effect));
 }
 function penetrates(e){
   const clauses=[];
@@ -157,7 +172,9 @@ function penetrates(e){
 }
 function effectSentence(e,{perCharge=false}={}){
   switch(e.kind){
-    case "damage":return [finish("Inflige "+num(e.amount)+" dégâts"+(e.channel?" "+elementOf(e.channel):"")+
+    case "damage":return [finish((e.targetScope==="self"?
+      "La créature qui utilise cette capacité subit ":"Inflige ")+num(e.amount)+" dégâts"+
+      (e.channel?" "+elementOf(e.channel):"")+
       (perCharge?" par charge consommée":"")+
       onTarget(e.targetScope)+(penetrates(e).length?" et "+words(penetrates(e)):""))];
     case "heal":return [finish("Rend "+num(e.amount)+" PV"+(perCharge?" par charge consommée":"")+onTarget(e.targetScope))];

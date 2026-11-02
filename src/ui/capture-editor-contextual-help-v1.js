@@ -2,6 +2,7 @@
 // sans changer la définition canonique d'une stat, d'un Skill ou son export.
 import {normalizeCaptureStatRegistryV1} from "../contracts/capture-stat-registry-v1.js";
 import {projectCaptureStatDefinitionEffectsV1} from "../core/combat/capture-stat-effects-v1.js";
+import {describeCaptureStatusEffectV1} from "./capture-skill-explanation-v1.js?v=self-periodic-prose-20261102";
 
 const decimal = value => new Intl.NumberFormat("fr-FR", {maximumFractionDigits: 2}).format(Number(value) || 0);
 const seconds = ms => decimal((Number(ms) || 0) / 1000) + " s";
@@ -66,17 +67,8 @@ function explainEffect(effect) {
           : " ; chaque réactivation renouvelle la durée sans agrandir le rayon")+
         (effect.persistAfterRecall ? " ; persiste après rappel de la créature" : " ; disparaît au rappel de la créature");
     }
-    case "apply_status": {
-      const status=effect.status ?? {};
-      const dur=" pendant "+seconds(status.durationMs);
-      if(status.kind === "heal_over_time") return "Soigne "+decimal(status.amount ?? 0)+" PV toutes les "+seconds(status.tickIntervalMs)+dur+" "+where;
-      if(status.kind === "damage_over_time") return "Inflige "+decimal(status.amount ?? 0)+" dégâts de base toutes les "+seconds(status.tickIntervalMs)+dur+" "+where;
-      if(status.kind === "stat_modifier") return "Modifie la stat "+(status.statId ?? "choisie")+" de "+decimal(status.deltaPoints ?? 0)+" points"+dur+" "+where;
-      if(status.kind === "shield") return "Bouclier de "+decimal(status.amount ?? 0)+" points"+dur+" "+where;
-      if(status.kind === "damage_reflection") return "Renvoie "+decimal(status.percent ?? 0)+" % des dégâts subis (après boucliers et réductions), sans renvoi en chaîne"+dur+" "+where;
-      const kinds={stun:"Étourdit",root:"Immobilise",silence:"Empêche certaines capacités",taunt:"Provoque",immunity:"Protège"};
-      return (kinds[status.kind] ?? "Applique un statut ("+(status.kind??"personnalisé")+")")+dur+" "+where;
-    }
+    case "apply_status":
+      return describeCaptureStatusEffectV1(effect).join(" ").replace(/\.$/,"");
     case "scheduled_effect":
       return "Déclenche un effet différé après "+seconds(effect.trigger?.delayMs)+" "+where;
     case "cleanse": return "Retire des effets négatifs "+where;
@@ -132,6 +124,7 @@ function liveSkill(root) {
       const status={
         kind:statusKind,
         statId:readField(row,"[data-skill-status-stat-id]"),
+        channel:readField(row,"[data-skill-status-channel]",readField(root,"[data-skill-element]")) || null,
         deltaPoints:numberField(row,"[data-skill-status-delta-points]",0),
         percent:numberField(row,"[data-skill-status-reflection-percent]",0),
         durationMs:numberField(row,"[data-skill-status-duration-seconds]",0)*1000,
