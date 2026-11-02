@@ -53,6 +53,18 @@ document.addEventListener("DOMContentLoaded",()=>{
    sel('[data-editor-tab="skills"]').click();
    if(sel('[data-editor-panel="skills"]').hidden)
      throw Error("Skills navigation did not display its native panel");
+   const unified=sel("[data-skill-effect-add-kind]");
+   for(const type of ["damage","heal","apply_status","scheduled_effect","summon_entity"])
+     if(![...unified.options].some(o=>o.value==="effect:"+type))
+       throw Error("unified effects menu missing "+type);
+   const effectsHost=sel("[data-skill-effects-host]");
+   const previousCount=effectsHost.children.length;
+   unified.value="effect:apply_status";
+   unified.dispatchEvent(new Event("change",{bubbles:true}));
+   const newRow=[...effectsHost.children].at(-1);
+   if(effectsHost.children.length!==previousCount+1 || unified.value!=="standard" ||
+      newRow?.querySelector("[data-skill-effect-kind]")?.value!=="apply_status")
+     throw Error("unified picker did not reveal native status controls");
    sel("[data-skill-new]").click();
    if(enabled.checked||sel("[data-skill-channeling-effects-host]").children.length!==0)
      throw Error("new skill inherited the previous ability's invisible channel effects");
@@ -70,6 +82,10 @@ document.addEventListener("DOMContentLoaded",()=>{
    sel("[data-skill-channel-ice-sprite-jump]").click();
    const travelPicker=sel("[data-skill-travel-fx]");
    const visualPanel=sel("[data-skill-fx-advanced]");
+   if(![...travelPicker.options].some(o=>o.value==="pack:capture:sprite-pointe-glace-01"))
+     throw Error("official ice spike missing from native Trajet picker");
+   travelPicker.value="pack:capture:sprite-pointe-glace-01";
+   travelPicker.dispatchEvent(new Event("change",{bubbles:true}));
    if(!visualPanel.open||visualPanel.closest(".card").dataset.collapsed==="true"||
       travelPicker.getClientRects().length===0)
      throw Error("ice sprite shortcut did not display the original Trajet selector: "+

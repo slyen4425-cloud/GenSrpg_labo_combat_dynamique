@@ -73,7 +73,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -117,7 +117,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -7872,7 +7872,8 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
     return (
       !creatureOwned &&
       (role !== "travel" || asset.category === "travel" ||
-        (asset.category === "skill" && tags.includes("expanding"))) &&
+        (asset.category === "skill" && tags.includes("expanding")) ||
+        asset.compatibility?.editorRoles?.includes("travel") === true) &&
       asset.mediaType === "image" &&
       (
         asset.assetType === "sprite" ||
@@ -10813,6 +10814,27 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   const contactHoldSettings = one(root, "[data-skill-contact-hold-settings]");
   const contactHoldEffectsHost = one(root, "[data-skill-contact-hold-effects-host]");
   const contactHoldEffectAddButton = one(root, "[data-skill-contact-hold-effect-add]");
+  const effectChooser = one(root, "[data-skill-effect-add-kind]");
+  const effectGuide = one(root, "[data-skill-effect-guide]");
+  // UI-only choices from canonical SkillEffect kinds; no second effect schema.
+  const nativeEffects = document.createElement("optgroup");
+  nativeEffects.label = "Effets tactiques";
+  for (const kind of SKILL_EFFECT_V1_KINDS)
+    createOption(nativeEffects, "effect:" + kind, tacticalEffectKindLabelV1(kind));
+  effectChooser.insertBefore(nativeEffects, effectChooser.querySelector('[value="wall"]'));
+  function syncGuidedEffectPanelsV1(selected = null) {
+    for (const [key, selector, enabled] of [
+      ["charged", "[data-skill-charged-panel]", chargedEnabled],
+      ["charged-effects", "[data-skill-charged-effects-panel]", chargedEffectsEnabled],
+      ["channeling", "[data-skill-channeling-section]", channelingEnabled],
+      ["contact-hold", "[data-skill-contact-hold]", contactHoldEnabled]
+    ]) {
+      // Disclosure state only, no change to active effects or saved author data.
+      one(root, selector).open = selected === key || (selected === null && enabled.checked);
+    }
+  }
+  const guideEffectV1 = message => {effectGuide.textContent=message;};
+  syncGuidedEffectPanelsV1();
   const creatureLibrarySelect = one(
     root,
     "[data-creature-library-select]"
@@ -12803,7 +12825,50 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     return true;
   }
   listen(skillEffectAddButton, "click", () => {
-    const choice = one(root, "[data-skill-effect-add-kind]");
+    const choice = effectChooser;
+    if (choice.value.startsWith("effect:")) {
+      const effectKind = choice.value.slice(7);
+      if (!SKILL_EFFECT_V1_KINDS.includes(effectKind)) return;
+      // Channeling has one owner for tick damage; never add initial hits.
+      const onChannel=channelingEnabled.checked;
+      if(onChannel && !["damage","heal","apply_status","apply_marker"].includes(effectKind)){
+        choice.value="standard";
+        setStatus(root,"Une canalisation accepte uniquement dégâts, soins, statuts et marqueurs par pulsation. Aucun autre effet ajouté.","warn");
+        return;
+      }
+      if(chargedEnabled.checked && ["damage","life_steal"].includes(effectKind)){
+        choice.value="standard";
+        setStatus(root,"L'attaque chargée gère déjà ses dégâts ; aucun effet de dégâts supplémentaire ajouté.","warn");
+        return;
+      }
+      const row = appendHumanSkillEffectV1(root, {kind:effectKind}, statRegistry, null,
+        onChannel ? "[data-skill-channeling-effects-host]" : "[data-skill-effects-host]");
+      if(onChannel)syncGuidedEffectPanelsV1("channeling");
+      row.querySelector("[data-skill-effect-kind]")?.dispatchEvent(
+        new Event("change", {bubbles:true}));
+      choice.value="standard";
+      guideEffectV1("Effet ajouté : "+tacticalEffectKindLabelV1(effectKind)+
+        ". Ses réglages sont dans la nouvelle ligne ci-dessous.");
+      row.scrollIntoView?.({block:"nearest"});
+      row.querySelector("[data-skill-effect-kind]")?.focus?.();
+      return;
+    }
+    if(["charged","charged-effects","mine","wall"].includes(choice.value) &&
+       (channelingEnabled.checked ||
+        (contactHoldEnabled.checked && ["charged","charged-effects"].includes(choice.value)))){
+      choice.value="standard";
+      setStatus(root,"Mécanique incompatible avec la canalisation ou le maintien au contact déjà actif. Aucun réglage effacé.","warn");
+      return;
+    }
+    if (choice.value==="channeling" || choice.value==="contact-hold") {
+      const selected=choice.value;
+      choice.value="standard";
+      syncGuidedEffectPanelsV1(selected);
+      guideEffectV1(selected==="channeling"
+        ? "Canalisation : active la case du panneau ouvert, puis règle les pulsations."
+        : "Maintien au contact : active la case du panneau ouvert, puis règle les effets répétés.");
+      return;
+    }
     if(choice.value==="mine"){
       // Only ONE native scheduled_effect record. Its optional visualCue
       // projects an arena warning from Combat State; no duplicate timer.
@@ -12813,6 +12878,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         effects:[{kind:"damage",targetScope:"target",amount:20,channel:"ice"}]
       },statRegistry);
       choice.value="standard";
+      guideEffectV1("Mine ajoutée : configure son délai et ses dégâts dans la ligne.");
       one(root,"[data-skill-category]").value="offensive";
       one(root,"[data-skill-form]").value="area";
       one(root,"[data-skill-approach]").value="none";
@@ -12828,6 +12894,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         visualScale:1,offsetForwardPx:0,offsetUpPx:0
       },statRegistry);
       choice.value="standard";
+      guideEffectV1("Mur ajouté : configure les PV, le placement et le sprite dans la ligne d'invocation.");
       autoConfigureStandaloneWallV1();
       return;
     }
@@ -12837,6 +12904,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       chargedEnabled.checked=false;
       one(root,"[data-skill-charged-config]").hidden=true;
       choice.value="standard";
+      syncGuidedEffectPanelsV1("charged-effects");
+      guideEffectV1("Charge d'effets : paramètres ouverts ci-dessous.");
       setStatus(root,"Charge d'effets activée : ajoute un soin ou un statut numérique puis règle la puissance par activation.","ok");
       return;
     }
@@ -12859,10 +12928,18 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       one(root,"[data-skill-charged-effects-config]").hidden=true;
       one(root,"[data-skill-charged-config]").hidden = false;
       choice.value="standard";
+      syncGuidedEffectPanelsV1("charged");
+      guideEffectV1("Attaque chargée : paramètres ouverts ci-dessous.");
       setStatus(root,"Attaque chargée ajoutée : règle les dégâts, charges et taille ici, puis choisis tes sprites Cast et Projectile.", "ok");
       return;
     }
-    appendHumanSkillEffectV1(root, null, statRegistry);
+    const row=appendHumanSkillEffectV1(root, null, statRegistry);
+    guideEffectV1("Dégâts ajoutés : configure la valeur et le canal dans la nouvelle ligne.");
+    row.scrollIntoView?.({block:"nearest"});
+  });
+  listen(effectChooser, "change", () => {
+    // The selection itself creates or reveals the one native effect editor.
+    if(effectChooser.value!=="standard")skillEffectAddButton.click();
   });
   function prepareIceSpikeChannelV1({preset=false}={}) {
     if(chargedEnabled.checked||chargedEffectsEnabled.checked||contactHoldEnabled.checked){
@@ -12896,6 +12973,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
     channelingEnabled.checked=true;
     channelingConfig.hidden=false;
+    syncGuidedEffectPanelsV1("channeling");
     one(root,"[data-skill-channeling-section]").open=true;
     one(root,"[data-skill-category]").value="offensive";
     one(root,"[data-skill-form]").value="area";
@@ -12936,6 +13014,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   });
   listen(channelingEnabled,"change",()=>{
     channelingConfig.hidden=!channelingEnabled.checked;
+    if(channelingEnabled.checked)syncGuidedEffectPanelsV1("channeling");
     if(channelingEnabled.checked){
       if(chargedEnabled.checked||chargedEffectsEnabled.checked||contactHoldEnabled.checked){
         channelingEnabled.checked=false;channelingConfig.hidden=true;
@@ -12971,6 +13050,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       setStatus(root,"Désactive la canalisation avant le maintien au contact.","warn");
     }
     contactHoldSettings.hidden = !contactHoldEnabled.checked;
+    if(contactHoldEnabled.checked)syncGuidedEffectPanelsV1("contact-hold");
   });
   listen(contactHoldEffectAddButton, "click", () => {
     appendHumanSkillEffectV1(root, null, statRegistry, null,
