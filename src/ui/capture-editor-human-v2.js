@@ -12143,6 +12143,56 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       state.runtimeReady ? "ok" : "warning";
   }
 
+  // Every skill reference selector (the library, the five loadout slots
+  // and any future selector populated with the same existing skill IDs)
+  // shares ONE registry-derived filter owner. No parallel list of abilities.
+  function refreshHumanSkillElementFiltersV1() {
+    const available=new Set(configuredSkills.keys());
+    for(const select of root.querySelectorAll("select")){
+      const options=[...select.querySelectorAll("option")];
+      const skillOptions=options.filter(opt=>available.has(opt.value));
+      if(skillOptions.length===0)continue;
+      const parent=select.closest("label")??select.parentElement;
+      if(!parent)continue;
+      let filter=parent.querySelector(":scope > [data-skill-element-filter]");
+      if(!filter){
+        filter=document.createElement("select");
+        filter.dataset.skillElementFilter="true";
+        filter.setAttribute("aria-label","Filtrer les capacités par élément");
+        filter.style.cssText="max-width:100%;margin:4px 0 8px;min-height:36px";
+        select.before(filter);
+        filter.addEventListener("change",()=>applyFilter(select,filter));
+      }
+      const prev=filter.value||"";
+      const distinct=new Map();
+      for(const opt of skillOptions){
+        const entry=configuredSkills.get(opt.value);
+        const meta=humanSkillSelectorElementMetaV1(entry?.definition?.element);
+        const id=meta.element??"__neutral__";
+        if(!distinct.has(id))distinct.set(id,meta.label);
+      }
+      filter.textContent="";
+      createOption(filter,"","Tous les éléments");
+      for(const [id,label] of distinct)createOption(filter,id,label);
+      filter.value=distinct.has(prev)?prev:"";
+      applyFilter(select,filter);
+    }
+  }
+  function applyFilter(select,filter) {
+    const selected=select.value;
+    for(const opt of select.querySelectorAll("option")) {
+      if(!opt.value||!configuredSkills.has(opt.value)){opt.hidden=false;continue;}
+      const meta=humanSkillSelectorElementMetaV1(configuredSkills.get(opt.value).definition.element);
+      const id=meta.element??"__neutral__";
+      // A currently equipped/edited skill must remain reachable even while
+      // browsing another element; this never clears the selected ID.
+      opt.hidden=Boolean(filter.value&&filter.value!==id&&opt.value!==selected);
+    }
+    for(const group of select.querySelectorAll("optgroup")){
+      group.hidden=[...group.querySelectorAll("option")].every(opt=>opt.hidden);
+    }
+  }
+
   function refreshSkillLibraryOptions(
     preferredId = null
   ) {
@@ -12198,6 +12248,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     ) {
       librarySelect.value = previous;
     }
+    refreshHumanSkillElementFiltersV1();
   }
 
   function refreshLoadoutOptions(preferredId = null) {
@@ -12336,6 +12387,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
 
     syncLoadoutAvailability();
+    refreshHumanSkillElementFiltersV1();
   }
 
   function persistCurrentSkill(intent) {
