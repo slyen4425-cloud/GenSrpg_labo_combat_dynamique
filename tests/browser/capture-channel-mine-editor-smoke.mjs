@@ -48,6 +48,8 @@ document.addEventListener("DOMContentLoaded",()=>{
    // combination was invalid. One guided click must produce a savable
    // native area channel without discarding existing media references.
    sel("[data-skill-new]").click();
+   if(enabled.checked||sel("[data-skill-channeling-effects-host]").children.length!==0)
+     throw Error("new skill inherited the previous ability's invisible channel effects");
    sel("[data-skill-name]").value="Pique de glace";
    const preset=sel("[data-skill-channel-ice-preset]");
    if(!preset)throw Error("guided ice-spike preset missing");
