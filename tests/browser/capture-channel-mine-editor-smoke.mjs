@@ -41,10 +41,17 @@ document.addEventListener("DOMContentLoaded",()=>{
      throw Error("Pique de glace upload missing from the native saved skill list");
    if(library.options.length>1){
      const selected=library.value;
+     const sourceTotal=library.options.length;
      const ice=filters.find(f=>f.parentElement?.contains(library));
      const iceOption=[...ice.options].find(x=>x.value==="ice");
      if(iceOption){ice.value="ice";ice.dispatchEvent(new Event("change",{bubbles:true}));
-       if(library.value!==selected)throw Error("filter discarded selected ability");}
+       if(library.value!==selected)throw Error("filter discarded selected ability");
+       if(library.options.length>=sourceTotal ||
+          [...library.options].some(o=>o.value==="cap_fire_atk_5"))
+         throw Error("mobile skill editor filter must remove unrelated options, not only hide");
+       ice.value="";ice.dispatchEvent(new Event("change",{bubbles:true}));
+       if(library.options.length!==sourceTotal)throw Error("clearing element filter did not restore skill choices");
+     }
    }
    // Real Android-like author path: the normal Projectile + Channeling
    // combination was invalid. One guided click must produce a savable
@@ -96,6 +103,14 @@ document.addEventListener("DOMContentLoaded",()=>{
    const preset=sel("[data-skill-channel-ice-preset]");
    if(!preset)throw Error("guided ice-spike preset missing");
    preset.click();
+   const motion=sel("[data-skill-ground-motion]");
+   const groundY=sel("[data-skill-ground-offset-y]");
+   if(!motion||!groundY||!sel("[data-skill-ground-rise-px]"))
+     throw Error("ground trajectory author controls missing");
+   motion.value="fixed";motion.dispatchEvent(new Event("change",{bubbles:true}));
+   groundY.value="35";
+   if(!sel("[data-skill-ground-rise-px]").closest("label").hidden)
+     throw Error("fixed ice spike still shows irrelevant rise distance");
    const form=sel("[data-skill-form]");
    if(!enabled.checked||form.value!=="area"||trajectory.value!=="under_target")
      throw Error("ice spike preset failed canonical area + under-target presentation");

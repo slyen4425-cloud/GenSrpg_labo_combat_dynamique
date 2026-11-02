@@ -1841,3 +1841,8 @@ html {
 
 /* Optional charged-projectile controls obey the same editor disclosure state. */
 [data-skill-charged-config][hidden] { display:none !important; }
+
+/* Ground editing owns the existing trajectory fields: a hidden state must
+ * win over .editor-choice-group display:flex/grid on Android. */
+[data-skill-ground-settings][hidden],
+[data-skill-ground-settings] label[hidden] { display:none !important; }
