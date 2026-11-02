@@ -12914,7 +12914,13 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     setStatus(root,"Pics de glace canalisés prêts : choisis le sprite montant dans Effets visuels → Personnaliser les animations → Trajet. Le son Impact se rejouera à chaque pulsation. Enregistre puis teste.","ok");
   });
   listen(channelIceSpriteJump,"click",()=>{
-    one(root,"[data-skill-fx-advanced]").open=true;
+    const personalization=one(root,"[data-skill-fx-advanced]");
+    const visualCard=personalization.closest(".card");
+    // Use the existing disclosure owner's real toggle (and its ARIA
+    // state), not a second independent visibility flag for this card.
+    if(visualCard?.dataset.collapsed==="true")
+      visualCard.querySelector(".card-title")?.click();
+    personalization.open=true;
     const sprite=one(root,"[data-skill-travel-fx]");
     sprite.scrollIntoView?.({block:"center",behavior:"smooth"});
     sprite.focus?.();
