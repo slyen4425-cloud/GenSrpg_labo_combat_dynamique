@@ -340,6 +340,7 @@ export function applyImmediateTacticalEffectsV1({
         skillId: skill.id,
         scheduledEffectId:
           scheduled.record.id,
+        ...(scheduled.record.visualCue?{visualCue:scheduled.record.visualCue}:{}),
         dueAtMs:
           scheduled.record.dueAtMs
       }));
