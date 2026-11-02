@@ -343,6 +343,8 @@ export async function mountCombatDemo({
   lightControls?.addEventListener?.("change", onLightControlInput);
 
   const activeApproachBySlot = new Map();
+  // Visual State owns ONE retained attack pose per slot; Runtime owns its lifetime.
+  const heldAttackBySlot = new Map();
   const activeDodgeFxBySlot = new Map();
   const activeBurrowTerrainFxBySlot = new Map();
 
@@ -464,7 +466,7 @@ export async function mountCombatDemo({
     }
 
     const slot = slotOf(slotKey);
-    if (!slot.visible) {
+    if (!slot.visible || heldAttackBySlot.has(slotKey)) {
       return null;
     }
 
@@ -631,6 +633,18 @@ export async function mountCombatDemo({
       );
     }
 
+    const heldAttack = heldAttackBySlot.get(slotKey);
+    if (type === "hit" && heldAttack) {
+      // A non-lethal hit cannot restart idle over an unbroken channel pose.
+      return Promise.resolve({ status: "held" });
+    }
+    if (type === "attack" && metadata?.holdAttackPose === true && heldAttack) {
+      return Promise.resolve({ status: "held" });
+    }
+    if (heldAttack && type !== "defense" && type !== "hit") {
+      releaseHeldAttackPoseFor(slotKey);
+    }
+
     const activeApproach = activeApproachBySlot.get(slotKey);
     if (type === "hit" && activeApproach) {
       return Promise.resolve(activeApproach.finished).then(
@@ -673,12 +687,13 @@ export async function mountCombatDemo({
       // The slot's real camera view chooses the pose. A V5 single-sprite
       // creature continues using its original rangedAttackFx for both sides.
       const rangedVisual = creatureRangedAppearanceForViewV1(slot.meta, slot.view);
+      const holdAttackPose = type === "attack" && metadata?.holdAttackPose === true;
       const rangedAppearance =
         type === "attack" &&
         metadata?.useRangedAppearance === true &&
         rangedVisual?.url
           ? slot.playMovementAppearance(
-              rangedVisual,
+              holdAttackPose ? { ...rangedVisual, playbackMode: "hold-last" } : rangedVisual,
               plan.segments.reduce((sum, segment) => sum + segment.durationMs, 0),
               slot.view === "player" ? 1 : -1
             )
@@ -701,17 +716,25 @@ export async function mountCombatDemo({
         throw error;
       }
 
+      if (holdAttackPose) {
+        heldAttackBySlot.set(slotKey, { appearance: rangedAppearance });
+      }
       return handle.finished.then((result) => {
         if (
           result?.status === "finished" &&
           !disposed &&
+          !holdAttackPose &&
           !["idle", "ko", "recall"].includes(type) &&
           slot.visible
         ) {
           startIdleFor(slotKey);
         }
         return result;
-      }).finally(() => rangedAppearance?.cancel?.());
+      }).finally(() => {
+        if (!holdAttackPose || !heldAttackBySlot.has(slotKey)) {
+          rangedAppearance?.cancel?.();
+        }
+      });
     } catch (error) {
       return Promise.reject(error);
     }
@@ -1039,8 +1062,23 @@ export async function mountCombatDemo({
     return active?.releaseHold?.() === true;
   }
 
+  function hasHeldAttackPoseFor(slotKey) {
+    return heldAttackBySlot.has(slotKey);
+  }
+
+  function releaseHeldAttackPoseFor(slotKey) {
+    const held = heldAttackBySlot.get(slotKey);
+    if (!held) return false;
+    heldAttackBySlot.delete(slotKey);
+    held.appearance?.cancel?.();
+    const slot = slotOf(slotKey);
+    if (slot.visible) startIdleFor(slotKey);
+    return true;
+  }
+
   function cancelFor(slotKey) {
     const slot = slotOf(slotKey);
+    heldAttackBySlot.delete(slotKey);
     const activeApproach =
       activeApproachBySlot.get(slotKey) ?? null;
     activeApproach?.contactWatcher?.cancel();
@@ -1070,6 +1108,7 @@ export async function mountCombatDemo({
     }
 
     const slot = slotOf(slotKey);
+    heldAttackBySlot.delete(slotKey);
     cancelDodgeAppearanceFx(slotKey);
     cancelBurrowTerrainFxFor(slotKey);
     slot.setCreature(meta, displayName);
@@ -1087,6 +1126,7 @@ export async function mountCombatDemo({
   function setSlotVisible(slotKey, visible) {
     const slot = slotOf(slotKey);
     if (!visible) {
+      heldAttackBySlot.delete(slotKey);
       cancelDodgeAppearanceFx(slotKey);
       cancelBurrowTerrainFxFor(slotKey);
     }
@@ -1120,6 +1160,8 @@ export async function mountCombatDemo({
     playMovementFor,
     playApproachFor,
     releaseHeldApproachFor,
+    releaseHeldAttackPoseFor,
+    hasHeldAttackPoseFor,
     cancelFor,
     startIdleFor,
     setCreatureFor,
@@ -1190,6 +1232,7 @@ export async function mountCombatDemo({
       }
       movementCueTimers.clear();
       cameraFx.dispose();
+      heldAttackBySlot.clear();
       for (const slot of Object.values(slots)) {
         slot.dispose();
       }
