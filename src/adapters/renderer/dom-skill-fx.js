@@ -3072,12 +3072,13 @@ export function createDomSkillFxRenderer({
 
     const travelVisual = presentation?.travel ?? null;
     const skyfall = travelVisual?.trajectoryMode === "skyfall";
+    const underTarget = travelVisual?.trajectoryMode === "under_target";
     const travelSourceAnchor =
       presentation?.travelSourceAnchor ?? null;
     // Direct fire keeps the actor's AUTHORED rest placement and a point
     // on its existing physical alpha mask. Only transient translations
     // disappear from the projected resting lane. Skyfall remains live.
-    const opaquePoint = !skyfall && targetCollisionModelFor
+    const opaquePoint = !skyfall && !underTarget && targetCollisionModelFor
       ? visibleModelOpaqueAimPoint(
           targetCollisionModelFor(targetSlot)?.snapshot?.() ?? null
         )
@@ -3104,7 +3105,9 @@ export function createDomSkillFxRenderer({
     );
     // Skyfall is authored on visual.travel: the source actor never becomes
     // the origin. The same Runtime travel duration and contact sensor apply.
-    const from = skyfall
+    const from = underTarget
+      ? {x:to.x,y:projectileTargetRect(targetSlot).bottom-arenaRect.top}
+      : skyfall
       ? {
           x: to.x + travelVisual.fallOffsetXPx,
           y: to.y - travelVisual.fallHeightPx
@@ -3173,13 +3176,13 @@ export function createDomSkillFxRenderer({
       const hasDirectionalHeading = typeof headingRad === "number" &&
         Number.isFinite(headingRad);
       const nativeLeftward = hasDirectionalHeading && Math.cos(headingRad) < 0;
-      const mirrorHorizontally = !skyfall && hasDirectionalHeading &&
+      const mirrorHorizontally = !skyfall && !underTarget && hasDirectionalHeading &&
         (deltaX < 0) !== nativeLeftward;
       const travelAngle = Math.atan2(deltaY, deltaX);
       // Preserve the existing rotations of all right-facing sprites; only
       // native-left artworks require an inverted mirror decision and an
       // angular wrap to avoid a nearly full-turn rotation for upper lanes.
-      let rotationRad = skyfall || !hasDirectionalHeading
+      let rotationRad = skyfall || underTarget || !hasDirectionalHeading
         ? 0
         : nativeLeftward
           ? travelAngle - (mirrorHorizontally ? Math.PI - headingRad : headingRad)
