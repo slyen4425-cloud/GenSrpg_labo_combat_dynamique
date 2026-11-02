@@ -979,6 +979,10 @@ export async function mountCombatTest({
     }
     lastState = state;
     combatEntityOverlay.render(state);
+    const mines=fx.syncScheduledMines(state);
+    for(const mine of mines.triggered)
+      combatAudio.play({type:"impact",skillId:mine.skillId,
+        actorSlot:mine.actorId,targetSlot:mine.targetId,loop:false});
     renderHp(state);
     renderEnergy(state);
     zoneAudio.sync(
