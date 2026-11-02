@@ -12910,6 +12910,12 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     if(!prepareIceSpikeChannelV1({preset:true}))return;
     setStatus(root,"Pics de glace canalisés prêts : choisis le sprite montant dans Effets visuels → Personnaliser les animations → Trajet. Le son Impact se rejouera à chaque pulsation. Enregistre puis teste.","ok");
   });
+  listen(channelIceSpriteJump,"click",()=>{
+    one(root,"[data-skill-fx-advanced]").open=true;
+    const sprite=one(root,"[data-skill-travel-fx]");
+    sprite.scrollIntoView?.({block:"center",behavior:"smooth"});
+    sprite.focus?.();
+  });
   listen(one(root,"[data-skill-form]"),"change",()=>{
     if(!channelingEnabled.checked || one(root,"[data-skill-form]").value!=="projectile")return;
     const rising=one(root,"[data-skill-trajectory-mode]").value==="under_target";
