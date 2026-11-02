@@ -188,7 +188,7 @@ function resolvedAudio(audioAssetForId, slot) {
 }
 
 function semanticView(context) {
-  const actorView = ["impact", "clash-impact"].includes(context?.fxType)
+  const actorView = ["impact", "channel-pulse", "clash-impact"].includes(context?.fxType)
     ? context?.targetView : context?.sourceView;
   const view = context?.view ?? (["player", "opponent"].includes(actorView) ? actorView : "player");
   if (
