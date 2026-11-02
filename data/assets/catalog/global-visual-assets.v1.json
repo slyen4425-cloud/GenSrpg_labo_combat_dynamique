@@ -9773,7 +9773,8 @@
           "combat",
           "capture",
           "editor"
-        ]
+        ],
+        "editorRoles": ["travel"]
       }
     },
     {
