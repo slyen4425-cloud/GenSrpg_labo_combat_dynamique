@@ -1866,6 +1866,9 @@ function presentationForSkill(fields) {
     }
     if (arrival !== "same") travel.arrivalLayer = arrival;
   }
+  if (travel !== null && presentation.travelTrajectoryMode === "under_target") {
+    travel.trajectoryMode="under_target";
+  }
   if (travel !== null && presentation.travelTrajectoryMode === "skyfall") {
     travel.trajectoryMode = "skyfall";
     travel.fallHeightPx = finiteNumber(
@@ -1998,7 +2001,7 @@ function presentationForSkill(fields) {
         ? 12
         : (travel?.frameSpeedMultiplier != null || travel?.perspectiveAmount != null)
           ? 11
-        : travel?.trajectoryMode === "skyfall"
+        : ["skyfall","under_target"].includes(travel?.trajectoryMode)
           ? 10
         : (
         [cast, impact, persistentZone].some(
@@ -3024,7 +3027,8 @@ export function buildHumanSkillDraftV1(fields) {
       ),
       form: requiredText(fields.form, "Style de capacité"),
       // The authored trajectory owns projectile targeting in the Capture editor.
-      // A skyfall targets a fixed landing point, not a moving creature;
+      // Skyfall targets fixed terrain; under-target rises from the live
+      // target's feet using the normal direct collision authority.
       // other projectiles remain direct. Combat Rules reads only this definition.
       projectileTargeting:
         fields.form !== "projectile" ? "direct"
