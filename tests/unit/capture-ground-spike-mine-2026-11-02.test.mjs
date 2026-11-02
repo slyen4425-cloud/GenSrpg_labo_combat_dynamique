@@ -5,6 +5,7 @@ import {normalizeSkillEffectV1} from "../../src/contracts/skill-effect-v1.js";
 import {normalizeSkillPresentationBindingV10} from "../../src/contracts/skill-presentation-binding-v10.js";
 import {scheduleSkillEffectV1} from "../../src/core/combat/scheduled-effect-runtime-v1.js";
 import {createCombatState} from "../../src/core/combat/combat-state.js";
+import {planSkillOutcomeFx} from "../../src/core/fx/skill-fx-plan.js";
 const read=p=>readFileSync(new URL("../../"+p,import.meta.url),"utf8");
 test("RED: under-target projectile accepted by ONE visual contract, not added damage engine",()=>{
  const normal=normalizeSkillPresentationBindingV10({version:10,visual:{
@@ -44,4 +45,16 @@ test("reusable native effect selection only, no second scheduler",()=>{
  assert.match(runtime,/pulseContactHolds/);
  assert.match(fx,/syncScheduledMines/);
  assert.doesNotMatch(fx,/setInterval\(/);
+});
+
+test("a mine or channel casts no fake instant hit; native tick/expiry owns visible impact",()=>{
+ const start=planSkillOutcomeFx({resolution:{ok:true,outcome:"hit",skillId:"ice-spike",
+  channelingStart:true,events:[]},targetSlot:"enemy"});
+ assert.deepEqual(start,[]);
+ const mine=planSkillOutcomeFx({resolution:{ok:true,outcome:"hit",skillId:"ice-mine",
+  events:[{type:"scheduled-effect-created",visualCue:"ground_mine"}]},targetSlot:"enemy"});
+ assert.deepEqual(mine,[]);
+ const normal=planSkillOutcomeFx({resolution:{ok:true,outcome:"hit",skillId:"ice-spike",
+  events:[]},targetSlot:"enemy"});
+ assert.equal(normal[0].type,"impact");
 });
