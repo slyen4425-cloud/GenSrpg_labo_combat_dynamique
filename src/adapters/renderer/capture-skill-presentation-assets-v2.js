@@ -146,6 +146,15 @@ function resolvedVisual(
       ...(slot.trajectoryMode === "skyfall" ? {
         fallHeightPx: slot.fallHeightPx,
         fallOffsetXPx: slot.fallOffsetXPx
+      } : {}),
+      // V14 under-target position and motion belong to this same authored
+      // visual. Forward them to the FX renderer; do not rederive a second
+      // movement rule from the asset or the skill's gameplay definition.
+      ...(slot.trajectoryMode === "under_target" && slot.groundMotion != null ? {
+        groundMotion: slot.groundMotion,
+        groundOffsetXPx: slot.groundOffsetXPx,
+        groundOffsetYPx: slot.groundOffsetYPx,
+        groundRisePx: slot.groundRisePx
       } : {})
     })
   });
