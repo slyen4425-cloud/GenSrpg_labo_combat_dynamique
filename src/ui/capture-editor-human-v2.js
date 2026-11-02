@@ -12783,6 +12783,22 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   }
   listen(skillEffectAddButton, "click", () => {
     const choice = one(root, "[data-skill-effect-add-kind]");
+    if(choice.value==="mine"){
+      // Only ONE native scheduled_effect record. Its optional visualCue
+      // projects an arena warning from Combat State; no duplicate timer.
+      appendHumanSkillEffectV1(root,{
+        kind:"scheduled_effect",targetScope:"target",visualCue:"ground_mine",
+        trigger:{type:"after_ms",delayMs:3000},
+        effects:[{kind:"damage",targetScope:"target",amount:20,channel:"ice"}]
+      },statRegistry);
+      choice.value="standard";
+      one(root,"[data-skill-category]").value="offensive";
+      one(root,"[data-skill-form]").value="area";
+      one(root,"[data-skill-approach]").value="none";
+      beamStageLayout.sync();
+      setStatus(root,"Mine créée : règle le délai, les dégâts, le sprite et le son d’impact ; le cercle suit la position de pose au sol.","ok");
+      return;
+    }
     if (choice.value === "wall") {
       appendHumanSkillEffectV1(root,{
         kind:"summon_entity",targetScope:"self",entityKind:"barrier",
