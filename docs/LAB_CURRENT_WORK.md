@@ -1,3 +1,12 @@
+## 2026-11-02 — Pose d'attaque maintenue pendant charge/canalisation (chantier ouvert, NON GREEN)
+- Demande : lancer le sprite d'attaque une seule fois, geler sa dernière frame durant la préparation d'une attaque chargée et pendant tous les ticks d'une canalisation, restaurer la posture à la libération / fin native / interruption / rappel / démontage.
+- Base `gh-pages@6e8cd529fc53892ea86f8d95fe2f568e07c0fa29` ; START `checkpoint/lab-start-cast-pose-hold-2026-11-02` ; branche `work/lab-cast-pose-hold-2026-11-02`. `main`, autres dépôts, réglages auteurs et gameplay exclus.
+- Propriétaire de l'horloge : Combat Runtime ; cycle visuel : Combat Resolution Presenter déclenché par les événements natifs ; seul renderer des apparences `dom-creature-movement-visual-v1` affiche le sprite (option native `hold-last` déjà supportée). Pas de nouveau scheduler, pas de deuxième autorité.
+- Périmètre : `src/adapters/renderer/combat-resolution-presenter.js`, `src/ui/demo-app.js`, `src/ui/combat-2v2-test-ui.js`, un test de régression et ce journal. Préserver les attaques classiques, version image unique, sprites face/dos, FX/sons/ticks natifs, animations d'approche et collisions.
+- TDD RED : cas charge, canalisation, interruption, dispose, sprite absent et attaque ordinaire ; validation complète Foundation + 4 navigateurs avant GREEN technique, contrôle publication Pages puis essai Android auteur distinct.
+
+---
+
 ## 2026-11-02 — Pique de glace : correction cause racine du sprite fixe (adaptateur de présentation)
 - Signal auteur : l'export mis à jour `pique_glace` contient `visual.travel.trajectoryMode=under_target`, `groundMotion=fixed`, `groundRisePx=80`, mais le sprite continuait à monter. Le réglage auteur est valide : `groundRisePx` doit être ignoré en mode fixe.
 - Cause démontrée : `normalizeSkillPresentationBindingV14` conserve les coordonnées/modes, mais `resolvedVisual` de `capture-skill-presentation-assets-v2.js` omettait les quatre champs `groundMotion/groundOffsetXPx/groundOffsetYPx/groundRisePx` en construisant la présentation pour `dom-skill-fx.js`. Le FX recevait `undefined` et appliquait l'animation montante par défaut (pulse). Aucun changement de calcul des dégâts ou de collision n'est nécessaire.
