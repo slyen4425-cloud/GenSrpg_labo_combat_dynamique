@@ -1241,7 +1241,8 @@ export async function mountCombatTest({
     onClock(state) {
       statusFx?.syncCountdowns(state);
     },
-    onChannelStart({actorId,skillId}) {
+    onChannelStart({actorId,targetId,skillId}) {
+      presenter.presentChannelStart({actorSlot:actorId,targetSlot:targetId});
       setStatus("Canalisation en cours : "+skillId+".","accent");
     },
     onChannelTick({actorId,targetId,skillId,tick}) {
@@ -1251,7 +1252,8 @@ export async function mountCombatTest({
       combatAudio.play({type:"impact",skillId,actorSlot:actorId,targetSlot:targetId,loop:false});
       setStatus("Canalisation · pulsation "+tick+".","accent");
     },
-    onChannelEnd({reason}) {
+    onChannelEnd({actorId,reason}) {
+      presenter.endChannelPose({actorSlot:actorId});
       setStatus("Canalisation terminée ("+reason+").","info");
       renderAvailability();
     },
