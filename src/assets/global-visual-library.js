@@ -3,7 +3,7 @@ const BRANCH = "global-assets";
 // Cache revision for the one canonical global-assets catalog and its image URLs.
 // Delivery must wait until the authoritative branch has propagated; the REAL
 // browser test now checks its metadata rather than inventing directional assets.
-const REVISION = "2026-11-02-v50-approved-ice-spike-dual-visual-role";
+const REVISION = "2026-11-02-v51-gorille-glaces-charge-player12";
 
 export const GLOBAL_VISUAL_LIBRARY = Object.freeze({
   repository: REPOSITORY,
