@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {describeCaptureSkillV1} from "../../src/ui/capture-skill-explanation-v1.js";
+import {captureBestiaryCardsV1} from "../../src/ui/capture-bestiary-cards-v1.js";
 
 const src=path=>readFileSync(new URL("../../"+path,import.meta.url),"utf8");
 const wall=JSON.parse(src("data/capture/showcase/mur_de_glace.capture-skill-transfer-v1.json")).draft.definition;
@@ -36,4 +37,21 @@ test("RED: one overlay keeps native collision geometry and positions the sole HP
  assert.match(renderer,/position:absolute.*top:/s,"badge must leave the normal flex-flow below sprite");
  assert.match(renderer,/arenaRect|visibleRect|bounds/,"badge must clamp into the visible arena at large sprite scales");
  assert.doesNotMatch(renderer,/cloneNode\(/);
+});
+
+test("real Gorice Bestiary card from the two official Showcase transfers displays only gameplay",()=>{
+ const creature=JSON.parse(src("data/capture/showcase/gorice.capture-creature-transfer-v1.json"));
+ const skill=JSON.parse(src("data/capture/showcase/mur_de_glace.capture-skill-transfer-v1.json"));
+ const visuals=creature.draft.presentation.visual;
+ const assets=["front","back","icon"].map(role=>({
+   id:visuals[role].assetId,assetType:role==="icon"?"icon":"portrait",
+   mediaType:"image",resource:{file:"capture/creatures/gorice/"+role+".webp"}
+ }));
+ const cards=captureBestiaryCardsV1({creatureTransfers:[creature],skillTransfers:[skill],assetCatalog:{assets}});
+ assert.equal(cards.length,1);
+ const equip=cards[0].skills.find(s=>s.name==="Mur de glace");
+ assert.ok(equip,"Mur de glace must resolve through the actual bestiary equip chain");
+ const prose=equip.explanation.sentences.join(" ");
+ assert.match(prose,/2 PV par point/);
+ assert.doesNotMatch(prose,/X 47|Y 55|Position|Placement|esquiv/i);
 });
