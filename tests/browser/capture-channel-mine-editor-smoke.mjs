@@ -69,6 +69,16 @@ document.addEventListener("DOMContentLoaded",()=>{
    if(enabled.checked||sel("[data-skill-channeling-effects-host]").children.length!==0)
      throw Error("new skill inherited the previous ability's invisible channel effects");
    sel("[data-skill-name]").value="Pique de glace";
+   const panels=["[data-skill-charged-panel]","[data-skill-charged-effects-panel]",
+     "[data-skill-channeling-section]","[data-skill-contact-hold]"];
+   if(panels.some(q=>!sel(q).hidden))
+     throw Error("independent mechanics panels remain visible outside the selector");
+   const chooser=sel("[data-skill-effect-add-kind]");
+   chooser.value="channeling";
+   chooser.dispatchEvent(new Event("change",{bubbles:true}));
+   if(sel("[data-skill-channeling-section]").hidden||
+       panels.filter(q=>!sel(q).hidden).length!==1)
+     throw Error("selecting channeling did not show exactly its original panel");
    const preset=sel("[data-skill-channel-ice-preset]");
    if(!preset)throw Error("guided ice-spike preset missing");
    preset.click();

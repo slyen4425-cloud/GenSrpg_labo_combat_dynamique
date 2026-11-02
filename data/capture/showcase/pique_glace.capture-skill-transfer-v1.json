@@ -89,7 +89,7 @@
     },
     "presentation": {
       "id": "skill:pique_glace",
-      "version": 9,
+      "version": 10,
       "subjectType": "skill",
       "subjectId": "pique_glace",
       "visual": {

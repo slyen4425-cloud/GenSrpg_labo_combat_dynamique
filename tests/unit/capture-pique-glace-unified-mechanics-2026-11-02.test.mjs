@@ -12,6 +12,7 @@ test("Pique de glace author export is installed as canonical showcase preserving
  assert.equal(t.draft.definition.channeling.energyCostPerTick,3);
  assert.deepEqual(t.draft.definition.effects,[]);
  assert.equal(t.draft.definition.channeling.effects[0].amount,5);
+ assert.equal(t.draft.presentation.version,10);
  assert.equal(t.draft.presentation?.visual?.travel?.assetId,"pack:capture:sprite-pointe-glace-01");
  assert.equal(t.draft.presentation?.visual?.travel?.trajectoryMode,"under_target");
 });
@@ -23,6 +24,6 @@ test("Unified effect selector owns mechanics visibility without displaying indep
    assert.match(html,new RegExp(attr+"[^>]* hidden"));
  }
  assert.match(js,/syncGuidedEffectPanelsV1/);
- assert.match(js,/\.hidden\s*=\s*selected\s*!==\s*key/);
+ assert.match(js,/panel\.hidden\s*=\s*mode\s*!==\s*kind/);
  assert.match(js,/writeSkillDraftFields\([\s\S]*?syncHumanGuidedSkillEffectPanelsV1/);
 });
