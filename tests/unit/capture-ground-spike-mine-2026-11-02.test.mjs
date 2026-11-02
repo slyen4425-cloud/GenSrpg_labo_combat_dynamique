@@ -8,11 +8,9 @@ import {createCombatState} from "../../src/core/combat/combat-state.js";
 import {planSkillOutcomeFx} from "../../src/core/fx/skill-fx-plan.js";
 const read=p=>readFileSync(new URL("../../"+p,import.meta.url),"utf8");
 test("RED: under-target projectile accepted by ONE visual contract, not added damage engine",()=>{
- const normal=normalizeSkillPresentationBindingV10({version:10,visual:{
-  travel:{assetId:"ice-spike",attachment:"trajectory",trigger:"travel-start",
-    displayScale:1,layerByView:{player:"front",opponent:"front"},playbackMode:"once",
-    offsetX:0,offsetY:0,rotationDeg:0,opacity:1,trajectoryMode:"under_target"}
- }});
+ const saved=JSON.parse(read("data/capture/showcase/boule_neige.capture-skill-transfer-v1.json")).draft.presentation;
+ const normal=normalizeSkillPresentationBindingV10({...saved,version:10,
+  visual:{...saved.visual,travel:{...saved.visual.travel,trajectoryMode:"under_target"}}});
  assert.equal(normal.visual.travel.trajectoryMode,"under_target");
  const ui=read("examples/dom-demo/capture-editor-v2.html");
  assert.match(ui,/option value="under_target"/);
