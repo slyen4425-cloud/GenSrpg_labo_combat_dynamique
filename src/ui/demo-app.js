@@ -58,6 +58,9 @@ export function creatureAerialAppearanceForPhaseV1(meta, view, phase) {
   return null;
 }
 
+// Default if an attack asset does not declare a native frame duration.
+const DEFAULT_HELD_ATTACK_FRAME_MS = 90;
+
 const DATA_URLS = Object.freeze({
   profiles: Object.freeze({
     serpentine: new URL(
@@ -608,6 +611,23 @@ export async function mountCombatDemo({
     });
   }
 
+  function holdAttackPoseFor(slotKey) {
+    if (disposed) return Object.freeze({ status: "disposed" });
+    const slot = slotOf(slotKey);
+    const visual = creatureRangedAppearanceForViewV1(slot.meta, slot.view);
+    if (!slot.visible || !visual?.url) return Object.freeze({ status: "ignored" });
+    const frameCount = Math.max(1, Math.floor(Number(visual.frameCount) || 1));
+    const frameMs = Number(visual.frameMs) > 0 ? Number(visual.frameMs) : DEFAULT_HELD_ATTACK_FRAME_MS;
+    const appearance = slot.playMovementAppearance(
+      { ...visual, playbackMode: "hold-last" },
+      frameMs * frameCount,
+      slot.view === "player" ? 1 : -1
+    );
+    return appearance
+      ? Object.freeze({ status: "holding", cancel: () => appearance.cancel() })
+      : Object.freeze({ status: "ignored" });
+  }
+
   function playEventFor(
     slotKey,
     type,
@@ -1117,6 +1137,7 @@ export async function mountCombatDemo({
 
   return Object.freeze({
     playEventFor,
+    holdAttackPoseFor,
     playMovementFor,
     playApproachFor,
     releaseHeldApproachFor,
