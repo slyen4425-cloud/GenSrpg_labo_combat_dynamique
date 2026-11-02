@@ -2723,6 +2723,7 @@ export function humanSkillEditorFieldsFromDraftV1(
     approachMode:
       definition.approachMode ?? "none",
     contactHold: definition.contactHold ?? null,
+    channeling: definition.channeling ?? null,
     hitPresenceStates:
       definition.hitPresenceStates == null
         ? null
@@ -3049,6 +3050,18 @@ export function buildHumanSkillDraftV1(fields) {
         fields.approachMode ?? "none",
         "Déplacement"
       ),
+      ...(fields.channeling ? {channeling:{
+        tickIntervalMs:finiteNumber(fields.channeling.tickIntervalMs,"Intervalle canalisation"),
+        maxDurationMs:finiteNumber(fields.channeling.maxDurationMs ?? 0,"Durée canalisation"),
+        maxTicks:fields.channeling.maxTicks == null || Number(fields.channeling.maxTicks)===0
+          ? null : positiveInteger(fields.channeling.maxTicks,"Maximum ticks"),
+        energyCostPerTick:finiteNumber(fields.channeling.energyCostPerTick,"Énergie par tick"),
+        stopOnDamage:fields.channeling.stopOnDamage !== false,
+        stopOnStun:fields.channeling.stopOnStun !== false,
+        stopOnSilence:fields.channeling.stopOnSilence !== false,
+        effects:buildHumanTacticalSkillEffectsV1(fields.channeling.effects ?? [],
+          {defaultDamageChannel:fields.element??null})
+      }} : {}),
       ...(fields.contactHold ? {
         contactHold: {
           tickIntervalMs: finiteNumber(fields.contactHold.tickIntervalMs, "Intervalle maintien au contact"),
@@ -3587,6 +3600,37 @@ export function readHumanProjectilePowerV1(
   };
 }
 
+function writeHumanChannelingFieldsV1(root, channel, statRegistry = null, statusVisuals = {}) {
+  const active=channel != null;
+  one(root,"[data-skill-channeling-enabled]").checked=active;
+  one(root,"[data-skill-channeling-config]").hidden=!active;
+  for(const [selector,value] of [
+    ["[data-skill-channeling-interval]",channel?.tickIntervalMs??1000],
+    ["[data-skill-channeling-duration]",channel?.maxDurationMs??5000],
+    ["[data-skill-channeling-max-ticks]",channel?.maxTicks??0],
+    ["[data-skill-channeling-energy]",channel?.energyCostPerTick??2]
+  ]) one(root,selector).value=String(value);
+  for(const [key,checked] of [
+    ["damage",channel?.stopOnDamage!==false],
+    ["stun",channel?.stopOnStun!==false],
+    ["silence",channel?.stopOnSilence!==false]
+  ]) one(root,"[data-skill-channeling-stop-"+key+"]").checked=checked;
+  renderHumanSkillEffectsV1(root,channel?.effects??[],statRegistry,statusVisuals,
+    "[data-skill-channeling-effects-host]");
+}
+function readHumanChannelingFieldsV1(root) {
+  if(!one(root,"[data-skill-channeling-enabled]").checked)return null;
+  return {
+    tickIntervalMs:numericValue(root,"[data-skill-channeling-interval]"),
+    maxDurationMs:numericValue(root,"[data-skill-channeling-duration]"),
+    maxTicks:numericValue(root,"[data-skill-channeling-max-ticks]")||null,
+    energyCostPerTick:numericValue(root,"[data-skill-channeling-energy]"),
+    stopOnDamage:one(root,"[data-skill-channeling-stop-damage]").checked,
+    stopOnStun:one(root,"[data-skill-channeling-stop-stun]").checked,
+    stopOnSilence:one(root,"[data-skill-channeling-stop-silence]").checked,
+    effects:readHumanSkillEffectsV1(root,"[data-skill-channeling-effects-host]")
+  };
+}
 function writeHumanContactHoldFieldsV1(root, hold, statRegistry = null, statusVisuals = {}) {
   one(root, "[data-skill-contact-hold-enabled]").checked = hold !== null && hold !== undefined;
   one(root, "[data-skill-contact-hold-settings]").hidden = hold === null || hold === undefined;
@@ -3914,6 +3958,8 @@ function writeSkillDraftFields(
     fields.presentation.statusVisuals
   );
   writeHumanContactHoldFieldsV1(root, fields.contactHold, statRegistry,
+    fields.presentation.statusVisuals);
+  writeHumanChannelingFieldsV1(root,fields.channeling,statRegistry,
     fields.presentation.statusVisuals);
   renderHumanProjectilePowerV1(
     root,
@@ -9377,6 +9423,7 @@ function readSkillFields(root) {
       root,
       "[data-skill-approach]"
     ),
+    channeling:readHumanChannelingFieldsV1(root),
     contactHold: one(root, "[data-skill-contact-hold-enabled]").checked
       ? {
           tickIntervalMs: numericValue(root, "[data-skill-contact-hold-interval]"),
@@ -10725,6 +10772,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     root,
     "[data-skill-effect-add]"
   );
+  const channelingEnabled=one(root,"[data-skill-channeling-enabled]");
+  const channelingConfig=one(root,"[data-skill-channeling-config]");
+  const channelEffectsHost=one(root,"[data-skill-channeling-effects-host]");
+  const channelEffectAdd=one(root,"[data-skill-channeling-effect-add]");
   const contactHoldEnabled = one(root, "[data-skill-contact-hold-enabled]");
   const contactHoldSettings = one(root, "[data-skill-contact-hold-settings]");
   const contactHoldEffectsHost = one(root, "[data-skill-contact-hold-effects-host]");
@@ -12711,7 +12762,42 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
     appendHumanSkillEffectV1(root, null, statRegistry);
   });
+  listen(channelingEnabled,"change",()=>{
+    channelingConfig.hidden=!channelingEnabled.checked;
+    if(channelingEnabled.checked){
+      if(chargedEnabled.checked||chargedEffectsEnabled.checked||contactHoldEnabled.checked){
+        channelingEnabled.checked=false;channelingConfig.hidden=true;
+        setStatus(root,"La canalisation ne se combine pas avec charge ou maintien au contact. Désactive d’abord cette mécanique.","warn");
+        return;
+      }
+      // The initial skill cannot apply a second duplicate effect; move only
+      // native allowed tick effects to the existing nested channel owner.
+      const immediate=readHumanSkillEffectsV1(root);
+      if(immediate.length){
+        const allowed=immediate.every(e=>["damage","heal","apply_status","apply_marker"].includes(e.kind)
+          && ["target","self"].includes(e.targetScope));
+        if(allowed){
+          renderHumanSkillEffectsV1(root,immediate,statRegistry,{},"[data-skill-channeling-effects-host]");
+          renderHumanSkillEffectsV1(root,[],statRegistry);
+        }else{
+          channelingEnabled.checked=false;channelingConfig.hidden=true;
+          setStatus(root,"La canalisation ne peut pas conserver simultanément les effets initiaux. Retire les zones ou programmations avant de l'activer.","warn");
+          return;
+        }
+      }
+      one(root,"[data-skill-form]").value="beam";
+      one(root,"[data-skill-approach]").value="none";
+      one(root,"[data-skill-travel-time]").value="0";
+      beamStageLayout.sync();
+    }
+  });
+  listen(channelEffectAdd,"click",()=>appendHumanSkillEffectV1(root,null,statRegistry,null,
+    "[data-skill-channeling-effects-host]"));
   listen(contactHoldEnabled, "change", () => {
+    if(contactHoldEnabled.checked&&channelingEnabled.checked){
+      contactHoldEnabled.checked=false;
+      setStatus(root,"Désactive la canalisation avant le maintien au contact.","warn");
+    }
     contactHoldSettings.hidden = !contactHoldEnabled.checked;
   });
   listen(contactHoldEffectAddButton, "click", () => {
@@ -12721,7 +12807,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   // The same tactical row owner handles both lists, but each host is a
   // separate explicit source. A repeated effect cannot silently become an
   // immediate impact effect (or vice versa).
-  for (const effectsHost of [skillEffectsHost, contactHoldEffectsHost]) {
+  for (const effectsHost of [skillEffectsHost, contactHoldEffectsHost, channelEffectsHost]) {
     listen(effectsHost, "change", event => {
       const row = event.target?.closest?.("[data-skill-effect-row]");
       if (!row) return;
