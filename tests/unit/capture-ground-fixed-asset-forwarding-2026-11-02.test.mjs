@@ -18,7 +18,8 @@ function fakeElement(rect={left:0,top:0,width:20,height:20}) {
   return {style:{},dataset:{},className:"",ownerDocument:null,children:[],
     append(child){this.children.push(child);},
     remove(){},
-    getBoundingClientRect(){return rect;}
+    // DOMRect exposes bottom/right even when a test only supplies left/top/size.
+    getBoundingClientRect(){return {...rect,right:rect.left+rect.width,bottom:rect.top+rect.height};}
   };
 }
 function pulse(travel) {
