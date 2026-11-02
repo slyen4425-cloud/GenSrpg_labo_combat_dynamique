@@ -1806,9 +1806,18 @@ export function createDomSkillFxRenderer({
     const peakScale = isClash ? 1.2 : 1.08;
     const endScale = isClash ? 1.48 : 1.28;
 
+    // A channel pulse is the SAME authored sprite animation, but rooted
+    // at the ground below the target. This visual never detects collision
+    // or decides damage; native Combat Runtime already accepted the tick.
+    const groundRise = type === "channel-pulse";
+    if(groundRise) node.style.transformOrigin="50% 100%";
     const animation = animate(
       node,
-      [
+      groundRise ? [
+        {transform:`translate(-50%, -4%) scale(${0.3 * displayScale}, ${0.08 * displayScale})`,opacity:0.1 * opacity},
+        {transform:`translate(-50%, -100%) scale(${displayScale}, ${displayScale})`,opacity,offset:0.65},
+        {transform:`translate(-50%, -100%) scale(${displayScale}, ${displayScale})`,opacity:animatedSprite ? opacity : 0.45 * opacity}
+      ] : [
         {
           transform:
             `translate(-50%, -50%) scale(${startScale * displayScale})`,
@@ -2143,7 +2152,7 @@ export function createDomSkillFxRenderer({
       });
     }
     if (
-      !["cast", "projectile", "beam", "impact", "clash-impact", "miss", "damage", "heal", "phase"].includes(type)
+      !["cast", "projectile", "beam", "impact", "channel-pulse", "clash-impact", "miss", "damage", "heal", "phase"].includes(type)
     ) {
       return Object.freeze({
         status: "ignored",
@@ -2612,6 +2621,26 @@ export function createDomSkillFxRenderer({
           presentation?.impactFeedbackOffset ??
           null
       });
+    }
+
+    if (type === "channel-pulse") {
+      // The authored under-target sprite is a purely visual rising ice
+      // spike played once PER ACCEPTED native tick, never at the first cast.
+      // Any other channeled ability keeps its existing impact-at-target.
+      const groundVisual=presentation?.travel?.trajectoryMode==="under_target"
+        ? presentation.travel : null;
+      if(groundVisual){
+        const feet=projectileTargetRect(targetSlot);
+        return playImpactVisual({
+          visual:groundVisual,skillId,
+          point:{x:feet.left+feet.width/2-arenaRect.left,
+                 y:feet.bottom-arenaRect.top},
+          durationMs,
+          layer:presentation?.travelLayer ?? "front",
+          type:"channel-pulse"
+        });
+      }
+      return play({type:"impact",skillId,actorSlot,fromSlot,targetSlot,durationMs});
     }
 
     if (type === "impact") {
