@@ -61,7 +61,7 @@ test("approved ice gorilla charge: sole registered player animation with hold-la
   assert.equal(manifest.atlas.frameCount, 12);
   assert.equal(manifest.atlas.frameWidth, 512);
   assert.equal(manifest.atlas.frameHeight, 512);
-  assert.equal(asset.resource.file, base.replace(/^assets\\/library\\//, "") + "/" + manifest.atlas.file);
+  assert.equal(asset.resource.file, base.slice("assets/library/".length) + "/" + manifest.atlas.file);
   for (const kind of ["canalisation", "planche"]) {
     const name = manifest.previews[kind];
     assert.ok(name && read(base + "/" + name).length > 10000);
