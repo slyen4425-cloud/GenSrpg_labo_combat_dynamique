@@ -1763,6 +1763,19 @@ export async function mountCoop2v2Test({
         damageFeedback?.flash(feedback.actorId, { delayMs });
       }
     },
+    onChannelStart({actorId}) {
+      if(actionRefs[actorId])actionRefs[actorId].textContent="Canalisation";
+    },
+    onChannelTick({actorId,targetId,skillId,tick}) {
+      // Same native tick and same FX/audio adapter in 1v1 and 2v2.
+      fx.play({type:"impact",skillId,fromSlot:actorId,targetSlot:targetId,durationMs:420});
+      combatAudio.play({type:"impact",skillId,actorSlot:actorId,targetSlot:targetId,loop:false});
+      if(actionRefs[actorId])actionRefs[actorId].textContent="Canalisation · "+tick;
+    },
+    onChannelEnd({actorId,reason}) {
+      if(actionRefs[actorId])actionRefs[actorId].textContent="Prêt";
+      renderState();queueAiDecisions();
+    },
     onContactHoldStart({actorId}) {
       if (actionRefs[actorId]) actionRefs[actorId].textContent = "Au contact";
     },
