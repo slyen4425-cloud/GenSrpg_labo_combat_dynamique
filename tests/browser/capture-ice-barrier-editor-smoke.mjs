@@ -87,9 +87,38 @@ try{
    to:{x:spriteRect.right+40,y:spriteRect.top+spriteRect.height/2},
    barriers:arenaOverlay.collisionRectsFor({sourceActorId:"opponent",targetActorId:"player"})});
  if(arenaSegment?.entityId!==arenaPlaced.record.id)throw Error("arena wall has no real collision");
+ // Ordinary wall HP badge must be ABOVE the actual artwork, not below it.
+ const normalBadge=stage.querySelector("[data-combat-entity-hp]").getBoundingClientRect();
+ if(normalBadge.bottom>spriteRect.top-3)
+   throw Error("normal wall HP badge is still below/over the sprite");
  arenaOverlay.dispose();
   if(stage.dataset.combatEntityArenaActive)throw Error("arena-layer flag not removed on dispose");
   stage.remove();
+ // User's scale-4 arena wall is taller than the viewport: its unique
+ // native HP badge must remain visible while preserving collision bounds.
+ const tallStage=document.createElement("div");
+ tallStage.style.cssText="position:relative;width:400px;height:220px;overflow:hidden;";
+ document.body.append(tallStage);
+ const tallWall=createCombatBarrierV1({state,sourceActorId:"player",protectedActorId:"player",
+   sourceSkillId:"wall-hp-large",effect:{...effect,placementMode:"arena",
+    arenaXPct:47,arenaYPct:55,visualScale:4,visualScaleX:1.5}});
+ const tallOverlay=createCombatEntityOverlayV1({fighterContainers:{player:host},
+   arenaHost:tallStage,assetForId:id=>presentationAssets.visualAsset(id)});
+ tallOverlay.render(tallWall.state);
+ const tallSprite=tallStage.querySelector("[data-combat-entity-sprite]").getBoundingClientRect();
+ const tallBadge=tallStage.querySelector("[data-combat-entity-hp]").getBoundingClientRect();
+ const tallBounds=tallStage.getBoundingClientRect();
+ if(Math.abs(tallSprite.width-420)>1||Math.abs(tallSprite.height-368)>1)
+   throw Error("native scale-4 sprite bounds changed while adjusting HP badge");
+ if(tallStage.querySelectorAll("[data-combat-entity-hp]").length!==1)
+   throw Error("a second HP badge/owner was created");
+ if(tallBadge.top<tallBounds.top+3||tallBadge.bottom>tallBounds.bottom-3)
+   throw Error("scale-4 wall HP badge is clipped by the arena");
+ const tallCollision=tallOverlay.collisionRectsFor({sourceActorId:"opponent",targetActorId:"player"})[0]?.rect;
+ if(!tallCollision||Math.abs(tallCollision.width-tallSprite.width)>1||
+   Math.abs(tallCollision.height-tallSprite.height)>1)
+   throw Error("HP badge changed physical wall collision bounds");
+ tallOverlay.dispose();tallStage.remove();
  // Author width and height must change the same visible art + collision rectangle.
   const stretchStage=document.createElement("div");
   stretchStage.style.cssText="position:relative;width:400px;height:220px;";
