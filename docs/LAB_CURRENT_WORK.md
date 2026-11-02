@@ -1,9 +1,12 @@
-## 2026-11-02 — Sécurisation du maintien de pose contre une ancienne animation rejetée (en cours)
+## 2026-11-02 — Sécurisation du maintien de pose contre une ancienne animation rejetée (validation technique)
 - Reprise de la PR #208 publiée à gh-pages@5cbf51fbbc20c476328b2bbc7d433c5d429c08af ; CI 41485983540 et Pages 41485983849 SUCCESS ; validation Android auteur de l'animation toujours distincte.
 - Risque de concurrence asynchrone identifié dans le propriétaire `createCombatResolutionPresenter.beginAttackPose` : l'échec différé de l'ancienne promesse visuelle appelle `releaseAttackPose(actorSlot)` sans vérifier que le maintien appartient encore à cette ancienne tentative. Si une nouvelle charge/canalisation démarre entre-temps sur le même acteur, la mauvaise pose peut être libérée.
 - BASE gh-pages@5cbf51fbbc20c476328b2bbc7d433c5d429c08af ; START checkpoint/lab-start-stale-attack-pose-2026-11-02 ; WORK work/lab-stale-attack-pose-2026-11-02. Source unique inchangée : Demo Visual State = pose, Combat Runtime = événements, Presenter = projection d'un événement.
 - Portée strictement limitée : un test RED avec rejet différé A après le début B et un garde d'identité d'événement dans `src/adapters/renderer/combat-resolution-presenter.js` ; test additionnel dans `tests/unit/attack-pose-hold-charge-channel-2026-11-02.test.mjs`, ce journal. Pas de nouveaux timers, pas de moteur de maintien parallèle ; dégâts, énergie, sort Pique de glace, gestes, animations et callbacks natifs 1v1/2v2 inchangés.
 - Ordre : test RED réel avant le code, correction racine, suite Foundation+4 Chromium sur SHA final code/docs, checkpoint GREEN sur SHA exact et PR dédiée vers gh-pages ; vérifier CI/Pages postfusion. Ne pas conclure Android sans test physique.
+- RED démontré sur SHA `3ecf82324ba09f889f965c43deb5e9df19fe44f7` : Actions `41490152670`, Foundation FAIL avec l'assertion `the stale failure must not unfreeze cast B` (`false !== true`) ; les jobs ultérieurs ont été supplantés, ne pas présenter le run comme 5/5 rouge exhaustif.
+- Correctif propriétaire sur SHA `0cf07a72d27b0cf40a9b40c9114efcedf4f1d6e1` : remplace la simple présence `Set` par une identité de cast dans le même `Map` ; seul le rejet de la tentative courante peut libérer la pose. Aucune seconde animation, horloge ni état de combat. CI `41490363365` = SUCCESS **5/5** (Foundation + quatre Chromium) sur SHA de code ; la présente documentation produit un nouveau SHA nécessitant sa propre CI avant checkpoint GREEN.
+- PR #209 vers `gh-pages` ouverte en brouillon ; pas encore fusionnée au moment de cette entrée.
 
 ---
 
