@@ -44,7 +44,44 @@ document.addEventListener("DOMContentLoaded",()=>{
      if(iceOption){ice.value="ice";ice.dispatchEvent(new Event("change",{bubbles:true}));
        if(library.value!==selected)throw Error("filter discarded selected ability");}
    }
-   document.body.dataset.channelMineSmoke="pass:channel:native-mine:under-target:filters";
+   // Real Android-like author path: the normal Projectile + Channeling
+   // combination was invalid. One guided click must produce a savable
+   // native area channel without discarding existing media references.
+   // Use the real editor tab navigation: this panel is hidden by default
+   // while the editor starts on the Creature tab. Never force CSS/hidden
+   // or invent a second selector in a synthetic detached subtree.
+   sel('[data-editor-tab="skills"]').click();
+   if(sel('[data-editor-panel="skills"]').hidden)
+     throw Error("Skills navigation did not display its native panel");
+   sel("[data-skill-new]").click();
+   if(enabled.checked||sel("[data-skill-channeling-effects-host]").children.length!==0)
+     throw Error("new skill inherited the previous ability's invisible channel effects");
+   sel("[data-skill-name]").value="Pique de glace";
+   const preset=sel("[data-skill-channel-ice-preset]");
+   if(!preset)throw Error("guided ice-spike preset missing");
+   preset.click();
+   const form=sel("[data-skill-form]");
+   if(!enabled.checked||form.value!=="area"||trajectory.value!=="under_target")
+     throw Error("ice spike preset failed canonical area + under-target presentation");
+   const pulseEffects=sel("[data-skill-channeling-effects-host]");
+   const damage=pulseEffects.querySelector("[data-skill-effect-amount]");
+   if(!damage||Number(damage.value)!==12)
+     throw Error("ice spike repeated native damage not configured");
+   sel("[data-skill-channel-ice-sprite-jump]").click();
+   const travelPicker=sel("[data-skill-travel-fx]");
+   const visualPanel=sel("[data-skill-fx-advanced]");
+   if(!visualPanel.open||visualPanel.closest(".card").dataset.collapsed==="true"||
+      travelPicker.getClientRects().length===0)
+     throw Error("ice sprite shortcut did not display the original Trajet selector: "+
+       "advanced="+visualPanel.open+", card="+visualPanel.closest(".card").dataset.collapsed+
+       ", rects="+travelPicker.getClientRects().length+
+       ", ancestry="+(()=>{let x=travelPicker,chain=[];while(x&&chain.length<14){const st=getComputedStyle(x);chain.push(x.tagName+"."+String(x.className||"").slice(0,50)+"[hidden="+x.hidden+",open="+x.open+",display="+st.display+",rect="+x.getClientRects().length+"]");x=x.parentElement;}return chain.join(">")})());
+   form.value="projectile";form.dispatchEvent(new Event("change",{bubbles:true}));
+   if(form.value!=="area")throw Error("form guard left invalid projectile + channeling");
+   sel("[data-skill-create]").click();
+   if(![...library.options].some(o=>o.textContent.includes("Pique de glace")))
+     throw Error("native ice spike could not be saved after guided configuration");
+   document.body.dataset.channelMineSmoke="pass:channel:native-mine:under-target:filters:ice-spike-saved";
   }catch(e){document.body.dataset.channelMineSmoke="error:"+e.message;}
  },2400);
 });

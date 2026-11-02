@@ -73,7 +73,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -117,7 +117,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -4077,6 +4077,9 @@ function prepareNewSkillDraftFields(
     statRegistry
   );
   writeHumanContactHoldFieldsV1(root, null, statRegistry);
+  // New ability means an empty channel contract too. Otherwise the previous
+  // draft's invisible pulse effects survive and silently override presets.
+  writeHumanChannelingFieldsV1(root, null, statRegistry);
   writeSkillFeedbackControlsV1(
     root,
     {}
@@ -10804,6 +10807,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   const channelingConfig=one(root,"[data-skill-channeling-config]");
   const channelEffectsHost=one(root,"[data-skill-channeling-effects-host]");
   const channelEffectAdd=one(root,"[data-skill-channeling-effect-add]");
+  const channelIcePreset=one(root,"[data-skill-channel-ice-preset]");
+  const channelIceSpriteJump=one(root,"[data-skill-channel-ice-sprite-jump]");
   const contactHoldEnabled = one(root, "[data-skill-contact-hold-enabled]");
   const contactHoldSettings = one(root, "[data-skill-contact-hold-settings]");
   const contactHoldEffectsHost = one(root, "[data-skill-contact-hold-effects-host]");
@@ -12858,6 +12863,76 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       return;
     }
     appendHumanSkillEffectV1(root, null, statRegistry);
+  });
+  function prepareIceSpikeChannelV1({preset=false}={}) {
+    if(chargedEnabled.checked||chargedEffectsEnabled.checked||contactHoldEnabled.checked){
+      setStatus(root,"Pics de glace canalisés : désactive d'abord Charge ou Maintien au contact. Les données actuelles sont conservées.","warn");
+      return false;
+    }
+    // One native owner for damage: migrate only compatible immediate effects
+    // into the existing channeling.effects list, never copy or merge silently.
+    const immediate=readHumanSkillEffectsV1(root);
+    const pulse=readHumanSkillEffectsV1(root,"[data-skill-channeling-effects-host]");
+    const allowed=immediate.every(e=>["damage","heal","apply_status","apply_marker"].includes(e.kind)
+      && ["target","self"].includes(e.targetScope));
+    if(!allowed || (immediate.length&&pulse.length)){
+      setStatus(root,"Canalisation : plusieurs effets différents sont déjà configurés. Ajuste les lignes existantes avant de continuer ; aucune donnée n'a été écrasée.","warn");
+      return false;
+    }
+    if(immediate.length){
+      renderHumanSkillEffectsV1(root,immediate,statRegistry,{},"[data-skill-channeling-effects-host]");
+      renderHumanSkillEffectsV1(root,[],statRegistry);
+    }else if(preset&&!pulse.length){
+      renderHumanSkillEffectsV1(root,[{kind:"damage",targetScope:"target",amount:12,channel:"ice"}],
+        statRegistry,{},"[data-skill-channeling-effects-host]");
+    }
+    if(preset && !channelingEnabled.checked){
+      for(const [selector,value] of [
+        ["[data-skill-channeling-interval]",1000],
+        ["[data-skill-channeling-duration]",5000],
+        ["[data-skill-channeling-max-ticks]",4],
+        ["[data-skill-channeling-energy]",3]
+      ]) one(root,selector).value=String(value);
+    }
+    channelingEnabled.checked=true;
+    channelingConfig.hidden=false;
+    one(root,"[data-skill-channeling-section]").open=true;
+    one(root,"[data-skill-category]").value="offensive";
+    one(root,"[data-skill-form]").value="area";
+    one(root,"[data-skill-approach]").value="none";
+    one(root,"[data-skill-travel-time]").value="0";
+    if(preset){
+      one(root,"[data-skill-element]").value="ice";
+      one(root,"[data-skill-trajectory-mode]").value="under_target";
+      one(root,"[data-skill-projectile-power]").value="0";
+    }
+    beamStageLayout.sync();
+    return true;
+  }
+  listen(channelIcePreset,"click",()=>{
+    if(!prepareIceSpikeChannelV1({preset:true}))return;
+    setStatus(root,"Pics de glace canalisés prêts : choisis le sprite montant dans Effets visuels → Personnaliser les animations → Trajet. Le son Impact se rejouera à chaque pulsation. Enregistre puis teste.","ok");
+  });
+  listen(channelIceSpriteJump,"click",()=>{
+    const personalization=one(root,"[data-skill-fx-advanced]");
+    const visualCard=personalization.closest(".card");
+    // Use the existing disclosure owner's real toggle (and its ARIA
+    // state), not a second independent visibility flag for this card.
+    if(visualCard?.dataset.collapsed==="true")
+      visualCard.querySelector(".card-title")?.click();
+    personalization.open=true;
+    const sprite=one(root,"[data-skill-travel-fx]");
+    sprite.scrollIntoView?.({block:"center",behavior:"smooth"});
+    sprite.focus?.();
+  });
+  listen(one(root,"[data-skill-form]"),"change",()=>{
+    if(!channelingEnabled.checked || one(root,"[data-skill-form]").value!=="projectile")return;
+    const rising=one(root,"[data-skill-trajectory-mode]").value==="under_target";
+    one(root,"[data-skill-form]").value=rising?"area":"beam";
+    beamStageLayout.sync();
+    setStatus(root,rising
+      ?"La canalisation de pics au sol utilise la forme Zone : « Sous la cible » règle le sprite, pas un projectile physique."
+      :"Un projectile physique ne peut pas être canalisé : utilise Rayon ou Zone pour les effets répétés.","warn");
   });
   listen(channelingEnabled,"change",()=>{
     channelingConfig.hidden=!channelingEnabled.checked;

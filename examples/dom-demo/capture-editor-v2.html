@@ -1463,6 +1463,10 @@
 
         <details class="skill-channeling" data-skill-channeling-section>
           <summary><strong>Canalisation — dégâts, soins ou statuts à chaque pulsation</strong></summary>
+          <p class="note">Pour des pics sortant du sol : ce n'est pas un projectile physique. L'attaque est une Zone canalisée ; le sprite Trajet (animé) surgit sous la cible à chaque pulsation. La compétence reste esquivable selon ses règles, sans dégâts au lancement.</p>
+          <button type="button" class="secondary-action" data-skill-channel-ice-preset>Configurer Pics de glace canalisés</button>
+          <button type="button" class="secondary-action" data-skill-channel-ice-sprite-jump>Choisir le sprite des pics (Trajet)</button>
+          <p class="note">Ce réglage conserve ton nom, ton ID et tes sprites existants. Il initialise 12 dégâts de Glace par seconde, pendant 4 pulsations au maximum, à 3 énergie par pulsation. Les réglages restent modifiables.</p>
           <label class="switch-line"><input type="checkbox" data-skill-channeling-enabled>
             <span>Activer la canalisation (rayon, zone, aura ou sur soi)</span></label>
           <div data-skill-channeling-config hidden>
@@ -1479,7 +1483,7 @@
             <label class="switch-line"><input type="checkbox" data-skill-channeling-stop-silence checked> Interrompre si réduit au silence</label>
             <div class="skill-effects-list" data-skill-channeling-effects-host></div>
             <button type="button" class="secondary-action" data-skill-channeling-effect-add>+ Ajouter un effet répété (par tick)</button>
-            <p class="note">À chaque tick, le sprite et le son d'impact existants peuvent se rejouer ; règle les dégâts par tick ci-dessus.</p>
+            <p class="note">Sprites : ouvre ci-dessous « Personnaliser les animations » (section Effets visuels). <strong>Cast</strong> = une fois au lancement. <strong>Trajet</strong> = sprite des pics à faire surgir du sol, rejoué à chaque pulsation avec le mode « Sous la cible ». <strong>Impact</strong> = sprite utilisé pour les autres canalisations, ou en repli si aucun Trajet n'est choisi. <strong>Son Impact</strong> = son joué à chaque pulsation. Ne choisis pas la forme Projectile : elle reste réservée aux projectiles physiques.</p>
           </div>
         </details>
 
@@ -2610,6 +2614,6 @@
     </template>
   </section>
 
-  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102"></script>
+  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102"></script>
 </body>
 </html>
