@@ -55,7 +55,7 @@ test("RED: bestiary correctly explains a rear wall and that one strike never spi
  const skill=normalizeSkillDefinition({...src.draft.definition,
    effects:[{...src.draft.definition.effects[0],arenaXPct:undefined,arenaYPct:undefined,placementMode:"behind"}]});
  const explanation=describeCaptureSkillV1(skill).sentences.join(" ");
- assert.match(explanation,/derrière/i);
+ assert.doesNotMatch(explanation,/Placement|Position|derrière|coordonnées/i,"bestiary describes gameplay, not editor-only position");
  assert.match(explanation,/arrêt|bloqu|intercept/i);
  assert.doesNotMatch(explanation,/dégâts excédentaires touchent leur cible/i);
 });
