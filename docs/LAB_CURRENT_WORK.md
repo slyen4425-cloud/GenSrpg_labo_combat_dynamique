@@ -6,6 +6,8 @@
 - Propriétaires autorisés : `src/ui/capture-editor-human-v2.js`, petit helper de preset UI si requis, `examples/dom-demo/capture-editor-v2.html`, `src/ui/combat-test-ui.js` et `combat-2v2-test-ui.js` pour même signal `onChannelTick`, `src/adapters/renderer/dom-skill-fx.js` et `capture-skill-presentation-assets-v2.js` pour un rendu par tick, tests unitaires/Chromium, révision de cache ESM et docs. Protégés : `SkillDefinition` mécanique, Combat Runtime/Session/State, IA, assets officiels, autres modes, `main` et `global-assets`.
 - TDD RED sur la configuration canalisée valide et le vrai chemin navigateur, sur le rendu d'un sprite au pied de cible déclenché uniquement par un tick, et sur les anciens combos interdits. CI Foundation + 4 navigateurs du SHA code+docs, checkpoint GREEN exact, PR gh-pages, postmerge CI/Pages, validation tactile Android distincte. Aucun maquillage des erreurs.
 
+- Reprise fil n°2, preuves au SHA de code `0587b9e782fb3ae49ce4dca84846341bc7bff5ea` : PR #201 run `41435002157` = 5/5 ; exécution branche `41434991087` premier essai 4/5 (sentinelle historique `shadow-light-real-render-smoke.mjs`, `real contact count=0`), relance du seul job `creature-library-browser` puis second essai = 5/5 sur le même SHA, sans désactiver ni modifier le test. Ce comportement intermittent ne prouve pas une régression des pics ; instabilité historique de contact à suivre distinctement, sans masquage. Aucun checkpoint final, publication ni validation Android avant CI 5/5 du SHA documentaire final et Pages postfusion.
+
 ---
 
 ## 2026-11-02 — Canalisation éditable, pics sous cible, mine différée, ergonomie effets et filtres par élément

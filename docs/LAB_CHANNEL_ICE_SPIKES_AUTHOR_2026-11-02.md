@@ -23,3 +23,9 @@ Base `gh-pages@6a932f46b212a9eb84828b7958f1f1cfb0bad81b`.
 START `checkpoint/lab-start-channel-ice-spikes-ux-2026-11-02`.
 WORK `work/lab-channel-ice-spikes-ux-2026-11-02`.
 PR #201 ; aucun changement sur `main`, `global-assets`, GenSrpg ou Exploration ; aucun fichier utilisateur écrasé.
+
+## Vérification lors de la reprise — fil Labo Combat n°2
+- État source avant cette entrée : PR #201 en brouillon, branche à `0587b9e782fb3ae49ce4dca84846341bc7bff5ea`, base publiée `gh-pages@6a932f46b212a9eb84828b7958f1f1cfb0bad81b`; aucun changement sur `main` ni sur le catalogue `global-assets`.
+- CI Pull Request `41435002157` : Foundation + 4 navigateurs, 5/5 réussis sur `0587b9e`.
+- CI branche `41434991087` : 4/5 au premier essai à cause d'un `real contact count=0` dans la sentinelle historique `shadow-light-real-render-smoke.mjs`, hors des fichiers modifiés de ce chantier ; relance **du job échoué uniquement**, même SHA, cinq jobs réussis au second essai. Ce défaut intermittent reste visible dans l'historique, sans suppression de la sentinelle et sans conclusion abusive sur sa cause.
+- La présente mise à jour documentaire crée un nouveau commit : exiger la suite 5/5 **sur ce nouveau SHA**, checkpoint GREEN correspondant, fusion PR #201 vers `gh-pages`, CI et Pages postfusion, puis essai tactile utilisateur. La donnée locale `pique_glace` de l'utilisateur n'est pas un export officiel : ne jamais l'écraser.
