@@ -524,39 +524,6 @@ export function buildHumanTacticalSkillEffectsV1(
       });
     }
 
-    if (kind === "scheduled_effect") {
-      const nestedKind = row.querySelector(
-        "[data-skill-scheduled-effect-kind]"
-      ).value;
-      const nested = {
-        kind: nestedKind,
-        targetScope: "target",
-        amount: Number(
-          row.querySelector(
-            "[data-skill-scheduled-effect-amount]"
-          ).value
-        )
-      };
-      if (nestedKind === "damage") {
-        nested.channel =
-          row.querySelector(
-            "[data-skill-scheduled-effect-channel]"
-          ).value || null;
-      }
-
-      return {
-        kind,
-        targetScope: "target",
-        ...(row.querySelector("[data-skill-scheduled-mine]")?.checked?{visualCue:"ground_mine"}:{}),
-        delaySeconds: Number(
-          row.querySelector(
-            "[data-skill-scheduled-delay-seconds]"
-          ).value
-        ),
-        effects: [nested]
-      };
-    }
-
     if (kind === "persistent_zone") {
       const tickEffect =
         effect.tickEffect ?? {};
@@ -6955,6 +6922,40 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
       interceptKinds:[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
         .filter(input=>input.checked).map(input=>input.value)
     };
+
+    if (kind === "scheduled_effect") {
+      const nestedKind = row.querySelector(
+        "[data-skill-scheduled-effect-kind]"
+      ).value;
+      const nested = {
+        kind: nestedKind,
+        targetScope: "target",
+        amount: Number(
+          row.querySelector(
+            "[data-skill-scheduled-effect-amount]"
+          ).value
+        )
+      };
+      if (nestedKind === "damage") {
+        nested.channel =
+          row.querySelector(
+            "[data-skill-scheduled-effect-channel]"
+          ).value || null;
+      }
+
+      return {
+        kind,
+        targetScope: "target",
+        ...(row.querySelector("[data-skill-scheduled-mine]")?.checked?{visualCue:"ground_mine"}:{}),
+        delaySeconds: Number(
+          row.querySelector(
+            "[data-skill-scheduled-delay-seconds]"
+          ).value
+        ),
+        effects: [nested]
+      };
+    }
+
 
     if (kind === "persistent_zone") {
       const zoneEffectKind=row.querySelector("[data-skill-zone-effect-kind]").value;
