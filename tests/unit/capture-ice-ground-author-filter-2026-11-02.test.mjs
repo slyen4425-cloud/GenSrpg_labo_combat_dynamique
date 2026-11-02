@@ -15,7 +15,10 @@ test("RED: under-target FX uses validated V14 offsets independent of motion and 
   visual:{...before.visual,travel:{...before.visual.travel,groundMotion:"teleport"}}}),/groundMotion/);
 });
 test("RED: old skills keep their original normalized travel and gameplay",()=>{
- const x=normalizeSkillPresentationBinding(baseSkill.presentation);
+ const {sourceVersion:_source,...historical}=baseSkill.presentation;
+ const {groundMotion:_m,groundOffsetXPx:_x,groundOffsetYPx:_y,groundRisePx:_rise,...oldTravel}=historical.visual.travel;
+ const x=normalizeSkillPresentationBinding({...historical,version:10,
+   visual:{...historical.visual,travel:oldTravel}});
  assert.equal(x.version,10);
  assert.equal(x.visual.travel.trajectoryMode,"under_target");
  assert.equal(x.visual.travel.groundMotion,undefined);

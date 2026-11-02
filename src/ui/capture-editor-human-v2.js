@@ -12251,6 +12251,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   }
 
   let unfilteredLibraryChildren=[];
+  const boundSkillElementFilters=new WeakSet();
   // Every skill reference selector (the library, the five loadout slots
   // and any future selector populated with the same existing skill IDs)
   // shares ONE registry-derived filter owner. No parallel list of abilities.
@@ -12273,7 +12274,12 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         filter.setAttribute("aria-label","Filtrer les capacités par élément");
         filter.style.cssText="max-width:100%;margin:4px 0 8px;min-height:36px";
         select.before(filter);
+      }
+      // A static filter already exists in the Skills editor markup; the
+      // former implementation wired ONLY dynamically created filters.
+      if(!boundSkillElementFilters.has(filter)){
         filter.addEventListener("change",()=>applyFilter(select,filter));
+        boundSkillElementFilters.add(filter);
       }
       const prev=filter.value||"";
       const distinct=new Map();

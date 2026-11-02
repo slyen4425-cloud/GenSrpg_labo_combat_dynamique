@@ -17,7 +17,9 @@ test("Pique de glace author export is installed as canonical showcase preserving
  assert.equal(canonical.definition.channeling.effects[0].amount,5);
  assert.equal(canonical.definition.channeling.energyCostPerTick,3);
  assert.equal(canonical.presentation.visual.travel.trajectoryMode,"under_target");
- assert.equal(t.draft.presentation.version,10);
+ assert.equal(t.draft.presentation.version,14);
+ assert.equal(t.draft.presentation.sourceVersion,10);
+ assert.equal(t.draft.presentation.visual.travel.groundMotion,"fixed");
  assert.equal(t.draft.presentation?.visual?.travel?.assetId,"pack:capture:sprite-pointe-glace-01");
  assert.equal(t.draft.presentation?.visual?.travel?.trajectoryMode,"under_target");
 });
