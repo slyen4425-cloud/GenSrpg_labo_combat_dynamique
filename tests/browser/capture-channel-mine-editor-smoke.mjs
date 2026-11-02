@@ -44,7 +44,27 @@ document.addEventListener("DOMContentLoaded",()=>{
      if(iceOption){ice.value="ice";ice.dispatchEvent(new Event("change",{bubbles:true}));
        if(library.value!==selected)throw Error("filter discarded selected ability");}
    }
-   document.body.dataset.channelMineSmoke="pass:channel:native-mine:under-target:filters";
+   // Real Android-like author path: the normal Projectile + Channeling
+   // combination was invalid. One guided click must produce a savable
+   // native area channel without discarding existing media references.
+   sel("[data-skill-new]").click();
+   sel("[data-skill-name]").value="Pique de glace";
+   const preset=sel("[data-skill-channel-ice-preset]");
+   if(!preset)throw Error("guided ice-spike preset missing");
+   preset.click();
+   const form=sel("[data-skill-form]");
+   if(!enabled.checked||form.value!=="area"||trajectory.value!=="under_target")
+     throw Error("ice spike preset failed canonical area + under-target presentation");
+   const pulseEffects=sel("[data-skill-channeling-effects-host]");
+   const damage=pulseEffects.querySelector("[data-skill-effect-amount]");
+   if(!damage||Number(damage.value)!==12)
+     throw Error("ice spike repeated native damage not configured");
+   form.value="projectile";form.dispatchEvent(new Event("change",{bubbles:true}));
+   if(form.value!=="area")throw Error("form guard left invalid projectile + channeling");
+   sel("[data-skill-create]").click();
+   if(![...library.options].some(o=>o.textContent.includes("Pique de glace")))
+     throw Error("native ice spike could not be saved after guided configuration");
+   document.body.dataset.channelMineSmoke="pass:channel:native-mine:under-target:filters:ice-spike-saved";
   }catch(e){document.body.dataset.channelMineSmoke="error:"+e.message;}
  },2400);
 });
