@@ -5524,9 +5524,14 @@ function appendHumanSkillEffectV1(
       tacticalEffectKindLabelV1(value)
     );
   }
-  if (hostSelector === "[data-skill-contact-hold-effects-host]") {
+  if (hostSelector === "[data-skill-contact-hold-effects-host]" ||
+      hostSelector === "[data-skill-channeling-effects-host]") {
     for (const option of kind.options) {
-      if (["persistent_zone", "scheduled_effect", "force_reserve_switch", "summon_entity"].includes(option.value)) option.disabled = true;
+      const allowed=hostSelector === "[data-skill-channeling-effects-host]"
+        ? ["damage","heal","apply_status","apply_marker"]
+        : SKILL_EFFECT_V1_KINDS.filter(k=>!["persistent_zone","scheduled_effect",
+            "force_reserve_switch","summon_entity"].includes(k));
+      option.disabled=!allowed.includes(option.value);
     }
   }
 
@@ -5541,6 +5546,10 @@ function appendHumanSkillEffectV1(
       value,
       tacticalTargetScopeLabelV1(value)
     );
+  }
+
+  if(hostSelector==="[data-skill-channeling-effects-host]"){
+    for(const opt of scope.options)opt.disabled=!["target","self"].includes(opt.value);
   }
 
   const remove = document.createElement("button");
