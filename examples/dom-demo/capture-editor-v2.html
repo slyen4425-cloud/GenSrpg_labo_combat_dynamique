@@ -1959,6 +1959,25 @@
             <label>Décalage horizontal du départ (px)
               <input type="number" min="-700" max="700" step="10" value="0" data-skill-fall-offset-x>
             </label>
+            <fieldset class="editor-choice-group" data-skill-ground-settings>
+              <legend>Sous la cible — emplacement et déplacement</legend>
+              <p class="note">Si les 12 images du sprite montrent déjà une pointe qui surgit, utilise Sur place. Monter déplace le sprite en plus de son animation.</p>
+              <label>Déplacement du sprite
+                <select data-skill-ground-motion>
+                  <option value="fixed" selected>Sur place — animation seule</option>
+                  <option value="rise">Montée — translation vers le haut</option>
+                </select>
+              </label>
+              <label>Position horizontale (px, négatif = gauche)
+                <input type="number" min="-400" max="400" step="5" value="0" data-skill-ground-offset-x>
+              </label>
+              <label>Position verticale (px, positif = plus bas)
+                <input type="number" min="-400" max="400" step="5" value="0" data-skill-ground-offset-y>
+              </label>
+              <label>Distance de montée en mode Montée (px)
+                <input type="number" min="0" max="400" step="5" value="80" data-skill-ground-rise-px>
+              </label>
+            </fieldset>
             <fieldset class="editor-choice-group" data-skill-wave-settings>
               <legend>Onde expansive — collision sur le rayon visible</legend>
               <label>Rayon initial (% largeur de l'arène)

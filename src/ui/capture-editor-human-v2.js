@@ -1837,6 +1837,10 @@ function presentationForSkill(fields) {
   }
   if (travel !== null && presentation.travelTrajectoryMode === "under_target") {
     travel.trajectoryMode="under_target";
+    travel.groundMotion=presentation.groundMotion??"fixed";
+    travel.groundOffsetXPx=finiteNumber(presentation.groundOffsetXPx??0,"Décalage sol X");
+    travel.groundOffsetYPx=finiteNumber(presentation.groundOffsetYPx??0,"Décalage sol Y");
+    travel.groundRisePx=finiteNumber(presentation.groundRisePx??80,"Montée visuelle");
   }
   if (travel !== null && presentation.travelTrajectoryMode === "skyfall") {
     travel.trajectoryMode = "skyfall";
@@ -2004,8 +2008,9 @@ function presentationForSkill(fields) {
         fields.id,
         "ID capacité"
       ),
-    version: burrowTerrain !== null ? 13 : baseVersion,
+    version: travel?.groundMotion != null ? 14 : burrowTerrain !== null ? 13 : baseVersion,
     ...(burrowTerrain !== null ? {baseVersion} : {}),
+    ...(travel?.groundMotion != null ? {sourceVersion:burrowTerrain!==null?13:baseVersion} : {}),
     subjectType: "skill",
     subjectId: requiredText(
       fields.id,
@@ -2754,6 +2759,10 @@ export function humanSkillEditorFieldsFromDraftV1(
       travelArrivalLayer: travel?.arrivalLayer ?? "same",
       travelTrajectoryMode: definition.projectileTargeting === "expanding_wave"
         ? "expanding_wave" : travel?.trajectoryMode ?? "linear",
+      groundMotion: travel?.groundMotion ?? (travel?.trajectoryMode==="under_target"?"rise":"fixed"),
+      groundOffsetXPx: travel?.groundOffsetXPx ?? 0,
+      groundOffsetYPx: travel?.groundOffsetYPx ?? 0,
+      groundRisePx: travel?.groundRisePx ?? 80,
       waveStartRadiusPct: definition.expandingWave?.startRadiusPct ?? 3,
       waveEndRadiusPct: definition.expandingWave?.endRadiusPct ?? 65,
       waveThicknessPct: definition.expandingWave?.thicknessPct ?? 6,
@@ -3824,6 +3833,10 @@ function writeSkillDraftFields(
     ["[data-skill-wave-thickness]", fields.presentation.waveThicknessPct],
     ["[data-skill-fall-height]", fields.presentation.fallHeightPx],
     ["[data-skill-fall-offset-x]", fields.presentation.fallOffsetXPx],
+    ["[data-skill-ground-motion]", fields.presentation.groundMotion],
+    ["[data-skill-ground-offset-x]", fields.presentation.groundOffsetXPx],
+    ["[data-skill-ground-offset-y]", fields.presentation.groundOffsetYPx],
+    ["[data-skill-ground-rise-px]", fields.presentation.groundRisePx],
     [
       "[data-skill-cast-layer-player]",
       fields.presentation.castLayerPlayer
@@ -9621,6 +9634,10 @@ function readSkillFields(root) {
       waveThicknessPct: numericValue(root, "[data-skill-wave-thickness]"),
       fallHeightPx: numericValue(root, "[data-skill-fall-height]"),
       fallOffsetXPx: numericValue(root, "[data-skill-fall-offset-x]"),
+      groundMotion: selectedValue(root,"[data-skill-ground-motion]"),
+      groundOffsetXPx: numericValue(root,"[data-skill-ground-offset-x]"),
+      groundOffsetYPx: numericValue(root,"[data-skill-ground-offset-y]"),
+      groundRisePx: numericValue(root,"[data-skill-ground-rise-px]"),
       castLayerPlayer: selectedValue(
         root,
         "[data-skill-cast-layer-player]"
@@ -10479,6 +10496,10 @@ function writeCaptureFxStarterPresentationFieldsV1(
     ["[data-skill-wave-thickness]", presentation.waveThicknessPct ?? 6],
     ["[data-skill-fall-height]", presentation.fallHeightPx],
     ["[data-skill-fall-offset-x]", presentation.fallOffsetXPx],
+    ["[data-skill-ground-motion]", presentation.groundMotion ?? "fixed"],
+    ["[data-skill-ground-offset-x]", presentation.groundOffsetXPx ?? 0],
+    ["[data-skill-ground-offset-y]", presentation.groundOffsetYPx ?? 0],
+    ["[data-skill-ground-rise-px]", presentation.groundRisePx ?? 80],
     ["[data-skill-travel-layer-player]", presentation.travelLayerPlayer],
     ["[data-skill-travel-layer-opponent]", presentation.travelLayerOpponent],
     ["[data-skill-impact-fx]", presentation.impactAssetId],
