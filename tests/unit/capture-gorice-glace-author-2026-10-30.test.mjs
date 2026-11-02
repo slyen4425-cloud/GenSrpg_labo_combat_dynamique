@@ -10,7 +10,8 @@ import { projectCaptureStatEffectsV1 } from "../../src/core/combat/capture-stat-
 const repoFile = (path) => readFile(new URL("../../" + path, import.meta.url), "utf8");
 const goricePath = "data/capture/showcase/gorice.capture-creature-transfer-v1.json";
 const goriceSourcePath = "data/capture/source-exports/gensrpg-capture-creature-gorice-2026-10-30.json";
-const goriceLatestSourcePath = "data/capture/source-exports/gensrpg-capture-creature-gorice-author-2026-11-01.json";
+const goriceLatestSourcePath = "data/capture/source-exports/gensrpg-capture-creature-gorice-author-2026-11-02.json";
+const goricePriorSourcePath = "data/capture/source-exports/gensrpg-capture-creature-gorice-author-2026-11-01.json";
 const loupPath = "data/capture/showcase/crea-loup.capture-creature-transfer-v1.json";
 const loupSourcePath = "data/capture/source-exports/gensrpg-capture-creature-crea-loup-2026-10-21.json";
 
@@ -47,6 +48,7 @@ test("Gorice historical author source is preserved and new author revision loads
   assert.equal(JSON.parse(historical).draft.id, "gorice");
   assert.equal(JSON.parse(historical).statValues.values.glace, 0, "2026-10-30 archive must remain unchanged");
   assert.notEqual(source, historical, "new author export must not rewrite historical provenance");
+  assert.equal(createHash("sha256").update(await repoFile(goricePriorSourcePath)).digest("hex"), "c1191e68b1ae956222d23d58f7a0657c17a32426997e69e4859d3231aadeb854", "Nov 1 provenance must remain untouched");
   const active = await repoFile(goricePath);
   assert.equal(active, source, "active author payload must match original export byte-for-byte");
   const imported = importCaptureTransferJsonV1(active, { statRegistry: await registry() });
@@ -64,8 +66,8 @@ test("Gorice historical author source is preserved and new author revision loads
   assert.equal(record.draft.presentation.visual.front.assetId, "pack:capture:creature-gorille-des-glaces-opponent-01");
   assert.equal(record.draft.presentation.visual.back.assetId, "pack:capture:creature-gorille-des-glaces-player-01");
   assert.equal(record.draft.presentation.visual.icon.assetId, "pack:capture:creature-gorille-des-glaces-icon-01");
-  assert.deepEqual(record.draft.skillIds, ["fireball", "boule_neige", "poing_givrant", "mur_de_glace"], "latest author export owns the new skillIds");
-  assert.deepEqual(record.loadout.slots.map((slot) => slot.skillId), ["boule_neige", "poing_givrant", "mur_de_glace", null, null]);
+  assert.deepEqual(record.draft.skillIds, ["fireball", "boule_neige", "poing_givrant", "mur_de_glace", "pique_glace", "furie_bestiale"], "latest author export owns the new skillIds");
+  assert.deepEqual(record.loadout.slots.map((slot) => slot.skillId), ["boule_neige", "poing_givrant", "mur_de_glace", "pique_glace", "furie_bestiale"]);
 });
 
 test("Showcase has one unique Gorice entry and preserves Loup volcanique as a different creature", async () => {

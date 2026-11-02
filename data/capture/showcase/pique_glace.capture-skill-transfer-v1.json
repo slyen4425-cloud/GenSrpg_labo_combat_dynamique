@@ -93,6 +93,9 @@
       "subjectType": "skill",
       "subjectId": "pique_glace",
       "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-ice-spikes-01"
+        },
         "travel": {
           "assetId": "pack:capture:sprite-pointe-glace-01",
           "displayScale": 3,
