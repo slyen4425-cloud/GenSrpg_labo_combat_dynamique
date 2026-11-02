@@ -3715,6 +3715,12 @@ function syncHumanGuidedSkillEffectPanelsV1(root, selected = null) {
   return mode;
 }
 
+function syncSkillGroundVisualControlsV14(root) {
+  const group=root.querySelector("[data-skill-ground-settings]");
+  if(group)group.hidden=root.querySelector("[data-skill-trajectory-mode]")?.value!=="under_target";
+  const rise=root.querySelector("[data-skill-ground-rise-px]")?.closest("label");
+  if(rise)rise.hidden=root.querySelector("[data-skill-ground-motion]")?.value!=="rise";
+}
 function writeSkillDraftFields(
   root,
   draft,
@@ -3984,6 +3990,7 @@ function writeSkillDraftFields(
     fields.projectileClash
   );
   syncHumanGuidedSkillEffectPanelsV1(root);
+  syncSkillGroundVisualControlsV14(root);
 
   return fields;
 }
@@ -10854,6 +10861,9 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     root,
     "[data-skill-effect-add]"
   );
+  listen(one(root,"[data-skill-trajectory-mode]"),"change",()=>syncSkillGroundVisualControlsV14(root));
+  listen(one(root,"[data-skill-ground-motion]"),"change",()=>syncSkillGroundVisualControlsV14(root));
+  syncSkillGroundVisualControlsV14(root);
   const channelingEnabled=one(root,"[data-skill-channeling-enabled]");
   const channelingConfig=one(root,"[data-skill-channeling-config]");
   const channelEffectsHost=one(root,"[data-skill-channeling-effects-host]");
@@ -12240,13 +12250,17 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       state.runtimeReady ? "ok" : "warning";
   }
 
+  let unfilteredLibraryChildren=[];
   // Every skill reference selector (the library, the five loadout slots
   // and any future selector populated with the same existing skill IDs)
   // shares ONE registry-derived filter owner. No parallel list of abilities.
   function refreshHumanSkillElementFiltersV1() {
     const available=new Set(configuredSkills.keys());
     for(const select of root.querySelectorAll("select")){
-      const options=[...select.querySelectorAll("option")];
+      const options=select===librarySelect && unfilteredLibraryChildren.length
+        ? unfilteredLibraryChildren.flatMap(node=>node.tagName==="OPTION"
+            ? [node] : [...node.querySelectorAll("option")])
+        : [...select.querySelectorAll("option")];
       const skillOptions=options.filter(opt=>available.has(opt.value));
       if(skillOptions.length===0)continue;
       const parent=select.closest("label")??select.parentElement;
@@ -12278,6 +12292,22 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   }
   function applyFilter(select,filter) {
     const selected=select.value;
+    if(select===librarySelect && unfilteredLibraryChildren.length){
+      // Native Android menus ignore option.hidden: rebuild the visible DOM
+      // from this same configuredSkills-derived UI list, with no new authority.
+      select.replaceChildren(...unfilteredLibraryChildren.map(node=>node.cloneNode(true)));
+      for(const opt of [...select.querySelectorAll("option")]){
+        if(!opt.value||!configuredSkills.has(opt.value))continue;
+        const meta=humanSkillSelectorElementMetaV1(configuredSkills.get(opt.value).definition.element);
+        const id=meta.element??"__neutral__";
+        if(filter.value && filter.value!==id && opt.value!==selected)opt.remove();
+      }
+      for(const group of [...select.querySelectorAll("optgroup")]){
+        if(!group.querySelector("option"))group.remove();
+      }
+      if(selected && [...select.options].some(opt=>opt.value===selected))select.value=selected;
+      return;
+    }
     for(const opt of select.querySelectorAll("option")) {
       if(!opt.value||!configuredSkills.has(opt.value)){opt.hidden=false;continue;}
       const meta=humanSkillSelectorElementMetaV1(configuredSkills.get(opt.value).definition.element);
@@ -12346,6 +12376,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     ) {
       librarySelect.value = previous;
     }
+    unfilteredLibraryChildren=[...librarySelect.children].map(node=>node.cloneNode(true));
     refreshHumanSkillElementFiltersV1();
   }
 
