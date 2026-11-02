@@ -37,6 +37,8 @@ document.addEventListener("DOMContentLoaded",()=>{
    const filters=[...document.querySelectorAll("[data-skill-element-filter]")];
    if(filters.length<6)throw Error("skill element filters missing on all selectors: "+filters.length);
    const library=sel("[data-skill-library-select]");
+   if(![...library.options].some(o=>o.value==="pique_glace"))
+     throw Error("Pique de glace upload missing from the native saved skill list");
    if(library.options.length>1){
      const selected=library.value;
      const ice=filters.find(f=>f.parentElement?.contains(library));
@@ -69,6 +71,28 @@ document.addEventListener("DOMContentLoaded",()=>{
    if(enabled.checked||sel("[data-skill-channeling-effects-host]").children.length!==0)
      throw Error("new skill inherited the previous ability's invisible channel effects");
    sel("[data-skill-name]").value="Pique de glace";
+   // Follow the actual mobile path: the Skills card may be collapsed by the
+   // editor accordion, so open it through its real heading before requiring
+   // visible bounding rectangles for the selected mechanism.
+   const effectsCard=sel("[data-skill-effect-add-kind]").closest(".card");
+   if(effectsCard?.dataset.collapsed==="true")
+     effectsCard.querySelector(".card-title")?.click();
+   if(effectsCard?.dataset.collapsed==="true")
+     throw Error("Effects card cannot be opened by normal author controls");
+   const panels=["[data-skill-charged-panel]","[data-skill-charged-effects-panel]",
+     "[data-skill-channeling-section]","[data-skill-contact-hold]"];
+   if(panels.some(q=>!sel(q).hidden||sel(q).getClientRects().length!==0))
+     throw Error("independent mechanics panels remain VISIBLE outside the selector");
+   const chooser=sel("[data-skill-effect-add-kind]");
+   chooser.value="channeling";
+   chooser.dispatchEvent(new Event("change",{bubbles:true}));
+   if(sel("[data-skill-channeling-section]").hidden||
+       sel("[data-skill-channeling-section]").getClientRects().length===0||
+       panels.filter(q=>!sel(q).hidden||sel(q).getClientRects().length!==0).length!==1)
+     throw Error("selecting channeling did not show exactly its original panel: "+
+       panels.map(q=>q+"(hidden="+sel(q).hidden+",rect="+sel(q).getClientRects().length+
+         ",computed="+getComputedStyle(sel(q)).display+")").join("|")+
+       "; card="+effectsCard?.dataset.collapsed);
    const preset=sel("[data-skill-channel-ice-preset]");
    if(!preset)throw Error("guided ice-spike preset missing");
    preset.click();

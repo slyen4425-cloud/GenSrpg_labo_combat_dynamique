@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>GenSrpG Lab — Éditeur Capture</title>
   <link rel="stylesheet" href="./demo.css?v=wall-layer-scale-xy-20261101">
-  <link rel="stylesheet" href="./capture-editor-v2.css">
+  <link rel="stylesheet" href="./capture-editor-v2.css?v=pique-glace-unified-mechanics-20261102">
   <style>
     [data-creature-view-settings][hidden] { display: none; }
     [data-skill-charged-effects-config][hidden] { display: none !important; }
@@ -1407,10 +1407,12 @@
 
         <details class="editor-context-help"><summary>ⓘ Cibles, dégâts, buffs et zones</summary>
           <p class="note">Les dégâts sont des valeurs de base : Défense et résistances les modifient avant de retirer des PV. Une zone persistante peut toucher plusieurs ennemis régulièrement. Un soin rend des PV et un statut dure un temps précis. Ouvrez « Que fait cette capacité ? » pour lire vos réglages.</p>
+          <p class="note">Effets tactiques : Dégâts de zone, Soin, Gain d’énergie, Drain d’énergie, Buff / Debuff, Dégâts périodiques, Soin périodique, Bouclier, Immobilisation, Silence, Stun, Provocation, Nettoyage et Dissipation. Tous ces types sont sélectionnables dans le menu principal.</p>
+          <p class="note">Zone persistante : elle peut réappliquer des dégâts à intervalles réguliers, augmenter son rayon et se renforcer lors de la réactivation. Les réglages correspondants apparaissent lorsque cet effet est sélectionné.</p>
         </details>
         <label>Quel effet veux-tu ajouter ou régler ?
           <select data-skill-effect-add-kind aria-describedby="effect-guide">
-            <option value="standard" selected>+ Dégâts classiques (rapide)</option>
+            <option value="standard" selected>Effets immédiats : voir / modifier</option>
             <option value="wall">Invoquer un mur destructible</option>
             <option value="mine">Mine : explosion différée au sol</option>
             <option value="charged">Attaque chargée : projectile renforcé</option>
@@ -1420,10 +1422,10 @@
           </select>
         </label>
         <p class="note" id="effect-guide" data-skill-effect-guide>Choisis un effet : ses paramètres apparaissent directement. Les autres mécanismes restent repliés, sans perte de tes configurations.</p>
-        <button type="button" class="secondary-action" data-skill-effect-add>Ajouter des dégâts classiques</button>
+        <button type="button" class="secondary-action" data-skill-effect-add>Ajouter un effet de dégâts</button>
         <div class="skill-effects-list" data-skill-effects-host></div>
 
-        <details class="projectile-clash-config" aria-label="Attaque chargée" data-skill-charged-panel>
+        <details class="projectile-clash-config" aria-label="Attaque chargée" data-skill-charged-panel hidden>
           <summary><strong>Attaque chargée — réactiver avant le tir</strong></summary>
           <label class="switch-line"><input type="checkbox" data-skill-charged-enabled>
             <span>Activer l'attaque chargée (projectile direct uniquement)</span>
@@ -1443,7 +1445,7 @@
           <p class="note">« Préparation » (section Timing) est le temps de préparation de CHAQUE charge. Une pression trop rapide ne donne aucun bonus. Après chaque préparation, une fenêtre s'ouvre pour appuyer de nouveau. Chaque activation validée consomme l'énergie définie dans Timing : sans énergie, aucune nouvelle charge. Un seul projectile part après la dernière préparation et l'expiration de la fenêtre, ou dès que la préparation de la charge maximale est finie. Le cast grossit après chaque activation valide ; le cooldown et le nombre d'utilisations ne sont engagés qu'au premier appui.</p>
         </details>
 
-        <details class="projectile-clash-config" aria-label="Charge des effets tactiques" data-skill-charged-effects-panel>
+        <details class="projectile-clash-config" aria-label="Charge des effets tactiques" data-skill-charged-effects-panel hidden>
           <summary><strong>Charge de buffs, debuffs et soins</strong></summary>
           <label class="switch-line"><input type="checkbox" data-skill-charged-effects-enabled>
             <span>Renforcer les effets à chaque activation</span></label>
@@ -1460,7 +1462,7 @@
           <p class="note">Mêmes coûts, préparation et fenêtre que l'attaque chargée. Amplifie uniquement dégâts, soins et puissance des statuts numériques ; ne prolonge pas les durées et ne contourne pas les immunités.</p>
         </details>
 
-        <details class="skill-channeling" data-skill-channeling-section>
+        <details class="skill-channeling" data-skill-channeling-section hidden>
           <summary><strong>Canalisation — dégâts, soins ou statuts à chaque pulsation</strong></summary>
           <p class="note">Pour des pics sortant du sol : ce n'est pas un projectile physique. L'attaque est une Zone canalisée ; le sprite Trajet (animé) surgit sous la cible à chaque pulsation. La compétence reste esquivable selon ses règles, sans dégâts au lancement.</p>
           <button type="button" class="secondary-action" data-skill-channel-ice-preset>Configurer Pics de glace canalisés</button>
@@ -1486,7 +1488,7 @@
           </div>
         </details>
 
-        <details class="skill-contact-hold" data-skill-contact-hold aria-label="Maintien au contact">
+        <details class="skill-contact-hold" data-skill-contact-hold aria-label="Maintien au contact" hidden>
           <summary><strong>Sangsue / Maintien au contact (facultatif)</strong></summary>
           <label><input type="checkbox" data-skill-contact-hold-enabled>
             Rester au corps à corps après l'impact et appliquer des effets régulièrement
@@ -1510,30 +1512,7 @@
           </div>
         </details>
 
-        <p class="note">
-          Chaque effet possède sa propre portée. Les durées de statut sont réglées en secondes ici puis converties vers le contrat gameplay.
-        </p>
 
-        <details class="tactical-effect-help" aria-label="Effets tactiques disponibles">
-          <summary>Voir les effets tactiques disponibles</summary>
-          <span>Dégâts de zone</span>
-          <span>Soin</span>
-          <span>Gain d’énergie</span>
-          <span>Drain d’énergie</span>
-          <span>Buff / Debuff</span>
-          <span>Dégâts périodiques</span>
-          <span>Soin périodique</span>
-          <span>Bouclier</span>
-          <span>Immobilisation</span>
-          <span>Silence</span>
-          <span>Stun</span>
-          <span>Provocation</span>
-          <span>Nettoyage</span>
-          <span>Dissipation</span>
-          <span>Immunité dégâts / états négatifs</span>
-          <span>Effet différé après délai</span>
-          <span>Zone persistante évolutive</span>
-        </details>
 
         <template data-skill-expressiveness-prototypes>
           <label class="check">
@@ -1549,9 +1528,7 @@
           </label>
         </template>
 
-        <p class="note">
-          Une zone persistante peut durer plusieurs secondes, infliger des dégâts à intervalles réguliers et être renforcée par plusieurs réactivations. Son rayon gameplay utilise les distances Proche → Moyen → Loin ; chaque renforcement peut augmenter ce rayon jusqu’au maximum configuré.
-        </p>
+
       </article>
 
 
@@ -2613,6 +2590,6 @@
     </template>
   </section>
 
-  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102"></script>
+  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102"></script>
 </body>
 </html>

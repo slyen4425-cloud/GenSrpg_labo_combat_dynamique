@@ -1,0 +1,128 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "pique_glace",
+    "description": "Na",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "pique_glace",
+      "name": "Pique de glace",
+      "category": "offensive",
+      "form": "area",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "ice",
+      "approachMode": "none",
+      "channeling": {
+        "tickIntervalMs": 1000,
+        "maxDurationMs": 10000,
+        "maxTicks": 10,
+        "energyCostPerTick": 3,
+        "stopOnDamage": true,
+        "stopOnStun": true,
+        "stopOnSilence": true,
+        "effects": [
+          {
+            "kind": "damage",
+            "targetScope": "target",
+            "amount": 5,
+            "channel": "ice",
+            "ignoreResistancePct": 0,
+            "ignoreDamageReductionPct": 0
+          }
+        ]
+      },
+      "energyCost": 0,
+      "preparationMs": 0,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": []
+    },
+    "presentation": {
+      "id": "skill:pique_glace",
+      "version": 10,
+      "subjectType": "skill",
+      "subjectId": "pique_glace",
+      "visual": {
+        "travel": {
+          "assetId": "pack:capture:sprite-pointe-glace-01",
+          "displayScale": 1,
+          "attachment": "trajectory",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "trajectoryMode": "under_target"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}
