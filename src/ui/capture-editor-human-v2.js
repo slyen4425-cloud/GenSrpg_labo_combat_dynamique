@@ -10805,6 +10805,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   const channelEffectsHost=one(root,"[data-skill-channeling-effects-host]");
   const channelEffectAdd=one(root,"[data-skill-channeling-effect-add]");
   const channelIcePreset=one(root,"[data-skill-channel-ice-preset]");
+  const channelIceSpriteJump=one(root,"[data-skill-channel-ice-sprite-jump]");
   const contactHoldEnabled = one(root, "[data-skill-contact-hold-enabled]");
   const contactHoldSettings = one(root, "[data-skill-contact-hold-settings]");
   const contactHoldEffectsHost = one(root, "[data-skill-contact-hold-effects-host]");
