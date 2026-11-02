@@ -449,6 +449,8 @@ export function createCombatResolutionPresenter({
     }
 
     const preparedAttack = consumePreparedAttack(actorSlot);
+    const chargedPoseReleased = Boolean(action.chargeState) &&
+      visuals.hasHeldAttackPoseFor?.(actorSlot) === true;
     // Charged attacks unfreeze at launch; channeling stays held through the
     // native tick lifecycle (and only the native onChannelEnd frees it).
     if (!action.skill?.channeling) releaseAttackPose(actorSlot);
@@ -572,7 +574,7 @@ export function createCombatResolutionPresenter({
           }
         });
     } else if (!action.mirrorReturn && !preparedAttack?.started &&
-               !visuals.hasHeldAttackPoseFor?.(actorSlot)) {
+               !chargedPoseReleased && !visuals.hasHeldAttackPoseFor?.(actorSlot)) {
       // Only an explicitly authored ranged creature pose replaces the
       // default attacking silhouette; FX projectiles/beams remain unchanged.
       visuals
