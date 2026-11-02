@@ -58,7 +58,7 @@ test("charged skill prepares ONE held creature pose, releases it exactly once be
     h.presenter.presentRelease({action});
     assert.equal(h.held.has("player"),false);
     assert.equal(h.events.filter(x=>x.type==="release-pose").length,1);
-    assert.equal(h.events.filter(x=>x.eventType==="attack").length,2);
+    assert.equal(h.events.filter(x=>x.eventType==="attack").length,1, "the charged pose must not replay on release");
   }finally{h.presenter.dispose();}
 });
 test("channel keeps one posed sprite from preparation through release and native pulses, then returns to idle on end",()=>{
