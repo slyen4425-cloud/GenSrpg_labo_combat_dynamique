@@ -107,7 +107,8 @@ const FIELDS_BY_KIND = Object.freeze({
   scheduled_effect: new Set([
     ...COMMON_FIELDS,
     "trigger",
-    "effects"
+    "effects",
+    "visualCue"
   ]),
   summon_entity: new Set([
     ...COMMON_FIELDS, "entityKind", "statId", "hpPerStatPoint", "interceptKinds", "spriteAssetId",
@@ -510,6 +511,11 @@ export function normalizeSkillEffectV1(input) {
       delayMs
     });
     output.effects = nestedEffects;
+    if(value.visualCue!==undefined){
+      if(value.visualCue!=="ground_mine"||!nestedEffects.some(e=>e.kind==="damage"))
+        throw new RangeError("scheduled_effect.visualCue ground_mine requires damage");
+      output.visualCue="ground_mine";
+    }
   }
 
   if (kind === "persistent_zone") {
