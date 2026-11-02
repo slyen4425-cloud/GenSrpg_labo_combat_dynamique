@@ -4077,6 +4077,9 @@ function prepareNewSkillDraftFields(
     statRegistry
   );
   writeHumanContactHoldFieldsV1(root, null, statRegistry);
+  // New ability means an empty channel contract too. Otherwise the previous
+  // draft's invisible pulse effects survive and silently override presets.
+  writeHumanChannelingFieldsV1(root, null, statRegistry);
   writeSkillFeedbackControlsV1(
     root,
     {}
