@@ -1,3 +1,12 @@
+## 2026-11-02 — Trois exports auteur : Gorice, Pique de glace, Furie bestiale (chantier)
+- Demande : remplacer exactement les exports fournis Gorice (ID `gorice`), Pique de glace (ID `pique_glace`) et installer Furie bestiale (ID `furie_bestiale`) dans la bibliothèque Capture actuelle, sans réimport Android manuel. Aucun changement volontaire aux valeurs, visuels, niveaux, stats ou coûts auteurs.
+- BASE `gh-pages@1f141f01788310e5fbb6bc6f74018f33bd7d03c7` ; START `checkpoint/lab-start-gorice-pique-furie-2026-11-02` ; WORK `work/lab-gorice-pique-furie-2026-11-02`. Les archives antérieures restent intactes ; une seule entrée vitrine par ID. Pas de changement de `main`, GenSrpG, Exploration, Combat Runtime, assets ou moteur.
+- Sources exactes remises : `gensrpg-capture-creature-gorice(2).json` SHA256 `77ddd3f10f315e2fdee56aa02b4f5579eb2fec5e11ba4676b9411b7bf376d9f2`, `gensrpg-capture-skill-pique_glace(2).json` SHA256 `927cd4a1fb2a9f8e4b6e9517975bda7bec98f1935dc31db7b066aadb0df8648b`, `gensrpg-capture-skill-furie_bestiale.json` SHA256 `5454c262bc0fae990ac317b2cb1382cef87c9313fecc206e2e62e3c0c7b0fea7`.
+- Propriétaire : `data/capture/showcase` + manifests existants par transfert natif ; `source-exports` archives de provenance **inertes**. Périmètre : 3 vitrine, 3 archives datées, 1 ligne manifest compétences, 1 nouveau test, adaptations minimales de 2 sentinelles historiques Gorice (références à l'ancienne version active), présent journal ; aucun doublon ni second lecteur.
+- Ordre : test RED sur présence, unicité, identité des trois sources et raccord de charge des compétences ; puis intégration exacte + sentinelles historiques compatibles ; Foundation + quatre Chromium du SHA code/docs final ; checkpoint GREEN seulement sur preuves ; PR vers `gh-pages` et contrôle CI/Pages postmerge. Test visuel Android par l'auteur distinct de CI.
+
+---
+
 ## 2026-11-02 — Sécurisation du maintien de pose contre une ancienne animation rejetée (validation technique)
 - Reprise de la PR #208 publiée à gh-pages@5cbf51fbbc20c476328b2bbc7d433c5d429c08af ; CI 41485983540 et Pages 41485983849 SUCCESS ; validation Android auteur de l'animation toujours distincte.
 - Risque de concurrence asynchrone identifié dans le propriétaire `createCombatResolutionPresenter.beginAttackPose` : l'échec différé de l'ancienne promesse visuelle appelle `releaseAttackPose(actorSlot)` sans vérifier que le maintien appartient encore à cette ancienne tentative. Si une nouvelle charge/canalisation démarre entre-temps sur le même acteur, la mauvaise pose peut être libérée.
