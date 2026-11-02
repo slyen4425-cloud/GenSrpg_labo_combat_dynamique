@@ -350,6 +350,7 @@ export function createCombatResolutionPresenter({
         ["projectile", "beam", "area"].includes(action.skill?.form) &&
         (action.skill?.approachMode ?? "none") === "none" &&
         !action.chargeState &&
+        !action.skill?.channeling &&
         Number(action.travelMs) === 0 &&
         Number(action.preparationMs) > 0 &&
         instantAttackAnticipationMs > 0) {
