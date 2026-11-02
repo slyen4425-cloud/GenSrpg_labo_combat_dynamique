@@ -430,6 +430,9 @@ export function createDomSkillFxRenderer({
   let disposed = false;
   const active = new Set();
   const persistentZones = new Map();
+  // Scheduled mines have NO visual clock or gameplay state here. This Map
+  // projects the existing Combat State records into the same FX renderer.
+  const scheduledMineNodes=new Map();
 
   function anchor(collection, slot, label) {
     const element = collection[slot];
@@ -1853,6 +1856,49 @@ export function createDomSkillFxRenderer({
     });
   }
 
+  function syncScheduledMines(state) {
+    if(disposed)return Object.freeze({status:"disposed",triggered:[]});
+    const records=(state?.scheduledEffects??[]).filter(x=>x.visualCue==="ground_mine");
+    const expected=new Set(),triggered=[];
+    const arenaRect=arena.getBoundingClientRect();
+    for(const record of records) {
+      expected.add(record.id);
+      let item=scheduledMineNodes.get(record.id);
+      if(!item){
+        const target=projectileTargetRect(record.targetActorId);
+        const x=target.left+target.width/2-arenaRect.left;
+        const y=target.bottom-arenaRect.top;
+        const node=arena.ownerDocument.createElement("span");
+        node.className="skill-fx skill-fx--mine-telegraph";
+        node.dataset.skillFx="mine-telegraph";
+        node.dataset.scheduledMineId=record.id;
+        node.style.cssText="position:absolute;width:42px;height:19px;border-radius:50%;border:2px solid rgba(255,214,92,.9);background:rgba(255,105,56,.24);box-shadow:0 0 7px #ffbb50;pointer-events:none;transform:translate(-50%,-50%);z-index:5;";
+        node.style.left=x+"px";node.style.top=y+"px";
+        arena.append(node);
+        item={node,x,y,record};scheduledMineNodes.set(record.id,item);
+      }
+      const left=Math.max(0,record.dueAtMs-Number(state.elapsedMs??0));
+      const total=Math.max(1,record.dueAtMs-record.scheduledAtMs);
+      item.node.style.opacity=String(Math.max(.35,Math.min(1,1-left/total*.65)));
+    }
+    for(const [id,item] of [...scheduledMineNodes]){
+      if(expected.has(id))continue;
+      scheduledMineNodes.delete(id);
+      item.node.remove();
+      // The actual native scheduled-effect owner decided this trigger:
+      // never apply damage from the renderer, never animate a cancelled mine.
+      if(Number(state.elapsedMs)>=item.record.dueAtMs){
+        const r=arena.getBoundingClientRect();
+        play({type:"impact",skillId:item.record.sourceSkillId,
+          fromSlot:item.record.sourceActorId,targetSlot:item.record.targetActorId,
+          impactPoint:{x:r.left+item.x,y:r.top+item.y},durationMs:450});
+        triggered.push(Object.freeze({skillId:item.record.sourceSkillId,
+          actorId:item.record.sourceActorId,targetId:item.record.targetActorId}));
+      }
+    }
+    return Object.freeze({status:"synced",triggered:Object.freeze(triggered)});
+  }
+
   function syncPersistentZones(zones = []) {
     if (disposed) {
       return Object.freeze({
@@ -2573,7 +2619,7 @@ export function createDomSkillFxRenderer({
       // Reuse the physical contact point from the one native runtime sensor.
       // The DOM fallback reads the SAME displayed wall sprite (no duplicate
       // geometry), useful if the observed point was unavailable.
-      const worldPoint = combatEntityId && Number.isFinite(impactPoint?.x) &&
+      const worldPoint = Number.isFinite(impactPoint?.x) &&
         Number.isFinite(impactPoint?.y) ? impactPoint : null;
       const wallSprite = combatEntityId && !worldPoint
         ? [...arena.querySelectorAll("[data-combat-entity-id]")]
@@ -3072,12 +3118,13 @@ export function createDomSkillFxRenderer({
 
     const travelVisual = presentation?.travel ?? null;
     const skyfall = travelVisual?.trajectoryMode === "skyfall";
+    const underTarget = travelVisual?.trajectoryMode === "under_target";
     const travelSourceAnchor =
       presentation?.travelSourceAnchor ?? null;
     // Direct fire keeps the actor's AUTHORED rest placement and a point
     // on its existing physical alpha mask. Only transient translations
     // disappear from the projected resting lane. Skyfall remains live.
-    const opaquePoint = !skyfall && targetCollisionModelFor
+    const opaquePoint = !skyfall && !underTarget && targetCollisionModelFor
       ? visibleModelOpaqueAimPoint(
           targetCollisionModelFor(targetSlot)?.snapshot?.() ?? null
         )
@@ -3104,7 +3151,9 @@ export function createDomSkillFxRenderer({
     );
     // Skyfall is authored on visual.travel: the source actor never becomes
     // the origin. The same Runtime travel duration and contact sensor apply.
-    const from = skyfall
+    const from = underTarget
+      ? {x:to.x,y:projectileTargetRect(targetSlot).bottom-arenaRect.top}
+      : skyfall
       ? {
           x: to.x + travelVisual.fallOffsetXPx,
           y: to.y - travelVisual.fallHeightPx
@@ -3173,13 +3222,13 @@ export function createDomSkillFxRenderer({
       const hasDirectionalHeading = typeof headingRad === "number" &&
         Number.isFinite(headingRad);
       const nativeLeftward = hasDirectionalHeading && Math.cos(headingRad) < 0;
-      const mirrorHorizontally = !skyfall && hasDirectionalHeading &&
+      const mirrorHorizontally = !skyfall && !underTarget && hasDirectionalHeading &&
         (deltaX < 0) !== nativeLeftward;
       const travelAngle = Math.atan2(deltaY, deltaX);
       // Preserve the existing rotations of all right-facing sprites; only
       // native-left artworks require an inverted mirror decision and an
       // angular wrap to avoid a nearly full-turn rotation for upper lanes.
-      let rotationRad = skyfall || !hasDirectionalHeading
+      let rotationRad = skyfall || underTarget || !hasDirectionalHeading
         ? 0
         : nativeLeftward
           ? travelAngle - (mirrorHorizontally ? Math.PI - headingRad : headingRad)
@@ -3431,6 +3480,8 @@ export function createDomSkillFxRenderer({
       return;
     }
     cancelAll();
+    for(const item of scheduledMineNodes.values())item.node.remove();
+    scheduledMineNodes.clear();
     disposed = true;
   }
 
@@ -3440,6 +3491,7 @@ export function createDomSkillFxRenderer({
       return presentationForSkill(skillId,{sourceView,targetView,fxType:"burrow"})?.burrowTerrain ?? null;
     },
     syncPersistentZones,
+    syncScheduledMines,
     sampleZoneSpatialContext,
     barrierContactFor,
     cancelProjectileFor,

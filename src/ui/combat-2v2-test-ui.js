@@ -10,17 +10,17 @@ import {
 import { captureCreatureReactionActionIdV1 } from "../contracts/capture-creature-defensive-reaction-v1.js";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-definition.js";
-import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102";
+import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createEmbeddedCombatLifecycleV1 } from "./embedded-combat-lifecycle-v1.js";
-import { createCombatRuntime } from "../core/combat/combat-runtime.js?v=wall-state-20261031-wall-geometry-20261031-wall-ground-stop-20261101-wall-impact-20261101";
+import { createCombatRuntime } from "../core/combat/combat-runtime.js?v=wall-state-20261031-wall-geometry-20261031-wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102";
 import { createBattleActorAiController, CAPTURE_AI_TACTICS_V1_DEFAULT } from "../core/combat/battle-actor-ai-controller.js";
 import {
   isSkillTargetAllowed,
   targetRelation
 } from "../core/combat/targeting.js";
-import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101";
-import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-native-bidirectional-20261028-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-wall-live-r2-20261101-wall-ground-stop-20261101-wall-impact-20261101";
+import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102";
+import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-native-bidirectional-20261028-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-wall-live-r2-20261101-wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102";
 import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
@@ -1156,6 +1156,10 @@ export async function mountCoop2v2Test({
     fx.syncPersistentZones(
       state.persistentZones ?? []
     );
+    const mines=fx.syncScheduledMines(state);
+    for(const mine of mines.triggered)
+      combatAudio.play({type:"impact",skillId:mine.skillId,
+        actorSlot:mine.actorId,targetSlot:mine.targetId,loop:false});
     zoneAudio.sync(
       state.persistentZones ?? []
     );
@@ -1762,6 +1766,19 @@ export async function mountCoop2v2Test({
       if (feedback.kind === "damage") {
         damageFeedback?.flash(feedback.actorId, { delayMs });
       }
+    },
+    onChannelStart({actorId}) {
+      if(actionRefs[actorId])actionRefs[actorId].textContent="Canalisation";
+    },
+    onChannelTick({actorId,targetId,skillId,tick}) {
+      // Same native tick and same FX/audio adapter in 1v1 and 2v2.
+      fx.play({type:"impact",skillId,fromSlot:actorId,targetSlot:targetId,durationMs:420});
+      combatAudio.play({type:"impact",skillId,actorSlot:actorId,targetSlot:targetId,loop:false});
+      if(actionRefs[actorId])actionRefs[actorId].textContent="Canalisation · "+tick;
+    },
+    onChannelEnd({actorId,reason}) {
+      if(actionRefs[actorId])actionRefs[actorId].textContent="Prêt";
+      renderState();queueAiDecisions();
     },
     onContactHoldStart({actorId}) {
       if (actionRefs[actorId]) actionRefs[actorId].textContent = "Au contact";

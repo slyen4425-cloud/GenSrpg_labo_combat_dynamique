@@ -1236,6 +1236,9 @@
         </div>
 
         <label>Modèle de départ (optionnel)
+          <select data-skill-element-filter aria-label="Filtrer les capacités par élément">
+            <option value="">Tous les éléments</option>
+          </select>
           <select data-skill-library-select>
             <option value="">Aucun modèle — partir de zéro</option>
           </select>
@@ -1407,10 +1410,11 @@
         </details>
         <div class="skill-effects-list" data-skill-effects-host></div>
 
-        <label>Type d'effet à ajouter
+        <label>Mécanique ou effet à ajouter
           <select data-skill-effect-add-kind>
             <option value="standard" selected>Effet tactique classique</option>
             <option value="wall">Invoquer un mur destructible (configuration automatique)</option>
+            <option value="mine">Mine de glace — zone au sol puis explosion différée</option>
             <option value="charged">Attaque chargée — projectile renforcé</option>
             <option value="charged-effects">Charge d’effets — buffs, debuffs, soins</option>
           </select>
@@ -1457,8 +1461,30 @@
           <p class="note">Mêmes coûts, préparation et fenêtre que l'attaque chargée. Amplifie uniquement dégâts, soins et puissance des statuts numériques ; ne prolonge pas les durées et ne contourne pas les immunités.</p>
         </section>
 
-        <section class="skill-contact-hold" data-skill-contact-hold aria-label="Maintien au contact">
-          <h3>Sangsue / Maintien au contact</h3>
+        <details class="skill-channeling" data-skill-channeling-section>
+          <summary><strong>Canalisation — dégâts, soins ou statuts à chaque pulsation</strong></summary>
+          <label class="switch-line"><input type="checkbox" data-skill-channeling-enabled>
+            <span>Activer la canalisation (rayon, zone, aura ou sur soi)</span></label>
+          <div data-skill-channeling-config hidden>
+            <p class="note">Le lanceur reste occupé. Chaque tick paie l'énergie et applique les effets ci-dessous.
+              Aucun dégât supplémentaire à l'impact initial. Ne pas combiner avec charge ou maintien au contact.</p>
+            <div class="timing-grid">
+              <label>Intervalle des ticks (ms)<input type="number" data-skill-channeling-interval min="100" max="60000" step="50" value="1000"></label>
+              <label>Durée maximale (ms, 0 = aucune)<input type="number" data-skill-channeling-duration min="0" max="120000" step="100" value="5000"></label>
+              <label>Nombre max de ticks (0 = illimité)<input type="number" data-skill-channeling-max-ticks min="0" max="500" step="1" value="5"></label>
+              <label>Énergie par tick<input type="number" data-skill-channeling-energy min="0" step="0.1" value="2"></label>
+            </div>
+            <label class="switch-line"><input type="checkbox" data-skill-channeling-stop-damage checked> Interrompre si le lanceur subit des dégâts</label>
+            <label class="switch-line"><input type="checkbox" data-skill-channeling-stop-stun checked> Interrompre si étourdi</label>
+            <label class="switch-line"><input type="checkbox" data-skill-channeling-stop-silence checked> Interrompre si réduit au silence</label>
+            <div class="skill-effects-list" data-skill-channeling-effects-host></div>
+            <button type="button" class="secondary-action" data-skill-channeling-effect-add>+ Ajouter un effet répété (par tick)</button>
+            <p class="note">À chaque tick, le sprite et le son d'impact existants peuvent se rejouer ; règle les dégâts par tick ci-dessus.</p>
+          </div>
+        </details>
+
+        <details class="skill-contact-hold" data-skill-contact-hold aria-label="Maintien au contact">
+          <summary><strong>Sangsue / Maintien au contact (facultatif)</strong></summary>
           <label><input type="checkbox" data-skill-contact-hold-enabled>
             Rester au corps à corps après l'impact et appliquer des effets régulièrement
           </label>
@@ -1479,13 +1505,14 @@
             </button>
             <p class="note">Les effets périodiques utilisent le moteur de combat existant (dégâts, drain, soins, statuts…). Les zones persistantes et les programmations différées ne peuvent pas être imbriquées ici.</p>
           </div>
-        </section>
+        </details>
 
         <p class="note">
           Chaque effet possède sa propre portée. Les durées de statut sont réglées en secondes ici puis converties vers le contrat gameplay.
         </p>
 
-        <div class="tactical-effect-help" aria-label="Effets tactiques disponibles">
+        <details class="tactical-effect-help" aria-label="Effets tactiques disponibles">
+          <summary>Voir les effets tactiques disponibles</summary>
           <span>Dégâts de zone</span>
           <span>Soin</span>
           <span>Gain d’énergie</span>
@@ -1503,7 +1530,7 @@
           <span>Immunité dégâts / états négatifs</span>
           <span>Effet différé après délai</span>
           <span>Zone persistante évolutive</span>
-        </div>
+        </details>
 
         <template data-skill-expressiveness-prototypes>
           <label class="check">
@@ -1693,6 +1720,7 @@
                 <select data-skill-trajectory-mode>
                   <option value="linear" selected>Lanceur → cible (classique)</option>
                   <option value="skyfall">Chute du ciel (vers la cible)</option>
+                  <option value="under_target">Sous la cible — pique de glace surgissante</option>
                   <option value="expanding_wave">Onde sphérique expansive (depuis la créature)</option>
                 </select>
               </label>
@@ -2582,6 +2610,6 @@
     </template>
   </section>
 
-  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102"></script>
+  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102"></script>
 </body>
 </html>

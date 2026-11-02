@@ -73,7 +73,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -117,7 +117,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -509,6 +509,7 @@ export function buildHumanTacticalSkillEffectsV1(
       return normalizeSkillEffectV1({
         kind,
         targetScope,
+        ...(effect.visualCue==="ground_mine"?{visualCue:"ground_mine"}:{}),
         trigger: {
           type: "after_ms",
           delayMs
@@ -521,38 +522,6 @@ export function buildHumanTacticalSkillEffectsV1(
             }
           )
       });
-    }
-
-    if (kind === "scheduled_effect") {
-      const nestedKind = row.querySelector(
-        "[data-skill-scheduled-effect-kind]"
-      ).value;
-      const nested = {
-        kind: nestedKind,
-        targetScope: "target",
-        amount: Number(
-          row.querySelector(
-            "[data-skill-scheduled-effect-amount]"
-          ).value
-        )
-      };
-      if (nestedKind === "damage") {
-        nested.channel =
-          row.querySelector(
-            "[data-skill-scheduled-effect-channel]"
-          ).value || null;
-      }
-
-      return {
-        kind,
-        targetScope: "target",
-        delaySeconds: Number(
-          row.querySelector(
-            "[data-skill-scheduled-delay-seconds]"
-          ).value
-        ),
-        effects: [nested]
-      };
     }
 
     if (kind === "persistent_zone") {
@@ -1866,6 +1835,9 @@ function presentationForSkill(fields) {
     }
     if (arrival !== "same") travel.arrivalLayer = arrival;
   }
+  if (travel !== null && presentation.travelTrajectoryMode === "under_target") {
+    travel.trajectoryMode="under_target";
+  }
   if (travel !== null && presentation.travelTrajectoryMode === "skyfall") {
     travel.trajectoryMode = "skyfall";
     travel.fallHeightPx = finiteNumber(
@@ -1998,7 +1970,7 @@ function presentationForSkill(fields) {
         ? 12
         : (travel?.frameSpeedMultiplier != null || travel?.perspectiveAmount != null)
           ? 11
-        : travel?.trajectoryMode === "skyfall"
+        : ["skyfall","under_target"].includes(travel?.trajectoryMode)
           ? 10
         : (
         [cast, impact, persistentZone].some(
@@ -2723,6 +2695,7 @@ export function humanSkillEditorFieldsFromDraftV1(
     approachMode:
       definition.approachMode ?? "none",
     contactHold: definition.contactHold ?? null,
+    channeling: definition.channeling ?? null,
     hitPresenceStates:
       definition.hitPresenceStates == null
         ? null
@@ -3023,7 +2996,8 @@ export function buildHumanSkillDraftV1(fields) {
       ),
       form: requiredText(fields.form, "Style de capacité"),
       // The authored trajectory owns projectile targeting in the Capture editor.
-      // A skyfall targets a fixed landing point, not a moving creature;
+      // Skyfall targets fixed terrain; under-target rises from the live
+      // target's feet using the normal direct collision authority.
       // other projectiles remain direct. Combat Rules reads only this definition.
       projectileTargeting:
         fields.form !== "projectile" ? "direct"
@@ -3049,6 +3023,18 @@ export function buildHumanSkillDraftV1(fields) {
         fields.approachMode ?? "none",
         "Déplacement"
       ),
+      ...(fields.channeling ? {channeling:{
+        tickIntervalMs:finiteNumber(fields.channeling.tickIntervalMs,"Intervalle canalisation"),
+        maxDurationMs:finiteNumber(fields.channeling.maxDurationMs ?? 0,"Durée canalisation"),
+        maxTicks:fields.channeling.maxTicks == null || Number(fields.channeling.maxTicks)===0
+          ? null : positiveInteger(fields.channeling.maxTicks,"Maximum ticks"),
+        energyCostPerTick:finiteNumber(fields.channeling.energyCostPerTick,"Énergie par tick"),
+        stopOnDamage:fields.channeling.stopOnDamage !== false,
+        stopOnStun:fields.channeling.stopOnStun !== false,
+        stopOnSilence:fields.channeling.stopOnSilence !== false,
+        effects:buildHumanTacticalSkillEffectsV1(fields.channeling.effects ?? [],
+          {defaultDamageChannel:fields.element??null})
+      }} : {}),
       ...(fields.contactHold ? {
         contactHold: {
           tickIntervalMs: finiteNumber(fields.contactHold.tickIntervalMs, "Intervalle maintien au contact"),
@@ -3121,7 +3107,10 @@ export function buildHumanSkillDraftV1(fields) {
       targetRelations:
         usesTacticalEffects
           ? humanSkillTargetRelationsFromTacticalEffectsV1(
-              tacticalEffects,
+              fields.channeling
+                ? buildHumanTacticalSkillEffectsV1(fields.channeling.effects??[],
+                    {defaultDamageChannel:fields.element??null})
+                : tacticalEffects,
               { form: fields.form }
             )
           : stableIds(
@@ -3587,6 +3576,37 @@ export function readHumanProjectilePowerV1(
   };
 }
 
+function writeHumanChannelingFieldsV1(root, channel, statRegistry = null, statusVisuals = {}) {
+  const active=channel != null;
+  one(root,"[data-skill-channeling-enabled]").checked=active;
+  one(root,"[data-skill-channeling-config]").hidden=!active;
+  for(const [selector,value] of [
+    ["[data-skill-channeling-interval]",channel?.tickIntervalMs??1000],
+    ["[data-skill-channeling-duration]",channel?.maxDurationMs??5000],
+    ["[data-skill-channeling-max-ticks]",channel?.maxTicks??0],
+    ["[data-skill-channeling-energy]",channel?.energyCostPerTick??2]
+  ]) one(root,selector).value=String(value);
+  for(const [key,checked] of [
+    ["damage",channel?.stopOnDamage!==false],
+    ["stun",channel?.stopOnStun!==false],
+    ["silence",channel?.stopOnSilence!==false]
+  ]) one(root,"[data-skill-channeling-stop-"+key+"]").checked=checked;
+  renderHumanSkillEffectsV1(root,channel?.effects??[],statRegistry,statusVisuals,
+    "[data-skill-channeling-effects-host]");
+}
+function readHumanChannelingFieldsV1(root) {
+  if(!one(root,"[data-skill-channeling-enabled]").checked)return null;
+  return {
+    tickIntervalMs:numericValue(root,"[data-skill-channeling-interval]"),
+    maxDurationMs:numericValue(root,"[data-skill-channeling-duration]"),
+    maxTicks:numericValue(root,"[data-skill-channeling-max-ticks]")||null,
+    energyCostPerTick:numericValue(root,"[data-skill-channeling-energy]"),
+    stopOnDamage:one(root,"[data-skill-channeling-stop-damage]").checked,
+    stopOnStun:one(root,"[data-skill-channeling-stop-stun]").checked,
+    stopOnSilence:one(root,"[data-skill-channeling-stop-silence]").checked,
+    effects:readHumanSkillEffectsV1(root,"[data-skill-channeling-effects-host]")
+  };
+}
 function writeHumanContactHoldFieldsV1(root, hold, statRegistry = null, statusVisuals = {}) {
   one(root, "[data-skill-contact-hold-enabled]").checked = hold !== null && hold !== undefined;
   one(root, "[data-skill-contact-hold-settings]").hidden = hold === null || hold === undefined;
@@ -3637,6 +3657,8 @@ function writeSkillTemplateFields(
   }
   if(Object.prototype.hasOwnProperty.call(fields,"markerCost"))
     renderHumanSkillMarkerCostV1(root, fields.markerCost);
+  // A legacy template must reset mechanics not owned by that template.
+  writeHumanChannelingFieldsV1(root,fields.channeling??null,statRegistry);
 
   renderHumanSkillEffectsV1(
     root,
@@ -3914,6 +3936,8 @@ function writeSkillDraftFields(
     fields.presentation.statusVisuals
   );
   writeHumanContactHoldFieldsV1(root, fields.contactHold, statRegistry,
+    fields.presentation.statusVisuals);
+  writeHumanChannelingFieldsV1(root,fields.channeling,statRegistry,
     fields.presentation.statusVisuals);
   renderHumanProjectilePowerV1(
     root,
@@ -5500,9 +5524,14 @@ function appendHumanSkillEffectV1(
       tacticalEffectKindLabelV1(value)
     );
   }
-  if (hostSelector === "[data-skill-contact-hold-effects-host]") {
+  if (hostSelector === "[data-skill-contact-hold-effects-host]" ||
+      hostSelector === "[data-skill-channeling-effects-host]") {
     for (const option of kind.options) {
-      if (["persistent_zone", "scheduled_effect", "force_reserve_switch", "summon_entity"].includes(option.value)) option.disabled = true;
+      const allowed=hostSelector === "[data-skill-channeling-effects-host]"
+        ? ["damage","heal","apply_status","apply_marker"]
+        : SKILL_EFFECT_V1_KINDS.filter(k=>!["persistent_zone","scheduled_effect",
+            "force_reserve_switch","summon_entity"].includes(k));
+      option.disabled=!allowed.includes(option.value);
     }
   }
 
@@ -5517,6 +5546,10 @@ function appendHumanSkillEffectV1(
       value,
       tacticalTargetScopeLabelV1(value)
     );
+  }
+
+  if(hostSelector==="[data-skill-channeling-effects-host]"){
+    for(const opt of scope.options)opt.disabled=!["target","self"].includes(opt.value);
   }
 
   const remove = document.createElement("button");
@@ -6386,6 +6419,13 @@ function appendHumanSkillEffectV1(
     "skill-status-config";
   scheduledBox.dataset.skillEffectConfigKind =
     "scheduled_effect";
+  const mineCue=document.createElement("label");
+  mineCue.className="switch-line";
+  const mineCheck=document.createElement("input");
+  mineCheck.type="checkbox";mineCheck.dataset.skillScheduledMine="true";
+  mineCheck.checked=effect?.visualCue==="ground_mine";
+  mineCue.append(mineCheck,document.createTextNode(" Mine : petit cercle au sol avant explosion"));
+  scheduledBox.append(mineCue);
 
   const scheduledDelay =
     tacticalNumberInputV1(
@@ -6891,6 +6931,40 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
       interceptKinds:[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
         .filter(input=>input.checked).map(input=>input.value)
     };
+
+    if (kind === "scheduled_effect") {
+      const nestedKind = row.querySelector(
+        "[data-skill-scheduled-effect-kind]"
+      ).value;
+      const nested = {
+        kind: nestedKind,
+        targetScope: "target",
+        amount: Number(
+          row.querySelector(
+            "[data-skill-scheduled-effect-amount]"
+          ).value
+        )
+      };
+      if (nestedKind === "damage") {
+        nested.channel =
+          row.querySelector(
+            "[data-skill-scheduled-effect-channel]"
+          ).value || null;
+      }
+
+      return {
+        kind,
+        targetScope: "target",
+        ...(row.querySelector("[data-skill-scheduled-mine]")?.checked?{visualCue:"ground_mine"}:{}),
+        delaySeconds: Number(
+          row.querySelector(
+            "[data-skill-scheduled-delay-seconds]"
+          ).value
+        ),
+        effects: [nested]
+      };
+    }
+
 
     if (kind === "persistent_zone") {
       const zoneEffectKind=row.querySelector("[data-skill-zone-effect-kind]").value;
@@ -9377,6 +9451,7 @@ function readSkillFields(root) {
       root,
       "[data-skill-approach]"
     ),
+    channeling:readHumanChannelingFieldsV1(root),
     contactHold: one(root, "[data-skill-contact-hold-enabled]").checked
       ? {
           tickIntervalMs: numericValue(root, "[data-skill-contact-hold-interval]"),
@@ -10725,6 +10800,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     root,
     "[data-skill-effect-add]"
   );
+  const channelingEnabled=one(root,"[data-skill-channeling-enabled]");
+  const channelingConfig=one(root,"[data-skill-channeling-config]");
+  const channelEffectsHost=one(root,"[data-skill-channeling-effects-host]");
+  const channelEffectAdd=one(root,"[data-skill-channeling-effect-add]");
   const contactHoldEnabled = one(root, "[data-skill-contact-hold-enabled]");
   const contactHoldSettings = one(root, "[data-skill-contact-hold-settings]");
   const contactHoldEffectsHost = one(root, "[data-skill-contact-hold-effects-host]");
@@ -12092,6 +12171,57 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       state.runtimeReady ? "ok" : "warning";
   }
 
+  // Every skill reference selector (the library, the five loadout slots
+  // and any future selector populated with the same existing skill IDs)
+  // shares ONE registry-derived filter owner. No parallel list of abilities.
+  function refreshHumanSkillElementFiltersV1() {
+    const available=new Set(configuredSkills.keys());
+    for(const select of root.querySelectorAll("select")){
+      const options=[...select.querySelectorAll("option")];
+      const skillOptions=options.filter(opt=>available.has(opt.value));
+      if(skillOptions.length===0)continue;
+      const parent=select.closest("label")??select.parentElement;
+      if(!parent)continue;
+      let filter=select.previousElementSibling?.matches?.("[data-skill-element-filter]")
+        ? select.previousElementSibling : null;
+      if(!filter){
+        filter=document.createElement("select");
+        filter.dataset.skillElementFilter="true";
+        filter.setAttribute("aria-label","Filtrer les capacités par élément");
+        filter.style.cssText="max-width:100%;margin:4px 0 8px;min-height:36px";
+        select.before(filter);
+        filter.addEventListener("change",()=>applyFilter(select,filter));
+      }
+      const prev=filter.value||"";
+      const distinct=new Map();
+      for(const opt of skillOptions){
+        const entry=configuredSkills.get(opt.value);
+        const meta=humanSkillSelectorElementMetaV1(entry?.definition?.element);
+        const id=meta.element??"__neutral__";
+        if(!distinct.has(id))distinct.set(id,meta.label);
+      }
+      filter.textContent="";
+      createOption(filter,"","Tous les éléments");
+      for(const [id,label] of distinct)createOption(filter,id,label);
+      filter.value=distinct.has(prev)?prev:"";
+      applyFilter(select,filter);
+    }
+  }
+  function applyFilter(select,filter) {
+    const selected=select.value;
+    for(const opt of select.querySelectorAll("option")) {
+      if(!opt.value||!configuredSkills.has(opt.value)){opt.hidden=false;continue;}
+      const meta=humanSkillSelectorElementMetaV1(configuredSkills.get(opt.value).definition.element);
+      const id=meta.element??"__neutral__";
+      // A currently equipped/edited skill must remain reachable even while
+      // browsing another element; this never clears the selected ID.
+      opt.hidden=Boolean(filter.value&&filter.value!==id&&opt.value!==selected);
+    }
+    for(const group of select.querySelectorAll("optgroup")){
+      group.hidden=[...group.querySelectorAll("option")].every(opt=>opt.hidden);
+    }
+  }
+
   function refreshSkillLibraryOptions(
     preferredId = null
   ) {
@@ -12147,6 +12277,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     ) {
       librarySelect.value = previous;
     }
+    refreshHumanSkillElementFiltersV1();
   }
 
   function refreshLoadoutOptions(preferredId = null) {
@@ -12285,6 +12416,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
 
     syncLoadoutAvailability();
+    refreshHumanSkillElementFiltersV1();
   }
 
   function persistCurrentSkill(intent) {
@@ -12667,6 +12799,22 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   }
   listen(skillEffectAddButton, "click", () => {
     const choice = one(root, "[data-skill-effect-add-kind]");
+    if(choice.value==="mine"){
+      // Only ONE native scheduled_effect record. Its optional visualCue
+      // projects an arena warning from Combat State; no duplicate timer.
+      appendHumanSkillEffectV1(root,{
+        kind:"scheduled_effect",targetScope:"target",visualCue:"ground_mine",
+        trigger:{type:"after_ms",delayMs:3000},
+        effects:[{kind:"damage",targetScope:"target",amount:20,channel:"ice"}]
+      },statRegistry);
+      choice.value="standard";
+      one(root,"[data-skill-category]").value="offensive";
+      one(root,"[data-skill-form]").value="area";
+      one(root,"[data-skill-approach]").value="none";
+      beamStageLayout.sync();
+      setStatus(root,"Mine créée : règle le délai, les dégâts, le sprite et le son d’impact ; le cercle suit la position de pose au sol.","ok");
+      return;
+    }
     if (choice.value === "wall") {
       appendHumanSkillEffectV1(root,{
         kind:"summon_entity",targetScope:"self",entityKind:"barrier",
@@ -12711,7 +12859,42 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
     appendHumanSkillEffectV1(root, null, statRegistry);
   });
+  listen(channelingEnabled,"change",()=>{
+    channelingConfig.hidden=!channelingEnabled.checked;
+    if(channelingEnabled.checked){
+      if(chargedEnabled.checked||chargedEffectsEnabled.checked||contactHoldEnabled.checked){
+        channelingEnabled.checked=false;channelingConfig.hidden=true;
+        setStatus(root,"La canalisation ne se combine pas avec charge ou maintien au contact. Désactive d’abord cette mécanique.","warn");
+        return;
+      }
+      // The initial skill cannot apply a second duplicate effect; move only
+      // native allowed tick effects to the existing nested channel owner.
+      const immediate=readHumanSkillEffectsV1(root);
+      if(immediate.length){
+        const allowed=immediate.every(e=>["damage","heal","apply_status","apply_marker"].includes(e.kind)
+          && ["target","self"].includes(e.targetScope));
+        if(allowed){
+          renderHumanSkillEffectsV1(root,immediate,statRegistry,{},"[data-skill-channeling-effects-host]");
+          renderHumanSkillEffectsV1(root,[],statRegistry);
+        }else{
+          channelingEnabled.checked=false;channelingConfig.hidden=true;
+          setStatus(root,"La canalisation ne peut pas conserver simultanément les effets initiaux. Retire les zones ou programmations avant de l'activer.","warn");
+          return;
+        }
+      }
+      one(root,"[data-skill-form]").value="beam";
+      one(root,"[data-skill-approach]").value="none";
+      one(root,"[data-skill-travel-time]").value="0";
+      beamStageLayout.sync();
+    }
+  });
+  listen(channelEffectAdd,"click",()=>appendHumanSkillEffectV1(root,null,statRegistry,null,
+    "[data-skill-channeling-effects-host]"));
   listen(contactHoldEnabled, "change", () => {
+    if(contactHoldEnabled.checked&&channelingEnabled.checked){
+      contactHoldEnabled.checked=false;
+      setStatus(root,"Désactive la canalisation avant le maintien au contact.","warn");
+    }
     contactHoldSettings.hidden = !contactHoldEnabled.checked;
   });
   listen(contactHoldEffectAddButton, "click", () => {
@@ -12721,7 +12904,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   // The same tactical row owner handles both lists, but each host is a
   // separate explicit source. A repeated effect cannot silently become an
   // immediate impact effect (or vice versa).
-  for (const effectsHost of [skillEffectsHost, contactHoldEffectsHost]) {
+  for (const effectsHost of [skillEffectsHost, contactHoldEffectsHost, channelEffectsHost]) {
     listen(effectsHost, "change", event => {
       const row = event.target?.closest?.("[data-skill-effect-row]");
       if (!row) return;

@@ -109,6 +109,14 @@ export function planSkillOutcomeFx({
     ]);
   }
 
+  if (resolution.channelingStart === true ||
+    (resolution.events?.some(e=>e.type==="scheduled-effect-created"&&e.visualCue==="ground_mine") &&
+      !resolution.events?.some(e=>e.type==="damage"||e.type==="heal"))) {
+    // No fake initial impact on the target. The existing Runtime
+    // callback / scheduled State replay the correct FX when effects apply.
+    return Object.freeze([]);
+  }
+
   if (
     resolution.persistentZoneOnly === true
   ) {
