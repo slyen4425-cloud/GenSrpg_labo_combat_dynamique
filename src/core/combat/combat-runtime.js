@@ -1042,7 +1042,13 @@ export function createCombatRuntime({
           x:wallPoint.x,y:wallPoint.y
         })})
       : resolution;
-    onResolved(presentationResolution);
+    // Channeling effects begin on the first native tick, never at the
+    // initial skill arrival. Signal this only to the visual presenter.
+    const authoredPresentation=resolution.ok&&effectiveAction.actionType==="skill"&&
+      effectiveAction.skill?.channeling
+      ? Object.freeze({...presentationResolution,channelingStart:true})
+      : presentationResolution;
+    onResolved(authoredPresentation);
     if(resolution.ok&&resolution.outcome==="hit"&&
         effectiveAction.actionType==="skill"&&effectiveAction.skill?.channeling&&
         Number(session.snapshot().fighters[effectiveAction.actorId]?.hp)>0&&
@@ -1064,7 +1070,7 @@ export function createCombatRuntime({
       returnMirroredProjectile(effectiveAction, atNowMs, contactPoint);
     }
     emitStateIfChanged({ force: true });
-    return presentationResolution;
+    return authoredPresentation;
   }
 
   function processProjectileClash({
