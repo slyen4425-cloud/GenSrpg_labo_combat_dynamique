@@ -16,3 +16,7 @@ Les trois JSON du joueur sont copiés tels quels dans des archives inertes daté
 L'éditeur recharge les fichiers JSON avec `cache: "no-store"`. Le jeton de module ES existant est **suffixé** de `gorice-pique-furie-20261102` sur la chaîne HTML/ESM de l'éditeur afin que les navigateurs chargent le nouveau manifest sans réutiliser l'ancien cache. Préfixe canonique conservé.
 
 Test TDD RED sur le SHA `03ff4fb11ea9aa79cf0677e7079bc8fd466e1a22`, workflow `41524220089` (Foundation FAIL attendu sur archives manquantes ; consulter Actions pour les détails). Après installation, exiger Foundation + quatre Chromium verts sur le SHA final, checkpoint GREEN, PR vers `gh-pages`, puis CI/Pages postfusion. Validation tactile Android et effets visuels réels par l'auteur indépendants des automatisations.
+
+## Résultat technique intermédiaire
+- SHA `4ea4b0f5efd277a959ea80a3fb55748b1a90eccc` : **CI 5/5 SUCCESS**, run `41524956481`, Fondation et quatre Chromium.
+- Cette note de clôture ajoute un nouveau SHA à tester exactement avant GREEN. La vérification tactile Android de l'auteur demeure distincte.
