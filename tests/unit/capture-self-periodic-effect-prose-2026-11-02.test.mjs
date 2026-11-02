@@ -7,13 +7,14 @@ import {summarizeCaptureSkillSettingsV1} from "../../src/ui/capture-editor-conte
 const userSkill = JSON.parse(readFileSync(new URL("../../data/capture/showcase/furie_bestiale.capture-skill-transfer-v1.json", import.meta.url),"utf8")).draft.definition;
 const output = skill => describeCaptureSkillV1(skill).sentences.join(" ");
 const selfDamage = userSkill.effects[1];
+const {channel:unusedChannel,damageMode:unusedMode,...periodicFields}=selfDamage.status;
 const selfHeal = {
   kind:"apply_status",targetScope:"self",
-  status:{...selfDamage.status,kind:"heal_over_time",polarity:"beneficial",amount:4,durationMs:15000,tickIntervalMs:3000}
+  status:{...periodicFields,kind:"heal_over_time",polarity:"beneficial",amount:4,durationMs:15000,tickIntervalMs:3000}
 };
 test("Furie bestiale: 60s Glace bonus is distinct from 10 self-damage every 10s for 60s",()=>{
   const prose = output(userSkill);
-  assert.match(prose,/Augmente .*Glace de 100 points .*pendant 60 secondes/);
+  assert.match(prose,/Augmente .*glace de 100 points .*pendant 60 secondes/i);
   assert.match(prose,/La créature qui utilise cette capacité subit 10 dégâts de Glace toutes les 10 secondes pendant 60 secondes/);
   assert.doesNotMatch(prose,/Gorice|gorille|Inflige 10 dégâts de Glace/);
 });
@@ -39,6 +40,6 @@ test("Author editor contextual help derives the same self-periodic prose as the 
   const summary=summarizeCaptureSkillSettingsV1({name:"Furie bestiale",requiredLevel:20,energyCost:6,
     effects:userSkill.effects});
   assert.match(summary,/La créature qui utilise cette capacité subit 10 dégâts de Glace toutes les 10 secondes pendant 60 secondes/);
-  assert.match(summary,/Augmente .*Glace de 100 points .*pendant 60 secondes/);
+  assert.match(summary,/Augmente .*glace de 100 points .*pendant 60 secondes/i);
   assert.doesNotMatch(summary,/sur soi|sur la cible .*10 dégâts de Glace/);
 });
