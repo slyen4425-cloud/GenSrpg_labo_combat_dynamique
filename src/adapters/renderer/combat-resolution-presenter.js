@@ -3,7 +3,7 @@ import {
   planSkillOutcomeFx,
   planSkillPreparationFx,
   planSkillReleaseFx
-} from "../../core/fx/skill-fx-plan.js?v=wall-impact-20261101-channel-ground-mine-filter-20261102";
+} from "../../core/fx/skill-fx-plan.js?v=wall-impact-20261101-channel-ground-mine-filter-20261102-wall-channel-loop-audio-20261103";
 
 // Presentation anticipation only: Combat Runtime retains exclusive ownership of hit timing.
 const DEFAULT_INSTANT_ATTACK_ANTICIPATION_MS = 250;
