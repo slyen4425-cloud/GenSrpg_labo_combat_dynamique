@@ -5,6 +5,7 @@ import {projectCombatArenaBarrierXForSideV1} from "../../src/adapters/renderer/c
 import {planSkillPreparationFx} from "../../src/core/fx/skill-fx-plan.js";
 import {createCombatResolutionPresenter} from "../../src/adapters/renderer/combat-resolution-presenter.js";
 import {createDomCombatAudio} from "../../src/adapters/audio/dom-combat-audio.js";
+import {createDomSkillFxRenderer} from "../../src/adapters/renderer/dom-skill-fx.js";
 
 test("opponent free-arena wall is next to its protected creature, player coordinates unchanged",()=>{
   const authoredXPct=47;
@@ -86,4 +87,36 @@ test("native under-target channel tick plays configured projectile/travel sound 
   for(const path of ["src/ui/combat-test-ui.js","src/ui/combat-2v2-test-ui.js"]){
     assert.match(source(path),/combatAudio\.play\(\{type:"channel-pulse"/);
   }
+});
+
+test("real DOM cast FX loops frames for the native channel and is removed on native stop",async()=>{
+  let removed=0;
+  const created=[];
+  const arena={
+    ownerDocument:{createElement(){const node={
+      className:"",dataset:{},style:{},remove(){removed++;},
+      append(){},setAttribute(){}
+    };created.push(node);return node;}},
+    append(){},
+    getBoundingClientRect(){return {left:0,top:0,width:500,height:300};}
+  };
+  const anchors={player:{getBoundingClientRect(){return {left:80,top:200,width:40,height:40};}}};
+  const renderer=createDomSkillFxRenderer({
+    arena,anchors,
+    presentationForSkill(){return {cast:{assetId:"art:ice",url:"ice.webp",frameCount:12,frameMs:80,playbackMode:"once"}};},
+    animate(){return {finished:Promise.resolve(),cancel(){}};}
+  });
+  try{
+    const handle=renderer.play({type:"cast",actorSlot:"player",skillId:"pique-glace",
+      durationMs:250,holdUntilCancelled:true});
+    assert.equal(handle.status,"running");
+    assert.equal(handle.holdUntilCancelled,true);
+    assert.equal(created[0].style.animationIterationCount,"infinite");
+    await Promise.resolve();
+    assert.equal(renderer.activeCount,1,"end of preparation must not remove channel cast");
+    handle.animation.cancel();
+    assert.equal(renderer.activeCount,0,"native channel end cancels the only cast owner");
+    assert.equal(removed,1,"cast must be removed exactly once");
+    assert.deepEqual(await handle.finished,{status:"cancelled"});
+  }finally{renderer.dispose();}
 });
