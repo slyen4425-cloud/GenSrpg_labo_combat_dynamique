@@ -38,4 +38,7 @@ jobs:
           git add -- assets/library/capture/creatures/renard_magique_dore/animations/movement/player data/assets/catalog/global-visual-assets.v1.json
           git diff --cached --quiet && { echo "Missing generated fox movement files"; exit 1; }
           git commit -m "assets(capture): register approved golden fox movement player 12f"
+          # Preserve concurrent documentation commits; never force-push or overwrite assets.
+          git fetch origin work/lab-renard-dore-movement-12f-2026-11-03
+          git rebase origin/work/lab-renard-dore-movement-12f-2026-11-03
           git push origin HEAD:work/lab-renard-dore-movement-12f-2026-11-03
