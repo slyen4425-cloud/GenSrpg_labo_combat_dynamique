@@ -28,6 +28,25 @@ const inline="import {createCombatState} from \"/src/core/combat/combat-state.js
     if(controls&&hb.left<controls.right&&hb.right>controls.left&&
       hb.top<controls.bottom&&hb.bottom>controls.top)
       throw Error("opponent HP hidden under right controls");
+    // Renderer/Runtime share one true projectile lane for impact-time wall
+    // contact: observed wall, never a generic invulnerability shortcut.
+    const nativeFx=createDomSkillFxRenderer({arena,anchors,targetAnchors,
+      barrierCollisionRectsFor:q=>wallOverlay.collisionRectsFor(q),
+      presentationForSkill:id=>({travel:{...snow.draft.presentation.visual.travel,
+        url:svg,...(id==="vertical-ice"?{trajectoryMode:"under_target"}:{})}})});
+    try{
+      nativeFx.play({type:"projectile",skillId:"boule_neige",fromSlot:"local-1",
+        targetSlot:"opponent-1",durationMs:5000});
+      const direct=nativeFx.barrierContactFor({sourceActorId:"local-1",
+        targetActorId:"opponent-1",kind:"projectile",skillId:"boule_neige"});
+      if(direct?.entityId!==enemy.record.id)
+        throw Error("native projectile missed the real opposing wall at resolution");
+      nativeFx.play({type:"projectile",skillId:"vertical-ice",fromSlot:"local-1",
+        targetSlot:"opponent-1",durationMs:5000});
+      const vertical=nativeFx.barrierContactFor({sourceActorId:"local-1",
+        targetActorId:"opponent-1",kind:"projectile",skillId:"vertical-ice"});
+      if(vertical!==null)throw Error("under-target projectile wrongly intercepted");
+    }finally{nativeFx.dispose();}
     metrics.enemyWall={left:(eb.left-rect.left)/rect.width,
       width:eb.width/rect.height,centerY:(eb.top+eb.height/2-rect.top)/rect.height,
       hpX:(hb.left+hb.width/2-rect.left)/rect.width,
