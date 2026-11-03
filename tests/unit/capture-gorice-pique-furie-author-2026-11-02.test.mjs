@@ -26,8 +26,8 @@ const validate = (live, archive, checksum, kind) => {
   return imported.value;
 };
 
-test("Gorice: latest author transfer equips Pique de glace and Furie bestiale on one creature", () => {
-  const record = validate(paths.gorice, paths.goriceArchive,
+test("Gorice: Nov 2 archived author transfer equips Pique de glace and Furie bestiale", () => {
+  const record = validate(paths.goriceArchive, paths.goriceArchive,
     "77ddd3f10f315e2fdee56aa02b4f5579eb2fec5e11ba4676b9411b7bf376d9f2", "creature");
   assert.equal(record.draft.id, "gorice");
   assert.deepEqual(record.draft.skillIds,

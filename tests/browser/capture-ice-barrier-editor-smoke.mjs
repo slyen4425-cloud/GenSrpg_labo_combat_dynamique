@@ -87,10 +87,10 @@ try{
    to:{x:spriteRect.right+40,y:spriteRect.top+spriteRect.height/2},
    barriers:arenaOverlay.collisionRectsFor({sourceActorId:"opponent",targetActorId:"player"})});
  if(arenaSegment?.entityId!==arenaPlaced.record.id)throw Error("arena wall has no real collision");
- // Ordinary wall HP badge must be ABOVE the actual artwork, not below it.
+ // The unique wall HP badge sits right under the visible base, not above the wall.
  const normalBadge=stage.querySelector("[data-combat-entity-hp]").getBoundingClientRect();
- if(normalBadge.bottom>spriteRect.top-3)
-   throw Error("normal wall HP badge is still below/over the sprite");
+ if(normalBadge.top<spriteRect.bottom-6||normalBadge.top>spriteRect.bottom+8)
+   throw Error("normal wall HP badge is not directly under the sprite base");
  arenaOverlay.dispose();
   if(stage.dataset.combatEntityArenaActive)throw Error("arena-layer flag not removed on dispose");
   stage.remove();
