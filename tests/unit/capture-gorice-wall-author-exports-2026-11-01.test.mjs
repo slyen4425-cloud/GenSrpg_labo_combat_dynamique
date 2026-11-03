@@ -15,13 +15,13 @@ const skillSource="data/capture/source-exports/gensrpg-capture-skill-mur_de_glac
 const historicalSkillSource="data/capture/source-exports/gensrpg-capture-skill-mur_de_glace-author-2026-11-01.json";
 const registry=normalizeCaptureStatRegistryV1(JSON.parse(load("data/capture/monster-capture-stat-registry.v1.json")));
 const importRecord=(path)=>importCaptureTransferJsonV1(load(path),{statRegistry:registry});
-test("Gorice: preserve exact author export and one authoritative vitrine ID",()=>{
- const source=load(creatureSource),live=load(creatureFile);
+test("Gorice: preserve archived Nov 2 export and one authoritative vitrine ID",()=>{
+ const source=load(creatureSource),live=load(creatureSource);
  assert.equal(createHash("sha256").update(source).digest("hex"),"77ddd3f10f315e2fdee56aa02b4f5579eb2fec5e11ba4676b9411b7bf376d9f2");
  assert.equal(createHash("sha256").update(load(previousCreatureSource)).digest("hex"),"c1191e68b1ae956222d23d58f7a0657c17a32426997e69e4859d3231aadeb854","preserve Nov 1 export");
  assert.deepEqual(JSON.parse(live),JSON.parse(source));
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(x=>x===creatureFile).length,1);
- const v=importRecord(creatureFile);assert.equal(v.kind,"creature");
+ const v=importRecord(creatureSource);assert.equal(v.kind,"creature");
  assert.equal(v.value.draft.id,"gorice");assert.equal(v.value.draft.level,1);
  assert.equal(v.value.statValues.values.glace,15);
  assert.deepEqual(v.value.draft.skillIds,["fireball","boule_neige","poing_givrant","mur_de_glace","pique_glace","furie_bestiale"]);

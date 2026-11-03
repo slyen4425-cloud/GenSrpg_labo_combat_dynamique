@@ -11,6 +11,7 @@ const repoFile = (path) => readFile(new URL("../../" + path, import.meta.url), "
 const goricePath = "data/capture/showcase/gorice.capture-creature-transfer-v1.json";
 const goriceSourcePath = "data/capture/source-exports/gensrpg-capture-creature-gorice-2026-10-30.json";
 const goriceLatestSourcePath = "data/capture/source-exports/gensrpg-capture-creature-gorice-author-2026-11-02.json";
+const goriceCurrentSourcePath = "data/capture/source-exports/gensrpg-capture-creature-gorice-author-2026-11-03.json";
 const goricePriorSourcePath = "data/capture/source-exports/gensrpg-capture-creature-gorice-author-2026-11-01.json";
 const loupPath = "data/capture/showcase/crea-loup.capture-creature-transfer-v1.json";
 const loupSourcePath = "data/capture/source-exports/gensrpg-capture-creature-crea-loup-2026-10-21.json";
@@ -50,7 +51,8 @@ test("Gorice historical author source is preserved and new author revision loads
   assert.notEqual(source, historical, "new author export must not rewrite historical provenance");
   assert.equal(createHash("sha256").update(await repoFile(goricePriorSourcePath)).digest("hex"), "c1191e68b1ae956222d23d58f7a0657c17a32426997e69e4859d3231aadeb854", "Nov 1 provenance must remain untouched");
   const active = await repoFile(goricePath);
-  assert.equal(active, source, "active author payload must match original export byte-for-byte");
+  assert.notEqual(active,source,"November 2 author source stays archived");
+  assert.equal(active,await repoFile(goriceCurrentSourcePath),"new active author payload must match the November 3 export byte-for-byte");
   const imported = importCaptureTransferJsonV1(active, { statRegistry: await registry() });
   assert.equal(imported.kind, "creature");
   const record = imported.value;

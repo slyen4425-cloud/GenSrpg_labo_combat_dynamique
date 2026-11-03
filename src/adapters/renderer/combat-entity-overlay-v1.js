@@ -2,6 +2,16 @@
 // playback; the Combat Damage Application owns all entity HP and destruction.
 const round=n=>Math.round(n*100)/100;
 const formatHp=e=>round(e.hp)+" / "+round(e.maxHp)+" PV";
+// A free-arena wall belongs to its protected team. Author coordinates are
+// unchanged for the primary/player side. The opposing side projects the same
+// author X toward its own fighter rather than reusing the player's world X.
+export function projectCombatArenaBarrierXForSideV1({authoredXPct,ownerCenterXPct,opponentSide=false}){
+  const x=Math.max(0,Math.min(100,Number(authoredXPct)));
+  if(!opponentSide)return x;
+  const owner=Number(ownerCenterXPct);
+  if(!Number.isFinite(owner))return 100-x;
+  return round(50+(Math.max(0,Math.min(100,owner))-50)*(1-x/100));
+}
 
 export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,teamOf=null,assetForId=()=>null}){
   const hosts={},nodes=new Map();let snapshot=null;
@@ -73,7 +83,7 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
     const label=document.createElement("div");label.dataset.combatEntityHp="true";
     // One badge per CombatEntity. It must not participate in the wall's
     // flex flow: a tall authored sprite used to push it below the arena.
-    label.style.cssText="position:absolute;left:50%;top:0;transform:translateX(-50%);z-index:7;border:1px solid #a1e8fb;border-radius:8px;background:rgba(14,62,101,.96);color:white;padding:3px 6px;text-align:center;font-weight:700;font-size:11px;white-space:nowrap;pointer-events:none;";
+    label.style.cssText="position:absolute;left:50%;top:100%;transform:translateX(-50%);z-index:7;border:1px solid #a1e8fb;border-radius:8px;background:rgba(14,62,101,.96);color:white;padding:3px 6px;text-align:center;font-weight:700;font-size:11px;white-space:nowrap;pointer-events:none;";
     node.append(sprite,label);host.append(node);
     nodes.set(entity.id,{node,sprite,label,hp:entity.hp,actorId:entity.protectedActorId});
     return nodes.get(entity.id);
@@ -106,7 +116,19 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
       const item=existing??newNode(entity,parent);
       if(item.node.parentNode!==parent)parent.append(item.node);
       if(arenaMode){
-        item.node.style.left=entity.arenaXPct+"%";
+        const primaryActorId=Object.keys(fighterContainers)[0];
+        const opponentSide=typeof teamOf==="function"
+          ?teamOf(entity.protectedActorId)!==teamOf(primaryActorId)
+          :entity.protectedActorId!==primaryActorId;
+        const stageRect=arenaHost.getBoundingClientRect();
+        const ownerRect=fighterContainers[entity.protectedActorId].getBoundingClientRect();
+        const ownerCenterXPct=stageRect.width>0
+          ?100*((ownerRect.left+ownerRect.width/2-stageRect.left)/stageRect.width)
+          :NaN;
+        const drawnX=projectCombatArenaBarrierXForSideV1({
+          authoredXPct:entity.arenaXPct,ownerCenterXPct,opponentSide
+        });
+        item.node.style.left=drawnX+"%";
         item.node.style.top=entity.arenaYPct+"%";
         item.node.style.bottom="auto";
         item.node.style.transform="translate(-50%, -50%)";
@@ -138,15 +160,15 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
         viewport.style.height=Math.round(70*scale*(entity.visualScaleY??1))+"px";
       }
       item.label.textContent="🧊 Mur "+formatHp(entity);
-      // Place the badge ABOVE the actual wall art, then clamp into the
-      // visible arena (a scale-4 wall can extend beyond its upper edge).
-      // This only changes text placement: the sprite's original rectangle
-      // stays the sole collision/impact surface.
+      // Display the single HP badge just BELOW the wall's base. When a huge
+      // authored sprite exceeds the visible arena, pin that badge to the
+      // lower visible edge instead of losing it below the screen.
+      // The physical collision rectangle always remains the sprite alone.
       const spriteRect=item.sprite.getBoundingClientRect();
       const visibleRect=(arenaHost??fighterContainers[entity.protectedActorId])
         .getBoundingClientRect();
       const labelHeight=item.label.getBoundingClientRect().height||24;
-      const preferredTop=spriteRect.top-labelHeight-8;
+      const preferredTop=spriteRect.bottom+4;
       const top=Math.max(visibleRect.top+6,
         Math.min(preferredTop,visibleRect.bottom-labelHeight-6));
       item.label.style.top=Math.round(top-spriteRect.top)+"px";

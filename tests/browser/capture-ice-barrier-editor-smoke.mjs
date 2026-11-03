@@ -87,13 +87,49 @@ try{
    to:{x:spriteRect.right+40,y:spriteRect.top+spriteRect.height/2},
    barriers:arenaOverlay.collisionRectsFor({sourceActorId:"opponent",targetActorId:"player"})});
  if(arenaSegment?.entityId!==arenaPlaced.record.id)throw Error("arena wall has no real collision");
- // Ordinary wall HP badge must be ABOVE the actual artwork, not below it.
+ // The unique wall HP badge sits right under the visible base, not above the wall.
  const normalBadge=stage.querySelector("[data-combat-entity-hp]").getBoundingClientRect();
- if(normalBadge.bottom>spriteRect.top-3)
-   throw Error("normal wall HP badge is still below/over the sprite");
+ if(normalBadge.top<spriteRect.bottom-6||normalBadge.top>spriteRect.bottom+8)
+   throw Error("normal wall HP badge is not directly under the sprite base");
  arenaOverlay.dispose();
   if(stage.dataset.combatEntityArenaActive)throw Error("arena-layer flag not removed on dispose");
   stage.remove();
+ // Use real protected-fighter hosts for player/opponent in the arena and
+ // assert their single native walls do NOT share one absolute author X.
+ const versusStage=document.createElement("div");
+ versusStage.style.cssText="position:relative;width:900px;height:280px;overflow:visible;";
+ const heroAnchor=document.createElement("div"),enemyAnchor=document.createElement("div");
+ for(const [el,left] of [[heroAnchor,"10%"],[enemyAnchor,"75%"]]){
+   el.style.cssText="position:absolute;top:25%;width:15%;height:55%;left:"+left+";";
+   versusStage.append(el);
+ }
+ document.body.append(versusStage);
+ const opposingState=createCombatState({fighters:[
+   {id:"player",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,statValuesById:{glace:80}},
+   {id:"opponent",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,statValuesById:{glace:80}}
+ ]});
+ const authoredWall={...effect,placementMode:"arena",arenaXPct:47,arenaYPct:55};
+ const playerWall=createCombatBarrierV1({state:opposingState,sourceActorId:"player",protectedActorId:"player",sourceSkillId:"mirror-player",effect:authoredWall});
+ const enemyWall=createCombatBarrierV1({state:playerWall.state,sourceActorId:"opponent",protectedActorId:"opponent",sourceSkillId:"mirror-enemy",effect:authoredWall});
+ for(const teamOf of [null,id=>id==="player"?"ally":"enemy"]){
+   const mirroredOverlay=createCombatEntityOverlayV1({
+     fighterContainers:{player:heroAnchor,opponent:enemyAnchor},arenaHost:versusStage,
+     ...(teamOf?{teamOf}:{}),assetForId:id=>presentationAssets.visualAsset(id)});
+   mirroredOverlay.render(enemyWall.state);
+   const playerNode=versusStage.querySelector('[data-combat-entity-id="'+playerWall.record.id+'"]');
+   const enemyNode=versusStage.querySelector('[data-combat-entity-id="'+enemyWall.record.id+'"]');
+   const pX=parseFloat(playerNode?.style.left),eX=parseFloat(enemyNode?.style.left);
+   if(Math.abs(pX-47)>.1||eX<60||eX>80||eX-pX<12)
+     throw Error("opponent barrier reused the player's world coordinates "+pX+" / "+eX);
+   const blocking=mirroredOverlay.collisionRectsFor({sourceActorId:"player",targetActorId:"opponent"});
+   if(blocking.length!==1||blocking[0].entityId!==enemyWall.record.id)
+     throw Error("opponent wall lost its own physical collision geometry");
+   const sprite=enemyNode.querySelector("[data-combat-entity-sprite]").getBoundingClientRect();
+   if(Math.abs((sprite.left+sprite.width/2-versusStage.getBoundingClientRect().left)/900-eX/100)>.02)
+     throw Error("opponent wall image and collision use different projected X");
+   mirroredOverlay.dispose();
+ }
+ versusStage.remove();
  // User's scale-4 arena wall is taller than the viewport: its unique
  // native HP badge must remain visible while preserving collision bounds.
  const tallStage=document.createElement("div");

@@ -19,8 +19,11 @@ test("two ice author exports are preserved byte-for-byte, imported by the canoni
  const ids=[];
  for(const [id,[sourcePath,sha]] of archives){
   const original=await file(sourcePath), active=await file(published(id));
-  assert.equal(createHash("sha256").update(original).digest("hex"),sha,id+" author SHA256");
-  assert.deepEqual(active,original,id+" active payload differs from author export");
+  assert.equal(createHash("sha256").update(original).digest("hex"),sha,id+" historical author SHA256");
+  const expectedActive=id==="boule_neige"
+    ?await file("data/capture/source-exports/gensrpg-capture-skill-boule_neige-author-2026-11-03.json")
+    :original;
+  assert.deepEqual(active,expectedActive,id+" active payload differs from its current author export");
   const parsed=importCaptureTransferJsonV1(active.toString("utf8"));
   assert.equal(parsed.kind,"skill");
   assert.equal(parsed.value.draft.id,id);
