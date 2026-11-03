@@ -1,3 +1,10 @@
+// A wall intercepts a travelled lane, never a strike materialising on its
+// target from the ground or descending vertically from the sky.
+// This is a presentation geometry classification, not a second damage rule.
+export function barrierContactAllowedForTrajectoryV1(mode) {
+  return mode !== "under_target" && mode !== "skyfall";
+}
+
 // Pure continuous swept sensor against the actual visible barrier bounds.
 // Only the native Combat Damage authority changes combat HP.
 export function sweptSegmentRectContactV1({from,to,rect}){

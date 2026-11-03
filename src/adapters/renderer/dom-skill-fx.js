@@ -1,4 +1,4 @@
-import {sweptSegmentRectContactV1,nearestBarrierSegmentContactV1} from "../../core/combat/combat-barrier-spatial-v1.js";
+import {sweptSegmentRectContactV1,nearestBarrierSegmentContactV1,barrierContactAllowedForTrajectoryV1} from "../../core/combat/combat-barrier-spatial-v1.js";
 import { sweptPointHitsOpaqueMask, sweptPointHitsSpriteEllipseV1, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1, sweptExpandingWaveMeetsProjectileV1 } from "./dom-visible-model-contact.js?v=wall-ground-stop-20261101";
 
 function defaultAnimate(element, keyframes, options) {
@@ -572,11 +572,14 @@ export function createDomSkillFxRenderer({
             rect: mirrorRect
           })
         : null;
-      const barrierContacts=(barrierCollisionRectsFor?.({
-        sourceActorId:record.fromSlot,targetActorId:record.targetSlot
-      })??[]).map(entry=>({entityId:entry.entityId,
-        point:sweptSegmentRectContactV1({from:record.previousProjectilePoint,to:projectilePoint,rect:entry.rect})
-      })).filter(entry=>entry.point!==null);
+      // Ground spikes and skyfall do not traverse a lateral wall lane.
+      const barrierContacts=barrierContactAllowedForTrajectoryV1(record.trajectoryMode)
+        ? (barrierCollisionRectsFor?.({
+            sourceActorId:record.fromSlot,targetActorId:record.targetSlot
+          })??[]).map(entry=>({entityId:entry.entityId,
+            point:sweptSegmentRectContactV1({from:record.previousProjectilePoint,to:projectilePoint,rect:entry.rect})
+          })).filter(entry=>entry.point!==null)
+        : [];
       barrierContacts.sort((a,b)=>
         Math.hypot(a.point.x-record.previousProjectilePoint.x,a.point.y-record.previousProjectilePoint.y)-
         Math.hypot(b.point.x-record.previousProjectilePoint.x,b.point.y-record.previousProjectilePoint.y));
@@ -2225,6 +2228,7 @@ export function createDomSkillFxRenderer({
       }
       node.dataset.skillFx = "cast";
       node.dataset.skillId = skillId ?? "";
+      node.dataset.fxActorSide = anchors[sourceSlot]?.closest?.("[data-demo-view]")?.dataset?.demoView ?? "unknown";
       // The independent CSS scale composes with the authored cast keyframe
       // transform. The ongoing sprite animation is never restarted per tap.
       node.style.scale = String(Number.isFinite(sizeMultiplier) && sizeMultiplier > 0 ? sizeMultiplier : 1);
@@ -3247,6 +3251,7 @@ export function createDomSkillFxRenderer({
       node.className += " skill-fx--layer-behind";
     }
     node.dataset.skillFx = "projectile";
+    node.dataset.fxActorSide = anchors[fromSlot]?.closest?.("[data-demo-view]")?.dataset?.demoView ?? "unknown";
     if (skillId) {
       node.dataset.skillId = skillId;
     }
@@ -3363,7 +3368,8 @@ export function createDomSkillFxRenderer({
       contactFrameId: null,
       contactReported: false,
       projectilePower: Math.max(0,Number(projectilePower)||0),
-      mirrorSurfaceEligible: !skyfall
+      mirrorSurfaceEligible: !skyfall,
+      trajectoryMode:travelVisual?.trajectoryMode ?? null
     };
     active.add(record);
 
@@ -3399,6 +3405,8 @@ export function createDomSkillFxRenderer({
     // leave the caster behind, then clear the enemy in FRONT before impact.
     // No second RAF/timeout, no change to core trajectory or collision.
     const startLayer = presentation?.travelLayer === "behind" ? "behind" : "front";
+    const behindLayer=arena.dataset?.combatEntityArenaActive==="true"&&node.dataset.fxActorSide==="player"
+      ? "3" : "2";
     const endLayer = !skyfall && ["front", "behind"].includes(presentation?.travelArrivalLayer)
       ? presentation.travelArrivalLayer : startLayer;
     const actualKeyframes = groundConfigured && travelVisual.groundMotion==="fixed"
@@ -3416,8 +3424,8 @@ export function createDomSkillFxRenderer({
             offset: ratio,
             transform: `translate(-50%, -50%) translate3d(${deltaX * ratio}px, ${deltaY * ratio}px, 0) scale(${Number((pulse * travelDisplayScale * depth).toFixed(6))})`,
             opacity: ratio === 0 ? 0.95 : 1,
-            zIndex: ratio < 0.38 ? (startLayer === "behind" ? "2" : "7")
-              : (endLayer === "behind" ? "2" : "7")
+            zIndex: ratio < 0.38 ? (startLayer === "behind" ? behindLayer : "7")
+              : (endLayer === "behind" ? behindLayer : "7")
           };
         })
       : keyframes;
@@ -3458,6 +3466,9 @@ export function createDomSkillFxRenderer({
   // its exact rendered endpoints; contact uses the moving fighter and target.
   function barrierContactFor({sourceActorId,targetActorId,kind,skillId=null}){
     if(disposed||!["beam","contact"].includes(kind)||barrierCollisionRectsFor===null)return null;
+    if(skillId&&!barrierContactAllowedForTrajectoryV1(
+      presentationForSkill(skillId,{sourceView:sourceActorId,targetView:targetActorId,fxType:kind})?.travel?.trajectoryMode
+    ))return null;
     const barriers=barrierCollisionRectsFor({sourceActorId,targetActorId,kind})??[];
     if(!Array.isArray(barriers)||barriers.length===0)return null;
     const activeBeam=kind==="beam"?[...active].find(record=>

@@ -2379,3 +2379,12 @@ button.reserve-card {
 .arena[data-combat-entity-arena-active="true"] .fighter[data-demo-view="opponent"] {
   z-index: 3;
 }
+
+/* With an arena wall, a player/ally FX authored behind its OWN model must
+   still be drawn above the wall plane (3), yet beneath the model plane (4).
+   The standard behind layer (2) remains valid when no wall is present and
+   on the opponent's side.  Both cast and projectile follow one depth rule. */
+.arena[data-combat-entity-arena-active="true"] .skill-fx--cast.skill-fx--layer-behind[data-fx-actor-side="player"],
+.arena[data-combat-entity-arena-active="true"] .skill-fx--projectile.skill-fx--layer-behind[data-fx-actor-side="player"] {
+  z-index: 3;
+}
