@@ -20,4 +20,12 @@
 - GREEN : navigateur Chromium avec **vrai export Loup** + moteur visuel, phone reference (~400px) et PC (~900px) et redimensionnement de l'arène, coordonnées de pieds/socles normalisées identiques. Sentinelles d'animations/shadows intactes. Foundation + 4 Chromium, SHA exact, GREEN checkpoint et PR gh-pages après preuves. Validation photo téléphone utilisateur reste distincte.
 
 ## Résultats
-À renseigner après RED / CI.
+## Validation technique et mesures réelles
+- Export officiel loup `crea-loup` : même source à `Y=+60` côté adverse, `Y=0` côté joueur, échelles `0.8` et `1.2`. Aucun JSON auteur modifié.
+- Nouvelle sentinelle `tests/unit/capture-wolf-author-offset-projection-2026-11-03.test.mjs` : la composition du transform Actor + Shadow utilise la même variable CSS d'arène, tandis que les translations de mouvement ne sont pas multipliées et que les démos hors Capture gardent leur comportement historique.
+- Nouveau navigateur `tests/browser/capture-wolf-phone-pc-author-offset-smoke.mjs` : extrait le vrai template de combat depuis l'éditeur HTML, lit le vrai export Loup et le profil quadrupède, monte `mountCombatDemo` et compare la géométrie DOM du modèle, le repos, la taille et les pattes, en 1v1 et 2v2, fenêtre « téléphone » 920×490 contre fenêtre PC 1920×1080. Parcours navigateur réussi sur run `41638835388`.
+- Résultats réels Chromium : en 1v1, centre Y adverse normalisé **0,49856 téléphone / 0,49811 PC**, base d'image **0,61727 / 0,61702** ; en 2v2, centre Y **0,46334 / 0,46280**, base **0,55523 / 0,55486**. Ces valeurs ne sont pas des prédictions issues de tests CSS statiques : elles proviennent des rectangles réellement rendus.
+- L'ancienne preuve « proportions » ne testait pas les offsets auteur; elle n'était pas suffisante pour valider le cas signalé. Cette sentinelle vérifie désormais ce cas précis. Les captures de l'utilisateur montrent également des compétences en cours différentes (PC Boule de feu, téléphone Griffe) : la validation artistique finale nécessite une comparaison à l'arrêt, même créature et même arène.
+- Chaîne ESM canonique de l'éditeur mise à jour ; Foundation avait détecté deux décalages de suffixe cache pendant la première passe, corrigés dans les imports (sans affecter catalogue ni gameplay).
+- **GREEN final** uniquement après succès Foundation+quatre Chromium sur le SHA final du journal. Puis checkpoint/PR gh-pages, CI et Pages post-fusion. `main` et données auteur protégés.
+
