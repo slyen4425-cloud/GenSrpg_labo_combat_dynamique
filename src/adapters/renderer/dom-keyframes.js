@@ -11,6 +11,23 @@ function formatNumber(value) {
   return Object.is(rounded, -0) ? "0" : String(rounded);
 }
 
+/* Presentation-only unit conversion: the Capture combat editor authors offsets
+   in a phone-sized arena. Scale the authored base with the actual 16:9 arena,
+   but NOT the transient movement/impact displacement. Body and shadow both
+   use this same owner; standalone laboratory actors retain plain pixel values.
+   The single CSS variable belongs to the arena's layout observer. */
+function responsivePositionComponent(actor, base, transient) {
+  const variable = actor.positionScaleVar;
+  if (variable == null) {
+    return formatNumber(base + transient) + "px";
+  }
+  if (variable !== "--combat-arena-author-offset-scale") {
+    throw new RangeError("unknown presentation position scale variable");
+  }
+  return "calc(" + formatNumber(base) + "px * var(" + variable + ", 1) + " +
+    formatNumber(transient) + "px)";
+}
+
 export function composeDomFilter(filter = {}) {
   const brightness = finite(filter.brightness ?? 1, "filter.brightness");
   const saturate = finite(filter.saturate ?? 1, "filter.saturate");
@@ -50,20 +67,22 @@ export function composeDomTransform(actor, transient = {}) {
   const rotateDeg = finite(transient.rotateDeg ?? 0, "transform.rotateDeg");
 
   return [
-    `translate3d(${formatNumber(baseX + translateX)}px, ${formatNumber(baseY + translateY)}px, 0)`,
+    `translate3d(${responsivePositionComponent(actor, baseX, translateX)}, ${responsivePositionComponent(actor, baseY, translateY)}, 0)`,
     `rotate(${formatNumber(rotateDeg)}deg)`,
     `scale(${formatNumber(baseScale * scaleX)}, ${formatNumber(baseScale * scaleY)})`
   ].join(" ");
 }
 
 export function composeDomShadowTransform(actor, ground = {}) {
-  const x = finite(actor.position?.x ?? 0, "actor.position.x") +
-    finite(ground.translateX ?? 0, "ground.translateX");
-  const y = finite(actor.position?.y ?? 0, "actor.position.y") +
-    finite(ground.translateY ?? 0, "ground.translateY");
+  const x = responsivePositionComponent(actor,
+    finite(actor.position?.x ?? 0, "actor.position.x"),
+    finite(ground.translateX ?? 0, "ground.translateX"));
+  const y = responsivePositionComponent(actor,
+    finite(actor.position?.y ?? 0, "actor.position.y"),
+    finite(ground.translateY ?? 0, "ground.translateY"));
   const scale = finite(actor.scale ?? 1, "actor.scale") *
     finite(ground.scale ?? 1, "ground.scale");
-  return `translate3d(${formatNumber(x)}px, ${formatNumber(y)}px, 0) translateX(-50%) scale(${formatNumber(scale)})`;
+  return `translate3d(${x}, ${y}, 0) translateX(-50%) scale(${formatNumber(scale)})`;
 }
 
 export function animationPlanToDomTimeline(plan, actor) {

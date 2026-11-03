@@ -85,3 +85,5 @@ jobs:
         run: node tests/browser/expanding-wave-mini-preview-smoke.mjs
       - name: Real Chromium mobile/PC creature feet and proportions, 1v1 and 2v2
         run: node tests/browser/capture-pc-phone-arena-parity-smoke.mjs
+      - name: Real Chromium Loup volcanique author Y+60 offset phone/PC, 1v1 and 2v2
+        run: node tests/browser/capture-wolf-phone-pc-author-offset-smoke.mjs
