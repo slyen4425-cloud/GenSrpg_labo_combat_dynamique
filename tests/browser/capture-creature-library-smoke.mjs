@@ -1975,7 +1975,7 @@ const server = createServer(async (req, res) => {
             if(field("type").value!=="defense" || field("icon").value!=="" ||
                field("charges").value!=="2" || field("recharge").value!=="30" ||
                field("window").value!=="0.25" || field("reduction").value!=="50")
-              throw Error("Moussados independent Defense or Foudrillon icon/settings leaked");
+              throw Error("Moussados independent Defense or Foudrillon icon/settings leaked: "+JSON.stringify({type:field("type").value,icon:field("icon").value,charges:field("charges").value,recharge:field("recharge").value,window:field("window").value,reduction:field("reduction").value}));
             selectCreature("crea_foudrillon");
             if(field("type").value!=="defense" || field("charges").value!=="3" ||
                field("recharge").value!=="26" || field("window").value!=="0.55" ||
