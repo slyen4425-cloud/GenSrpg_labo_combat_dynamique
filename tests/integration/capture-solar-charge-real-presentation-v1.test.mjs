@@ -98,3 +98,29 @@ test("Real native Runtime completes Charge solaire after 800ms and permits a fol
     assert.equal(runtime.hasActiveAction,false);
   } finally {runtime.dispose();presenter.dispose();}
 });
+
+test("hostile physical contact still waits for visual contact in live visible-contact mode", () => {
+  const fighter=id=>({id,maxHp:100,initialHp:100,maxEnergy:30,initialEnergy:30,
+    energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0});
+  const format={teamOf:id=>id==="enemy"?"opposing":"local"};
+  const session=createCombatSession({distance:"medium",fighters:["player","enemy"].map(fighter),battleFormat:format});
+  const strike=normalizeSkillDefinition({id:"hostile-ground-contact",name:"Contact",category:"offensive",
+    form:"contact",approachMode:"ground",targetRelations:["enemy"],energyCost:0,
+    preparationMs:0,travelMs:500,recoveryMs:0,cooldownMs:0,effect:{damage:15,heal:0}});
+  let clock=1000,pending=()=>{};
+  const runtime=createCombatRuntime({session,groundContactResolution:"visible",tickMs:25,now:()=>clock,
+    setTimer:f=>{pending=f;return 1;},clearTimer:()=>{pending=()=>{};}});
+  try {
+    runtime.start();
+    assert.equal(runtime.startSkill({actorId:"player",targetId:"enemy",skill:strike}).ok,true);
+    clock+=600;pending();
+    assert.equal(runtime.hasActiveActionFor("player"),true,
+      "real hostile ground movement is still pending a model-contact report");
+    assert.equal(session.snapshot().fighters.enemy.hp,100,"no early damage without contact");
+    const ended=runtime.reportGroundApproachEnd({
+      actorId:"player",targetId:"enemy",skillId:strike.id
+    });
+    assert.equal(ended.ok,true);
+    assert.equal(runtime.hasActiveActionFor("player"),false,"the reported end closes the action");
+  } finally {runtime.dispose();}
+});
