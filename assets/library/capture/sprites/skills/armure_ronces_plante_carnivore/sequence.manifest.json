@@ -1,0 +1,111 @@
+{
+  "schema": "capture-skill-overlay-v1",
+  "id": "pack:capture:sprite-armure-ronces-plante-carnivore-01",
+  "creatureReference": "plante_carnivore",
+  "type": "defense_thorn_armor_overlay",
+  "frameCount": 6,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameDurationsMs": [
+    140,
+    130,
+    120,
+    130,
+    145,
+    240
+  ],
+  "frameMs": 135,
+  "mode": "once",
+  "holdLastFrame": true,
+  "holdFrameIndex": 5,
+  "facingReference": "opponent",
+  "sourceArchive": "armure_ronces_plante_carnivore_6f.zip",
+  "sourceSha256": "0ec7c6cd52bc8a3677c214bf9d49a8e45f34a6ce7d285179e811313e95ddfcac",
+  "sourceGitBlob": "97750b8ab5cb623c6aa8e8aa6bf3b5c3e241249d",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/armure_ronces_01.png",
+      "sha256": "1730bb7932a1e8358dcee3db89325905a7a47b64b4cf55d39ceac06c9138abfd",
+      "marginsLTRB": [
+        76,
+        117,
+        69,
+        47
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/armure_ronces_02.png",
+      "sha256": "5ac0cfebfca295c71a73bfe3f09748db9943274472530087d7c5a6d0804fa0f1",
+      "marginsLTRB": [
+        74,
+        104,
+        64,
+        44
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/armure_ronces_03.png",
+      "sha256": "b7762c22ba178838d1da18081c9cf5baddbee90de3f722189847cd5a51c5a0c8",
+      "marginsLTRB": [
+        68,
+        89,
+        60,
+        38
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/armure_ronces_04.png",
+      "sha256": "88661da37a7c4280361fee0b153a7841a0c003f35da7c1b5de920adfb47a7662",
+      "marginsLTRB": [
+        65,
+        79,
+        52,
+        34
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/armure_ronces_05.png",
+      "sha256": "912933c29b3bfd4752694065529d64034ebff2623f78c281c1d0c8ca5a151589",
+      "marginsLTRB": [
+        64,
+        67,
+        49,
+        41
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/armure_ronces_06.png",
+      "sha256": "53a3fbaad1ef61197e74398cf09dda7b52718720c7164140e6a882e45b6912d7",
+      "marginsLTRB": [
+        65,
+        68,
+        50,
+        41
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/armure_ronces_plante_carnivore_atlas_6f.webp",
+    "format": "sprite-strip",
+    "frameCount": 6,
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "sha256": "ee030e4ab610df0ff857be356e7cc63b9c90a52e2eba7e6c9d4655660f7a2a45",
+    "lossless": true
+  },
+  "preview": {
+    "mask": "previews/masque_6f.webp",
+    "control": "previews/controle_3x2.png"
+  },
+  "runtimeOnlyThorns": true,
+  "noAutoBinding": true,
+  "notes": "Overlay mask only; composite preserved as source review, not in asset catalog."
+}

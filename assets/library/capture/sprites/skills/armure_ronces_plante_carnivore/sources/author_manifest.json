@@ -1,0 +1,31 @@
+{
+  "schema": "gensrpg-capture-overlay-sprite-v1",
+  "creature": "plante_carnivore",
+  "type": "defense_thorn_armor_overlay",
+  "frames": 6,
+  "frameSize": [
+    512,
+    512
+  ],
+  "layout": {
+    "atlasColumns": 3,
+    "atlasRows": 2
+  },
+  "frameDurationMs": [
+    140,
+    130,
+    120,
+    130,
+    145,
+    240
+  ],
+  "playback": "once",
+  "holdLastFrame": true,
+  "holdFrameIndex": 5,
+  "assets": {
+    "atlas": "armure_ronces_atlas_3x2.png",
+    "maskPreview": "armure_ronces_masque_preview.webp",
+    "creatureCompositePreview": "armure_ronces_sur_creature_preview.webp"
+  },
+  "note": "Only thorns in real alpha PNG frames. Composite preview is art review; runtime should only use the mask. Artwork and precise overlay alignment need user validation before publishing."
+}
