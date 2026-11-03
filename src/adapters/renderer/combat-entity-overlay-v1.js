@@ -9,14 +9,17 @@ export const OPPONENT_BARRIER_NEAR_OWNER_FRACTION_V1=0.75;
 // A free-arena wall belongs to its protected team. Author coordinates are
 // unchanged for the primary/player side. The opposing side projects the same
 // author X toward its own fighter rather than reusing the player's world X.
-export function projectCombatArenaBarrierXForSideV1({authoredXPct,ownerCenterXPct,opponentSide=false}){
+export function projectCombatArenaBarrierXForSideV1({authoredXPct,ownerCenterXPct,opponentSide=false,visualWidthPct=0}){
   const x=Math.max(0,Math.min(100,Number(authoredXPct)));
   if(!opponentSide)return x;
   const owner=Number(ownerCenterXPct);
   if(!Number.isFinite(owner))return 100-x;
   const ownerSideFraction=OPPONENT_BARRIER_NEAR_OWNER_FRACTION_V1+
     (1-OPPONENT_BARRIER_NEAR_OWNER_FRACTION_V1)*x/100;
-  return round(50+(Math.max(0,Math.min(100,owner))-50)*ownerSideFraction);
+  const preferred=50+(Math.max(0,Math.min(100,owner))-50)*ownerSideFraction;
+  // Respect the protected half using the SAME real visible wall width.
+  const halfWidth=Math.max(0,Number(visualWidthPct)||0)/2;
+  return round(owner>=50?Math.max(preferred,52+halfWidth):Math.min(preferred,48-halfWidth));
 }
 
 // One sprite geometry, scaled by the existing arena-author presentation unit.
@@ -129,12 +132,15 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
       const existing=nodes.get(entity.id);
       const arenaMode=entity.placementMode==="arena";
       if(arenaMode&&!arenaOverlay)throw new Error("arenaHost is required for arena wall placement");
+      const size=projectCombatArenaBarrierVisualSizeV1(entity,
+        arenaHost?fxArenaScaleV1(arenaHost):1);
+      let opponentSide=false;
       const parent=arenaMode?arenaOverlay:hosts[entity.protectedActorId];
       const item=existing??newNode(entity,parent);
       if(item.node.parentNode!==parent)parent.append(item.node);
       if(arenaMode){
         const primaryActorId=Object.keys(fighterContainers)[0];
-        const opponentSide=typeof teamOf==="function"
+        opponentSide=typeof teamOf==="function"
           ?teamOf(entity.protectedActorId)!==teamOf(primaryActorId)
           :entity.protectedActorId!==primaryActorId;
         const stageRect=arenaHost.getBoundingClientRect();
@@ -143,7 +149,8 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
           ?100*((ownerRect.left+ownerRect.width/2-stageRect.left)/stageRect.width)
           :NaN;
         const drawnX=projectCombatArenaBarrierXForSideV1({
-          authoredXPct:entity.arenaXPct,ownerCenterXPct,opponentSide
+          authoredXPct:entity.arenaXPct,ownerCenterXPct,opponentSide,
+          visualWidthPct:stageRect.width>0?100*size.width/stageRect.width:0
         });
         item.node.style.left=drawnX+"%";
         item.node.style.top=entity.arenaYPct+"%";
@@ -167,8 +174,6 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
         item.node.style.transform="translate(-50%, -50%)";
       }
       // Layout dimensions = visual dimensions = the single collision rectangle.
-      const size=projectCombatArenaBarrierVisualSizeV1(entity,
-        arenaHost?fxArenaScaleV1(arenaHost):1);
       item.sprite.style.width=size.width+"px";
       item.sprite.style.height=size.height+"px";
       const viewport=item.sprite.querySelector("[data-combat-entity-visual-viewport]");
@@ -186,7 +191,10 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
       const visibleRect=(arenaHost??fighterContainers[entity.protectedActorId])
         .getBoundingClientRect();
       const labelHeight=item.label.getBoundingClientRect().height||24;
-      const preferredTop=spriteRect.bottom+4;
+      const preferredTop=arenaMode&&opponentSide
+        ? spriteRect.top+Math.max(labelHeight+10,
+          Math.min(spriteRect.height*.22,visibleRect.height*.28))
+        : spriteRect.bottom+4;
       const top=Math.max(visibleRect.top+6,
         Math.min(preferredTop,visibleRect.bottom-labelHeight-6));
       item.label.style.top=Math.round(top-spriteRect.top)+"px";

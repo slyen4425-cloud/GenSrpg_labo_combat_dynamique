@@ -3369,7 +3369,10 @@ export function createDomSkillFxRenderer({
       contactReported: false,
       projectilePower: Math.max(0,Number(projectilePower)||0),
       mirrorSurfaceEligible: !skyfall,
-      trajectoryMode:travelVisual?.trajectoryMode ?? null
+      trajectoryMode:travelVisual?.trajectoryMode ?? null,
+      // Native impact can query this SAME rendered flight lane if RAF is late.
+      barrierSegment:Object.freeze({from:Object.freeze({x:from.x+arenaRect.left,y:from.y+arenaRect.top}),
+        to:Object.freeze({x:to.x+arenaRect.left,y:to.y+arenaRect.top})})
     };
     active.add(record);
 
@@ -3465,17 +3468,24 @@ export function createDomSkillFxRenderer({
   // No second RAF, hit logic or entity HP authority. An active beam supplies
   // its exact rendered endpoints; contact uses the moving fighter and target.
   function barrierContactFor({sourceActorId,targetActorId,kind,skillId=null}){
-    if(disposed||!["beam","contact"].includes(kind)||barrierCollisionRectsFor===null)return null;
+    if(disposed||!["projectile","beam","contact"].includes(kind)||barrierCollisionRectsFor===null)return null;
     if(skillId&&!barrierContactAllowedForTrajectoryV1(
       presentationForSkill(skillId,{sourceView:sourceActorId,targetView:targetActorId,fxType:kind})?.travel?.trajectoryMode
     ))return null;
+    const activeProjectile=kind==="projectile"?[...active].find(record=>
+      record.type==="projectile"&&record.fromSlot===sourceActorId&&
+      record.targetSlot===targetActorId&&
+      (skillId===null||String(record.skillId)===String(skillId))) : null;
+    if(kind==="projectile"&&(!activeProjectile||
+      !barrierContactAllowedForTrajectoryV1(activeProjectile.trajectoryMode)))return null;
     const barriers=barrierCollisionRectsFor({sourceActorId,targetActorId,kind})??[];
     if(!Array.isArray(barriers)||barriers.length===0)return null;
     const activeBeam=kind==="beam"?[...active].find(record=>
       record.type==="beam"&&record.fromSlot===sourceActorId&&
       record.targetSlot===targetActorId&&
       (skillId===null||String(record.skillId)===String(skillId))) : null;
-    const observed=activeBeam?.barrierSegment??null;
+    const observed=kind==="projectile"
+      ? activeProjectile?.barrierSegment??null : activeBeam?.barrierSegment??null;
     const source=observed?.from??rectCenter(sourceRect(sourceActorId));
     const target=observed?.to??rectCenter(projectileTargetRect(targetActorId));
     return nearestBarrierSegmentContactV1({from:source,to:target,barriers});
