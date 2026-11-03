@@ -26,12 +26,12 @@ test("RED: phone-approved fighter sizes must remain a constant share of the 16:9
   for(const [selector,percentage] of Object.entries(one)){
     const declaration=rule(base,selector);
     assert.match(declaration,new RegExp("width:\\s*"+percentage+"%;"),selector);
-    assert.doesNotMatch(declaration,/width:\\s*min\\(|dvh|rem/,selector+" must never cap desktop");
+    assert.doesNotMatch(declaration,/width:\s*min\(|dvh|rem/,selector+" must never cap desktop");
   }
   for(const [selector,percentage] of Object.entries(twoActors)){
     const declaration=rule(two,selector);
     assert.match(declaration,new RegExp("width:\\s*"+percentage+"%;"),selector);
-    assert.doesNotMatch(declaration,/width:\\s*min\\(|dvh|rem/,selector+" must never cap desktop");
+    assert.doesNotMatch(declaration,/width:\s*min\(|dvh|rem/,selector+" must never cap desktop");
   }
 });
 
