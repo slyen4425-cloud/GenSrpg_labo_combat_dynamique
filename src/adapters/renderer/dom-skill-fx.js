@@ -1832,7 +1832,7 @@ export function createDomSkillFxRenderer({
       {transform:`translate(-50%, -100%) scale(${displayScale})`,opacity}
     ];
     const riseStart=visual.groundMotion==="rise" && Number.isFinite(visual.groundRisePx)
-      ? `translate(-50%, calc(-100% + ${visual.groundRisePx}px))`
+      ? `translate(-50%, calc(-100% + ${fxAuthorPixelsV1(arena, visual.groundRisePx)}px))`
       : "translate(-50%, -4%)";
     const animation = animate(
       node,
