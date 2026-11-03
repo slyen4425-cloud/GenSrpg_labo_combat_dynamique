@@ -23,6 +23,7 @@ test("RED: keep original author offsets and scales for real Gorice/Firestorm ass
 test("RED: all gameplay-bearing FX shells are sized against the real 16:9 arena, not capped viewport px",()=>{
  const rules={
   ".skill-fx--projectile:not(.skill-fx--sprite-shell)":6.3,
+  ".skill-fx--channel-pulse":6.3,
   ".skill-fx--sprite-shell":9.7,
   ".skill-fx--cast":14.2,
   ".skill-fx--impact":14.2,
