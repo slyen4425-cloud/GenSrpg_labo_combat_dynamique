@@ -36,7 +36,8 @@ const server=createServer(async(req,res)=>{
     }
     const path=resolve(root,"."+decodeURIComponent(url.pathname));
     if(!path.startsWith(root+sep)){res.writeHead(403).end("Forbidden");return;}
-    res.writeHead(200,{"Content-Type":types[extname(path)]??"application/octet-stream"}).end(await readFile(path));
+    const bytes=await readFile(path);
+    res.writeHead(200,{"Content-Type":types[extname(path)]??"application/octet-stream"}).end(bytes);
   }catch(error){res.writeHead(404).end(String(error));}
 });
 server.listen(0,"127.0.0.1");await once(server,"listening");
