@@ -642,7 +642,7 @@ export function createDomSkillFxRenderer({
 
     const radiusPx = Math.max(
       1,
-      Number(glow.radiusPx) || 1
+      fxAuthorPixelsV1(arena, glow.radiusPx) || 1
     );
     const strength = clampUnit(
       glow.strength,
@@ -1296,15 +1296,15 @@ export function createDomSkillFxRenderer({
 
     const spreadPx = Math.max(
       1,
-      Number(smoke.spreadPx) || 1
+      fxAuthorPixelsV1(arena, smoke.spreadPx) || 1
     );
     const sizePx = Math.max(
       1,
-      Number(smoke.sizePx) || 1
+      fxAuthorPixelsV1(arena, smoke.sizePx) || 1
     );
     const risePx = Math.max(
       1,
-      Number(smoke.risePx) || 1
+      fxAuthorPixelsV1(arena, smoke.risePx) || 1
     );
     const durationMs = Math.max(
       1,
@@ -1904,7 +1904,7 @@ export function createDomSkillFxRenderer({
         node.className="skill-fx skill-fx--mine-telegraph";
         node.dataset.skillFx="mine-telegraph";
         node.dataset.scheduledMineId=record.id;
-        node.style.cssText="position:absolute;width:42px;height:19px;border-radius:50%;border:2px solid rgba(255,214,92,.9);background:rgba(255,105,56,.24);box-shadow:0 0 7px #ffbb50;pointer-events:none;transform:translate(-50%,-50%);z-index:5;";
+        node.style.cssText=`position:absolute;width:${fxAuthorPixelsV1(arena,42)}px;height:${fxAuthorPixelsV1(arena,19)}px;border-radius:50%;border:${fxAuthorPixelsV1(arena,2)}px solid rgba(255,214,92,.9);background:rgba(255,105,56,.24);box-shadow:0 0 ${fxAuthorPixelsV1(arena,7)}px #ffbb50;pointer-events:none;transform:translate(-50%,-50%);z-index:5;`;
         node.style.left=x+"px";node.style.top=y+"px";
         arena.append(node);
         item={node,x,y,record};scheduledMineNodes.set(record.id,item);
