@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 299,
+    "assets": 300,
     "icons": 94,
-    "sprites": 181,
+    "sprites": 182,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
-    "creatures": 66
+    "creatures": 67
   },
   "assets": [
     {
@@ -10290,6 +10290,48 @@
         "playbackMode": "once",
         "holdLastFrame": true,
         "persistentFrameIndex": 5
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-renard-magique-dore-movement-player-12-v1",
+      "label": "Renard magique doré — vol ondulant, déplacement joueur (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "renard-magique-dore",
+        "gold",
+        "light",
+        "spirit",
+        "fox",
+        "flying",
+        "movement",
+        "animated",
+        "player",
+        "dos"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / animation approuvée 2026-11-03",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/renard_magique_dore/animations/movement/player/atlases/renard_magique_dore_mouvement_joueur_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 120,
+        "playbackMode": "loop"
       },
       "compatibility": {
         "uses": [
