@@ -1,3 +1,4 @@
+import { isPureBeneficialAllySkillV1 } from "../../contracts/skill-beneficial-contact-v1.js";
 import {
   planSkillFx,
   planSkillOutcomeFx,
@@ -478,20 +479,7 @@ export function createCombatResolutionPresenter({
     // beneficial ally/self status. Never turn those into a live-model
     // collision or a one-millisecond self-approach. Only the Presentation
     // owner opts out; Combat Rules and the author's export remain unchanged.
-    const skill = action.skill;
-    const supportiveOnly = skill &&
-      Array.isArray(skill.targetRelations) &&
-      skill.targetRelations.length > 0 &&
-      skill.targetRelations.every(relation => relation === "self" || relation === "ally") &&
-      Number(skill.effect?.damage ?? 0) === 0 &&
-      Array.isArray(skill.effects) &&
-      skill.effects.length > 0 &&
-      skill.effects.every(effect =>
-        (effect.kind === "apply_status" && effect.status?.polarity === "beneficial") ||
-        effect.kind === "heal" ||
-        effect.kind === "energy_restore" ||
-        effect.kind === "cleanse"
-      );
+    const supportiveOnly = isPureBeneficialAllySkillV1(action.skill);
     if (
       !supportiveOnly &&
       ["ground", "teleport", "aerial", "burrow"].includes(approachMode) &&
