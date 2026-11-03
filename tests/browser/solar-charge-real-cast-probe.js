@@ -50,6 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
                  action.includes("Charge solaire · trajet"))throw Error("solar action frozen "+action);
               const bolt=q('[data-combat-skill="lib_light_bolt"]');
               if(!bolt)throw Error("Rayon lumineux disappeared after solar cast");
+              if(bolt.disabled)throw Error("Rayon lumineux is still disabled after Charge solaire (actor action never released)");
+              if(solarSkill.disabled!==true)throw Error("Charge solaire must remain on its own cooldown");
               // The real native solar status/bonus is asserted by the Session
               // sentinels. HUD icon rendering is intentionally NOT treated as
               // a gameplay source of truth here.
