@@ -1,3 +1,12 @@
+## 2026-11-03 — Trois transferts auteur et mur de glace position adverse / PV près de la base
+- Demande : placer les exports complets et stricts Gemmor (`crea_crys_2`), Boule de neige (`boule_neige`), Gorice (`gorice`) ; Mur de glace actuellement correct côté joueur, mais l'adversaire utilise les mêmes coordonnées mondiales (`placementMode=arena`, X47/Y55) ; replacer l'étiquette PV sous le mur, moins bas, sans la faire sortir de l'arène.
+- BASE `gh-pages@bb9f74bc2fd5964ba8a52f4fbfc9d76f46983470`, START `checkpoint/lab-start-author-three-wall-side-hp-2026-11-03`, WORK `work/lab-author-three-wall-side-hp-2026-11-03`. Charte, Roadmap, checkpoint policy, architecture lus. Périmètre: trois vitrines canoniques; trois sources exactes datées, manifeste créature Gemmor une fois; tests et sentinelles historiques adaptées; overlay unique `src/adapters/renderer/combat-entity-overlay-v1.js` et navigateur sentinelle ; cache ESM seulement si exigé par preuves. Pas d'autre changement de jeu, stat, position joueur, combat damage/HP, murs imprimés ou moteur.
+- Sources SHA256: Gemmor `b4e481de8d67e2e7968836e831187a6d1843ff4923c4a832f8cdc351c2ca5c58`; Boule de neige `ee83444579b670eea4d31f10973d0468464e22a56e5ffd3442e98cbdddbfe597`; Gorice `538b4b8e1fc6ac91a39d46e2d35ea1425760a29573ab27ce5e0bee1ba63edede`. Anciens exports 01/02 conservés strictement inertes, aucun double ID.
+- Diagnostic: overlay projette `arenaXPct` dans le même repère absolu, sans utiliser la propriété de l'équipe protégée. La présentation doit tenir compte du camp propriétaire (en 1v1 et 2v2) mais l'unique hitbox reste celle du vrai sprite ; le combat natif ne calcule aucune position. Le badge reste unique et suit la base visible du mur, sans déborder.
+- Tests RED/GREEN: vrais fichiers et import natif; identité par ID, manifest, archives; géométrie projetée de manière distincte côté opposé, joueur inchangé; navigateur collision/HP dessous et clamp; suites Foundation + 4 navigateurs sur SHA final avant GREEN; PR vers gh-pages + CI/Pages postfusion. Validation Android réelle reste à faire par l'auteur.
+
+---
+
 ## 2026-11-03 — Visibilité animation chargée Gorille adversaire (cache éditeur)
 - Source officielle publiée : `global-assets@aded6a9bc571dd1dd557889d35ad4e513f6f27dd` (PR #214, workflow d'import #41558245884 et CI post-fusion #41558880085 SUCCESS).
 - BASE édition `gh-pages@0a0e3f8da15f2677d7deeb9e2e908581558b4cf5` ; checkpoint `checkpoint/lab-start-gorille-charge-opponent-selector-2026-11-03` ; travail `work/lab-gorille-charge-opponent-selector-2026-11-03`.
