@@ -40,7 +40,13 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
           clearInterval(awaiting);
-          if(solarButton.disabled)throw Error("Charge solaire unavailable before first use");
+          if(solarButton.disabled)throw Error("Charge solaire unavailable pre-cast: level="+
+            (q("[data-test-creature-level]")?.value??"?")+
+            " energy="+(q('[data-combat-energy-value="local-1"]')?.textContent??"?")+
+            " status="+(q("[data-combat-live-status]")?.textContent??"?")+
+            " localAction="+(q('[data-combat-action="local-1"]')?.textContent??"?")+
+            " cd="+(solarButton.querySelector(".action-option__cooldown")?.textContent??"none")+
+            " boltDisabled="+(q('[data-combat-skill="lib_light_bolt"]')?.disabled??"?"));
           solarButton.click();
           // In the real 2v2 preview an ally/self skill needs an explicit
           // physical target selection. Merely clicking the ability arms it;
