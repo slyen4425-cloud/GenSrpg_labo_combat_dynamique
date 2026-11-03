@@ -62,7 +62,7 @@ test("a real opposing snowball absorbed by the official ice wall cannot interrup
     h.step(100);
     assert.equal(h.runtime.hasContactHoldFor("player"),true);
     assert.equal(h.runtime.startSkill({actorId:"opponent",targetId:"player",skill:official("boule_neige")}).ok,true);
-    h.step(1010);
+    h.step(1700);
     assert.equal(h.ticks.length,1);
     const hit=h.runtime.reportActionContact({actorId:"opponent",targetId:"player",
       skillId:"boule_neige",combatEntityId:wallId,contactPoint:{x:200,y:200}});
@@ -72,7 +72,7 @@ test("a real opposing snowball absorbed by the official ice wall cannot interrup
     assert.ok(h.session.snapshot().combatEntities[0].hp<hp,"wall absorbs charged snowball");
     assert.equal(h.ended.length,0,"a blocked projectile cannot cancel a channel");
     assert.equal(h.runtime.hasContactHoldFor("player"),true);
-    h.step(2020);
+    h.step(2700);
     assert.equal(h.ticks.length,2,"channel still ticks after a blocked snowball");
   }finally{h.runtime.dispose();}
 });
@@ -83,7 +83,7 @@ test("without interception, actual damage still ends the same author channel",()
     h.step(100);
     assert.equal(h.runtime.hasContactHoldFor("player"),true);
     assert.equal(h.runtime.startSkill({actorId:"opponent",targetId:"player",skill:official("boule_neige")}).ok,true);
-    h.step(1010);
+    h.step(1700);
     h.runtime.reportActionContact({actorId:"opponent",targetId:"player",skillId:"boule_neige",
       contactPoint:{x:200,y:200}});
     assert.ok(h.session.snapshot().fighters.player.hp<140);
