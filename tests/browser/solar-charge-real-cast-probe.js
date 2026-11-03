@@ -34,13 +34,37 @@ document.addEventListener("DOMContentLoaded", () => {
       const awaiting=setInterval(()=>{
         try {
           const solarButton=q('[data-combat-skill="cap_light_atk_3"]');
-          if(!solarButton) {
-            const err=q("[data-editor-status]")?.textContent??"";
-            if(++tries>95){clearInterval(awaiting);fail("real preview missing solar button: "+err.slice(0,125));}
+          const energyLabel=q('[data-combat-energy-value="local-1"]')?.textContent??"";
+          const energy=parseFloat(energyLabel);
+          const boltReady=q('[data-combat-skill="lib_light_bolt"]')?.disabled===false;
+          // Native Lumilo starts with 2/12 energy, while both Solar and Bolt
+          // cost 3 each. Wait on the real regeneration clock until BOTH can
+          // be paid sequentially. Never bypass skill costs or force buttons.
+          if(!solarButton || !Number.isFinite(energy) || energy<6 ||
+              solarButton.disabled || !boltReady) {
+            if(++tries>150){
+              clearInterval(awaiting);
+              fail("real Charge solaire not launchable with 6 energy: energy="+energyLabel+
+                ", disabled="+(solarButton?.disabled??"missing")+
+                ", boltReady="+boltReady+
+                ", action="+(q('[data-combat-action="local-1"]')?.textContent??"?"));
+            }
             return;
           }
           clearInterval(awaiting);
           solarButton.click();
+          // In the real 2v2 preview an ally/self skill needs an explicit
+          // physical target selection. Merely clicking the ability arms it;
+          // the old smoke could then report success without casting anything.
+          if(solarButton.dataset.targeting==="true") {
+            const self=qa('[data-target-actor="local-1"]').find(el=>
+              el.dataset.skillTargetCandidate==="true");
+            if(!self)throw Error("Charge solaire armed but self target absent");
+            self.click();
+          }
+          const started=q('[data-combat-action="local-1"]')?.textContent??"";
+          if(!started.includes("Charge solaire"))
+            throw Error("Charge solaire was armed but not actually cast: "+started);
           setTimeout(()=>{
             try {
               const action=q('[data-combat-action="local-1"]')?.textContent??"";
@@ -50,10 +74,18 @@ document.addEventListener("DOMContentLoaded", () => {
                  action.includes("Charge solaire · trajet"))throw Error("solar action frozen "+action);
               const bolt=q('[data-combat-skill="lib_light_bolt"]');
               if(!bolt)throw Error("Rayon lumineux disappeared after solar cast");
+              if(bolt.disabled)throw Error("Rayon lumineux is still disabled after Charge solaire (actor action never released)");
+              if(solarSkill.disabled!==true)throw Error("Charge solaire must remain on its own cooldown");
               // The real native solar status/bonus is asserted by the Session
               // sentinels. HUD icon rendering is intentionally NOT treated as
               // a gameplay source of truth here.
               bolt.click();
+              if(bolt.dataset.targeting==="true") {
+                const enemy=qa('[data-target-actor="opponent-1"]').find(el=>
+                  el.dataset.skillTargetCandidate==="true");
+                if(!enemy)throw Error("Rayon lumineux armed but enemy target absent");
+                enemy.click();
+              }
               const afterBolt=q('[data-combat-action="local-1"]')?.textContent??"";
               if(!afterBolt.includes("Rayon lumineux"))
                 throw Error("follow-up Rayon lumineux could not start: "+afterBolt);

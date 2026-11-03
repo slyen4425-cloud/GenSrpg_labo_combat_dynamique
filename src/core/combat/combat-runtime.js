@@ -1,3 +1,4 @@
+import { isPureBeneficialAllySkillV1 } from "../../contracts/skill-beneficial-contact-v1.js";
 import {amplifyChargedEffectSkillV1} from "./charged-effects-v1.js";
 import {
   combatHealthDeltaEventsV1
@@ -1265,7 +1266,8 @@ export function createCombatRuntime({
           const action = item.record.action;
           if (groundContactResolution === "visible" &&
               action.actionType === "skill" && action.skill?.form === "contact" &&
-              action.skill?.approachMode === "ground" && !item.record.mirrorReturn) {
+              action.skill?.approachMode === "ground" && !item.record.mirrorReturn &&
+              !isPureBeneficialAllySkillV1(action.skill)) {
             // The same outbound AnimationPlan owns the final contact opportunity.
             return;
           }
@@ -1867,6 +1869,7 @@ export function createCombatRuntime({
 
     return (
       form === "contact" &&
+      !isPureBeneficialAllySkillV1(action.skill) &&
       ["ground", "aerial", "teleport"].includes(
         action.skill?.approachMode ?? "none"
       )
@@ -2015,6 +2018,7 @@ export function createCombatRuntime({
         record.action.actionType !== "skill" ||
         record.action.skill?.form !== "contact" ||
         record.action.skill?.approachMode !== "ground" ||
+        isPureBeneficialAllySkillV1(record.action.skill) ||
         record.action.targetId !== targetId ||
         (skillId !== null && String(record.action.skill.id) !== String(skillId)))
       return Object.freeze({ok:false,outcome:"no_matching_ground_approach"});
