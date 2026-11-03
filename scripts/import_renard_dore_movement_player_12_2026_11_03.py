@@ -141,7 +141,7 @@ def main():
         }
         outputs[TARGET/"movement.manifest.json"]=(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n").encode()
 
-    if len(outputs)!=18:raise ValueError("Wrong number of output files: "+str(len(outputs)))
+    if len(outputs)!=17:raise ValueError("Wrong number of output files: "+str(len(outputs)))
     entry={
       "id":ASSET_ID,"label":"Renard magique doré — vol ondulant, déplacement joueur (12 frames)",
       "assetType":"sprite","mediaType":"image","category":"creature",
