@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 296,
+    "assets": 298,
     "icons": 94,
-    "sprites": 178,
+    "sprites": 180,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
-    "creatures": 64
+    "creatures": 66
   },
   "assets": [
     {
@@ -10168,6 +10168,84 @@
         "playbackMode": "once",
         "holdLastFrame": true,
         "persistentFrameIndex": 11
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-gorille-des-glaces-movement-player-12-v1",
+      "label": "Gorice — déplacement joueur / dos (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "gorille-des-glaces",
+        "gorice",
+        "ice",
+        "animated",
+        "movement",
+        "player",
+        "dos"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / preview approuvée 2026-11-03",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/gorille_des_glaces/animations/movement/player/atlases/gorice_deplacement_joueur_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 130,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-gorille-des-glaces-movement-opponent-12-v1",
+      "label": "Gorice — déplacement adversaire / face (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "gorille-des-glaces",
+        "gorice",
+        "ice",
+        "animated",
+        "movement",
+        "opponent",
+        "face"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / preview approuvée 2026-11-03",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/gorille_des_glaces/animations/movement/opponent/atlases/gorice_deplacement_adversaire_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 110,
+        "playbackMode": "loop"
       },
       "compatibility": {
         "uses": [

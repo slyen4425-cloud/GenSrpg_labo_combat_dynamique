@@ -1,0 +1,182 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "assetId": "pack:capture:creature-gorille-des-glaces-movement-player-12-v1",
+  "creatureId": "gorille_des_glaces",
+  "action": "movement",
+  "view": "player",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 130,
+  "frameDurationsMs": [
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    400
+  ],
+  "playbackMode": "loop",
+  "safeMarginMinPx": 42,
+  "atlas": {
+    "file": "atlases/gorice_deplacement_joueur_12f.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "sha256": "6603d4da83aa7d229cb61bea5bc5003dd5c4a235311239fd65f881af8dbdbe2b",
+    "lossless": true
+  },
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/gorice_deplacement_joueur_01.png",
+      "sha256": "0f862b6436d61a0b51f2a40540cb95a4b55d979681ee742889c12eee47f0bcd4",
+      "marginsLTRB": [
+        84,
+        80,
+        86,
+        101
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/gorice_deplacement_joueur_02.png",
+      "sha256": "db11f5b83eaf0a4adf937b7f2e782dddd12336c9819a4097583efeef2a404094",
+      "marginsLTRB": [
+        86,
+        81,
+        71,
+        101
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/gorice_deplacement_joueur_03.png",
+      "sha256": "b2718fae3dee232808621a021db5c367fe8b24607c9daef70e0b9059d5c71c53",
+      "marginsLTRB": [
+        80,
+        80,
+        57,
+        101
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/gorice_deplacement_joueur_04.png",
+      "sha256": "4702d09504bad438c577cae6a8612a5f4d74600b2f2b319c35632740f7e1da82",
+      "marginsLTRB": [
+        76,
+        89,
+        67,
+        101
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/gorice_deplacement_joueur_05.png",
+      "sha256": "c7c1517ba75e1faab631e6be60a435901e7b2030f0ca981fbaf4fc3943331b71",
+      "marginsLTRB": [
+        73,
+        89,
+        69,
+        103
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/gorice_deplacement_joueur_06.png",
+      "sha256": "640f684471a05a2b80570c9c5fa5f19e9a9e43f48ab625f34bb51f96cfe1da52",
+      "marginsLTRB": [
+        76,
+        81,
+        71,
+        108
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/gorice_deplacement_joueur_07.png",
+      "sha256": "53cd47e5ed02a4e01f95a6c939ae11db5a2924d0952123f46678f1261f2f9c42",
+      "marginsLTRB": [
+        67,
+        80,
+        61,
+        113
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/gorice_deplacement_joueur_08.png",
+      "sha256": "3d1123463ae90e8b41e90f1156da1387db47dc77cd5a6fa6119c901422422b59",
+      "marginsLTRB": [
+        75,
+        81,
+        58,
+        114
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/gorice_deplacement_joueur_09.png",
+      "sha256": "aadb6cc19d08c86822be9dd1ac222d2f1131e7bbd0800621706abcb7f454b4b0",
+      "marginsLTRB": [
+        76,
+        80,
+        77,
+        112
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/gorice_deplacement_joueur_10.png",
+      "sha256": "68007fd0471815dbf13cad0083349ba603304b7583695306ee711243eea40df6",
+      "marginsLTRB": [
+        89,
+        79,
+        83,
+        112
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/gorice_deplacement_joueur_11.png",
+      "sha256": "cb0f6635e101faf74ff39ff6bc28302f507b309efc551d49a2e19b802837d0e6",
+      "marginsLTRB": [
+        85,
+        77,
+        79,
+        111
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/gorice_deplacement_joueur_12.png",
+      "sha256": "924be349d991c7133dffa87f6c3e8853ad541d6e7730ad431870ff13de640434",
+      "marginsLTRB": [
+        88,
+        77,
+        77,
+        112
+      ]
+    }
+  ],
+  "previews": {
+    "gif": "previews/gorice_deplacement_joueur_12f.gif",
+    "animatedWebp": "previews/gorice_deplacement_joueur_12f.webp"
+  },
+  "sourceArchive": "GORICE_DEPLACEMENTS_JOUEUR_ADVERSAIRE_24_FRAMES_VALIDES.zip",
+  "sourceArchiveSha256": "4eb0515e387ba1bbad8ca193f6faed61029a4ed9a20004bff763f254abfc0948",
+  "sourceGitBlob": "1db42e0a4339bc6dfa3c5c0306fa251a5c7d68d1",
+  "approval": "artist-approved 2026-11-03",
+  "authorMasterFrame01": "not-certified-pixel-identical; user approved animated preview with this limitation disclosed",
+  "notes": "Frames imported byte-exact from approved ZIP; source poses and orientation preserved. No automatic assignment to creature data; author chooses movement asset using the standard editor."
+}
