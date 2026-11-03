@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 298,
+    "assets": 299,
     "icons": 94,
-    "sprites": 180,
+    "sprites": 181,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
@@ -10246,6 +10246,50 @@
         "frameCount": 12,
         "frameMs": 110,
         "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-armure-ronces-plante-carnivore-01",
+      "label": "Armure de ronces — pointes seules (Plante carnivore, 6f)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "nature",
+        "thorn",
+        "ronces",
+        "plante-carnivore",
+        "defense",
+        "buff",
+        "status",
+        "overlay",
+        "animated",
+        "hold-last-frame"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / artwork author approved",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/armure_ronces_plante_carnivore/atlases/armure_ronces_plante_carnivore_atlas_6f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 6,
+        "frameMs": 135,
+        "playbackMode": "once",
+        "holdLastFrame": true,
+        "persistentFrameIndex": 5
       },
       "compatibility": {
         "uses": [
