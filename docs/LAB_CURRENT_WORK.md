@@ -1,3 +1,12 @@
+## 2026-11-03 — Gorille des glaces, attaque chargée adversaire (SOURCE RECOUPÉE À DÉPOSER)
+- START global-assets@0042455482b9b1b4f6c9c040a5b4be3293b334f1, checkpoint `checkpoint/lab-start-gorille-glaces-charge-opponent-2026-11-03`, branche `work/lab-gorille-glaces-charge-opponent-2026-11-03`.
+- Dépôt source initial confirmé sur GitHub (`_incoming/gorille_des_glaces_adversaire_charge_12f.zip`, Git blob `75ecdfd79c47e748d25a720d40f2bb884bdd847b`). Défaut démontré : artefacts et silhouettes touchant les limites des cases.
+- Nouvelle source à recevoir : `gorille_des_glaces_adversaire_charge_12f_RECOUPE.zip`, SHA256 `487b1cc772c4dcf1f4daa541ec99f6c04eaaf88bc8e27d19e6c3db201e2d84ba`. Extraction corrigée depuis les 12 poses approuvées, aucune refonte artistique.
+- Préparés : script d'import, workflow de vérification SHA/CRC/PNG/alpha/atlas/préviews, contrat de catalogue avec un seul ID et sans auto-affectation. Autorité media `global-assets`, moteur/editor/main protégés.
+- **NON GREEN / NON PUBLIÉ** avant source corrigée, CI, PR assets et contrôle de l'éditeur public.
+
+---
+
 ## 2026-11-02 — Gorille des glaces : attaque chargee/canalisee joueur 12f
 - Source: global-assets:_incoming/gorille_des_glaces_canalisation_corrigee_12f.zip; source SHA256 379afd5861977a636059dd8453e67fb3d622fe78d52830a08f58562f6dba390b; Git blob 5891b83b944b9d7735d118fdc0e90c2367b4a91c.
 - BASE global-assets@bef5aaed06bc823ecafc43e2249310cb4c2ccfce; checkpoint/lab-start-gorille-glaces-charge-player-2026-11-02; work/lab-gorille-glaces-charge-player-2026-11-02.
