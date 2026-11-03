@@ -3,7 +3,7 @@ import {
   planSkillOutcomeFx,
   planSkillPreparationFx,
   planSkillReleaseFx
-} from "../../core/fx/skill-fx-plan.js?v=wall-impact-20261101-channel-ground-mine-filter-20261102";
+} from "../../core/fx/skill-fx-plan.js?v=wall-impact-20261101-channel-ground-mine-filter-20261102-wall-channel-loop-audio-20261103";
 
 // Presentation anticipation only: Combat Runtime retains exclusive ownership of hit timing.
 const DEFAULT_INSTANT_ATTACK_ANTICIPATION_MS = 250;
@@ -66,6 +66,8 @@ export function createCombatResolutionPresenter({
   const timers = new Set();
   const preparedAttacksByActor = new Map();
   const preparationFxByActor = new Map();
+  // A persistent cast is still the ONE preparation FX, not a new timer or actor.
+  const channelCastByActor = new Set();
   const preparationAudioByActor = new Map();
   const travelAudioByActor = new Map();
   const footfallAudioByActor = new Map();
@@ -161,13 +163,14 @@ export function createCombatResolutionPresenter({
 
   function cancelPreparation(
     actorSlot = "player",
-    { audioMode = "all" } = {}
+    { audioMode = "all", preserveChannelCast = false } = {}
   ) {
     let cancelled = cancelPreparedAttack(actorSlot);
 
     const fxHandle = preparationFxByActor.get(actorSlot);
-    if (fxHandle) {
+    if (fxHandle && !(preserveChannelCast && channelCastByActor.has(actorSlot))) {
       preparationFxByActor.delete(actorSlot);
+      channelCastByActor.delete(actorSlot);
       fxHandle.animation?.cancel?.();
       cancelled = true;
     }
@@ -293,7 +296,10 @@ export function createCombatResolutionPresenter({
   }
 
   function endChannelPose({ actorSlot = "player" }) {
-    return releaseAttackPose(actorSlot);
+    // Native onChannelEnd is the sole end signal for both the creature pose
+    // and the single cast FX loop. The next cast is free to start afterward.
+    const castStopped = cancelPreparation(actorSlot);
+    return releaseAttackPose(actorSlot) || castStopped;
   }
 
   function cancelActionPresentation(
@@ -396,6 +402,7 @@ export function createCombatResolutionPresenter({
 
     if (handle) {
       preparationFxByActor.set(actorSlot, handle);
+      if (action?.skill?.channeling && handle.holdUntilCancelled === true) channelCastByActor.add(actorSlot);
       Promise.resolve(handle.finished)
         .finally(() => {
           if (preparationFxByActor.get(actorSlot) === handle) {
@@ -461,7 +468,7 @@ export function createCombatResolutionPresenter({
     if (!action.skill?.channeling) releaseAttackPose(actorSlot);
     cancelPreparation(
       actorSlot,
-      { audioMode: "loop-only" }
+      { audioMode: "loop-only", preserveChannelCast: Boolean(action.skill?.channeling) }
     );
     cancelFootfallAudio(actorSlot);
 
@@ -670,6 +677,10 @@ export function createCombatResolutionPresenter({
     // channelingStart may retain the pose after skill arrival.
     if (heldAttackPoseByActor.has(actorSlot) && resolution.channelingStart !== true) {
       releaseAttackPose(actorSlot);
+    }
+    // Failed arrival or blocked channel must not leak the held cast FX.
+    if (resolution.channelingStart !== true && channelCastByActor.has(actorSlot)) {
+      cancelPreparation(actorSlot);
     }
 
     let ko = false;
@@ -886,6 +897,7 @@ export function createCombatResolutionPresenter({
     approachVisualsByActor.clear();
     const presentationActors = new Set([
       ...preparationFxByActor.keys(),
+      ...channelCastByActor,
       ...preparationAudioByActor.keys(),
       ...travelAudioByActor.keys(),
       ...footfallAudioByActor.keys(),
@@ -900,6 +912,7 @@ export function createCombatResolutionPresenter({
       cancelTravelAudio(actorSlot);
       cancelFootfallAudio(actorSlot);
     }
+    channelCastByActor.clear();
     for (const actorSlot of heldAttackPoseByActor.keys()) releaseAttackPose(actorSlot);
     disposed = true;
     outcomeByActor.clear();

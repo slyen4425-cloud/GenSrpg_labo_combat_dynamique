@@ -119,7 +119,10 @@ try{
    const playerNode=versusStage.querySelector('[data-combat-entity-id="'+playerWall.record.id+'"]');
    const enemyNode=versusStage.querySelector('[data-combat-entity-id="'+enemyWall.record.id+'"]');
    const pX=parseFloat(playerNode?.style.left),eX=parseFloat(enemyNode?.style.left);
-   if(Math.abs(pX-47)>.1||eX<60||eX>80||eX-pX<12)
+   const ownerRect=enemyAnchor.getBoundingClientRect(),stageRect=versusStage.getBoundingClientRect();
+   const ownerX=100*((ownerRect.left+ownerRect.width/2-stageRect.left)/stageRect.width);
+   const minFrontX=50+(ownerX-50)*0.75;
+   if(Math.abs(pX-47)>.1||eX<minFrontX||eX>=ownerX||eX-pX<12)
      throw Error("opponent barrier reused the player's world coordinates "+pX+" / "+eX);
    const blocking=mirroredOverlay.collisionRectsFor({sourceActorId:"player",targetActorId:"opponent"});
    if(blocking.length!==1||blocking[0].entityId!==enemyWall.record.id)

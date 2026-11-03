@@ -43,7 +43,7 @@ test("Gemmor, new charged snowball and latest Gorice animations survive native i
 test("arena wall X preserves player authored position, but resolves on the opposite team's side",()=>{
  assert.equal(projectCombatArenaBarrierXForSideV1({authoredXPct:47,ownerCenterXPct:80,opponentSide:false}),47);
  const enemy=projectCombatArenaBarrierXForSideV1({authoredXPct:47,ownerCenterXPct:80,opponentSide:true});
- assert.ok(enemy>=60&&enemy<=80,"opponent wall must be in front of enemy, not player");
+ assert.ok(enemy>=74&&enemy<80,"opponent wall must be near enemy and not midfield");
  assert.notEqual(enemy,47);
- assert.equal(projectCombatArenaBarrierXForSideV1({authoredXPct:47,ownerCenterXPct:20,opponentSide:true}),34.1);
+ assert.equal(projectCombatArenaBarrierXForSideV1({authoredXPct:47,ownerCenterXPct:20,opponentSide:true}),23.98);
 });

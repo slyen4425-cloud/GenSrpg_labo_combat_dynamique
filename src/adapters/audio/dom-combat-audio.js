@@ -29,6 +29,12 @@ function soundFor(presentation, type, phase) {
       return presentation?.defense ?? null;
     case "impact":
       return presentation?.impactSound ?? null;
+    case "channel-pulse":
+      // A native pulse that spawns an under-target projectile owns its
+      // projectile sound, not an impact sound. No additional audio clock.
+      return presentation?.travel?.trajectoryMode === "under_target"
+        ? presentation?.travelSound ?? null
+        : presentation?.impactSound ?? null;
     case "aura":
       return presentation?.auraSound ?? null;
     case "phase":

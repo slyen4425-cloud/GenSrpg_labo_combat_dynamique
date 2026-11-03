@@ -11,6 +11,7 @@ export function planSkillPreparationFx({
       type: "cast",
       skillId: action.skill.id,
       actorSlot,
+      ...(action.skill.channeling ? {holdUntilCancelled:true} : {}),
       ...(action.chargeState ? {sizeMultiplier:action.chargeState.sizeMultiplier} : {}),
       durationMs: Math.max(
         0,
