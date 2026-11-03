@@ -1,3 +1,8 @@
+## 2026-11-03 — Proportions téléphone = PC dans l'arène de Capture
+- BASE `gh-pages@114cd8a3d3ce26e0d8a931f5c712f861b8c02114`, START `checkpoint/lab-start-pc-phone-arena-parity-2026-11-03`, WORK `work/lab-pc-phone-arena-parity-2026-11-03`. Écart signalé PC : ennemi flotte malgré modèle correct sur téléphone. Cause prouvée : `min(Ndvh, rem)` plafonne les combattants dans une scène 16:9 fixe. Correction dans le seul CSS de prévisualisation : proportion du cadre 16:9, X/Y et displayScale auteurs préservés. Scénarios téléphone/PC Chromium 1v1/2v2, sentinelles historiques mises à jour, CI cinq jobs; journal `docs/LAB_PC_PHONE_ARENA_PARITY_2026_11_03.md`. Protéger le format téléphone, la source LC, main, les modèles, moteurs, exports et médias ; validation physique par l'auteur distincte.
+
+---
+
 ## 2026-11-03 — Mur adverse rapproché et canalisation cast/audio (CI code 5/5 ; validation finale)
 - BASE `gh-pages@4c6a2c13c1b705f74ddfc9dc9e10451bc2cd0453` ; START `checkpoint/lab-start-wall-channel-fx-2026-11-03`, WORK `work/lab-wall-channel-fx-2026-11-03` ; périmètre/propriétaires/sentinelles et protections détaillés dans `docs/LAB_WALL_CHANNEL_FX_2026_11_03.md`. Aucune promotion main autorisée ; GREEN uniquement après CI fondation + 4 navigateurs, checkpoint exact et publication. Test Android séparé.
 - CI du code sur `bf4a9df91f4006c9ab705bc41ff78a3eceba646a` : 5/5 SUCCESS, run #41620218464 (Foundation 2551 tests et quatre suites Chromium). Deux échecs antérieurs étaient des caches ESM incohérents, rectifiés dans la chaîne canonique. Refaire la CI sur le SHA final de ce journal avant checkpoint GREEN et PR `gh-pages`; contrôle tactile auteur toujours séparé.
