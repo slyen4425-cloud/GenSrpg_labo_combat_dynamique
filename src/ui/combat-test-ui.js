@@ -1249,7 +1249,7 @@ export async function mountCombatTest({
       // Native Combat Runtime owns the ONLY pulse clock; the existing FX/
       // audio adapters replay the authored impact, never apply damage.
       fx.play({type:"channel-pulse",skillId,fromSlot:actorId,targetSlot:targetId,durationMs:420});
-      combatAudio.play({type:"impact",skillId,actorSlot:actorId,targetSlot:targetId,loop:false});
+      combatAudio.play({type:"channel-pulse",skillId,actorSlot:actorId,targetSlot:targetId,loop:false});
       setStatus("Canalisation · pulsation "+tick+".","accent");
     },
     onChannelEnd({actorId,reason}) {
