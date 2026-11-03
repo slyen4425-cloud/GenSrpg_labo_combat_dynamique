@@ -2,6 +2,9 @@
 // playback; the Combat Damage Application owns all entity HP and destruction.
 const round=n=>Math.round(n*100)/100;
 const formatHp=e=>round(e.hp)+" / "+round(e.maxHp)+" PV";
+// Keep the opposing free-arena wall next to its protectee, rather than in
+// the neutral midfield. The author X still adjusts the remaining front gap.
+export const OPPONENT_BARRIER_NEAR_OWNER_FRACTION_V1=0.75;
 // A free-arena wall belongs to its protected team. Author coordinates are
 // unchanged for the primary/player side. The opposing side projects the same
 // author X toward its own fighter rather than reusing the player's world X.
@@ -10,7 +13,9 @@ export function projectCombatArenaBarrierXForSideV1({authoredXPct,ownerCenterXPc
   if(!opponentSide)return x;
   const owner=Number(ownerCenterXPct);
   if(!Number.isFinite(owner))return 100-x;
-  return round(50+(Math.max(0,Math.min(100,owner))-50)*(1-x/100));
+  const ownerSideFraction=OPPONENT_BARRIER_NEAR_OWNER_FRACTION_V1+
+    (1-OPPONENT_BARRIER_NEAR_OWNER_FRACTION_V1)*x/100;
+  return round(50+(Math.max(0,Math.min(100,owner))-50)*ownerSideFraction);
 }
 
 export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,teamOf=null,assetForId=()=>null}){
