@@ -970,14 +970,14 @@ export function createCombatRuntime({
     // from its own swept sprite sensor; beam/contact from the same FX adapter.
     const physicalKind=effectiveAction.actionType==="skill"
       ? effectiveAction.skill?.form : null;
-    const spatialBarrierContact=["beam","contact"].includes(physicalKind)
+    const spatialBarrierContact=["projectile","beam","contact"].includes(physicalKind)
       ? readBarrierContact?.({sourceActorId:effectiveAction.actorId,
           targetActorId:effectiveAction.targetId,kind:physicalKind,
           skillId:effectiveAction.skill.id})??null
       : null;
     const spatialBarrierId=spatialBarrierContact?.entityId??null;
     const barrierContactId=physicalKind==="projectile"
-      ? (visibleContact?combatEntityId??null:null)
+      ? (visibleContact?combatEntityId??spatialBarrierId:spatialBarrierId)
       : physicalKind==="contact" && visibleContact && combatEntityId
         ? combatEntityId : spatialBarrierId;
     const resolvedAction=["projectile","beam","contact"].includes(physicalKind)
