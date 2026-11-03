@@ -26,6 +26,18 @@ import { playDomBurrowTerrainFxV2 } from "../adapters/renderer/dom-burrow-terrai
 import {defaultBurrowSpritesV1} from "../assets/burrow-terrain-builtins-v1.js";
 import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
 
+// Author positioning is calibrated in a ~400 CSS-px high landscape phone
+// arena. Keep the author X/Y intact; project only the display translation
+// using the actual arena, not the device viewport or the fighter's width.
+export const CAPTURE_PHONE_REFERENCE_ARENA_HEIGHT_PX = 400;
+export const CAPTURE_ARENA_AUTHOR_OFFSET_CSS_VAR = "--combat-arena-author-offset-scale";
+
+export function captureArenaAuthorPositionScaleV1(arena) {
+  const height=Number(arena?.getBoundingClientRect?.()?.height ?? arena?.clientHeight ?? 0);
+  return Number.isFinite(height) && height > 0
+    ? height / CAPTURE_PHONE_REFERENCE_ARENA_HEIGHT_PX : 1;
+}
+
 // Pure presentation choice: slot "player" sees the creature's back,
 // slot "opponent" sees its front. V5 single-sprite authors retain fallback.
 export function creatureMovementAppearanceForViewV1(meta, view) {
@@ -193,11 +205,14 @@ export function restingTargetCenterForApproachV1(targetSlot) {
     Number.isFinite(nativeWidth) && nativeWidth > 0
       ? rect.width / nativeWidth
       : 1;
+  const authoredScale = targetSlot.actor?.positionScaleVar
+    ? captureArenaAuthorPositionScaleV1(container.closest?.("[data-combat-arena]"))
+    : 1;
   return Object.freeze({
     x: rect.left + rect.width / 2 +
-      (Number(targetSlot.actor?.position?.x) || 0) * scale,
+      (Number(targetSlot.actor?.position?.x) || 0) * authoredScale * scale,
     y: rect.top + rect.height / 2 +
-      (Number(targetSlot.actor?.position?.y) || 0) * scale
+      (Number(targetSlot.actor?.position?.y) || 0) * authoredScale * scale
   });
 }
 
@@ -252,6 +267,23 @@ export async function mountCombatDemo({
 
   let disposed = false;
   const arena = requiredElement(root, "[data-combat-arena]");
+  const phoneArenaAuthorOffsets = Boolean(
+    root.closest?.('[data-capture-preview-shell][data-landscape-required="true"]')
+  );
+  const applyArenaPositionScale = () => {
+    if (!phoneArenaAuthorOffsets) return;
+    arena.style?.setProperty?.(
+      CAPTURE_ARENA_AUTHOR_OFFSET_CSS_VAR,
+      String(captureArenaAuthorPositionScaleV1(arena))
+    );
+  };
+  // First paint + each resize: the one actual arena owns this scale.
+  // CSS-var-based body and shadow timelines automatically follow it.
+  applyArenaPositionScale();
+  const authorOffsetResizeObserver =
+    phoneArenaAuthorOffsets && typeof globalThis.ResizeObserver === "function"
+      ? new globalThis.ResizeObserver(applyArenaPositionScale) : null;
+  authorOffsetResizeObserver?.observe(arena);
   const cameraFx = createDomCameraFxRenderer({
     element: arena
   });
@@ -330,7 +362,8 @@ export async function mountCombatDemo({
           profiles,
           container,
           initialVisible: container.hidden !== true,
-          getArenaLight: () => arenaLight
+          getArenaLight: () => arenaLight,
+          usePhoneArenaAuthorOffsets: phoneArenaAuthorOffsets
         })
       ];
     })
@@ -1184,10 +1217,13 @@ export async function mountCombatDemo({
     // Actor profile alone owns its base placement. The FX renderer uses
     // this resting offset without following transient flight/burrow motion.
     getRestingOffsetFor(slotKey) {
-      const position = slotOf(slotKey).actor?.position;
+      const actor = slotOf(slotKey).actor;
+      const position = actor?.position;
+      const factor = actor?.positionScaleVar
+        ? captureArenaAuthorPositionScaleV1(arena) : 1;
       return Object.freeze({
-        x: Number(position?.x) || 0,
-        y: Number(position?.y) || 0
+        x: (Number(position?.x) || 0) * factor,
+        y: (Number(position?.y) || 0) * factor
       });
     },
     getStatusPresentationTargetFor(slotKey) {
@@ -1232,6 +1268,10 @@ export async function mountCombatDemo({
       }
       movementCueTimers.clear();
       cameraFx.dispose();
+      authorOffsetResizeObserver?.disconnect();
+      if (phoneArenaAuthorOffsets) {
+        arena.style?.removeProperty?.(CAPTURE_ARENA_AUTHOR_OFFSET_CSS_VAR);
+      }
       heldAttackBySlot.clear();
       for (const slot of Object.values(slots)) {
         slot.dispose();
@@ -1248,7 +1288,8 @@ function createSlot({
   profiles,
   container = null,
   initialVisible = true,
-  getArenaLight = () => normalizeArenaShadowLightV1()
+  getArenaLight = () => normalizeArenaShadowLightV1(),
+  usePhoneArenaAuthorOffsets = false
 }) {
   const slotContainer =
     container ??
@@ -1319,7 +1360,7 @@ function createSlot({
   function rebuildActor(asset) {
     renderer?.dispose();
 
-    actor = normalizeVisualActor({
+    const normalizedActor = normalizeVisualActor({
       id: `${meta.id}-${key}`,
       creatureId: meta.id,
       profile: meta.profile,
@@ -1330,6 +1371,14 @@ function createSlot({
       transformOrigin:
         meta.transformOrigin ?? { x: "50%", y: "50%" }
     });
+    // Renderer-only option; authored data and VisualActor canonical schema
+    // remain untouched, including the wolf's opponent Y=+60.
+    actor = usePhoneArenaAuthorOffsets
+      ? Object.freeze({
+          ...normalizedActor,
+          positionScaleVar: CAPTURE_ARENA_AUTHOR_OFFSET_CSS_VAR
+        })
+      : normalizedActor;
 
     slotContainer.style?.setProperty?.(
       "--creature-display-scale",
