@@ -1,4 +1,4 @@
-import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-geometry-20261031-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-bestiary-hp-20261102-author-three-wall-side-hp-20261103";
+import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-geometry-20261031-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-bestiary-hp-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
 import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
 import { normalizeOpponentAiPolicy } from "../contracts/opponent-ai-policy.js";
@@ -6,13 +6,13 @@ import { createCombatSession } from "../core/combat/combat-session.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js?v=wall-state-20261031-wall-geometry-20261031-wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102";
 import { createRosterSession } from "../core/combat/roster-session.js";
 import { createOpponentDecisionController } from "../core/combat/opponent-decision-controller.js";
-import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102";
-import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-facing-grainou-20261028-wall-geometry-20261031-wall-live-r2-20261101-wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102";
+import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-wall-channel-loop-audio-20261103";
+import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-facing-grainou-20261028-wall-geometry-20261031-wall-live-r2-20261101-wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-wall-channel-loop-audio-20261103";
 import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
 import { createDomDistancePresenter } from "../adapters/renderer/dom-distance-presenter.js";
-import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
+import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js?v=wall-channel-loop-audio-20261103";
 import { createPersistentZoneAudioSyncV1 } from "../adapters/audio/persistent-zone-audio-sync-v1.js";
 
 const DATA_URLS = Object.freeze({
