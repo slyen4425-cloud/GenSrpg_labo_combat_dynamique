@@ -69,6 +69,12 @@ document.addEventListener("DOMContentLoaded", () => {
               // sentinels. HUD icon rendering is intentionally NOT treated as
               // a gameplay source of truth here.
               bolt.click();
+              if(bolt.dataset.targeting==="true") {
+                const enemy=qa('[data-target-actor="opponent-1"]').find(el=>
+                  el.dataset.skillTargetCandidate==="true");
+                if(!enemy)throw Error("Rayon lumineux armed but enemy target absent");
+                enemy.click();
+              }
               const afterBolt=q('[data-combat-action="local-1"]')?.textContent??"";
               if(!afterBolt.includes("Rayon lumineux"))
                 throw Error("follow-up Rayon lumineux could not start: "+afterBolt);
