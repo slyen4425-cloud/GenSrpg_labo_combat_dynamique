@@ -155,7 +155,7 @@ def main():
         dest.write_bytes(b)
     catalog["assets"].extend(additions)
     for key in ("assets","sprites","creatures"):catalog["counts"][key]+=2
-    CATALOG.write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+    CATALOG.write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print("Gorice movement imported: 12 player + 12 opponent, 2 lossless WebP atlases, 4 previews, single canonical catalog, no gameplay changes.")
 
 if __name__=="__main__":main()
