@@ -1,3 +1,11 @@
+## 2026-11-03 — Renard magique doré : déplacement joueur / vol ondulant validé (12 frames)
+- BASE `global-assets@d4b106cfab32469421d97b9e952dffb55828567a`, START `checkpoint/lab-start-renard-dore-movement-12f-2026-11-03`, WORK `work/lab-renard-dore-movement-12f-2026-11-03`. La propriété des médias est `global-assets` et son catalogue unique ; ni `main`, ni le moteur, ni les autres créatures ne sont modifiés.
+- ZIP exact `_incoming/RENARD_MAGIQUE_DORE_DEPLACEMENT_JOUEUR_12F_VALIDE (1).zip`, 4 840 282 octets, SHA256 `58f2869f7bfde8faea1f339d998eae8d2833a88d3bd89e9ca94e65adb1542d8a`, Git blob `88fe0398f9856580fa63f2aa96a4ed12703904b2`. Douze poses transparentes 512×512, marges ≥77px, atlas WebP horizontal 6144×512 avec alpha/pixels visibles identiques, previews WebP/GIF 12 images, boucle 120 ms/frame. Aucune inversion/retouche du modèle original, cadre 01 non certifié pixel-identique au modèle maître et donc marqué non certifié, sans faux GREEN.
+- Contrat et scope `docs/LAB_RENARD_DORE_MOVEMENT_12F_2026-11-03.md` ; importer `scripts/import_renard_dore_movement_player_12_2026_11_03.py`, workflow isolé `import-renard-dore-movement-12f-2026-11-03.yml`, TDD RED `tests/unit/renard-magique-dore-movement-player-12-assets.test.mjs`. Ajouter un seul ID `pack:capture:creature-renard-magique-dore-movement-player-12-v1` au catalogue existant. Aucun équipement automatique : sélection dans l'éditeur existant.
+- Critères : validation source intégrale et `npm run ci` après import réel, CI verte au SHA final, checkpoint GREEN, PR vers `global-assets`, contrôle postfusion. Lot client `gh-pages` séparé pour cache et vrai Chromium, puis CI et Pages. Validation Android humaine reste distincte.
+
+---
+
 ## 2026-11-03 — Armure de ronces Plante carnivore 6f : masque seul (EN COURS)
 - BASE global-assets@dc398a0056e46b267b66cb1f1c753925c86d8517 ; START `checkpoint/lab-start-thorn-armor-overlay-2026-11-03` ; WORK `work/lab-thorn-armor-overlay-2026-11-03`.
 - Source artiste : `_incoming/armure_ronces_plante_carnivore_6f.zip` (4 439 017 octets), Git blob `97750b8ab5cb623c6aa8e8aa6bf3b5c3e241249d`, SHA256 `0ec7c6cd52bc8a3677c214bf9d49a8e45f34a6ce7d285179e811313e95ddfcac`.

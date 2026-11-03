@@ -1,0 +1,184 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "assetId": "pack:capture:creature-renard-magique-dore-movement-player-12-v1",
+  "creatureId": "renard_magique_dore",
+  "action": "movement",
+  "view": "player",
+  "orientation": "right",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 120,
+  "frameDurationsMs": [
+    120,
+    120,
+    120,
+    120,
+    120,
+    120,
+    120,
+    120,
+    120,
+    120,
+    120,
+    120
+  ],
+  "playbackMode": "loop",
+  "safeMarginMinPx": 42,
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/renard_magique_dore_mouvement_joueur_01.png",
+      "sha256": "e9100398d579457e258a7f486f88eee075500fc1a29164c6013150ee76bfd42c",
+      "marginsLTRB": [
+        109,
+        123,
+        110,
+        124
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/renard_magique_dore_mouvement_joueur_02.png",
+      "sha256": "aa5ae2b4c52e2e7550820bb5bbc7b472f9a86a8a28e767d665bd8fd196a4cad7",
+      "marginsLTRB": [
+        106,
+        116,
+        115,
+        140
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/renard_magique_dore_mouvement_joueur_03.png",
+      "sha256": "1e2ce384992c2a70e4b140280d749a6c1db8298a74c67ebe9d3abcebf266e4ad",
+      "marginsLTRB": [
+        102,
+        102,
+        116,
+        155
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/renard_magique_dore_mouvement_joueur_04.png",
+      "sha256": "f43fd51dd2a84b07b87c2f812c62dc6bcac2a808249e314a3a7fe86e0e1d7cba",
+      "marginsLTRB": [
+        93,
+        87,
+        116,
+        170
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/renard_magique_dore_mouvement_joueur_05.png",
+      "sha256": "088d6db6f1c29df90b11a61ebcc31940462c6e907827089145bcfb1489892e8a",
+      "marginsLTRB": [
+        93,
+        78,
+        113,
+        178
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/renard_magique_dore_mouvement_joueur_06.png",
+      "sha256": "029535e5a18cfca35eac506776090be44725d72b06c6d32ccacbbc6460a29ea6",
+      "marginsLTRB": [
+        93,
+        77,
+        114,
+        172
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/renard_magique_dore_mouvement_joueur_07.png",
+      "sha256": "e61776a7982059aa33ad600dc77b44c865504dc539c7e6d4c2272e4f39263af4",
+      "marginsLTRB": [
+        93,
+        87,
+        117,
+        161
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/renard_magique_dore_mouvement_joueur_08.png",
+      "sha256": "69e1422c290aecb5ade2a19261f1489e78be6a39dfbbecedbfb704e86a84d7a9",
+      "marginsLTRB": [
+        91,
+        103,
+        117,
+        141
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/renard_magique_dore_mouvement_joueur_09.png",
+      "sha256": "455406e7eadf2498598ff42b4632bb0320c95600c6d35d38451b0bfde71d87bf",
+      "marginsLTRB": [
+        93,
+        115,
+        115,
+        132
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/renard_magique_dore_mouvement_joueur_10.png",
+      "sha256": "d31a9403872c5546dfc48af1af4b2b1c0525701fde3c6c6c0c72613479925538",
+      "marginsLTRB": [
+        96,
+        118,
+        112,
+        124
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/renard_magique_dore_mouvement_joueur_11.png",
+      "sha256": "3033be7e52cf7660c3168614747d35b90174e9fb254a466a999cbbf8171fc80e",
+      "marginsLTRB": [
+        100,
+        125,
+        116,
+        121
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/renard_magique_dore_mouvement_joueur_12.png",
+      "sha256": "41cedc4cd5e53a6ef82650e18205a0a1da554068aad3a04bc1a5ced183d299b2",
+      "marginsLTRB": [
+        100,
+        129,
+        112,
+        116
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/renard_magique_dore_mouvement_joueur_12f.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "sha256": "0c4206f2658bce77990563747d407e00bd9e42605c0f986528f4a4f3938e7b4f",
+    "lossless": true
+  },
+  "previews": {
+    "animatedWebp": "previews/renard_magique_dore_mouvement_joueur_12f_anime.webp",
+    "gif": "previews/renard_magique_dore_mouvement_joueur_12f_preview.gif",
+    "contactSheet": "previews/renard_magique_dore_mouvement_joueur_12f_contact.png"
+  },
+  "sourceArchive": "RENARD_MAGIQUE_DORE_DEPLACEMENT_JOUEUR_12F_VALIDE (1).zip",
+  "sourceArchiveSha256": "58f2869f7bfde8faea1f339d998eae8d2833a88d3bd89e9ca94e65adb1542d8a",
+  "sourceGitBlob": "88fe0398f9856580fa63f2aa96a4ed12703904b2",
+  "approval": "artist-approved moving preview 2026-11-03",
+  "frame01MasterIdentical": false,
+  "notes": "Original 12 approved frames are unchanged. Frame 01 pixel identity with author master is NOT certified; do not replace the model master. No automatic skill or movement assignment."
+}
