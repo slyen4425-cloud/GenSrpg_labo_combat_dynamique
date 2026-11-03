@@ -224,6 +224,9 @@ try{
    anchors:{player:hero,opponent:foe},targetAnchors:{player:hero,opponent:foe},
    targetCollisionModelFor:()=>null,
    barrierCollisionRectsFor:args=>liveOverlay.collisionRectsFor(args),
+   presentationForSkill:id=>id==="skyfall-bypass"?{travel:{trajectoryMode:"skyfall",fallHeightPx:180}}
+      :id==="ground-bypass"?{travel:{trajectoryMode:"under_target",groundMotion:"rise",groundRisePx:100}}
+      :null,
    onProjectileContact:contact=>{contacts.push(contact);return {ok:true};},
    requestFrame:callback=>{queued.push(callback);return queued.length;},
    cancelFrame:()=>{},
@@ -242,6 +245,22 @@ try{
  if(intercepted.absorbedByEntity!==23||intercepted.appliedDamage!==0||
     intercepted.state.combatEntities[0].hp!==57)
    throw Error("real projectile hit did not reduce native wall HP");
+ // A ground-emerging or skyfall projectile MUST bypass the identical
+ // real DOM wall rectangle, not just a hypothetical core-only sensor.
+ for(const [skillId,mode] of [["skyfall-bypass","skyfall"],["ground-bypass","under_target"]]){
+   const before=contacts.length;
+   attackFx.play({type:"projectile",skillId,fromSlot:"opponent",targetSlot:"player",durationMs:1200});
+   const node=[...battlefield.querySelectorAll('[data-skill-fx="projectile"]')].at(-1);
+   if(!node||queued.length===0)throw Error(mode+" did not enter the actual FX sensor");
+   node.style.left=(liveWall.rect.left-battlefield.getBoundingClientRect().left-25)+"px";
+   queued.shift()();
+   if(contacts.length!==before)throw Error(mode+" was wrongly stopped by the visible wall");
+   const unblocked=applyCombatDamageV1({state:summoned.state,sourceActorId:"opponent",
+     targetActorId:"player",damage:7,incomingKind:"projectile"});
+   if(unblocked.absorbedByEntity!==0||unblocked.appliedDamage!==7||
+     unblocked.state.combatEntities[0].hp!==80)
+       throw Error(mode+" still damaged the wall without a physical contact");
+ }
  // The moving actor's EXISTING contact observer must stop on the real
  // collision rectangle of the DOM wall, before reaching the defender.
  const standing=liveOverlay.collisionRectsFor({
