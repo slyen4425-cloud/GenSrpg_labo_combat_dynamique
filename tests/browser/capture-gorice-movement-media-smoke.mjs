@@ -62,11 +62,23 @@ const html='<!doctype html><html><body><script type="module">'+
 ' anim.cancel();node.remove();'+
 ' }'+
 ' document.body.dataset.goriceMediaSmoke="pass:both-12f:official:resolver:alpha:loop";'+
-' } catch(e){document.body.dataset.goriceMediaSmoke="error:"+String(e.message||e)}'+
+' } catch(e){document.body.dataset.goriceMediaSmoke="error:"+String(e.message||e)} finally{await fetch("/__done",{method:"POST"})}'+
 ' </script></body></html>';
+// Hold the browser load event until the module has decoded both real WebP atlases.
+// Chromium --dump-dom otherwise snapshots before async image decoding completes.
+let released=false;const pending=[];
+const tinyGif=Buffer.from("R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=","base64");
+const unblock=()=>{released=true;for(const response of pending)
+  response.writeHead(200,{"Content-Type":"image/gif"}).end(tinyGif);
+  pending.length=0;};
 const server=createServer(async(req,res)=>{
   try{
     const p=decodeURIComponent(new URL(req.url,"http://localhost").pathname);
+    if(p==="/__hold"){
+      if(released)return void res.writeHead(200,{"Content-Type":"image/gif"}).end(tinyGif);
+      pending.push(res);return;
+    }
+    if(p==="/__done"){unblock();return void res.writeHead(200).end("ok");}
     if(p==="/__catalog")return void res.writeHead(200,{"Content-Type":"application/json","Cache-Control":"no-store"}).end(catalogBytes);
     if(p.startsWith("/__gorice/")){
       const view=p.slice("/__gorice/".length).replace(".webp","");
@@ -77,7 +89,7 @@ const server=createServer(async(req,res)=>{
       const editor=await readFile(resolve(root,"examples/dom-demo/capture-editor-v2.html"),"utf8");
       const probe=html.slice(html.indexOf("<script type=\"module\">"),html.indexOf("</script>")+9);
       if(!editor.includes("</head>")||!probe.includes("createGlobalPresentationAssetResolverV1"))throw Error("Editor probe fixture missing");
-      return void res.writeHead(200,{"Content-Type":"text/html"}).end(editor.replace("</head>",probe+"</head>"));
+      return void res.writeHead(200,{"Content-Type":"text/html"}).end(editor.replace("</head>",probe+"</head>").replace("</body>",'<img src="/__hold" alt="" style="display:none"></body>'));
     }
     const file=resolve(root,"."+p);
     if(!file.startsWith(root+sep))return void res.writeHead(403).end("Forbidden");
