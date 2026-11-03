@@ -1,5 +1,7 @@
 ## 2026-11-03 — Proportions téléphone = PC dans l'arène de Capture
 - BASE `gh-pages@114cd8a3d3ce26e0d8a931f5c712f861b8c02114`, START `checkpoint/lab-start-pc-phone-arena-parity-2026-11-03`, WORK `work/lab-pc-phone-arena-parity-2026-11-03`. Écart signalé PC : ennemi flotte malgré modèle correct sur téléphone. Cause prouvée : `min(Ndvh, rem)` plafonne les combattants dans une scène 16:9 fixe. Correction dans le seul CSS de prévisualisation : proportion du cadre 16:9, X/Y et displayScale auteurs préservés. Scénarios téléphone/PC Chromium 1v1/2v2, sentinelles historiques mises à jour, CI cinq jobs; journal `docs/LAB_PC_PHONE_ARENA_PARITY_2026_11_03.md`. Protéger le format téléphone, la source LC, main, les modèles, moteurs, exports et médias ; validation physique par l'auteur distincte.
+- RED CSS au SHA `21d02d76578b16591442c87abc1a4bf911723504`, CI #41629358286. Correctif CSS six largeurs, zéro changement position ou export. Tests navigateur natif en 1v1/2v2 phone 900×400 et PC 1920×1080 : parité tailles/centres/pieds PASS ; sentinelles 1v1/2v2 préservées. CI technique code sur `7db2bd0ed03e091493c31d220eeefe09956fc580` : 5/5 SUCCESS, #41630257449. Refaire CI exacte après ce journal ; checkpoint final attendu `checkpoint/lab-pc-phone-arena-parity-green-2026-11-03` ; PR `gh-pages` puis post-fusion CI + Pages. Validation artistique smartphone réelle séparée.
+
 
 ---
 
