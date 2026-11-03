@@ -40,7 +40,20 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
           clearInterval(awaiting);
+          if(solarButton.disabled)throw Error("Charge solaire unavailable before first use");
           solarButton.click();
+          // In the real 2v2 preview an ally/self skill needs an explicit
+          // physical target selection. Merely clicking the ability arms it;
+          // the old smoke could then report success without casting anything.
+          if(solarButton.dataset.targeting==="true") {
+            const self=qa('[data-target-actor="local-1"]').find(el=>
+              el.dataset.skillTargetCandidate==="true");
+            if(!self)throw Error("Charge solaire armed but self target absent");
+            self.click();
+          }
+          const started=q('[data-combat-action="local-1"]')?.textContent??"";
+          if(!started.includes("Charge solaire"))
+            throw Error("Charge solaire was armed but not actually cast: "+started);
           setTimeout(()=>{
             try {
               const action=q('[data-combat-action="local-1"]')?.textContent??"";
