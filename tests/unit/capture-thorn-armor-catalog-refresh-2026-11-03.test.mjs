@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { GLOBAL_VISUAL_LIBRARY, globalVisualAssetUrl } from "../../src/assets/global-visual-library.js";
 import { createGlobalPresentationAssetResolverV1 } from "../../src/assets/global-presentation-asset-resolver-v1.js";
+import { captureEditorAssetMatchesRoleV1, humanVisualAssetElementV1 } from "../../src/ui/capture-editor-human-v2.js";
 
 test("Thorn armor uses refreshed canonical catalog; the renderer receives the mask only", () => {
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
@@ -14,7 +15,11 @@ test("Thorn armor uses refreshed canonical catalog; the renderer receives the ma
   assert.ok(url.includes("?v="+GLOBAL_VISUAL_LIBRARY.revision));
   const id="pack:capture:sprite-armure-ronces-plante-carnivore-01";
   const definition={id,assetType:"sprite",mediaType:"image",category:"skill",tags:["nature","overlay"],
-    resource:{file:atlas,format:"sprite-strip",mime:"image/webp",frameCount:6,frameMs:135,playbackMode:"once",holdLastFrame:true,persistentFrameIndex:5}};
+    resource:{file:atlas,format:"sprite-strip",mime:"image/webp",frameCount:6,frameMs:135,playbackMode:"once",holdLastFrame:true,persistentFrameIndex:5},
+    compatibility:{uses:["combat","capture","editor"]}};
+  assert.equal(captureEditorAssetMatchesRoleV1(definition,"status"),true,"mask must appear in status overlay selector");
+  assert.equal(captureEditorAssetMatchesRoleV1(definition,"creature"),false,"not a creature model");
+  assert.equal(humanVisualAssetElementV1(definition),"nature");
   const resolve=createGlobalPresentationAssetResolverV1({assetCatalog:{assets:[definition]},assetUrlForFile:globalVisualAssetUrl});
   const sprite=resolve(id);
   assert.equal(sprite.assetId,id);
