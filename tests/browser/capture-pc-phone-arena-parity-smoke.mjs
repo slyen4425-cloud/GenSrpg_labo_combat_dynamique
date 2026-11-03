@@ -15,7 +15,7 @@ const browserScript=[
   'try {',
   'const count=new URLSearchParams(location.search).get("count");',
   'const arena=document.querySelector("[data-combat-arena]");',
-  'arena.dataset.combatActiveCount=count;',
+  'if(arena.dataset.combatActiveCount!==count)throw Error("native active count not set before first paint");',
   'const bounding=arena.getBoundingClientRect();',
   'if(Math.abs(bounding.width/bounding.height-16/9)>.01)throw Error("native arena not 16:9");',
   'const ids=count==="2"?["local-1","local-2","opponent-1","opponent-2"]:["local-1","opponent-1"];',
@@ -49,7 +49,15 @@ const server=createServer(async(req,res)=>{
   try{
     const url=new URL(req.url,"http://localhost");
     if(url.pathname==="/__arena_parity__"){
-      res.writeHead(200,{"Content-Type":"text/html"}).end(fixture);return;
+      const count=url.searchParams.get("count");
+      if(!["1","2"].includes(count))throw Error("invalid active count");
+      // Declare BattleFormat active count in the real template BEFORE the
+      // stylesheet computes layout. Setting it after first paint makes the
+      // native 260ms left/top transition visible to a racing smoke snapshot.
+      const marker='class="arena arena--coop-2v2" data-combat-arena';
+      if(!fixture.includes(marker))throw Error("native arena template missing");
+      const page=fixture.replace(marker,marker+' data-combat-active-count="'+count+'"');
+      res.writeHead(200,{"Content-Type":"text/html"}).end(page);return;
     }
     const filepath=resolve(root,"."+decodeURIComponent(url.pathname));
     if(!filepath.startsWith(root+sep)){res.writeHead(403).end("Forbidden");return;}
