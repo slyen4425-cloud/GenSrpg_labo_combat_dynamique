@@ -1,3 +1,13 @@
+## 2026-11-03 — Armure de ronces Plante carnivore 6f : masque seul (EN COURS)
+- BASE global-assets@dc398a0056e46b267b66cb1f1c753925c86d8517 ; START `checkpoint/lab-start-thorn-armor-overlay-2026-11-03` ; WORK `work/lab-thorn-armor-overlay-2026-11-03`.
+- Source artiste : `_incoming/armure_ronces_plante_carnivore_6f.zip` (4 439 017 octets), Git blob `97750b8ab5cb623c6aa8e8aa6bf3b5c3e241249d`, SHA256 `0ec7c6cd52bc8a3677c214bf9d49a8e45f34a6ce7d285179e811313e95ddfcac`.
+- Une seule entrée `pack:capture:sprite-armure-ronces-plante-carnivore-01` dans le catalogue global-assets ; source runtime = 6 masques PNG RGBA 512×512 (sans créature), atlas WebP lossless 3072×512, prévisualisation et maintien frame 06. Prévisualisation compositée de référence non utilisée dans le jeu.
+- Prévoir un seul script d'import, workflow, tests sentinelle source réelle + CI, checkpoint GREEN, PR vers global-assets, puis cache editeur `gh-pages` et vérification du vrai sélecteur ; ne pas déclarer livré avant cela.
+- Protéger les modèles FACE/DOS, tous les assets antérieurs, animations créatures, combat rules, capacités et GensRPG ; pas d'affectation auto.
+- Détails : `docs/LAB_THORN_ARMOR_OVERLAY_2026-11-03.md`.
+
+---
+
 ## 2026-11-03 — Gorice : déplacement animé 12f joueur + 12f adversaire (médias officiels)
 - BASE `global-assets@e1eecf3cd93d388e646f141677aaf5139259157f`, START `checkpoint/lab-start-gorice-movement-24f-assets-2026-11-03`, WORK `work/lab-gorice-movement-24f-assets-2026-11-03`. Lot médias uniquement, pas de modification du runtime ni de `main` ou de `gh-pages` ; contrat détaillé `docs/LAB_GORICE_MOVEMENT_24F_2026-11-03.md`.
 - ZIP auteur présent `_incoming/GORICE_DEPLACEMENTS_JOUEUR_ADVERSAIRE_24_FRAMES_VALIDES.zip`, 12 722 008 octets, SHA256 `4eb0515e387ba1bbad8ca193f6faed61029a4ed9a20004bff763f254abfc0948` et Git blob `1db42e0a4339bc6dfa3c5c0306fa251a5c7d68d1`. 24 images RGBA 512×512, marges min 57 px joueur, 43 px adversaire ; atlas 12×512 sans perte (équivalence pixel visible/alpha), GIF/WebP preview 12 images, mouvement bouclé, aucune inversion miroir.
