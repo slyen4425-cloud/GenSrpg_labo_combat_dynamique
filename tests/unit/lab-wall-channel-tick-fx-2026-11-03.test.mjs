@@ -30,7 +30,7 @@ test("only native channeling holds the authored cast loop across release",()=>{
       releaseHeldAttackPoseFor(){return false;}
     },
     fx:{
-      play(plan){calls.push(plan);return {status:"running",animation:{cancel(){cancels++;}},finished:new Promise(()=>{})};},
+      play(plan){calls.push(plan);return {status:"running",holdUntilCancelled:plan.holdUntilCancelled===true,animation:{cancel(){cancels++;}},finished:new Promise(()=>{})};},
       cancelProjectileFor(){return 0;}
     },
     audio:{play(event){audioCalls.push(event);return {status:"ignored",finished:Promise.resolve()};}}
@@ -52,7 +52,7 @@ test("cancelled or failed channel cleans cast without a lingering loop",()=>{
   let cancelled=0;
   const presenter=createCombatResolutionPresenter({
     visuals:{playEventFor(){return Promise.resolve({status:"finished"});},cancelFor(){}},
-    fx:{play(){return {status:"running",animation:{cancel(){cancelled++;}},finished:new Promise(()=>{})};}}
+    fx:{play(plan){return {status:"running",holdUntilCancelled:plan.holdUntilCancelled===true,animation:{cancel(){cancelled++;}},finished:new Promise(()=>{})};}}
   });
   try{
     presenter.presentPreparation({action});presenter.presentRelease({action});
