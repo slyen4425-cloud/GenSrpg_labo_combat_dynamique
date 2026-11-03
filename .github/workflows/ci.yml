@@ -46,6 +46,8 @@ jobs:
         run: node tests/browser/capture-ice-barrier-editor-smoke.mjs
       - name: Real Chromium 2.5D arena shadow and flying light projection
         run: node tests/browser/shadow-light-real-render-smoke.mjs
+      - name: Real Chromium mobile/PC creature feet and proportions, 1v1 and 2v2
+        run: node tests/browser/capture-pc-phone-arena-parity-smoke.mjs
       - name: Real Chromium Capture Bestiaire (front only)
         run: node tests/browser/capture-bestiary-smoke.mjs
 
