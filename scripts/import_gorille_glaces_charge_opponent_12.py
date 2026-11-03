@@ -15,7 +15,7 @@ import zipfile
 from PIL import Image, ImageChops
 
 ROOT = Path(__file__).resolve().parents[1]
-ARCHIVE_NAME = "gorille_des_glaces_adversaire_charge_12f_RECOUPE.zip"
+ARCHIVE_NAME = "Gorille_Glaces_Adversaire_12F.zip"
 SOURCE = ROOT / "_incoming" / ARCHIVE_NAME
 SOURCE_SHA256 = "487b1cc772c4dcf1f4daa541ec99f6c04eaaf88bc8e27d19e6c3db201e2d84ba"
 ASSET_ID = "pack:capture:creature-gorille-des-glaces-attack-opponent-12-charge-v1"
