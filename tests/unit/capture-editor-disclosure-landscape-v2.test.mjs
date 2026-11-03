@@ -86,14 +86,14 @@ test("landscape preview V2 owns one centered 16 by 9 arena instead of stretching
   );
 });
 
-test("landscape preview V2 uses dedicated compact HUD and height-driven fighter sizing", async () => {
+test("landscape preview V2 retains compact HUD with phone-proportional arena fighter sizing", async () => {
   const css = await text(
     "examples/dom-demo/capture-editor-v2.css"
   );
 
   assert.match(
     css,
-    /data-landscape-required="true"[\s\S]*?\.arena--coop-2v2\s+\.fighter--player[^}]*dvh/
+    /data-landscape-required="true"[\s\S]*?\.arena--coop-2v2\s+\.fighter--player[^}]*width:\s*16\.3125%/
   );
   assert.match(
     css,
