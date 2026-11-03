@@ -1,3 +1,12 @@
+## 2026-11-03 — Gorice : déplacement animé 12f joueur + 12f adversaire (médias officiels)
+- BASE `global-assets@e1eecf3cd93d388e646f141677aaf5139259157f`, START `checkpoint/lab-start-gorice-movement-24f-assets-2026-11-03`, WORK `work/lab-gorice-movement-24f-assets-2026-11-03`. Lot médias uniquement, pas de modification du runtime ni de `main` ou de `gh-pages` ; contrat détaillé `docs/LAB_GORICE_MOVEMENT_24F_2026-11-03.md`.
+- ZIP auteur présent `_incoming/GORICE_DEPLACEMENTS_JOUEUR_ADVERSAIRE_24_FRAMES_VALIDES.zip`, 12 722 008 octets, SHA256 `4eb0515e387ba1bbad8ca193f6faed61029a4ed9a20004bff763f254abfc0948` et Git blob `1db42e0a4339bc6dfa3c5c0306fa251a5c7d68d1`. 24 images RGBA 512×512, marges min 57 px joueur, 43 px adversaire ; atlas 12×512 sans perte (équivalence pixel visible/alpha), GIF/WebP preview 12 images, mouvement bouclé, aucune inversion miroir.
+- TDD RED : `tests/unit/gorice-movement-24f-assets-2026-11-03.test.mjs` refuse les deux IDs absents. Import GitHub Actions `import-gorice-movement-24f-2026-11-03.yml` avec script `scripts/import_gorice_movement_24f_2026_11_03.py`; sortie en branche après validation (run `41633169460` = SUCCESS). Le premier passage avait ajouté une séquence littérale `\\n` dans le JSON ; cause corrigée, pas de masquage.
+- Fichiers autorisés : nouvelle sous-arborescence `animations/movement/player` + `opponent` de Gorille, 2 nouvelles entrées au catalogue unique, importeur et son workflow, sentinelle, ce journal, rapport. Le reste (attaques Gorice, images maîtres, FX, créatures, règles/éditeur) est protégé.
+- Critère : CI `npm run ci` sur SHA documentaire final, checkpoint GREEN exact, PR vers `global-assets`, CI postfusion. Second lot `gh-pages` séparé pour cache + vrai test éditeur. **Frame 01 non certifiée identique au maître** ; validation artistique de la preview ne remplace pas cette preuve ; journaliser sans l'affirmer.
+
+---
+
 ## 2026-11-03 — Gorille des glaces, attaque chargée adversaire : source validée et importée (PR #214)
 - START global-assets@0042455482b9b1b4f6c9c040a5b4be3293b334f1 ; checkpoint `checkpoint/lab-start-gorille-glaces-charge-opponent-2026-11-03` ; branche `work/lab-gorille-glaces-charge-opponent-2026-11-03`.
 - ZIP initial `_incoming/gorille_des_glaces_adversaire_charge_12f.zip` conservé comme source refusée pour défauts de découpe (SHA Git 75ecdfd79c47e748d25a720d40f2bb884bdd847b). Aucune modification des poses artistiques approuvées.

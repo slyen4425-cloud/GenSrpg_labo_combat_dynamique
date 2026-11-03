@@ -1,0 +1,41 @@
+name: Import approved Gorice movement 12+12
+on:
+  push:
+    branches:
+      - work/lab-gorice-movement-24f-assets-2026-11-03
+    paths:
+      - scripts/import_gorice_movement_24f_2026_11_03.py
+      - .github/workflows/import-gorice-movement-24f-2026-11-03.yml
+permissions:
+  contents: write
+concurrency:
+  group: import-gorice-movement-24f-2026-11-03
+  cancel-in-progress: false
+jobs:
+  validate-and-import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install "Pillow>=10,<13"
+      - name: Compile importer
+        run: python -m py_compile scripts/import_gorice_movement_24f_2026_11_03.py
+      - name: Verify official ZIP and import only approved Gorice movement
+        run: python scripts/import_gorice_movement_24f_2026_11_03.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Full catalog and sentinel tests on the generated actual PNG/WebP
+        run: npm run ci
+      - name: Commit verified assets to the working branch, never directly to global-assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- assets/library/capture/creatures/gorille_des_glaces/animations/movement data/assets/catalog/global-visual-assets.v1.json
+          git diff --cached --quiet && { echo "No generated Gorice movement assets"; exit 1; }
+          git commit -m "assets(capture): register approved Gorice player and opponent movement 12f"
+          git push origin HEAD:work/lab-gorice-movement-24f-assets-2026-11-03
