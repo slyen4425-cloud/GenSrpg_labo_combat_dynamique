@@ -6,17 +6,24 @@ const formatHp=e=>round(e.hp)+" / "+round(e.maxHp)+" PV";
 // Keep the opposing free-arena wall next to its protectee, rather than in
 // the neutral midfield. The author X still adjusts the remaining front gap.
 export const OPPONENT_BARRIER_NEAR_OWNER_FRACTION_V1=0.75;
+// A wide authored wall must not reach into the player's space on its enemy side.
+// Project its centre using the very same sprite width observed by collision.
+export const OPPONENT_BARRIER_WIDTH_BACKSHIFT_V1=0.2;
 // A free-arena wall belongs to its protected team. Author coordinates are
 // unchanged for the primary/player side. The opposing side projects the same
 // author X toward its own fighter rather than reusing the player's world X.
-export function projectCombatArenaBarrierXForSideV1({authoredXPct,ownerCenterXPct,opponentSide=false}){
+export function projectCombatArenaBarrierXForSideV1({authoredXPct,ownerCenterXPct,opponentSide=false,wallWidthPct=0}){
   const x=Math.max(0,Math.min(100,Number(authoredXPct)));
   if(!opponentSide)return x;
   const owner=Number(ownerCenterXPct);
   if(!Number.isFinite(owner))return 100-x;
   const ownerSideFraction=OPPONENT_BARRIER_NEAR_OWNER_FRACTION_V1+
     (1-OPPONENT_BARRIER_NEAR_OWNER_FRACTION_V1)*x/100;
-  return round(50+(Math.max(0,Math.min(100,owner))-50)*ownerSideFraction);
+  const authoredCentre=50+(Math.max(0,Math.min(100,owner))-50)*ownerSideFraction;
+  const width=Math.max(0,Number(wallWidthPct)||0);
+  if(width===0||owner===50)return round(authoredCentre);
+  const shiftedOwner=owner+(owner>50?1:-1)*width*OPPONENT_BARRIER_WIDTH_BACKSHIFT_V1;
+  return round(owner>50?Math.max(authoredCentre,shiftedOwner):Math.min(authoredCentre,shiftedOwner));
 }
 
 // One sprite geometry, scaled by the existing arena-author presentation unit.
@@ -132,18 +139,24 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
       const parent=arenaMode?arenaOverlay:hosts[entity.protectedActorId];
       const item=existing??newNode(entity,parent);
       if(item.node.parentNode!==parent)parent.append(item.node);
+      // Keep the same footprint for visual placement and projectile interception.
+      const size=projectCombatArenaBarrierVisualSizeV1(entity,
+        arenaHost?fxArenaScaleV1(arenaHost):1);
+      let opposingArenaSide=false;
       if(arenaMode){
         const primaryActorId=Object.keys(fighterContainers)[0];
         const opponentSide=typeof teamOf==="function"
           ?teamOf(entity.protectedActorId)!==teamOf(primaryActorId)
           :entity.protectedActorId!==primaryActorId;
+        opposingArenaSide=opponentSide;
         const stageRect=arenaHost.getBoundingClientRect();
         const ownerRect=fighterContainers[entity.protectedActorId].getBoundingClientRect();
         const ownerCenterXPct=stageRect.width>0
           ?100*((ownerRect.left+ownerRect.width/2-stageRect.left)/stageRect.width)
           :NaN;
         const drawnX=projectCombatArenaBarrierXForSideV1({
-          authoredXPct:entity.arenaXPct,ownerCenterXPct,opponentSide
+          authoredXPct:entity.arenaXPct,ownerCenterXPct,opponentSide,
+          wallWidthPct:stageRect.width>0?size.width/stageRect.width*100:0
         });
         item.node.style.left=drawnX+"%";
         item.node.style.top=entity.arenaYPct+"%";
@@ -167,8 +180,6 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
         item.node.style.transform="translate(-50%, -50%)";
       }
       // Layout dimensions = visual dimensions = the single collision rectangle.
-      const size=projectCombatArenaBarrierVisualSizeV1(entity,
-        arenaHost?fxArenaScaleV1(arenaHost):1);
       item.sprite.style.width=size.width+"px";
       item.sprite.style.height=size.height+"px";
       const viewport=item.sprite.querySelector("[data-combat-entity-visual-viewport]");
@@ -187,9 +198,17 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
         .getBoundingClientRect();
       const labelHeight=item.label.getBoundingClientRect().height||24;
       const preferredTop=spriteRect.bottom+4;
+      // The oversized opposing wall reaches the bottom-right battle HUD.
+      // Keep the one real HP badge above the HUD, not under its controls.
+      const needsVisibleEnemyBadge=arenaMode&&opposingArenaSide&&
+        preferredTop>visibleRect.top+visibleRect.height*.65;
+      const maxReadableTop=needsVisibleEnemyBadge
+        ?visibleRect.top+visibleRect.height*.60
+        :visibleRect.bottom-labelHeight-6;
       const top=Math.max(visibleRect.top+6,
-        Math.min(preferredTop,visibleRect.bottom-labelHeight-6));
+        Math.min(preferredTop,visibleRect.bottom-labelHeight-6,maxReadableTop));
       item.label.style.top=Math.round(top-spriteRect.top)+"px";
+      item.label.style.left=needsVisibleEnemyBadge?"25%":"50%";
       item.node.setAttribute("role","status");
       item.node.setAttribute("aria-label","Mur destructible, "+entity.hp+" PV sur "+entity.maxHp);
       if(existing&&entity.hp<existing.hp&&typeof item.sprite.animate==="function"){
