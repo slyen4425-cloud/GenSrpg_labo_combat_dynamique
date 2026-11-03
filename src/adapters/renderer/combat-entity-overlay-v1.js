@@ -1,3 +1,4 @@
+import {fxArenaScaleV1} from "./dom-skill-fx.js";
 // Persistent view of Combat State entities. The DOM owns only geometry and visual
 // playback; the Combat Damage Application owns all entity HP and destruction.
 const round=n=>Math.round(n*100)/100;
@@ -16,6 +17,17 @@ export function projectCombatArenaBarrierXForSideV1({authoredXPct,ownerCenterXPc
   const ownerSideFraction=OPPONENT_BARRIER_NEAR_OWNER_FRACTION_V1+
     (1-OPPONENT_BARRIER_NEAR_OWNER_FRACTION_V1)*x/100;
   return round(50+(Math.max(0,Math.min(100,owner))-50)*ownerSideFraction);
+}
+
+// One sprite geometry, scaled by the existing arena-author presentation unit.
+// The same dimensions are used by the visible art and its collision rectangle.
+export function projectCombatArenaBarrierVisualSizeV1(entity,arenaScale=1){
+  const scale=entity.visualScale??1;
+  return Object.freeze({
+    width:Math.round(70*scale*(entity.visualScaleX??1)*arenaScale),
+    height:Math.round(92*scale*(entity.visualScaleY??1)*arenaScale),
+    artHeight:Math.round(70*scale*(entity.visualScaleY??1)*arenaScale)
+  });
 }
 
 export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,teamOf=null,assetForId=()=>null}){
@@ -155,14 +167,15 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
         item.node.style.transform="translate(-50%, -50%)";
       }
       // Layout dimensions = visual dimensions = the single collision rectangle.
-      const scale=entity.visualScale??1;
-      item.sprite.style.width=Math.round(70*scale*(entity.visualScaleX??1))+"px";
-      item.sprite.style.height=Math.round(92*scale*(entity.visualScaleY??1))+"px";
+      const size=projectCombatArenaBarrierVisualSizeV1(entity,
+        arenaHost?fxArenaScaleV1(arenaHost):1);
+      item.sprite.style.width=size.width+"px";
+      item.sprite.style.height=size.height+"px";
       const viewport=item.sprite.querySelector("[data-combat-entity-visual-viewport]");
       if(viewport){
         // Square source art stays square at X=Y=1, but can stretch independently.
         viewport.style.aspectRatio="auto";
-        viewport.style.height=Math.round(70*scale*(entity.visualScaleY??1))+"px";
+        viewport.style.height=size.artHeight+"px";
       }
       item.label.textContent="🧊 Mur "+formatHp(entity);
       // Display the single HP badge just BELOW the wall's base. When a huge
