@@ -1,3 +1,13 @@
+## 2026-11-03 — Armure de ronces Plante carnivore 6f : rafraîchissement du sélecteur (WORK)
+- BASE gh-pages@9e9d67ed1e340f8c9d820d48345d42585e8a9c86 ; START `checkpoint/lab-start-thorn-armor-selector-refresh-2026-11-03` ; WORK `work/lab-thorn-armor-selector-refresh-2026-11-03`.
+- Propriétaire : le catalogue `global-assets` contient seul `pack:capture:sprite-armure-ronces-plante-carnivore-01`, atlas `capture/sprites/skills/armure_ronces_plante_carnivore/atlases/armure_ronces_plante_carnivore_atlas_6f.webp`. Nouvelle révision cache `v54` de l'unique `GLOBAL_VISUAL_LIBRARY`, aucun doublon.
+- Éditeur : un sprite de masque seul 6f, statut/nature/défense, à sélectionner manuellement ; maintien de la dernière image, pas de modification métier.
+- Compatibilité : la sentinelle Gorice exige `v53+` au lieu de `v53` fixe ; nouvelle sentinelle `v54+` et contrat du resolver. Règles, créatures, autres médias, `main`, Exploration et GensRPG protégés.
+- Publication seulement après succès CI sur SHA final, checkpoint GREEN, PR vers gh-pages et déploiement Pages ; vérification du sélecteur réellement proposé et prévisualisation avant de déclarer livré.
+- Source et charte : `docs/LAB_THORN_ARMOR_EDITOR_REFRESH_2026-11-03.md`.
+
+---
+
 ## 2026-11-03 — Mur de glace : parité PC/téléphone, casts et attaques verticales
 - **Source** : retour réel auteur. Tailles des autres sprites PC validées et protégées. Le mur libre garde le rendu téléphone comme référence ; `Pique de glace` et les frappes `skyfall` doivent ignorer l'interception du mur sans perdre leurs dégâts ni modifier leurs exports.
 - **BASE immuable** : Combat `gh-pages@8d3b10e14b7cd9b92c9d6cc6c8d20815edfd8c82`. START `checkpoint/lab-start-wall-cast-channel-2026-11-03`; WORK `work/lab-wall-cast-channel-2026-11-03`. Branches créées depuis le même SHA avant le premier test RED. `main`, GensRPG, Exploration, `global-assets`, JSON auteur et comportement GPU général inchangés.

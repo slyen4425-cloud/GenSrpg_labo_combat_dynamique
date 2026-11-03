@@ -40,7 +40,7 @@ const html='<!doctype html><html><body><script type="module">'+
 ' try {'+
 ' const res=await fetch("/__catalog",{cache:"no-store"});'+
 ' if(!res.ok)throw Error("catalog not served"); const data=await res.json();'+
-' if(GLOBAL_VISUAL_LIBRARY.revision!=="2026-11-03-v53-gorice-movement-24f")throw Error("cache revision wrong");'+
+' if(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v([0-9]+)-/)?.[1]||0)<53)throw Error("cache revision wrong");'+
 ' const resolveAsset=createGlobalPresentationAssetResolverV1({assetCatalog:data,assetUrlForFile:globalVisualAssetUrl});'+
 ' for(const view of ["player","opponent"]){'+
 ' const id="pack:capture:creature-gorille-des-glaces-movement-"+view+"-12-v1";'+
