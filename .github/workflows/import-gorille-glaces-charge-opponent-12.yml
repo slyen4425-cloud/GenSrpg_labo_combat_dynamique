@@ -1,0 +1,46 @@
+name: Import Gorilla ice charge opponent 12 frames
+on:
+  push:
+    branches:
+      - work/lab-gorille-glaces-charge-opponent-2026-11-03
+    paths:
+      - _incoming/Gorille_Glaces_Adversaire_12F.zip
+      - scripts/import_gorille_glaces_charge_opponent_12.py
+      - .github/workflows/import-gorille-glaces-charge-opponent-12.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gorille-glaces-charge-opponent-12
+  cancel-in-progress: false
+jobs:
+  source-verified-import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install image verifier
+        run: python -m pip install 'Pillow>=10,<13'
+      - name: Verify source archive and extract assets
+        run: |
+          python -m py_compile scripts/import_gorille_glaces_charge_opponent_12.py
+          python scripts/import_gorille_glaces_charge_opponent_12.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test catalog and full regression suite
+        run: npm run ci
+      - name: Commit verified media and catalog on work branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- assets/library/capture/creatures/gorille_des_glaces/animations/attack/opponent
+          git add -- data/assets/catalog/global-visual-assets.v1.json
+          git diff --cached --check
+          git diff --cached --quiet && { echo 'No validated asset diff'; exit 1; }
+          git commit -m 'assets(capture): import Gorille charge opponent 12f'
+          git push origin HEAD:work/lab-gorille-glaces-charge-opponent-2026-11-03
