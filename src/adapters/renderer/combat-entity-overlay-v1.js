@@ -8,7 +8,7 @@ const formatHp=e=>round(e.hp)+" / "+round(e.maxHp)+" PV";
 export const OPPONENT_BARRIER_NEAR_OWNER_FRACTION_V1=0.75;
 // A wide authored wall must not reach into the player's space on its enemy side.
 // Project its centre using the very same sprite width observed by collision.
-export const OPPONENT_BARRIER_WIDTH_BACKSHIFT_V1=0.2;
+export const OPPONENT_BARRIER_MAX_FRONT_REACH_PCT_V1=18;
 // A free-arena wall belongs to its protected team. Author coordinates are
 // unchanged for the primary/player side. The opposing side projects the same
 // author X toward its own fighter rather than reusing the player's world X.
@@ -22,8 +22,16 @@ export function projectCombatArenaBarrierXForSideV1({authoredXPct,ownerCenterXPc
   const authoredCentre=50+(Math.max(0,Math.min(100,owner))-50)*ownerSideFraction;
   const width=Math.max(0,Number(wallWidthPct)||0);
   if(width===0||owner===50)return round(authoredCentre);
-  const shiftedOwner=owner+(owner>50?1:-1)*width*OPPONENT_BARRIER_WIDTH_BACKSHIFT_V1;
-  return round(owner>50?Math.max(authoredCentre,shiftedOwner):Math.min(authoredCentre,shiftedOwner));
+  // Keep a regular narrow wall in front of its owner as before; only a
+  // disproportionately wide wall needs its center shifted away from midfield.
+  // This caps how far its foremost edge reaches into the other team's half.
+  const frontLimit=owner>50
+    ?Math.max(50,owner-OPPONENT_BARRIER_MAX_FRONT_REACH_PCT_V1)
+    :Math.min(50,owner+OPPONENT_BARRIER_MAX_FRONT_REACH_PCT_V1);
+  const adjusted=owner>50
+    ?Math.max(authoredCentre,frontLimit+width/2)
+    :Math.min(authoredCentre,frontLimit-width/2);
+  return round(adjusted);
 }
 
 // One sprite geometry, scaled by the existing arena-author presentation unit.
