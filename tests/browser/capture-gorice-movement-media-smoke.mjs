@@ -73,7 +73,12 @@ const server=createServer(async(req,res)=>{
       if(!assets[view])return void res.writeHead(404).end("Unknown view");
       return void res.writeHead(200,{"Content-Type":"image/webp","Cache-Control":"no-store"}).end(assets[view]);
     }
-    if(p==="/")return void res.writeHead(200,{"Content-Type":"text/html"}).end(html);
+    if(p==="/"){
+      const editor=await readFile(resolve(root,"examples/dom-demo/capture-editor-v2.html"),"utf8");
+      const probe=html.slice(html.indexOf("<script type=\"module\">"),html.indexOf("</script>")+9);
+      if(!editor.includes("</head>")||!probe.includes("createGlobalPresentationAssetResolverV1"))throw Error("Editor probe fixture missing");
+      return void res.writeHead(200,{"Content-Type":"text/html"}).end(editor.replace("</head>",probe+"</head>"));
+    }
     const file=resolve(root,"."+p);
     if(!file.startsWith(root+sep))return void res.writeHead(403).end("Forbidden");
     const body=await readFile(file);
@@ -87,7 +92,7 @@ try{
   if(!chrome)throw Error("Chromium is required for true media proof");
   const url="http://127.0.0.1:"+server.address().port+"/";
   const child=spawn(chrome,["--headless=new","--no-sandbox","--disable-gpu",
-    "--disable-dev-shm-usage","--no-first-run","--virtual-time-budget=30000","--dump-dom",url],
+    "--disable-dev-shm-usage","--no-first-run","--virtual-time-budget=50000","--dump-dom",url],
     {stdio:["ignore","pipe","pipe"]});
   const out=[],err=[];child.stdout.on("data",x=>out.push(x));child.stderr.on("data",x=>err.push(x));
   const exit=await Promise.race([once(child,"close").then(([code])=>code),
