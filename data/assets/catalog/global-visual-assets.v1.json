@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 295,
+    "assets": 296,
     "icons": 94,
-    "sprites": 177,
+    "sprites": 178,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
-    "creatures": 63
+    "creatures": 64
   },
   "assets": [
     {
@@ -10119,6 +10119,48 @@
       },
       "resource": {
         "file": "capture/creatures/gorille_des_glaces/animations/attack/player/atlases/gorille_des_glaces_charge_player_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 110,
+        "playbackMode": "once",
+        "holdLastFrame": true,
+        "persistentFrameIndex": 11
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-gorille-des-glaces-attack-opponent-12-charge-v1",
+      "label": "Gorille des glaces — charge / canalisation, attaque adversaire face (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "gorille-des-glaces",
+        "ice",
+        "animated",
+        "attack",
+        "charge",
+        "channeling",
+        "face",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / art valide, recoupe technique 2026-11-03",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/gorille_des_glaces/animations/attack/opponent/atlases/gorille_des_glaces_charge_opponent_12_atlas.webp",
         "format": "sprite-strip",
         "mime": "image/webp",
         "frameCount": 12,

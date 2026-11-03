@@ -1,0 +1,230 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "gorille_des_glaces",
+  "view": "opponent",
+  "action": "attack",
+  "variant": "charge-canalisation",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameDurationsMs": [
+    115,
+    105,
+    110,
+    110,
+    110,
+    100,
+    100,
+    105,
+    110,
+    115,
+    135,
+    190
+  ],
+  "playbackMode": "once",
+  "holdLastFrame": true,
+  "persistentFrameIndex": 11,
+  "sourceSheet": "gorille_de_glace_en_animation_12_poses.png",
+  "frameFiles": [
+    "gorille_des_glaces_adversaire_charge_01.png",
+    "gorille_des_glaces_adversaire_charge_02.png",
+    "gorille_des_glaces_adversaire_charge_03.png",
+    "gorille_des_glaces_adversaire_charge_04.png",
+    "gorille_des_glaces_adversaire_charge_05.png",
+    "gorille_des_glaces_adversaire_charge_06.png",
+    "gorille_des_glaces_adversaire_charge_07.png",
+    "gorille_des_glaces_adversaire_charge_08.png",
+    "gorille_des_glaces_adversaire_charge_09.png",
+    "gorille_des_glaces_adversaire_charge_10.png",
+    "gorille_des_glaces_adversaire_charge_11.png",
+    "gorille_des_glaces_adversaire_charge_12.png"
+  ],
+  "preview": "preview_canalisation.webp",
+  "atlas": "atlas_strip_12f.webp",
+  "controlSheet": "planche_controle_4x3.png",
+  "frames": [
+    {
+      "frame": 1,
+      "source_bbox": [
+        59,
+        62,
+        267,
+        248
+      ],
+      "margins_LTRB": [
+        104,
+        149,
+        73,
+        51
+      ]
+    },
+    {
+      "frame": 2,
+      "source_bbox": [
+        415,
+        69,
+        268,
+        241
+      ],
+      "margins_LTRB": [
+        97,
+        159,
+        79,
+        51
+      ]
+    },
+    {
+      "frame": 3,
+      "source_bbox": [
+        756,
+        84,
+        277,
+        226
+      ],
+      "margins_LTRB": [
+        70,
+        177,
+        95,
+        52
+      ]
+    },
+    {
+      "frame": 4,
+      "source_bbox": [
+        1116,
+        101,
+        286,
+        206
+      ],
+      "margins_LTRB": [
+        69,
+        202,
+        86,
+        51
+      ]
+    },
+    {
+      "frame": 5,
+      "source_bbox": [
+        49,
+        422,
+        280,
+        217
+      ],
+      "margins_LTRB": [
+        91,
+        188,
+        70,
+        51
+      ]
+    },
+    {
+      "frame": 6,
+      "source_bbox": [
+        396,
+        396,
+        298,
+        240
+      ],
+      "margins_LTRB": [
+        74,
+        160,
+        66,
+        51
+      ]
+    },
+    {
+      "frame": 7,
+      "source_bbox": [
+        730,
+        387,
+        317,
+        250
+      ],
+      "margins_LTRB": [
+        38,
+        148,
+        77,
+        51
+      ]
+    },
+    {
+      "frame": 8,
+      "source_bbox": [
+        1095,
+        381,
+        321,
+        256
+      ],
+      "margins_LTRB": [
+        42,
+        139,
+        69,
+        51
+      ]
+    },
+    {
+      "frame": 9,
+      "source_bbox": [
+        25,
+        721,
+        319,
+        265
+      ],
+      "margins_LTRB": [
+        61,
+        128,
+        51,
+        52
+      ]
+    },
+    {
+      "frame": 10,
+      "source_bbox": [
+        374,
+        717,
+        326,
+        268
+      ],
+      "margins_LTRB": [
+        46,
+        124,
+        59,
+        52
+      ]
+    },
+    {
+      "frame": 11,
+      "source_bbox": [
+        724,
+        722,
+        330,
+        264
+      ],
+      "margins_LTRB": [
+        30,
+        130,
+        68,
+        51
+      ]
+    },
+    {
+      "frame": 12,
+      "source_bbox": [
+        1088,
+        717,
+        335,
+        268
+      ],
+      "margins_LTRB": [
+        33,
+        125,
+        59,
+        52
+      ]
+    }
+  ],
+  "notes": "Silhouette recrop from original approved 4x3 composition; no art generation, preserve pose order and perspective."
+}
