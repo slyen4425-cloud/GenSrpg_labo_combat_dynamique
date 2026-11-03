@@ -6,7 +6,7 @@ const ids=["pack:capture:creature-gorille-des-glaces-movement-player-12-v1","pac
 const prefix="capture/creatures/gorille_des_glaces/animations/movement/";
 test("Gorice movement uses a single canonical updated global-assets catalog",()=>{
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
-  const version=GLOBAL_VISUAL_LIBRARY.revision.match(/^\\d{4}-\\d{2}-\\d{2}-v(\\d+)-[a-z0-9-]+$/);
+  const version=GLOBAL_VISUAL_LIBRARY.revision.match(/^\d{4}-\d{2}-\d{2}-v(\d+)-[a-z0-9-]+$/);
   assert.ok(version && Number(version[1]) >= 53, "Gorice movement requires catalog revision v53+");
   assert.ok(GLOBAL_VISUAL_LIBRARY.catalogUrl.includes("?v="+GLOBAL_VISUAL_LIBRARY.revision));
 });
