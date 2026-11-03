@@ -38,6 +38,8 @@ jobs:
         run: node tests/browser/capture-ice-wall-persistent-atlas-smoke.mjs
       - name: Real Chromium Gorice player/opponent official movement 12f media and resolver
         run: node tests/browser/capture-gorice-movement-media-smoke.mjs
+      - name: Real Chromium Renard magique dore official 12f movement and resolver
+        run: node tests/browser/capture-renard-dore-movement-media-smoke.mjs
       - name: Real Chromium Ice VFX zone floor spike fog selectors and 3 actual WebP images
         run: node tests/browser/capture-ice-ground-spike-fog-editor-smoke.mjs
       - name: Real Chromium charged projectile author fields
