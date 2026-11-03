@@ -4,7 +4,9 @@ on:
     branches:
       - work/lab-gorille-glaces-charge-opponent-2026-11-03
     paths:
-      - _incoming/gorille_des_glaces_adversaire_charge_12f_RECOUPE.zip
+      - _incoming/Gorille_Glaces_Adversaire_12F.zip
+      - scripts/import_gorille_glaces_charge_opponent_12.py
+      - .github/workflows/import-gorille-glaces-charge-opponent-12.yml
   workflow_dispatch:
 permissions:
   contents: write
