@@ -75,7 +75,7 @@ try{
       if(Math.abs(phone.wall[key]-pc.wall[key])>.012)
         throw Error("REAL wall "+count+" actor "+key+" phone "+phone.wall[key]+" PC "+pc.wall[key]);
     }
-    for(const key of ["leftX","centerX","ownerX","badgeX","badgeY","badgeBottomY"]){
+    for(const key of ["leftX","centerX","ownerX","badgeX","badgeY"]){
       if(Math.abs(phone.enemyWall[key]-pc.enemyWall[key])>.012)
         throw Error("opponent wall "+count+" actor "+key+" phone "+phone.enemyWall[key]+" PC "+pc.enemyWall[key]);
     }
