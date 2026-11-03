@@ -1,3 +1,8 @@
+## 2026-11-03 — Mur adversaire et cast/audio par tick (LOT OUVERT)
+- BASE `gh-pages@4c6a2c13c1b705f74ddfc9dc9e10451bc2cd0453` ; START `checkpoint/lab-start-wall-channel-fx-2026-11-03`, WORK `work/lab-wall-channel-fx-2026-11-03` ; périmètre/propriétaires/sentinelles et protections détaillés dans `docs/LAB_WALL_CHANNEL_FX_2026_11_03.md`. Aucune promotion main autorisée ; GREEN uniquement après CI fondation + 4 navigateurs, checkpoint exact et publication. Test Android séparé.
+
+---
+
 ## 2026-11-03 — Trois transferts auteur et mur de glace position adverse / PV près de la base
 - Demande : placer les exports complets et stricts Gemmor (`crea_crys_2`), Boule de neige (`boule_neige`), Gorice (`gorice`) ; Mur de glace actuellement correct côté joueur, mais l'adversaire utilise les mêmes coordonnées mondiales (`placementMode=arena`, X47/Y55) ; replacer l'étiquette PV sous le mur, moins bas, sans la faire sortir de l'arène.
 - BASE `gh-pages@bb9f74bc2fd5964ba8a52f4fbfc9d76f46983470`, START `checkpoint/lab-start-author-three-wall-side-hp-2026-11-03`, WORK `work/lab-author-three-wall-side-hp-2026-11-03`. Charte, Roadmap, checkpoint policy, architecture lus. Périmètre: trois vitrines canoniques; trois sources exactes datées, manifeste créature Gemmor une fois; tests et sentinelles historiques adaptées; overlay unique `src/adapters/renderer/combat-entity-overlay-v1.js` et navigateur sentinelle ; cache ESM seulement si exigé par preuves. Pas d'autre changement de jeu, stat, position joueur, combat damage/HP, murs imprimés ou moteur.
