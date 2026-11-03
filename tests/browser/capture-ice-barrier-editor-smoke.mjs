@@ -253,7 +253,10 @@ try{
    const node=[...battlefield.querySelectorAll('[data-skill-fx="projectile"]')].at(-1);
    if(!node||queued.length===0)throw Error(mode+" did not enter the actual FX sensor");
    node.style.left=(liveWall.rect.left-battlefield.getBoundingClientRect().left-25)+"px";
-   queued.shift()();
+   // The preceding bypass projectile may keep sampling frames; drain the
+   // currently queued callbacks once so THIS new projectile is also tested.
+   const currentCallbacks=queued.length;
+   for(let frame=0;frame<currentCallbacks;frame++)queued.shift()();
    if(contacts.length!==before)throw Error(mode+" was wrongly stopped by the visible wall");
    const unblocked=applyCombatDamageV1({state:summoned.state,sourceActorId:"opponent",
      targetActorId:"player",damage:7,incomingKind:"projectile"});
