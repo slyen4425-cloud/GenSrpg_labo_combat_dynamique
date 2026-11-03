@@ -1055,6 +1055,9 @@ button.reserve-card {
 .capture-preview-shell[data-landscape-required="true"] [data-combat-arena] .skill-fx--projectile:not(.skill-fx--sprite-shell) {
   width: 6.3%;
 }
+.capture-preview-shell[data-landscape-required="true"] [data-combat-arena] .skill-fx--channel-pulse {
+  width: 6.3%;
+}
 .capture-preview-shell[data-landscape-required="true"] [data-combat-arena] .skill-fx--sprite-shell {
   width: 9.7%;
 }
