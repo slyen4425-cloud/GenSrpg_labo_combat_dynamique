@@ -25,4 +25,8 @@
 4. Rapport après tests réels, sans prétendre à une affectation automatique ou un test Android effectué.
 
 ## Statut
-Préparation du lot ; source trouvée et validée localement, publication non engagée avant résultats CI.
+Source vérifiée et médias importés sur la branche work : workflow `41710724207` SUCCESS, commit `6664921736b475f14a0c2354c2bbc5525f09c5ac`.
+- 6 PNG 512 RGBA et marges >=30 px, atlas WebP sans perte 3072x512, preview masque seul : fichiers réels vérifiés et stockés.
+- Catalogue canonique : +1 asset (`299` total, `181` sprites), jamais de modèle/plante dans le média runtime.
+- CI post-import liée au commit bot signalée `action_required` (limitation d'exécution des workflows sur commits de bot), pas un succès. Le présent commit documentaire déclenche les sentinelles via l'acteur connecté.
+- Exiger encore les cinq jobs sur SHA final, checkpoint GREEN, PR global-assets, puis cache gh-pages et vérification public.
