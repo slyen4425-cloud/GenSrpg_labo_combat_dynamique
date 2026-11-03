@@ -7,7 +7,7 @@ import { createCombatRuntime } from "../core/combat/combat-runtime.js?v=wall-sta
 import { createRosterSession } from "../core/combat/roster-session.js";
 import { createOpponentDecisionController } from "../core/combat/opponent-decision-controller.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-wall-channel-loop-audio-20261103";
-import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-facing-grainou-20261028-wall-geometry-20261031-wall-live-r2-20261101-wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-wall-channel-loop-audio-20261103";
+import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-facing-grainou-20261028-wall-geometry-20261031-wall-live-r2-20261101-wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-wall-channel-loop-audio-20261103-global-fx-phone-pc-20261103";
 import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";

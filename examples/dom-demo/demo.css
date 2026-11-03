@@ -1046,6 +1046,38 @@ button.reserve-card {
   pointer-events: none;
 }
 
+/* Capture phone-reference FX geometry: the arena is the only visual scale.
+   The 16:9 phone layout (about 711x400 CSS px) was already artist-approved.
+   Fixed/rem/vw caps made the same authored sprites far too small on PC.
+   Percentages below are widths of the ACTUAL arena, so both viewports share
+   the same relative body / impact / zone footprint and the same hit sample.
+   Keep the standalone laboratory's legacy CSS unchanged. */
+.capture-preview-shell[data-landscape-required="true"] [data-combat-arena] .skill-fx--projectile:not(.skill-fx--sprite-shell) {
+  width: 6.3%;
+}
+.capture-preview-shell[data-landscape-required="true"] [data-combat-arena] .skill-fx--channel-pulse {
+  width: 6.3%;
+}
+.capture-preview-shell[data-landscape-required="true"] [data-combat-arena] .skill-fx--sprite-shell {
+  width: 9.7%;
+}
+.capture-preview-shell[data-landscape-required="true"] [data-combat-arena] .skill-fx--cast {
+  width: 14.2%;
+}
+.capture-preview-shell[data-landscape-required="true"] [data-combat-arena] .skill-fx--impact {
+  width: 14.2%;
+}
+.capture-preview-shell[data-landscape-required="true"] [data-combat-arena] .skill-fx--persistent-zone,
+.capture-preview-shell[data-landscape-required="true"] [data-combat-arena] .skill-fx--tactical-zone {
+  width: 25.8%;
+}
+.capture-preview-shell[data-landscape-required="true"] [data-combat-arena] .skill-fx--clash-impact {
+  width: 19.4%;
+}
+.capture-preview-shell[data-landscape-required="true"] [data-combat-arena] .skill-fx--phase {
+  width: 15.5%;
+}
+
 .action-option__icon-shell {
   position: relative;
   z-index: 1;

@@ -37,6 +37,20 @@ function centerRelativeTo(rect, arenaRect) {
   });
 }
 
+/* One presentation unit for every Capture visual, shared with the existing
+   actor/ground-shadow renderer. The actual arena owns this CSS variable.
+   Standalone demos with no owner keep their original 1:1 pixel units.
+   NEVER multiply native movement deltas or actual DOM contact rectangles. */
+export function fxArenaScaleV1(arena) {
+  const value = Number(arena?.style?.getPropertyValue?.(
+    "--combat-arena-author-offset-scale"
+  ));
+  return Number.isFinite(value) && value > 0 ? value : 1;
+}
+export function fxAuthorPixelsV1(arena, value) {
+  return (Number(value) || 0) * fxArenaScaleV1(arena);
+}
+
 function clampUnit(value, fallback = 0.5) {
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) {
@@ -628,7 +642,7 @@ export function createDomSkillFxRenderer({
 
     const radiusPx = Math.max(
       1,
-      Number(glow.radiusPx) || 1
+      fxAuthorPixelsV1(arena, glow.radiusPx) || 1
     );
     const strength = clampUnit(
       glow.strength,
@@ -722,11 +736,11 @@ export function createDomSkillFxRenderer({
 
     const lengthPx = Math.max(
       1,
-      Number(trail.lengthPx) || 1
+      fxAuthorPixelsV1(arena, trail.lengthPx) || 1
     );
     const sizePx = Math.max(
       1,
-      Number(trail.sizePx) || 1
+      fxAuthorPixelsV1(arena, trail.sizePx) || 1
     );
     const opacity = clampUnit(
       trail.opacity,
@@ -913,15 +927,15 @@ export function createDomSkillFxRenderer({
 
     const spreadPx = Math.max(
       1,
-      Number(burst.spreadPx) || 1
+      fxAuthorPixelsV1(arena, burst.spreadPx) || 1
     );
     const sizePx = Math.max(
       1,
-      Number(burst.sizePx) || 1
+      fxAuthorPixelsV1(arena, burst.sizePx) || 1
     );
     const risePx = Math.max(
       1,
-      Number(burst.risePx) || 1
+      fxAuthorPixelsV1(arena, burst.risePx) || 1
     );
     const durationMs = Math.max(
       1,
@@ -1084,11 +1098,11 @@ export function createDomSkillFxRenderer({
 
     const spreadPx = Math.max(
       1,
-      Number(burst.spreadPx) || 1
+      fxAuthorPixelsV1(arena, burst.spreadPx) || 1
     );
     const sizePx = Math.max(
       1,
-      Number(burst.sizePx) || 1
+      fxAuthorPixelsV1(arena, burst.sizePx) || 1
     );
     const durationMs = Math.max(
       1,
@@ -1282,15 +1296,15 @@ export function createDomSkillFxRenderer({
 
     const spreadPx = Math.max(
       1,
-      Number(smoke.spreadPx) || 1
+      fxAuthorPixelsV1(arena, smoke.spreadPx) || 1
     );
     const sizePx = Math.max(
       1,
-      Number(smoke.sizePx) || 1
+      fxAuthorPixelsV1(arena, smoke.sizePx) || 1
     );
     const risePx = Math.max(
       1,
-      Number(smoke.risePx) || 1
+      fxAuthorPixelsV1(arena, smoke.risePx) || 1
     );
     const durationMs = Math.max(
       1,
@@ -1734,10 +1748,10 @@ export function createDomSkillFxRenderer({
       Object.freeze({
         x:
           point.x +
-          (Number(feedbackOffset?.x) || 0),
+          fxAuthorPixelsV1(arena, feedbackOffset?.x),
         y:
           point.y +
-          (Number(feedbackOffset?.y) || 0)
+          fxAuthorPixelsV1(arena, feedbackOffset?.y)
       });
     const visualDelayMs = type === "impact" && playCameraFx !== null
       ? impactVisualDelayForCameraShakeV1(feedback?.cameraShake)
@@ -1778,8 +1792,8 @@ export function createDomSkillFxRenderer({
     node.dataset.skillFx = type;
     node.dataset.skillId = skillId ?? "";
     if (combatEntityId) node.dataset.combatEntityImpactId = combatEntityId;
-    node.style.left = `${point.x + (Number(visual.offsetX) || 0)}px`;
-    node.style.top = `${point.y + (Number(visual.offsetY) || 0)}px`;
+    node.style.left = `${point.x + fxAuthorPixelsV1(arena, visual.offsetX)}px`;
+    node.style.top = `${point.y + fxAuthorPixelsV1(arena, visual.offsetY)}px`;
 
     const spriteVisual = applySpriteVisual(
       node,
@@ -1818,7 +1832,7 @@ export function createDomSkillFxRenderer({
       {transform:`translate(-50%, -100%) scale(${displayScale})`,opacity}
     ];
     const riseStart=visual.groundMotion==="rise" && Number.isFinite(visual.groundRisePx)
-      ? `translate(-50%, calc(-100% + ${visual.groundRisePx}px))`
+      ? `translate(-50%, calc(-100% + ${fxAuthorPixelsV1(arena, visual.groundRisePx)}px))`
       : "translate(-50%, -4%)";
     const animation = animate(
       node,
@@ -1890,7 +1904,7 @@ export function createDomSkillFxRenderer({
         node.className="skill-fx skill-fx--mine-telegraph";
         node.dataset.skillFx="mine-telegraph";
         node.dataset.scheduledMineId=record.id;
-        node.style.cssText="position:absolute;width:42px;height:19px;border-radius:50%;border:2px solid rgba(255,214,92,.9);background:rgba(255,105,56,.24);box-shadow:0 0 7px #ffbb50;pointer-events:none;transform:translate(-50%,-50%);z-index:5;";
+        node.style.cssText=`position:absolute;width:${fxAuthorPixelsV1(arena,42)}px;height:${fxAuthorPixelsV1(arena,19)}px;border-radius:50%;border:${fxAuthorPixelsV1(arena,2)}px solid rgba(255,214,92,.9);background:rgba(255,105,56,.24);box-shadow:0 0 ${fxAuthorPixelsV1(arena,7)}px #ffbb50;pointer-events:none;transform:translate(-50%,-50%);z-index:5;`;
         node.style.left=x+"px";node.style.top=y+"px";
         arena.append(node);
         item={node,x,y,record};scheduledMineNodes.set(record.id,item);
@@ -2062,9 +2076,9 @@ export function createDomSkillFxRenderer({
 
       if (!fixedAtGround || !record.zoneCenter) record.zoneCenter = source;
       const offsetX =
-        Number(visual.offsetX) || 0;
+        fxAuthorPixelsV1(arena, visual.offsetX);
       const offsetY =
-        Number(visual.offsetY) || 0;
+        fxAuthorPixelsV1(arena, visual.offsetY);
 
       // Native "long" is *the entire battlefield*, not the 1.9x ellipse.
       // The same persistent-zone sprite must reflect that authoritative
@@ -2217,8 +2231,8 @@ export function createDomSkillFxRenderer({
       if (castAnchor) {
         node.dataset.fxAnchor = castAnchor;
       }
-      node.style.left = `${from.x + (Number(visual.offsetX) || 0)}px`;
-      node.style.top = `${from.y + (Number(visual.offsetY) || 0)}px`;
+      node.style.left = `${from.x + (fxAuthorPixelsV1(arena, visual.offsetX))}px`;
+      node.style.top = `${from.y + (fxAuthorPixelsV1(arena, visual.offsetY))}px`;
       const spriteVisual = applySpriteVisual(
         node,
         visual,
@@ -2655,8 +2669,8 @@ export function createDomSkillFxRenderer({
         const feet=projectileTargetRect(targetSlot);
         return playImpactVisual({
           visual:groundVisual,skillId,
-          point:{x:feet.left+feet.width/2-arenaRect.left+(Number(groundVisual.groundOffsetXPx)||0),
-                 y:feet.bottom-arenaRect.top+(Number(groundVisual.groundOffsetYPx)||0)},
+          point:{x:feet.left+feet.width/2-arenaRect.left+fxAuthorPixelsV1(arena, groundVisual.groundOffsetXPx),
+                 y:feet.bottom-arenaRect.top+fxAuthorPixelsV1(arena, groundVisual.groundOffsetYPx)},
           durationMs,
           layer:presentation?.travelLayer ?? "front",
           type:"channel-pulse"
@@ -2973,7 +2987,7 @@ export function createDomSkillFxRenderer({
       const displayScaleY = Math.min(
         8, Math.max(0.25, Number(travelVisual.displayScaleY) || 1)
       );
-      const thicknessPx = BEAM_CAP_BASE_SIZE_PX * displayScale * displayScaleY;
+      const thicknessPx = BEAM_CAP_BASE_SIZE_PX * displayScale * displayScaleY * fxArenaScaleV1(arena);
 
       const node = arena.ownerDocument.createElement("span");
       node.className = "skill-fx skill-fx--beam skill-fx--sprite-shell";
@@ -3021,7 +3035,7 @@ export function createDomSkillFxRenderer({
         const scale = Math.min(
           8, Math.max(0.25, Number(visual.displayScale) || 1)
         );
-        const size = BEAM_CAP_BASE_SIZE_PX * scale;
+        const size = BEAM_CAP_BASE_SIZE_PX * scale * fxArenaScaleV1(arena);
         cap.style.width = `${size}px`;
         cap.style.height = `${size * Math.min(8, Math.max(0.25, Number(visual.displayScaleY) || 1))}px`;
         cap.style.transform = "translate(-50%, -50%)";
@@ -3061,11 +3075,11 @@ export function createDomSkillFxRenderer({
         // offsets. An older beam without cast may use start/travel offsets.
         // The contact sprite's V9 offset also defines the beam end point.
         const sourceVisual = presentation?.cast ?? startVisual ?? travelVisual;
-        const startX = from.x + (Number(sourceVisual?.offsetX) || 0);
-        const startY = from.y + (Number(sourceVisual?.offsetY) || 0);
+        const startX = from.x + fxAuthorPixelsV1(arena, sourceVisual?.offsetX);
+        const startY = from.y + fxAuthorPixelsV1(arena, sourceVisual?.offsetY);
         const targetOffset = presentation?.impactFeedbackOffset ?? targetVisual;
-        const endX = to.x + (Number(targetOffset?.x ?? targetOffset?.offsetX) || 0);
-        const endY = to.y + (Number(targetOffset?.y ?? targetOffset?.offsetY) || 0);
+        const endX = to.x + fxAuthorPixelsV1(arena, targetOffset?.x ?? targetOffset?.offsetX);
+        const endY = to.y + fxAuthorPixelsV1(arena, targetOffset?.y ?? targetOffset?.offsetY);
         const distancePx = Math.max(
           1, Math.hypot(endX - startX, endY - startY)
         );
@@ -3075,7 +3089,7 @@ export function createDomSkillFxRenderer({
         const capOverlap = (visual) => hasSpriteVisual(visual)
           ? BEAM_CAP_BASE_SIZE_PX *
             Math.min(8, Math.max(0.25, Number(visual.displayScale) || 1)) *
-            BEAM_CAP_OVERLAP_RATIO
+            BEAM_CAP_OVERLAP_RATIO * fxArenaScaleV1(arena)
           : 0;
         const fromOverlap = Math.min(distancePx / 3, capOverlap(startVisual));
         const toOverlap = Math.min(distancePx / 3, capOverlap(targetVisual));
@@ -3204,12 +3218,12 @@ export function createDomSkillFxRenderer({
     const groundConfigured=underTarget && ["fixed","rise"].includes(travelVisual?.groundMotion);
     const feet=underTarget ? projectileTargetRect(targetSlot) : null;
     const groundStart=groundConfigured
-      ? {x:feet.left+feet.width/2-arenaRect.left+(Number(travelVisual.groundOffsetXPx)||0),
-         y:feet.bottom-arenaRect.top+(Number(travelVisual.groundOffsetYPx)||0)}
+      ? {x:feet.left+feet.width/2-arenaRect.left+fxAuthorPixelsV1(arena, travelVisual.groundOffsetXPx),
+         y:feet.bottom-arenaRect.top+fxAuthorPixelsV1(arena, travelVisual.groundOffsetYPx)}
       : null;
     if(groundConfigured)to={
       x:groundStart.x,
-      y:groundStart.y-(travelVisual.groundMotion==="rise" ? (Number(travelVisual.groundRisePx)||0):0)
+      y:groundStart.y-(travelVisual.groundMotion==="rise" ? fxAuthorPixelsV1(arena, travelVisual.groundRisePx):0)
     };
     // Skyfall is authored on visual.travel: the source actor never becomes
     // the origin. The same Runtime travel duration and contact sensor apply.
@@ -3217,8 +3231,8 @@ export function createDomSkillFxRenderer({
       ? (groundConfigured ? groundStart : {x:to.x,y:projectileTargetRect(targetSlot).bottom-arenaRect.top})
       : skyfall
       ? {
-          x: to.x + travelVisual.fallOffsetXPx,
-          y: to.y - travelVisual.fallHeightPx
+          x: to.x + fxAuthorPixelsV1(arena, travelVisual.fallOffsetXPx),
+          y: to.y - fxAuthorPixelsV1(arena, travelVisual.fallHeightPx)
         }
       : fromPoint && Number.isFinite(fromPoint.x) && Number.isFinite(fromPoint.y)
         ? { x: fromPoint.x - arenaRect.left, y: fromPoint.y - arenaRect.top }

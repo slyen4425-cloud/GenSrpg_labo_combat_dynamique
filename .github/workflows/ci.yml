@@ -87,3 +87,5 @@ jobs:
         run: node tests/browser/capture-pc-phone-arena-parity-smoke.mjs
       - name: Real Chromium Loup volcanique author Y+60 offset phone/PC, 1v1 and 2v2
         run: node tests/browser/capture-wolf-phone-pc-author-offset-smoke.mjs
+      - name: Real Chromium authored Gorice ice and Firestorm FX phone/PC geometry, 1v1 and 2v2
+        run: node tests/browser/capture-global-fx-phone-pc-parity-smoke.mjs
