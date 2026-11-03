@@ -2,7 +2,7 @@
 - BASE global-assets@dc398a0056e46b267b66cb1f1c753925c86d8517 ; START `checkpoint/lab-start-thorn-armor-overlay-2026-11-03` ; WORK `work/lab-thorn-armor-overlay-2026-11-03`.
 - Source artiste : `_incoming/armure_ronces_plante_carnivore_6f.zip` (4 439 017 octets), Git blob `97750b8ab5cb623c6aa8e8aa6bf3b5c3e241249d`, SHA256 `0ec7c6cd52bc8a3677c214bf9d49a8e45f34a6ce7d285179e811313e95ddfcac`.
 - Une seule entrée `pack:capture:sprite-armure-ronces-plante-carnivore-01` dans le catalogue global-assets ; source runtime = 6 masques PNG RGBA 512×512 (sans créature), atlas WebP lossless 3072×512, prévisualisation et maintien frame 06. Prévisualisation compositée de référence non utilisée dans le jeu.
-- Prévoir un seul script d'import, workflow, tests sentinelle source réelle + CI, checkpoint GREEN, PR vers global-assets, puis cache editeur `gh-pages` et vérification du vrai sélecteur ; ne pas déclarer livré avant cela.
+- Import terminé sur WORK au commit `6664921736b475f14a0c2354c2bbc5525f09c5ac` : GitHub Actions #41710724207 SUCCESS (source SHA/CRC, 6 PNG alpha, atlas lossless, preview animée, npm run ci). Le CI bot suivant était `action_required` et ne vaut pas GREEN. Gate final : CI 5 jobs au SHA humain, checkpoint GREEN, PR médias #224, puis cache gh-pages PR #225 et vérification sélecteur.
 - Protéger les modèles FACE/DOS, tous les assets antérieurs, animations créatures, combat rules, capacités et GensRPG ; pas d'affectation auto.
 - Détails : `docs/LAB_THORN_ARMOR_OVERLAY_2026-11-03.md`.
 
