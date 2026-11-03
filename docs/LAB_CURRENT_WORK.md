@@ -1,9 +1,11 @@
-## 2026-11-03 — Gorille des glaces, attaque chargée adversaire (SOURCE RECOUPÉE À DÉPOSER)
-- START global-assets@0042455482b9b1b4f6c9c040a5b4be3293b334f1, checkpoint `checkpoint/lab-start-gorille-glaces-charge-opponent-2026-11-03`, branche `work/lab-gorille-glaces-charge-opponent-2026-11-03`.
-- Dépôt source initial confirmé sur GitHub (`_incoming/gorille_des_glaces_adversaire_charge_12f.zip`, Git blob `75ecdfd79c47e748d25a720d40f2bb884bdd847b`). Défaut démontré : artefacts et silhouettes touchant les limites des cases.
-- Nouvelle source à recevoir : `gorille_des_glaces_adversaire_charge_12f_RECOUPE.zip`, SHA256 `487b1cc772c4dcf1f4daa541ec99f6c04eaaf88bc8e27d19e6c3db201e2d84ba`. Extraction corrigée depuis les 12 poses approuvées, aucune refonte artistique.
-- Préparés : script d'import, workflow de vérification SHA/CRC/PNG/alpha/atlas/préviews, contrat de catalogue avec un seul ID et sans auto-affectation. Autorité media `global-assets`, moteur/editor/main protégés.
-- **NON GREEN / NON PUBLIÉ** avant source corrigée, CI, PR assets et contrôle de l'éditeur public.
+## 2026-11-03 — Gorille des glaces, attaque chargée adversaire : source validée et importée (PR #214)
+- START global-assets@0042455482b9b1b4f6c9c040a5b4be3293b334f1 ; checkpoint `checkpoint/lab-start-gorille-glaces-charge-opponent-2026-11-03` ; branche `work/lab-gorille-glaces-charge-opponent-2026-11-03`.
+- ZIP initial `_incoming/gorille_des_glaces_adversaire_charge_12f.zip` conservé comme source refusée pour défauts de découpe (SHA Git 75ecdfd79c47e748d25a720d40f2bb884bdd847b). Aucune modification des poses artistiques approuvées.
+- Source technique corrigée vérifiée : `_incoming/Gorille_Glaces_Adversaire_12F.zip`, Git blob `73dfb24b904103a5278f533bea21b73c19c20ba4`, SHA256 `487b1cc772c4dcf1f4daa541ec99f6c04eaaf88bc8e27d19e6c3db201e2d84ba`.
+- Workflow d'import #41558245884 SUCCESS : CRC, SHA, 12 PNG RGBA 512×512, alpha/bords, poses distinctes, atlas lossless 6144×512 identique aux frames, preview 12f, catalogue ID unique. Import commit `81ff592ddb2bb5b40131e1b6529c679d27ec2d4d`.
+- Média : `pack:capture:creature-gorille-des-glaces-attack-opponent-12-charge-v1`, `once`, frame 12 maintenue durant charge/canalisation. Test sentinelle `tests/unit/gorille-glaces-charge-opponent-12-assets.test.mjs`.
+- Périmètre strict : ajout d'une animation `opponent` uniquement ; l'animation `player`, les modèles runtime, les autres créatures, compétences et le moteur sont protégés. Pas d'auto-affectation.
+- Reste : obtenir CI 5 jobs sur SHA final, checkpoint GREEN exact, promouvoir PR #214 vers `global-assets`, actualiser l'unique catalogue consommé par `gh-pages` via révision du cache, vérifier CI/deploy et chemin de chargement public. Ne pas déclarer GREEN/publik avant preuves.
 
 ---
 
