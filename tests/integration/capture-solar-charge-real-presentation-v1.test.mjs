@@ -73,7 +73,7 @@ test("Real native Runtime completes Charge solaire after 800ms and permits a fol
       ally:team("ally",["ally"]),enemy:team("enemy",["enemy"])}}});
   const {approaches,presenter}=presentation();
   let clock=1000;let pending=()=>{};const results=[];
-  const runtime=createCombatRuntime({session,tickMs:25,now:()=>clock,
+  const runtime=createCombatRuntime({session,tickMs:25,groundContactResolution:"visible",now:()=>clock,
     setTimer:f=>{pending=f;return 1;},clearTimer:()=>{pending=()=>{};},
     onRelease({action}){presenter.presentRelease({action,actorSlot:action.actorId,targetSlot:action.targetId});},
     onResolved(result){results.push(result);}
@@ -84,6 +84,7 @@ test("Real native Runtime completes Charge solaire after 800ms and permits a fol
     assert.equal(runtime.hasActiveAction,true,"new author version prepares for 800 ms");
     clock+=800;
     pending();
+    assert.equal(runtime.hasActiveActionFor("player"),false,"real visible-contact mode must release actor action after beneficial cast");
     assert.equal(runtime.hasActiveAction,false,"no permanent action/recovery after 800ms buff");
     assert.equal(approaches.length,0,"visual cannot start contact movement for beneficent buff");
     assert.equal(results.length,1);
