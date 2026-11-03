@@ -1,0 +1,58 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import { createHash } from "node:crypto";
+const root = process.cwd();
+const base = "assets/library/capture/sprites/skills/armure_ronces_plante_carnivore";
+const id = "pack:capture:sprite-armure-ronces-plante-carnivore-01";
+const sha = data => createHash("sha256").update(data).digest("hex");
+const read = file => fs.readFileSync(path.join(root, file));
+test("Armure de ronces: one real 6-frame transparent thorn-only overlay, no creature baked in", () => {
+  const cat = JSON.parse(read("data/assets/catalog/global-visual-assets.v1.json"));
+  assert.equal(cat.counts.assets, cat.assets.length);
+  assert.equal(new Set(cat.assets.map(a => a.id)).size, cat.assets.length);
+  const registered = cat.assets.filter(a => a.id === id);
+  assert.equal(registered.length, 1, "single canonical asset missing");
+  const asset = registered[0];
+  assert.equal(asset.category, "skill");
+  assert.equal(asset.assetType, "sprite");
+  assert.ok(asset.tags.includes("overlay") && asset.tags.includes("nature"));
+  assert.equal(asset.resource.frameCount, 6);
+  assert.equal(asset.resource.format, "sprite-strip");
+  assert.equal(asset.resource.playbackMode, "once");
+  assert.equal(asset.resource.holdLastFrame, true);
+  assert.equal(asset.resource.persistentFrameIndex, 5);
+  assert.ok(asset.compatibility.uses.includes("editor"));
+  const manifest = JSON.parse(read(base+"/sequence.manifest.json"));
+  assert.equal(manifest.id, id);
+  assert.equal(manifest.frameCount, 6);
+  assert.deepEqual(manifest.frameSize, [512, 512]);
+  assert.equal(manifest.mode, "once");
+  assert.equal(manifest.holdLastFrame, true);
+  assert.equal(manifest.holdFrameIndex, 5);
+  assert.equal(manifest.sourceSha256, "0ec7c6cd52bc8a3677c214bf9d49a8e45f34a6ce7d285179e811313e95ddfcac");
+  assert.equal(manifest.frames.length, 6);
+  const hashes = new Set();
+  for(let i=0;i<6;i++){
+    const frame = manifest.frames[i];
+    assert.equal(frame.file, "frames/armure_ronces_"+String(i+1).padStart(2,"0")+".png");
+    const data = read(base+"/"+frame.file);
+    assert.equal(data.subarray(0,8).toString("hex"),"89504e470d0a1a0a");
+    assert.equal(data.readUInt32BE(16), 512);
+    assert.equal(data.readUInt32BE(20), 512);
+    assert.equal(data[25], 6, "RGBA PNG required");
+    assert.equal(sha(data),frame.sha256);
+    assert.ok(Math.min(...frame.marginsLTRB)>=30,"frame clipped");
+    hashes.add(frame.sha256);
+  }
+  assert.equal(hashes.size, 6, "frames should differ");
+  const atlas = read(base+"/"+manifest.atlas.file);
+  assert.equal(atlas.toString("ascii",0,4),"RIFF");
+  assert.equal(atlas.toString("ascii",8,12),"WEBP");
+  assert.equal(sha(atlas),manifest.atlas.sha256);
+  assert.equal(asset.resource.file, base.slice("assets/library/".length)+"/"+manifest.atlas.file);
+  assert.ok(read(base+"/"+manifest.preview.mask).length>10000);
+  // Preview with the creature is reference-only; it must NEVER be the runtime atlas.
+  assert.ok(!asset.resource.file.includes("sur_creature"));
+});
