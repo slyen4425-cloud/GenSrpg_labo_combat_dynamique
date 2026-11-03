@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
           const solarButton=q('[data-combat-skill="cap_light_atk_3"]');
           const energyLabel=q('[data-combat-energy-value="local-1"]')?.textContent??"";
-          const energy=Number(energyLabel.match(/^\\s*([0-9]+(?:\\.[0-9]+)?)/)?.[1]);
+          const energy=parseFloat(energyLabel);
           const boltReady=q('[data-combat-skill="lib_light_bolt"]')?.disabled===false;
           // Native Lumilo starts with 2/12 energy, while both Solar and Bolt
           // cost 3 each. Wait on the real regeneration clock until BOTH can
