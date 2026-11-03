@@ -26,8 +26,6 @@ test("RED: all gameplay-bearing FX shells are sized against the real 16:9 arena,
   ".skill-fx--sprite-shell":9.7,
   ".skill-fx--cast":14.2,
   ".skill-fx--impact":14.2,
-  ".skill-fx--persistent-zone":25.8,
-  ".skill-fx--tactical-zone":25.8,
   ".skill-fx--clash-impact":19.4,
   ".skill-fx--phase":15.5
  };
@@ -38,7 +36,7 @@ test("RED: all gameplay-bearing FX shells are sized against the real 16:9 arena,
    const rx=new RegExp(escaped+"\\s*\\{[^}]*\\bwidth:\\s*"+width+"%;");
    assert.match(scope,rx,"missing arena-relative native FX width "+selector);
  }
- assert.match(scope,/\.skill-fx--persistent-zone,\s*\n?.*\.skill-fx--tactical-zone/s,"same CSS percentage must own persistent visual and occupancy ellipse");
+ assert.match(scope,/\.skill-fx--persistent-zone,\s*\n?.*\.skill-fx--tactical-zone\s*\{[^}]*width:\s*25\.8%;/s,"one CSS rule must own the persistent sprite and its tactical ellipse");
 });
 
 test("RED: FX artist offsets and special beam dimensions consume the existing arena scale, movement trajectories never do",()=>{
