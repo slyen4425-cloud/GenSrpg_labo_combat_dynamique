@@ -42,7 +42,6 @@ def atlas_matches(atlas_bytes, images):
         atlas = im.convert("RGBA")
     for index, reference in enumerate(images):
         sample = atlas.crop((512*index,0,512*(index+1),512))
-        ap=atlas.getchannel("A") if False else None
         # WebP lossless normalizes RGB at alpha=0; visible colors and all alpha must be lossless.
         if sample.getchannel("A").tobytes() != reference.getchannel("A").tobytes():
             raise ValueError("Atlas alpha differs from PNG at frame " + str(index+1))
@@ -54,7 +53,7 @@ def main():
     archive_bytes = ARCHIVE.read_bytes()
     if len(archive_bytes)!=EXPECTED_SIZE or digest(archive_bytes)!=EXPECTED_SHA256:
         raise ValueError("Uploaded approved ZIP changed or was replaced")
-    gitblob=sha1(b"blob " + str(len(archive_bytes)).encode() + b"\\0" + archive_bytes).hexdigest()
+    gitblob=sha1(b"blob " + str(len(archive_bytes)).encode() + b"\0" + archive_bytes).hexdigest()
     if gitblob!=EXPECTED_GIT_BLOB:raise ValueError("Git source blob mismatch")
     catalog=json.loads(CATALOG.read_text(encoding="utf-8"))
     assert catalog["storage"]["branch"]=="global-assets"
@@ -136,7 +135,7 @@ def main():
                 "authorMasterFrame01":"not-certified-pixel-identical; user approved animated preview with this limitation disclosed",
                 "notes":"Frames imported byte-exact from approved ZIP; source poses and orientation preserved. No automatic assignment to creature data; author chooses movement asset using the standard editor."
             }
-            outputs[folder/"movement.manifest.json"]=(json.dumps(manifest,ensure_ascii=False,indent=2)+"\\n").encode()
+            outputs[folder/"movement.manifest.json"]=(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n").encode()
             additions.append({
                 "id":aid,
                 "label":f"Gorice — déplacement {'joueur / dos' if view=='player' else 'adversaire / face'} (12 frames)",
