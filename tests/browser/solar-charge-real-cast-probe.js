@@ -34,19 +34,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const awaiting=setInterval(()=>{
         try {
           const solarButton=q('[data-combat-skill="cap_light_atk_3"]');
-          if(!solarButton) {
-            const err=q("[data-editor-status]")?.textContent??"";
-            if(++tries>95){clearInterval(awaiting);fail("real preview missing solar button: "+err.slice(0,125));}
+          const energyLabel=q('[data-combat-energy-value="local-1"]')?.textContent??"";
+          const energy=Number(energyLabel.match(/^\\s*([0-9]+(?:\\.[0-9]+)?)/)?.[1]);
+          const boltReady=q('[data-combat-skill="lib_light_bolt"]')?.disabled===false;
+          // Native Lumilo starts with 2/12 energy, while both Solar and Bolt
+          // cost 3 each. Wait on the real regeneration clock until BOTH can
+          // be paid sequentially. Never bypass skill costs or force buttons.
+          if(!solarButton || !Number.isFinite(energy) || energy<6 ||
+              solarButton.disabled || !boltReady) {
+            if(++tries>150){
+              clearInterval(awaiting);
+              fail("real Charge solaire not launchable with 6 energy: energy="+energyLabel+
+                ", disabled="+(solarButton?.disabled??"missing")+
+                ", boltReady="+boltReady+
+                ", action="+(q('[data-combat-action="local-1"]')?.textContent??"?"));
+            }
             return;
           }
           clearInterval(awaiting);
-          if(solarButton.disabled)throw Error("Charge solaire unavailable pre-cast: level="+
-            (q("[data-test-creature-level]")?.value??"?")+
-            " energy="+(q('[data-combat-energy-value="local-1"]')?.textContent??"?")+
-            " status="+(q("[data-combat-live-status]")?.textContent??"?")+
-            " localAction="+(q('[data-combat-action="local-1"]')?.textContent??"?")+
-            " cd="+(solarButton.querySelector(".action-option__cooldown")?.textContent??"none")+
-            " boltDisabled="+(q('[data-combat-skill="lib_light_bolt"]')?.disabled??"?"));
           solarButton.click();
           // In the real 2v2 preview an ally/self skill needs an explicit
           // physical target selection. Merely clicking the ability arms it;
