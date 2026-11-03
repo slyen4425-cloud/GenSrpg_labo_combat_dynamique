@@ -1,3 +1,12 @@
+## 2026-11-03 — Visibilité animation chargée Gorille adversaire (cache éditeur)
+- Source officielle publiée : `global-assets@aded6a9bc571dd1dd557889d35ad4e513f6f27dd` (PR #214, workflow d'import #41558245884 et CI post-fusion #41558880085 SUCCESS).
+- BASE édition `gh-pages@0a0e3f8da15f2677d7deeb9e2e908581558b4cf5` ; checkpoint `checkpoint/lab-start-gorille-charge-opponent-selector-2026-11-03` ; travail `work/lab-gorille-charge-opponent-selector-2026-11-03`.
+- Seule modification fonctionnelle : révision cache du catalogue canonique `v51 -> v52` dans `src/assets/global-visual-library.js`, sans catalogue de secours ni deuxième source, et sans modification de moteur, autres médias, compétences ou fiches créatures.
+- ID officiel : `pack:capture:creature-gorille-des-glaces-attack-opponent-12-charge-v1`, ressource WebP lossless 12×512, une seule séquence `once`, dernière frame maintenue pour charge/canalisation. Sélecteur d'animation FACE adversaire, aucune affectation automatique.
+- Tests : `tests/unit/capture-gorille-charge-opponent-catalog-refresh-2026-11-03.test.mjs`, CI gh-pages complète, puis déploiement Pages et contrôle des URL réelles. Aucun GREEN tant que tests du SHA final ne sont pas tous réussis.
+
+---
+
 ## 2026-11-02 — Explication générique des effets périodiques sur le lanceur (Furie bestiale)
 - Signal auteur : Furie bestiale donne à la cible +100 points d'affinité Glace pendant 60 secondes, **mais son effet périodique négatif cible explicitement la créature qui lance** la capacité (`targetScope=self`) : 10 dégâts de Glace toutes les 10 secondes durant 60 secondes. Le texte ne doit jamais suggérer que l'ennemi subit ce coût. Ne pas modifier l'export auteur ni sa sémantique.
 - BASE `gh-pages@f15e4e203cf14c64f77f2414d64f2b2cb069c06d` ; START `checkpoint/lab-start-self-periodic-explanation-2026-11-02` ; WORK `work/lab-self-periodic-explanation-2026-11-02`. La charte, la roadmap, la politique checkpoints et l'architecture ont été consultées. Le `main`, GenSrpG et Exploration sont hors périmètre.
