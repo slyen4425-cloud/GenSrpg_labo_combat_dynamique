@@ -2151,6 +2151,7 @@ export function createDomSkillFxRenderer({
     expandingWave = null,
     projectilePower = 0,
     sizeMultiplier = 1,
+    holdUntilCancelled = false,
     durationMs,
     delayMs = 0
   }) {
@@ -2181,7 +2182,11 @@ export function createDomSkillFxRenderer({
       : null;
 
     if (type === "cast") {
-      const visual = presentation?.cast ?? null;
+      // For native channeling, the authored cast cycles until Runtime emits
+      // onChannelEnd. The one preparation FX remains its only playback owner.
+      const visual = holdUntilCancelled && presentation?.cast
+        ? {...presentation.cast, playbackMode:"loop"}
+        : presentation?.cast ?? null;
       if (!hasSpriteVisual(visual)) {
         return Object.freeze({
           status: "ignored",
@@ -2266,6 +2271,11 @@ export function createDomSkillFxRenderer({
         }
       );
 
+      let settleHeld = null;
+      const heldFinished = holdUntilCancelled
+        ? new Promise(resolve => { settleHeld = resolve; })
+        : null;
+      if (holdUntilCancelled) Promise.resolve(spriteAnimation?.finished).catch(() => {});
       const animation = {
         cancel() {
           spriteAnimation?.cancel?.();
@@ -2275,15 +2285,17 @@ export function createDomSkillFxRenderer({
           ) {
             particleAnimation?.cancel?.();
           }
+          if (holdUntilCancelled) {
+            cleanup(record);
+            settleHeld?.({status:"cancelled"});
+          }
         },
-        finished:
-          spriteAnimation?.finished ??
-          Promise.resolve()
+        finished: heldFinished ?? spriteAnimation?.finished ?? Promise.resolve()
       };
 
       record.animation = animation;
 
-      const finished = Promise.resolve(animation.finished)
+      const finished = holdUntilCancelled ? heldFinished : Promise.resolve(animation.finished)
         .then(() => {
           cleanup(record);
           return { status: "finished" };
@@ -2298,6 +2310,7 @@ export function createDomSkillFxRenderer({
 
       return Object.freeze({
         status: "running",
+        holdUntilCancelled: Boolean(holdUntilCancelled),
         animation,
         finished,
         setDuration(nextDurationMs) {
