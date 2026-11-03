@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 
 const css=readFileSync(new URL("../../examples/dom-demo/capture-editor-v2.css",import.meta.url),"utf8");
-const base=css.slice(css.indexOf("/* Keep perceived creature size tied to the short edge"));
+const base=css.slice(css.indexOf("/* Phone-approved 16:9 arena composition"));
 const two=css.slice(css.indexOf("/* Capture landscape 2v2 depth V2"));
 const rule=(source,selector)=>{
   const escaped=selector.replace(/[.*+?^\u0024{}()|[\]\\]/g,"\\$&");
