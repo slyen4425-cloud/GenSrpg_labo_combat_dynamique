@@ -52,6 +52,6 @@ test("real author ice spikes tick directly on a fighter protected by a native ic
 test("wall-owning FX cast does not sit behind its wall simply because it is behind its caster",()=>{
   const fx=source("src/adapters/renderer/dom-skill-fx.js");
   const css=source("examples/dom-demo/demo.css");
-  assert.match(fx,/data-fx-actor-side/);
+  assert.match(fx,/dataset\.fxActorSide/);
   assert.match(css,/data-combat-entity-arena-active[^\\n]*skill-fx--layer-behind/);
 });
