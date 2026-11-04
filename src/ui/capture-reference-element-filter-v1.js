@@ -1,27 +1,40 @@
 // One authoring UI owner for filtering any creature/skill reference dropdown.
 // The configured registries remain the only source of IDs and elements.
 export function createCaptureReferenceElementFiltersV1({
-  root, configuredSkills, configuredCreatures, elementMeta, listen = (node,event,cb)=>node.addEventListener(event,cb)
+  root, configuredSkills, configuredCreatures, elementMeta,
+  visualAssets = () => [], visualAssetElement = () => null,
+  listen = (node,event,cb)=>node.addEventListener(event,cb)
 }) {
   const states = new WeakMap();
   const boundFilters = new WeakSet();
+  let visualAssetById = new Map();
   const explicitSkill = "[data-skill-library-select], [data-loadout-slot]";
   const explicitCreature = "[data-creature-library-select], [data-evolution-target], [data-test-local-creature], [data-test-opponent-creature]";
+  const explicitAsset = "[data-asset-role], [data-skill-status-visual-asset], [data-skill-barrier-sprite-asset-id], [data-burrow-start-asset], [data-burrow-travel-asset], [data-burrow-impact-asset]";
 
   function getKind(select, options) {
     if (select.matches("[data-skill-element-filter], [data-reference-element-filter]")) return null;
     if (select.matches(explicitSkill)) return "skill";
     if (select.matches(explicitCreature)) return "creature";
+    if (select.matches(explicitAsset)) return "asset";
     const ids = options.map(o=>o.value).filter(Boolean);
     const skills = ids.filter(id=>configuredSkills.has(id)).length;
     const creatures = ids.filter(id=>configuredCreatures.has(id)).length;
-    return skills && !creatures ? "skill" : creatures && !skills ? "creature" : null;
+    const assets = ids.filter(id=>visualAssetById.has(id)).length;
+    return skills && !creatures && !assets ? "skill"
+      : creatures && !skills && !assets ? "creature"
+      : assets && !skills && !creatures ? "asset" : null;
   }
   function idsFor(kind,id) {
     if (kind==="skill") {
       const entry = configuredSkills.get(id);
       if (!entry) return null;
       return [elementMeta(entry.definition?.element).element ?? "__neutral__"];
+    }
+    if (kind==="asset") {
+      const asset = visualAssetById.get(id);
+      if (!asset) return null;
+      return [elementMeta(visualAssetElement(asset)).element ?? "__neutral__"];
     }
     const entry = configuredCreatures.get(id);
     if (!entry) return null;
@@ -59,6 +72,8 @@ export function createCaptureReferenceElementFiltersV1({
     state.rendered=[...select.children];
   }
   function refresh() {
+    // A temporary presentation index only: the official catalog owns the data.
+    visualAssetById=new Map(visualAssets().filter(asset=>asset?.id).map(asset=>[asset.id,asset]));
     for (const select of root.querySelectorAll("select")) {
       // A refresh by the actual editor replaces option nodes. A filter refresh
       // itself also replaces nodes but updates rendered, keeping original safe.
@@ -83,7 +98,9 @@ export function createCaptureReferenceElementFiltersV1({
         // author controls and Chromium tests for skill loadout slots.
         if (state.kind==="skill") filter.dataset.skillElementFilter="true";
         filter.setAttribute("aria-label",
-          state.kind==="skill"?"Filtrer les capacités par élément":"Filtrer les créatures par élément");
+          state.kind==="skill"?"Filtrer les capacités par élément"
+            : state.kind==="creature"?"Filtrer les créatures par élément"
+            : "Filtrer les sprites et visuels par élément");
         filter.style.cssText="max-width:100%;margin:4px 0 8px;min-height:36px";
         select.before(filter);
       }
@@ -95,7 +112,9 @@ export function createCaptureReferenceElementFiltersV1({
       const choices=new Map();
       for (const option of available) {
         for (const id of idsFor(state.kind,option.value)) {
-          if (!choices.has(id)) choices.set(id,id==="__neutral__"?"Sans élément":elementMeta(id).label);
+          if (!choices.has(id)) choices.set(id,id==="__neutral__"
+            ? (state.kind==="asset"?"Autres / non classés":"Sans élément")
+            : elementMeta(id).label);
         }
       }
       filter.textContent="";
