@@ -1,6 +1,6 @@
 import {appendCaptureEffectConditionFieldsV1,readCaptureEffectConditionV1} from "./capture-effect-condition-fields-v1.js";
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js?v=self-periodic-prose-20261102";
-import { createCaptureReferenceElementFiltersV1 } from "./capture-reference-element-filter-v1.js";
+import { createCaptureReferenceElementFiltersV1 } from "./capture-reference-element-filter-v1.js?v=visual-element-filters-20261104";
 import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104";
 import { normalizeCaptureMarkerLibraryV1 } from "../contracts/capture-marker-v1.js";
 import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1, captureMarkerZoneSelectV1 } from "./capture-marker-effect-fields-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104";
@@ -8695,7 +8695,7 @@ async function hydrateNativeSkillCatalog() {
   );
 }
 
-async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
+async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null, refreshReferenceFilters = () => {}) {
   const response = await fetch(
     GLOBAL_VISUAL_LIBRARY.catalogUrl,
     { cache: "no-store" }
@@ -8733,6 +8733,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
   }
   syncHumanCreatureReactionControlsV1(root);
   captureMarkerRefreshReferenceChoicesV1(root);
+  refreshReferenceFilters();
 
   function preview(select, image) {
     const asset = byId.get(select.value);
@@ -8822,6 +8823,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
     }
     syncHumanCreatureReactionControlsV1(root);
     captureMarkerRefreshReferenceChoicesV1(root);
+    refreshReferenceFilters();
   }
 
   function mountCreatorVisualImporter(
@@ -12271,11 +12273,26 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   // rebuilds actual options for Android; it never edits the chosen IDs.
   const referenceElementFilters=createCaptureReferenceElementFiltersV1({
     root,configuredSkills,configuredCreatures,
-    elementMeta:humanSkillSelectorElementMetaV1,listen
+    elementMeta:humanSkillSelectorElementMetaV1,
+    visualAssets:()=>EDITOR_VISUAL_ASSETS_BY_ROOT.get(root)??[],
+    visualAssetElement:humanVisualAssetElementV1,listen
   });
   function refreshHumanSkillElementFiltersV1() {
     referenceElementFilters.refresh();
   }
+  // New buff/status rows are authored after the initial asset hydration.
+  // Refresh the ONE existing filter owner only when an editor control
+  // creates or replaces a picker, not on every ordinary click/frame.
+  listen(root,"click",(event)=>{
+    if(event.target?.closest?.(
+      "[data-skill-effect-add], [data-skill-channeling-effect-add], [data-skill-contact-hold-effect-add], [data-skill-new]"
+    )) refreshHumanSkillElementFiltersV1();
+  });
+  listen(root,"change",(event)=>{
+    if(event.target?.matches?.(
+      "[data-skill-library-select], [data-skill-effect-kind]"
+    )) refreshHumanSkillElementFiltersV1();
+  });
 
   function refreshSkillLibraryOptions(
     preferredId = null
@@ -14096,7 +14113,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   const ready =
     settleCaptureEditorStartupDependenciesV1({
       assetCatalogPromise:
-        hydrateAssetCatalog(root, listen, creatorVisualAssets),
+        hydrateAssetCatalog(root, listen, creatorVisualAssets, refreshHumanSkillElementFiltersV1),
       privateAudioCatalogPromise:
         hydratePrivateAudioCatalog(
           root,
