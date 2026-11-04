@@ -47,7 +47,7 @@ const probe='<script type="module">'+
 ' try{'+
 ' const response=await fetch("/__catalog",{cache:"no-store"});if(!response.ok)throw Error("catalog unavailable");'+
 ' const catalog=await response.json();'+
-' if(!GLOBAL_VISUAL_LIBRARY.revision.includes("v58-heriplante-player-attack-movement-12f"))throw Error("editor catalog revision stale");'+
+' if(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v([0-9]+)-/)?.[1]||0)<58)throw Error("editor catalog revision older than approved player 12f media");'+
 ' const resolveAsset=createGlobalPresentationAssetResolverV1({assetCatalog:catalog,assetUrlForFile:globalVisualAssetUrl});'+
 ' for(const action of ["attack","movement"]){'+
 ' const id="pack:capture:creature-heriplante-"+action+"-player-12-v1";'+
