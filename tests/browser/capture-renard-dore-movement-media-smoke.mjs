@@ -42,7 +42,7 @@ const html='<!doctype html><html><body><script type="module">'+
 ' try {'+
 ' const res=await fetch("/__catalog",{cache:"no-store"});'+
 ' if(!res.ok)throw Error("catalog not served"); const data=await res.json();'+
-' if(GLOBAL_VISUAL_LIBRARY.revision!=="2026-11-04-v55-lumilo-player-attack-role")throw Error("cache revision wrong");'+
+' if(GLOBAL_VISUAL_LIBRARY.revision!=="2026-11-04-v56-lumilo-opponent-attack-12f")throw Error("cache revision wrong");'+
 ' const fox=data.assets.filter(a=>a.id==="pack:capture:creature-renard-magique-dore-movement-player-12-v1");'+
 ' if(fox.length!==1||!fox[0].tags.includes("attack")||fox[0].tags.includes("movement"))throw Error("live editor catalog does not classify Lumilo as attack");'+
 ' const resolveAsset=createGlobalPresentationAssetResolverV1({assetCatalog:data,assetUrlForFile:globalVisualAssetUrl});'+
