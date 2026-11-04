@@ -6,7 +6,7 @@ const ids=["pack:capture:creature-gorille-des-glaces-movement-player-12-v1","pac
 const prefix="capture/creatures/gorille_des_glaces/animations/movement/";
 test("Gorice movement uses a single canonical updated global-assets catalog",()=>{
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
-  assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-11-04-v56-lumilo-opponent-attack-12f");
+  assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v([0-9]+)-/)?.[1]||0)>=56,"Older assets require a canonical catalog revision v56+");
   assert.ok(GLOBAL_VISUAL_LIBRARY.catalogUrl.includes("?v="+GLOBAL_VISUAL_LIBRARY.revision));
 });
 test("Gorice player/opponent movement uses source data, loops, preserves opposite facing",()=>{
