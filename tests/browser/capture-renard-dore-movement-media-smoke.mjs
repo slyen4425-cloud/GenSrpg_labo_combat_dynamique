@@ -26,6 +26,8 @@ for(const view of ["player"]){
   const asset=hits[0];
   const filename="capture/creatures/renard_magique_dore/animations/movement/"+view+
     "/atlases/renard_magique_dore_mouvement_"+(view==="player"?"joueur":"adversaire")+"_12f.webp";
+  if(!asset.tags?.includes("attack")||asset.tags?.includes("movement")||!asset.tags?.includes("player")||asset.tags?.includes("opponent"))throw Error("Lumilo player must be attack-only in official catalog");
+  if(!/attaque.*joueur/i.test(asset.label))throw Error("Official Lumilo asset label not updated");
   if(asset.resource.file!==filename||asset.resource.frameCount!==12||
       asset.resource.frameMs!==120||
       asset.resource.playbackMode!=="loop")throw Error("Wrong official author metadata: "+id);
@@ -40,7 +42,9 @@ const html='<!doctype html><html><body><script type="module">'+
 ' try {'+
 ' const res=await fetch("/__catalog",{cache:"no-store"});'+
 ' if(!res.ok)throw Error("catalog not served"); const data=await res.json();'+
-' if(GLOBAL_VISUAL_LIBRARY.revision!=="2026-11-03-v54-renard-dore-movement-12f")throw Error("cache revision wrong");'+
+' if(GLOBAL_VISUAL_LIBRARY.revision!=="2026-11-04-v55-lumilo-player-attack-role")throw Error("cache revision wrong");'+
+' const fox=data.assets.filter(a=>a.id==="pack:capture:creature-renard-magique-dore-movement-player-12-v1");'+
+' if(fox.length!==1||!fox[0].tags.includes("attack")||fox[0].tags.includes("movement"))throw Error("live editor catalog does not classify Lumilo as attack");'+
 ' const resolveAsset=createGlobalPresentationAssetResolverV1({assetCatalog:data,assetUrlForFile:globalVisualAssetUrl});'+
 ' for(const view of ["player"]){'+
 ' const id="pack:capture:creature-renard-magique-dore-movement-"+view+"-12-v1";'+
@@ -58,7 +62,7 @@ const html='<!doctype html><html><body><script type="module">'+
 ' node.append(sprite);document.body.append(node);'+
 ' const anim=sprite.animate([{transform:"translateX(0%)"},{transform:"translateX(-91.6666666667%)"}],'+
 ' {duration:media.frameCount*media.frameMs,iterations:Infinity,easing:"steps(12,end)"});'+
-' if(anim.effect.getTiming().iterations!==Infinity||anim.effect.getTiming().duration!==12*media.frameMs)throw Error("movement playback loop wrong");'+
+' if(anim.effect.getTiming().iterations!==Infinity||anim.effect.getTiming().duration!==12*media.frameMs)throw Error("12f authored playback loop changed");'+
 ' anim.cancel();node.remove();'+
 ' }'+
 ' document.body.dataset.renardMediaSmoke="pass:player-12f:official:resolver:alpha:loop";'+
