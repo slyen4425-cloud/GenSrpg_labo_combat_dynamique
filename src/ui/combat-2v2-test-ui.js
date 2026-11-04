@@ -362,6 +362,7 @@ function normalizedInjectedCombatSource(input) {
     roster: input.roster ?? null,
     fighterConfigs: input.fighterConfigs ?? null,
     skillIdsByCreature: input.skillIdsByCreature ?? null,
+    skillIdsByRosterMember: input.skillIdsByRosterMember ?? null,
     ...(input.recallPreparationMs === undefined ? {} : { recallPreparationMs: input.recallPreparationMs }),
     gameOptions:
       normalizeCaptureGameOptionsV1(
@@ -592,7 +593,7 @@ export async function mountCoop2v2Test({
     skills,
     skillsById,
     skillIdsByActor,
-    roster: rosterDefinition, fighterConfigs, skillIdsByCreature,
+    roster: rosterDefinition, fighterConfigs, skillIdsByCreature, skillIdsByRosterMember,
     skillSpeedMultiplier, recallPreparationMs, gameOptions
   } = await loadCoop2v2CombatSource({
     nativeCombatSource,
@@ -1900,7 +1901,7 @@ export async function mountCoop2v2Test({
       recallPreparationMs
     );
     rosterController = createCaptureCombatRosterControllerV1({
-      session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals,
+      session, rosterDefinition, fighterConfigs, skillIdsByCreature, skillIdsByRosterMember, visuals,
       battleFormat:format,
       recallCooldownMs: gameOptions.recallCooldownMs,
       beforeActorChanged: actorId => presenter.cancelActionPresentation(actorId),
