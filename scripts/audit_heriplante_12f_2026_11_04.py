@@ -16,7 +16,7 @@ SOURCES=[
 ]
 for action,name,blob in SOURCES:
     b=(FOLDER/name).read_bytes()
-    found=sha1(b"blob "+str(len(b)).encode()+b"\\0"+b).hexdigest()
+    found=sha1(b"blob "+str(len(b)).encode()+b"\x00"+b).hexdigest()
     assert blob==found,(name,found,blob)
     print(f"SOURCE {action} {name}: size={len(b)}, sha256={sha256(b).hexdigest()}, git_blob={found}",flush=True)
     with ZipFile(BytesIO(b)) as z:
