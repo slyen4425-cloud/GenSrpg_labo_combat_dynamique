@@ -29,7 +29,9 @@ document.addEventListener("DOMContentLoaded",()=>{
       if(!group||box.hidden||!kinds)throw Error("reflection author controls not visible");
       const bounds=x=>x.getBoundingClientRect();
       if(bounds(box).width<200||bounds(group).width<200)
-        throw Error("skills tab not visible, cannot measure geometry");
+        throw Error("skills tab not visible: panelHidden="+one('[data-editor-panel="skills"]').hidden+
+          ", activeTab="+one('[data-editor-tab="skills"]').dataset.active+
+          ", boxWidth="+Math.round(bounds(box).width)+", groupWidth="+Math.round(bounds(group).width));
       const fail=(msg)=>{throw Error(msg)};
       const percent=box.querySelector("[data-skill-status-reflection-percent]"),
         contact=group.querySelector("[data-reflection-contact-damage]"),
@@ -89,7 +91,9 @@ try {
     .filter(Boolean).find(bin=>spawnSync("which",[bin]).status===0);
   if(!chrome)throw Error("Chromium is required");
   for(const [width,height] of [[1440,900],[920,520],[390,844]]) {
-    const url="http://127.0.0.1:"+server.address().port+"/examples/dom-demo/capture-editor-v2.html";
+    // Use the real editor deep-link, also applied after the async catalog-ready
+    // promise; otherwise it can reset a manually selected tab to Creature.
+    const url="http://127.0.0.1:"+server.address().port+"/examples/dom-demo/capture-editor-v2.html?tab=skills";
     const child=spawn(chrome,["--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage","--no-first-run",
       "--window-size="+width+","+height,"--force-device-scale-factor=1","--virtual-time-budget=14000","--dump-dom",url],
       {stdio:["ignore","pipe","pipe"]});
