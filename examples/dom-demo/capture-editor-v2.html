@@ -1274,8 +1274,9 @@
         </details>
         <div class="grid two">
           <label>Nom<input data-skill-name value="Boule de feu"></label>
-          <label class="technical-field">Identifiant<input data-skill-id value="fireball"></label>
+          <label class="technical-field">Identifiant (généré depuis le nom)<input data-skill-id value="fireball" readonly aria-label="Identifiant stable de la capacité"></label>
         </div>
+        <p class="note">Nouvelle capacité : écris seulement son nom. L’identifiant se crée automatiquement, sans accents ni espaces et sans écraser une capacité existante. Une fois enregistrée, son identité reste fixe.</p>
         <label>Description<textarea data-skill-description rows="2">Projectile de feu.</textarea></label>
 
         <div class="grid two">
