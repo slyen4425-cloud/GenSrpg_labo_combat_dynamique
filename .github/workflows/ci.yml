@@ -28,6 +28,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Real Chromium reflection status author PC/phone responsive geometry
+        run: node tests/browser/capture-reflection-editor-responsive-smoke.mjs
       - name: Real Chromium channeling, ground mines, under-target projectiles and element filters
         run: node tests/browser/capture-channel-mine-editor-smoke.mjs
       - name: Real Chromium creature library startup smoke
@@ -48,8 +50,6 @@ jobs:
         run: node tests/browser/capture-charged-projectile-editor-smoke.mjs
       - name: Real Chromium charged buff-debuff editor
         run: node tests/browser/capture-charged-effects-smoke.mjs
-      - name: Real Chromium reflection status author PC/phone responsive geometry
-        run: node tests/browser/capture-reflection-editor-responsive-smoke.mjs
       - name: Real Chromium ice barrier author and entity HUD
         run: node tests/browser/capture-ice-barrier-editor-smoke.mjs
       - name: Real Chromium 2.5D arena shadow and flying light projection
