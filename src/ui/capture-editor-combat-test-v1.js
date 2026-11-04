@@ -5,6 +5,38 @@ import { resolveCaptureSkillSaveModeV1 } from "./capture-editor-skill-save-mode-
 import { resolveCaptureCreatureSaveModeV1 } from "./capture-editor-creature-save-mode-v1.js";
 
 export const CAPTURE_COMBAT_TEST_MAX_TEAM_SIZE_V1 = 6;
+// Reuse Combat's exact same author drafts and native progression/exporter.
+// A real session can pass the explicit species levels it owns; absence keeps
+// the historical isolated editor Tester unchanged. This projection does not
+// persist any level back into authored creature definitions.
+export function resolveCaptureCombatCreatureLevelsV1({
+ localCreatureIds,opponentCreatureIds,previewLevel=20,creatureLevelsById
+}={}){
+ if(!Number.isInteger(previewLevel)||previewLevel<1||previewLevel>100)
+  throw new RangeError('Combat previewLevel must be an integer 1..100');
+ if(!Array.isArray(localCreatureIds)||!Array.isArray(opponentCreatureIds)||
+   !localCreatureIds.length||!opponentCreatureIds.length)
+  throw new TypeError('Combat participant creature IDs required');
+ const ids=[...new Set([...localCreatureIds,...opponentCreatureIds])];
+ for(const id of ids)
+  if(typeof id!=='string'||!id.trim())
+   throw new TypeError('Combat participant creature ID required');
+ if(creatureLevelsById===undefined)
+  return new Map(ids.map(id=>[id,previewLevel]));
+ if(!creatureLevelsById||typeof creatureLevelsById!=='object'||
+   Array.isArray(creatureLevelsById)||Object.getPrototypeOf(creatureLevelsById)!==Object.prototype)
+  throw new TypeError('Explicit Combat creatureLevelsById object required');
+ const supplied=Object.keys(creatureLevelsById);
+ if(supplied.length!==ids.length||supplied.some(id=>!ids.includes(id)))
+  throw new RangeError('Combat creatureLevelsById must match every participating creature exactly');
+ return new Map(ids.map(id=>{
+  const level=creatureLevelsById[id];
+  if(!Number.isInteger(level)||level<1||level>100)
+   throw new RangeError('Invalid Combat creature level for '+id+'; expected integer 1..100');
+  return [id,level];
+ }));
+}
+
 
 function teamIds(ids, label, configuredCreatures) {
   if (!Array.isArray(ids) || ids.length < 1 || ids.length > CAPTURE_COMBAT_TEST_MAX_TEAM_SIZE_V1) {
@@ -39,7 +71,7 @@ export function buildCaptureEditorCombatTestV1({
   activePerTeam, arenaId, combatRules, skillSpeedMultiplier = CAPTURE_COMBAT_REFERENCE_SPEED_V1, recallPreparationMs,
   allyControlMode = "ai", gameOptions,
   statRegistry = null, progressionRules = null,
-  previewLevel = 20
+  previewLevel = 20, creatureLevelsById
 }) {
   if (!Number.isInteger(previewLevel) || previewLevel < 1 || previewLevel > 100) {
     throw new RangeError("Le niveau du combat de test doit être un entier de 1 à 100.");
@@ -53,6 +85,10 @@ export function buildCaptureEditorCombatTestV1({
   if (![1, 2].includes(count) || count > local.length || count > opponent.length) {
     throw new RangeError("Choisis 1 ou 2 créatures actives et au moins autant de membres dans chaque équipe.");
   }
+  const levels=resolveCaptureCombatCreatureLevelsV1({
+    localCreatureIds:local,opponentCreatureIds:opponent,
+    previewLevel,creatureLevelsById
+  });
   const records = [...new Set([...local, ...opponent])].map(id => configuredCreatures.get(id));
   const battleSetup = normalizeCaptureBattleSetupEditorDraftV1({
     schema: "capture-battle-setup-editor-draft-v1", id: "capture-human-preview",
@@ -68,7 +104,7 @@ export function buildCaptureEditorCombatTestV1({
     battleSetup,
     // Ephemeral combat-only projection: never change configuredCreatures or exported authored drafts.
     creatureDrafts: records.map(record => applyCaptureCombatRulesToCreatureDraftV1({
-      creatureDraft: { ...record.draft, level: previewLevel }, combatRules
+      creatureDraft: { ...record.draft, level: levels.get(record.draft.id) }, combatRules
     })),
     skillDrafts: [...configuredSkills.values()],
     loadouts: records.map(record => record.loadout),
