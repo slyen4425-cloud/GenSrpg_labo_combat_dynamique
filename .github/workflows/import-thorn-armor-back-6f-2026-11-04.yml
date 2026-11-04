@@ -42,4 +42,7 @@ jobs:
           git diff --cached --check
           git diff --cached --quiet && { echo 'No valid import output'; exit 1; }
           git commit -m 'assets(capture): import thorn-only armor back 6f'
+          # Keep documentation/CI commits made since this workflow started.
+          git fetch origin work/lab-thorn-armor-back-overlay-2026-11-04
+          git rebase origin/work/lab-thorn-armor-back-overlay-2026-11-04
           git push origin HEAD:work/lab-thorn-armor-back-overlay-2026-11-04
