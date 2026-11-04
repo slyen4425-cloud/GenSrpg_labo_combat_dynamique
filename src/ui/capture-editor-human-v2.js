@@ -1,8 +1,9 @@
 import {appendCaptureEffectConditionFieldsV1,readCaptureEffectConditionV1} from "./capture-effect-condition-fields-v1.js";
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js?v=self-periodic-prose-20261102";
-import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js?v=marker-life-drain-20261028";
+import { createCaptureReferenceElementFiltersV1 } from "./capture-reference-element-filter-v1.js";
+import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104";
 import { normalizeCaptureMarkerLibraryV1 } from "../contracts/capture-marker-v1.js";
-import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1, captureMarkerZoneSelectV1 } from "./capture-marker-effect-fields-v1.js?v=marker-life-drain-20261028";
+import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1, captureMarkerZoneSelectV1 } from "./capture-marker-effect-fields-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104";
 import { captureEditorElementChannelChoicesV1, captureEditorGeneratedStatIdV1 } from "./capture-editor-element-channel-select-v1.js";
 import {
   mountCaptureBeamStageLayoutV1,
@@ -73,7 +74,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -89,8 +90,9 @@ import {
 } from "./private-audio-role-groups-v1.js";
 import {
   resolveCaptureSkillSaveModeV1,
-  nextCaptureSkillDraftIdV1
-} from "./capture-editor-skill-save-mode-v1.js";
+  nextCaptureSkillDraftIdV1,
+  suggestCaptureSkillDraftIdFromNameV1
+} from "./capture-editor-skill-save-mode-v1.js?v=reference-elements-skill-id-20261104";
 import {
   resolveCaptureCreatureSaveModeV1,
   nextCaptureCreatureDraftIdV1
@@ -117,7 +119,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -10812,6 +10814,16 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     root,
     "[data-skill-new]"
   );
+  const skillNameInput=one(root,"[data-skill-name]");
+  const skillIdInput=one(root,"[data-skill-id]");
+  let newSkillDraftMode=false;
+  listen(skillNameInput,"input",()=>{
+    if (!newSkillDraftMode || librarySelect.value!=="") return;
+    skillIdInput.value=suggestCaptureSkillDraftIdFromNameV1({
+      name:skillNameInput.value,
+      configuredSkillIds:[...configuredSkills.keys()]
+    });
+  });
   const createSkillButton = one(
     root,
     "[data-skill-create]"
@@ -11836,6 +11848,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
 
     select.value = previous ?? "";
+    refreshHumanSkillElementFiltersV1();
   }
 
   function syncLoadoutAvailability() {
@@ -11955,6 +11968,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     preferredId = null
   ) {
     combatTeamControls.refresh();
+    refreshHumanSkillElementFiltersV1();
     const previous =
       preferredId ??
       selectedCreatureId ??
@@ -11997,6 +12011,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     ) {
       creatureLibrarySelect.value = previous;
     }
+    refreshHumanSkillElementFiltersV1();
   }
 
   function currentCreatureRecord() {
@@ -12219,6 +12234,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     ).readOnly = true;
     creatureLibrarySelect.value = creatureId;
     combatTeamControls.refresh();
+    refreshHumanSkillElementFiltersV1();
     updateCreatureLibraryState(
       "Modification de « " +
         record.draft.displayName +
@@ -12250,81 +12266,15 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       state.runtimeReady ? "ok" : "warning";
   }
 
-  let unfilteredLibraryChildren=[];
-  const boundSkillElementFilters=new WeakSet();
-  // Every skill reference selector (the library, the five loadout slots
-  // and any future selector populated with the same existing skill IDs)
-  // shares ONE registry-derived filter owner. No parallel list of abilities.
+  // One registry-backed filter owner handles all existing creature/skill
+  // dropdowns, including team rosters and evolution candidates. Filtering
+  // rebuilds actual options for Android; it never edits the chosen IDs.
+  const referenceElementFilters=createCaptureReferenceElementFiltersV1({
+    root,configuredSkills,configuredCreatures,
+    elementMeta:humanSkillSelectorElementMetaV1,listen
+  });
   function refreshHumanSkillElementFiltersV1() {
-    const available=new Set(configuredSkills.keys());
-    for(const select of root.querySelectorAll("select")){
-      const options=select===librarySelect && unfilteredLibraryChildren.length
-        ? unfilteredLibraryChildren.flatMap(node=>node.tagName==="OPTION"
-            ? [node] : [...node.querySelectorAll("option")])
-        : [...select.querySelectorAll("option")];
-      const skillOptions=options.filter(opt=>available.has(opt.value));
-      if(skillOptions.length===0)continue;
-      const parent=select.closest("label")??select.parentElement;
-      if(!parent)continue;
-      let filter=select.previousElementSibling?.matches?.("[data-skill-element-filter]")
-        ? select.previousElementSibling : null;
-      if(!filter){
-        filter=document.createElement("select");
-        filter.dataset.skillElementFilter="true";
-        filter.setAttribute("aria-label","Filtrer les capacités par élément");
-        filter.style.cssText="max-width:100%;margin:4px 0 8px;min-height:36px";
-        select.before(filter);
-      }
-      // A static filter already exists in the Skills editor markup; the
-      // former implementation wired ONLY dynamically created filters.
-      if(!boundSkillElementFilters.has(filter)){
-        filter.addEventListener("change",()=>applyFilter(select,filter));
-        boundSkillElementFilters.add(filter);
-      }
-      const prev=filter.value||"";
-      const distinct=new Map();
-      for(const opt of skillOptions){
-        const entry=configuredSkills.get(opt.value);
-        const meta=humanSkillSelectorElementMetaV1(entry?.definition?.element);
-        const id=meta.element??"__neutral__";
-        if(!distinct.has(id))distinct.set(id,meta.label);
-      }
-      filter.textContent="";
-      createOption(filter,"","Tous les éléments");
-      for(const [id,label] of distinct)createOption(filter,id,label);
-      filter.value=distinct.has(prev)?prev:"";
-      applyFilter(select,filter);
-    }
-  }
-  function applyFilter(select,filter) {
-    const selected=select.value;
-    if(select===librarySelect && unfilteredLibraryChildren.length){
-      // Native Android menus ignore option.hidden: rebuild the visible DOM
-      // from this same configuredSkills-derived UI list, with no new authority.
-      select.replaceChildren(...unfilteredLibraryChildren.map(node=>node.cloneNode(true)));
-      for(const opt of [...select.querySelectorAll("option")]){
-        if(!opt.value||!configuredSkills.has(opt.value))continue;
-        const meta=humanSkillSelectorElementMetaV1(configuredSkills.get(opt.value).definition.element);
-        const id=meta.element??"__neutral__";
-        if(filter.value && filter.value!==id && opt.value!==selected)opt.remove();
-      }
-      for(const group of [...select.querySelectorAll("optgroup")]){
-        if(!group.querySelector("option"))group.remove();
-      }
-      if(selected && [...select.options].some(opt=>opt.value===selected))select.value=selected;
-      return;
-    }
-    for(const opt of select.querySelectorAll("option")) {
-      if(!opt.value||!configuredSkills.has(opt.value)){opt.hidden=false;continue;}
-      const meta=humanSkillSelectorElementMetaV1(configuredSkills.get(opt.value).definition.element);
-      const id=meta.element??"__neutral__";
-      // A currently equipped/edited skill must remain reachable even while
-      // browsing another element; this never clears the selected ID.
-      opt.hidden=Boolean(filter.value&&filter.value!==id&&opt.value!==selected);
-    }
-    for(const group of select.querySelectorAll("optgroup")){
-      group.hidden=[...group.querySelectorAll("option")].every(opt=>opt.hidden);
-    }
+    referenceElementFilters.refresh();
   }
 
   function refreshSkillLibraryOptions(
@@ -12382,7 +12332,6 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     ) {
       librarySelect.value = previous;
     }
-    unfilteredLibraryChildren=[...librarySelect.children].map(node=>node.cloneNode(true));
     refreshHumanSkillElementFiltersV1();
   }
 
@@ -12552,6 +12501,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     ].map((select) => select.value);
 
     configuredSkills.set(draft.id, draft);
+    newSkillDraftMode=false;
     refreshSkillLibraryOptions(draft.id);
 
     if (saveMode.mode === "create") {
@@ -12693,6 +12643,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
 
   listen(librarySelect, "change", () => {
     const abilityId = librarySelect.value;
+    if (abilityId) newSkillDraftMode=false;
 
     if (!abilityId) {
       updateLibraryState(null);
@@ -12740,6 +12691,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   });
 
   listen(newSkillButton, "click", () => {
+    newSkillDraftMode=true;
     const nextId = nextCaptureSkillDraftIdV1({
       configuredSkillIds: [...configuredSkills.keys()]
     });
@@ -12751,10 +12703,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       nextId,
       statRegistry
     );
-    one(
-      root,
-      "[data-skill-id]"
-    ).readOnly = false;
+    skillIdInput.readOnly = true;
+    skillIdInput.value=suggestCaptureSkillDraftIdFromNameV1({
+      name:skillNameInput.value,configuredSkillIds:[...configuredSkills.keys()]
+    });
     selectedLegacyState = null;
 
     setStatus(
@@ -13839,6 +13791,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         loadCreatureRecord(selectedCreatureId);
       }
       combatTeamControls.refresh();
+    refreshHumanSkillElementFiltersV1();
       const teamSizes = Object.values(lastExport.teams).map(actorIds =>
         lastExport.rosters.filter(roster => actorIds.includes(roster.slotId))
           .reduce((size, roster) => size + roster.members.length, 0)
@@ -14096,6 +14049,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         progressionRules =
           applyResult.progressionRules;
 
+        newSkillDraftMode=false;
         refreshEditorAfterTransferV1({
           plan,
           applyResult

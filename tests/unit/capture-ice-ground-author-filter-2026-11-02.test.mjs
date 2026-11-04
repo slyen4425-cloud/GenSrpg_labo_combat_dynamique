@@ -39,8 +39,15 @@ test("RED: target feet sprite can play fixed without native travel translation",
  assert.match(code,/groundOffsetYPx/);
  assert.match(code,/groundRisePx/);
 });
-test("RED: editor library filter removes irrelevant options from mobile native select instead of hidden",()=>{
- const code=raw("src/ui/capture-editor-human-v2.js");
- assert.match(code,/unfilteredLibraryChildren/);
- assert.match(code,/select\.replaceChildren/);
+test("RED: one shared registry-backed filter rebuilds native skill and creature menus for Android",()=>{
+ const editor=raw("src/ui/capture-editor-human-v2.js");
+ const owner=raw("src/ui/capture-reference-element-filter-v1.js");
+ assert.match(editor,/createCaptureReferenceElementFiltersV1/);
+ assert.match(editor,/referenceElementFilters\.refresh\(\)/);
+ assert.match(owner,/original=now\.map\(node=>node\.cloneNode\(true\)\)/);
+ assert.match(owner,/select\.replaceChildren\(\.\.\.visible\)/);
+ assert.match(owner,/option\.value===selected/);
+ assert.match(owner,/filter\.dataset\.skillElementFilter="true"/);
+ assert.match(owner,/configuredCreatures\.get\(id\)/);
+ assert.match(owner,/configuredSkills\.get\(id\)/);
 });
