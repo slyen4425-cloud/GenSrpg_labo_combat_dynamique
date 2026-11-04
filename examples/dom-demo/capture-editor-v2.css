@@ -781,6 +781,92 @@ body[data-editor-view="preview"] {
   gap: 0.55rem;
 }
 
+/* Author statuses: checkbox labels are action choices, not full-width text
+   fields. Scope this to the status editor; combat HUD controls are untouched. */
+.skill-status-config label.check,
+.skill-status-config__specific label.check,
+.skill-status-config__grid > label:has(> input[type="checkbox"]) {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.skill-status-config label.check > input[type="checkbox"],
+.skill-status-config__specific label.check > input[type="checkbox"],
+.skill-status-config__grid > label > input[type="checkbox"] {
+  flex: 0 0 1.125rem;
+  width: 1.125rem;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  min-height: 1.125rem;
+  margin: 0;
+  padding: 0;
+  accent-color: #8adfeb;
+}
+
+/* The native reflection sub-form was a three-column grid nested into ONE
+   column of another three-column grid. Give it the full author section.
+   Layout only: input names, values, native timers and combat semantics stay. */
+.skill-status-config__specific > [data-reflection-controls] {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.skill-status-config__specific[data-skill-status-config-kind="damage_reflection"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.skill-status-config__specific[data-skill-status-config-kind="damage_reflection"] > label {
+  max-width: 24rem;
+}
+
+[data-reflection-controls] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.7rem;
+  padding: 0.8rem;
+  min-width: 0;
+  border: 1px solid rgba(131, 230, 247, 0.18);
+  border-radius: 0.65rem;
+  background: rgba(9, 34, 45, 0.58);
+}
+
+[data-reflection-controls] > label.check,
+[data-reflection-controls] .skill-status-config__grid > label.check {
+  padding: 0.65rem 0.7rem;
+  border: 1px solid rgba(131, 230, 247, 0.16);
+  border-radius: 0.55rem;
+  background: rgba(22, 60, 74, 0.45);
+  cursor: pointer;
+}
+
+[data-reflection-controls] > label.check:focus-within,
+[data-reflection-controls] .skill-status-config__grid > label.check:focus-within {
+  border-color: rgba(144, 225, 241, 0.85);
+}
+
+[data-reflection-controls] .skill-status-config__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+[data-reflection-controls] > label:not(.check) {
+  width: min(100%, 26rem);
+}
+
+[data-reflection-controls] > .note {
+  display: block;
+  max-width: 74ch;
+  margin: 0;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
 .skill-effect-row [hidden],
 .skill-status-config [hidden] {
   display: none !important;
