@@ -9,11 +9,17 @@ const root=process.cwd();
 const mime={".html":"text/html",".js":"text/javascript",".mjs":"text/javascript",".css":"text/css",".json":"application/json"};
 const probe=`<script>
 document.addEventListener("DOMContentLoaded",()=>{
-  setTimeout(()=>{
+  let attempts=0;
+  const inspect=()=>{
     try {
       const one=sel=>document.querySelector(sel);
       // Activate the actual Skills tab: DOM of inactive tabs has zero geometry.
       one('[data-editor-tab="skills"]').click();
+      const panel=one('[data-editor-panel="skills"]');
+      if(!panel||panel.hidden) {
+        if(++attempts<45)return setTimeout(inspect,180);
+        throw Error("native Skills tab failed to activate after editor ready");
+      }
       one("[data-skill-new]").click();
       const kind=one("[data-skill-effect-add-kind]"),add=one("[data-skill-effect-add]");
       kind.value="standard";add.click();
@@ -71,7 +77,8 @@ document.addEventListener("DOMContentLoaded",()=>{
       const compact={check:Math.round(bounds(all).width),section:Math.round(bounds(group).width)};
       document.body.dataset.reflectionLayoutSmoke="pass:"+innerWidth+":"+compact.check+":"+compact.section;
     }catch(e){document.body.dataset.reflectionLayoutSmoke="error:"+String(e.message||e)}
-  },2200);
+  };
+  setTimeout(inspect,2200);
 });
 </script>`;
 
