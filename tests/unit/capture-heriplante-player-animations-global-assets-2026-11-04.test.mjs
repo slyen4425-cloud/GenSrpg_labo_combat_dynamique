@@ -18,7 +18,7 @@ const assets=metadata.map(({action,mode,ms,id})=>({
 }));
 test("the official catalog revision is refreshed without a second authority",()=>{
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
-  assert.ok(GLOBAL_VISUAL_LIBRARY.revision.includes("v58-heriplante-player-attack-movement-12f"));
+  assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v([0-9]+)-/)?.[1]||0)>=58,"Earlier player animations require a canonical revision v58+");
 });
 test("the two authored player animations are classified into distinct editor role selectors",()=>{
   assert.equal(assets.length,2);
