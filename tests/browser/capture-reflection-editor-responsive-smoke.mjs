@@ -33,6 +33,13 @@ document.addEventListener("DOMContentLoaded",()=>{
       effect.value="apply_status";effect.dispatchEvent(new Event("change",{bubbles:true}));
       const status=row.querySelector("[data-skill-status-kind]");
       status.value="damage_reflection";status.dispatchEvent(new Event("change",{bubbles:true}));
+      // Editor cards start folded by their native disclosure owner; open
+      // the actual "Effets tactiques" card, as the author does in the UI.
+      const effectsCard=row.closest(".card");
+      if(effectsCard?.dataset.collapsed==="true")
+        effectsCard.querySelector(":scope > .card-title")?.click();
+      if(effectsCard?.dataset.collapsed!=="false")
+        throw Error("the native Effects tactiques disclosure did not open");
       const box=row.querySelector('[data-skill-status-config-kind="damage_reflection"]');
       const group=box?.querySelector('[data-reflection-controls="main"]');
       const kinds=group?.querySelector(".skill-status-config__grid");
