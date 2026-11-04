@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 301,
+    "assets": 302,
     "icons": 94,
-    "sprites": 183,
+    "sprites": 184,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
@@ -10373,6 +10373,53 @@
         "frameCount": 12,
         "frameMs": 115,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-armure-ronces-plante-carnivore-back-01",
+      "label": "Armure de ronces — pointes seules, vue joueur dos (6f)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "nature",
+        "thorn",
+        "ronces",
+        "plante-carnivore",
+        "defense",
+        "buff",
+        "status",
+        "overlay",
+        "player",
+        "back",
+        "dos",
+        "animated",
+        "hold-last-frame"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / artwork artist-approved",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/armure_ronces_plante_carnivore/back/atlases/armure_ronces_dos_6f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 6,
+        "frameMs": 138,
+        "playbackMode": "once",
+        "holdLastFrame": true,
+        "persistentFrameIndex": 5
       },
       "compatibility": {
         "uses": [

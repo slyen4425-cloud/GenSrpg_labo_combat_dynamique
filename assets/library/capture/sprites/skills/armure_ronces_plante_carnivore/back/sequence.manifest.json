@@ -1,0 +1,113 @@
+{
+  "schema": "capture-skill-overlay-v1",
+  "assetId": "pack:capture:sprite-armure-ronces-plante-carnivore-back-01",
+  "creatureReference": "plante_carnivore",
+  "referenceView": "player_back",
+  "role": "defense_thorn_armor_overlay",
+  "runtimeMaskOnly": true,
+  "frameCount": 6,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameDurationsMs": [
+    145,
+    145,
+    140,
+    135,
+    130,
+    130
+  ],
+  "frameMs": 138,
+  "playbackMode": "once",
+  "holdLastFrame": true,
+  "holdFrameIndex": 5,
+  "holdUntil": "buff_removed",
+  "noAutoBinding": true,
+  "sourceArchive": "armure_ronces_plante_carnivore_dos_6f.zip",
+  "sourceArchiveSha256": "d3cdba93cc9102b760a7fd0e0dc49e0b0f0ad9d6d524a10f6940388f7688a276",
+  "sourceGitBlobSha": "0587d83efb6a1a1f18f822e406065afec552a2d5",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/armure_ronces_dos_01.png",
+      "sha256": "6af67e22ab62e8496110072482488ea88390554de259c1143a1bc427a8e70275",
+      "marginsLTRB": [
+        71,
+        83,
+        77,
+        98
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/armure_ronces_dos_02.png",
+      "sha256": "f480436626b7814a94863a3a5772808899f7facdb0519dbb636eb664c42ece90",
+      "marginsLTRB": [
+        67,
+        75,
+        74,
+        89
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/armure_ronces_dos_03.png",
+      "sha256": "4e438479ff2392fbd03ae7a937947b0cebad67f152e5c326f8494adbbfcca339",
+      "marginsLTRB": [
+        62,
+        66,
+        70,
+        80
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/armure_ronces_dos_04.png",
+      "sha256": "daf30cd78551365e1818b8a08548e8d1825d8af846086373353857fc61db7977",
+      "marginsLTRB": [
+        58,
+        56,
+        65,
+        68
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/armure_ronces_dos_05.png",
+      "sha256": "e90e2eafd81ae4bba40e7b241f3f2727fde8a99f719df15628d62e21dcf0d572",
+      "marginsLTRB": [
+        53,
+        47,
+        61,
+        55
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/armure_ronces_dos_06.png",
+      "sha256": "936772eef6dea77507e197eafa3df25ee7a702cac728c68bf6a5acb08420239b",
+      "marginsLTRB": [
+        45,
+        36,
+        56,
+        40
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/armure_ronces_dos_6f.webp",
+    "format": "sprite-strip",
+    "width": 3072,
+    "height": 512,
+    "frameCount": 6,
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "sha256": "fecfe824822ec843181ee5354e0a492971b1f26b41d68561a9818ba4cf03c177",
+    "lossless": true
+  },
+  "preview": {
+    "mask": "previews/masque_6f.webp",
+    "control": "previews/controle_3x2.png"
+  }
+}
