@@ -40,6 +40,8 @@ jobs:
         run: node tests/browser/capture-gorice-movement-media-smoke.mjs
       - name: Real Chromium Renard magique dore official 12f movement and resolver
         run: node tests/browser/capture-renard-dore-movement-media-smoke.mjs
+      - name: Real Chromium Lumilo opponent attack official 12f and once playback
+        run: node tests/browser/capture-renard-dore-attack-opponent-media-smoke.mjs
       - name: Real Chromium Ice VFX zone floor spike fog selectors and 3 actual WebP images
         run: node tests/browser/capture-ice-ground-spike-fog-editor-smoke.mjs
       - name: Real Chromium charged projectile author fields
