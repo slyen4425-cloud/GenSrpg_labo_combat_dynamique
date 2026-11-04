@@ -36,15 +36,25 @@ export function createCaptureReferenceElementFiltersV1({
     const selected=select.value;
     const selectedElement=filter.value;
     const nodes=state.original.map(node=>node.cloneNode(true));
-    for (const option of optionsFrom(nodes)) {
-      if (!option.value) continue;
+    const keep=option=>{
+      if (!option.value) return true;
       const elements=idsFor(state.kind,option.value);
-      if (elements && selectedElement && !elements.includes(selectedElement) && option.value!==selected) option.remove();
+      return !elements || !selectedElement || elements.includes(selectedElement) || option.value===selected;
+    };
+    const visible=[];
+    for (const node of nodes) {
+      if (node.tagName==="OPTION") {
+        if (keep(node)) visible.push(node);
+      } else if (node.tagName==="OPTGROUP") {
+        for (const option of [...node.querySelectorAll("option")]) {
+          if (!keep(option)) option.remove();
+        }
+        if (node.querySelector("option")) visible.push(node);
+      } else {
+        visible.push(node);
+      }
     }
-    for (const group of nodes.filter(node=>node.tagName==="OPTGROUP")) {
-      if (!group.querySelector("option")) group.remove();
-    }
-    select.replaceChildren(...nodes.filter(node=>node.parentNode===null));
+    select.replaceChildren(...visible);
     if (selected && [...select.options].some(option=>option.value===selected)) select.value=selected;
     state.rendered=[...select.children];
   }
