@@ -6195,6 +6195,46 @@ function appendHumanSkillEffectV1(
       ""
   );
 
+  // Most status masks are shared between player and opponent. Enable the
+  // second catalog selection only for asymmetric artwork (e.g. spines face/dos).
+  const statusOpponentVisualEnabled = document.createElement("input");
+  statusOpponentVisualEnabled.type = "checkbox";
+  statusOpponentVisualEnabled.setAttribute(
+    "data-skill-status-opponent-visual-enabled", "true"
+  );
+  statusOpponentVisualEnabled.checked =
+    Boolean(statusPresentation?.sprite?.opponentAssetId);
+
+  const statusOpponentVisualAsset = document.createElement("select");
+  statusOpponentVisualAsset.setAttribute(
+    "data-skill-status-opponent-visual-asset", "true"
+  );
+  populateHumanStatusVisualAssetV1(
+    root,
+    statusOpponentVisualAsset,
+    statusPresentation?.sprite?.opponentAssetId ?? ""
+  );
+
+  const statusOpponentVisualLabel = document.createElement("label");
+  statusOpponentVisualLabel.className = "check";
+  statusOpponentVisualLabel.append(
+    statusOpponentVisualEnabled,
+    document.createTextNode(
+      "Utiliser un sprite différent côté adversaire (facultatif)"
+    )
+  );
+  const statusOpponentVisualField = tacticalFieldV1(
+    "Sprite côté adversaire (vue de face)",
+    statusOpponentVisualAsset
+  );
+  const syncStatusOpponentVisualField = () => {
+    statusOpponentVisualField.hidden = !statusOpponentVisualEnabled.checked;
+  };
+  statusOpponentVisualEnabled.addEventListener(
+    "change", syncStatusOpponentVisualField
+  );
+  syncStatusOpponentVisualField();
+
   const statusVisualScale =
     tacticalNumberInputV1(
       "skillStatusVisualScale",
@@ -6255,9 +6295,11 @@ function appendHumanSkillEffectV1(
     "true";
   spriteFields.append(
     tacticalFieldV1(
-      "Sprite du statut",
+      "Sprite du statut (joueur et adversaire par défaut)",
       statusVisualAsset
     ),
+    statusOpponentVisualLabel,
+    statusOpponentVisualField,
     tacticalFieldV1(
       "Échelle du sprite",
       statusVisualScale
@@ -7384,9 +7426,26 @@ function readHumanStatusVisualsV1(root) {
         );
       }
 
+      const separateOpponentSprite =
+        row.querySelector(
+          "[data-skill-status-opponent-visual-enabled]"
+        )?.checked === true;
+      const opponentAssetId = String(
+        row.querySelector(
+          "[data-skill-status-opponent-visual-asset]"
+        )?.value ?? ""
+      ).trim();
+      if (separateOpponentSprite && !opponentAssetId) {
+        throw new Error(
+          "Choisis le sprite côté adversaire pour le statut « " +
+            statusId + " », ou désactive le visuel différent."
+        );
+      }
+
       presentation.sprite = {
         ...readStatusSpriteControlsV1(row),
         assetId,
+        ...(separateOpponentSprite ? { opponentAssetId } : {}),
         displayScale: Number(
           row.querySelector(
             "[data-skill-status-visual-scale]"
