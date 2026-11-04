@@ -34,6 +34,8 @@ document.addEventListener("DOMContentLoaded",()=>{
       if(bounds(group).width<bounds(box).width*.82)fail("reflection subform trapped inside narrow grid column");
       const threshold=row.querySelector("[data-stack-threshold-enabled]");
       if(!threshold)fail("stack threshold control missing");
+      all.click();
+      if(kinds.hidden||getComputedStyle(kinds).display==="none")fail("per-source choices hidden");
       const checkboxes=[...group.querySelectorAll('label.check input[type="checkbox"]'),threshold];
       for(const c of checkboxes) {
         const r=bounds(c),label=c.closest("label"),p=bounds(label);
@@ -45,8 +47,6 @@ document.addEventListener("DOMContentLoaded",()=>{
       }
       // The author can select all sources or individual categories without losing
       // the native meaning of the controls. Geometry must remain within its owner.
-      all.click();
-      if(kinds.hidden||getComputedStyle(kinds).display==="none")fail("per-source choices hidden");
       const checks=[...kinds.querySelectorAll("[data-reflection-kind]")];
       if(checks.length<7)fail("native damage reflection categories missing");
       for(const c of checks) {
