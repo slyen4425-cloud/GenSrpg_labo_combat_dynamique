@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded",()=>{
   setTimeout(()=>{
     try {
       const one=sel=>document.querySelector(sel);
+      // Activate the actual Skills tab: DOM of inactive tabs has zero geometry.
+      one('[data-editor-tab="skills"]').click();
       one("[data-skill-new]").click();
       const kind=one("[data-skill-effect-add-kind]"),add=one("[data-skill-effect-add]");
       kind.value="standard";add.click();
@@ -26,6 +28,8 @@ document.addEventListener("DOMContentLoaded",()=>{
       const kinds=group?.querySelector(".skill-status-config__grid");
       if(!group||box.hidden||!kinds)throw Error("reflection author controls not visible");
       const bounds=x=>x.getBoundingClientRect();
+      if(bounds(box).width<200||bounds(group).width<200)
+        throw Error("skills tab not visible, cannot measure geometry");
       const fail=(msg)=>{throw Error(msg)};
       const percent=box.querySelector("[data-skill-status-reflection-percent]"),
         contact=group.querySelector("[data-reflection-contact-damage]"),
