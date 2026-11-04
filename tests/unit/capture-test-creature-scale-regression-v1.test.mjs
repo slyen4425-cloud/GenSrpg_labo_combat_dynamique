@@ -53,5 +53,10 @@ test("selected Capture preview routes canonical scales through the native visual
   assert.match(pageJs, /adaptCaptureExportToNativeVisualSourceV1/);
   assert.doesNotMatch(pageJs, /creatureMetaByOptionId|buildCaptureTestOpponentDraftV1/);
   const composition = await readFile(new URL("../../src/ui/capture-editor-combat-test-v1.js", import.meta.url), "utf8");
-  assert.match(composition, /creatureDraft:\s*\{\s*\.\.\.record\.draft,\s*level:\s*previewLevel\s*\}/);
+  // The authoring preview must still preserve its original 20-level default,
+  // but real battles now supply the explicit current level per creature.
+  // Keep the original scale pathway and check the actual projection call.
+  assert.match(composition, /previewLevel\s*=\s*20/);
+  assert.match(composition, /resolveCaptureCombatCreatureLevelsV1/);
+  assert.match(composition, /creatureDraft:\s*\{\s*\.\.\.record\.draft,\s*level:\s*levels\.get\(record\.draft\.id\)\s*\}/);
 });
