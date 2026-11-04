@@ -30,7 +30,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Run real catalog and PNG source sentinels
+      - name: Run all native sentinels (existing player attack plus approved opponent attack)
         run: npm run ci
       - name: Commit validated media ONLY to work branch
         run: |
