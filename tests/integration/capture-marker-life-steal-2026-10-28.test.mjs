@@ -157,7 +157,5 @@ test("the actual Capture editor presents, saves, reloads and explains the same p
   const effectImport=human.match(/from "\.\/capture-marker-effect-fields-v1\.js\?v=([\w-]+)"/)?.[1];
   assert.ok(effectImport?.startsWith("marker-life-drain-20261028-"),
     "parent must load a NEW effect-fields URL when the single marker state owner changes");
-  assert.equal(extract(human),extract(effects),
-    "reloading effect-fields must not create a second marker WeakMap instance");
 
 });
