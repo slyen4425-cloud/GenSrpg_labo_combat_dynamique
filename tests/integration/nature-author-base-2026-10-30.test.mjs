@@ -14,7 +14,7 @@ async function readShowcase(id, kind = "skill") {
   return { doc: JSON.parse(source.toString("utf8")), gitBlob };
 }
 
-test("author Nature database changes only four existing skill files, byte exact", async () => {
+test("author Nature four skills remain byte exact and Coupe feuille Nov 4 delta is isolated", async () => {
   const expected = new Map([
     ["graine_sansue_cap", "7297d42ed2ca575179d9bb984065eb64c8d9e326"],
     ["Spore_soporifique", "37da9b6408355a96eb232e97fd18ff99439f4a3f"],
@@ -28,11 +28,16 @@ test("author Nature database changes only four existing skill files, byte exact"
     assert.equal(doc.draft.id, id);
     assert.equal(doc.draft.definition.element, "nature");
   }
-  assert.equal(
-    (await readShowcase("coupe_feuille")).gitBlob,
-    "0b516301eef8e4ccb1c5734f7649159b1434ec6a",
-    "unmodified Coupe feuille must remain unchanged"
-  );
+  // The four Nature exports above are byte exact. Coupe feuille received
+  // a later, independent Nov 4 author update: preserve the signed Oct 28
+  // provenance and permit ONLY collision power 0->1, not broad drift.
+  const history=JSON.parse(await readFile(new URL(
+    "data/capture/source-exports/gensrpg-capture-skill-coupe_feuille-2026-10-28.json",ROOT),"utf8"));
+  assert.equal(history.draft.definition.projectileClash.power,0);
+  const expected=structuredClone(history);
+  expected.draft.definition.projectileClash.power=1;
+  assert.deepEqual((await readShowcase("coupe_feuille")).doc,expected,
+    "Nov 4 author update must preserve every non-clash field");
 });
 
 test("author's sounds and icons remain present on the four Nature skills", async () => {
