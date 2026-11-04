@@ -36,7 +36,7 @@ import {
 } from "./demo-assets.js";
 import {
   createCaptureSkillPresentationAssetsV2
-} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102";
+} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-dual-status-20261104";
 import {
   createGlobalPresentationAssetResolverV1
 } from "../../src/assets/global-presentation-asset-resolver-v1.js";
