@@ -1,3 +1,11 @@
+## 2026-11-04 — Lumilo / Renard magique doré : attaque adversaire 12f dans le Labo Combat
+- Médias propriétaires `global-assets` déjà publiés PR #235 fusion `f2ddd3cd9eb5e30907a99f61a59f6f1eb1515def`, source Git blob `3355a2f465d03db5a617de284ef1253a602c16ea`. Atlas 6144×512 et 12 PNG 512×512 (alpha, marges 66px), aperçu WebP approuvé inchangé, ID `pack:capture:creature-renard-magique-dore-attack-opponent-12-v1`, `frameMs=115`, `playbackMode=once`. L'attaque joueur sous ID historique movement/player reste classée attaque et protégée.
+- Client BASE `gh-pages@fa33c94cefda63c07a80b9f0eb1b673bf6514322`; START `checkpoint/lab-start-renard-dore-attack-opponent-client-2026-11-04`; WORK `work/lab-renard-dore-attack-opponent-client-2026-11-04`. Action limitée à bump cache unique v55→v56 et test unité rôle attack/opponent/once + vrai Chromium du WebP officiel et résolveur. Garder tous les autres tests v55 en révision v56, sans en supprimer les assertions. Détails `docs/LAB_RENARD_DORE_ATTACK_OPPONENT_CLIENT_2026-11-04.md`.
+- Aucun nouvel enregistrement secondaire, aucune modification de maître, animations des autres créatures, combat, données auteur, sauvegarde, GenSrpG/Exploration/main. Frame 01 non certifiée pixel-identique au maître ; WebP approuvé visuellement sans fausse preuve.
+- GREEN seulement 5 jobs sur SHA final + checkpoint, fusion PR, CI et Pages postfusion. Android paysage à valider par l'auteur séparément.
+
+---
+
 ## 2026-11-04 — Lumilo 12f : rafraîchissement du client éditeur après reclassement ATTACK (LOT CLIENT, NON GREEN)
 - La PR média #233 a été fusionnée dans global-assets@ebd854dbe8d993c51705ad700db9151da3de8191. L'animation 12f DOS du Renard magique doré conserve son ID stable historique `...-movement-player-12-v1`, mais son tag propriétaire de sélection est maintenant `attack` et non `movement`.
 - **BASE immuable** : gh-pages@7088ed939655d8e52c1ac2ec9e76ed5fadc47eb2 ; START `checkpoint/lab-start-lumilo-attack-client-2026-11-04` ; WORK `work/lab-lumilo-attack-client-2026-11-04`. Il s'agit de l'exposition à l'éditeur officiel, pas d'une deuxième base média.

@@ -13,7 +13,7 @@ const lumilo={
 };
 test("RED: editor client requires fresh catalog revision to expose Lumilo player attack",()=>{
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
-  assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-11-04-v55-lumilo-player-attack-role");
+  assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-11-04-v56-lumilo-opponent-attack-12f");
   assert.equal(captureEditorCreatureVisualKindV1(lumilo),"attack");
   assert.equal(captureEditorAssetMatchesRoleV1(lumilo,"attack"),true);
   assert.equal(captureEditorAssetMatchesRoleV1(lumilo,"movement"),false);
