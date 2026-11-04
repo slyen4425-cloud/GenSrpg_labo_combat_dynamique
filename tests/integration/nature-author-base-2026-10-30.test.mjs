@@ -34,9 +34,9 @@ test("author Nature four skills remain byte exact and Coupe feuille Nov 4 delta 
   const history=JSON.parse(await readFile(new URL(
     "data/capture/source-exports/gensrpg-capture-skill-coupe_feuille-2026-10-28.json",ROOT),"utf8"));
   assert.equal(history.draft.definition.projectileClash.power,0);
-  const expected=structuredClone(history);
-  expected.draft.definition.projectileClash.power=1;
-  assert.deepEqual((await readShowcase("coupe_feuille")).doc,expected,
+  const coupeExpected=structuredClone(history);
+  coupeExpected.draft.definition.projectileClash.power=1;
+  assert.deepEqual((await readShowcase("coupe_feuille")).doc,coupeExpected,
     "Nov 4 author update must preserve every non-clash field");
 });
 
