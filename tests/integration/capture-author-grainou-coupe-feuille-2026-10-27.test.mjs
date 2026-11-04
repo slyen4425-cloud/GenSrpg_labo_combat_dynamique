@@ -17,7 +17,13 @@ for(const [id,kind] of [["crea_nat_1","creature"],["coupe_feuille","skill"]]){
     const historic=JSON.parse(await read(archived));
     assert.equal(historic.draft.presentation.version,9);
     const currentSource="data/capture/source-exports/gensrpg-capture-skill-"+id+"-2026-10-28.json";
-    assert.deepEqual(JSON.parse(await read(live)),JSON.parse(await read(currentSource)));
+    const previous=JSON.parse(await read(currentSource));
+    assert.equal(previous.draft.definition.projectileClash.power,0,
+      "2026-10-28 authored source is immutable historical provenance");
+    const expected=structuredClone(previous);
+    expected.draft.definition.projectileClash.power=1;
+    assert.deepEqual(JSON.parse(await read(live)),expected,
+      "Nov 4 author changed only collision power, preserving all historical settings");
   }else{
     const historical=JSON.parse(await read(archived));
     assert.equal(historical.draft.id,id,"2026-10-27 author creature archive remains untouched");
