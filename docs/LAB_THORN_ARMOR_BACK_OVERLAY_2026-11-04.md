@@ -21,3 +21,10 @@
 3. CI complète sur SHA final, checkpoint GREEN exact, PR `global-assets` et CI post-fusion.
 4. Lot client coordonné `gh-pages` sur HEAD publié pour la révision cache et test du sélecteur des effets Nature/statut. Validation téléphone distincte du test GitHub.
 5. Pas de GREEN si source, média réel, CI, déploiement ou preview ne sont pas vérifiés.
+
+## Preuves d'import
+- Source ZIP vérifiée (4 597 874 octets / Git blob `0587d83efb6a1a1f18f822e406065afec552a2d5`).
+- Import réel GitHub Actions #41852394408 : **SUCCESS** ; source SHA/CRC, 6 PNG RGBA, alpha, bords, atlas WebP lossless strictement identique aux 6 frames, preview, unicité des identifiants, `npm run ci`.
+- Commit d'import `595ea2c56dbbbb7539a548eb5517a5bc17f4f64c` (travail uniquement). Catalogue de travail : 302 assets, 184 sprites ; ancienne entrée FACE toujours intacte.
+- Le premier essai #41852006980 était rouge uniquement à la publication Git (non-fast-forward à cause d'une mise à jour documentaire concurrente). Cause racine : rebase sur le HEAD distant avant push ; réexécution succès #41852394408.
+- Publication finale conditionnée à CI sur SHA final, checkpoint GREEN, PR #237, puis cache `gh-pages` et test du sélecteur.
