@@ -1,0 +1,184 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "assetId": "pack:capture:creature-heriplante-movement-player-12-v1",
+  "creatureId": "heriplante",
+  "action": "movement",
+  "view": "player",
+  "direction": "right",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 100,
+  "frameDurationsMs": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100
+  ],
+  "playbackMode": "loop",
+  "returnToIdle": false,
+  "holdLastFrame": false,
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/heriplante_movement_player_01.png",
+      "sha256": "45fa8719a0d3eb50dd39cf9c6837dd2ec53094cfd9414fa7817cde7d10a130d3",
+      "marginsLTRB": [
+        95,
+        156,
+        95,
+        58
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/heriplante_movement_player_02.png",
+      "sha256": "b15ee2d28dba12005dfd3f7c2b94c5e05a64f602e4e1fc10392570faa2291e7d",
+      "marginsLTRB": [
+        96,
+        152,
+        98,
+        62
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/heriplante_movement_player_03.png",
+      "sha256": "31ab510ea9107733f1df2215afc8c4bfc6232580dbc07f5f71de7a29d43cc9eb",
+      "marginsLTRB": [
+        99,
+        139,
+        99,
+        65
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/heriplante_movement_player_04.png",
+      "sha256": "f187aba56612ce4f29ef1aefbab1d4b0c2e5dd7a510fd97ad69db92a163eeec2",
+      "marginsLTRB": [
+        97,
+        133,
+        98,
+        66
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/heriplante_movement_player_05.png",
+      "sha256": "3146849b15d981b55ff9678986a2296187f8c7f1d1de1152ca2451cc8b2fe5e2",
+      "marginsLTRB": [
+        96,
+        136,
+        95,
+        63
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/heriplante_movement_player_06.png",
+      "sha256": "9eaf566657e9c481709ddd07f80132c56273652a985e11a481daf899f2e216ba",
+      "marginsLTRB": [
+        94,
+        146,
+        94,
+        60
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/heriplante_movement_player_07.png",
+      "sha256": "bd60d8b5409210a9cad48f489e9ff00686e2169c9f1af6774d16a0fcba7cfb60",
+      "marginsLTRB": [
+        96,
+        153,
+        96,
+        58
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/heriplante_movement_player_08.png",
+      "sha256": "35897d921385aeebdde81c240ec1995f5fff15fdc685a3438677b55f8eb7268b",
+      "marginsLTRB": [
+        91,
+        144,
+        90,
+        61
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/heriplante_movement_player_09.png",
+      "sha256": "b0dda8557ef79161c72b9e415ec33893912659ab13c66ed53b90957eedd2171a",
+      "marginsLTRB": [
+        85,
+        140,
+        86,
+        63
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/heriplante_movement_player_10.png",
+      "sha256": "cc5777c90afc460511572eedff02c5cc216e187d9c5c9a6d791f4bc4c476cce2",
+      "marginsLTRB": [
+        84,
+        133,
+        85,
+        63
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/heriplante_movement_player_11.png",
+      "sha256": "1af7a42c54328b9e23797169999e85f8438809e0e10edee3f392197bd902e92d",
+      "marginsLTRB": [
+        94,
+        143,
+        92,
+        62
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/heriplante_movement_player_12.png",
+      "sha256": "295d67282cf2eba44ac7c66b85f59435bca428b3e68eb3fd9d4b22c88037ad7c",
+      "marginsLTRB": [
+        97,
+        155,
+        96,
+        60
+      ]
+    }
+  ],
+  "measuredMinMarginPx": 58,
+  "sourceMasterFrame01Identical": "not_verified",
+  "atlas": {
+    "file": "atlases/heriplante_movement_player_12f.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "sha256": "c02028dd561df4ea467cae38a02c743b8bd38b6297f0f15fdc0a0383f4aa9f5c",
+    "lossless": true
+  },
+  "previews": {
+    "animatedWebp": "previews/heriplante_movement_player_preview_12f.webp",
+    "contactSheet": "previews/heriplante_movement_player_contact_12f.png"
+  },
+  "sourceArchive": "HERIPLANTE_COURSE_JOUEUR_12F_VALIDEE.zip",
+  "sourceArchiveSha256": "81de09ee0db5aa41ce32aa40e590de9bf164feb20a0b9191e80c37593c00ae08",
+  "sourceGitBlob": "e32b4735c4cd84a7c63e8620b10f96e97e190f38",
+  "notes": "Original approved running poses preserved. Running silhouette is smaller than source master; test in actual editor before production claim."
+}

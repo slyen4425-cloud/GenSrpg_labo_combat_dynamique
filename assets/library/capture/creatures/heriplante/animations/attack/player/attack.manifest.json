@@ -1,0 +1,184 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "assetId": "pack:capture:creature-heriplante-attack-player-12-v1",
+  "creatureId": "heriplante",
+  "action": "attack",
+  "view": "player",
+  "direction": "right",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 125,
+  "frameDurationsMs": [
+    125,
+    125,
+    125,
+    125,
+    125,
+    125,
+    125,
+    125,
+    125,
+    125,
+    125,
+    125
+  ],
+  "playbackMode": "once",
+  "returnToIdle": true,
+  "holdLastFrame": false,
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/heriplante_attack_player_01.png",
+      "sha256": "6042e1ddbc87416c69f0202be9c4b194f9e95eacf701605af83cf8f989caf0bf",
+      "marginsLTRB": [
+        18,
+        120,
+        22,
+        20
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/heriplante_attack_player_02.png",
+      "sha256": "624f6a065f209154216896b19d72b23315bebc687598ab7732404f760d75ba7a",
+      "marginsLTRB": [
+        29,
+        96,
+        30,
+        19
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/heriplante_attack_player_03.png",
+      "sha256": "5ef756ccc5e1e4e6fdc4e9c813032e69be75631498ae02398bf07d52a4ed7101",
+      "marginsLTRB": [
+        32,
+        65,
+        31,
+        19
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/heriplante_attack_player_04.png",
+      "sha256": "537d91e8f1ef22aae9cbb17462653aee6be9eb32f5f11a8a95a9062aca71e4f4",
+      "marginsLTRB": [
+        18,
+        33,
+        19,
+        19
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/heriplante_attack_player_05.png",
+      "sha256": "9da6d419ad14a6308449fa37f367f7e1de9ab83d568588f64cb075ece081ea01",
+      "marginsLTRB": [
+        19,
+        113,
+        18,
+        19
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/heriplante_attack_player_06.png",
+      "sha256": "a39c22a90630cf10e25475d31dca2d3686c7bf32c8363d1cbe0ef18da8d5dbbd",
+      "marginsLTRB": [
+        19,
+        143,
+        18,
+        19
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/heriplante_attack_player_07.png",
+      "sha256": "1c14d0a8402f2e25d358b4b0e98b0accc37dcbc1351a45eb0d490b29c685362a",
+      "marginsLTRB": [
+        19,
+        139,
+        18,
+        18
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/heriplante_attack_player_08.png",
+      "sha256": "9f2167fc5f61ac7304f27ead7e4077772e22b63cac1540bfce131bac27b427b6",
+      "marginsLTRB": [
+        18,
+        83,
+        18,
+        18
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/heriplante_attack_player_09.png",
+      "sha256": "1816d49b8c570f8b79e45e8cbb7f7db7389f6a51215a20e06ba379859144fe9d",
+      "marginsLTRB": [
+        24,
+        70,
+        23,
+        18
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/heriplante_attack_player_10.png",
+      "sha256": "7bd7428aeabee3a2938935ee03c9397b5b4b07ae7e26f120680ad1428a8d55e4",
+      "marginsLTRB": [
+        29,
+        96,
+        29,
+        18
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/heriplante_attack_player_11.png",
+      "sha256": "9ae85efbdf8de6d34b130c77cad1a7f681d520b844dbfd9279c7f596dccdb2b2",
+      "marginsLTRB": [
+        28,
+        116,
+        28,
+        18
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/heriplante_attack_player_12.png",
+      "sha256": "3079420e1c25e34c407580b3633917415a48d5bc5b1b928d618f3ca8a55df785",
+      "marginsLTRB": [
+        30,
+        113,
+        30,
+        18
+      ]
+    }
+  ],
+  "measuredMinMarginPx": 18,
+  "sourceMasterFrame01Identical": true,
+  "atlas": {
+    "file": "atlases/heriplante_attack_player_12f.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "sha256": "16365015d7e937684fed8f19bf223883040fe49b9edc5cb2fd2743ed005cdf31",
+    "lossless": true
+  },
+  "previews": {
+    "animatedWebp": "previews/heriplante_attack_player_preview_12f.webp",
+    "contactSheet": "previews/heriplante_attack_player_contact_12f.jpg"
+  },
+  "sourceArchive": "heriplante_attaque_joueur_dos_12f.zip",
+  "sourceArchiveSha256": "9aefacb1ce72955d95f5b5867c52a01e86d331cd0e7d048fb9c8f4841f06006c",
+  "sourceGitBlob": "b5ccd543d708808b5b9c0555dd0a8adfdd41f63f",
+  "notes": "Original approved poses unchanged. Attack source master has 18 px margin, less than 32 px guideline; requires artist visual acceptance at runtime."
+}

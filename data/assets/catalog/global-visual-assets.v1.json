@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 302,
+    "assets": 304,
     "icons": 94,
-    "sprites": 184,
+    "sprites": 186,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
-    "creatures": 68
+    "creatures": 70
   },
   "assets": [
     {
@@ -10420,6 +10420,82 @@
         "playbackMode": "once",
         "holdLastFrame": true,
         "persistentFrameIndex": 5
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-heriplante-attack-player-12-v1",
+      "label": "Hériplante — attaque des lianes joueur, dos (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "heriplante",
+        "nature",
+        "attack",
+        "animated",
+        "player",
+        "dos"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / approuvé 2026-11-04",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/heriplante/animations/attack/player/atlases/heriplante_attack_player_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 125,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-heriplante-movement-player-12-v1",
+      "label": "Hériplante — course joueur, dos (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "heriplante",
+        "nature",
+        "movement",
+        "animated",
+        "player",
+        "dos"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / approuvé 2026-11-04",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/heriplante/animations/movement/player/atlases/heriplante_movement_player_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 100,
+        "playbackMode": "loop"
       },
       "compatibility": {
         "uses": [

@@ -1,0 +1,42 @@
+name: Import approved Heriplante player attack and movement 12f
+on:
+  push:
+    branches:
+      - work/lab-heriplante-player-attack-movement-12f-2026-11-04
+    paths:
+      - scripts/import_heriplante_player_12_2026_11_04.py
+      - .github/workflows/import-heriplante-player-12f-2026-11-04.yml
+permissions:
+  contents: write
+concurrency:
+  group: import-heriplante-player-12f-2026-11-04
+  cancel-in-progress: false
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'Pillow>=10,<13'
+      - name: Validate and extract both original user-approved ZIPs
+        run: python scripts/import_heriplante_player_12_2026_11_04.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run all current global-assets CI sentinels
+        run: npm run ci
+      - name: Commit verified media on isolated work branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- assets/library/capture/creatures/heriplante/animations data/assets/catalog/global-visual-assets.v1.json
+          git diff --cached --quiet && { echo "Missing generated official media"; exit 1; }
+          git commit -m "assets(capture): register approved Heriplante player attack and run 12f"
+          git fetch origin work/lab-heriplante-player-attack-movement-12f-2026-11-04
+          git rebase origin/work/lab-heriplante-player-attack-movement-12f-2026-11-04
+          git push origin HEAD:work/lab-heriplante-player-attack-movement-12f-2026-11-04
