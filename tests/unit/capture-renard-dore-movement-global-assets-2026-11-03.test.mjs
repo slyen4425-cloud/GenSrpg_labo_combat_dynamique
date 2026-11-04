@@ -7,7 +7,7 @@ const id="pack:capture:creature-renard-magique-dore-movement-player-12-v1";
 const file="capture/creatures/renard_magique_dore/animations/movement/player/atlases/renard_magique_dore_mouvement_joueur_12f.webp";
 test("Renard dore attack classification uses freshly versioned unique global-assets catalog",()=>{
   assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
-  assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-11-04-v56-lumilo-opponent-attack-12f");
+  assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v([0-9]+)-/)?.[1]||0)>=56,"Older assets require a canonical catalog revision v56+");
   assert.ok(GLOBAL_VISUAL_LIBRARY.catalogUrl.includes("?v="+GLOBAL_VISUAL_LIBRARY.revision));
   assert.equal(globalVisualAssetUrl(file).split("?")[0],
     "https://raw.githubusercontent.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/global-assets/assets/library/"+file);

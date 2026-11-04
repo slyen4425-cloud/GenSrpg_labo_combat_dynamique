@@ -1,3 +1,11 @@
+## 2026-11-04 — Armure de ronces Plante carnivore DOS : cache sélecteur Nature/statut
+- Source médias officielle `global-assets@090c8f830caa9ca839b6773bbda4fedfb1757053` (PR #237). Nouveau sprite DOS distinct `pack:capture:sprite-armure-ronces-plante-carnivore-back-01`, 6 frames, masque transparent, maintien final. L'asset FACE précédent reste présent/intact.
+- BASE client `gh-pages@2b4b194d7b1fac24d04bf64dc3c7522d7894b329`. START `checkpoint/lab-start-thorn-armor-back-selector-2026-11-04`. WORK `work/lab-thorn-armor-back-selector-2026-11-04`.
+- Seul changement runtime prévu : révision de l'unique catalogue global `v56 -> v57` ; source de vérité `global-assets` conservée. Test du resolver et de la classification Nature/statut, sans auto-affectation. Vérifications navigateur anciennes adaptées de `v56` exact à `v56+` pour éviter leur obsolescence lors d'un refresh correct.
+- Gate : CI complète cinq jobs sur SHA final, checkpoint GREEN, PR gh-pages, CI de fusion et Pages, vérification du sélecteur public. Détails `docs/LAB_THORN_ARMOR_BACK_EDITOR_REFRESH_2026-11-04.md`. Pas de changement dans règles/skills ou autres sprites.
+
+---
+
 ## 2026-11-04 — Lumilo / Renard magique doré : attaque adversaire 12f dans le Labo Combat
 - Médias propriétaires `global-assets` déjà publiés PR #235 fusion `f2ddd3cd9eb5e30907a99f61a59f6f1eb1515def`, source Git blob `3355a2f465d03db5a617de284ef1253a602c16ea`. Atlas 6144×512 et 12 PNG 512×512 (alpha, marges 66px), aperçu WebP approuvé inchangé, ID `pack:capture:creature-renard-magique-dore-attack-opponent-12-v1`, `frameMs=115`, `playbackMode=once`. L'attaque joueur sous ID historique movement/player reste classée attaque et protégée.
 - Client BASE `gh-pages@fa33c94cefda63c07a80b9f0eb1b673bf6514322`; START `checkpoint/lab-start-renard-dore-attack-opponent-client-2026-11-04`; WORK `work/lab-renard-dore-attack-opponent-client-2026-11-04`. Action limitée à bump cache unique v55→v56 et test unité rôle attack/opponent/once + vrai Chromium du WebP officiel et résolveur. Garder tous les autres tests v55 en révision v56, sans en supprimer les assertions. Détails `docs/LAB_RENARD_DORE_ATTACK_OPPONENT_CLIENT_2026-11-04.md`.
