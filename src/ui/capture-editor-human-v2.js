@@ -14049,6 +14049,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         progressionRules =
           applyResult.progressionRules;
 
+        newSkillDraftMode=false;
         refreshEditorAfterTransferV1({
           plan,
           applyResult
