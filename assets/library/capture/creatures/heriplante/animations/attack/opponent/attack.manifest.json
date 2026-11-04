@@ -1,0 +1,187 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "assetId": "pack:capture:creature-heriplante-attack-opponent-12-v1",
+  "creatureId": "heriplante",
+  "action": "attack",
+  "view": "opponent",
+  "orientation": "left",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 130,
+  "frameDurationsMs": [
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130
+  ],
+  "playbackMode": "once",
+  "returnToIdle": true,
+  "holdLastFrame": false,
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/heriplante_attack_opponent_01.png",
+      "sha256": "3f449f4b6529f3ab033e74544469385c0200c3e0cc807bb0dbad1845e27b6f2b",
+      "marginsLTRB": [
+        22,
+        90,
+        18,
+        20
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/heriplante_attack_opponent_02.png",
+      "sha256": "e84482ce52abf1dd895cccfd28f1927c450e89302a8882acf3c3137267ef1ac9",
+      "marginsLTRB": [
+        76,
+        111,
+        60,
+        74
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/heriplante_attack_opponent_03.png",
+      "sha256": "177af240b29b30d85109832e9f9d741801d006615f3aa8ab5451320806344acf",
+      "marginsLTRB": [
+        64,
+        104,
+        75,
+        70
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/heriplante_attack_opponent_04.png",
+      "sha256": "b220ee8ae57e3e0ee9e0f952f09eb1e59fc36c0e30f2707fce076b396473c9fa",
+      "marginsLTRB": [
+        54,
+        99,
+        80,
+        68
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/heriplante_attack_opponent_05.png",
+      "sha256": "0e46d9be5442fb229165c1c4534886585f54ddf190407d497266ab91638c6482",
+      "marginsLTRB": [
+        60,
+        72,
+        44,
+        80
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/heriplante_attack_opponent_06.png",
+      "sha256": "1b61c4b81dbba3e678f771835f95db067e8bbf0c245c25e0f34d8373ffe0e176",
+      "marginsLTRB": [
+        44,
+        76,
+        44,
+        79
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/heriplante_attack_opponent_07.png",
+      "sha256": "d9862995d28a83a63f9eabaa496b7047bc2059b7a8725f3262d6ce5ddf2fc2fd",
+      "marginsLTRB": [
+        44,
+        82,
+        44,
+        79
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/heriplante_attack_opponent_08.png",
+      "sha256": "e098fc626be324bf3449478dae89ebe516ac7bd226db641a16c116600540f55a",
+      "marginsLTRB": [
+        44,
+        87,
+        68,
+        79
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/heriplante_attack_opponent_09.png",
+      "sha256": "625db27bb8c1676b16a79088997f117e34dcaa1aac81076028d12590d6d307aa",
+      "marginsLTRB": [
+        53,
+        84,
+        47,
+        84
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/heriplante_attack_opponent_10.png",
+      "sha256": "176fc29edd7b5e45382eafb333912a83cda55e2f13768d2229f3adffb779c81a",
+      "marginsLTRB": [
+        80,
+        85,
+        73,
+        84
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/heriplante_attack_opponent_11.png",
+      "sha256": "dd96f19387fc93527e530b0ee5e39fc0cfc178c15ef792f6947925e92f116a1e",
+      "marginsLTRB": [
+        76,
+        81,
+        80,
+        85
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/heriplante_attack_opponent_12.png",
+      "sha256": "7236e8e0b50136d70ee4b577a7368b3253c7620ec27f3511094050b397361342",
+      "marginsLTRB": [
+        72,
+        82,
+        86,
+        85
+      ]
+    }
+  ],
+  "measuredMinMarginPx": 18,
+  "requiredMarginPx": 42,
+  "meetsStrictMarginRule": false,
+  "frame01MasterIdentical": true,
+  "atlas": {
+    "file": "atlases/heriplante_attack_opponent_12f_strip.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "sha256": "8feb042ab6a7b53074e88c60e89b25d8e795615fe99a6beda25160b9d7aa2c9d",
+    "lossless": true
+  },
+  "previews": {
+    "animatedWebp": "previews/heriplante_adversaire_attaque_preview_12f.webp",
+    "gif": "previews/heriplante_adversaire_attaque_preview_12f.gif",
+    "contactSheet": "previews/heriplante_adversaire_attaque_planche_preview_12f.jpg"
+  },
+  "sourceArchive": "heriplante_attaque_adversaire_face_12f.zip",
+  "sourceArchiveSha256": "4c75a378213bee7168ab9cc6d3104508c863ddb5127353b916faff42781c4402",
+  "sourceGitBlob": "da8a87a84c8f17a129cb64e9e101a7fb453ed408",
+  "notes": "Approved attack, unchanged. Original master has 18px margin < strict 42px; media not certified for strict margin. Independent opponent view. Course opponent ZIP not yet found."
+}
