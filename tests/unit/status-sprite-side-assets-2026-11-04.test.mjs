@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {normalizeSkillPresentationBinding} from "../../src/contracts/skill-presentation-binding.js";
 import {createCaptureSkillPresentationAssetsV2} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js";
+import {createDomStatusFxRenderer} from "../../src/adapters/renderer/dom-status-fx.js";
 import {buildHumanSkillDraftV1, humanSkillEditorFieldsFromDraftV1} from "../../src/ui/capture-editor-human-v2.js";
 import {exportCaptureSkillTransferJsonV1,importCaptureTransferJsonV1} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 
@@ -80,4 +81,45 @@ test("RED: editor exposes a hidden-by-default explicit opponent sprite picker, n
   assert.match(src,/data-skill-status-opponent-visual-enabled/);
   assert.match(src,/data-skill-status-opponent-visual-asset/);
   assert.match(src,/opponentAssetId/);
+});
+
+test("both native status FX nodes attach different authored masks without a second renderer or status clock",()=>{
+  const presentation=adapter(binding(true));
+  const doc={createElement(){return {ownerDocument:doc,style:{},dataset:{},append(){},remove(){this.removed=true}}}};
+  const attached={local:[],opponent:[]};
+  const targets=Object.fromEntries(Object.keys(attached).map(actorId=>[
+    actorId,{
+      motion:{ownerDocument:doc,append(node){attached[actorId].push(node)}},
+      image:{src:"/"+actorId+".webp"},statusHost:null
+    }
+  ]));
+  const renderer=createDomStatusFxRenderer({
+    targetFor:id=>targets[id],
+    statusPresentationFor:(statusId,context)=>presentation.statusPresentationFor(statusId,{
+      ...context,view:context.actorId==="opponent"?"opponent":"player"
+    })
+  });
+  const status={sourceSkillId:"armure-de-pointes",sourceActorId:"local",
+    definition:{id:"epines",durationMs:60000,polarity:"beneficial"},
+    appliedAtMs:0,expiresAtMs:60000,stacks:1};
+  const live=()=>({elapsedMs:1000,fighters:{
+    local:{statusEffects:[status]},opponent:{statusEffects:[status]}
+  }});
+  renderer.sync(live());
+  const playerNode=attached.local.find(n=>n.dataset.statusFx==="sprite");
+  const opponentNode=attached.opponent.find(n=>n.dataset.statusFx==="sprite");
+  assert.ok(playerNode&&opponentNode,"one native sprite each");
+  assert.match(playerNode.style.backgroundImage,/armure-ronces-plante-carnivore-back/);
+  assert.match(opponentNode.style.backgroundImage,/armure-ronces-plante-carnivore-01/);
+  assert.equal(playerNode.style.animationIterationCount,"1");
+  assert.equal(opponentNode.style.animationIterationCount,"1");
+  renderer.sync(live());
+  assert.equal(attached.local.length,1,"hold-last refresh must not restart player's animation");
+  assert.equal(attached.opponent.length,1,"hold-last refresh must not restart opposing animation");
+  renderer.sync({elapsedMs:61000,fighters:{
+    local:{statusEffects:[]},opponent:{statusEffects:[]}
+  }});
+  assert.equal(playerNode.removed,true);
+  assert.equal(opponentNode.removed,true);
+  renderer.dispose();
 });
