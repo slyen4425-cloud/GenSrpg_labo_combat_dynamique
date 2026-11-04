@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 300,
+    "assets": 301,
     "icons": 94,
-    "sprites": 182,
+    "sprites": 183,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
-    "creatures": 67
+    "creatures": 68
   },
   "assets": [
     {
@@ -10332,6 +10332,47 @@
         "frameCount": 12,
         "frameMs": 120,
         "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-renard-magique-dore-attack-opponent-12-v1",
+      "label": "Renard magique doré — attaque spirituelle adversaire (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "renard-magique-dore",
+        "gold",
+        "light",
+        "spirit",
+        "fox",
+        "attack",
+        "animated",
+        "opponent",
+        "face"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / WebP approved 2026-11-04",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/renard_magique_dore/animations/attack/opponent/atlases/renard_magique_dore_attaque_adversaire_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 115,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [

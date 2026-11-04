@@ -1,0 +1,187 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "assetId": "pack:capture:creature-renard-magique-dore-attack-opponent-12-v1",
+  "creatureId": "renard_magique_dore",
+  "action": "attack",
+  "variant": "ondulation-spirituelle",
+  "view": "opponent",
+  "direction": "left",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 115,
+  "frameDurationsMs": [
+    115,
+    115,
+    115,
+    115,
+    115,
+    115,
+    115,
+    115,
+    115,
+    115,
+    115,
+    115
+  ],
+  "playbackMode": "once",
+  "returnToIdle": true,
+  "holdLastFrame": false,
+  "safeMarginMinPx": 42,
+  "measuredMinMarginPx": 66,
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/renard_magique_dore_attaque_adversaire_01.png",
+      "sha256": "2bf93ae79afc213b0c2a166120497b78d125f4385664b7e6ae181eb65bfa67d8",
+      "marginsLTRB": [
+        118,
+        123,
+        96,
+        107
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/renard_magique_dore_attaque_adversaire_02.png",
+      "sha256": "cded7fe625186519873e8dd73baf9caa00dcb10aaecd71397622d53e23c0313d",
+      "marginsLTRB": [
+        114,
+        114,
+        91,
+        112
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/renard_magique_dore_attaque_adversaire_03.png",
+      "sha256": "9c315b318fe742022b1046a47ac99e1a7cefc64efd069ac83d11cc065c8a85ae",
+      "marginsLTRB": [
+        112,
+        90,
+        86,
+        131
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/renard_magique_dore_attaque_adversaire_04.png",
+      "sha256": "6a86bfca8ec80a0b740ef17e591620f04902c91eb89d94a81ac5cbfbb9dddfd5",
+      "marginsLTRB": [
+        113,
+        66,
+        82,
+        159
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/renard_magique_dore_attaque_adversaire_05.png",
+      "sha256": "4f1aeacace25a83b4aba576fca4b1e5a4b9f75ec329fc913ce5d65093f5276ad",
+      "marginsLTRB": [
+        110,
+        76,
+        80,
+        148
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/renard_magique_dore_attaque_adversaire_06.png",
+      "sha256": "e5ef24d8fa2564c141151436bde7c8376339461418f0fd525949e1fdc108af7f",
+      "marginsLTRB": [
+        112,
+        85,
+        84,
+        135
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/renard_magique_dore_attaque_adversaire_07.png",
+      "sha256": "6811b87b8dea7b8e7d9be13c5ab8833bd3830ed261345dcf1d5d003817aaa0d3",
+      "marginsLTRB": [
+        111,
+        100,
+        84,
+        119
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/renard_magique_dore_attaque_adversaire_08.png",
+      "sha256": "62d12803d20b1ace0b4439e6c286c08341b15e10e2ae779395cc9681b76c39c6",
+      "marginsLTRB": [
+        109,
+        108,
+        90,
+        115
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/renard_magique_dore_attaque_adversaire_09.png",
+      "sha256": "2b5ad59ca9885626a7d03c9fbc8237d2bd1003e5e40e76fbbeac32650d4c5194",
+      "marginsLTRB": [
+        110,
+        116,
+        90,
+        110
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/renard_magique_dore_attaque_adversaire_10.png",
+      "sha256": "278ccc67020ea7dd186fd64c279d69be4341da8bb9a4e62a98552587548aef12",
+      "marginsLTRB": [
+        112,
+        126,
+        91,
+        102
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/renard_magique_dore_attaque_adversaire_11.png",
+      "sha256": "321ca2d7e4979364818eb817b6bcd5863a03181055b973b05d831a9ea1d4fbe5",
+      "marginsLTRB": [
+        112,
+        122,
+        91,
+        108
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/renard_magique_dore_attaque_adversaire_12.png",
+      "sha256": "ae43b090f02aca97b195c37d708d4f18c8cda1c4a09d09d2777ae58534f7627e",
+      "marginsLTRB": [
+        114,
+        105,
+        91,
+        114
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/renard_magique_dore_attaque_adversaire_12f.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "sha256": "90301ccccaf7e36485a57ce8ff0e6c8a1ce496c9a544c1941e3f5f8959183fef",
+    "lossless": true
+  },
+  "previews": {
+    "animatedWebp": "previews/renard_magique_dore_attaque_adversaire_12f_valide.webp",
+    "contactSheet": "previews/renard_magique_dore_attaque_adversaire_12f_contact.png"
+  },
+  "sourceArchive": "RENARD_MAGIQUE_DORE_ATTAQUE_ADVERSAIRE_12F_VALIDE.zip",
+  "sourceArchiveSha256": "7106cbcdbd2d97a985dd496d79549cf999702bfae6b88aa322bea4f03a436c3b",
+  "sourceGitBlob": "3355a2f465d03db5a617de284ef1253a602c16ea",
+  "approvedPreviewSha256": "bb915db0f4ce66059e96f9bb293639f0d674e179d05a8245f064144157b73f57",
+  "frame01MasterIdentical": false,
+  "notes": "Artwork approved as animated WebP; installed as ATTACK opponent, one playback, not movement. Master original and author creature unchanged."
+}
