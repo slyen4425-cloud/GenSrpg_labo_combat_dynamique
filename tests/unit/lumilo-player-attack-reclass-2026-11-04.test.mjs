@@ -25,6 +25,19 @@ test("RED: Lumilo 12f artwork is attack, no longer movement, without new asset a
   assert.equal(asset.resource.frameMs,120);
   assert.equal(asset.resource.playbackMode,"loop","do not change the approved animation");
   assert.equal(manifest.atlas.sha256,"0c4206f2658bce77990563747d407e00bd9e42605c0f986528f4a4f3938e7b4f");
-  assert.equal(catalog.assets.some(asset=>asset.id.includes("renard-magique-dore")&&asset.tags?.includes("attack")&&asset.tags?.includes("opponent")),false,
-    "do not invent an opponent attack animation");
+  // The author approved a distinct opponent attack on 2026-11-04.
+  // Retain the player attack's original ID, tags and bytes, but now require the newly approved opponent view.
+  const opponentId="pack:capture:creature-renard-magique-dore-attack-opponent-12-v1";
+  const opponents=catalog.assets.filter(asset=>asset.id===opponentId);
+  assert.equal(opponents.length,1,"only the explicitly approved opponent attack may be registered");
+  const opponent=opponents[0];
+  assert.equal(opponent.category,"creature");
+  assert.equal(opponent.tags.includes("attack"),true);
+  assert.equal(opponent.tags.includes("opponent"),true);
+  assert.equal(opponent.tags.includes("movement"),false);
+  assert.equal(opponent.resource.frameCount,12);
+  assert.equal(opponent.resource.playbackMode,"once","opponent attack must play once");
+  assert.equal(opponent.resource.frameMs,115);
+  assert.equal(catalog.assets.filter(asset=>asset.id.includes("renard-magique-dore")&&asset.tags?.includes("attack")&&asset.tags?.includes("opponent")).length,1,
+    "no duplicate opponent attack or false player-facing view");
 });
