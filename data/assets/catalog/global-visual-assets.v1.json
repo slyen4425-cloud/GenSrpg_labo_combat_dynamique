@@ -10301,7 +10301,7 @@
     },
     {
       "id": "pack:capture:creature-renard-magique-dore-movement-player-12-v1",
-      "label": "Renard magique doré — vol ondulant, déplacement joueur (12 frames)",
+      "label": "Renard magique doré (Lumilo) — attaque joueur / dos, vol ondulant (12 frames)",
       "assetType": "sprite",
       "mediaType": "image",
       "category": "creature",
@@ -10314,7 +10314,7 @@
         "spirit",
         "fox",
         "flying",
-        "movement",
+        "attack",
         "animated",
         "player",
         "dos"

@@ -9,7 +9,7 @@ const catalog=JSON.parse(readFileSync("data/assets/catalog/global-visual-assets.
 const sha=x=>createHash("sha256").update(x).digest("hex");
 const id="pack:capture:creature-renard-magique-dore-movement-player-12-v1";
 
-test("Renard dore: unique player movement ID in canonical global-assets",()=>{
+test("Renard dore: stable player ID reclassified for attacks in canonical global-assets",()=>{
   assert.equal(catalog.storage.branch,"global-assets");
   assert.equal(new Set(catalog.assets.map(a=>a.id)).size,catalog.assets.length);
   assert.equal(catalog.counts.assets,catalog.assets.length);
@@ -17,6 +17,8 @@ test("Renard dore: unique player movement ID in canonical global-assets",()=>{
   assert.equal(matched.length,1);
   const media=matched[0];
   assert.equal(media.category,"creature");
+  assert.ok(media.tags.includes("attack"));
+  assert.ok(!media.tags.includes("movement"));
   assert.equal(media.resource.file,"capture/creatures/renard_magique_dore/animations/movement/player/atlases/renard_magique_dore_mouvement_joueur_12f.webp");
   assert.equal(media.resource.format,"sprite-strip");
   assert.equal(media.resource.frameCount,12);
@@ -28,7 +30,7 @@ test("Renard dore: exactly 12 approved RGBA frames, safety margins, atlas and pr
   const m=JSON.parse(readFileSync(resolve(base,"movement.manifest.json"),"utf8"));
   assert.equal(m.schema,"capture-creature-animation-v1");
   assert.equal(m.creatureId,"renard_magique_dore");
-  assert.equal(m.action,"movement");
+  assert.equal(m.action,"attack");
   assert.equal(m.view,"player");
   assert.equal(m.assetId,id);
   assert.equal(m.orientation,"right");

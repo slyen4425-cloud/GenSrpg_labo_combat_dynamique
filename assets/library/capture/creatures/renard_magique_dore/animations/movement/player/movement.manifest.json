@@ -2,7 +2,7 @@
   "schema": "capture-creature-animation-v1",
   "assetId": "pack:capture:creature-renard-magique-dore-movement-player-12-v1",
   "creatureId": "renard_magique_dore",
-  "action": "movement",
+  "action": "attack",
   "view": "player",
   "orientation": "right",
   "frameCount": 12,
@@ -180,5 +180,5 @@
   "sourceGitBlob": "88fe0398f9856580fa63f2aa96a4ed12703904b2",
   "approval": "artist-approved moving preview 2026-11-03",
   "frame01MasterIdentical": false,
-  "notes": "Original 12 approved frames are unchanged. Frame 01 pixel identity with author master is NOT certified; do not replace the model master. No automatic skill or movement assignment."
+  "notes": "Original 12 approved frames are unchanged. Frame 01 pixel identity with author master is NOT certified; do not replace the model master. No automatic skill or movement assignment. Reclassified for the existing player attack chooser on 2026-11-04 at the author's request; original approved frames/atlas, stable ID, source path and playback are unchanged. The opponent-side attack animation is not supplied."
 }
