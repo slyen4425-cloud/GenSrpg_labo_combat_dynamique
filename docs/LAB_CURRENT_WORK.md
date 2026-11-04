@@ -1,3 +1,14 @@
+## 2026-11-04 — Combat : niveaux explicites des créatures pour vraie session Aventure GenSRPG (LOT ISOLÉ, NON GREEN)
+
+- **Demande** : les monstres possédés démarrent au niveau 1 selon la règle Aventure existante, puis Combats doivent recevoir le niveau réel de chaque espèce participante, sans forcer tout le monde au `previewLevel:20`. Le Labo Combat est seul propriétaire des statistiques dérivées, des capacités débloquées et du combat ; GenSRPG est seul propriétaire des niveaux/XP des instances persistantes. Aucun import GenSRPG dans Combat.
+- **Base / checkpoint START** : Combat `main@81ad362a401b7b2eb9faa811528aced9f2d6384a`; `checkpoint/lab-start-capture-per-creature-levels-2026-11-04`; `work/lab-capture-per-creature-levels-2026-11-04`. Aucune écriture directe main.
+- **Propriétaire** : le constructeur existant `src/ui/capture-editor-combat-test-v1.js` continue de calculer les exports à partir des mêmes définitions auteur, et accepte en option des niveaux de créatures explicitement fournis par le contexte consommateur. L'éditeur Tester historique sans option conserve `previewLevel=20`, sans nouvelle règle globale. Ne jamais modifier les drafts auteur pour sauvegarde ; les niveaux sont des projections de combat éphémères.
+- **Périmètre** : contrat `creatureLevelsById` avec vérification exacte de toutes les espèces participantes, niveau 1..100 entier, pas de défaut silencieux, refus des espèces inconnues/absentes. Les doublons même espèce dans un combat avec niveaux différents nécessiteront un contrat de membre de roster distinct et NE SONT PAS résolus ici : pas d'identité inventée ni de double moteur.
+- **TDD** : test pur au départ sur l'entrée contractuelle et la non-mutation ; tests runtime historique déjà présent via `npm test`, vraie CI 5 jobs/éditeur contre-régression. Validé seulement après CI sur SHA exact, checkpoint GREEN, PR vers main et nouvelle certification par consommateur Exploration, GenSRPG main inchangé.
+- **Hors périmètre** : changement du ratio XP GenSRPG, import de profils personnages, simulation de PV, nouveau moteur de stats, écriture dans GenSRPG/Exploration, sprites, éditeur de bestiaire, migration/CI PWA.
+
+---
+
 ## 2026-10-30 — Deep-link des onglets auteur pour GenSrpg (NON PROMU)
 - **BASE immuable**: Combat main@248f718ec924106d16999d59e5dc8310f8450180 ; checkpoint `checkpoint/lab-start-author-tab-deeplink-2026-10-30` ; branche `work/lab-author-tab-deeplink-2026-10-30`.
 - **Périmètre**: entrée officielle `examples/dom-demo/capture-editor-v2.js`, propriétaire UI `src/ui/capture-editor-human-v2.js`, test `tests/unit/capture-editor-initial-tab-owner-20261030.test.mjs`, ce journal. Les règles de combat, les transferts, sauvegardes, assets, autres modes, GenSrpg et main restent intacts.
