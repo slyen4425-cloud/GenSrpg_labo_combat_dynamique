@@ -34,10 +34,18 @@ document.addEventListener("DOMContentLoaded",()=>{
       const kinds=group?.querySelector(".skill-status-config__grid");
       if(!group||box.hidden||!kinds)throw Error("reflection author controls not visible");
       const bounds=x=>x.getBoundingClientRect();
-      if(bounds(box).width<200||bounds(group).width<200)
-        throw Error("skills tab not visible: panelHidden="+one('[data-editor-panel="skills"]').hidden+
+      if(bounds(box).width<200||bounds(group).width<200) {
+        const ancestors=[];let n=box;
+        while(n&&n!==document.body){
+          ancestors.push(n.tagName.toLowerCase()+"."+String(n.className||"").split(" ").join(".")+
+            "(hidden="+n.hidden+",display="+getComputedStyle(n).display+
+            ",width="+Math.round(bounds(n).width)+",open="+n.open+")");
+          n=n.parentElement;
+        }
+        throw Error("reflection form not displayed: panelHidden="+one('[data-editor-panel="skills"]').hidden+
           ", activeTab="+one('[data-editor-tab="skills"]').dataset.active+
-          ", boxWidth="+Math.round(bounds(box).width)+", groupWidth="+Math.round(bounds(group).width));
+          ", ancestors="+ancestors.join(" <- ").slice(0,900));
+      }
       const fail=(msg)=>{throw Error(msg)};
       const percent=box.querySelector("[data-skill-status-reflection-percent]"),
         contact=group.querySelector("[data-reflection-contact-damage]"),
