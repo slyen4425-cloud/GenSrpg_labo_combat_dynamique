@@ -16,7 +16,7 @@ const opponent={
 
 test("fresh canonical catalog revision exposes approved attack opponent",()=>{
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
- assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-11-04-v56-lumilo-opponent-attack-12f");
+ assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v([0-9]+)-/)?.[1]||0)>=56,"Older assets require a canonical catalog revision v56+");
  assert.ok(GLOBAL_VISUAL_LIBRARY.catalogUrl.endsWith("?v="+GLOBAL_VISUAL_LIBRARY.revision));
  assert.equal(globalVisualAssetUrl(file),
  "https://raw.githubusercontent.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/global-assets/assets/library/"+file+"?v="+GLOBAL_VISUAL_LIBRARY.revision);
