@@ -30,6 +30,8 @@ jobs:
           node-version: 22
       - name: Real Chromium unified reference element filters and skill ID authoring
         run: node tests/browser/capture-reference-filters-skill-ids-smoke.mjs
+      - name: Real Chromium optional player/opponent status mask with native author controls
+        run: node tests/browser/capture-status-sprite-side-assets-smoke.mjs
       - name: Real Chromium reflection status author PC/phone responsive geometry
         run: node tests/browser/capture-reflection-editor-responsive-smoke.mjs
       - name: Real Chromium channeling, ground mines, under-target projectiles and element filters
