@@ -50,7 +50,7 @@
         "incomingForms": []
       },
       "projectileClash": {
-        "power": 0
+        "power": 1
       },
       "reaction": {
         "blockForms": [],

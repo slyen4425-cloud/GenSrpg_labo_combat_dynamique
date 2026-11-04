@@ -15,11 +15,20 @@ const cases=[
  {id:"gorice",kind:"creature",sha:"538b4b8e1fc6ac91a39d46e2d35ea1425760a29573ab27ce5e0bee1ba63edede",live:"data/capture/showcase/gorice.capture-creature-transfer-v1.json",archive:"data/capture/source-exports/gensrpg-capture-creature-gorice-author-2026-11-03.json"}
 ];
 const registry=normalizeCaptureStatRegistryV1(JSON.parse(root("data/capture/monster-capture-stat-registry.v1.json")));
-test("all three user exports are exact canonical transfers with exactly one ID",()=>{
+test("Nov 3 user archives remain signed; Nov 4 Gemmor scale update is the only allowed delta",()=>{
  for(const entry of cases){
   const source=root(entry.archive),current=root(entry.live);
   assert.equal(createHash("sha256").update(source).digest("hex"),entry.sha,entry.id);
-  assert.deepEqual(JSON.parse(current),JSON.parse(source),entry.id);
+  const expected=JSON.parse(source);
+  if(entry.id==="crea_crys_2"){
+    assert.equal(expected.draft.presentation.viewOverrides.player.displayScale,1.7,
+      "signed Nov 3 Gemmor provenance remains unchanged");
+    assert.equal(expected.draft.presentation.viewOverrides.opponent.displayScale,1);
+    expected.draft.presentation.viewOverrides.player.displayScale=1.4;
+    expected.draft.presentation.viewOverrides.opponent.displayScale=0.7;
+  }
+  assert.deepEqual(JSON.parse(current),expected,
+    entry.id+" must match its immutable Nov 3 source plus only approved Nov 4 changes");
   const loaded=importCaptureTransferJsonV1(current,{statRegistry:registry});
   assert.equal(loaded.kind,entry.kind,entry.id);
   assert.equal(loaded.value.draft.id,entry.id);

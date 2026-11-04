@@ -135,14 +135,14 @@
       },
       "viewOverrides": {
         "player": {
-          "displayScale": 1.7,
+          "displayScale": 1.4,
           "position": {
             "x": 0,
             "y": 0
           }
         },
         "opponent": {
-          "displayScale": 1,
+          "displayScale": 0.7,
           "position": {
             "x": 0,
             "y": 50
