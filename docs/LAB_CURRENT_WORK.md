@@ -1,3 +1,9 @@
+## 2026-11-04 — Combat : niveaux individuels d’un duel sauvage avec espèce commune
+
+- START `checkpoint/lab-start-adventure-encounter-member-levels-2026-11-04` sur Combat `main@4425d123f4f02d04b2e2942c989789abaf159b0a` (Laboratory CI #41841807733 SUCCESS). Branche `work/lab-adventure-encounter-member-levels-2026-11-04`. Éditeur public gh-pages `52a06768b7bbfb4733b29e393873d02cf2b7c888` distinct.
+- Propriétaire : préparation de scénario Combat et projection de capacités du roster. Deux membres de la même espèce peuvent avoir des niveaux différents ; une clé par espèce écrase le niveau ou les capacités de l’un des deux. L’entrée sauvage 1v1 réemploie le même exporteur natif et distingue les projections de membre, tout en conservant l’espèce canonique des deux acteurs et visuels. Aucune écriture de draft, aucune règle de progression ou combat redéfinie.
+- TDD : deux membres d’une espèce aux niveaux 1/5 et 5/1, déblocage officiel, lecture du vrai roster, niveaux manquants refusés et sentinelles Tester. Exécuter `npm run ci` et les 5 jobs Laboratory CI. Protéger le Tester, les données auteur, la sauvegarde et les autres dépôts.
+
 ## 2026-11-04 — Combat : niveaux explicites des créatures pour vraie session Aventure GenSRPG (CI GREEN, CONSOMMATEUR À CERTIFIER)
 - **CI validée sur code exact** : [Laboratory CI #41841181419](https://github.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/actions/runs/41841181419) SUCCESS, **5/5 jobs**, commit `38b47443d6747f1f2db2004677147d65fd86d59f`. Le premier essai #41840697555 fut rouge : ancienne sentinelle liée au texte littéral `level:previewLevel`, désormais contrôlée contre le vrai chemin de projection et le défaut du Tester; un contrôle Chromium indépendant Foudrillon/Moussado échouait puis est redevenu vert sans contournement ni changement de test. Les niveaux d'une espèce partagée entre deux équipes restent un contrat roster à traiter séparément avant vrais combats identiques de niveaux différents.
 

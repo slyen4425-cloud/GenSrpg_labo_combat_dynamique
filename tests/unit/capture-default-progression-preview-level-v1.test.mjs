@@ -5,6 +5,10 @@ import { captureActiveSkillSlotsForLevelV1 } from "../../src/contracts/capture-p
 import { projectCapturePlannedLoadoutsToCombatV1 } from "../../src/adapters/input/capture/capture-planned-loadout-to-combat-v1.js";
 import { buildHumanProgressionRulesV1 } from "../../src/ui/capture-editor-human-v2.js";
 import { buildCaptureEditorCombatTestV1 } from "../../src/ui/capture-editor-combat-test-v1.js";
+import { buildCaptureEncounterCombatSourceV1 } from "../../src/ui/capture-encounter-combat-source-v1.js";
+import { loadCoop2v2CombatSource } from "../../src/ui/combat-2v2-test-ui.js";
+import { createCaptureCombatRosterControllerV1 } from "../../src/ui/capture-combat-roster-controller-v1.js";
+import { createCombatSession } from "../../src/core/combat/combat-session.js";
 import { exportCaptureEditorDraftsToCombatExportV3 } from "../../src/adapters/input/capture/capture-editor-exporter-v3.js";
 
 const skillIds = ["skill-1", "skill-2", "skill-3", "skill-4", "skill-ultimate"];
@@ -130,4 +134,39 @@ test("editor exposes visible level 20 preview selector but authored new creature
   assert.match(html, /data-creature-level[^>]*value="1"|value="1"[^>]*data-creature-level/);
   const ui = await readFile(new URL("../../src/ui/capture-editor-human-v2.js", import.meta.url), "utf8");
   assert.match(ui, /data-test-creature-level/);
+});
+
+
+test("native wild mirror battle keeps both species IDs and equips each member at its own level", async () => {
+  const draft = creature("crea-wild", 12);
+  const configuredCreatures = new Map([[draft.id, { draft, loadout: loadout(draft.id) }]]);
+  const input = {
+    configuredCreatures, configuredSkills: new Map(skills.map(d => [d.id, d])),
+    arenaId: null, combatRules, progressionRules: await rules()
+  };
+  for (const [localLevel, opponentLevel] of [[1, 5], [5, 1]]) {
+    const source = buildCaptureEncounterCombatSourceV1({
+      ...input,
+      local: { speciesId: draft.id, level: localLevel },
+      opponent: { speciesId: draft.id, level: opponentLevel }
+    });
+    const native = await loadCoop2v2CombatSource({ nativeCombatSource: source });
+    assert.deepEqual(native.format.actors.map(a => a.creatureId), [draft.id, draft.id]);
+    assert.notEqual(native.format.actor("local-1").fighterConfigId, native.format.actor("opponent-1").fighterConfigId);
+    const session = createCombatSession({distance: "medium", battleFormat: native.format, fighters: native.fighters});
+    const roster = createCaptureCombatRosterControllerV1({
+      session, rosterDefinition: native.roster, fighterConfigs: native.fighterConfigs,
+      skillIdsByCreature: native.skillIdsByCreature, skillIdsByRosterMember: native.skillIdsByRosterMember,
+      visuals: {}, battleFormat: native.format
+    });
+    for (const [actor, level] of [["local-1", localLevel], ["opponent-1", opponentLevel]]) {
+      const expected = skillIds.slice(0, level === 1 ? 1 : 2);
+      assert.deepEqual(native.skillIdsByActor[actor], expected);
+      assert.deepEqual(roster.skillIdsFor(actor), expected);
+    }
+  }
+  assert.equal(draft.level, 12);
+  assert.throws(() => buildCaptureEncounterCombatSourceV1({
+    ...input, local: { speciesId: draft.id, level: 1 }, opponent: { speciesId: draft.id }
+  }), /level/);
 });
