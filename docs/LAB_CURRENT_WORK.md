@@ -1,3 +1,13 @@
+## 2026-11-04 — Plante carnivore : armure de ronces DOS, masque de pointes 6f (lot médias)
+- BASE `global-assets@2fb20599155718940c743a72557eb1d5d6d1ec86`, START `checkpoint/lab-start-thorn-armor-back-overlay-2026-11-04`, WORK `work/lab-thorn-armor-back-overlay-2026-11-04`.
+- Source approuvée `_incoming/armure_ronces_plante_carnivore_dos_6f.zip`, 4 597 874 octets, Git blob `0587d83efb6a1a1f18f822e406065afec552a2d5`, SHA256 `d3cdba93cc9102b760a7fd0e0dc49e0b0f0ad9d6d524a10f6940388f7688a276`.
+- Un seul nouveau média `pack:capture:sprite-armure-ronces-plante-carnivore-back-01` : 6 PNG RGBA 512², atlas WebP lossless 3072×512, vrai masque transparent de pointes, sans corps de créature, preview 6 poses, maintien de l'image finale pour statut défensif. Cible `assets/library/capture/sprites/skills/armure_ronces_plante_carnivore/back/`.
+- Ancienne version FACE `pack:capture:sprite-armure-ronces-plante-carnivore-01` strictement conservée. Aucun auto-binding, aucune modification au gameplay/runtime, modèles ou autres médias.
+- TDD sentinelle + import vérifié GitHub Actions + CI et checkpoint GREEN, PR vers global-assets. Ensuite lot coordonné gh-pages pour cache-bust du catalogue et test du sélecteur Nature / statut en navigateur. Publication NON GREEN avant preuves.
+- Contrat : `docs/LAB_THORN_ARMOR_BACK_OVERLAY_2026-11-04.md`.
+
+---
+
 ## 2026-11-04 — Renard doré : animation attaque adversaire (12f) approuvée
 - BASE `global-assets@b52d22afe6ff0c635547943c63b0b51aa1553e2f`, START `checkpoint/lab-start-renard-dore-attack-opponent-12f-2026-11-04`, WORK `work/lab-renard-dore-attack-opponent-12f-2026-11-04`. Source unique `global-assets/_incoming/RENARD_MAGIQUE_DORE_ATTAQUE_ADVERSAIRE_12F_VALIDE.zip` : 4 358 878 octets ; SHA256 `7106cbcdbd2d97a985dd496d79549cf999702bfae6b88aa322bea4f03a436c3b` ; Git blob `3355a2f465d03db5a617de284ef1253a602c16ea`. Vue adversaire, ondulation spirituelle, 12 PNG RGBA 512² (marge min 66 px), atlas WebP sans perte 6144×512 et preview WebP exact approuvé SHA256 `bb915db0f4ce66059e96f9bb293639f0d674e179d05a8245f064144157b73f57`.
 - Périmètre : créer uniquement `animations/attack/opponent/` du renard doré et une entrée catalogue `pack:capture:creature-renard-magique-dore-attack-opponent-12-v1`, `frameCount=12`, `frameMs=115`, `playbackMode=once`, retour idle. Ne **pas** confondre preview en boucle et attaque jouée une fois, ni modifier maître, vue joueur, attaque joueur existante (ID historique movement/player déjà reclassé en attack), données auteur, FX, moteur ou autres créatures.
