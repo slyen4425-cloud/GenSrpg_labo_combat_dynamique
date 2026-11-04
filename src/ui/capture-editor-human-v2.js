@@ -8695,7 +8695,7 @@ async function hydrateNativeSkillCatalog() {
   );
 }
 
-async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null, refreshReferenceFilters = () => {}) {
+async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
   const response = await fetch(
     GLOBAL_VISUAL_LIBRARY.catalogUrl,
     { cache: "no-store" }
@@ -8733,7 +8733,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null, ref
   }
   syncHumanCreatureReactionControlsV1(root);
   captureMarkerRefreshReferenceChoicesV1(root);
-  refreshReferenceFilters();
+  root.dispatchEvent(new Event("capture-visual-assets-changed"));
 
   function preview(select, image) {
     const asset = byId.get(select.value);
@@ -8823,7 +8823,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null, ref
     }
     syncHumanCreatureReactionControlsV1(root);
     captureMarkerRefreshReferenceChoicesV1(root);
-    refreshReferenceFilters();
+    root.dispatchEvent(new Event("capture-visual-assets-changed"));
   }
 
   function mountCreatorVisualImporter(
@@ -12280,6 +12280,9 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   function refreshHumanSkillElementFiltersV1() {
     referenceElementFilters.refresh();
   }
+  // The catalog owner notifies the editor when native sprite options change.
+  // This is a disposable local event, not an asset registry or a DOM observer.
+  listen(root,"capture-visual-assets-changed",refreshHumanSkillElementFiltersV1);
   // New buff/status rows are authored after the initial asset hydration.
   // Refresh the ONE existing filter owner only when an editor control
   // creates or replaces a picker, not on every ordinary click/frame.
@@ -14113,7 +14116,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   const ready =
     settleCaptureEditorStartupDependenciesV1({
       assetCatalogPromise:
-        hydrateAssetCatalog(root, listen, creatorVisualAssets, refreshHumanSkillElementFiltersV1),
+        hydrateAssetCatalog(root, listen, creatorVisualAssets),
       privateAudioCatalogPromise:
         hydratePrivateAudioCatalog(
           root,
