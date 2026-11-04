@@ -20,3 +20,9 @@
 - Base immuable `gh-pages@90f0c4636af72c5847f95da982f7d3ebc7001b76`.
 - START `checkpoint/lab-start-unify-reference-filters-skill-ids-2026-11-04`; WORK `work/lab-unify-reference-filters-skill-ids-2026-11-04`.
 - Pas de données auteur modifiées, pas de deuxième autorité sur le registre, pas de changements de combat, de statuts, sprites, assets ou autres projets.
+
+## Premiers contrôles et compatibilité
+- Première CI #41897118396 : le nouveau test **vrai Chromium** a réussi aux trois formats (1440 / 920 / fenêtre étroite 500), avec catalogues réels (134 options capacité, 106 créatures, 105 équipe). Foundation et l'ancien test `capture-channel-mine-editor-smoke` ont révélé deux contrats historiques incompatibles avec un refactor qui les aurait ignorés.
+- Les filtres dynamiques de capacités conservent désormais **les deux attributs** : `data-skill-element-filter` (contrat public préexistant) et `data-reference-element-filter=skill`. La sentinelle de source de 2026-11-02 vérifie maintenant le nouveau propriétaire d'options natives et les mêmes exigences Android (clonage, sélection maintenue, retrait physique).
+- IMPORTANT : la bibliothèque de marqueurs possède un `WeakMap` d'instances par document. `capture-editor-human-v2.js` **et** `capture-marker-effect-fields-v1.js` doivent importer exactement la même URL ESM versionnée après extraction du slug pur : les deux imports sont maintenant synchronisés, ainsi que l'URL du module d'effets depuis l'éditeur. La sentinelle de marqueurs d'octobre reste active, non contournée.
+- Aucune compétence ni comportement de combat modifié pour résoudre ces tests. Relancer CI Foundation + 4 Chromium sur SHA final, GREEN seulement sur 5/5.
