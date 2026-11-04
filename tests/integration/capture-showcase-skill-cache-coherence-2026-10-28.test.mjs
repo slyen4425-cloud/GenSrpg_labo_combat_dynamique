@@ -49,14 +49,20 @@ test("every active Capture Showcase skill path and author id is unique", async (
   assert.equal(ids.filter((id) => id === "coupe_feuille").length, 1);
 });
 
-test("Coupe feuille v11 keeps its new signed source without overwriting the historical v9", async () => {
+test("Coupe feuille preserves signed v9/v11 archives and only changes clash power Nov 4", async () => {
   const raw = await read(archivePath);
   const live = JSON.parse(await read(publishedPath));
   const original = JSON.parse(raw);
   const old = JSON.parse(await read(historicalPath));
   assert.equal(Buffer.byteLength(raw), 4176);
   assert.equal(createHash("sha256").update(raw).digest("hex"), "572e78fa2b2c1da0142be3ec48fa89b4e569331df32fa35a0360c76f3b6d5b6c");
-  assert.deepEqual(live, original, "published user config differs from signed source");
+  assert.equal(original.draft.definition.projectileClash.power,0,
+    "signed 2026-10-28 version remains immutable");
+  const expected=structuredClone(original);
+  expected.draft.definition.projectileClash.power=1;
+  assert.deepEqual(live, expected,
+    "Nov 4 authored update must change ONLY collision power relative to signed v11");
+  assert.equal(live.draft.definition.projectileClash.power,1);
   assert.equal(live.draft.presentation.version, 11);
   assert.equal(old.draft.presentation.version, 9);
 });
