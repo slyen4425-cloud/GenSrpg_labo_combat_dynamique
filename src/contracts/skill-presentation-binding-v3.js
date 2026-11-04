@@ -103,6 +103,7 @@ function normalizeSprite(raw, field) {
     if (
       ![
         "assetId",
+        "opponentAssetId",
         "displayScale",
         "opacity",
         "playbackMode",
@@ -149,6 +150,13 @@ function normalizeSprite(raw, field) {
       value.assetId,
       field + ".assetId"
     ),
+    // Optional author override. Missing means BOTH views use assetId.
+    ...(value.opponentAssetId == null ? {} : {
+      opponentAssetId: stableAssetId(
+        value.opponentAssetId,
+        field + ".opponentAssetId"
+      )
+    }),
     displayScale: positiveNumber(
       value.displayScale,
       field + ".displayScale",

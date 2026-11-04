@@ -74,7 +74,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -119,7 +119,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -6195,6 +6195,46 @@ function appendHumanSkillEffectV1(
       ""
   );
 
+  // Most status masks are shared between player and opponent. Enable the
+  // second catalog selection only for asymmetric artwork (e.g. spines face/dos).
+  const statusOpponentVisualEnabled = document.createElement("input");
+  statusOpponentVisualEnabled.type = "checkbox";
+  statusOpponentVisualEnabled.setAttribute(
+    "data-skill-status-opponent-visual-enabled", "true"
+  );
+  statusOpponentVisualEnabled.checked =
+    Boolean(statusPresentation?.sprite?.opponentAssetId);
+
+  const statusOpponentVisualAsset = document.createElement("select");
+  statusOpponentVisualAsset.setAttribute(
+    "data-skill-status-opponent-visual-asset", "true"
+  );
+  populateHumanStatusVisualAssetV1(
+    root,
+    statusOpponentVisualAsset,
+    statusPresentation?.sprite?.opponentAssetId ?? ""
+  );
+
+  const statusOpponentVisualLabel = document.createElement("label");
+  statusOpponentVisualLabel.className = "check";
+  statusOpponentVisualLabel.append(
+    statusOpponentVisualEnabled,
+    document.createTextNode(
+      "Utiliser un sprite différent côté adversaire (facultatif)"
+    )
+  );
+  const statusOpponentVisualField = tacticalFieldV1(
+    "Sprite côté adversaire (vue de face)",
+    statusOpponentVisualAsset
+  );
+  const syncStatusOpponentVisualField = () => {
+    statusOpponentVisualField.hidden = !statusOpponentVisualEnabled.checked;
+  };
+  statusOpponentVisualEnabled.addEventListener(
+    "change", syncStatusOpponentVisualField
+  );
+  syncStatusOpponentVisualField();
+
   const statusVisualScale =
     tacticalNumberInputV1(
       "skillStatusVisualScale",
@@ -6255,9 +6295,11 @@ function appendHumanSkillEffectV1(
     "true";
   spriteFields.append(
     tacticalFieldV1(
-      "Sprite du statut",
+      "Sprite du statut (joueur et adversaire par défaut)",
       statusVisualAsset
     ),
+    statusOpponentVisualLabel,
+    statusOpponentVisualField,
     tacticalFieldV1(
       "Échelle du sprite",
       statusVisualScale
@@ -7384,9 +7426,26 @@ function readHumanStatusVisualsV1(root) {
         );
       }
 
+      const separateOpponentSprite =
+        row.querySelector(
+          "[data-skill-status-opponent-visual-enabled]"
+        )?.checked === true;
+      const opponentAssetId = String(
+        row.querySelector(
+          "[data-skill-status-opponent-visual-asset]"
+        )?.value ?? ""
+      ).trim();
+      if (separateOpponentSprite && !opponentAssetId) {
+        throw new Error(
+          "Choisis le sprite côté adversaire pour le statut « " +
+            statusId + " », ou désactive le visuel différent."
+        );
+      }
+
       presentation.sprite = {
         ...readStatusSpriteControlsV1(row),
         assetId,
+        ...(separateOpponentSprite ? { opponentAssetId } : {}),
         displayScale: Number(
           row.querySelector(
             "[data-skill-status-visual-scale]"

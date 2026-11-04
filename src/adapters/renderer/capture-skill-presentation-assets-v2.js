@@ -284,6 +284,12 @@ function resolvedStatusPresentation(
         assetForId,
         {
           ...presentation.sprite,
+          // One status presentation, one sprite resolver: an authored second
+          // mask is exceptional; all ordinary statuses keep their main asset.
+          assetId:
+            view === "opponent" && presentation.sprite.opponentAssetId
+              ? presentation.sprite.opponentAssetId
+              : presentation.sprite.assetId,
           playbackMode:
             presentation.sprite.playbackMode ??
             "loop",

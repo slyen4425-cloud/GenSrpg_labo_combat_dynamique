@@ -1,3 +1,13 @@
+## 2026-11-04 — Sprites de statut : visuel adversaire facultatif (Armure de pointes)
+- Demande auteur : masque d'épines fixé au corps, artwork DOS joueur / FACE adversaire ; ne jamais imposer deux sprites aux autres capacités.
+- Base `gh-pages@16c1627e9e11f65bbd8553dba5e4362e22182b60`, checkpoint `checkpoint/lab-start-status-sprite-view-assets-2026-11-04`, branche `work/lab-status-sprite-view-assets-2026-11-04`.
+- Propriétaire visuel unique : `statusVisuals[statusId].sprite.assetId` reste commun par défaut ; `opponentAssetId` est facultatif, validé comme ID officiel, utilisé uniquement par `resolvedStatusPresentation` selon la vue. Pas de migration de version ni changement de Status Runtime/DOM Status FX.
+- UI : case facultative cachant par défaut le sélecteur adversaire ; le catalogue existant est réutilisé ; sauvegarde/export/import et mode `hold-last` préservés.
+- Fichiers fonctionnels : `src/contracts/skill-presentation-binding-v3.js`, `src/adapters/renderer/capture-skill-presentation-assets-v2.js`, `src/ui/capture-editor-human-v2.js`, entrée ESM/HTML, tests unitaires/Chromium, workflow, `docs/LAB_STATUS_SPRITE_SIDE_ASSETS_2026_11_04.md`. Aucun autre labo, asset ou skill auteur touché.
+- Tests TDD + navigateur PC, téléphone paysage/étroit ; GREEN uniquement CI Foundation + 4 Chromium sur SHA final, checkpoint, PR gh-pages, Pages ; validation appareil auteur distincte.
+
+---
+
 ## 2026-11-04 — Filtres élémentaires unifiés + identifiant automatique des capacités
 - Demande auteur : tous les panneaux proposant une créature ou une capacité doivent pouvoir filtrer par élément, y compris bibliothèque créatures, évolutions, équipes de combat, choix de capacités et loadouts. À la création d'une capacité, saisie du nom => identifiant auto comme pour les marqueurs.
 - Diagnostic : l'éditeur `src/ui/capture-editor-human-v2.js` possède déjà un filtre d'élément des seuls choix de capacités ; `refreshCreatureLibraryOptions`, `refreshEvolutionTargetOptions` et `mountCaptureEditorCombatTeamControlsV1.refresh` remplissent les créatures sans cette fonctionnalité. Les options `hidden` ne suffisent pas sur Android, la sélection existante doit rester préservée. Le convertisseur de nom des marqueurs est dans `capture-marker-library-v1.js`; les capacités créées gardent aujourd'hui un identifiant générique `nouvelle-capacite` sans liaison à leur nom.
