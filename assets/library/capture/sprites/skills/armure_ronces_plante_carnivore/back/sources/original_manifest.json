@@ -1,0 +1,64 @@
+{
+  "schema": "gensrpg-capture-overlay-sprite-v1",
+  "creature": "plante_carnivore",
+  "view": "player_back",
+  "type": "defense_thorn_armor_overlay",
+  "frameCount": 6,
+  "frameSize": [
+    512,
+    512
+  ],
+  "playback": "once",
+  "holdLastFrame": true,
+  "holdFrameIndex": 5,
+  "frameDurationsMs": [
+    145,
+    145,
+    140,
+    135,
+    130,
+    130
+  ],
+  "referenceImage": "plante_carnivore_dos(1).png",
+  "sourceArt": "a_clean_high_resolution_sprite_sheet_style_image.png",
+  "sourceSheetFinalFrame": 6,
+  "construction": "per-piece anchored thorn growth based on the verified final mask; no other creature artwork is baked in",
+  "frames": [
+    {
+      "file": "frames/armure_ronces_dos_01.png",
+      "sha256": "6af67e22ab62e8496110072482488ea88390554de259c1143a1bc427a8e70275"
+    },
+    {
+      "file": "frames/armure_ronces_dos_02.png",
+      "sha256": "f480436626b7814a94863a3a5772808899f7facdb0519dbb636eb664c42ece90"
+    },
+    {
+      "file": "frames/armure_ronces_dos_03.png",
+      "sha256": "4e438479ff2392fbd03ae7a937947b0cebad67f152e5c326f8494adbbfcca339"
+    },
+    {
+      "file": "frames/armure_ronces_dos_04.png",
+      "sha256": "daf30cd78551365e1818b8a08548e8d1825d8af846086373353857fc61db7977"
+    },
+    {
+      "file": "frames/armure_ronces_dos_05.png",
+      "sha256": "e90e2eafd81ae4bba40e7b241f3f2727fde8a99f719df15628d62e21dcf0d572"
+    },
+    {
+      "file": "frames/armure_ronces_dos_06.png",
+      "sha256": "936772eef6dea77507e197eafa3df25ee7a702cac728c68bf6a5acb08420239b"
+    }
+  ],
+  "atlas": {
+    "file": "armure_ronces_dos_atlas_6f.webp",
+    "format": "sprite-strip",
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "frameCount": 6,
+    "sha256": "fecfe824822ec843181ee5354e0a492971b1f26b41d68561a9818ba4cf03c177"
+  },
+  "maskPreview": "armure_ronces_dos_preview_masque.webp",
+  "compositedReviewOnly": "armure_ronces_dos_preview_sur_creature.webp",
+  "holdUntil": "buff_removed",
+  "noAutoBinding": true
+}
