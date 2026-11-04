@@ -79,6 +79,9 @@ export function createCaptureReferenceElementFiltersV1({
       if (!filter) {
         filter=root.ownerDocument.createElement("select");
         filter.dataset.referenceElementFilter=state.kind;
+        // Preserve the previous selector contract used by existing runtime
+        // author controls and Chromium tests for skill loadout slots.
+        if (state.kind==="skill") filter.dataset.skillElementFilter="true";
         filter.setAttribute("aria-label",
           state.kind==="skill"?"Filtrer les capacités par élément":"Filtrer les créatures par élément");
         filter.style.cssText="max-width:100%;margin:4px 0 8px;min-height:36px";
