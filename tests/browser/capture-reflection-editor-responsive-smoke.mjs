@@ -22,7 +22,11 @@ document.addEventListener("DOMContentLoaded",()=>{
       }
       one("[data-skill-new]").click();
       const kind=one("[data-skill-effect-add-kind]"),add=one("[data-skill-effect-add]");
-      kind.value="standard";add.click();
+      // The visible "Effets immédiats" chooser is the native owner of the
+      // immediate-effects panel (which may stay collapsed from a new skill).
+      kind.value="standard";
+      kind.dispatchEvent(new Event("change",{bubbles:true}));
+      add.click();
       const row=[...document.querySelectorAll("[data-skill-effects-host] [data-skill-effect-row]")].at(-1);
       if(!row)throw Error("native skill effect row missing");
       const effect=row.querySelector("[data-skill-effect-kind]");
@@ -38,7 +42,8 @@ document.addEventListener("DOMContentLoaded",()=>{
         const ancestors=[];let n=box;
         while(n&&n!==document.body){
           ancestors.push(n.tagName.toLowerCase()+"."+String(n.className||"").split(" ").join(".")+
-            "(hidden="+n.hidden+",display="+getComputedStyle(n).display+
+            "(hidden="+n.hidden+",hasHiddenAttr="+n.hasAttribute("hidden")+
+            ",inlineDisplay="+n.style.display+",display="+getComputedStyle(n).display+
             ",width="+Math.round(bounds(n).width)+",open="+n.open+")");
           n=n.parentElement;
         }
