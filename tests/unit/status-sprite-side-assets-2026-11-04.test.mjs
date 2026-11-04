@@ -6,8 +6,8 @@ import {createCaptureSkillPresentationAssetsV2} from "../../src/adapters/rendere
 import {buildHumanSkillDraftV1, humanSkillEditorFieldsFromDraftV1} from "../../src/ui/capture-editor-human-v2.js";
 import {exportCaptureSkillTransferJsonV1,importCaptureTransferJsonV1} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 
-const player="pack:capture:sprite-armor-spines-back-01";
-const opponent="pack:capture:sprite-armor-spines-front-01";
+const player="pack:capture:sprite-armure-ronces-plante-carnivore-back-01";
+const opponent="pack:capture:sprite-armure-ronces-plante-carnivore-01";
 const sprite=(both=false)=>({
   assetId:player, ...(both?{opponentAssetId:opponent}:{}),
   displayScale:1.3,opacity:0.85,playbackMode:"hold-last",
@@ -53,8 +53,8 @@ test("RED: status resolver selects the opposing asset only for semantic opponent
   const view=v=>adapted.statusPresentationFor("epines",{sourceSkillId:"armure-de-pointes",view:v}).sprite;
   assert.equal(view("player").assetId,player);
   assert.equal(view("opponent").assetId,opponent);
-  assert.match(view("player").url,/spines-back/);
-  assert.match(view("opponent").url,/spines-front/);
+  assert.match(view("player").url,/armure-ronces-plante-carnivore-back/);
+  assert.match(view("opponent").url,/armure-ronces-plante-carnivore-01/);
   assert.equal(view("player").playbackMode,"hold-last");
   assert.equal(view("opponent").offsetX,9);
   assert.equal(view("opponent").displayScale,1.3);
