@@ -1,3 +1,5 @@
+import { captureAuthorSlugV1 as captureMarkerAuthorSlugV1 } from "./capture-author-id-v1.js";
+export { captureAuthorSlugV1 as captureMarkerAuthorSlugV1 } from "./capture-author-id-v1.js";
 import {normalizeCaptureMarkerV1, normalizeCaptureMarkerLibraryV1} from "../contracts/capture-marker-v1.js";
 import {captureMarkerExportSnapshotV1} from "./capture-marker-export-v1.js";
 import {normalizeCaptureSkillEditorDraftV1} from "../contracts/capture-skill-editor-draft-v1.js";
@@ -55,12 +57,7 @@ export function captureMarkerRefreshReferenceChoicesV1(root){
 
 // Author convenience only: the stored/portable marker ID remains the strict
 // immutable CaptureMarkerV1 slug, never a display name or runtime fallback.
-export function captureMarkerAuthorSlugV1(value) {
-  return String(value ?? "").normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g,"")
-    .toLowerCase().replace(/[^a-z0-9]+/g,"-")
-    .replace(/^-+|-+$/g,"").slice(0,64).replace(/-+$/g,"");
-}
+
 function fill(select,items,placeholder){
   if(!select)return;
   const current=select.value;
