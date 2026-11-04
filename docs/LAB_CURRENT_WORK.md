@@ -3,7 +3,7 @@
 - Source approuvée `_incoming/armure_ronces_plante_carnivore_dos_6f.zip`, 4 597 874 octets, Git blob `0587d83efb6a1a1f18f822e406065afec552a2d5`, SHA256 `d3cdba93cc9102b760a7fd0e0dc49e0b0f0ad9d6d524a10f6940388f7688a276`.
 - Un seul nouveau média `pack:capture:sprite-armure-ronces-plante-carnivore-back-01` : 6 PNG RGBA 512², atlas WebP lossless 3072×512, vrai masque transparent de pointes, sans corps de créature, preview 6 poses, maintien de l'image finale pour statut défensif. Cible `assets/library/capture/sprites/skills/armure_ronces_plante_carnivore/back/`.
 - Ancienne version FACE `pack:capture:sprite-armure-ronces-plante-carnivore-01` strictement conservée. Aucun auto-binding, aucune modification au gameplay/runtime, modèles ou autres médias.
-- TDD sentinelle + import vérifié GitHub Actions + CI et checkpoint GREEN, PR vers global-assets. Ensuite lot coordonné gh-pages pour cache-bust du catalogue et test du sélecteur Nature / statut en navigateur. Publication NON GREEN avant preuves.
+- TDD sentinelle + import validé GitHub Actions #41852394408 SUCCESS au commit `595ea2c56dbbbb7539a548eb5517a5bc17f4f64c` (6 PNG RGBA, atlas source exact, preview masque, catalogue +1). Première tentative #41852006980 : push non-fast-forward après ajout de docs ; correction cause via rebase, pas de masquage. PR média #237. Attendre CI au SHA final puis checkpoint GREEN, merge global-assets et lot gh-pages pour cache / test navigateur avant déclaration complète.
 - Contrat : `docs/LAB_THORN_ARMOR_BACK_OVERLAY_2026-11-04.md`.
 
 ---
