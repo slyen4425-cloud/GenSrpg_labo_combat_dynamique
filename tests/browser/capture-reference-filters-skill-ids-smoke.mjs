@@ -87,6 +87,34 @@ document.addEventListener("DOMContentLoaded",()=>{
       name.dispatchEvent(new Event("input",{bubbles:true}));
       verify(id.value==="coupe_feuille","renaming existing skill must not change its permanent ID");
 
+      // A creature visual picker is an asset catalog, not a species reference.
+      const model=one("[data-creature-front-select]");
+      const modelFilter=model?.previousElementSibling;
+      verify(modelFilter?.dataset.referenceElementFilter==="asset","creature model picker lacks asset element filter");
+      const modelCount=model.options.length;
+      verify(modelCount>10,"creature model asset library not hydrated");
+      choose(modelFilter,"nature");
+      verify(model.options.length<modelCount,"creature model asset filter did not narrow native options");
+      choose(modelFilter,"");
+      verify(model.options.length===modelCount,"creature model reset lost assets");
+
+      // A status sprite is created dynamically inside a buff/debuff effect row.
+      const effectKind=one("[data-skill-effect-add-kind]");
+      choose(effectKind,"effect:apply_status");
+      one("[data-skill-effect-add]").click();
+      const status=[...document.querySelectorAll("[data-skill-status-visual-asset]")].at(-1);
+      verify(status,"status visual sprite selector missing after effect creation");
+      const statusFilter=status.previousElementSibling;
+      verify(statusFilter?.dataset.referenceElementFilter==="asset","buff/status sprite lacks asset element filter");
+      const statusCount=status.options.length;
+      verify(statusCount>8,"status sprite catalog unexpectedly empty");
+      choose(statusFilter,"fire");
+      verify(status.options.length<statusCount,"status sprite Fire filter did not remove incompatible options");
+      choose(statusFilter,"nature");
+      verify([...status.options].some(o=>/nature|plante|ronce/i.test(o.textContent)),"Nature status sprite not offered");
+      choose(statusFilter,"");
+      verify(status.options.length===statusCount,"status sprite reset did not restore original options");
+
       out("pass:"+innerWidth+":"+originalSkillCount+":"+fullCreatureCount+":"+allTeamCount);
     }catch(error){out("error:"+String(error.message||error));}
   }
