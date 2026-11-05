@@ -278,6 +278,23 @@ export function createBattleActorAiController({
     return null;
   }
 
+  function pendingCharge() {
+    const action=runtime.activeActionFor?.(normalizedActorId);
+    return Boolean(action?.chargeState && (action.skill?.chargedAttack||action.skill?.chargedEffects) &&
+      action.chargeState.chargeCount<action.chargeState.maxCharges);
+  }
+  function retryActiveCharge() {
+    if (!pendingCharge() || !runtime.previewChargedSkillRetrigger) return null;
+    const action=runtime.activeActionFor(normalizedActorId);
+    const skill=skills.find(s=>s.id===action.actionId);
+    if (!skill) return null;
+    const preview=runtime.previewChargedSkillRetrigger({actorId:normalizedActorId,skillId:skill.id});
+    if (!preview.ok) return {status:"busy",actorId:normalizedActorId,reason:preview.outcome};
+    const result=runtime.startSkill({actorId:normalizedActorId,targetId:action.targetId,skill});
+    return result.ok?{status:"charged",actorId:normalizedActorId,skillId:skill.id,result}
+      :{status:"busy",actorId:normalizedActorId,reason:result.outcome};
+  }
+
   function takeTurn() {
     const state = session.snapshot();
     const actor = state.fighters[normalizedActorId];
@@ -289,6 +306,8 @@ export function createBattleActorAiController({
       });
     }
 
+    const activeCharge=retryActiveCharge();
+    if(activeCharge)return Object.freeze(activeCharge);
     if (runtime.hasActiveActionFor(normalizedActorId)) {
       return Object.freeze({
         status: "busy",
@@ -394,6 +413,7 @@ export function createBattleActorAiController({
 
   return Object.freeze({
     takeTurn,
+    pendingCharge,
     observeRelease,
     maybeDodge,
     reset() {
