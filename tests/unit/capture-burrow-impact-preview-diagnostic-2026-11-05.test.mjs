@@ -37,15 +37,16 @@ function png(width,height,pixels){
  return Buffer.concat([Buffer.from("89504e470d0a1a0a","hex"),chunk("IHDR",ihdr),chunk("IDAT",deflateSync(raw,{level:9})),chunk("IEND",Buffer.alloc(0))]);
 }
 test("diagnostic: actual impact animation RGBA 20-frame mosaic for inspection",()=>{
- const S=96,C=4,R=5,W=C*S,H=R*S,out=Buffer.alloc(W*H*4);
- for(let f=0;f<20;f++){
-  const frame=decode("sprite_burrow_impact_"+String(f+1).padStart(2,"0")+".png");
+ const S=128,C=4,R=2,W=C*S,H=R*S,out=Buffer.alloc(W*H*4);
+ const frames=[8,15,16,17,18,19,20];
+ for(let f=0;f<frames.length;f++){
+  const frame=decode("sprite_burrow_impact_"+String(frames[f]).padStart(2,"0")+".png");
   const ox=(f%C)*S,oy=Math.floor(f/C)*S;
   for(let y=0;y<S;y++)for(let x=0;x<S;x++){
    const sx=Math.floor((x+.5)*512/S),sy=Math.floor((y+.5)*512/S);
    const i=(sy*512+sx)*4,j=((oy+y)*W+ox+x)*4;
    const alpha=frame[i+3]/255,bg=((Math.floor(x/12)+Math.floor(y/12))%2)?230:245;
-   for(let c=0;c<3;c++)out[j+c]=Math.round(frame[i+c]*alpha+bg*(1-alpha));
+   for(let c=0;c<3;c++)out[j+c]=Math.min(255,Math.round((frame[i+c]*alpha+bg*(1-alpha))/24)*24);
    out[j+3]=255;
   }
  }
