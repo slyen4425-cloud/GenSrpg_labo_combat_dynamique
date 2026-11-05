@@ -19,7 +19,7 @@ test("Nov 3 archives stay signed; Nov 5 active Gorice/Gemmor exports preserve ex
  for(const entry of cases){
   const source=root(entry.archive),current=root(entry.live);
   assert.equal(createHash("sha256").update(source).digest("hex"),entry.sha,entry.id);
-  const expected=JSON.parse(source);
+  let expected=JSON.parse(source);
   if(entry.id==="crea_crys_2"){
     assert.equal(expected.draft.presentation.viewOverrides.player.displayScale,1.7,
       "signed Nov 3 Gemmor provenance remains unchanged");
@@ -32,11 +32,16 @@ test("Nov 3 archives stay signed; Nov 5 active Gorice/Gemmor exports preserve ex
     expected.draft.combat.approachTimeModifierPct=25;
   }
   if(entry.id==="gorice"){
-    expected.draft.presentation.viewOverrides.player.displayScale=1.5;
-    expected.draft.presentation.viewOverrides.opponent.displayScale=0.8;
+    // The signed Nov 3 snapshot remains immutable. A second signed Nov 5
+    // author upload now replaces the active preset (including movement V9).
+    const final=root("data/capture/source-exports/gensrpg-capture-creature-gorice-2026-11-05-1925.json");
+    assert.equal(createHash("sha256").update(final).digest("hex"),
+      "56496a621efe6a5003fdb21c7abefc0f9fd306007390729aabab7bbda2b808d8");
+    expected=JSON.parse(final);
+    assert.equal(expected.draft.presentation.version,9);
   }
   assert.deepEqual(JSON.parse(current),expected,
-    entry.id+" must match immutable Nov 3 source plus approved Nov 4–5 author changes");
+    entry.id+" must match immutable historical source plus latest explicit author transfer");
   const loaded=importCaptureTransferJsonV1(current,{statRegistry:registry});
   assert.equal(loaded.kind,entry.kind,entry.id);
   assert.equal(loaded.value.draft.id,entry.id);

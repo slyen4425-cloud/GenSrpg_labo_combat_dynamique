@@ -31,8 +31,13 @@ test("one official Mur de glace preset replaces level-one example with actual co
  assert.equal(skill.effects[0].hpPerStatPoint,2);
  assert.deepEqual(skill.effects[0].interceptKinds,["projectile","beam","contact"]);
  assert.equal(skill.effects[0].spriteAssetId,"pack:capture:sprite-mur-glace-arcanique-01");
- assert.equal(skill.effects[0].visualScale,4);
- assert.equal(skill.effects[0].visualScaleX,1.5);
+ assert.equal(skill.effects[0].visualScale,2.5);
+ assert.equal(skill.effects[0].visualScaleX,1.5);assert.equal(skill.effects[0].visualScaleY,1.2);
+ assert.equal(skill.effects[0].opponentVisualScale,1.5);
+ assert.equal(skill.effects[0].opponentVisualScaleX,1.5);
+ assert.equal(skill.effects[0].opponentVisualScaleY,1.2);
+ assert.equal(skill.effects[0].opponentArenaXPct,70);
+ assert.equal(skill.effects[0].opponentArenaYPct,50);
  assert.equal(skill.effects[0].placementMode,"arena");
  assert.equal(skill.effects[0].arenaXPct,47);
  assert.equal(skill.effects[0].arenaYPct,55);
