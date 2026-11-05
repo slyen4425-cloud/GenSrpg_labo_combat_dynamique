@@ -6458,6 +6458,13 @@ function appendHumanSkillEffectV1(
    if(effect?.spriteAssetId && ![...barrierSprite.options].some(o=>o.value===effect.spriteAssetId))
      createOption(barrierSprite,effect.spriteAssetId,effect.spriteAssetId);
    barrierSprite.value=effect?.spriteAssetId??"";
+   const barrierOpponentSprite=document.createElement("select");
+   barrierOpponentSprite.dataset.skillBarrierOpponentSpriteAssetId="true";
+   barrierOpponentSprite.dataset.assetRole="zone";
+   populateSelect(barrierOpponentSprite,EDITOR_VISUAL_ASSETS_BY_ROOT.get(root)??[],"zone");
+   if(effect?.opponentSpriteAssetId && ![...barrierOpponentSprite.options].some(o=>o.value===effect.opponentSpriteAssetId))
+     createOption(barrierOpponentSprite,effect.opponentSpriteAssetId,effect.opponentSpriteAssetId);
+   barrierOpponentSprite.value=effect?.opponentSpriteAssetId??"";
    const wallScale=tacticalNumberInputV1("skillBarrierVisualScale",effect?.visualScale??1,{min:0.25,max:12,step:0.05});
     const wallScaleX=tacticalNumberInputV1("skillBarrierVisualScaleX",effect?.visualScaleX??1,{min:0.25,max:8,step:0.05});
     const wallScaleY=tacticalNumberInputV1("skillBarrierVisualScaleY",effect?.visualScaleY??1,{min:0.25,max:8,step:0.05});
@@ -6502,7 +6509,8 @@ function appendHumanSkillEffectV1(
   barrierHelp.textContent="Mur défensif réel avec ses propres PV : statistique du lanceur × coefficient (0 point = aucune invocation). Une attaque interceptée s'arrête entièrement sur le mur, même si elle le détruit ; aucun malus ne traverse. Les zones et DoT ne sont pas interceptés. Une nouvelle invocation de la même compétence remplace le mur précédent.";
   barrierBox.append(tacticalFieldV1("Statistique de l'invocation",barrierStatId),
     tacticalFieldV1("PV par point de stat (coefficient libre)",barrierHpRatio),
-     tacticalFieldV1("Sprite du mur (bibliothèque de zones)",barrierSprite),
+     tacticalFieldV1("Sprite du mur côté joueur (défaut des deux camps)",barrierSprite),
+     tacticalFieldV1("Sprite du mur côté adversaire (facultatif, sinon celui du joueur)",barrierOpponentSprite),
      tacticalFieldV1("Échelle générale du mur (× 0,25 à × 12)",wallScale),
       tacticalFieldV1("Scale X — largeur (× 0,25 à × 8)",wallScaleX),
       tacticalFieldV1("Scale Y — hauteur (× 0,25 à × 8)",wallScaleY),
@@ -7024,6 +7032,8 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
         {placementMode:"behind"}:{}),
       ...(row.querySelector("[data-skill-barrier-sprite-asset-id]")?.value
         ? {spriteAssetId:row.querySelector("[data-skill-barrier-sprite-asset-id]").value}:{}),
+      ...(row.querySelector("[data-skill-barrier-opponent-sprite-asset-id]")?.value
+        ? {opponentSpriteAssetId:row.querySelector("[data-skill-barrier-opponent-sprite-asset-id]").value}:{}),
       interceptKinds:[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
         .filter(input=>input.checked).map(input=>input.value)
     };
