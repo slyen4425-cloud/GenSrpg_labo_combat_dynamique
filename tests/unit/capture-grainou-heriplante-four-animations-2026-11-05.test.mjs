@@ -5,61 +5,54 @@ import {normalizeCaptureCreatureEditorDraftV3} from "../../src/contracts/capture
 import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js";
 import {createGlobalPresentationAssetResolverV1} from "../../src/assets/global-presentation-asset-resolver-v1.js";
 import {captureEditorCreatureVisualKindV1,captureEditorAssetMatchesRoleV1} from "../../src/ui/capture-editor-human-v2.js";
+
 const record=JSON.parse(readFileSync(new URL("../../data/capture/showcase/crea_nat_1.capture-creature-transfer-v1.json",import.meta.url),"utf8"));
-const mappings=[
- ["rangedAttack","attack","opponent",130,"once"],
- ["rangedAttackBack","attack","player",125,"once"],
- ["movement","movement","opponent",115,"loop"],
- ["movementBack","movement","player",100,"loop"]
+const list=[
+ {action:"attack",view:"opponent",name:"heriplante_attack_opponent_12f_strip.webp",ms:130,mode:"once"},
+ {action:"attack",view:"player",name:"heriplante_attack_player_12f.webp",ms:125,mode:"once"},
+ {action:"movement",view:"opponent",name:"heriplante_movement_opponent_12f.webp",ms:115,mode:"loop"},
+ {action:"movement",view:"player",name:"heriplante_movement_player_12f.webp",ms:100,mode:"loop"}
 ];
-const folder="capture/creatures/heriplante/animations/";
-const atlas=action=>action==="attack"?"attack":"movement";
-const files={
- "attack:opponent":"heriplante_attack_opponent_12f_strip.webp",
- "attack:player":"heriplante_attack_player_12f.webp",
- "movement:opponent":"heriplante_movement_opponent_12f.webp",
- "movement:player":"heriplante_movement_player_12f.webp"
-};
-test("Grainou preserves author gameplay, four views, dodge and upgrades presentation without shadow binding",()=>{
+test("Grainou author transfer remains unchanged; media library never overwrites creator data",()=>{
  const draft=normalizeCaptureCreatureEditorDraftV3(record.draft);
  assert.equal(draft.id,"crea_nat_1");
- assert.equal(draft.presentation.version,9);
- assert.deepEqual(draft.presentation.viewOverrides,record.draft.presentation.viewOverrides);
+ assert.equal(draft.presentation.version,3);
+ assert.equal(draft.presentation.visual.front.assetId,"pack:capture:creature-heriplante-opponent-01");
+ assert.equal(draft.presentation.visual.back.assetId,"pack:capture:creature-heriplante-player-01");
+ assert.equal(draft.presentation.visual.icon.assetId,"pack:capture:creature-heriplante-icon-01");
  assert.equal(draft.presentation.visual.dodge.assetId,"pack:capture:sprite-fleur-defense-01");
+ for(const prop of ["movement","movementBack","rangedAttack","rangedAttackBack"]){
+   assert.equal(draft.presentation.visual[prop],undefined,"author has not saved an animation assignment; do not invent it");
+ }
  assert.deepEqual(draft.sourceStats,record.draft.sourceStats);
  assert.deepEqual(draft.combat,record.draft.combat);
- assert.deepEqual(draft.skillIds,record.draft.skillIds);
- assert.deepEqual(draft.presentation.visual.front,{assetId:"pack:capture:creature-heriplante-opponent-01"});
- assert.deepEqual(draft.presentation.visual.back,{assetId:"pack:capture:creature-heriplante-player-01"});
- assert.equal(draft.presentation.visual.movementPlayback.mode,"loop");
- for(const [field,action,view] of mappings){
-   const id="pack:capture:creature-heriplante-"+action+"-"+view+"-12-v1";
-   assert.equal(draft.presentation.visual[field].assetId,id);
-   assert.equal(draft.presentation.visual[field].mode,"sprite");
-   assert.equal(draft.presentation.visual[field].rotationTurns,0);
- }
+ assert.deepEqual(record.loadout.creatureId,"crea_nat_1");
 });
-test("all four role-specific media resolve to separate official WebP atlas files",()=>{
- const assets=mappings.map(([,action,view,frameMs,playbackMode])=>{
-  const file=folder+action+"/"+view+"/atlases/"+files[action+":"+view];
-  return {id:"pack:capture:creature-heriplante-"+action+"-"+view+"-12-v1",
-   assetType:"sprite",mediaType:"image",category:"creature",
-   tags:["capture","creature","heriplante",action,view,"animated"],
-   resource:{file,format:"sprite-strip",frameCount:12,frameMs,playbackMode}};
- });
- const resolver=createGlobalPresentationAssetResolverV1({assetCatalog:{assets},assetUrlForFile:globalVisualAssetUrl});
+test("all four genuine Hériplante 12f media are available as independent editor-assignable official catalog roles",()=>{
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
  assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v([0-9]+)-/)?.[1]||0)>=60);
- for(const [field,action,view,frameMs,mode] of mappings){
-  const id=record.draft.presentation.visual[field].assetId;
-  const meta=assets.find(x=>x.id===id);
-  assert.ok(meta);
-  assert.equal(captureEditorCreatureVisualKindV1(meta),action);
-  assert.ok(captureEditorAssetMatchesRoleV1(meta,action));
-  const media=resolver(id);
-  assert.equal(media.url,globalVisualAssetUrl(meta.resource.file));
-  assert.equal(media.frameCount,12);
-  assert.equal(media.frameMs,frameMs);
-  assert.equal(media.playbackMode,mode);
+ const assets=list.map(item=>({
+   id:"pack:capture:creature-heriplante-"+item.action+"-"+item.view+"-12-v1",
+   assetType:"sprite",mediaType:"image",category:"creature",
+   tags:["capture","creature","heriplante",item.action,item.view,"animated",item.view==="player"?"dos":"face"],
+   compatibility:{uses:["combat","capture","editor"]},
+   resource:{
+     file:"capture/creatures/heriplante/animations/"+item.action+"/"+item.view+"/atlases/"+item.name,
+     format:"sprite-strip",frameCount:12,frameMs:item.ms,playbackMode:item.mode
+   }
+ }));
+ const resolver=createGlobalPresentationAssetResolverV1({assetCatalog:{assets},assetUrlForFile:globalVisualAssetUrl});
+ for(const item of list){
+   const id="pack:capture:creature-heriplante-"+item.action+"-"+item.view+"-12-v1";
+   const asset=assets.find(a=>a.id===id);
+   assert.ok(asset);
+   assert.equal(captureEditorCreatureVisualKindV1(asset),item.action);
+   assert.equal(captureEditorAssetMatchesRoleV1(asset,item.action),true);
+   assert.equal(captureEditorAssetMatchesRoleV1(asset,item.action==="attack"?"movement":"attack"),false);
+   const result=resolver(id);
+   assert.equal(result.url,globalVisualAssetUrl(asset.resource.file));
+   assert.equal(result.frameCount,12);
+   assert.equal(result.frameMs,item.ms);
+   assert.equal(result.playbackMode,item.mode);
  }
 });
