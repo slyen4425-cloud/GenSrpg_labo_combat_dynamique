@@ -27,7 +27,7 @@ export function projectCaptureEncounterOwnedStatsV1({
      !configuredCreatures.has(speciesId))
     throw new RangeError('Owned creature species is not present in official Combat registry');
   const bonus=allocations(statAllocations);
-  if(bonus===null||Object.values(bonus).every(points=>points===0))
+  if(bonus===null||Object.keys(bonus).length===0)
     return configuredCreatures;
   if(statRegistry==null)
     throw new TypeError('Official Combat statRegistry is required for owned stat allocations');
@@ -46,6 +46,9 @@ export function projectCaptureEncounterOwnedStatsV1({
       throw new RangeError('Owned stat value exceeds a safe Combat projection');
     values[statId]=sum;
   }
+  // Zero-only configurations must still validate their IDs, but never
+  // create a new Combat instance or a false per-member difference.
+  if(Object.values(bonus).every(points=>points===0))return configuredCreatures;
   const projected=normalizeCaptureCreatureStatValuesV1({
     schema:'capture-creature-stat-values-v1',creatureId:speciesId,values
   },registry);
