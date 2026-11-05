@@ -125,6 +125,30 @@ export function createBattleActorAiController({
   const tacticSeed = textSeed(normalizedActorId) ^ (Number(profile?.seed) || 0);
   const allies = Object.freeze(allyIds.filter(id => typeof id === "string" && id !== normalizedActorId));
 
+  const failedHoldUntil = new Map();
+  let recentHold = null;
+  function holdAvailable(skill,targetId,state) {
+    if(!skill.contactHold)return true;
+    const key=skill.id+"::"+targetId;
+    const until=failedHoldUntil.get(key)??0;
+    if(Number(state.elapsedMs??0)>=until){failedHoldUntil.delete(key);return true;}
+    return false;
+  }
+  function watchHold(skill,targetId,state) {
+    if(!skill.contactHold)return;
+    recentHold={skillId:skill.id,targetId,
+      actorHp:Number(state.fighters[normalizedActorId]?.hp),
+      targetHp:Number(state.fighters[targetId]?.hp)};
+  }
+  function assessHold(state) {
+    if(!recentHold)return;
+    const hold=recentHold;recentHold=null;
+    const a=Number(state.fighters[normalizedActorId]?.hp),t=Number(state.fighters[hold.targetId]?.hp);
+    if(![a,t,hold.actorHp,hold.targetHp].every(Number.isFinite))return;
+    const dealt=Math.max(0,hold.targetHp-t),lost=Math.max(0,hold.actorHp-a);
+    if(dealt===0||lost>dealt)failedHoldUntil.set(hold.skillId+"::"+hold.targetId,Number(state.elapsedMs??0)+8000);
+  }
+
   // Do not select a self-sacrifice unless a teammate can benefit and HP is critical.
   function allowAllySacrifice(state, actor, skill) {
     const effects = Array.isArray(skill.effects) ? skill.effects : [];
