@@ -12,8 +12,8 @@ export const CAPTURE_COMBAT_TEST_MAX_TEAM_SIZE_V1 = 6;
 export function resolveCaptureCombatCreatureLevelsV1({
  localCreatureIds,opponentCreatureIds,previewLevel=20,creatureLevelsById
 }={}){
- if(!Number.isInteger(previewLevel)||previewLevel<1||previewLevel>100)
-  throw new RangeError('Combat previewLevel must be an integer 1..100');
+ if(!Number.isSafeInteger(previewLevel)||previewLevel<1)
+  throw new RangeError('Combat previewLevel must be a positive safe integer');
  if(!Array.isArray(localCreatureIds)||!Array.isArray(opponentCreatureIds)||
    !localCreatureIds.length||!opponentCreatureIds.length)
   throw new TypeError('Combat participant creature IDs required');
@@ -31,8 +31,8 @@ export function resolveCaptureCombatCreatureLevelsV1({
   throw new RangeError('Combat creatureLevelsById must match every participating creature exactly');
  return new Map(ids.map(id=>{
   const level=creatureLevelsById[id];
-  if(!Number.isInteger(level)||level<1||level>100)
-   throw new RangeError('Invalid Combat creature level for '+id+'; expected integer 1..100');
+  if(!Number.isSafeInteger(level)||level<1)
+   throw new RangeError('Invalid Combat creature level for '+id+'; expected positive safe integer');
   return [id,level];
  }));
 }
@@ -73,8 +73,8 @@ export function buildCaptureEditorCombatTestV1({
   statRegistry = null, progressionRules = null,
   previewLevel = 20, creatureLevelsById
 }) {
-  if (!Number.isInteger(previewLevel) || previewLevel < 1 || previewLevel > 100) {
-    throw new RangeError("Le niveau du combat de test doit être un entier de 1 à 100.");
+  if (!Number.isSafeInteger(previewLevel) || previewLevel < 1) {
+    throw new RangeError("Le niveau du combat de test doit être un entier positif sûr.");
   }
   const local = teamIds(localCreatureIds, "L’équipe locale", configuredCreatures);
   const opponent = teamIds(opponentCreatureIds, "L’équipe adverse", configuredCreatures);

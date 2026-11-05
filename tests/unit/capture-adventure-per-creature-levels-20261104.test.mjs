@@ -17,7 +17,7 @@ test('adventure explicit Level 1 is not silently overwritten by Level 20 preview
 test('real battle requires every participant and rejects other species or invalid levels',()=>{
  const bad=[
   {crea_ally:1},{crea_ally:1,crea_enemy:0},
-  {crea_ally:101,crea_enemy:1},{crea_ally:1.5,crea_enemy:1},
+  {crea_ally:Number.MAX_SAFE_INTEGER+1,crea_enemy:1},{crea_ally:1.5,crea_enemy:1},
   {crea_ally:1,crea_enemy:1,unknown:1},
   {crea_ally:'1',crea_enemy:1},null
  ];

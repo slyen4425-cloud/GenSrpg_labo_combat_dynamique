@@ -6,8 +6,8 @@ function requireParticipant(participant, side) {
   if (typeof participant?.speciesId !== "string" || !participant.speciesId.trim()) {
     throw new TypeError(side + " speciesId is required");
   }
-  if (!Number.isInteger(participant.level) || participant.level < 1 || participant.level > 100) {
-    throw new RangeError(side + " level must be an integer in 1..100");
+  if (!Number.isSafeInteger(participant.level) || participant.level < 1) {
+    throw new RangeError(side + " level must be a positive safe integer");
   }
 }
 
