@@ -117,7 +117,7 @@ function fakeClock() {
   };
 }
 
-function harness() {
+function harness({groundContactResolution="timed"} = {}) {
   const session = createCombatSession({
     distance: "medium",
     fighters: [
@@ -128,6 +128,7 @@ function harness() {
   const clock = fakeClock();
   const resolutions = [];
   const runtime = createCombatRuntime({
+    groundContactResolution,
     session,
     now: clock.now,
     setTimer: clock.setTimer,
@@ -564,4 +565,35 @@ test("ordinary aerial contact cannot chase and damage an already airborne oppone
     assert.equal(resolutions.find(x=>x.skillId==="aerial-melee-chaser")?.outcome,"evaded");
     assert.equal(session.snapshot().fighters.player.hp,100);
   } finally{runtime.dispose();}
+});
+
+
+test("visible ordinary grounded contact cannot override underground defender presence",()=>{
+  const {runtime,session,clock,resolutions}=harness({groundContactResolution:"visible"});
+  const buried=skill({id:"burrow-defender",form:"contact",approachMode:"burrow",travelMs:2000,damage:15});
+  const incoming=skill({id:"ground-smash-surface",form:"contact",approachMode:"ground",travelMs:1200,damage:28});
+  assert.equal(runtime.startSkill({actorId:"player",targetId:"opponent",skill:buried}).ok,true);
+  assert.equal(runtime.startSkill({actorId:"opponent",targetId:"player",skill:incoming}).ok,true);
+  clock.setTime(650);
+  const observed=runtime.reportActionContact({actorId:"opponent",targetId:"player",skillId:incoming.id});
+  assert.equal(observed.ok,true);
+  const resolved=resolutions.find(r=>r.skillId===incoming.id);
+  assert.equal(resolved?.outcome,"evaded");
+  assert.equal(resolved?.targetPresence,"underground");
+  assert.equal(session.snapshot().fighters.player.hp,100,"burrowing defender must ignore the visible ground overlap");
+  runtime.dispose();
+});
+
+test("explicit anti-underground grounded strike still respects authored presence reach",()=>{
+  const {runtime,session,clock,resolutions}=harness({groundContactResolution:"visible"});
+  const buried=skill({id:"burrow-defender-anti",form:"contact",approachMode:"burrow",travelMs:2000,damage:0});
+  const incoming=skill({id:"ground-smash-anti-underground",form:"contact",approachMode:"ground",travelMs:1200,damage:28,
+    hitPresenceStates:["surface","underground"]});
+  assert.equal(runtime.startSkill({actorId:"player",targetId:"opponent",skill:buried}).ok,true);
+  assert.equal(runtime.startSkill({actorId:"opponent",targetId:"player",skill:incoming}).ok,true);
+  clock.setTime(650);
+  assert.equal(runtime.reportActionContact({actorId:"opponent",targetId:"player",skillId:incoming.id}).ok,true);
+  assert.equal(resolutions.find(r=>r.skillId===incoming.id)?.outcome,"hit");
+  assert.equal(session.snapshot().fighters.player.hp,72);
+  runtime.dispose();
 });
