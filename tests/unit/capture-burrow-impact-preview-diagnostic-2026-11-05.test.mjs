@@ -49,5 +49,7 @@ test("diagnostic: actual impact animation RGBA 20-frame mosaic for inspection",(
    out[j+3]=255;
   }
  }
- console.log("BURROW_IMPACT_PREVIEW_BASE64="+png(W,H,out).toString("base64"));
+ const b64=png(W,H,out).toString("base64");
+ for(let start=0,part=0;start<b64.length;start+=12000,part++)
+   console.log("BURROW_IMPACT_PREVIEW_PART_"+String(part).padStart(3,"0")+"="+b64.slice(start,start+12000));
 });
