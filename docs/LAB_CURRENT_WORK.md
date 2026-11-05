@@ -1,3 +1,11 @@
+## 2026-11-05 — Réconciliation des filtres élémentaires des sprites (EN COURS)
+- Base gh-pages `22da2abd5536bfb25e37e14b80f4cd539150899c`, START `checkpoint/lab-start-visual-element-filters-reconcile-2026-11-05`, WORK `work/lab-visual-element-filters-reconcile-2026-11-05`.
+- Un contrôleur pour les menus de sprites (statuts / adversaire inclus), créatures et compétences ; préserver Armure de pointe, les IDs et les banques officielles.
+- TDD RED→GREEN, synchronisation ESM, cinq jobs CI, checkpoint et PR avant publication.
+- Détails : `docs/LAB_VISUAL_ELEMENT_FILTERS_RECONCILE_2026_11_05.md`.
+
+---
+
 ## 2026-11-05 — Publication de la capacité auteur Armure de pointe (LOT DONNÉES)
 - Diagnostic : export auteur disponible, ID `armure-de-pointe`, absent de `data/capture/showcase` et du manifeste natif ; la bibliothèque `configuredSkills` ne peut donc pas la proposer. Pas de second enregistrement.
 - BASE `gh-pages@f53725e1064f9d2947bbefce6fc5f77cb82b008f`, START `checkpoint/lab-start-armure-pointe-import-2026-11-05`, WORK `work/lab-armure-pointe-import-2026-11-05`.
