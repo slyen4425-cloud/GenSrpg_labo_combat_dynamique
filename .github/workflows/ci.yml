@@ -52,6 +52,8 @@ jobs:
         run: node tests/browser/capture-heriplante-player-animations-media-smoke.mjs
       - name: Real Chromium Heriplante opponent attack 12f from official catalog
         run: node tests/browser/capture-heriplante-attack-opponent-media-smoke.mjs
+      - name: Real Chromium Heriplante opponent run 12f and Grainou catalog resolver
+        run: node tests/browser/capture-heriplante-opponent-run-media-smoke.mjs
       - name: Real Chromium Ice VFX zone floor spike fog selectors and 3 actual WebP images
         run: node tests/browser/capture-ice-ground-spike-fog-editor-smoke.mjs
       - name: Real Chromium charged projectile author fields
