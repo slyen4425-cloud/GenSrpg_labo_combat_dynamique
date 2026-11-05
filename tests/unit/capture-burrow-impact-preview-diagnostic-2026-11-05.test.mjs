@@ -54,3 +54,17 @@ test("diagnostic: actual impact animation RGBA 20-frame mosaic for inspection",(
  for(let start=0,part=0;start<b64.length;start+=12000,part++)
    console.log("BURROW_IMPACT_PREVIEW_PART_"+String(part).padStart(3,"0")+"="+b64.slice(start,start+12000));
 });
+
+test("diagnostic: alpha row runs for late impact frames",()=>{
+ for(const id of [8,15,16,17,18,19,20]){
+  const p=decode("sprite_burrow_impact_"+String(id).padStart(2,"0")+".png");
+  const counts=[];
+  for(let y=0;y<512;y++){let n=0;for(let x=0;x<512;x++)if(p[(y*512+x)*4+3]>=8)n++;counts.push(n);}
+  const runs=[];let start=-1,max=0,total=0;
+  for(let y=0;y<=512;y++){const n=y<512?counts[y]:0;
+   if(n>0){if(start<0){start=y;max=0;total=0;}max=Math.max(max,n);total+=n;}
+   else if(start>=0){runs.push({start,end:y-1,max,total});start=-1;}
+  }
+  console.log("IMPACT_ROW_RUNS_"+id+"="+JSON.stringify(runs));
+ }
+});
