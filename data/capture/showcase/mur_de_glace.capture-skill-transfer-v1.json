@@ -82,8 +82,16 @@
           "arenaXPct": 47,
           "arenaYPct": 55,
           "spriteAssetId": "pack:capture:sprite-mur-glace-arcanique-01",
-          "visualScale": 4,
+          "opponentSpriteAssetId": "pack:capture:sprite-mur-glace-arcanique-01",
+          "opponentPlacementMode": "arena",
+          "opponentVisualScale": 1.5,
+          "opponentVisualScaleX": 1.5,
+          "opponentVisualScaleY": 1.2,
+          "opponentArenaXPct": 70,
+          "opponentArenaYPct": 50,
+          "visualScale": 2.5,
           "visualScaleX": 1.5,
+          "visualScaleY": 1.2,
           "offsetForwardPx": 0,
           "offsetUpPx": 50
         }
