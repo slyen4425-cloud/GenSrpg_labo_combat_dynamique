@@ -122,7 +122,7 @@
     ],
     "presentation": {
       "id": "creature:crea_nat_1",
-      "version": 9,
+      "version": 3,
       "subjectType": "creature",
       "subjectId": "crea_nat_1",
       "profileId": "quadruped",
@@ -167,42 +167,6 @@
           "durationMs": 1800,
           "offsetX": 0,
           "offsetY": 0
-        },
-        "rangedAttack": {
-          "assetId": "pack:capture:creature-heriplante-attack-opponent-12-v1",
-          "mode": "sprite",
-          "displayScale": 1,
-          "rotationTurns": 0,
-          "frameCount": 1,
-          "transitionMs": 80
-        },
-        "rangedAttackBack": {
-          "assetId": "pack:capture:creature-heriplante-attack-player-12-v1",
-          "mode": "sprite",
-          "displayScale": 1,
-          "rotationTurns": 0,
-          "frameCount": 1,
-          "transitionMs": 80
-        },
-        "movement": {
-          "assetId": "pack:capture:creature-heriplante-movement-opponent-12-v1",
-          "mode": "sprite",
-          "displayScale": 1,
-          "rotationTurns": 0,
-          "frameCount": 1,
-          "transitionMs": 80
-        },
-        "movementBack": {
-          "assetId": "pack:capture:creature-heriplante-movement-player-12-v1",
-          "mode": "sprite",
-          "displayScale": 1,
-          "rotationTurns": 0,
-          "frameCount": 1,
-          "transitionMs": 80
-        },
-        "movementPlayback": {
-          "frameMs": 0,
-          "mode": "loop"
         }
       },
       "sockets": [
