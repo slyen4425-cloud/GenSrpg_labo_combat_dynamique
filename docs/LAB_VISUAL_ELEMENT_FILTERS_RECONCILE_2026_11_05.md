@@ -17,3 +17,10 @@
 ## Critères finaux
 - RED de la régression puis Foundation + quatre jobs Chromium verts sur SHA final, revue, checkpoint GREEN, PR `gh-pages`, contrôle Pages et test Android physique auteur distinct.
 - `main` inchangé.
+
+## Résultats de vérification (05-11-2026)
+- RED sur le nouveau test avant implémentation : commit `01fb66d7c1732a4036ba969635e31a85536c7d2d`, CI #42033560546 : masque sprite adversaire sans filtre élémentaire ; quatre autres jobs verts.
+- Correction fonctionnelle et cache ESM : commits `c395b0b639fa145998556a406d6995c94b3229c0` et `6db2afb6302aac9dd6fd254e8f67b38f8d80fa69`.
+- CI #42034149723, tentative 2 sur `6db2afb6302aac9dd6fd254e8f67b38f8d80fa69` : **5/5 jobs verts**, incluant le test de référence 1440/920/390, les statuts FACE/DOS, et la fondation.
+- Tentative 1 : unique échec du test de rendu d'ombre 2.5D (aucune modification du module de collision), corrigé par simple relance du même SHA sans altérer la logique ni le test. À surveiller en cas de récidive, sans le déclarer « corrigé ».
+- Publication uniquement par PR vers `gh-pages` et contrôle Pages ; test tactile sur appareil réel reste à faire par l'auteur.

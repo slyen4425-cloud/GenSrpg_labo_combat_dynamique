@@ -1,7 +1,7 @@
-## 2026-11-05 — Réconciliation des filtres élémentaires des sprites (EN COURS)
+## 2026-11-05 — Réconciliation des filtres élémentaires des sprites (CI 5/5 — jalon de livraison)
 - Base gh-pages `22da2abd5536bfb25e37e14b80f4cd539150899c`, START `checkpoint/lab-start-visual-element-filters-reconcile-2026-11-05`, WORK `work/lab-visual-element-filters-reconcile-2026-11-05`.
 - Un contrôleur pour les menus de sprites (statuts / adversaire inclus), créatures et compétences ; préserver Armure de pointe, les IDs et les banques officielles.
-- TDD RED→GREEN, synchronisation ESM, cinq jobs CI, checkpoint et PR avant publication.
+- TDD RED confirmé CI #42033560546 (masque opposant sans filtre), correction ciblée des assets et synchronisation ESM ; CI #42034149723 **5/5 GREEN (attempt 2, même SHA `6db2afb6302aac9dd6fd254e8f67b38f8d80fa69`)**. Le test 2.5D indépendant a échoué lors de l'attempt 1, puis réussi sans changement de code au second passage. Jalon de livraison via checkpoint / PR `gh-pages`.
 - Détails : `docs/LAB_VISUAL_ELEMENT_FILTERS_RECONCILE_2026_11_05.md`.
 
 ---
