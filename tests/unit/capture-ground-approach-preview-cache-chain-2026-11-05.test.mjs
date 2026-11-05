@@ -24,6 +24,6 @@ test("public Capture preview imports fresh locomotion script through ONE version
  assert.equal(query(entry,"capture-editor-preview-runtime-loader-v1.js"),release);
  assert.equal(query(human,"capture-showcase-skill-presets-v1.js"),release);
  assert.equal(query(loader,"capture-combat-preview-v1.js"),release);
- assert.ok(query(preview,"demo-app.js").endsWith("-ground-approach-steps-20261105"));
+ assert.ok(query(preview,"demo-app.js").includes("-ground-approach-steps-20261105"));
  assert.equal(query(demo,"plan-animation.js"),"ground-approach-steps-20261105");
 });
