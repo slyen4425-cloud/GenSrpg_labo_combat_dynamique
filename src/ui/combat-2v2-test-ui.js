@@ -1707,7 +1707,7 @@ export async function mountCoop2v2Test({
         const actorId = controller.snapshot().actorId;
         if (
           Number(state.elapsedMs) <
-          Number(aiReadyAt.get(actorId) ?? 0)
+          Number(aiReadyAt.get(actorId) ?? 0) && !controller.pendingCharge()
         ) {
           continue;
         }
@@ -1795,6 +1795,7 @@ export async function mountCoop2v2Test({
     onClock(state) {
       statusFx?.syncCountdowns(state);
       renderAvailability();
+      if(aiControllers.some(controller=>controller.pendingCharge()))queueAiDecisions();
       for (const controller of aiControllers) {
         const decision = controller.maybeDodge({ elapsedMs: state.elapsedMs });
         if (decision.status === "dodged" || decision.status === "defended") {
