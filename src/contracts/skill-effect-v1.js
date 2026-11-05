@@ -112,7 +112,10 @@ const FIELDS_BY_KIND = Object.freeze({
   ]),
   summon_entity: new Set([
     ...COMMON_FIELDS, "entityKind", "statId", "hpPerStatPoint", "interceptKinds", "spriteAssetId",
-    "visualScale", "visualScaleX", "visualScaleY", "offsetForwardPx", "offsetUpPx", "placementMode", "arenaXPct", "arenaYPct", "opponentSpriteAssetId"
+    "visualScale", "visualScaleX", "visualScaleY", "offsetForwardPx", "offsetUpPx", "placementMode", "arenaXPct", "arenaYPct", "opponentSpriteAssetId",
+    "opponentVisualScale", "opponentVisualScaleX", "opponentVisualScaleY",
+    "opponentPlacementMode", "opponentArenaXPct", "opponentArenaYPct",
+    "opponentOffsetForwardPx", "opponentOffsetUpPx"
   ])
 });
 
@@ -330,6 +333,35 @@ export function normalizeSkillEffectV1(input) {
     }
     if(value.spriteAssetId != null) output.spriteAssetId=requiredString(value.spriteAssetId,"summon_entity.spriteAssetId");
     if(value.opponentSpriteAssetId != null) output.opponentSpriteAssetId=requiredString(value.opponentSpriteAssetId,"summon_entity.opponentSpriteAssetId");
+    // Enemy wall parameters are OPTIONAL; missing values inherit the exact
+    // legacy player settings and its previous opponent-side projection.
+    if(value.opponentPlacementMode != null){
+      if(!["protected","behind","arena"].includes(value.opponentPlacementMode))
+        throw new RangeError("summon_entity.opponentPlacementMode must be protected, behind or arena");
+      output.opponentPlacementMode=value.opponentPlacementMode;
+    }
+    for(const axis of ["opponentVisualScale","opponentVisualScaleX","opponentVisualScaleY"]){
+      if(value[axis]==null)continue;
+      const scale=positiveNumber(value[axis],"summon_entity."+axis);
+      const maximum=axis==="opponentVisualScale"?12:8;
+      if(scale<0.25||scale>maximum)
+        throw new RangeError("summon_entity."+axis+" must be between 0.25 and "+maximum);
+      output[axis]=scale;
+    }
+    for(const axis of ["opponentArenaXPct","opponentArenaYPct"]){
+      if(value[axis]==null)continue;
+      const coordinate=Number(value[axis]);
+      if(!Number.isFinite(coordinate)||coordinate<0||coordinate>100)
+        throw new RangeError("summon_entity."+axis+" must be between 0 and 100");
+      output[axis]=coordinate;
+    }
+    for(const axis of ["opponentOffsetForwardPx","opponentOffsetUpPx"]){
+      if(value[axis]==null)continue;
+      const displacement=Number(value[axis]);
+      if(!Number.isFinite(displacement)||Math.abs(displacement)>150)
+        throw new RangeError("summon_entity."+axis+" must be between -150 and 150");
+      output[axis]=displacement;
+    }
     if(value.visualScale != null){
       const scale=positiveNumber(value.visualScale,"summon_entity.visualScale");
       if(scale<0.25||scale>12)throw new RangeError("summon_entity.visualScale must be 0.25 to 12");
