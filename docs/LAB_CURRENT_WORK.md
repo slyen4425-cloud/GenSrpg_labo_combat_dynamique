@@ -1,3 +1,14 @@
+## 2026-11-05 — Raccord Monster Capture : statistiques des instances possédées dans le vrai combat (EN COURS / RED attendu)
+
+- **Contexte** : GenSRPG Aventure conserve `party.active.statAllocations` (points du niveau), mais ne les transmet pas encore au combat; les scénarios natifs Combat utilisent uniquement les valeurs auteur `record.statValues`. Les créatures publiées, le Tester et le registre de statistiques doivent rester inchangés.
+- **Propriétaire** : Labo Combat est SEUL propriétaire des valeurs/statEffects et du constructeur natif `buildCaptureEncounterCombatSourceV1`. GenSRPG est seul propriétaire du portefeuille et de ses sauvegardes; Exploration ne transporte ensuite qu'une enveloppe versionnée.
+- **START** : `main@53890e1383b33f7a0ec5bb2fafed59acf1d7a163` (CI #41948369881 SUCCESS 5/5), `checkpoint/lab-start-adventure-instance-stat-allocations-2026-11-05`; branche `work/lab-adventure-instance-stat-allocations-2026-11-05`.
+- **Périmètre** : validation des bonus d'une instance par IDs du registre officiel Combat, addition à ses valeurs auteur uniquement dans la projection éphémère du combattant local, projection native de PV/puissance/résistances/vitesse, préservation d'un adversaire de même espèce non bonifié. Aucune formule de stats ni type d'objet dans GenSRPG, aucun deuxième moteur, pas de modification `gh-pages` ou des définitions enregistrées.
+- **TDD RED→GREEN** : vérification de base + bonus (y compris stat custom), de l'absence de mutation, refus ID inconnu/valeur négative ou fractionnaire, même espèce avec niveaux/statistiques distincts, 25 % PV après bonus et Tester niveau 20 inchangé. CI Lab Foundation et quatre navigateurs, checkpoints et revue avant main; consommateurs Exploration/GenSRPG seulement après certification de Combat main.
+- **Prochain jalon** : implémenter port optionnel dans le constructeur officiel; ensuite contrat transport Exploration puis GenSRPG, chacun dans son propre lot/branche/CI, en privilégiant une vraie partie testable. Dungeon et éditeur d'objets sont hors périmètre.
+
+---
+
 ## 2026-11-05 — Combat accepte le niveau positif défini par la partie
 - **START** `checkpoint/lab-start-adventure-free-level-cap-2026-11-05` au `main@dd15e3e2df0d36d039a554e89e094aba28b43dff` ; branche `work/lab-adventure-free-level-cap-2026-11-05`. Lecture préalable CHARTE/ROADMAP/CURRENT_WORK/CHECKPOINT_POLICY.
 - **Cause racine** : `src/ui/capture-editor-combat-test-v1.js` et `src/ui/capture-encounter-combat-source-v1.js` refusaient les levels >100 alors que le plafond appartient aux règles de la partie. Test RED `tests/unit/capture-adventure-free-level-cap-v1.test.mjs` : 101/250/1500/1M dans le seul resolver natif + rejets invalides. **Correction** : validation d'entier positif sûr, sans plafond implicite ; **Tester conserve niveau 20 par défaut**, compétences et stats autorisées identiques, aucune valeur d'auteur modifiée.
