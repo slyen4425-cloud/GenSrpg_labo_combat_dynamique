@@ -28,7 +28,8 @@ test('author-approved Gorice V9 uses identical file and one official creature ca
  assert.equal(draft.presentation.version,9);
  assert.equal(draft.presentation.viewOverrides.player.displayScale,1.5);
  assert.equal(draft.presentation.viewOverrides.opponent.displayScale,0.8);
- assert.equal(importCaptureTransferJsonV1(bytes.toString()).kind,'creature');
+ const statRegistry=JSON.parse(read('data/capture/monster-capture-stat-registry.v1.json'));
+ assert.equal(importCaptureTransferJsonV1(bytes.toString(),{statRegistry}).kind,'creature');
 });
 test('all six Gorice skills are resolved by one official Combat main catalogue, not a shadow source',()=>{
  const skillFiles=ids.map(pathFor);
