@@ -1,5 +1,19 @@
 # Laboratoire Combat Dynamique — Charte permanente de développement
 
+## RÈGLE 0 — CRITIQUE : une bibliothèque canonique et aucune publication complète dupliquée (5 novembre 2026)
+
+**Règle bloquante commune GenSRPG, Combat et Exploration, appliquée dans chaque dépôt par son propre propriétaire.**
+
+1. **Une bibliothèque canonique par site** : interdit de recopier intégralement les sprites, atlas, musiques, données et bibliothèques Combat/Capture dans plusieurs prévisualisations. Les publications historiques peuvent conserver leurs URL ou des redirections documentées, mais sans recopier le même arbre lourd. Aucun ZIP auteur dans un site public sans consommation prouvée.
+2. **Budget et inventaire** : chaque site GitHub Pages publie un rapport automatique en octets par catégorie, chemins dupliqués, SHA source, asset count et URL de test. **900 Mio non compressés maximum** tant qu'un changement de budget motivé, explicite et testé n'a pas été validé. Ne jamais contourner par timeout/retry.
+3. **Séparation de version** : `main` est la source de règles/contrats officielle consommée par GenSRPG ; `gh-pages` est historiquement la branche de l'éditeur publié, aujourd'hui distincte. Toute convergence passe par PR ciblée et contrats vérifiés : ni fusion aveugle des historiques, ni double moteur autoritaire.
+4. **Aucune suppression** d'assets auteur, sources, sauvegardes, branches, historiques ou fichiers de médias pour faire passer une publication. Le nettoyage porte sur la **copie temporaire du build** uniquement, après inventaire des imports/URLs effectifs, tests PC/mobile et preuve de compatibilité.
+5. **Gate de sortie** : CI exacte, tests navigateur de l'éditeur, vérification des anciens liens et de la source chargée, checkpoint et preuve du SHA servi en HTTPS. La validation d'une PR seule n'est pas une publication ; NON GREEN si n'importe quel maillon échoue.
+
+Cette règle prévaut sur les workflows de copie historiques et ne permet pas au Combat de modifier directement les sources d'Exploration ni de GenSRPG.
+
+
+
 Cette charte est la référence obligatoire avant chaque travail sur le dépôt `GenSrpg_labo_combat_dynamique`.
 
 Elle est inspirée de la charte permanente de GenSrpG, mais adaptée à un laboratoire autonome.
