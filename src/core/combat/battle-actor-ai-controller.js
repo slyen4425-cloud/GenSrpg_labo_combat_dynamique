@@ -186,7 +186,7 @@ export function createBattleActorAiController({
       const goal = reinforcementGoal(state, actor, skill);
       for (const targetId of candidateTargetIds(skill)) {
         const target = state.fighters[targetId];
-        if (!target || Number(target.hp) <= 0) continue;
+        if (!target || Number(target.hp) <= 0 || !holdAvailable(skill,targetId,state)) continue;
         const preview = session.previewSkill({ actorId: normalizedActorId, targetId, skill });
         if (!preview.ok) {
           if (preview.outcome === "insufficient_energy" && !saving) {
@@ -216,6 +216,7 @@ export function createBattleActorAiController({
     for (const choice of choices) {
       const result = runtime.startSkill({actorId:normalizedActorId, targetId:choice.targetId, skill:choice.skill});
       if (!result.ok) continue;
+      watchHold(choice.skill,choice.targetId,state);
       recentSkillIds.unshift(choice.skill.id);
       if (recentSkillIds.length > 2) recentSkillIds.pop();
       tacticalTurnIndex++;
@@ -339,6 +340,7 @@ export function createBattleActorAiController({
       });
     }
 
+    assessHold(state);
     const targetId = aliveTarget(state);
     if (!targetId) {
       return Object.freeze({
@@ -358,7 +360,7 @@ export function createBattleActorAiController({
         - (right.candidateIndex - skillIndex + skills.length) % skills.length);
 
     for (const { skill, candidateIndex, goal } of candidates) {
-      if (!allowAllySacrifice(state, actor, skill)) continue;
+      if (!allowAllySacrifice(state, actor, skill) || !holdAvailable(skill,targetId,state)) continue;
       const preview = session.previewSkill({
         actorId: normalizedActorId,
         targetId,
@@ -411,6 +413,7 @@ export function createBattleActorAiController({
         continue;
       }
 
+      watchHold(skill,targetId,state);
       skillIndex =
         (candidateIndex + 1) % skills.length;
 
@@ -446,6 +449,7 @@ export function createBattleActorAiController({
       threatNumber = 0;
       visibleThreat = null;
       recentSkillIds.length = 0;
+      recentHold=null;failedHoldUntil.clear();
     },
     snapshot() {
       return Object.freeze({
