@@ -6,6 +6,11 @@ const formatHp=e=>round(e.hp)+" / "+round(e.maxHp)+" PV";
 // Keep the opposing free-arena wall next to its protectee, rather than in
 // the neutral midfield. The author X still adjusts the remaining front gap.
 export const OPPONENT_BARRIER_NEAR_OWNER_FRACTION_V1=0.75;
+
+// One author asset owner per wall. Enemy override is OPTIONAL, never a second gameplay entity.
+export function resolveCombatBarrierSpriteAssetIdForSideV1(entity,opponentSide=false){
+  return opponentSide?(entity.opponentSpriteAssetId??entity.spriteAssetId??null):(entity.spriteAssetId??null);
+}
 // A free-arena wall belongs to its protected team. Author coordinates are
 // unchanged for the primary/player side. The opposing side projects the same
 // author X toward its own fighter rather than reusing the player's world X.
@@ -52,13 +57,14 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
     arenaOverlay.style.zIndex="3";
     arenaHost.append(arenaOverlay);
   }
-  function newNode(entity,host){
+  function newNode(entity,host,opponentSide=false){
     const node=document.createElement("div");node.dataset.combatEntityId=entity.id;
     node.dataset.combatEntityKind="barrier";
     node.style.cssText="position:absolute;bottom:10%;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:3px;transform:translateX(-50%);";
     const sprite=document.createElement("div");sprite.dataset.combatEntitySprite="true";
     sprite.style.cssText="position:relative;width:70px;height:92px;overflow:hidden;box-sizing:border-box;border:2px solid rgba(181,244,255,.96);border-radius:38% 38% 12% 12%;background:linear-gradient(110deg,rgba(234,254,255,.9),rgba(57,167,224,.83) 38%,rgba(12,81,140,.94) 82%);clip-path:polygon(15% 5%,36% 0%,52% 10%,76% 0%,95% 20%,100% 100%,0 100%,0 30%);filter:drop-shadow(0 0 9px rgba(120,224,255,.8));";
-    const asset=entity.spriteAssetId?assetForId(entity.spriteAssetId):null;
+    const assetId=resolveCombatBarrierSpriteAssetIdForSideV1(entity,opponentSide);
+    const asset=assetId?assetForId(assetId):null;
     const url=asset?.url??asset?.runtimeUrl??asset?.resource?.runtimeUrl??null;
     if(typeof url==="string"&&url.length>0){
       const image=document.createElement("img");image.dataset.combatEntityImage="true";
@@ -134,15 +140,14 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
       if(arenaMode&&!arenaOverlay)throw new Error("arenaHost is required for arena wall placement");
       const size=projectCombatArenaBarrierVisualSizeV1(entity,
         arenaHost?fxArenaScaleV1(arenaHost):1);
-      let opponentSide=false;
+      const primaryActorId=Object.keys(fighterContainers)[0];
+      const opponentSide=typeof teamOf==="function"
+        ?teamOf(entity.protectedActorId)!==teamOf(primaryActorId)
+        :entity.protectedActorId!==primaryActorId;
       const parent=arenaMode?arenaOverlay:hosts[entity.protectedActorId];
-      const item=existing??newNode(entity,parent);
+      const item=existing??newNode(entity,parent,opponentSide);
       if(item.node.parentNode!==parent)parent.append(item.node);
       if(arenaMode){
-        const primaryActorId=Object.keys(fighterContainers)[0];
-        opponentSide=typeof teamOf==="function"
-          ?teamOf(entity.protectedActorId)!==teamOf(primaryActorId)
-          :entity.protectedActorId!==primaryActorId;
         const stageRect=arenaHost.getBoundingClientRect();
         const ownerRect=fighterContainers[entity.protectedActorId].getBoundingClientRect();
         const ownerCenterXPct=stageRect.width>0

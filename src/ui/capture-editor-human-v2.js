@@ -74,7 +74,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -119,7 +119,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -6458,6 +6458,13 @@ function appendHumanSkillEffectV1(
    if(effect?.spriteAssetId && ![...barrierSprite.options].some(o=>o.value===effect.spriteAssetId))
      createOption(barrierSprite,effect.spriteAssetId,effect.spriteAssetId);
    barrierSprite.value=effect?.spriteAssetId??"";
+   const barrierOpponentSprite=document.createElement("select");
+   barrierOpponentSprite.dataset.skillBarrierOpponentSpriteAssetId="true";
+   barrierOpponentSprite.dataset.assetRole="zone";
+   populateSelect(barrierOpponentSprite,EDITOR_VISUAL_ASSETS_BY_ROOT.get(root)??[],"zone");
+   if(effect?.opponentSpriteAssetId && ![...barrierOpponentSprite.options].some(o=>o.value===effect.opponentSpriteAssetId))
+     createOption(barrierOpponentSprite,effect.opponentSpriteAssetId,effect.opponentSpriteAssetId);
+   barrierOpponentSprite.value=effect?.opponentSpriteAssetId??"";
    const wallScale=tacticalNumberInputV1("skillBarrierVisualScale",effect?.visualScale??1,{min:0.25,max:12,step:0.05});
     const wallScaleX=tacticalNumberInputV1("skillBarrierVisualScaleX",effect?.visualScaleX??1,{min:0.25,max:8,step:0.05});
     const wallScaleY=tacticalNumberInputV1("skillBarrierVisualScaleY",effect?.visualScaleY??1,{min:0.25,max:8,step:0.05});
@@ -6502,7 +6509,8 @@ function appendHumanSkillEffectV1(
   barrierHelp.textContent="Mur défensif réel avec ses propres PV : statistique du lanceur × coefficient (0 point = aucune invocation). Une attaque interceptée s'arrête entièrement sur le mur, même si elle le détruit ; aucun malus ne traverse. Les zones et DoT ne sont pas interceptés. Une nouvelle invocation de la même compétence remplace le mur précédent.";
   barrierBox.append(tacticalFieldV1("Statistique de l'invocation",barrierStatId),
     tacticalFieldV1("PV par point de stat (coefficient libre)",barrierHpRatio),
-     tacticalFieldV1("Sprite du mur (bibliothèque de zones)",barrierSprite),
+     tacticalFieldV1("Sprite du mur côté joueur (défaut des deux camps)",barrierSprite),
+     tacticalFieldV1("Sprite du mur côté adversaire (facultatif, sinon celui du joueur)",barrierOpponentSprite),
      tacticalFieldV1("Échelle générale du mur (× 0,25 à × 12)",wallScale),
       tacticalFieldV1("Scale X — largeur (× 0,25 à × 8)",wallScaleX),
       tacticalFieldV1("Scale Y — hauteur (× 0,25 à × 8)",wallScaleY),
@@ -7024,6 +7032,8 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
         {placementMode:"behind"}:{}),
       ...(row.querySelector("[data-skill-barrier-sprite-asset-id]")?.value
         ? {spriteAssetId:row.querySelector("[data-skill-barrier-sprite-asset-id]").value}:{}),
+      ...(row.querySelector("[data-skill-barrier-opponent-sprite-asset-id]")?.value
+        ? {opponentSpriteAssetId:row.querySelector("[data-skill-barrier-opponent-sprite-asset-id]").value}:{}),
       interceptKinds:[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
         .filter(input=>input.checked).map(input=>input.value)
     };

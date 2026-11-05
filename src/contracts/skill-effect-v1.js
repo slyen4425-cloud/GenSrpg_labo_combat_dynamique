@@ -112,7 +112,7 @@ const FIELDS_BY_KIND = Object.freeze({
   ]),
   summon_entity: new Set([
     ...COMMON_FIELDS, "entityKind", "statId", "hpPerStatPoint", "interceptKinds", "spriteAssetId",
-    "visualScale", "visualScaleX", "visualScaleY", "offsetForwardPx", "offsetUpPx", "placementMode", "arenaXPct", "arenaYPct"
+    "visualScale", "visualScaleX", "visualScaleY", "offsetForwardPx", "offsetUpPx", "placementMode", "arenaXPct", "arenaYPct", "opponentSpriteAssetId"
   ])
 });
 
@@ -329,6 +329,7 @@ export function normalizeSkillEffectV1(input) {
       if(placementMode==="behind")output.placementMode="behind";
     }
     if(value.spriteAssetId != null) output.spriteAssetId=requiredString(value.spriteAssetId,"summon_entity.spriteAssetId");
+    if(value.opponentSpriteAssetId != null) output.opponentSpriteAssetId=requiredString(value.opponentSpriteAssetId,"summon_entity.opponentSpriteAssetId");
     if(value.visualScale != null){
       const scale=positiveNumber(value.visualScale,"summon_entity.visualScale");
       if(scale<0.25||scale>12)throw new RangeError("summon_entity.visualScale must be 0.25 to 12");

@@ -31,7 +31,8 @@ export function createCombatBarrierV1({state,sourceActorId,protectedActorId,sour
     ...(effect.placementMode==="arena"?{
       placementMode:"arena",arenaXPct:effect.arenaXPct,arenaYPct:effect.arenaYPct
     }:effect.placementMode==="behind"?{placementMode:"behind"}:{}),
-    interceptKinds:effect.interceptKinds,...(effect.spriteAssetId?{spriteAssetId:effect.spriteAssetId}:{}),createdAtMs:atMs});
+    interceptKinds:effect.interceptKinds,...(effect.spriteAssetId?{spriteAssetId:effect.spriteAssetId}:{}),
+    ...(effect.opponentSpriteAssetId?{opponentSpriteAssetId:effect.opponentSpriteAssetId}:{}),createdAtMs:atMs});
   return frozen({outcome:previous?"refreshed":"created",record,
     state:frozen({...state,combatEntities:frozen([...current.filter(entry=>!same(entry)),record])})});
 }

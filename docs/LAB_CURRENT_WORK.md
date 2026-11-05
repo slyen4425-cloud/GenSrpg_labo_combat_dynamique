@@ -1,3 +1,11 @@
+## 2026-11-05 — Sprite du mur distinct par camp (lot visuel/édition)
+- Base gh-pages `6b0139e2f8590db3ddd4caaf213adc7be34e4b66`, START `checkpoint/lab-start-barrier-side-sprites-2026-11-05`, WORK `work/lab-barrier-side-sprites-2026-11-05`.
+- `summon_entity.opponentSpriteAssetId` optionnel ; `spriteAssetId` joueur/default conservé. Résolution du camp au rendu existant, sans nouveau moteur de collision et sans modifier les PV du mur.
+- Éditeur : sélecteur mur joueur et adversaire facultatif ; les deux dans la bibliothèque de zones officielle, avec import/export unique.
+- Fichiers autorisés : Skill Effect V1, CombatEntity V1, renderer du mur, éditeur humain, tests + chaîne de cache publique si nécessaire. Protect : CombatRuntime, dommages, géométrie, 1v1/2v2, API GenSrpG, global-assets. Tests contractuels et rendu navigateur/CI 5 jobs avant GREEN et gh-pages.
+
+---
+
 ## 2026-11-05 — IA combat : recharge et contact utile
 - Base gh-pages `6b0139e2f8590db3ddd4caaf213adc7be34e4b66`, START `checkpoint/lab-start-ai-charge-contact-efficiency-2026-11-05`, WORK `work/lab-ai-charge-contact-efficiency-2026-11-05`.
 - Propriétaire décision : `src/core/combat/battle-actor-ai-controller.js`. Exploiter API native `previewChargedSkillRetrigger` pour la réactivation de charge sans nouveau timer/impact, et différer les `contactHold` inefficaces après bilan des vrais PV. Raccord horloge `src/ui/combat-2v2-test-ui.js`.
