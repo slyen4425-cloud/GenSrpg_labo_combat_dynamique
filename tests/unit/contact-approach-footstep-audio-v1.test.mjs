@@ -23,8 +23,8 @@ async function approachFootfalls(profileId) {
   return plan.cues?.filter(cue=>cue.type==="footfall")??[];
 }
 
-test("canonical contact approach cues have 4 massive, 2 quadruped, 3 biped and zero flying/serpentine footfalls", async()=>{
-  for(const [profile,count] of [["massive",4],["quadruped",2],["biped",3],["flying",0],["serpentine",0]]){
+test("canonical contact approach cues have 4 massive, 3 quadruped, 5 biped and zero flying/serpentine footfalls", async()=>{
+  for(const [profile,count] of [["massive",4],["quadruped",3],["biped",5],["flying",0],["serpentine",0]]){
     const cues=await approachFootfalls(profile);
     assert.equal(cues.length,count,profile);
     assert.ok(cues.every(cue=>cue.atMs>=0&&cue.atMs<=1400),profile+" cue must follow actual approach");
