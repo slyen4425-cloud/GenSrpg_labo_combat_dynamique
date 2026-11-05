@@ -4,9 +4,11 @@ import {readFileSync} from "node:fs";
 import {createHash} from "node:crypto";
 import {importCaptureTransferJsonV1,exportCaptureSkillTransferJsonV1} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 import {normalizeSkillEffectV1} from "../../src/contracts/skill-effect-v1.js";
+import {normalizeCaptureStatRegistryV1} from "../../src/contracts/capture-stat-registry-v1.js";
 import {CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
 import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 const read=path=>readFileSync(new URL("../../"+path,import.meta.url),"utf8");
+const registry=normalizeCaptureStatRegistryV1(JSON.parse(read("data/capture/monster-capture-stat-registry.v1.json")));
 const sources={
  gorice:"data/capture/source-exports/gensrpg-capture-creature-gorice-2026-11-05-1925.json",
  wall:"data/capture/source-exports/gensrpg-capture-skill-mur_de_glace-2026-11-05-1925.json"
@@ -35,7 +37,7 @@ test("RED: author original Gorice V9 is the exact single published transfer, wit
   "boule_neige","poing_givrant","mur_de_glace","pique_glace","furie_bestiale"]);
  assert.equal(d.statValues.values.glace,15);
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(path=>path===live.gorice).length,1);
- assert.equal(importCaptureTransferJsonV1(published).value.draft.id,"gorice");
+ assert.equal(importCaptureTransferJsonV1(published,{statRegistry:registry}).value.draft.id,"gorice");
 });
 
 test("RED: the final ice-wall export replaces exactly one official skill and keeps independent enemy placement",()=>{
