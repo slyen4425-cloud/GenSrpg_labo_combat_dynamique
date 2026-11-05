@@ -3,6 +3,7 @@
 - BASE `gh-pages@f53725e1064f9d2947bbefce6fc5f77cb82b008f`, START `checkpoint/lab-start-armure-pointe-import-2026-11-05`, WORK `work/lab-armure-pointe-import-2026-11-05`.
 - Export inchangé octet pour octet, SHA-256 `5c7e28002d2beed3e5e1e0f087995fa3baab1583f0ed65b6fb99cffa0f3710dc`. Niveau 5, Nature, renvoi 100% des dégâts contact sur 10s, sprite DOS déjà officiel. Polarité `detrimental` conservée telle que fournie ; pas d'invention du sprite adversaire, dont le sélecteur reste optionnel.
 - Seule autorité : un fichier `data/capture/showcase/armure-de-pointe.capture-skill-transfer-v1.json` et une entrée dans `src/catalogs/capture-showcase-skill-presets-v1.js`. Pas de changement des règles, rendus, assets, anciennes capacités, loadouts, autres laboratoires.
+- Le nouveau chemin du manifeste exige un rafraîchissement cohérent de la chaîne ESM de l'éditeur déjà existante (HTML, module entrée, Human Editor, chargeurs de previews et UI 2v2). Aucune deuxième bibliothèque, aucun autre champ d'auteur modifié.
 - TDD : test nouveau de hash / schéma / valeurs / unicité / transfert et éditeur ; sentinelle Chromium sur la vraie bibliothèque Nature et sélection avec rechargement de la vraie fiche. Tests Foundation + 4 Chromium sur SHA final, checkpoint GREEN, PR `gh-pages`, contrôle publication et test smartphone utilisateur distinct. Détails : `docs/LAB_ARMURE_POINTE_AUTHOR_IMPORT_2026_11_05.md`.
 
 ---
