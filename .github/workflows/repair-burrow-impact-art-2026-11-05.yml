@@ -1,4 +1,5 @@
 name: One-time repair authored burrow impact source and WebP
+# Verified VP8L lossless decoding and source-alpha QA before commit.
 on:
   push:
     branches: [work/lab-burrow-impact-asset-audit-2026-11-05]
