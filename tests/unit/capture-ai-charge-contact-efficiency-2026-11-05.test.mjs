@@ -16,7 +16,7 @@ function makeController({abilities,eligible=()=>true,active=()=>null}){
 }
 test("busy AI can re-activate a native charged action without starting another skill",()=>{
  const charged={id:"charged",name:"charged",energyCost:2,chargedAttack:{maxCharges:3}};
- let active={actionType:"skill",actionId:"charged",targetId:"enemy",skill:charged,chargeState:{chargeCount:1}};
+ let active={actionType:"skill",actionId:"charged",targetId:"enemy",skill:charged,chargeState:{chargeCount:1,maxCharges:3}};
  const h=makeController({abilities:[charged],active:()=>active});
  assert.equal(h.ai.pendingCharge(),true);
  const result=h.ai.takeTurn();
