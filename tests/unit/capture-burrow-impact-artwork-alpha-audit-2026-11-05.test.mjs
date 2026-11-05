@@ -22,9 +22,11 @@ test("public impact WebP atlas remains 20 frames of 384px with correct RIFF head
   assert.equal(bytes.toString("ascii",8,12),"WEBP");
   assert.ok(bytes.length>10000,"atlas must not be blank");
   const v=bytes.indexOf(Buffer.from("VP8X"));
-  assert.ok(v>0,"alpha-capable VP8X container required");
-  const width=1+bytes.readUIntLE(v+12,3);
-  const height=1+bytes.readUIntLE(v+15,3);
+  const l=bytes.indexOf(Buffer.from("VP8L"));
+  assert.ok(v>0||l>0,"lossless WebP VP8L or extended VP8X required");
+  if(l>0)assert.equal(bytes[l+8],0x2f,"lossless VP8L signature");
+  const width=v>0?1+bytes.readUIntLE(v+12,3):1+bytes[l+9]+((bytes[l+10]&63)<<8);
+  const height=v>0?1+bytes.readUIntLE(v+15,3):1+(bytes[l+10]>>6)+(bytes[l+11]<<2)+((bytes[l+12]&15)<<10);
   assert.equal(width,7680);
   assert.equal(height,384);
 });
