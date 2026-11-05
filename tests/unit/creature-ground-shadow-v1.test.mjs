@@ -55,9 +55,10 @@ for (const view of ["player", "opponent"]) {
       assert.ok(timeline.shadowKeyframes, "the canonical timeline must include the ground projection");
       assert.equal(timeline.shadowKeyframes.length, timeline.keyframes.length);
       let elapsed = 0;
+      const approachDuration = plan.segments.slice(0,-1).reduce((total,part)=>total+part.durationMs,0);
       for (let i = 0; i < plan.segments.length - 1; i++) {
         elapsed += plan.segments[i].durationMs;
-        const p = registry.get(profile).locomotion.phases[i].at, frame = timeline.shadowKeyframes[i + 1];
+        const p = elapsed / approachDuration, frame = timeline.shadowKeyframes[i + 1];
         assert.equal(frame.offset, timeline.keyframes[i + 1].offset);
         assert.equal(frame.easing, timeline.keyframes[i + 1].easing);
         assert.equal(translation(frame)[0], translation(timeline.keyframes[i + 1])[0]);
