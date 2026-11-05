@@ -1,3 +1,12 @@
+## 2026-11-05 — La cible souterraine esquive toujours les contacts de surface
+- Base gh-pages `4db7e39cc8bb07ddc45b817037ba57a4f6410f63`, START `checkpoint/lab-start-burrow-underground-ground-contact-2026-11-05`, WORK `work/lab-burrow-underground-ground-contact-2026-11-05`.
+- Export auteur transmis `attaque-sous-terraine` : `approachMode:burrow`, 2000 ms de trajet, 15 dégâts Terre, hitPresenceStates surface/underground. En cours de voyage souterrain, la victime doit échapper à toute attaque offensive ordinaire de surface, même si un capteur de contact DOM signale le chevauchement.
+- Cause: `resolveSkillCompletion` considère `confirmedVisibleBodyContact` comme supérieure à toute évade de présence, y compris `underground`. Correctif dans Action Resolver, propriétaire unique ; préserver l'exception intentionnelle aérienne et les compétences anti-souterraines.
+- Périmètre : `src/core/combat/action-resolver.js`, test intégration vrai Runtime, docs. Protéger le timing, le renderer, les sprites, Combat Runtime, IA, impacts, GenSrpG, global-assets, autres branches. TDD RED, CI 5/5 avant checkpoint GREEN, PR gh-pages et test mobile auteur.
+- Bug visuel impact `burrow:impact` séparé : diagnostic nécessaire avant tout recadrage ou régénération d'asset.
+
+---
+
 ## 2026-11-05 — Sprite du mur distinct par camp (lot visuel/édition)
 - Base gh-pages `6b0139e2f8590db3ddd4caaf213adc7be34e4b66`, START `checkpoint/lab-start-barrier-side-sprites-2026-11-05`, WORK `work/lab-barrier-side-sprites-2026-11-05`.
 - `summon_entity.opponentSpriteAssetId` optionnel ; `spriteAssetId` joueur/default conservé. Résolution du camp au rendu existant, sans nouveau moteur de collision et sans modifier les PV du mur.
