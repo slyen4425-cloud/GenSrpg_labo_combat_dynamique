@@ -1,3 +1,14 @@
+## 2026-11-05 — Réconciliation ciblée Combat main : Attaque sous-terraine V13 (recharge 25 s, sans fusion gh-pages)
+
+- **START** `main@954f38e6b84e842bc8bf6d8515d5c77b93aca5f1`; checkpoint `checkpoint/lab-start-showcase-author-v13-main-sync-2026-11-05`; branche `work/lab-showcase-author-v13-main-sync-2026-11-05`.
+- **Source auteur** : PR publiée sur Combat `gh-pages` #269, commit `7063384e4db35c7fd837fc55a367965a262c847b` (5/5 CI au SHA candidat), contenu V13 octet identique, cooldown 25000 ms. Pas de fusion des 1 260 commits historiques divergents ni de copie intégrale de l'éditeur.
+- **Autorité** : l'unique `src/catalogs/capture-showcase-skill-presets-v1.js` sur main référence l'unique transfert actif `attaque-sous-terraine`, conservé avec archive auteur d'origine. Aucun deuxième registre ni nouveau moteur.
+- **TDD RED** : test original `tests/unit/capture-burrow-author-v13-2026-11-05.test.mjs` ajouté avant données et catalogue, puis transport de bytes exacts ; validation du schéma normalisé, cooldown, présence souterraine, compatibilité export/import et non vulnérabilité aux coups normaux depuis la surface.
+- **Gates** : CI Laboratoire 5/5 sur SHA exact de cette branche, revue, checkpoint GREEN, puis PR vers main ; ne jamais publier un candidat sur main sans ces preuves. Tests et source GenSRPG/Exploration inchangés.
+- **Hors lot** : Gorice et Mur de glace issus de l'éditeur gh-pages ont d'autres dépendances d'assets/skills non encore certifiées sur main ; aucun faux import de créature ni coupe des imports.
+
+---
+
 ## 2026-11-05 — Raccord Monster Capture : statistiques des instances possédées dans le vrai combat (CI CANDIDAT GREEN, revue finale en cours)
 
 - **Contexte** : GenSRPG Aventure conserve `party.active.statAllocations` (points du niveau), mais ne les transmet pas encore au combat; les scénarios natifs Combat utilisent uniquement les valeurs auteur `record.statValues`. Les créatures publiées, le Tester et le registre de statistiques doivent rester inchangés.
