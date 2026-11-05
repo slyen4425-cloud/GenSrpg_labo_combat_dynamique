@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 305,
+    "assets": 306,
     "icons": 94,
-    "sprites": 187,
+    "sprites": 188,
     "fx": 2,
     "portraits": 17,
     "backgrounds": 5,
-    "creatures": 71
+    "creatures": 72
   },
   "assets": [
     {
@@ -10534,6 +10534,45 @@
         "frameCount": 12,
         "frameMs": 130,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-heriplante-movement-opponent-12-v1",
+      "label": "Hériplante — course adversaire / face (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "heriplante",
+        "nature",
+        "movement",
+        "animated",
+        "opponent",
+        "face",
+        "run"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / approuvé 2026-11-04",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/heriplante/animations/movement/opponent/atlases/heriplante_movement_opponent_12f.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameMs": 115,
+        "playbackMode": "loop"
       },
       "compatibility": {
         "uses": [

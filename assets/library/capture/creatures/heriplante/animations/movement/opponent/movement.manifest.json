@@ -1,0 +1,198 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "assetId": "pack:capture:creature-heriplante-movement-opponent-12-v1",
+  "creatureId": "heriplante",
+  "action": "movement",
+  "view": "opponent",
+  "variant": "run",
+  "orientation": "left",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 115,
+  "frameDurationsMs": [
+    115,
+    115,
+    115,
+    115,
+    115,
+    115,
+    115,
+    115,
+    115,
+    115,
+    115,
+    115
+  ],
+  "playbackMode": "loop",
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/heriplante_course_adversaire_01.png",
+      "sha256": "3f449f4b6529f3ab033e74544469385c0200c3e0cc807bb0dbad1845e27b6f2b",
+      "approvedSourceSha256": "a8bcd6a2ca5aaa0f6cf36f59f07f5bd4658f8f00a2fe6cbe3add530f5146a6f7",
+      "marginsLTRB": [
+        22,
+        90,
+        18,
+        20
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/heriplante_course_adversaire_02.png",
+      "sha256": "66c6902f4b71a67d277ea96656f586d497b95724f5d1c3a39a7106ffb90f6101",
+      "approvedSourceSha256": "33574a5b50150a7c3bb5ad5b7c359225f75dbe5b4f1aa140ae4fdfb533445b27",
+      "marginsLTRB": [
+        35,
+        98,
+        31,
+        20
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/heriplante_course_adversaire_03.png",
+      "sha256": "2a87d42fb8b6592a62fd2cf7bbb56e8542e56ab443d0d1d457c38eb0e2c41b8d",
+      "approvedSourceSha256": "b4fa496c251bf3dccb0b61228a6d352951fe0c84e820c9b56e26dee17118f7ae",
+      "marginsLTRB": [
+        32,
+        136,
+        28,
+        20
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/heriplante_course_adversaire_04.png",
+      "sha256": "a64a40eac6af0db41f5a399a5377d16435bdf68dc97733b40f04ffc4b5b302a7",
+      "approvedSourceSha256": "5eff1bf8b712db498bfd17ec45e4cd946a13176c5eb773122483425807606d78",
+      "marginsLTRB": [
+        32,
+        138,
+        28,
+        20
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/heriplante_course_adversaire_05.png",
+      "sha256": "9629753c81e1a6d74890c9bc03716b206933e5e1fb00d12d959bf534dd456d91",
+      "approvedSourceSha256": "b0ed0249aff9de5b2c35ac0d75546f99fd58fc33729215e6edb4e67bef1cfede",
+      "marginsLTRB": [
+        32,
+        133,
+        28,
+        20
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/heriplante_course_adversaire_06.png",
+      "sha256": "cd5680ce6c1ef6b9aad9a2289b59a7d16ecc8d221c39c32799013dd7d5339d2d",
+      "approvedSourceSha256": "1e322a92ea3f80f89a98ccd2cecb92a85e7b56d8a1f80a7016b52d647c431703",
+      "marginsLTRB": [
+        32,
+        183,
+        28,
+        20
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/heriplante_course_adversaire_07.png",
+      "sha256": "f8d612029579e892f5fad963dc5fe0b1d6648e396e12a0bc246d57950257acc1",
+      "approvedSourceSha256": "b262f5ccbc20c39934d8cc0d8ea701f6d11ccff35c962166670ee51041985529",
+      "marginsLTRB": [
+        32,
+        150,
+        28,
+        20
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/heriplante_course_adversaire_08.png",
+      "sha256": "ab21893167d97e6a10373814e20f2717604dbfa8d2a2c66d4e3650344a668c76",
+      "approvedSourceSha256": "b29b8583ccd4be5ea199f13b8ee36830511a0a8731254dc31e099e4071a77546",
+      "marginsLTRB": [
+        32,
+        111,
+        28,
+        20
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/heriplante_course_adversaire_09.png",
+      "sha256": "ea4d782477e5547147c77f9afd7294be5346774a19a928cba067bd9cfddebb4d",
+      "approvedSourceSha256": "5ffbe21e15c83585d15102b07c053f4d769b6b5d00fa8b6716049de399565935",
+      "marginsLTRB": [
+        32,
+        111,
+        28,
+        20
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/heriplante_course_adversaire_10.png",
+      "sha256": "07459739531044ebebaa17e199121d6bd608ff3dae7f84539e840b182a8939bb",
+      "approvedSourceSha256": "e9411dc85a6b032aed52119dd7a3d8006200f485c976a19b60e0bee7a7d158cd",
+      "marginsLTRB": [
+        38,
+        98,
+        34,
+        20
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/heriplante_course_adversaire_11.png",
+      "sha256": "19bed621f4d0a3f2db2faa9e751dd7bc519cf7be38d98dabd30bbf6bf2a6f3a3",
+      "approvedSourceSha256": "20cf789e322ccf3fd788bfa00935d6707da2898f75170e957d40f4d5a40e4877",
+      "marginsLTRB": [
+        42,
+        98,
+        39,
+        20
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/heriplante_course_adversaire_12.png",
+      "sha256": "0bbb9e4af5c66895680b66c04a53559969eb8e21c834400fb4b68b6a3e165385",
+      "approvedSourceSha256": "ec98e85c7d124b62e2456bb7fae2911cbe69d05f6d2b1ea0e2b968ac66c7dd8d",
+      "marginsLTRB": [
+        53,
+        98,
+        49,
+        20
+      ]
+    }
+  ],
+  "atlas": {
+    "file": "atlases/heriplante_movement_opponent_12f.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "sha256": "7a20ffc494506ec0cd32e401a42e9f671e7b4e4ac199000219353616e655bed0",
+    "lossless": true
+  },
+  "previews": {
+    "animatedWebp": "previews/heriplante_adversaire_course_preview_12f.webp",
+    "gif": "previews/heriplante_adversaire_course_preview_12f.gif",
+    "contactSheet": "previews/heriplante_adversaire_course_contact_12f.jpg"
+  },
+  "sourceArchive": "HERIPLANTE_COURSE_ADVERSAIRE_12F_READY.zip",
+  "sourceArchiveSha256": "923a39bba4e72e89d297c0519fdcaf4d60598f663774e97cbde8fac8db3c1748",
+  "sourceGitBlob": "0de205c471e5b9661455fe052200513d992546ed",
+  "sourceMasterFrame01Identical": true,
+  "measuredMinMarginPx": 18,
+  "requiredMarginPx": 42,
+  "meetsStrictMarginRule": false,
+  "notes": "Artist-approved 12 poses are preserved visually. Original frame 01 had only invisible RGB difference from master; exported frame01 uses exact official PNG, and other PNG/atlas preserve alpha and visible RGB. Original margin 18px violates strict 42px rule; no false strict GREEN."
+}
