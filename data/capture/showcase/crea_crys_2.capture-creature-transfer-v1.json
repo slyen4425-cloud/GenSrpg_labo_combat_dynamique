@@ -17,7 +17,7 @@
     },
     "elements": [
       "earth",
-      "light"
+      "nature"
     ],
     "resistances": [
       {
@@ -79,7 +79,7 @@
       "spawnChance": 10,
       "spawnTags": [
         "earth",
-        "light"
+        "nature"
       ],
       "evolution": null
     },
@@ -91,7 +91,7 @@
       "energyChargeIntervalMs": 0,
       "movementEnergyPerStep": 0,
       "chargeTimeModifierPct": 0,
-      "approachTimeModifierPct": 0,
+      "approachTimeModifierPct": 25,
       "reaction": {
         "type": "defense",
         "maxCharges": 5,
@@ -127,7 +127,7 @@
       "version": 3,
       "subjectType": "creature",
       "subjectId": "crea_crys_2",
-      "profileId": "quadruped",
+      "profileId": "biped",
       "displayScale": 1,
       "position": {
         "x": 0,
