@@ -470,9 +470,15 @@ document.addEventListener("DOMContentLoaded",()=>{
     if(x.value!=="25"||y.value!=="65"||scale.value!=="7")
       throw Error("enemy wall controls unexpectedly overwrote player settings");
     const firstIntercept=row.querySelector("[data-skill-barrier-intercept-kind]");
-    const checkRect=firstIntercept.getBoundingClientRect();
-    if(checkRect.width>28||checkRect.height>28||checkRect.width<12)
-      throw Error("wall interception checkbox is stretched instead of compact");
+    // The author panel may be on an inactive tab in this DOM smoke; a
+    // bounding rect would be 0 even with correct CSS. Read the actual
+    // computed input dimensions instead of confusing hidden with stretched.
+    const checkStyle=getComputedStyle(firstIntercept);
+    const checkWidth=parseFloat(checkStyle.width),checkHeight=parseFloat(checkStyle.height);
+    if(!Number.isFinite(checkWidth)||!Number.isFinite(checkHeight)||
+       checkWidth>28||checkHeight>28||checkWidth<12||checkHeight<12)
+      throw Error("wall interception checkbox is stretched: "+
+        checkWidth+"x"+checkHeight+" CSS px");
     const kinds=[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
      .filter(x=>x.checked).map(x=>x.value);
    if(ratio.value!=="1.5"||kinds.length!==3||!row.querySelector("[data-skill-barrier-sprite-asset-id]")||
