@@ -1,3 +1,11 @@
+## 2026-11-05 — IA combat : recharge et contact utile
+- Base gh-pages `6b0139e2f8590db3ddd4caaf213adc7be34e4b66`, START `checkpoint/lab-start-ai-charge-contact-efficiency-2026-11-05`, WORK `work/lab-ai-charge-contact-efficiency-2026-11-05`.
+- Propriétaire décision : `src/core/combat/battle-actor-ai-controller.js`. Exploiter API native `previewChargedSkillRetrigger` pour la réactivation de charge sans nouveau timer/impact, et différer les `contactHold` inefficaces après bilan des vrais PV. Raccord horloge `src/ui/combat-2v2-test-ui.js`.
+- Fichiers autorisés : contrôleur, UI de la décision, tests unitaires, documentation et import ESM si imposé. Protégés : Combat Runtime, session, réglage du créateur, canalisation, murs, contenus auteur, global-assets, main, GenSrpg.
+- TDD RED, test avec vrai runtime, 5 jobs CI et checkpoint GREEN avant gh-pages, essai auteur PC/téléphone distinct.
+
+---
+
 ## 2026-11-05 — Réconciliation des filtres élémentaires des sprites (CI 5/5 — jalon de livraison)
 - Base gh-pages `22da2abd5536bfb25e37e14b80f4cd539150899c`, START `checkpoint/lab-start-visual-element-filters-reconcile-2026-11-05`, WORK `work/lab-visual-element-filters-reconcile-2026-11-05`.
 - Un contrôleur pour les menus de sprites (statuts / adversaire inclus), créatures et compétences ; préserver Armure de pointe, les IDs et les banques officielles.
