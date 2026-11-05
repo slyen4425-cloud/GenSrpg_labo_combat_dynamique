@@ -1,3 +1,11 @@
+## 2026-11-05 — Publier export auteur « Attaque sous terraine »
+- Base gh-pages `4c053cedf4912f9731049d0e6482729af88d7803`, START `checkpoint/lab-start-author-burrow-skill-import-2026-11-05`, WORK `work/lab-author-burrow-skill-import-2026-11-05`.
+- Source unique : JSON auteur fourni aujourd'hui, `attaque-sous-terraine` ; publier exactement une fois dans Showcase en préservant ses champs, valeurs, sprite V13 et audio. La présente PR ne prétend pas retoucher les anciennes archives ni changer gameplay.
+- Correctif présence/contacts est propriétaire `action-resolver` déjà fusionné par PR #259 ; corrections source images `burrow:impact` propriétaire lot artistique séparé. Éviter toute duplication.
+- Autorisés: Showcase export/manifest, test de contrat/import, docs. Protégés: Runtime/AI/renderer, global-assets, autres capacités. TDD RED, CI Foundation et 4 browsers puis checkpoint GREEN et fusion.
+
+---
+
 ## 2026-11-05 — La cible souterraine esquive toujours les contacts de surface
 - Base gh-pages `4db7e39cc8bb07ddc45b817037ba57a4f6410f63`, START `checkpoint/lab-start-burrow-underground-ground-contact-2026-11-05`, WORK `work/lab-burrow-underground-ground-contact-2026-11-05`.
 - Export auteur transmis `attaque-sous-terraine` : `approachMode:burrow`, 2000 ms de trajet, 15 dégâts Terre, hitPresenceStates surface/underground. En cours de voyage souterrain, la victime doit échapper à toute attaque offensive ordinaire de surface, même si un capteur de contact DOM signale le chevauchement.
