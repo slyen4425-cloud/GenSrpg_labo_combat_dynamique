@@ -9,14 +9,14 @@ import {normalizeSkillPresentationBinding} from "../../src/contracts/skill-prese
 
 const path="data/capture/showcase/armure-de-pointe.capture-skill-transfer-v1.json";
 const id="armure-de-pointe";
-const hash="5c7e28002d2beed3e5e1e0f087995fa3baab1583f0ed65b6fb99cffa0f3710dc";
+const hash="5dd9ff195ca6225af740dcc8118923bdd96856823464182d1e7cc90c3f5069bb";
 const read=()=>readFileSync(path,"utf8");
 
 test("RED: author-export Armure de pointe is published byte-for-byte without replacing any skill",()=>{
   const raw=read();
   assert.equal(createHash("sha256").update(raw).digest("hex"),hash,
-    "the user's original 2903-byte skill transfer must be stored unchanged");
-  assert.equal(Buffer.byteLength(raw),2903);
+    "the user's latest 3472-byte skill transfer must be stored unchanged");
+  assert.equal(Buffer.byteLength(raw),3472);
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p===path).length,1,
     "exactly one official active manifest entry");
   assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length,
@@ -60,8 +60,12 @@ test("RED: published Armure de pointe retains exact user gameplay and artwork",(
   assert.equal(sprite.offsetY,0);
   assert.equal(sprite.displayScale,1.01);
   assert.equal(sprite.opacity,1);
-  assert.equal("opponentAssetId" in sprite,false,
-    "the author did not yet choose the optional adversary sprite");
+  assert.equal(sprite.opponentAssetId,"pack:capture:sprite-armure-ronces-plante-carnivore-01");
+  assert.equal(sprite.offsetMode,"custom");
+  assert.equal(sprite.opponentOffsetX,-18);
+  assert.equal(sprite.opponentOffsetY,-30);
+  assert.equal(draft.presentation.version,9);
+  assert.equal(draft.presentation.audio.impact.assetId,"gensrpg:sound:genrpg-pack2-a3d02c0f");
   assert.deepEqual(normalizeSkillPresentationBinding(draft.presentation),draft.presentation);
 });
 
