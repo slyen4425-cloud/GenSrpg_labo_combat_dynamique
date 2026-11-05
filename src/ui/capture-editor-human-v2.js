@@ -6489,7 +6489,7 @@ function appendHumanSkillEffectV1(
   const wallArenaHelp=document.createElement("small");
   wallArenaHelp.className="note skill-barrier-help";
   wallArenaHelp.dataset.skillBarrierArenaHelp="true";
-  wallArenaHelp.textContent="Position X/Y sur l'arène entière : 0 = bord gauche/haut, 50 = centre, 100 = bord droit/bas.";
+  wallArenaHelp.textContent="Position libre : X = 0 bord gauche, 50 centre, 100 bord droit ; Y = 0 en haut, 50 centre, 100 en bas.";
 
   // Optional overrides: empty inputs mean 'same as player'. Older skills
   // therefore keep their historical opposite-side projection unchanged.
