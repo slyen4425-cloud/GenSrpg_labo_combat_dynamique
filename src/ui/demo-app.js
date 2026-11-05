@@ -1,6 +1,6 @@
 import { normalizeCombatVisualEvent } from "../contracts/combat-visual-event.js";
 import { normalizeVisualActor } from "../contracts/visual-actor.js";
-import { planAnimation } from "../core/animation/plan-animation.js";
+import { planAnimation } from "../core/animation/plan-animation.js?v=ground-approach-steps-20261105";
 import { createProfileRegistry } from "../core/profiles/profile-registry.js";
 import { createDomActorRenderer } from "../adapters/renderer/dom-actor-renderer.js";
 import { createDomCreatureMovementVisualV1 } from "../adapters/renderer/dom-creature-movement-visual-v1.js";
