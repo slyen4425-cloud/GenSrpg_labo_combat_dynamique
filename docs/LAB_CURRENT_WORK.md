@@ -1,3 +1,11 @@
+## 2026-11-05 — Publier export auteur « Attaque sous terraine »
+- Base gh-pages `4c053cedf4912f9731049d0e6482729af88d7803`, START `checkpoint/lab-start-author-burrow-skill-import-2026-11-05`, WORK `work/lab-author-burrow-skill-import-2026-11-05`.
+- Source unique : JSON auteur fourni aujourd'hui, `attaque-sous-terraine` ; publier exactement une fois dans Showcase en préservant ses champs, valeurs, sprite V13 et audio. La présente PR ne prétend pas retoucher les anciennes archives ni changer gameplay.
+- Correctif présence/contacts est propriétaire `action-resolver` déjà fusionné par PR #259 ; corrections source images `burrow:impact` propriétaire lot artistique séparé. Éviter toute duplication.
+- Autorisés: Showcase export/manifest, test de contrat/import, docs. Protégés: Runtime/AI/renderer, global-assets, autres capacités. TDD RED, CI Foundation et 4 browsers puis checkpoint GREEN et fusion.
+
+---
+
 ## 2026-11-05 — Audit alpha et frame WebP impact souterrain
 - Base gh-pages `4db7e39cc8bb07ddc45b817037ba57a4f6410f63`; START `checkpoint/lab-start-burrow-impact-asset-audit-2026-11-05`; WORK `work/lab-burrow-impact-asset-audit-2026-11-05`.
 - Auteur : `attaque-sous-terraine` référence `burrow:impact`, 20 frames de 512×512 + WebP atlas (7680×384). L'utilisateur voit des artefacts dans la partie haute de l'explosion d'émergence.
