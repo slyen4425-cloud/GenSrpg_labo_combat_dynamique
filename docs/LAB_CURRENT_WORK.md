@@ -1,3 +1,13 @@
+## 2026-11-05 — Charte commune des sites Pages sans copies de bibliothèques entières (prévention)
+
+- Base Combat `main@954f38e6b84e842bc8bf6d8515d5c77b93aca5f1`, START `checkpoint/lab-start-pages-no-copy-charter-2026-11-05`, branche `work/lab-pages-no-copy-charter-2026-11-05`.
+- Suite à l'incident Exploration de 6,5 Gio (bibliothèque Capture copiée cinq fois), nouvelle règle 0 bloquante dans la charte Combat. GenSRPG PR #283 applique déjà la même règle ; Exploration PR #380 en assure la mesure dans son propre publisher.
+- TDD `tests/unit/pages-no-library-copy-charter.test.mjs` écrit avant le texte : contrôle interdit les copies complètes de bibliothèques, impose taille 900 Mio par site et préserve séparation `main` / `gh-pages`. L'unique workflow Combat `ci.yml` sur main ne déploie pas lui-même Pages.
+- Aucun changement runtime, animation, capacité, sprite, asset source, publication gh-pages, branche de l'éditeur ni autre dépôt. Test 5/5, checkpoint GREEN et revue avant intégration sur main.
+- Les copies historiques, le poids Git de Combat et les médias réels sont audités séparément dans l'issue #270 ; cette règle ne les efface pas automatiquement.
+
+---
+
 ## 2026-11-05 — Raccord Monster Capture : statistiques des instances possédées dans le vrai combat (CI CANDIDAT GREEN, revue finale en cours)
 
 - **Contexte** : GenSRPG Aventure conserve `party.active.statAllocations` (points du niveau), mais ne les transmet pas encore au combat; les scénarios natifs Combat utilisent uniquement les valeurs auteur `record.statValues`. Les créatures publiées, le Tester et le registre de statistiques doivent rester inchangés.
