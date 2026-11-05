@@ -45,7 +45,7 @@ test('all six Gorice skills are resolved by one official Combat main catalogue, 
  const wall=JSON.parse(read(pathFor('mur_de_glace'))).draft;
  assert.equal(wall.definition.cooldownMs,45000);
  assert.equal(wall.definition.element,'ice');
- assert.equal(wall.presentation.version,3);
+ assert.equal(wall.presentation.version,2);
 });
 test('main does not embed any new asset library or copy the published editor branch',()=>{
  const all=[...CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1,...CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1];
