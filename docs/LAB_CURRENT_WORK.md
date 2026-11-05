@@ -1,3 +1,13 @@
+## 2026-11-05 — Sources auteur Gorice V9 et Mur de glace (calibrage final)
+- BASE publiée `gh-pages@90da2c5be0073f1c6f26f7d934ee1984324fa02f` ; START `checkpoint/lab-start-gorice-wall-author-sync-2026-11-05` ; WORK `work/lab-gorice-wall-author-sync-2026-11-05`.
+- Auteur : deux exports JSON fournis le 05/11 à 19h25, `gorice` et `mur_de_glace`, à placer dans Showcase au même ID sans doublon, pendant que l'auteur teste indépendamment « Attaque sous terraine ».
+- Sources uniques : `data/capture/showcase/gorice.capture-creature-transfer-v1.json` et `data/capture/showcase/mur_de_glace.capture-skill-transfer-v1.json`; archives historiques source dans `data/capture/source-exports/`, pour conserver exactement les uploads (aucune correction opportuniste de texte/valeurs).
+- Gorice conserve son ID, son loadout et ses stats ; présentation auteur V9 avec mouvement côté joueur/adversaire. Mur conserve ses HP ×2, les interceptions et les nouvelles positions/échelles joueur/adversaire. Un seul élément actif par ID dans les catalogues existants ; les sprites sont déjà présents sur `global-assets`.
+- Périmètre : 2 transferts Showcase, 2 archives auteur, tests ciblés, `docs/LAB_CURRENT_WORK.md` et rapport. Protégés : contrats, moteur/Combat Damage/Renderer, éditeur, global-assets, `main`, GenSrpG, Exploration, autre capacité « Attaque sous terraine ».
+- Tests : TDD RED comparant sources archivées aux transferts actifs ; contrôle IDs unicité, round-trip, invariants gameplay et champs côté adversaire ; Foundation + quatre navigateurs, checkpoint GREEN sur SHA final, PR `gh-pages` puis contrôle de disponibilité. Aucun GREEN sans preuve.
+
+---
+
 ## 2026-11-05 — Mur destructible : formulaire lisible et calibrage indépendant par camp
 - BASE gh-pages `bea78a7abf428b02338d8e0a4172205df45c6354` ; START `checkpoint/lab-start-barrier-side-layout-2026-11-05` ; WORK `work/lab-barrier-side-layout-2026-11-05`.
 - Demande auteur sur capture : grille illisible, champs immenses, cases d'interception gigantesques ; ancien réglage commun d'échelle et position insuffisant pour le mur du joueur et celui de l'adversaire.
