@@ -1,3 +1,11 @@
+## 2026-11-05 — Import auteur Gorice & Gemmor (données uniquement)
+- Base gh-pages `6b0139e2f8590db3ddd4caaf213adc7be34e4b66`, START `checkpoint/lab-start-gorice-gemmor-author-import-2026-11-05`, WORK `work/lab-gorice-gemmor-author-import-2026-11-05`.
+- Source : deux JSON auteur reçus, mêmes IDs et chemins uniques showcase. Gorice échelles 1,5/0,8; Gemmor Nature, profil biped et approche +25%.
+- Périmètre : uniquement les deux exports de créature, ce journal et les tests de données. Protégés : IA, Runtime, compétences, main et global-assets.
+- Tests : valeurs exactes, identités, vrai chargement du catalogue, CI 5 jobs, GREEN puis gh-pages ; validation mobile distincte.
+
+---
+
 ## 2026-11-05 — Réconciliation des filtres élémentaires des sprites (CI 5/5 — jalon de livraison)
 - Base gh-pages `22da2abd5536bfb25e37e14b80f4cd539150899c`, START `checkpoint/lab-start-visual-element-filters-reconcile-2026-11-05`, WORK `work/lab-visual-element-filters-reconcile-2026-11-05`.
 - Un contrôleur pour les menus de sprites (statuts / adversaire inclus), créatures et compétences ; préserver Armure de pointe, les IDs et les banques officielles.

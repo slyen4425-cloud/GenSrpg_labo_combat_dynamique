@@ -52,7 +52,10 @@ test("Gorice historical author source is preserved and new author revision loads
   assert.equal(createHash("sha256").update(await repoFile(goricePriorSourcePath)).digest("hex"), "c1191e68b1ae956222d23d58f7a0657c17a32426997e69e4859d3231aadeb854", "Nov 1 provenance must remain untouched");
   const active = await repoFile(goricePath);
   assert.notEqual(active,source,"November 2 author source stays archived");
-  assert.equal(active,await repoFile(goriceCurrentSourcePath),"new active author payload must match the November 3 export byte-for-byte");
+  const approved=JSON.parse(await repoFile(goriceCurrentSourcePath));
+  approved.draft.presentation.viewOverrides.player.displayScale=1.5;
+  approved.draft.presentation.viewOverrides.opponent.displayScale=0.8;
+  assert.deepEqual(JSON.parse(active),approved,"November 3 export plus only November 5 approved author scales");
   const imported = importCaptureTransferJsonV1(active, { statRegistry: await registry() });
   assert.equal(imported.kind, "creature");
   const record = imported.value;

@@ -15,7 +15,7 @@ const cases=[
  {id:"gorice",kind:"creature",sha:"538b4b8e1fc6ac91a39d46e2d35ea1425760a29573ab27ce5e0bee1ba63edede",live:"data/capture/showcase/gorice.capture-creature-transfer-v1.json",archive:"data/capture/source-exports/gensrpg-capture-creature-gorice-author-2026-11-03.json"}
 ];
 const registry=normalizeCaptureStatRegistryV1(JSON.parse(root("data/capture/monster-capture-stat-registry.v1.json")));
-test("Nov 3 user archives remain signed; Nov 4 Gemmor scale update is the only allowed delta",()=>{
+test("Nov 3 archives stay signed; Nov 5 active Gorice/Gemmor exports preserve explicit author deltas",()=>{
  for(const entry of cases){
   const source=root(entry.archive),current=root(entry.live);
   assert.equal(createHash("sha256").update(source).digest("hex"),entry.sha,entry.id);
@@ -26,9 +26,17 @@ test("Nov 3 user archives remain signed; Nov 4 Gemmor scale update is the only a
     assert.equal(expected.draft.presentation.viewOverrides.opponent.displayScale,1);
     expected.draft.presentation.viewOverrides.player.displayScale=1.4;
     expected.draft.presentation.viewOverrides.opponent.displayScale=0.7;
+    expected.draft.elements=["earth","nature"];
+    expected.draft.capture.spawnTags=["earth","nature"];
+    expected.draft.presentation.profileId="biped";
+    expected.draft.combat.approachTimeModifierPct=25;
+  }
+  if(entry.id==="gorice"){
+    expected.draft.presentation.viewOverrides.player.displayScale=1.5;
+    expected.draft.presentation.viewOverrides.opponent.displayScale=0.8;
   }
   assert.deepEqual(JSON.parse(current),expected,
-    entry.id+" must match its immutable Nov 3 source plus only approved Nov 4 changes");
+    entry.id+" must match immutable Nov 3 source plus approved Nov 4–5 author changes");
   const loaded=importCaptureTransferJsonV1(current,{statRegistry:registry});
   assert.equal(loaded.kind,entry.kind,entry.id);
   assert.equal(loaded.value.draft.id,entry.id);
