@@ -87,6 +87,23 @@
       },
       "effects": []
     },
-    "presentation": null
+    "presentation": {
+      "id": "skill:sangsue",
+      "version": 2,
+      "subjectType": "skill",
+      "subjectId": "sangsue",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-drain-de-vie-01"
+        }
+      },
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:effect-ee93278c",
+          "volume": 1,
+          "loop": false
+        }
+      }
+    }
   }
 }
