@@ -125,6 +125,30 @@ export function createBattleActorAiController({
   const tacticSeed = textSeed(normalizedActorId) ^ (Number(profile?.seed) || 0);
   const allies = Object.freeze(allyIds.filter(id => typeof id === "string" && id !== normalizedActorId));
 
+  const failedHoldUntil = new Map();
+  let recentHold = null;
+  function holdAvailable(skill,targetId,state) {
+    if(!skill.contactHold)return true;
+    const key=skill.id+"::"+targetId;
+    const until=failedHoldUntil.get(key)??0;
+    if(Number(state.elapsedMs??0)>=until){failedHoldUntil.delete(key);return true;}
+    return false;
+  }
+  function watchHold(skill,targetId,state) {
+    if(!skill.contactHold)return;
+    recentHold={skillId:skill.id,targetId,
+      actorHp:Number(state.fighters[normalizedActorId]?.hp),
+      targetHp:Number(state.fighters[targetId]?.hp)};
+  }
+  function assessHold(state) {
+    if(!recentHold)return;
+    const hold=recentHold;recentHold=null;
+    const a=Number(state.fighters[normalizedActorId]?.hp),t=Number(state.fighters[hold.targetId]?.hp);
+    if(![a,t,hold.actorHp,hold.targetHp].every(Number.isFinite))return;
+    const dealt=Math.max(0,hold.targetHp-t),lost=Math.max(0,hold.actorHp-a);
+    if(dealt===0||lost>dealt)failedHoldUntil.set(hold.skillId+"::"+hold.targetId,Number(state.elapsedMs??0)+8000);
+  }
+
   // Do not select a self-sacrifice unless a teammate can benefit and HP is critical.
   function allowAllySacrifice(state, actor, skill) {
     const effects = Array.isArray(skill.effects) ? skill.effects : [];
@@ -162,7 +186,7 @@ export function createBattleActorAiController({
       const goal = reinforcementGoal(state, actor, skill);
       for (const targetId of candidateTargetIds(skill)) {
         const target = state.fighters[targetId];
-        if (!target || Number(target.hp) <= 0) continue;
+        if (!target || Number(target.hp) <= 0 || !holdAvailable(skill,targetId,state)) continue;
         const preview = session.previewSkill({ actorId: normalizedActorId, targetId, skill });
         if (!preview.ok) {
           if (preview.outcome === "insufficient_energy" && !saving) {
@@ -192,6 +216,7 @@ export function createBattleActorAiController({
     for (const choice of choices) {
       const result = runtime.startSkill({actorId:normalizedActorId, targetId:choice.targetId, skill:choice.skill});
       if (!result.ok) continue;
+      watchHold(choice.skill,choice.targetId,state);
       recentSkillIds.unshift(choice.skill.id);
       if (recentSkillIds.length > 2) recentSkillIds.pop();
       tacticalTurnIndex++;
@@ -278,6 +303,23 @@ export function createBattleActorAiController({
     return null;
   }
 
+  function pendingCharge() {
+    const action=runtime.activeActionFor?.(normalizedActorId);
+    return Boolean(action?.chargeState && (action.skill?.chargedAttack||action.skill?.chargedEffects) &&
+      action.chargeState.chargeCount<action.chargeState.maxCharges);
+  }
+  function retryActiveCharge() {
+    if (!pendingCharge() || !runtime.previewChargedSkillRetrigger) return null;
+    const action=runtime.activeActionFor(normalizedActorId);
+    const skill=skills.find(s=>s.id===action.actionId);
+    if (!skill) return null;
+    const preview=runtime.previewChargedSkillRetrigger({actorId:normalizedActorId,skillId:skill.id});
+    if (!preview.ok) return {status:"busy",actorId:normalizedActorId,reason:preview.outcome};
+    const result=runtime.startSkill({actorId:normalizedActorId,targetId:action.targetId,skill});
+    return result.ok?{status:"charged",actorId:normalizedActorId,skillId:skill.id,result}
+      :{status:"busy",actorId:normalizedActorId,reason:result.outcome};
+  }
+
   function takeTurn() {
     const state = session.snapshot();
     const actor = state.fighters[normalizedActorId];
@@ -289,6 +331,8 @@ export function createBattleActorAiController({
       });
     }
 
+    const activeCharge=retryActiveCharge();
+    if(activeCharge)return Object.freeze(activeCharge);
     if (runtime.hasActiveActionFor(normalizedActorId)) {
       return Object.freeze({
         status: "busy",
@@ -296,6 +340,7 @@ export function createBattleActorAiController({
       });
     }
 
+    assessHold(state);
     const targetId = aliveTarget(state);
     if (!targetId) {
       return Object.freeze({
@@ -315,7 +360,7 @@ export function createBattleActorAiController({
         - (right.candidateIndex - skillIndex + skills.length) % skills.length);
 
     for (const { skill, candidateIndex, goal } of candidates) {
-      if (!allowAllySacrifice(state, actor, skill)) continue;
+      if (!allowAllySacrifice(state, actor, skill) || !holdAvailable(skill,targetId,state)) continue;
       const preview = session.previewSkill({
         actorId: normalizedActorId,
         targetId,
@@ -368,6 +413,7 @@ export function createBattleActorAiController({
         continue;
       }
 
+      watchHold(skill,targetId,state);
       skillIndex =
         (candidateIndex + 1) % skills.length;
 
@@ -394,6 +440,7 @@ export function createBattleActorAiController({
 
   return Object.freeze({
     takeTurn,
+    pendingCharge,
     observeRelease,
     maybeDodge,
     reset() {
@@ -402,6 +449,7 @@ export function createBattleActorAiController({
       threatNumber = 0;
       visibleThreat = null;
       recentSkillIds.length = 0;
+      recentHold=null;failedHoldUntil.clear();
     },
     snapshot() {
       return Object.freeze({

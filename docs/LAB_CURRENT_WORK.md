@@ -1,3 +1,11 @@
+## 2026-11-05 — IA combat : recharge et contact utile
+- Base gh-pages `6b0139e2f8590db3ddd4caaf213adc7be34e4b66`, START `checkpoint/lab-start-ai-charge-contact-efficiency-2026-11-05`, WORK `work/lab-ai-charge-contact-efficiency-2026-11-05`.
+- Propriétaire décision : `src/core/combat/battle-actor-ai-controller.js`. Exploiter API native `previewChargedSkillRetrigger` pour la réactivation de charge sans nouveau timer/impact, et différer les `contactHold` inefficaces après bilan des vrais PV. Raccord horloge `src/ui/combat-2v2-test-ui.js`.
+- Fichiers autorisés : contrôleur, UI de la décision, tests unitaires, documentation et import ESM si imposé. Protégés : Combat Runtime, session, réglage du créateur, canalisation, murs, contenus auteur, global-assets, main, GenSrpg.
+- TDD RED, test avec vrai runtime, 5 jobs CI et checkpoint GREEN avant gh-pages, essai auteur PC/téléphone distinct.
+
+---
+
 ## 2026-11-05 — Import auteur Gorice & Gemmor (données uniquement)
 - Base gh-pages `6b0139e2f8590db3ddd4caaf213adc7be34e4b66`, START `checkpoint/lab-start-gorice-gemmor-author-import-2026-11-05`, WORK `work/lab-gorice-gemmor-author-import-2026-11-05`.
 - Source : deux JSON auteur reçus, mêmes IDs et chemins uniques showcase. Gorice échelles 1,5/0,8; Gemmor Nature, profil biped et approche +25%.
