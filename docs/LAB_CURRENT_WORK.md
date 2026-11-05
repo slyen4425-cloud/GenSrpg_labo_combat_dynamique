@@ -1,3 +1,10 @@
+## 2026-11-05 — Combat accepte le niveau positif défini par la partie
+- **START** `checkpoint/lab-start-adventure-free-level-cap-2026-11-05` au `main@dd15e3e2df0d36d039a554e89e094aba28b43dff` ; branche `work/lab-adventure-free-level-cap-2026-11-05`. Lecture préalable CHARTE/ROADMAP/CURRENT_WORK/CHECKPOINT_POLICY.
+- **Cause racine** : `src/ui/capture-editor-combat-test-v1.js` et `src/ui/capture-encounter-combat-source-v1.js` refusaient les levels >100 alors que le plafond appartient aux règles de la partie. Test RED `tests/unit/capture-adventure-free-level-cap-v1.test.mjs` : 101/250/1500/1M dans le seul resolver natif + rejets invalides. **Correction** : validation d'entier positif sûr, sans plafond implicite ; **Tester conserve niveau 20 par défaut**, compétences et stats autorisées identiques, aucune valeur d'auteur modifiée.
+- **Gates** : tests unitaires et intégration de combat, navigateur et CI du SHA exact avant checkpoint, aucune synchronisation de GenSRPG/Exploration ou de gh-pages sans certification indépendante. La stabilité en combat à très haut niveau sera contrôlée séparément ; ce lot lève uniquement les rejets de contrat.
+
+---
+
 ## 2026-11-05 — PV Combat en vraie partie Aventure : 25 % par défaut, Tester inchangé
 - Demande auteur : les créatures publiées sont réglées avec beaucoup de PV pour le **Tester niveau 20**. Une vraie partie démarre niveau 1 avec une seule capacité et doit utiliser globalement 1/4 des PV sans éditer chaque créature.
 - Owner unique des PV combat : `src/ui/capture-encounter-combat-source-v1.js` sur Combat main. Projection **éphémère** `hpMultiplier` (1 par défaut, 0.25 sur appel explicite Aventure), appliquée une seule fois aux `fighterConfigs` et `fighters` des deux camps. Arrondi supérieur et minimum 1 si PV positifs ; zéro conservé. Aucun changement aux créatures, sorts, stats natives, niveau 20 Tester, export auteur, XP, sauvegarde/retour ; les PV déjà gagnés/perdus dans une sauvegarde ne sont pas redimensionnés.
