@@ -60,7 +60,10 @@ test("the active source exports have author values and stable IDs",()=>{
   assert.deepEqual(entity.interceptKinds,["projectile","beam","contact"]);
   assert.equal(entity.placementMode,"arena");
   assert.equal(entity.arenaXPct,47);assert.equal(entity.arenaYPct,55);
-  assert.equal(entity.visualScale,4);assert.equal(entity.visualScaleX,1.5);
+  assert.equal(entity.visualScale,2.5);assert.equal(entity.visualScaleX,1.5);
+  assert.equal(entity.visualScaleY,1.2);
+  assert.equal(entity.opponentVisualScale,1.5);
+  assert.equal(entity.opponentArenaXPct,70);assert.equal(entity.opponentArenaYPct,50);
   assert.equal(frost.draft.definition.effects[0].amount,15);
   assert.equal(frost.draft.definition.effects[1].status.kind,"incoming_effect_modifier");
 });
