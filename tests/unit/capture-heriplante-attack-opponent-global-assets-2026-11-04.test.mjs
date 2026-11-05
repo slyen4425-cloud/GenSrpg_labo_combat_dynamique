@@ -11,7 +11,7 @@ const asset={id,label:"Hériplante — attaque adversaire 12 frames",assetType:"
  compatibility:{uses:["combat","capture","editor"]}};
 test("editor uses canonical catalog revision for opponent attack",()=>{
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
- assert.ok(GLOBAL_VISUAL_LIBRARY.revision.includes("v59-heriplante-opponent-attack-12f"));
+ assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v([0-9]+)-/)?.[1]||0)>=59,"Hériplante opponent attack is present from official revision v59 onward");
 });
 test("opponent attack is not movement and resolves to the real approved 12f atlas",()=>{
  assert.equal(captureEditorCreatureVisualKindV1(asset),"attack");
