@@ -7125,6 +7125,25 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
         ? {spriteAssetId:row.querySelector("[data-skill-barrier-sprite-asset-id]").value}:{}),
       ...(row.querySelector("[data-skill-barrier-opponent-sprite-asset-id]")?.value
         ? {opponentSpriteAssetId:row.querySelector("[data-skill-barrier-opponent-sprite-asset-id]").value}:{}),
+      // Empty enemy fields retain the original shared author values.
+      ...(["opponentVisualScale","opponentVisualScaleX","opponentVisualScaleY",
+        "opponentArenaXPct","opponentArenaYPct","opponentOffsetForwardPx","opponentOffsetUpPx"]
+        .reduce((values,key,index)=>{
+          const selectors=[
+            "[data-skill-barrier-opponent-visual-scale]",
+            "[data-skill-barrier-opponent-visual-scale-x]",
+            "[data-skill-barrier-opponent-visual-scale-y]",
+            "[data-skill-barrier-opponent-arena-x]",
+            "[data-skill-barrier-opponent-arena-y]",
+            "[data-skill-barrier-opponent-offset-forward]",
+            "[data-skill-barrier-opponent-offset-up]"
+          ];
+          const raw=row.querySelector(selectors[index])?.value.trim()??"";
+          if(raw!=="")values[key]=Number(raw);
+          return values;
+        },{})),
+      ...(row.querySelector("[data-skill-barrier-opponent-placement-mode]")?.value
+        ?{opponentPlacementMode:row.querySelector("[data-skill-barrier-opponent-placement-mode]").value}:{}),
       interceptKinds:[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
         .filter(input=>input.checked).map(input=>input.value)
     };
