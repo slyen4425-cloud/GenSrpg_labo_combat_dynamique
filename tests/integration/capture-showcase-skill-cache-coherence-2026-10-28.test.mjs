@@ -60,8 +60,13 @@ test("Coupe feuille preserves signed v9/v11 archives and only changes clash powe
     "signed 2026-10-28 version remains immutable");
   const expected=structuredClone(original);
   expected.draft.definition.projectileClash.power=1;
+  expected.draft.presentation.audio={
+    cast:{assetId:"gensrpg:sound:conflux-43060f16",volume:1,loop:false},
+    travel:{assetId:"gensrpg:sound:genrpg-pack2-9320854b",volume:1,loop:true},
+    impact:{assetId:"gensrpg:sound:effect-7b158ebd",volume:1,loop:false}
+  };
   assert.deepEqual(live, expected,
-    "Nov 4 authored update must change ONLY collision power relative to signed v11");
+    "Nov 5 uploaded author skill retains original combat rules plus precisely three sound bindings");
   assert.equal(live.draft.definition.projectileClash.power,1);
   assert.equal(live.draft.presentation.version, 11);
   assert.equal(old.draft.presentation.version, 9);
