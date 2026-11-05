@@ -1,3 +1,11 @@
+## 2026-11-05 — PV Combat en vraie partie Aventure : 25 % par défaut, Tester inchangé
+- Demande auteur : les créatures publiées sont réglées avec beaucoup de PV pour le **Tester niveau 20**. Une vraie partie démarre niveau 1 avec une seule capacité et doit utiliser globalement 1/4 des PV sans éditer chaque créature.
+- Owner unique des PV combat : `src/ui/capture-encounter-combat-source-v1.js` sur Combat main. Projection **éphémère** `hpMultiplier` (1 par défaut, 0.25 sur appel explicite Aventure), appliquée une seule fois aux `fighterConfigs` et `fighters` des deux camps. Arrondi supérieur et minimum 1 si PV positifs ; zéro conservé. Aucun changement aux créatures, sorts, stats natives, niveau 20 Tester, export auteur, XP, sauvegarde/retour ; les PV déjà gagnés/perdus dans une sauvegarde ne sont pas redimensionnés.
+- BASE `main@46b4efede522f3410778271fddec872a36f1c54b`, START `checkpoint/lab-start-adventure-hp-scale-2026-11-05`, WORK `work/lab-adventure-hp-scale-2026-11-05`.
+- TDD RED `tests/unit/capture-adventure-hp-scale-2026-11-05.test.mjs` + tests CI Foundation/4 Chromium et checksum. Exploration et GenSrpG consommeront **Combat main uniquement** après ses propres gates ; pas de nouveau registre ni copie de logique. GREEN uniquement avec CI complète, checkpoint exact, PR main et tests postfusion. Séparation recette Android physique.
+
+---
+
 ## 2026-11-04 — Combat : niveaux individuels d’un duel sauvage avec espèce commune
 
 - START `checkpoint/lab-start-adventure-encounter-member-levels-2026-11-04` sur Combat `main@4425d123f4f02d04b2e2942c989789abaf159b0a` (Laboratory CI #41841807733 SUCCESS). Branche `work/lab-adventure-encounter-member-levels-2026-11-04`. Éditeur public gh-pages `52a06768b7bbfb4733b29e393873d02cf2b7c888` distinct.
