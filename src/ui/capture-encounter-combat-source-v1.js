@@ -1,6 +1,7 @@
 import { adaptCaptureCombatExportStackV1 } from "../adapters/input/capture/capture-export-adapter-stack-v1.js";
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
 import { buildCaptureEditorCombatTestV1 } from "./capture-editor-combat-test-v1.js";
+import {projectCaptureEncounterOwnedStatsV1} from "../adapters/input/capture/capture-encounter-owned-stats-v1.js";
 
 function requireParticipant(participant, side) {
   if (typeof participant?.speciesId !== "string" || !participant.speciesId.trim()) {
@@ -40,9 +41,20 @@ export function applyCaptureEncounterHpMultiplierV1(source, multiplier = 1) {
 export function buildCaptureEncounterCombatSourceV1({ local, opponent, hpMultiplier = 1, ...options } = {}) {
   requireParticipant(local, "Local");
   requireParticipant(opponent, "Opponent");
+  // Only Combat projects stat allocations. GenSRPG owns the saved wallet,
+  // and Exploration transports the optional, scoped instance-only values.
+  // Explicit enemy allocations need a separate certified NPC contract.
+  if (opponent.statAllocations !== undefined)
+    throw new RangeError('Opponent statAllocations require an official NPC instance contract');
+  const authoredCreatures=options.configuredCreatures;
+  const ownedCreatures=projectCaptureEncounterOwnedStatsV1({
+    configuredCreatures:authoredCreatures,statRegistry:options.statRegistry,
+    speciesId:local.speciesId,statAllocations:local.statAllocations
+  });
+  const hasOwnedStatOverride=ownedCreatures!==authoredCreatures;
   const mirror = local.speciesId === opponent.speciesId;
-  const build = creatureLevelsById => buildCaptureEditorCombatTestV1({
-    ...options,
+  const build = (creatureLevelsById, configuredCreatures=ownedCreatures) => buildCaptureEditorCombatTestV1({
+    ...options,configuredCreatures,
     localCreatureIds: [local.speciesId],
     opponentCreatureIds: [opponent.speciesId],
     activePerTeam: 1,
@@ -52,13 +64,13 @@ export function buildCaptureEncounterCombatSourceV1({ local, opponent, hpMultipl
     ? { [local.speciesId]: local.level }
     : { [local.speciesId]: local.level, [opponent.speciesId]: opponent.level });
   const source = adaptCaptureCombatExportStackV1(exported);
-  if (!mirror || local.level === opponent.level) {
+  if (!mirror || (local.level === opponent.level && !hasOwnedStatOverride)) {
     return applyCaptureEncounterHpMultiplierV1(Object.freeze({ ...source, exported }), hpMultiplier);
   }
 
   // The author export is keyed by species. Project the opponent separately
   // through the same exporter, then bind its config to the existing roster slot.
-  const rival = adaptCaptureCombatExportStackV1(build({ [opponent.speciesId]: opponent.level }));
+  const rival = adaptCaptureCombatExportStackV1(build({ [opponent.speciesId]: opponent.level }, authoredCreatures));
   const actorId = source.battleFormat.teams["enemy-team"][0];
   const team = source.roster.teams[actorId];
   const memberId = team.activeMemberId;
