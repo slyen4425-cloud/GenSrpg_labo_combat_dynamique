@@ -1,0 +1,39 @@
+name: One-time repair authored burrow impact source and WebP
+on:
+  push:
+    branches: [work/lab-burrow-impact-asset-audit-2026-11-05]
+    paths:
+      - .github/workflows/repair-burrow-impact-art-2026-11-05.yml
+permissions:
+  contents: write
+jobs:
+  fix-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install image build dependency
+        run: python -m pip install --disable-pip-version-check pillow==11.3.0
+      - name: Repair only proven disconnected upper debris of impact 15-20
+        run: python scripts/repair-burrow-impact-ghost-bands-2026-11-05.py --write
+      - name: Confirm all 20 source frames and the real atlas
+        run: |
+          python scripts/repair-burrow-impact-ghost-bands-2026-11-05.py --check
+          node --test tests/unit/capture-burrow-impact-artwork-alpha-audit-2026-11-05.test.mjs
+      - name: Commit only the six repaired frames and the rebuilt atlas
+        run: |
+          git add \
+            assets/library/capture/sprites/skills/burrow_terrain/impact/frames/sprite_burrow_impact_{15..20}.png \
+            assets/library/capture/sprites/skills/burrow_terrain/impact/sprite_burrow_impact_atlas.webp
+          git diff --cached --check
+          test "$(git diff --cached --name-only | wc -l)" -eq 7
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix(art): remove detached upper ghost bands from burrow emergence frames 15-20 and atlas'
+          git push origin HEAD:work/lab-burrow-impact-asset-audit-2026-11-05
