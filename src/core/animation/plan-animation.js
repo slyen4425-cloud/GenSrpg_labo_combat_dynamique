@@ -1,3 +1,4 @@
+import { groundApproachLocomotionFromProfileV1 } from "./ground-approach-steps-v1.js";
 import { createAnimationPlan } from "./animation-plan.js";
 import { ROSTER_TRANSITION_PROFILE_V1 } from "../profiles/roster-transition-profile-v1.js";
 import {
@@ -490,7 +491,7 @@ export function planAnimation({ event, actor, profile }) {
         );
 
       const approach = locomotionShape({
-        cfg: locomotion,
+        cfg: groundApproachLocomotionFromProfileV1(locomotion),
         durationMs: target.travelMs,
         intensity,
         sign,
