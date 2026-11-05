@@ -42,14 +42,14 @@ document.addEventListener("DOMContentLoaded",()=>{
       const fullCreatureCount=creature.options.length;
       choose(creatureFilter,"earth");
       verify(creature.options.length<fullCreatureCount,"creature filter did not remove off-element options");
-      verify([...creature.options].some(o=>o.value==="crea_crys_2"),"Earth/Light creature not in Earth filter");
-      choose(creatureFilter,"light");
-      verify([...creature.options].some(o=>o.value==="crea_crys_2"),"Earth/Light creature not in Light filter");
+      verify([...creature.options].some(o=>o.value==="crea_crys_2"),"Earth/Nature creature not in Earth filter");
+      choose(creatureFilter,"nature");
+      verify([...creature.options].some(o=>o.value==="crea_crys_2"),"Earth/Nature creature not in Nature filter");
 
       const evolution=one("[data-evolution-target]");
       const evolutionFilter=evolution?.previousElementSibling;
       verify(evolutionFilter?.dataset.referenceElementFilter==="creature","evolution target filter missing");
-      choose(evolutionFilter,"light");
+      choose(evolutionFilter,"nature");
       verify([...evolution.options].some(o=>o.value==="crea_crys_2"),"evolution multi-element filtering missing");
       const opponents=[...document.querySelectorAll("[data-test-opponent-creature]")];
       verify(opponents.length===6,"test team selector list incomplete");
