@@ -1,3 +1,11 @@
+## 2026-11-05 — Réparation complémentaire des halos chromatiques parasites de `burrow:impact`
+- Base gh-pages `a162773a490d8c80b9f379497b0916239e0b7fc7`, START `checkpoint/lab-start-burrow-impact-color-artifact-2026-11-05`, WORK `work/lab-burrow-impact-color-artifact-2026-11-05`.
+- Validation visuelle des PNG source après retrait des bandes hautes : les 20 frames portent encore des pixels très saturés rouge/jaune/vert autour des débris de terre, non présents dans la palette marron/beige. Ils ne relèvent pas du gameplay ni du renderer.
+- Correction à la source, ciblée seulement sur pixels très saturés (`max(RGB) >=175`, saturation chromatique >=88 %, alpha visible) puis reconstruction synchrone du vrai atlas WebP lossless 20×384 ; aucun masquage CSS, aucun changement au timing, à la géométrie ou aux effets de compétences. Les autres assets sont protégés.
+- Audit quantitatif avant/après sur vrais PNG, aperçu visuel, un seul commit média via workflow temporaire, CI Foundation+4 navigateurs verts sur SHA final, checkpoint GREEN avant fusion gh-pages.
+
+---
+
 ## 2026-11-05 — Publier export auteur « Attaque sous terraine »
 - Base gh-pages `4c053cedf4912f9731049d0e6482729af88d7803`, START `checkpoint/lab-start-author-burrow-skill-import-2026-11-05`, WORK `work/lab-author-burrow-skill-import-2026-11-05`.
 - Source unique : JSON auteur fourni aujourd'hui, `attaque-sous-terraine` ; publier exactement une fois dans Showcase en préservant ses champs, valeurs, sprite V13 et audio. La présente PR ne prétend pas retoucher les anciennes archives ni changer gameplay.
