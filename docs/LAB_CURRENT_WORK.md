@@ -1,3 +1,13 @@
+## 2026-11-05 — Mur destructible : formulaire lisible et calibrage indépendant par camp
+- BASE gh-pages `bea78a7abf428b02338d8e0a4172205df45c6354` ; START `checkpoint/lab-start-barrier-side-layout-2026-11-05` ; WORK `work/lab-barrier-side-layout-2026-11-05`.
+- Demande auteur sur capture : grille illisible, champs immenses, cases d'interception gigantesques ; ancien réglage commun d'échelle et position insuffisant pour le mur du joueur et celui de l'adversaire.
+- Propriétaires : `SkillEffectV1` seul contrat pour options adverses facultatives ; `CombatEntityV1` transporte les options ; `CombatEntityOverlayV1` projette la géométrie réelle par camp ; `Capture Human Editor` présente les sections cohérentes. Pas de nouveau moteur de collisions ou d'HP.
+- Fichiers prévus : `src/contracts/skill-effect-v1.js`, `src/core/combat/combat-entity-v1.js`, `src/adapters/renderer/combat-entity-overlay-v1.js`, `src/ui/capture-editor-human-v2.js`, `examples/dom-demo/capture-editor-v2.css`, tests de contrat/éditeur/renderer, documentation et références ESM nécessaires.
+- Invariants : les paramètres historiques sont conservés, les champs adverses absents héritent de l'ancien comportement (y compris projection d'X du mur adverse). Les nouveaux champs explicites côté adverse ne touchent que le mur adverse. Les rectangles de collisions restent exactement ceux du sprite visible ; pas de modification de Combat Damage, HP, IA, assets, main, Exploration ni GenSrpG.
+- TDD : ajouter d'abord tests RED du contrat, round-trip auteur, calcul de taille et position side-specific, structure réelle du formulaire et cases mobiles ; ensuite implémentation minimale, tests Foundation et quatre navigateurs, revue du vrai parcours, checkpoint GREEN seulement sur preuves exactes, PR gh-pages et validation physique Android distincte.
+
+---
+
 ## 2026-11-05 — Réparation complémentaire des halos chromatiques parasites de `burrow:impact`
 - Base gh-pages `a162773a490d8c80b9f379497b0916239e0b7fc7`, START `checkpoint/lab-start-burrow-impact-color-artifact-2026-11-05`, WORK `work/lab-burrow-impact-color-artifact-2026-11-05`.
 - Validation visuelle des PNG source après retrait des bandes hautes : les 20 frames portent encore des pixels très saturés rouge/jaune/vert autour des débris de terre, non présents dans la palette marron/beige. Ils ne relèvent pas du gameplay ni du renderer.

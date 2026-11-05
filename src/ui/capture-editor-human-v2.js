@@ -74,7 +74,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -119,7 +119,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -6443,8 +6443,11 @@ function appendHumanSkillEffectV1(
     statusVisualBox
   );
 
+
+  // One authored wall, presented in small coherent groups. This is only
+  // authoring markup: CombatEntityOverlay remains the single visual owner.
   const barrierBox=document.createElement("div");
-  barrierBox.className="skill-status-config skill-status-config__grid";
+  barrierBox.className="skill-status-config skill-barrier-config";
   barrierBox.dataset.skillEffectConfigKind="summon_entity";
   const barrierStatId=document.createElement("select");
   barrierStatId.dataset.skillBarrierStatId="true";
@@ -6452,70 +6455,158 @@ function appendHumanSkillEffectV1(
   const barrierHpRatio=tacticalNumberInputV1("skillBarrierHpRatio",effect?.hpPerStatPoint??1,
     {min:0.01,step:"0.1"});
   const barrierSprite=document.createElement("select");
-   barrierSprite.dataset.skillBarrierSpriteAssetId="true";
-   barrierSprite.dataset.assetRole="zone";
-   populateSelect(barrierSprite,EDITOR_VISUAL_ASSETS_BY_ROOT.get(root)??[],"zone");
-   if(effect?.spriteAssetId && ![...barrierSprite.options].some(o=>o.value===effect.spriteAssetId))
-     createOption(barrierSprite,effect.spriteAssetId,effect.spriteAssetId);
-   barrierSprite.value=effect?.spriteAssetId??"";
-   const barrierOpponentSprite=document.createElement("select");
-   barrierOpponentSprite.dataset.skillBarrierOpponentSpriteAssetId="true";
-   barrierOpponentSprite.dataset.assetRole="zone";
-   populateSelect(barrierOpponentSprite,EDITOR_VISUAL_ASSETS_BY_ROOT.get(root)??[],"zone");
-   if(effect?.opponentSpriteAssetId && ![...barrierOpponentSprite.options].some(o=>o.value===effect.opponentSpriteAssetId))
-     createOption(barrierOpponentSprite,effect.opponentSpriteAssetId,effect.opponentSpriteAssetId);
-   barrierOpponentSprite.value=effect?.opponentSpriteAssetId??"";
-   const wallScale=tacticalNumberInputV1("skillBarrierVisualScale",effect?.visualScale??1,{min:0.25,max:12,step:0.05});
-    const wallScaleX=tacticalNumberInputV1("skillBarrierVisualScaleX",effect?.visualScaleX??1,{min:0.25,max:8,step:0.05});
-    const wallScaleY=tacticalNumberInputV1("skillBarrierVisualScaleY",effect?.visualScaleY??1,{min:0.25,max:8,step:0.05});
-   const wallForward=tacticalNumberInputV1("skillBarrierOffsetForward",effect?.offsetForwardPx??0,{min:-150,max:150,step:1});
-   const wallUp=tacticalNumberInputV1("skillBarrierOffsetUp",effect?.offsetUpPx??0,{min:-150,max:150,step:1});
-   const wallPlacement=document.createElement("select");
-   wallPlacement.dataset.skillBarrierPlacementMode="true";
-   createOption(wallPlacement,"protected","Devant la créature protégée");
-   createOption(wallPlacement,"behind","Derrière la créature protégée");
-   createOption(wallPlacement,"arena","Libre dans l'arène (X / Y)");
-   wallPlacement.value=effect?.placementMode??"protected";
-   const wallArenaX=tacticalNumberInputV1("skillBarrierArenaX",effect?.arenaXPct??50,{min:0,max:100,step:1});
-   const wallArenaY=tacticalNumberInputV1("skillBarrierArenaY",effect?.arenaYPct??50,{min:0,max:100,step:1});
-   const wallXField=tacticalFieldV1("X : position horizontale (%)",wallArenaX);
-   const wallYField=tacticalFieldV1("Y : position verticale (%)",wallArenaY);
-   const wallArenaHelp=document.createElement("small");
-   wallArenaHelp.className="note";
-   wallArenaHelp.dataset.skillBarrierArenaHelp="true";
-   wallArenaHelp.textContent="Position libre : X = 0 bord gauche, 50 centre, 100 bord droit ; Y = 0 en haut, 50 centre, 100 en bas. Le centre du mur est placé dans l'arène entière, indépendamment de la créature.";
-   const wallForwardField=tacticalFieldV1("Éloignement du mur (px ; positif = plus loin)",wallForward);
-   const wallUpField=tacticalFieldV1("Décalage en hauteur (px)",wallUp);
-   function syncWallPlacementFields(){
-     const arenaPlacement=wallPlacement.value==="arena";
-     wallXField.hidden=!arenaPlacement;wallYField.hidden=!arenaPlacement;
-     wallArenaHelp.hidden=!arenaPlacement;
-     wallForwardField.hidden=arenaPlacement;wallUpField.hidden=arenaPlacement;
-   }
-   wallPlacement.addEventListener("change",syncWallPlacementFields);
-   syncWallPlacementFields();
-   const barrierKinds=document.createElement("fieldset");
-  barrierKinds.className="editor-choice-group";
+  barrierSprite.dataset.skillBarrierSpriteAssetId="true";
+  barrierSprite.dataset.assetRole="zone";
+  populateSelect(barrierSprite,EDITOR_VISUAL_ASSETS_BY_ROOT.get(root)??[],"zone");
+  if(effect?.spriteAssetId && ![...barrierSprite.options].some(o=>o.value===effect.spriteAssetId))
+    createOption(barrierSprite,effect.spriteAssetId,effect.spriteAssetId);
+  barrierSprite.value=effect?.spriteAssetId??"";
+  const barrierOpponentSprite=document.createElement("select");
+  barrierOpponentSprite.dataset.skillBarrierOpponentSpriteAssetId="true";
+  barrierOpponentSprite.dataset.assetRole="zone";
+  populateSelect(barrierOpponentSprite,EDITOR_VISUAL_ASSETS_BY_ROOT.get(root)??[],"zone");
+  if(effect?.opponentSpriteAssetId && ![...barrierOpponentSprite.options].some(o=>o.value===effect.opponentSpriteAssetId))
+    createOption(barrierOpponentSprite,effect.opponentSpriteAssetId,effect.opponentSpriteAssetId);
+  barrierOpponentSprite.value=effect?.opponentSpriteAssetId??"";
+
+  const wallScale=tacticalNumberInputV1("skillBarrierVisualScale",effect?.visualScale??1,{min:0.25,max:12,step:0.05});
+  const wallScaleX=tacticalNumberInputV1("skillBarrierVisualScaleX",effect?.visualScaleX??1,{min:0.25,max:8,step:0.05});
+  const wallScaleY=tacticalNumberInputV1("skillBarrierVisualScaleY",effect?.visualScaleY??1,{min:0.25,max:8,step:0.05});
+  const wallForward=tacticalNumberInputV1("skillBarrierOffsetForward",effect?.offsetForwardPx??0,{min:-150,max:150,step:1});
+  const wallUp=tacticalNumberInputV1("skillBarrierOffsetUp",effect?.offsetUpPx??0,{min:-150,max:150,step:1});
+  const wallPlacement=document.createElement("select");
+  wallPlacement.dataset.skillBarrierPlacementMode="true";
+  createOption(wallPlacement,"protected","Devant la créature protégée");
+  createOption(wallPlacement,"behind","Derrière la créature protégée");
+  createOption(wallPlacement,"arena","Libre dans l'arène (X / Y)");
+  wallPlacement.value=effect?.placementMode??"protected";
+  const wallArenaX=tacticalNumberInputV1("skillBarrierArenaX",effect?.arenaXPct??50,{min:0,max:100,step:1});
+  const wallArenaY=tacticalNumberInputV1("skillBarrierArenaY",effect?.arenaYPct??50,{min:0,max:100,step:1});
+  const wallXField=tacticalFieldV1("X (%)",wallArenaX);
+  const wallYField=tacticalFieldV1("Y (%)",wallArenaY);
+  const wallForwardField=tacticalFieldV1("Distance avant/arrière (px)",wallForward);
+  const wallUpField=tacticalFieldV1("Décalage hauteur (px)",wallUp);
+  const wallArenaHelp=document.createElement("small");
+  wallArenaHelp.className="note skill-barrier-help";
+  wallArenaHelp.dataset.skillBarrierArenaHelp="true";
+  wallArenaHelp.textContent="Position libre : X = 0 bord gauche, 50 centre, 100 bord droit ; Y = 0 en haut, 50 centre, 100 en bas.";
+
+  // Optional overrides: empty inputs mean 'same as player'. Older skills
+  // therefore keep their historical opposite-side projection unchanged.
+  const opponentWallScale=tacticalNumberInputV1("skillBarrierOpponentVisualScale",effect?.opponentVisualScale??"",
+    {min:0.25,max:12,step:0.05});
+  const opponentWallScaleX=tacticalNumberInputV1("skillBarrierOpponentVisualScaleX",effect?.opponentVisualScaleX??"",
+    {min:0.25,max:8,step:0.05});
+  const opponentWallScaleY=tacticalNumberInputV1("skillBarrierOpponentVisualScaleY",effect?.opponentVisualScaleY??"",
+    {min:0.25,max:8,step:0.05});
+  const opponentPlacement=document.createElement("select");
+  opponentPlacement.dataset.skillBarrierOpponentPlacementMode="true";
+  createOption(opponentPlacement,"","Même placement que le joueur");
+  createOption(opponentPlacement,"protected","Devant la créature adverse");
+  createOption(opponentPlacement,"behind","Derrière la créature adverse");
+  createOption(opponentPlacement,"arena","Libre dans l'arène (X / Y)");
+  opponentPlacement.value=effect?.opponentPlacementMode??"";
+  const opponentArenaX=tacticalNumberInputV1("skillBarrierOpponentArenaX",effect?.opponentArenaXPct??"",
+    {min:0,max:100,step:1});
+  const opponentArenaY=tacticalNumberInputV1("skillBarrierOpponentArenaY",effect?.opponentArenaYPct??"",
+    {min:0,max:100,step:1});
+  const opponentForward=tacticalNumberInputV1("skillBarrierOpponentOffsetForward",effect?.opponentOffsetForwardPx??"",
+    {min:-150,max:150,step:1});
+  const opponentUp=tacticalNumberInputV1("skillBarrierOpponentOffsetUp",effect?.opponentOffsetUpPx??"",
+    {min:-150,max:150,step:1});
+  for(const input of [opponentWallScale,opponentWallScaleX,opponentWallScaleY,
+    opponentArenaX,opponentArenaY,opponentForward,opponentUp])
+    input.placeholder="Hérité";
+  const opponentXField=tacticalFieldV1("X adverse (%) — vide = auto",opponentArenaX);
+  const opponentYField=tacticalFieldV1("Y adverse (%) — vide = joueur",opponentArenaY);
+  const opponentForwardField=tacticalFieldV1("Distance adverse (px)",opponentForward);
+  const opponentUpField=tacticalFieldV1("Hauteur adverse (px)",opponentUp);
+  const opponentArenaHelp=document.createElement("small");
+  opponentArenaHelp.className="note skill-barrier-help";
+  opponentArenaHelp.textContent="Avec X adverse renseigné, la position est exacte ; si X reste vide, l'ancien placement automatique près de l'adversaire est conservé.";
+  function syncWallPlacementFields(){
+    const arenaPlacement=wallPlacement.value==="arena";
+    wallXField.hidden=!arenaPlacement;wallYField.hidden=!arenaPlacement;
+    wallArenaHelp.hidden=!arenaPlacement;
+    wallForwardField.hidden=arenaPlacement;wallUpField.hidden=arenaPlacement;
+    const enemyArena=(opponentPlacement.value||wallPlacement.value)==="arena";
+    opponentXField.hidden=!enemyArena;opponentYField.hidden=!enemyArena;
+    opponentArenaHelp.hidden=!enemyArena;
+    opponentForwardField.hidden=enemyArena;opponentUpField.hidden=enemyArena;
+  }
+  wallPlacement.addEventListener("change",syncWallPlacementFields);
+  opponentPlacement.addEventListener("change",syncWallPlacementFields);
+  syncWallPlacementFields();
+
+  function barrierSection(title,extraClass,fields){
+    const section=document.createElement("section");
+    section.className="skill-barrier-section "+extraClass;
+    const heading=document.createElement("h4");
+    heading.textContent=title;
+    const grid=document.createElement("div");
+    grid.className="skill-barrier-fields";
+    grid.append(...fields);
+    section.append(heading,grid);
+    return section;
+  }
+  const barrierVitals=barrierSection("Résistance du mur","skill-barrier-vitals",[
+    tacticalFieldV1("Statistique utilisée",barrierStatId),
+    tacticalFieldV1("PV par point de statistique",barrierHpRatio)
+  ]);
+  const playerArt=barrierSection("Apparence — joueur","skill-barrier-player-art",[
+    tacticalFieldV1("Sprite du mur",barrierSprite),
+    tacticalFieldV1("Échelle générale (× 0,25 à 12)",wallScale),
+    tacticalFieldV1("Largeur X (× 0,25 à 8)",wallScaleX),
+    tacticalFieldV1("Hauteur Y (× 0,25 à 8)",wallScaleY)
+  ]);
+  const playerPosition=barrierSection("Position — joueur","skill-barrier-player-position",[
+    tacticalFieldV1("Placement",wallPlacement),
+    wallXField,wallYField,wallForwardField,wallUpField
+  ]);
+  playerPosition.append(wallArenaHelp);
+  const opponentDetails=document.createElement("details");
+  opponentDetails.className="skill-barrier-opponent";
+  opponentDetails.dataset.skillBarrierOpponentSettings="true";
+  const existingOpponentOverrides=[
+    "opponentSpriteAssetId","opponentVisualScale","opponentVisualScaleX","opponentVisualScaleY",
+    "opponentPlacementMode","opponentArenaXPct","opponentArenaYPct",
+    "opponentOffsetForwardPx","opponentOffsetUpPx"
+  ].some(key=>effect?.[key]!=null);
+  opponentDetails.open=existingOpponentOverrides;
+  const opponentSummary=document.createElement("summary");
+  opponentSummary.textContent="Réglages côté adversaire (facultatifs)";
+  const opponentHint=document.createElement("p");
+  opponentHint.className="note skill-barrier-help";
+  opponentHint.textContent="Laisse un champ vide pour reprendre le réglage du joueur ; le mur adverse conserve alors son placement automatique historique.";
+  const opponentArt=barrierSection("Apparence — adversaire","skill-barrier-opponent-art",[
+    tacticalFieldV1("Sprite adverse (vide = joueur)",barrierOpponentSprite),
+    tacticalFieldV1("Échelle adverse (vide = joueur)",opponentWallScale),
+    tacticalFieldV1("Largeur X adverse",opponentWallScaleX),
+    tacticalFieldV1("Hauteur Y adverse",opponentWallScaleY)
+  ]);
+  const opponentPosition=barrierSection("Position — adversaire","skill-barrier-opponent-position",[
+    tacticalFieldV1("Placement adverse",opponentPlacement),
+    opponentXField,opponentYField,opponentForwardField,opponentUpField
+  ]);
+  opponentPosition.append(opponentArenaHelp);
+  opponentDetails.append(opponentSummary,opponentHint,opponentArt,opponentPosition);
+
+  const barrierKinds=document.createElement("fieldset");
+  barrierKinds.className="editor-choice-group skill-barrier-intercepts";
   const barrierLegend=document.createElement("legend");
-  barrierLegend.textContent="Types d'attaque interceptés";
+  barrierLegend.textContent="Types d'attaques interceptés";
   barrierKinds.append(barrierLegend);
   for(const [value,label] of [["projectile","Projectiles"],["beam","Rayons"],["contact","Corps à corps"]]){
     const wrap=document.createElement("label"),check=document.createElement("input");
+    wrap.className="skill-barrier-choice";
     check.type="checkbox";check.value=value;check.dataset.skillBarrierInterceptKind="true";
     check.checked=(effect?.interceptKinds??["projectile","beam","contact"]).includes(value);
     wrap.append(check,document.createTextNode(label));barrierKinds.append(wrap);
   }
-  const barrierHelp=document.createElement("small");barrierHelp.className="note";
-  barrierHelp.textContent="Mur défensif réel avec ses propres PV : statistique du lanceur × coefficient (0 point = aucune invocation). Une attaque interceptée s'arrête entièrement sur le mur, même si elle le détruit ; aucun malus ne traverse. Les zones et DoT ne sont pas interceptés. Une nouvelle invocation de la même compétence remplace le mur précédent.";
-  barrierBox.append(tacticalFieldV1("Statistique de l'invocation",barrierStatId),
-    tacticalFieldV1("PV par point de stat (coefficient libre)",barrierHpRatio),
-     tacticalFieldV1("Sprite du mur côté joueur (défaut des deux camps)",barrierSprite),
-     tacticalFieldV1("Sprite du mur côté adversaire (facultatif, sinon celui du joueur)",barrierOpponentSprite),
-     tacticalFieldV1("Échelle générale du mur (× 0,25 à × 12)",wallScale),
-      tacticalFieldV1("Scale X — largeur (× 0,25 à × 8)",wallScaleX),
-      tacticalFieldV1("Scale Y — hauteur (× 0,25 à × 8)",wallScaleY),
-     tacticalFieldV1("Placement du mur",wallPlacement),
-     wallXField,wallYField,wallArenaHelp,wallForwardField,wallUpField,barrierKinds,barrierHelp);
+  const barrierHelp=document.createElement("small");
+  barrierHelp.className="note skill-barrier-help";
+  barrierHelp.textContent="PV = statistique × coefficient. Une attaque interceptée s'arrête sur le mur, même détruit ; les zones et effets périodiques ne sont pas interceptés. Réinvoquer remplace le mur précédent.";
+  barrierBox.append(barrierVitals,playerArt,playerPosition,opponentDetails,barrierKinds,barrierHelp);
 
   const scheduledBox =
     document.createElement("div");
@@ -7034,6 +7125,25 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
         ? {spriteAssetId:row.querySelector("[data-skill-barrier-sprite-asset-id]").value}:{}),
       ...(row.querySelector("[data-skill-barrier-opponent-sprite-asset-id]")?.value
         ? {opponentSpriteAssetId:row.querySelector("[data-skill-barrier-opponent-sprite-asset-id]").value}:{}),
+      // Empty enemy fields retain the original shared author values.
+      ...(["opponentVisualScale","opponentVisualScaleX","opponentVisualScaleY",
+        "opponentArenaXPct","opponentArenaYPct","opponentOffsetForwardPx","opponentOffsetUpPx"]
+        .reduce((values,key,index)=>{
+          const selectors=[
+            "[data-skill-barrier-opponent-visual-scale]",
+            "[data-skill-barrier-opponent-visual-scale-x]",
+            "[data-skill-barrier-opponent-visual-scale-y]",
+            "[data-skill-barrier-opponent-arena-x]",
+            "[data-skill-barrier-opponent-arena-y]",
+            "[data-skill-barrier-opponent-offset-forward]",
+            "[data-skill-barrier-opponent-offset-up]"
+          ];
+          const raw=row.querySelector(selectors[index])?.value.trim()??"";
+          if(raw!=="")values[key]=Number(raw);
+          return values;
+        },{})),
+      ...(row.querySelector("[data-skill-barrier-opponent-placement-mode]")?.value
+        ?{opponentPlacementMode:row.querySelector("[data-skill-barrier-opponent-placement-mode]").value}:{}),
       interceptKinds:[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
         .filter(input=>input.checked).map(input=>input.value)
     };

@@ -29,12 +29,27 @@ export function projectCombatArenaBarrierXForSideV1({authoredXPct,ownerCenterXPc
 
 // One sprite geometry, scaled by the existing arena-author presentation unit.
 // The same dimensions are used by the visible art and its collision rectangle.
-export function projectCombatArenaBarrierVisualSizeV1(entity,arenaScale=1){
-  const scale=entity.visualScale??1;
+export function projectCombatArenaBarrierVisualSizeV1(entity,arenaScale=1,opponentSide=false){
+  const scale=opponentSide?(entity.opponentVisualScale??entity.visualScale??1):(entity.visualScale??1);
+  const scaleX=opponentSide?(entity.opponentVisualScaleX??entity.visualScaleX??1):(entity.visualScaleX??1);
+  const scaleY=opponentSide?(entity.opponentVisualScaleY??entity.visualScaleY??1):(entity.visualScaleY??1);
   return Object.freeze({
-    width:Math.round(70*scale*(entity.visualScaleX??1)*arenaScale),
-    height:Math.round(92*scale*(entity.visualScaleY??1)*arenaScale),
-    artHeight:Math.round(70*scale*(entity.visualScaleY??1)*arenaScale)
+    width:Math.round(70*scale*scaleX*arenaScale),
+    height:Math.round(92*scale*scaleY*arenaScale),
+    artHeight:Math.round(70*scale*scaleY*arenaScale)
+  });
+}
+
+// The authored player coordinates remain canonical. Older enemy walls keep
+// their protected-half auto-projection unless an explicit enemy X is authored.
+export function resolveCombatArenaBarrierPlacementForSideV1(entity,opponentSide=false){
+  return Object.freeze({
+    placementMode:opponentSide?(entity.opponentPlacementMode??entity.placementMode??"protected"):(entity.placementMode??"protected"),
+    arenaXPct:opponentSide?(entity.opponentArenaXPct??entity.arenaXPct??50):(entity.arenaXPct??50),
+    arenaYPct:opponentSide?(entity.opponentArenaYPct??entity.arenaYPct??50):(entity.arenaYPct??50),
+    offsetForwardPx:opponentSide?(entity.opponentOffsetForwardPx??entity.offsetForwardPx??0):(entity.offsetForwardPx??0),
+    offsetUpPx:opponentSide?(entity.opponentOffsetUpPx??entity.offsetUpPx??0):(entity.offsetUpPx??0),
+    explicitOpponentArenaX:opponentSide&&entity.opponentArenaXPct!=null
   });
 }
 
@@ -124,11 +139,18 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
     const avg=others.reduce((sum,[,host])=>{const r=host.getBoundingClientRect();return sum+r.left+r.width/2;},0)/others.length;
     return avg>=selfCenter?"right":"left";
   }
+  function opponentSideFor(entity){
+    const primaryActorId=Object.keys(fighterContainers)[0];
+    return typeof teamOf==="function"
+      ?teamOf(entity.protectedActorId)!==teamOf(primaryActorId)
+      :entity.protectedActorId!==primaryActorId;
+  }
   function render(state){
     snapshot=state;const living=new Set();
     if(arenaHost&&arenaOverlay){
       const hasArenaWall=(state?.combatEntities??[]).some(entity=>
-        entity.kind==="barrier"&&entity.placementMode==="arena"&&Number(entity.hp)>0);
+        entity.kind==="barrier"&&Number(entity.hp)>0&&
+        resolveCombatArenaBarrierPlacementForSideV1(entity,opponentSideFor(entity)).placementMode==="arena");
       if(hasArenaWall)arenaHost.dataset.combatEntityArenaActive="true";
       else delete arenaHost.dataset.combatEntityArenaActive;
     }
@@ -136,14 +158,12 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
       if(entity.kind!=="barrier"||!(Number(entity.hp)>0)||!hosts[entity.protectedActorId])continue;
       living.add(entity.id);
       const existing=nodes.get(entity.id);
-      const arenaMode=entity.placementMode==="arena";
+      const opponentSide=opponentSideFor(entity);
+      const placement=resolveCombatArenaBarrierPlacementForSideV1(entity,opponentSide);
+      const arenaMode=placement.placementMode==="arena";
       if(arenaMode&&!arenaOverlay)throw new Error("arenaHost is required for arena wall placement");
       const size=projectCombatArenaBarrierVisualSizeV1(entity,
-        arenaHost?fxArenaScaleV1(arenaHost):1);
-      const primaryActorId=Object.keys(fighterContainers)[0];
-      const opponentSide=typeof teamOf==="function"
-        ?teamOf(entity.protectedActorId)!==teamOf(primaryActorId)
-        :entity.protectedActorId!==primaryActorId;
+        arenaHost?fxArenaScaleV1(arenaHost):1,opponentSide);
       const parent=arenaMode?arenaOverlay:hosts[entity.protectedActorId];
       const item=existing??newNode(entity,parent,opponentSide);
       if(item.node.parentNode!==parent)parent.append(item.node);
@@ -153,28 +173,29 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
         const ownerCenterXPct=stageRect.width>0
           ?100*((ownerRect.left+ownerRect.width/2-stageRect.left)/stageRect.width)
           :NaN;
-        const drawnX=projectCombatArenaBarrierXForSideV1({
-          authoredXPct:entity.arenaXPct,ownerCenterXPct,opponentSide,
-          visualWidthPct:stageRect.width>0?100*size.width/stageRect.width:0
-        });
+        const drawnX=placement.explicitOpponentArenaX?placement.arenaXPct:
+          projectCombatArenaBarrierXForSideV1({
+            authoredXPct:placement.arenaXPct,ownerCenterXPct,opponentSide,
+            visualWidthPct:stageRect.width>0?100*size.width/stageRect.width:0
+          });
         item.node.style.left=drawnX+"%";
-        item.node.style.top=entity.arenaYPct+"%";
+        item.node.style.top=placement.arenaYPct+"%";
         item.node.style.bottom="auto";
         item.node.style.transform="translate(-50%, -50%)";
       }else{
         const facing=frontSideFor(entity.protectedActorId);
-        const side=entity.placementMode==="behind"
+        const side=placement.placementMode==="behind"
           ? (facing==="right"?"left":"right")
           : facing;
         item.node.style.left=side==="right"
-          ? "calc(110% + "+entity.offsetForwardPx+"px)"
-          : "calc(-10% - "+entity.offsetForwardPx+"px)";
+          ? "calc(110% + "+placement.offsetForwardPx+"px)"
+          : "calc(-10% - "+placement.offsetForwardPx+"px)";
         // Center the persistent wall sprite in the actual attack lane,
         // relative to the fighter's visible container. The former 10%-from-
         // bottom anchor put the entire wall too HIGH: a projectile travelling
         // through the fighter's center could slip under its real rectangle.
         // Transform centers the wall + PV label; scale remains fully native.
-        item.node.style.top="calc(50% - "+entity.offsetUpPx+"px)";
+        item.node.style.top="calc(50% - "+placement.offsetUpPx+"px)";
         item.node.style.bottom="auto";
         item.node.style.transform="translate(-50%, -50%)";
       }
