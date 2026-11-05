@@ -25,8 +25,9 @@ try{
   sourceSkillId:"wall",effect});
  const host=document.createElement("div");document.body.append(host);
  const wallArt="data:image/svg+xml,"+encodeURIComponent(\`<svg xmlns="http://www.w3.org/2000/svg" width="70" height="92"><path fill="#8ddaf4" d="M15 0H58L70 90H0Z"/></svg>\`);
+ const opponentWallArt="data:image/svg+xml,"+encodeURIComponent(\`<svg xmlns="http://www.w3.org/2000/svg" width="70" height="92"><path fill="#fca8ce" d="M15 0H58L70 90H0Z"/></svg>\`);
  const presentationAssets=createCaptureSkillPresentationAssetsV2({skillPresentations:{},
-  assetForId:id=>id==="test:wall-art"?{url:wallArt,frameCount:1}:null});
+  assetForId:id=>id==="test:wall-art"?{url:wallArt,frameCount:1}:id==="test:wall-opponent"?{url:opponentWallArt,frameCount:1}:null});
  const overlay=createCombatEntityOverlayV1({fighterContainers:{player:host},
   assetForId:id=>presentationAssets.visualAsset(id)});
  overlay.render(summoned.state);
@@ -108,7 +109,7 @@ try{
    {id:"player",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,statValuesById:{glace:80}},
    {id:"opponent",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,statValuesById:{glace:80}}
  ]});
- const authoredWall={...effect,placementMode:"arena",arenaXPct:47,arenaYPct:55};
+ const authoredWall={...effect,opponentSpriteAssetId:"test:wall-opponent",placementMode:"arena",arenaXPct:47,arenaYPct:55};
  const playerWall=createCombatBarrierV1({state:opposingState,sourceActorId:"player",protectedActorId:"player",sourceSkillId:"mirror-player",effect:authoredWall});
  const enemyWall=createCombatBarrierV1({state:playerWall.state,sourceActorId:"opponent",protectedActorId:"opponent",sourceSkillId:"mirror-enemy",effect:authoredWall});
  for(const teamOf of [null,id=>id==="player"?"ally":"enemy"]){
@@ -118,6 +119,10 @@ try{
    mirroredOverlay.render(enemyWall.state);
    const playerNode=versusStage.querySelector('[data-combat-entity-id="'+playerWall.record.id+'"]');
    const enemyNode=versusStage.querySelector('[data-combat-entity-id="'+enemyWall.record.id+'"]');
+   const playerSpriteUrl=playerNode?.querySelector("[data-combat-entity-image]")?.src;
+   const opponentSpriteUrl=enemyNode?.querySelector("[data-combat-entity-image]")?.src;
+   if(playerSpriteUrl!==wallArt||opponentSpriteUrl!==opponentWallArt)
+     throw Error("per-side wall sprite was not resolved from official side override");
    const pX=parseFloat(playerNode?.style.left),eX=parseFloat(enemyNode?.style.left);
    const ownerRect=enemyAnchor.getBoundingClientRect(),stageRect=versusStage.getBoundingClientRect();
    const ownerX=100*((ownerRect.left+ownerRect.width/2-stageRect.left)/stageRect.width);
