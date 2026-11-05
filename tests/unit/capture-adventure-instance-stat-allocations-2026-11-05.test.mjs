@@ -94,9 +94,22 @@ test('RED: same-species opponent stays unbuffed despite identical species ID and
  assert.equal(player.damagePctByChannel.fire,30);
  assert.equal(source.fighterConfigs['roster/opponent-1/opponent-member-1'].maxHp,25);
 });
+test('same-species same-level wild opponent also never inherits player instance bonuses',()=>{
+ const x=options();x.configuredCreatures.delete('enemy');
+ const source=buildCaptureEncounterCombatSourceV1({
+  ...x,local:{speciesId:'local',level:1,statAllocations:{health:20,focus:2}},
+  opponent:{speciesId:'local',level:1},hpMultiplier:0.25
+ });
+ const player=source.fighters.find(f=>f.id==='local-1');
+ const enemy=source.fighters.find(f=>f.id==='opponent-1');
+ assert.equal(player.maxHp,30);
+ assert.equal(enemy.maxHp,25);
+ assert.equal(player.outgoingDamagePct,3);
+ assert.ok(!enemy.outgoingDamagePct,'no per-instance stat effect on wild opponent');
+});
 test('RED: invalid allocations and missing official registry fail without partial mutation',()=>{
  const x=options(),before=x.configuredCreatures.get('local');
- for(const bad of [{ghost:1},{fire:-1},{fire:1.5},{health:Infinity},
+ for(const bad of [{ghost:1},{ghost:0},{fire:-1},{fire:1.5},{health:Infinity},
   {fire:'2'},Object.assign(Object.create(null),{fire:3})]){
   assert.throws(()=>projectCaptureEncounterOwnedStatsV1({
     configuredCreatures:x.configuredCreatures,statRegistry:registry,
