@@ -1,3 +1,11 @@
+## 2026-11-05 — Sprite du mur distinct par camp (lot visuel/édition)
+- Base gh-pages `6b0139e2f8590db3ddd4caaf213adc7be34e4b66`, START `checkpoint/lab-start-barrier-side-sprites-2026-11-05`, WORK `work/lab-barrier-side-sprites-2026-11-05`.
+- `summon_entity.opponentSpriteAssetId` optionnel ; `spriteAssetId` joueur/default conservé. Résolution du camp au rendu existant, sans nouveau moteur de collision et sans modifier les PV du mur.
+- Éditeur : sélecteur mur joueur et adversaire facultatif ; les deux dans la bibliothèque de zones officielle, avec import/export unique.
+- Fichiers autorisés : Skill Effect V1, CombatEntity V1, renderer du mur, éditeur humain, tests + chaîne de cache publique si nécessaire. Protect : CombatRuntime, dommages, géométrie, 1v1/2v2, API GenSrpG, global-assets. Tests contractuels et rendu navigateur/CI 5 jobs avant GREEN et gh-pages.
+
+---
+
 ## 2026-11-05 — Réconciliation des filtres élémentaires des sprites (CI 5/5 — jalon de livraison)
 - Base gh-pages `22da2abd5536bfb25e37e14b80f4cd539150899c`, START `checkpoint/lab-start-visual-element-filters-reconcile-2026-11-05`, WORK `work/lab-visual-element-filters-reconcile-2026-11-05`.
 - Un contrôleur pour les menus de sprites (statuts / adversaire inclus), créatures et compétences ; préserver Armure de pointe, les IDs et les banques officielles.
