@@ -1,6 +1,6 @@
 import {appendCaptureEffectConditionFieldsV1,readCaptureEffectConditionV1} from "./capture-effect-condition-fields-v1.js";
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js?v=self-periodic-prose-20261102";
-import { createCaptureReferenceElementFiltersV1 } from "./capture-reference-element-filter-v1.js";
+import { createCaptureReferenceElementFiltersV1 } from "./capture-reference-element-filter-v1.js?v=visual-elements-20261105";
 import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104";
 import { normalizeCaptureMarkerLibraryV1 } from "../contracts/capture-marker-v1.js";
 import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1, captureMarkerZoneSelectV1 } from "./capture-marker-effect-fields-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104";
@@ -74,7 +74,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -119,7 +119,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -8792,6 +8792,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
   }
   syncHumanCreatureReactionControlsV1(root);
   captureMarkerRefreshReferenceChoicesV1(root);
+  root.dispatchEvent(new Event("capture-visual-assets-changed"));
 
   function preview(select, image) {
     const asset = byId.get(select.value);
@@ -8881,6 +8882,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
     }
     syncHumanCreatureReactionControlsV1(root);
     captureMarkerRefreshReferenceChoicesV1(root);
+    root.dispatchEvent(new Event("capture-visual-assets-changed"));
   }
 
   function mountCreatorVisualImporter(
@@ -12330,11 +12332,26 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   // rebuilds actual options for Android; it never edits the chosen IDs.
   const referenceElementFilters=createCaptureReferenceElementFiltersV1({
     root,configuredSkills,configuredCreatures,
-    elementMeta:humanSkillSelectorElementMetaV1,listen
+    elementMeta:humanSkillSelectorElementMetaV1,
+    visualAssets:()=>EDITOR_VISUAL_ASSETS_BY_ROOT.get(root)??[],
+    visualAssetElement:humanVisualAssetElementV1,listen
   });
   function refreshHumanSkillElementFiltersV1() {
     referenceElementFilters.refresh();
   }
+  // The official catalog notifies this editor when sprite options change.
+  listen(root,"capture-visual-assets-changed",refreshHumanSkillElementFiltersV1);
+  // Refresh the existing owner only after new/replaced effect controls.
+  listen(root,"click",(event)=>{
+    if(event.target?.closest?.(
+      "[data-skill-effect-add], [data-skill-channeling-effect-add], [data-skill-contact-hold-effect-add], [data-skill-new]"
+    )) refreshHumanSkillElementFiltersV1();
+  });
+  listen(root,"change",(event)=>{
+    if(event.target?.matches?.(
+      "[data-skill-library-select], [data-skill-effect-kind]"
+    )) refreshHumanSkillElementFiltersV1();
+  });
 
   function refreshSkillLibraryOptions(
     preferredId = null

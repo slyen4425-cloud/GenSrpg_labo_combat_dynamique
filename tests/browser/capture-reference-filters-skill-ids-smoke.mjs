@@ -95,11 +95,44 @@ document.addEventListener("DOMContentLoaded",()=>{
       const statusFx=[...document.querySelectorAll("[data-skill-status-visual-asset]")];
       verify(statusFx.some(node=>node.value==="pack:capture:sprite-armure-ronces-plante-carnivore-back-01"),
         "original authored thorn armor mask is missing after native skill reload");
+      // Optional adversary status sprite shares the canonical asset filter.
+      const opponentStatus=[...document.querySelectorAll("[data-skill-status-opponent-visual-asset]")];
+      verify(opponentStatus.length>0,"opponent status sprite selector missing");
+      verify(opponentStatus.some(node=>node.previousElementSibling?.dataset.referenceElementFilter==="asset"),
+        "opponent status sprite selector lacks canonical asset element filter");
       choose(skill,"coupe_feuille");
       verify(id.value==="coupe_feuille"&&id.readOnly,"existing skill identity was not restored");
       name.value="Coupe feuille édition";
       name.dispatchEvent(new Event("input",{bubbles:true}));
       verify(id.value==="coupe_feuille","renaming existing skill must not change its permanent ID");
+
+      // A creature visual picker is an asset catalog, not a species reference.
+      const model=one("[data-creature-front-select]");
+      const modelFilter=model?.previousElementSibling;
+      verify(modelFilter?.dataset.referenceElementFilter==="asset","creature model picker lacks asset element filter");
+      const modelCount=model.options.length;
+      verify(modelCount>10,"creature model asset library not hydrated");
+      choose(modelFilter,"nature");
+      verify(model.options.length<modelCount,"creature model asset filter did not narrow native options");
+      choose(modelFilter,"");
+      verify(model.options.length===modelCount,"creature model reset lost assets");
+
+      // A status sprite is created dynamically inside a buff/debuff effect row.
+      const effectKind=one("[data-skill-effect-add-kind]");
+      choose(effectKind,"effect:apply_status");
+      one("[data-skill-effect-add]").click();
+      const status=[...document.querySelectorAll("[data-skill-status-visual-asset]")].at(-1);
+      verify(status,"status visual sprite selector missing after effect creation");
+      const statusFilter=status.previousElementSibling;
+      verify(statusFilter?.dataset.referenceElementFilter==="asset","buff/status sprite lacks asset element filter");
+      const statusCount=status.options.length;
+      verify(statusCount>8,"status sprite catalog unexpectedly empty");
+      choose(statusFilter,"fire");
+      verify(status.options.length<statusCount,"status sprite Fire filter did not remove incompatible options");
+      choose(statusFilter,"nature");
+      verify([...status.options].some(o=>/nature|plante|ronce/i.test(o.textContent)),"Nature status sprite not offered");
+      choose(statusFilter,"");
+      verify(status.options.length===statusCount,"status sprite reset did not restore original options");
 
       out("pass:"+innerWidth+":"+originalSkillCount+":"+fullCreatureCount+":"+allTeamCount);
     }catch(error){out("error:"+String(error.message||error));}
