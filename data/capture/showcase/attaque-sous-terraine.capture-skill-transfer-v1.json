@@ -23,7 +23,7 @@
       "preparationMs": 900,
       "travelMs": 2000,
       "recoveryMs": 0,
-      "cooldownMs": 2,
+      "cooldownMs": 25000,
       "maxUsesPerCombat": null,
       "interruptibleDuringPreparation": true,
       "allowedDistances": [
