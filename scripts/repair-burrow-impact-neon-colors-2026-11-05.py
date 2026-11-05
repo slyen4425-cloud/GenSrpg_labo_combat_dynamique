@@ -41,7 +41,8 @@ def clean(image):
     for i in indices:
         clean_pixels[i] = (0,0,0,0)
     output.putdata(clean_pixels)
-    assert all(clean_pixels[i] == pixels[i] for i in range(len(pixels)) if i not in set(indices)), "non-neon pixel changed"
+    changed=set(indices)
+    assert all(clean_pixels[i] == pixels[i] for i in range(len(pixels)) if i not in changed), "non-neon pixel changed"
     return output, removed, valid
 
 def main():
