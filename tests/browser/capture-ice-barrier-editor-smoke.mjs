@@ -447,6 +447,32 @@ document.addEventListener("DOMContentLoaded",()=>{
     if(!scale||!scaleX||!scaleY||scale.max!=="12"||scaleX.max!=="8"||scaleY.max!=="8")
       throw Error("wall editor missing independent X/Y scale and greater uniform scale");
     scale.value="7";scaleX.value="1.75";scaleY.value="0.65";
+    const panels=row.querySelectorAll(".skill-barrier-section");
+    const enemyDetails=row.querySelector("[data-skill-barrier-opponent-settings]");
+    if(panels.length<3||!enemyDetails||!enemyDetails.querySelector(".skill-barrier-opponent-position"))
+      throw Error("wall settings are not grouped by HP, art, placement and enemy side");
+    const enemyPlacement=row.querySelector("[data-skill-barrier-opponent-placement-mode]");
+    const enemyX=row.querySelector("[data-skill-barrier-opponent-arena-x]");
+    const enemyY=row.querySelector("[data-skill-barrier-opponent-arena-y]");
+    const enemyScale=row.querySelector("[data-skill-barrier-opponent-visual-scale]");
+    const enemyWidth=row.querySelector("[data-skill-barrier-opponent-visual-scale-x]");
+    const enemyHeight=row.querySelector("[data-skill-barrier-opponent-visual-scale-y]");
+    if(!enemyPlacement||!enemyX||!enemyY||!enemyScale||!enemyWidth||!enemyHeight||
+      enemyScale.value!==""||enemyX.value!=="")
+      throw Error("enemy wall override should be available but empty by default");
+    enemyDetails.open=true;
+    enemyPlacement.value="arena";
+    enemyPlacement.dispatchEvent(new Event("change",{bubbles:true}));
+    if(enemyX.closest("label").hidden||enemyY.closest("label").hidden)
+      throw Error("enemy arena coordinates should be separately editable");
+    enemyX.value="83";enemyY.value="31";
+    enemyScale.value="2";enemyWidth.value="0.8";enemyHeight.value="1.25";
+    if(x.value!=="25"||y.value!=="65"||scale.value!=="7")
+      throw Error("enemy wall controls unexpectedly overwrote player settings");
+    const firstIntercept=row.querySelector("[data-skill-barrier-intercept-kind]");
+    const checkRect=firstIntercept.getBoundingClientRect();
+    if(checkRect.width>28||checkRect.height>28||checkRect.width<12)
+      throw Error("wall interception checkbox is stretched instead of compact");
     const kinds=[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
      .filter(x=>x.checked).map(x=>x.value);
    if(ratio.value!=="1.5"||kinds.length!==3||!row.querySelector("[data-skill-barrier-sprite-asset-id]")||
