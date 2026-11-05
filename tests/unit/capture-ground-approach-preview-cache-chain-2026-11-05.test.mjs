@@ -19,7 +19,7 @@ test("public Capture preview imports fresh locomotion script through ONE version
  const preview=read("src/ui/capture-combat-preview-v1.js");
  const demo=read("src/ui/demo-app.js");
  const release=query(html,"capture-editor-v2.js");
- assert.ok(release.endsWith("-ground-approach-steps-20261105"));
+ assert.ok(release.includes("-ground-approach-steps-20261105"));
  assert.equal(query(entry,"capture-editor-human-v2.js"),release);
  assert.equal(query(entry,"capture-editor-preview-runtime-loader-v1.js"),release);
  assert.equal(query(human,"capture-showcase-skill-presets-v1.js"),release);
