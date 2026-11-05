@@ -1,3 +1,11 @@
+## 2026-11-05 — Audit alpha et frame WebP impact souterrain
+- Base gh-pages `4db7e39cc8bb07ddc45b817037ba57a4f6410f63`; START `checkpoint/lab-start-burrow-impact-asset-audit-2026-11-05`; WORK `work/lab-burrow-impact-asset-audit-2026-11-05`.
+- Auteur : `attaque-sous-terraine` référence `burrow:impact`, 20 frames de 512×512 + WebP atlas (7680×384). L'utilisateur voit des artefacts dans la partie haute de l'explosion d'émergence.
+- Audit : lire les 20 PNG source, vérifier marges alpha, produire une planche diagnostic uniquement sur la branche (aucune réécriture d'asset avant preuve). Propriété artistique : bibliothèque de sprites existante, sans texture CSS de camouflage ni impact gameplay. Protéger Combat Runtime, collisions, IA, global-assets et consumer.
+- TDD RED si défaut démontré ; correction d'asset source + atlas au même endroit, tests de la vraie planche/CI 5/5 puis checkpoint GREEN. Ne pas déclarer corrigé sans vérification visuelle.
+
+---
+
 ## 2026-11-05 — Import auteur Gorice & Gemmor (données uniquement)
 - Base gh-pages `6b0139e2f8590db3ddd4caaf213adc7be34e4b66`, START `checkpoint/lab-start-gorice-gemmor-author-import-2026-11-05`, WORK `work/lab-gorice-gemmor-author-import-2026-11-05`.
 - Source : deux JSON auteur reçus, mêmes IDs et chemins uniques showcase. Gorice échelles 1,5/0,8; Gemmor Nature, profil biped et approche +25%.
