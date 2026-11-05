@@ -1,0 +1,132 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "attaque-sous-terraine",
+    "description": "Na",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "attaque-sous-terraine",
+      "name": "Attaque sous terraine",
+      "category": "offensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "earth",
+      "approachMode": "burrow",
+      "energyCost": 2,
+      "preparationMs": 900,
+      "travelMs": 2000,
+      "recoveryMs": 0,
+      "cooldownMs": 25000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active",
+        "reserve"
+      ],
+      "hitPresenceStates": [
+        "surface",
+        "underground"
+      ],
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 15,
+          "channel": "earth",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:attaque-sous-terraine",
+      "version": 13,
+      "subjectType": "skill",
+      "subjectId": "attaque-sous-terraine",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-rock-smash-01"
+        },
+        "burrowTerrain": {
+          "start": {
+            "assetId": "burrow:start",
+            "scale": 4,
+            "offsetX": 0,
+            "offsetY": -130,
+            "frameMs": 70
+          },
+          "travel": {
+            "assetId": "burrow:travel",
+            "scale": 3,
+            "offsetX": 0,
+            "offsetY": -130,
+            "frameMs": 60
+          },
+          "impact": {
+            "assetId": "burrow:impact",
+            "scale": 4,
+            "offsetX": 0,
+            "offsetY": -130,
+            "frameMs": 70
+          }
+        }
+      },
+      "audio": {
+        "travel": {
+          "assetId": "gensrpg:sound:genrpg-pack2-2f09138e",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-742f6521",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "baseVersion": 2
+    }
+  }
+}
