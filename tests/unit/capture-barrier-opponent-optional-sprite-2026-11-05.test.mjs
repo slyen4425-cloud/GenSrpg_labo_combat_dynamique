@@ -21,7 +21,7 @@ test("opponent barrier asset is optional, inherited from player and normalized w
  assert.throws(()=>normalizeSkillEffectV1({...base,opponentSpriteAssetId:""}));
 });
 test("canonical Combat State preserves wall player+opponent options without touching HP/geometry",()=>{
- const state=createCombatState({fighters:[{id:"hero",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,statValuesById:{glace:15}}]});
+ const state=createCombatState({fighters:[{id:"hero",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10,statValuesById:{glace:15}},{id:"enemy",maxHp:100,initialHp:100,maxEnergy:10,initialEnergy:10}]});
  const wall=createCombatBarrierV1({state,sourceActorId:"hero",protectedActorId:"hero",sourceSkillId:"ice-wall",effect:normalizeSkillEffectV1({...base,opponentSpriteAssetId:enemy})}).record;
  assert.equal(wall.spriteAssetId,player);assert.equal(wall.opponentSpriteAssetId,enemy);assert.equal(wall.maxHp,30);
  assert.deepEqual(wall.interceptKinds,["projectile","beam","contact"]);
