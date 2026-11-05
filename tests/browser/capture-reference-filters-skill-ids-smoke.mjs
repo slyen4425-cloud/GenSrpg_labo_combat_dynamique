@@ -32,6 +32,8 @@ document.addEventListener("DOMContentLoaded",()=>{
       verify(skill.options.length<originalSkillCount,"skill filter did not remove off-element options from native DOM");
       choose(skillFilter,"nature");
       verify([...skill.options].some(o=>o.value==="coupe_feuille"),"Nature skill missing under native filter");
+      verify([...skill.options].filter(o=>o.value==="armure-de-pointe").length===1,
+        "published Armure de pointe is not offered exactly once under Nature");
       choose(skillFilter,"");
       verify(skill.options.length===originalSkillCount,"reset must restore entire skill catalog");
 
@@ -81,6 +83,18 @@ document.addEventListener("DOMContentLoaded",()=>{
       name.value="Armure de pointes";
       name.dispatchEvent(new Event("input",{bubbles:true}));
       verify(/^armure-de-pointes(?:-\\d+)?$/.test(id.value),"new skill ID not updated from typed name");
+      // The real active registry must reload the authored preset, not a
+      // legacy template or a second hand-built copy.
+      choose(skill,"armure-de-pointe");
+      verify(id.value==="armure-de-pointe"&&id.readOnly,
+        "published Armure de pointe cannot be selected as a real skill");
+      verify(name.value==="Armure de pointe","author's capacity name not reloaded");
+      verify(one("[data-skill-required-level]")?.value==="5","author level lost");
+      verify(one("[data-skill-energy-cost]")?.value==="3","author energy cost lost");
+      verify(one("[data-skill-cooldown]")?.value==="30000","author cooldown lost");
+      const statusFx=[...document.querySelectorAll("[data-skill-status-visual-asset]")];
+      verify(statusFx.some(node=>node.value==="pack:capture:sprite-armure-ronces-plante-carnivore-back-01"),
+        "original authored thorn armor mask is missing after native skill reload");
       choose(skill,"coupe_feuille");
       verify(id.value==="coupe_feuille"&&id.readOnly,"existing skill identity was not restored");
       name.value="Coupe feuille édition";
