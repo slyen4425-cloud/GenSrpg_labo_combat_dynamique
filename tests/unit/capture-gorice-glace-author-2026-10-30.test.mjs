@@ -12,6 +12,7 @@ const goricePath = "data/capture/showcase/gorice.capture-creature-transfer-v1.js
 const goriceSourcePath = "data/capture/source-exports/gensrpg-capture-creature-gorice-2026-10-30.json";
 const goriceLatestSourcePath = "data/capture/source-exports/gensrpg-capture-creature-gorice-author-2026-11-02.json";
 const goriceCurrentSourcePath = "data/capture/source-exports/gensrpg-capture-creature-gorice-author-2026-11-03.json";
+const goriceFinalSourcePath = "data/capture/source-exports/gensrpg-capture-creature-gorice-2026-11-05-1925.json";
 const goricePriorSourcePath = "data/capture/source-exports/gensrpg-capture-creature-gorice-author-2026-11-01.json";
 const loupPath = "data/capture/showcase/crea-loup.capture-creature-transfer-v1.json";
 const loupSourcePath = "data/capture/source-exports/gensrpg-capture-creature-crea-loup-2026-10-21.json";
@@ -52,10 +53,13 @@ test("Gorice historical author source is preserved and new author revision loads
   assert.equal(createHash("sha256").update(await repoFile(goricePriorSourcePath)).digest("hex"), "c1191e68b1ae956222d23d58f7a0657c17a32426997e69e4859d3231aadeb854", "Nov 1 provenance must remain untouched");
   const active = await repoFile(goricePath);
   assert.notEqual(active,source,"November 2 author source stays archived");
-  const approved=JSON.parse(await repoFile(goriceCurrentSourcePath));
-  approved.draft.presentation.viewOverrides.player.displayScale=1.5;
-  approved.draft.presentation.viewOverrides.opponent.displayScale=0.8;
-  assert.deepEqual(JSON.parse(active),approved,"November 3 export plus only November 5 approved author scales");
+  const prior=JSON.parse(await repoFile(goriceCurrentSourcePath));
+  assert.equal(prior.draft.id,"gorice","November 3 original retained as historical source");
+  const approved=JSON.parse(await repoFile(goriceFinalSourcePath));
+  assert.deepEqual(JSON.parse(active),approved,"final November 5 author upload is the exact active Gorice V9 source");
+  assert.equal(approved.draft.presentation.version,9);
+  assert.equal(approved.draft.presentation.visual.movementBack.assetId,
+    "pack:capture:creature-gorille-des-glaces-movement-player-12-v1");
   const imported = importCaptureTransferJsonV1(active, { statRegistry: await registry() });
   assert.equal(imported.kind, "creature");
   const record = imported.value;
