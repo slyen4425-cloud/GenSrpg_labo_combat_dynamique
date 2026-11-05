@@ -22,8 +22,13 @@ for(const [id,kind] of [["crea_nat_1","creature"],["coupe_feuille","skill"]]){
       "2026-10-28 authored source is immutable historical provenance");
     const expected=structuredClone(previous);
     expected.draft.definition.projectileClash.power=1;
+    expected.draft.presentation.audio={
+      cast:{assetId:"gensrpg:sound:conflux-43060f16",volume:1,loop:false},
+      travel:{assetId:"gensrpg:sound:genrpg-pack2-9320854b",volume:1,loop:true},
+      impact:{assetId:"gensrpg:sound:effect-7b158ebd",volume:1,loop:false}
+    };
     assert.deepEqual(JSON.parse(await read(live)),expected,
-      "Nov 4 author changed only collision power, preserving all historical settings");
+      "Nov 5 author retains collision power and adds exactly three audio cues, no gameplay changes");
   }else{
     const historical=JSON.parse(await read(archived));
     assert.equal(historical.draft.id,id,"2026-10-27 author creature archive remains untouched");
