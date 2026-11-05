@@ -32,7 +32,15 @@ export function createCombatBarrierV1({state,sourceActorId,protectedActorId,sour
       placementMode:"arena",arenaXPct:effect.arenaXPct,arenaYPct:effect.arenaYPct
     }:effect.placementMode==="behind"?{placementMode:"behind"}:{}),
     interceptKinds:effect.interceptKinds,...(effect.spriteAssetId?{spriteAssetId:effect.spriteAssetId}:{}),
-    ...(effect.opponentSpriteAssetId?{opponentSpriteAssetId:effect.opponentSpriteAssetId}:{}),createdAtMs:atMs});
+    ...(effect.opponentSpriteAssetId?{opponentSpriteAssetId:effect.opponentSpriteAssetId}:{}),
+    // Presentation-only overrides, transported by the same persistent entity.
+    // No alternate wall, HP pool or collision authority is created.
+    ...Object.fromEntries([
+      "opponentVisualScale","opponentVisualScaleX","opponentVisualScaleY",
+      "opponentPlacementMode","opponentArenaXPct","opponentArenaYPct",
+      "opponentOffsetForwardPx","opponentOffsetUpPx"
+    ].filter(key=>effect[key]!=null).map(key=>[key,effect[key]])),
+    createdAtMs:atMs});
   return frozen({outcome:previous?"refreshed":"created",record,
     state:frozen({...state,combatEntities:frozen([...current.filter(entry=>!same(entry)),record])})});
 }
