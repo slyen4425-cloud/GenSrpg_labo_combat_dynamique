@@ -1,3 +1,14 @@
+## 2026-11-05 — Convergence ciblée Gorice V9 + Mur de glace sur Combat main (candidat NON GREEN)
+
+- **START** `main@ef1bd9d7db091c95496ae01c5cc0106f517a9757` (PR #271 V13 fusionnée), checkpoint `checkpoint/lab-start-gorice-wall-author-main-sync-2026-11-05`, branche `work/lab-gorice-wall-author-main-sync-2026-11-05`.
+- **Source auteur approuvée** : PR `gh-pages #267`, merge `7063384e4db35c7fd837fc55a367965a262c847b` ; Gorice V9, Mur de glace version 2. Source visuelle officielle `global-assets` indexe tous les assets demandés (Gorice 7 IDs, capacités associées), sans aucune image dupliquée dans main.
+- **Dépendances exactes** : Gorice liste 6 compétences `fireball, boule_neige, poing_givrant, mur_de_glace, pique_glace, furie_bestiale`. `fireball` déjà sur main même SHA ; les cinq manquantes sont donc reprises octet pour octet depuis la version auteur publiée, ainsi que Gorice V9. Une seule inscription de chaque ID dans les catalogues officiels `CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1` et `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1`.
+- **TDD RED** : test `tests/unit/capture-gorice-wall-v9-main-author-sync-2026-11-05.test.mjs` créé avant la copie ; il vérifie le Git blob exact (Gorice et cinq skills), la normalisation officielle, la présence des six skills en un seul catalogue, le rendu de version et les réglages joueur/opposant de Gorice, aucune source `gh-pages` importée au runtime.
+- **Gates** : `npm run ci`, CI Laboratory 5/5 navigateur, revue, checkpoint GREEN, fusion vers main seulement après preuve SHA exact ; pas de manipulation des binaires ni de perte du Tester historique. Aucune modification du Labo Exploration/GenSrpg/PWA et aucun moteur parallèle.
+- **Attention** : le main de Combat reste seul propriétaire des règles et consommateur des catalogues ; ce lot transporte des définitions auteur et ne doit pas rebrancher des prototypes de `gh-pages` en bloc. Recette PC/smartphone après publication toujours requise.
+
+---
+
 ## 2026-11-05 — Charte commune des sites Pages sans copies de bibliothèques entières (prévention)
 
 - Base Combat `main@954f38e6b84e842bc8bf6d8515d5c77b93aca5f1`, START `checkpoint/lab-start-pages-no-copy-charter-2026-11-05`, branche `work/lab-pages-no-copy-charter-2026-11-05`.
