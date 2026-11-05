@@ -1,3 +1,13 @@
+## 2026-11-05 — Attaque sous terraine : import source auteur V13, contrôle présence et anomalie FX
+- BASE `gh-pages@65eeacdc3ca920c770ef429d781df9b7a14161fa` ; START `checkpoint/lab-start-burrow-author-v13-2026-11-05` ; WORK `work/lab-burrow-author-v13-2026-11-05`.
+- L'auteur a transmis `gensrpg-capture-skill-attaque-sous-terraine (1).json` (SHA256 `122c97ceb6fa521ff5090f08c208fdc9787bb92f49984a33b1a2490b22e32b83`). Identifiant canonique `attaque-sous-terraine` ; aucun ID doublon.
+- Comparaison avec Showcase actuel : **seul** `draft.definition.cooldownMs` change de `2` à `25000` ms. La présentation V13 et ses phases start/travel/impact (scales 4/3/4 et offsets Y=-130) restent identiques.
+- Demandes antérieures à diagnostiquer, non imputables à ce changement de données : attaque de surface touchant une créature en phase souterraine ; artefacts au sommet du sprite d'impact. Présence contrôlée par `CombatPresenceV1` et `ActionResolver`, FX/atlas contrôlés séparément. Ne pas prétendre ces deux problèmes réparés par la seule publication du cooldown.
+- Périmètre de ce lot : archive intégrale, remplacement de l'unique export officiel du skill, tests de comparaison/normalisation, tests comportementaux de présence si possible, documentation. Pas de nouveau moteur, pas de mutation d'atlas ou de média non inspecté, pas de modification des autres capacités.
+- TDD RED avant remplacement : test exactitude export auteur et cooldown, puis mise à jour ; CI Foundation + 4 navigateurs ; GREEN uniquement sur preuves, PR `gh-pages`, contrôle post-fusion. Les vérifications visuelles physiques restent distinctes.
+
+---
+
 ## 2026-11-05 — Sources auteur Gorice V9 et Mur de glace (calibrage final)
 - BASE publiée `gh-pages@90da2c5be0073f1c6f26f7d934ee1984324fa02f` ; START `checkpoint/lab-start-gorice-wall-author-sync-2026-11-05` ; WORK `work/lab-gorice-wall-author-sync-2026-11-05`.
 - Auteur : deux exports JSON fournis le 05/11 à 19h25, `gorice` et `mur_de_glace`, à placer dans Showcase au même ID sans doublon, pendant que l'auteur teste indépendamment « Attaque sous terraine ».
