@@ -941,7 +941,10 @@ export function resolveSkillCompletion({
   // Physical overlapping bodies are stronger evidence than a broad airborne
   // phase flag, but only for confirmed ground melee contact (not projectiles).
   const observedBodyContact = confirmedVisibleBodyContact === true &&
-    skill.form === "contact" && skill.approachMode === "ground";
+    skill.form === "contact" && skill.approachMode === "ground" &&
+    // Actual ground contact may beat a broad airborne movement cue, but
+    // cannot make a subterranean creature physically present on the surface.
+    presenceAtImpact.reach.presence !== "underground";
   const presence = observedBodyContact
     ? Object.freeze({...presenceAtImpact,evasion:null})
     : presenceAtImpact;
