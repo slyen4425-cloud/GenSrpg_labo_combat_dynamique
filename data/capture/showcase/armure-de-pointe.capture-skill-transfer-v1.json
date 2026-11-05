@@ -89,7 +89,7 @@
     },
     "presentation": {
       "id": "skill:armure-de-pointe",
-      "version": 3,
+      "version": 9,
       "subjectType": "skill",
       "subjectId": "armure-de-pointe",
       "visual": {
@@ -97,7 +97,13 @@
           "assetId": "pack:capture:icon-skill-armure-de-pointe-01"
         }
       },
-      "audio": {},
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-a3d02c0f",
+          "volume": 1,
+          "loop": false
+        }
+      },
       "statusVisuals": {
         "status-1": {
           "mode": "sprite",
@@ -110,10 +116,23 @@
             "offsetX": 19,
             "offsetY": 0,
             "assetId": "pack:capture:sprite-armure-ronces-plante-carnivore-back-01",
+            "opponentAssetId": "pack:capture:sprite-armure-ronces-plante-carnivore-01",
             "displayScale": 1.01,
-            "opacity": 1
+            "opacity": 1,
+            "offsetMode": "custom",
+            "opponentOffsetX": -18,
+            "opponentOffsetY": -30
           }
         }
+      },
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
       }
     }
   }

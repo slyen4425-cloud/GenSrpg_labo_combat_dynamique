@@ -36,8 +36,13 @@ test("author Nature four skills remain byte exact and Coupe feuille Nov 4 delta 
   assert.equal(history.draft.definition.projectileClash.power,0);
   const coupeExpected=structuredClone(history);
   coupeExpected.draft.definition.projectileClash.power=1;
+  coupeExpected.draft.presentation.audio={
+    cast:{assetId:"gensrpg:sound:conflux-43060f16",volume:1,loop:false},
+    travel:{assetId:"gensrpg:sound:genrpg-pack2-9320854b",volume:1,loop:true},
+    impact:{assetId:"gensrpg:sound:effect-7b158ebd",volume:1,loop:false}
+  };
   assert.deepEqual((await readShowcase("coupe_feuille")).doc,coupeExpected,
-    "Nov 4 author update must preserve every non-clash field");
+    "Nov 5 author adds only three audio cues to the already-approved clash power update");
 });
 
 test("author's sounds and icons remain present on the four Nature skills", async () => {
