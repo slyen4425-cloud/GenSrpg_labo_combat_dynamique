@@ -148,7 +148,23 @@
           "offsetMode": "same"
         }
       },
-      "audio": {},
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:conflux-43060f16",
+          "volume": 1,
+          "loop": false
+        },
+        "travel": {
+          "assetId": "gensrpg:sound:genrpg-pack2-9320854b",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:effect-7b158ebd",
+          "volume": 1,
+          "loop": false
+        }
+      },
       "statusVisuals": {},
       "feedback": {
         "glow": null,
