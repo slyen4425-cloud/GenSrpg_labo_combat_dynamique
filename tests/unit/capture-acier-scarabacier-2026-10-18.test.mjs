@@ -20,7 +20,8 @@ const statSource="data/capture/source-exports/gensrpg-capture-database-stat-acie
 test("Acier 2026-10-18 preserved; Nature 2026-10-21 appended without changing earlier stat IDs",async()=>{
  const current=JSON.parse(await read(registryPath));
  const ids=current.stats.map(x=>x.id);
- assert.deepEqual(ids,["health","speed","physical","defense","fire","water","earth","air","electric","light","shadow","poison","acier","nature","esprit"]);
+ assert.deepEqual(ids.slice(0,15),["health","speed","physical","defense","fire","water","earth","air","electric","light","shadow","poison","acier","nature","esprit"]);
+ assert.equal(ids[15],"glace","new ice stat is appended, not inserted into historical IDs");
  const authorStat=JSON.parse(await read(statSource));
  assert.deepEqual(current.stats.find(x=>x.id==="acier"),authorStat);
  assert.equal(authorStat.label,"Acier");
@@ -29,8 +30,8 @@ test("Acier 2026-10-18 preserved; Nature 2026-10-21 appended without changing ea
  assert.equal(authorStat.damagePctPerPoint,1);
  assert.equal(authorStat.resistancePctPerPoint,1);
  assert.equal(authorStat.damageReductionPctPerPoint,0);
- assert.equal(new Set(ids).size,15);
- assert.equal(normalizeCaptureStatRegistryV1(current).stats.length,15);
+ assert.equal(new Set(ids).size,ids.length);
+ assert.equal(normalizeCaptureStatRegistryV1(current).stats.length,16);
  assert.deepEqual(ids.slice(0,13),["health","speed","physical","defense","fire","water","earth","air","electric","light","shadow","poison","acier"]);
  assert.equal(current.stats.find(x=>x.id==="nature")?.damageChannel,"nature");
 });
