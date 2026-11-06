@@ -32,9 +32,10 @@ const visuals={
 };
 test("Esprit appends to original 14 canonical stats; channels preserved as authored",()=>{
  const ids=registry.stats.map(s=>s.id);
- assert.equal(ids.length,15);
- assert.deepEqual(ids.slice(-3),["acier","nature","esprit"]);
- assert.equal(new Set(ids).size,15);
+ assert.equal(ids.length,16);
+ assert.deepEqual(ids.slice(12,15),["acier","nature","esprit"]);
+ assert.equal(ids.at(-1),"glace","later Glace extension never moves the original three");
+ assert.equal(new Set(ids).size,ids.length);
  const spirit=captureStatDefinitionForIdV1(registry,"esprit");
  assert.equal(spirit.label,"Esprit");
  assert.equal(spirit.damageChannel,"esprit");

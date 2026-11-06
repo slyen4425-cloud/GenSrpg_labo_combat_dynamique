@@ -1,3 +1,13 @@
+## 2026-11-06 — Combat main : ajout de la statistique canonique « Glace » sans toucher aux compétences auteur (TDD)
+
+- **START** `checkpoint/lab-start-ice-stat-contract-2026-11-06` @ `main@ebaea5dc40c4803add76563029a9dff67b964d55`; branche `work/lab-ice-stat-contract-2026-11-06`, issue #274.
+- **Propriétaire** : `data/capture/monster-capture-stat-registry.v1.json` en tant que seul registre Monster Capture officiel. Les 15 premières statistiques restent identiques et dans le même ordre. La 16e entrée `glace` a été reprise exactement du catalogue auteur approuvé déjà publié sur Combat `gh-pages`, sans inventer de nouvelle valeur ni copier de bibliothèque d'assets.
+- **Cause** : Gorice V9 et Mur de glace V2 utilisent `statId=glace` mais l'édition `main` rejette cette statistique, ce qui met en échec les tests de démarrage de la bibliothèque. Ajout du registre uniquement, sans activer prématurément les compétences `summon_entity` et `incoming_effect_modifier` qui nécessitent un portage de contrats et runtime distinct.
+- **TDD** : test `tests/unit/capture-ice-stat-registry-2026-11-06.test.mjs` ajouté avant la modification du JSON ; valide canal Glace `ice`, accumulation des points, absence de réécriture des anciennes sauvegardes, unicité du catalogue et rejet des stats inconnues.
+- **Gate** : laboratoire CI 5/5, preuve SHA, revue, checkpoint avant fusion. Les sources des 15 autres stats, Mur de glace, Gorice et tous les assets/sprites restent intacts.
+
+---
+
 ## 2026-11-05 — Charte commune des sites Pages sans copies de bibliothèques entières (prévention)
 
 - Base Combat `main@954f38e6b84e842bc8bf6d8515d5c77b93aca5f1`, START `checkpoint/lab-start-pages-no-copy-charter-2026-11-05`, branche `work/lab-pages-no-copy-charter-2026-11-05`.
