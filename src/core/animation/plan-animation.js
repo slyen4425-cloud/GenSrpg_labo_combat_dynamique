@@ -91,6 +91,11 @@ function locomotionShape({
     throw new RangeError("locomotion.phases must be a non-empty array");
   }
 
+  // Animation Core must preserve each authored footstep even when a native
+  // instantaneous approach supplies fewer milliseconds than visual phases.
+  // Stretch *only* this visual plan; Combat Runtime still owns the true hit time.
+  const visualDurationMs = Math.max(totalDurationMs, cfg.phases.length);
+
   let previousAt = 0;
   let elapsedMs = 0;
   const segments = cfg.phases.map((phase, index) => {
@@ -99,10 +104,14 @@ function locomotionShape({
       throw new RangeError("locomotion phase offsets must increase from 0 to 1");
     }
 
+    const remainingPhases = cfg.phases.length - index - 1;
     const endMs =
       at === 1
-        ? totalDurationMs
-        : Math.round(totalDurationMs * at);
+        ? visualDurationMs
+        : Math.max(elapsedMs + 1, Math.min(
+            visualDurationMs - remainingPhases,
+            Math.round(visualDurationMs * at)
+          ));
     if (endMs <= elapsedMs) {
       throw new RangeError("locomotion duration is too short for configured phases");
     }
@@ -188,7 +197,7 @@ function locomotionShape({
     }
     return {
       type: "footfall",
-      atMs: Math.round(totalDurationMs * at),
+      atMs: Math.round(visualDurationMs * at),
       intensity: cueIntensity * intensity
     };
   });
