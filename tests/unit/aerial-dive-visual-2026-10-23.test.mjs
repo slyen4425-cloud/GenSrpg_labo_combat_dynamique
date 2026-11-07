@@ -59,5 +59,5 @@ test("the rival-camp visual anchor does not follow an opponent animation", () =>
   };
   assert.deepEqual(restingTargetCenterForApproachV1(target), {x:560,y:135});
   const source = readFileSync(new URL("../../src/ui/demo-app.js", import.meta.url), "utf8");
-  assert.match(source, /targetAim = approachMode === "aerial" \|\| airborneTarget\s*\? restingTargetCenterForApproachV1\(target\)/);
+  assert.match(source, /targetAim = approachMode === "aerial" \|\| airborneTarget \|\|\s*approachMode === "burrow"\s*\? restingTargetCenterForApproachV1\(target\)/);
 });
