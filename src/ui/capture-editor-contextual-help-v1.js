@@ -2,7 +2,7 @@
 // sans changer la définition canonique d'une stat, d'un Skill ou son export.
 import {normalizeCaptureStatRegistryV1} from "../contracts/capture-stat-registry-v1.js";
 import {projectCaptureStatDefinitionEffectsV1} from "../core/combat/capture-stat-effects-v1.js";
-import {describeCaptureStatusEffectV1} from "./capture-skill-explanation-v1.js?v=self-periodic-prose-20261102";
+import {describeCaptureStatusEffectV1} from "./capture-skill-explanation-v1.js?v=self-periodic-prose-20261102-heal-inversion-20261107";
 
 const decimal = value => new Intl.NumberFormat("fr-FR", {maximumFractionDigits: 2}).format(Number(value) || 0);
 const seconds = ms => decimal((Number(ms) || 0) / 1000) + " s";

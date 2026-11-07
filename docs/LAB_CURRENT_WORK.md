@@ -1,3 +1,14 @@
+## 2026-11-07 — Livraison éditeur public : Soin inversé (C2, candidat NON GREEN)
+
+- **Base publique figée** : `gh-pages@cb9befb137eda6f453f17b29b315ae0803ee461e`, START `checkpoint/lab-start-heal-inversion-pages-2026-11-07`, WORK `work/lab-heal-inversion-pages-2026-11-07`.
+- **Source Combat main certifiée** : PR #280 fusionnée, `main@1b4f650e91d785ddc7a3f65c3f0eb50c845899c1`, CI de PR #42383388846 cinq jobs SUCCESS. Importation ciblée des quatre propriétaires (statut/soin/dégâts/Bestiaire) et tests, sans duplication de ressources.
+- **Conflit conservé** : l'éditeur `src/ui/capture-editor-human-v2.js` sur `gh-pages` possède des changements autonomes. Les 16 adaptations ciblées incluent le champ et l'import contextualisé, jamais un remplacement complet depuis main. Autres contenus de l'éditeur et anciennes publications conservés.
+- **Cache** : suffixe de la chaîne ESM préexistante pour l'éditeur et le Bestiaire uniquement ; pas de seconde bibliothèque, de moteur ou d'asset.
+- **Périmètre** : contrats/Core/éditeur/Bestiaire, tests ciblés, documentation, six maillons de cache ESM et `.github/workflows/ci.yml`. Aucun changement GenSrpg, Exploration, assets auteur ou sauvegardes.
+- **Gate** : CINQ jobs sur SHA exact, vrai Chromium PC/paysage, revue diff et import/export puis PR vers `gh-pages`. Vérifier que Pages sert les octets + le chemin HTTPS après fusion et que l'éditeur propose vraiment Soin inversé. Aucune déclaration GREEN avant preuves ; smartphone réel auteur distinct.
+
+---
+
 ## 2026-11-07 — Backlog « Soin inversé » (documentation uniquement ; après raccord GenSrpg)
 - BASE `gh-pages@7063384e4db35c7fd837fc55a367965a262c847b` ; START `checkpoint/lab-start-heal-inversion-backlog-2026-11-07` ; WORK `work/lab-heal-inversion-backlog-2026-11-07`.
 - Demande auteur : mémoriser un effet générique transformant les soins reçus en perte de PV. **Aucun développement de ce mécanisme avant la fin du raccord à GenSrpg et nouvel accord**.

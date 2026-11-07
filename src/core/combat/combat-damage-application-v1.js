@@ -48,13 +48,51 @@ export function incomingEffectMultiplierV1({state,targetActorId,affectedPolarity
   return Math.max(0,1+pct/100);
 }
 
+// One HP-heal owner for ordinary heals, periodic healing and life steal.
+// The cure cannot create a second HP authority or a damage/heal recursion.
 export function applyCombatHealV1({state,targetActorId,amount,atMs=state.elapsedMs}) {
   const before=fighterOf(state,targetActorId).hp;
   const requested=Math.max(0,Number(amount)||0);
-  const adjusted=Math.round(requested*incomingEffectMultiplierV1({state,targetActorId,affectedPolarity:"beneficial",atMs})*100)/100;
-  const nextState=withFighterHp(state,targetActorId,before+adjusted);
+  const rounded=value=>Math.round(value*100)/100;
+  const adjusted=rounded(requested*incomingEffectMultiplierV1({
+    state,targetActorId,affectedPolarity:"beneficial",atMs
+  }));
+  const inversions=(fighterOf(state,targetActorId).statusEffects??[]).filter(instance=>
+    instance.definition?.kind==="heal_inversion" &&
+    isStatusEffectRuntimeInstanceActiveV1(instance,atMs));
+  const percent=Math.min(100,inversions.reduce((sum,instance)=>
+    sum+instance.definition.percent*instance.stacks,0));
+  const convertedRequested=rounded(adjusted*percent/100);
+  const healingRequested=rounded(adjusted-convertedRequested);
+  // Attribute converted damage to the last active curse source. Its HP loss
+  // uses Combat Damage Application, including shields, immunity and KO.
+  const curseSourceActorId=[...inversions].reverse().find(instance=>
+    state.fighters[instance.sourceActorId])?.sourceActorId??targetActorId;
+  let nextState=state;
+  let convertedDamage=0,absorbedByShield=0,immuneDamage=0;
+  if(convertedRequested>0&&before>0){
+    const result=applyCombatDamageV1({
+      state:nextState,sourceActorId:curseSourceActorId,targetActorId,
+      damage:convertedRequested,atMs,incomingKind:"other",allowReflection:false
+    });
+    nextState=result.state;
+    convertedDamage=result.appliedDamage;
+    absorbedByShield=result.absorbedByShield;
+    immuneDamage=result.immuneDamage;
+  }
+  const hpBeforeHeal=fighterOf(nextState,targetActorId).hp;
+  // The residual cure cannot resurrect someone brought to 0 by conversion,
+  // nor someone already knocked out with an active inversion.
+  if(healingRequested>0&&(hpBeforeHeal>0||convertedRequested===0)){
+    nextState=withFighterHp(nextState,targetActorId,hpBeforeHeal+healingRequested);
+  }
   const after=fighterOf(nextState,targetActorId).hp;
-  return Object.freeze({state:nextState,requested,adjusted,applied:after-before,hpBefore:before,hpAfter:after});
+  return Object.freeze({
+    state:nextState,requested,adjusted,applied:after-hpBeforeHeal,
+    convertedRequested,convertedDamage,absorbedByShield,immuneDamage,
+    curseSourceActorId:convertedRequested>0?curseSourceActorId:null,
+    hpBefore:before,hpAfter:after,netHpDelta:after-before
+  });
 }
 
 export function applyCombatDamageV1({

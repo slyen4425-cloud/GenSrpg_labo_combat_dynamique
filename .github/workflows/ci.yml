@@ -60,6 +60,8 @@ jobs:
         run: node tests/browser/capture-charged-projectile-editor-smoke.mjs
       - name: Real Chromium charged buff-debuff editor
         run: node tests/browser/capture-charged-effects-smoke.mjs
+      - name: Real Chromium heal-inversion skill authoring in mobile landscape
+        run: node tests/browser/capture-heal-inversion-editor-smoke.mjs
       - name: Real Chromium ice barrier author and entity HUD
         run: node tests/browser/capture-ice-barrier-editor-smoke.mjs
       - name: Real Chromium 2.5D arena shadow and flying light projection
