@@ -1,5 +1,11 @@
 ## 2026-11-07 — Attaque souterraine : réglages visuels masqués après sélection (main)
 
+### Contrôle complémentaire du cache public (7 novembre, même lot)
+- Les contrôles CI ont relevé trois décalages entre la révision HTML publiée et les imports ESM du catalogue visuel/skills et du combat.
+- Correction de la **chaîne existante** (entrée, éditeur, loader, preview, UI 2v2), tous alignés sur `5-barrier-side-layout-20261105-burrow-visual-fields-20261107`, sans nouveau fichier de données ni registre.
+- Préserve les paramètres auteur et les tests historiques de cohérence de cache.
+
+
 - **Signalement auteur** : en ouvrant la capacité `attaque-sous-terraine` dans l'éditeur, les trois paramètres auteur « Départ — creusement », « Trajet — sillon » et « Arrivée — émergence » semblent avoir disparu.
 - **Point d'accès** : onglet Compétences, modèle « Attaque sous terraine », carte 5 « Mouvement », sous « Déplacement de la créature » = « Attaque souterraine », panneau « sprites du terrain ». La carte est initialement repliée dans l'éditeur.
 - **Diagnostic confirmé dans le code** : `writeSkillDraftFields` appelait `writeBurrowStageFieldsV1` **avant** de renseigner `[data-skill-approach]`. Or le writer synchronise `[data-burrow-stage-fields].hidden` selon la valeur précédente, qui peut être `none`. La sélection du modèle se fait par JS sans événement `change` du select.
