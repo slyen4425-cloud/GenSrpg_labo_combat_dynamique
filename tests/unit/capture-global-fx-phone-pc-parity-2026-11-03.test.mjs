@@ -20,7 +20,20 @@ test("RED: keep original author offsets and scales for real Gorice/Firestorm ass
  assert.equal(zone.displayScaleY,0.8);assert.equal(zone.offsetY,0);
 });
 
-test("RED: all gameplay-bearing FX shells are sized against the real 16:9 arena, not capped viewport px",()=>{
+test("RED: all gameplay-bearing FX shells use the same 400px arena-height reference, regardless of PC width",()=>{
+ const rules={
+  ".skill-fx--projectile:not(.skill-fx--sprite-shell)":44.793,
+  ".skill-fx--channel-pulse":44.793,
+  ".skill-fx--sprite-shell":68.967,
+  ".skill-fx--cast":100.962,
+  ".skill-fx--impact":100.962,
+  ".skill-fx--clash-impact":137.934,
+  ".skill-fx--phase":110.205
+ };
+ const scope=css.slice(css.indexOf("/* All Capture visual settings use the SAME 400px arena-height unit"));
+ assert.ok(scope.length>300,"unified author CSS FX geometry owner missing");
+ for(const [selector,width] of Object.entries(rules)){
+   const escaped=selector.replace(/\W/g,"\\test("RED: all gameplay-bearing FX shells are sized against the real 16:9 arena, not capped viewport px",()=>{
  const rules={
   ".skill-fx--projectile:not(.skill-fx--sprite-shell)":6.3,
   ".skill-fx--channel-pulse":6.3,
@@ -38,6 +51,12 @@ test("RED: all gameplay-bearing FX shells are sized against the real 16:9 arena,
    assert.match(scope,rx,"missing arena-relative native FX width "+selector);
  }
  assert.match(scope,/\.skill-fx--persistent-zone,\s*\n?.*\.skill-fx--tactical-zone\s*\{[^}]*width:\s*25\.8%;/s,"one CSS rule must own the persistent sprite and its tactical ellipse");
+});");
+   const rx=new RegExp(escaped+"\\s*\\{[^}]*\\bwidth:\\s*calc\\("+width+"px \\* var\\(--combat-arena-author-offset-scale, 1\\)\\);");
+   assert.match(scope,rx,"missing height-projected native FX width "+selector);
+ }
+ assert.match(scope,/\.skill-fx--persistent-zone,\s*\n?.*\.skill-fx--tactical-zone\s*\{[^}]*width:\s*calc\(183\.438px \* var\(--combat-arena-author-offset-scale, 1\)\);/s,
+ "the persistent sprite and its tactical ellipse must share one projected visual size");
 });
 
 test("RED: FX artist offsets and special beam dimensions consume the existing arena scale, movement trajectories never do",()=>{

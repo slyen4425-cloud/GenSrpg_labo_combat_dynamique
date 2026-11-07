@@ -60,7 +60,7 @@ test("RED: three authored burrow stages and fallback terrain respond identically
  assert.equal(fxA.plan.holeWidthPx*1.5,fxB.plan.holeWidthPx);
  assert.equal(fxB.plan.holeWidthPx,fxC.plan.holeWidthPx);
  assert.equal(fxB.plan.trailWidthPx,fxA.plan.trailWidthPx*1.5);
- assert.equal(fxA.plan.trailLengthPx*1.5,fxB.plan.trailLengthPx);
+ assert.ok(Math.abs(fxA.plan.trailLengthPx*1.5-fxB.plan.trailLengthPx)<1e-9,"same geometry within float precision");
  assert.equal(b.nodes[0].style.top,"-420px");
  fxA.cancel();fxB.cancel();fxC.cancel();
  assert.ok(a.nodes.every(x=>x.removed));
