@@ -1,3 +1,13 @@
+## 2026-11-07 — Échelle visuelle unique PC/mobile sur tous les réglages (main)
+
+- **Auteur** : tous les réglages visuels de l'éditeur doivent être reproductibles à l'identique sur PC et téléphone, y compris Attaque sous-terraine. Aucune retouche à faire capacité par capacité.
+- **START** : `main@b18598cbc00e4b9daec5ed4c91701b8fedaf9ab8` ; checkpoint `checkpoint/lab-start-unified-visual-units-2026-11-07`.
+- **Cause racine** : l'unité auteur de l'arène (400 CSS-px de hauteur de référence) n'était appliquée que dans une prévisualisation mobile ; les tailles CSS cast/impact/projectile/zone dépendaient de la largeur réelle du PC, tandis que les trois sprites souterrains, esquives, animations de déplacement, décalages des murs et tremblements de caméra utilisaient des pixels non projetés.
+- **Correction** : une seule variable et un seul redimensionnement de l'arène pour tous les hôtes 1v1/2v2 et PC/mobile ; tailles FX CSS basées sur la hauteur et les dimensions de l'ancienne arène auteur 711×400 ; géométrie souterraine et offsets périphériques projetés par l'unité déjà existante. Les réglages auteur, contrats, ressources, collisions et dégâts restent inchangés ; pas de deuxième registre ni de copie.
+- **Tests sentinelles** : PC large et étroit à hauteur identique, téléphone 400px, PC 600px, stages souterrains et positions, widths CSS communes, secousse, tous les chemins d'offsets. Statut GREEN uniquement après tests CI exacts, navigateur et site HTTPS ; validation visuelle smartphone par l'auteur attendue.
+
+---
+
 ## 2026-11-07 — Gemmor : Festin carnivore et parcours 1/5/10/15/20 (main)
 
 - **Validation auteur** : ultime Festin carnivore (50 dégâts Nature directs, drain natif à 100 % du dommage réel, immobilisation 4 secondes, 2 charges du marqueur officiel Graine sansue) ; niveau 20, une utilisation par combat, 8 énergie, préparation 2,5 secondes. Les graines conservent leur règle canonique de vol de vie : 5 par charge toutes les 3 secondes sur 20 secondes.

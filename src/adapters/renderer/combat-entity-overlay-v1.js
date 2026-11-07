@@ -1,4 +1,4 @@
-import {fxArenaScaleV1} from "./dom-skill-fx.js";
+import {fxArenaScaleV1,fxAuthorPixelsV1} from "./dom-skill-fx.js";
 // Persistent view of Combat State entities. The DOM owns only geometry and visual
 // playback; the Combat Damage Application owns all entity HP and destruction.
 const round=n=>Math.round(n*100)/100;
@@ -187,15 +187,16 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
         const side=placement.placementMode==="behind"
           ? (facing==="right"?"left":"right")
           : facing;
+        const offsetForwardPx=fxAuthorPixelsV1(arenaHost,placement.offsetForwardPx);
         item.node.style.left=side==="right"
-          ? "calc(110% + "+placement.offsetForwardPx+"px)"
-          : "calc(-10% - "+placement.offsetForwardPx+"px)";
+          ? "calc(110% + "+offsetForwardPx+"px)"
+          : "calc(-10% - "+offsetForwardPx+"px)";
         // Center the persistent wall sprite in the actual attack lane,
         // relative to the fighter's visible container. The former 10%-from-
         // bottom anchor put the entire wall too HIGH: a projectile travelling
         // through the fighter's center could slip under its real rectangle.
         // Transform centers the wall + PV label; scale remains fully native.
-        item.node.style.top="calc(50% - "+placement.offsetUpPx+"px)";
+        item.node.style.top="calc(50% - "+fxAuthorPixelsV1(arenaHost,placement.offsetUpPx)+"px)";
         item.node.style.bottom="auto";
         item.node.style.transform="translate(-50%, -50%)";
       }

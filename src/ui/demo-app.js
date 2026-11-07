@@ -26,9 +26,9 @@ import { playDomBurrowTerrainFxV2 } from "../adapters/renderer/dom-burrow-terrai
 import {defaultBurrowSpritesV1} from "../assets/burrow-terrain-builtins-v1.js";
 import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
 
-// Author positioning is calibrated in a ~400 CSS-px high landscape phone
-// arena. Keep the author X/Y intact; project only the display translation
-// using the actual arena, not the device viewport or the fighter's width.
+// All authored visual settings use one reference: a 400 CSS-px high arena.
+// PC, smartphone, 1v1 and 2v2 share the same size and offset projection.
+// Save/export values stay unchanged; only presentation changes.
 export const CAPTURE_PHONE_REFERENCE_ARENA_HEIGHT_PX = 400;
 export const CAPTURE_ARENA_AUTHOR_OFFSET_CSS_VAR = "--combat-arena-author-offset-scale";
 
@@ -285,11 +285,8 @@ export async function mountCombatDemo({
 
   let disposed = false;
   const arena = requiredElement(root, "[data-combat-arena]");
-  const phoneArenaAuthorOffsets = Boolean(
-    root.closest?.('[data-capture-preview-shell][data-landscape-required="true"]')
-  );
+  // Every combat preview owns its arena visual unit, not only mobile.
   const applyArenaPositionScale = () => {
-    if (!phoneArenaAuthorOffsets) return;
     arena.style?.setProperty?.(
       CAPTURE_ARENA_AUTHOR_OFFSET_CSS_VAR,
       String(captureArenaAuthorPositionScaleV1(arena))
@@ -299,7 +296,7 @@ export async function mountCombatDemo({
   // CSS-var-based body and shadow timelines automatically follow it.
   applyArenaPositionScale();
   const authorOffsetResizeObserver =
-    phoneArenaAuthorOffsets && typeof globalThis.ResizeObserver === "function"
+    typeof globalThis.ResizeObserver === "function"
       ? new globalThis.ResizeObserver(applyArenaPositionScale) : null;
   authorOffsetResizeObserver?.observe(arena);
   const cameraFx = createDomCameraFxRenderer({
@@ -381,7 +378,7 @@ export async function mountCombatDemo({
           container,
           initialVisible: container.hidden !== true,
           getArenaLight: () => arenaLight,
-          usePhoneArenaAuthorOffsets: phoneArenaAuthorOffsets
+          usePhoneArenaAuthorOffsets: true
         })
       ];
     })
@@ -1287,9 +1284,7 @@ export async function mountCombatDemo({
       movementCueTimers.clear();
       cameraFx.dispose();
       authorOffsetResizeObserver?.disconnect();
-      if (phoneArenaAuthorOffsets) {
-        arena.style?.removeProperty?.(CAPTURE_ARENA_AUTHOR_OFFSET_CSS_VAR);
-      }
+      arena.style?.removeProperty?.(CAPTURE_ARENA_AUTHOR_OFFSET_CSS_VAR);
       heldAttackBySlot.clear();
       for (const slot of Object.values(slots)) {
         slot.dispose();

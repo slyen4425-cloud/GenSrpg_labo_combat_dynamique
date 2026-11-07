@@ -26,8 +26,12 @@ function point(value, label) {
 // In particular, no timer here can ever decide the gameplay hit.
 export function planBurrowTerrainFxV2({
   from, to, travelMs,
+  visualScale = 1,
   preset = BURROW_TERRAIN_FX_PRESET_V2
 }) {
+  if (!Number.isFinite(visualScale) || visualScale <= 0) {
+    throw new RangeError("visualScale must be a positive finite arena unit");
+  }
   const start = point(from, "from");
   const end = point(to, "to");
   const phases = burrowVisualDurationsV1(travelMs);
@@ -37,23 +41,23 @@ export function planBurrowTerrainFxV2({
   const trailAtMs = phases.diveMs;
   const trailMs = Math.max(1, emergeAtMs - trailAtMs);
   const totalMs = phases.diveMs + phases.hiddenMs + phases.emergeMs;
-  const spread = Math.min(1.4,Math.max(0.6,distance / 230));
+  const spread = Math.min(1.4,Math.max(0.6,distance / (230*visualScale)));
   const debris = Object.freeze(Array.from({length:preset.debrisCount},(_,i)=>{
     const angle = (i / preset.debrisCount)*Math.PI*2 + 0.35;
-    const radius = preset.debrisRadiusPx * (0.62 + (i%3)*0.19)*spread;
+    const radius = preset.debrisRadiusPx * visualScale * (0.62 + (i%3)*0.19)*spread;
     return Object.freeze({
       x: Math.cos(angle)*radius,
-      y: Math.sin(angle)*radius * 0.55 - 12,
-      sizePx: 4 + (i%3)*2
+      y: Math.sin(angle)*radius * 0.55 - 12*visualScale,
+      sizePx: (4 + (i%3)*2)*visualScale
     });
   }));
   return Object.freeze({
     from: start, to: end,
     phases,
     totalMs,
-    holeWidthPx: preset.holeWidthPx,
-    holeHeightPx: preset.holeHeightPx,
-    trailWidthPx: preset.trailWidthPx,
+    holeWidthPx: preset.holeWidthPx*visualScale,
+    holeHeightPx: preset.holeHeightPx*visualScale,
+    trailWidthPx: preset.trailWidthPx*visualScale,
     trailLengthPx: distance,
     trailAngleDeg: Math.atan2(dy,dx)*180/Math.PI,
     // The atlas faces right. Leftward travel mirrors it instead of

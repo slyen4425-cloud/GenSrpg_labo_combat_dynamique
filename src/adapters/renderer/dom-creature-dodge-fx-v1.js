@@ -1,5 +1,5 @@
 import {
-  applySpriteVisual
+  applySpriteVisual,fxAuthorPixelsV1
 } from "./dom-skill-fx.js";
 import {
   CREATURE_DODGE_VISUAL_DEFAULT_DURATION_MS_V3
@@ -163,9 +163,9 @@ export function playDomCreatureDodgeFxV1({
   node.dataset.assetId =
     visual.assetId ?? "";
   node.style.left =
-    centerX + offsetX + "px";
+    centerX + fxAuthorPixelsV1(arena,offsetX) + "px";
   node.style.top =
-    centerY + offsetY + "px";
+    centerY + fxAuthorPixelsV1(arena,offsetY) + "px";
   node.style.width =
     baseSize * displayScale + "px";
   node.style.height =

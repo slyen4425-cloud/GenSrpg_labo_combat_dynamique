@@ -1,7 +1,7 @@
 import {
   planBurrowTerrainFxV2
 } from "../../core/fx/burrow-terrain-fx-v2.js";
-import {applySpriteVisual} from "./dom-skill-fx.js";
+import {applySpriteVisual,fxArenaScaleV1,fxAuthorPixelsV1} from "./dom-skill-fx.js";
 
 // Ground-only visuals: real-world anchor points are provided by Demo UI.
 // All elapsed times originate from the already-running burrow attack plan.
@@ -11,7 +11,8 @@ export function playDomBurrowTerrainFxV2({arena,from,to,travelMs,sprites=null}) 
       typeof arena.append !== "function") {
     throw new TypeError("burrow arena requires a DOM element");
   }
-  const fx = planBurrowTerrainFxV2({from,to,travelMs});
+  const arenaScale=fxArenaScaleV1(arena);
+  const fx = planBurrowTerrainFxV2({from,to,travelMs,visualScale:arenaScale});
   const nodes = [], animations = [];
   let cancelled = false;
 
@@ -59,10 +60,10 @@ export function playDomBurrowTerrainFxV2({arena,from,to,travelMs,sprites=null}) 
     function spriteStage(stage,point,atMs,durationMs){
       const visual=sprites[stage];
       if(!visual||!visual.url)return;
-      const size=(stage==="travel"?145:125)*(Number(visual.scale)||1);
+      const size=(stage==="travel"?145:125)*(Number(visual.scale)||1)*arenaScale;
       const center={
-        x:point.x+(Number(visual.offsetX)||0),
-        y:point.y+(Number(visual.offsetY)||0)
+        x:point.x+fxAuthorPixelsV1(arena,visual.offsetX),
+        y:point.y+fxAuthorPixelsV1(arena,visual.offsetY)
       };
       const node=element("sprite-"+stage,center.x-size/2,center.y-size/2,size,size);
       node.className+=" skill-fx";
@@ -165,7 +166,7 @@ export function playDomBurrowTerrainFxV2({arena,from,to,travelMs,sprites=null}) 
       {transform:angle+"scaleX(1)",opacity:0}
     ],fx.trailMs+Math.max(1,fx.emergeMs*.55),fx.trailAtMs,"linear");
     // Dust crest rides ahead of the trench, not the creature's hidden sprite.
-    const crest=element("crest",fx.from.x-19,fx.from.y-22,38,27);
+    const crest=element("crest",fx.from.x-19*arenaScale,fx.from.y-22*arenaScale,38*arenaScale,27*arenaScale);
     crest.style.background=
       "radial-gradient(ellipse,rgba(219,165,96,.82),rgba(137,92,50,.44) 58%,transparent 76%)";
     play(crest,[

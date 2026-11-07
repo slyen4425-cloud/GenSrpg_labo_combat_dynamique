@@ -1,3 +1,5 @@
+import {fxArenaScaleV1} from "./dom-skill-fx.js";
+
 function defaultAnimate(element, keyframes, options) {
   if (typeof element.animate !== "function") {
     throw new TypeError("camera FX element does not support Web Animations API");
@@ -15,15 +17,17 @@ function positiveFinite(value, field) {
 
 // One animation owns the entire camera timeline. No per-pulse timers,
 // nested animations, or concurrent camera owners are introduced.
-export function cameraShakeTimelineV1(plan) {
+export function cameraShakeTimelineV1(plan,{arenaScale=1}={}) {
+  positiveFinite(arenaScale,"camera-shake.arenaScale");
+  const px=value=>value*arenaScale;
   if (!Array.isArray(plan?.sequence) || plan.sequence.length === 0) {
     return Object.freeze({
       durationMs: positiveFinite(plan?.durationMs, "camera-shake.durationMs"),
       keyframes: [
         { transform: "translate3d(0, 0, 0)", offset: 0 },
-        { transform: `translate3d(${plan.amplitudePx}px, ${plan.amplitudePx * 0.35}px, 0)`, offset: 0.2 },
-        { transform: `translate3d(${-plan.amplitudePx * 0.75}px, ${-plan.amplitudePx * 0.22}px, 0)`, offset: 0.48 },
-        { transform: `translate3d(${plan.amplitudePx * 0.38}px, ${plan.amplitudePx * 0.12}px, 0)`, offset: 0.72 },
+        { transform: `translate3d(${px(plan.amplitudePx)}px, ${px(plan.amplitudePx * 0.35)}px, 0)`, offset: 0.2 },
+        { transform: `translate3d(${px(-plan.amplitudePx * 0.75)}px, ${px(-plan.amplitudePx * 0.22)}px, 0)`, offset: 0.48 },
+        { transform: `translate3d(${px(plan.amplitudePx * 0.38)}px, ${px(plan.amplitudePx * 0.12)}px, 0)`, offset: 0.72 },
         { transform: "translate3d(0, 0, 0)", offset: 1 }
       ]
     });
@@ -52,9 +56,9 @@ export function cameraShakeTimelineV1(plan) {
   for (const {pauseMs, amplitudePx, durationMs: pulseMs} of steps) {
     cursor += pauseMs;
     keyframes.push({transform: zero, offset: cursor / durationMs});
-    keyframes.push({transform: `translate3d(${amplitudePx}px, ${amplitudePx * 0.35}px, 0)`, offset: (cursor + 0.2 * pulseMs) / durationMs});
-    keyframes.push({transform: `translate3d(${-amplitudePx * 0.75}px, ${-amplitudePx * 0.22}px, 0)`, offset: (cursor + 0.48 * pulseMs) / durationMs});
-    keyframes.push({transform: `translate3d(${amplitudePx * 0.38}px, ${amplitudePx * 0.12}px, 0)`, offset: (cursor + 0.72 * pulseMs) / durationMs});
+    keyframes.push({transform: `translate3d(${px(amplitudePx)}px, ${px(amplitudePx * 0.35)}px, 0)`, offset: (cursor + 0.2 * pulseMs) / durationMs});
+    keyframes.push({transform: `translate3d(${px(-amplitudePx * 0.75)}px, ${px(-amplitudePx * 0.22)}px, 0)`, offset: (cursor + 0.48 * pulseMs) / durationMs});
+    keyframes.push({transform: `translate3d(${px(amplitudePx * 0.38)}px, ${px(amplitudePx * 0.12)}px, 0)`, offset: (cursor + 0.72 * pulseMs) / durationMs});
     cursor += pulseMs;
     keyframes.push({transform: zero, offset: cursor / durationMs});
   }
@@ -100,7 +104,7 @@ export function createDomCameraFxRenderer({
     // cameraShakeTimelineV1, not an additional scheduler.
     positiveFinite(plan.durationMs, "camera-shake.durationMs");
     positiveFinite(plan.amplitudePx, "camera-shake.amplitudePx");
-    const timeline = cameraShakeTimelineV1(plan);
+    const timeline = cameraShakeTimelineV1(plan,{arenaScale:fxArenaScaleV1(element)});
     cancel();
     const animation = animate(element, timeline.keyframes, {
       duration: timeline.durationMs,
