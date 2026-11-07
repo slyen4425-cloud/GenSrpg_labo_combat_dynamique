@@ -1,3 +1,12 @@
+## 2026-11-07 — Synchronisation contrôlée Labo Combat Pages vers main (demande auteur)
+- BASE `main@ebaea5dc40c4803add76563029a9dff67b964d55` ; START `checkpoint/lab-start-pages-to-main-2026-11-07` ; WORK `work/lab-pages-to-main-2026-11-07`; source Pages `gh-pages@7063384e4db35c7fd837fc55a367965a262c847b` (à réévaluer si Pages avance).
+- Contraintes RÈGLE 0 : `main` est l'autorité de règles/contrats pour consommateurs ; `gh-pages` la prévisualisation. Ne pas fusionner aveuglément les historiques divergents (1265 commits spécifiques Pages et 73 sur main), pas de seconde bibliothèque/double moteur. Transfert sélectif des sources et des données approuvées via blobs déjà existants dans le **même dépôt**, sans nouvelle copie physique de bibliothèque.
+- Préserver les ajouts exclusifs de `main` : API scène d'aventure/HP de `src/ui/capture-encounter-combat-source-v1.js`, projections de stats allouées `src/adapters/input/capture/capture-encounter-owned-stats-v1.js`, niveau par créature, tests `main` correspondants, documentation historique et règle 0.
+- Vérifier que les modules importés et les deux environnements 1v1/2v2 restent compatibles. Pas de migration vers GenSrpg ou Exploration depuis ce lot. Pas de déploiement Pages supplémentaire ni copie ZIP d'assets en sortie.
+- TDD et validation : sentinelles `main` + suite `gh-pages` + tests Chromium en PR, sans fausse annonce GREEN, revue différences exactes, inventaire media/source, checkpoint GREEN sur SHA final, PR ciblée vers `main`. Si conflits incompatibles ou CI rouge : conserver `main` intact et documenter le blocage, sans passer en force.
+
+---
+
 ## 2026-11-05 — Charte commune des sites Pages sans copies de bibliothèques entières (prévention)
 
 - Base Combat `main@954f38e6b84e842bc8bf6d8515d5c77b93aca5f1`, START `checkpoint/lab-start-pages-no-copy-charter-2026-11-05`, branche `work/lab-pages-no-copy-charter-2026-11-05`.
