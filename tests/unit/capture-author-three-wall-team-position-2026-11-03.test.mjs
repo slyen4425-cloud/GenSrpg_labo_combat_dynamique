@@ -30,6 +30,13 @@ test("Nov 3 archives stay signed; Nov 5 active Gorice/Gemmor exports preserve ex
     expected.draft.capture.spawnTags=["earth","nature"];
     expected.draft.presentation.profileId="biped";
     expected.draft.combat.approachTimeModifierPct=25;
+    // Explicit Gemmor author approval (Nov 7): keep the signed archive and
+    // every preexisting creature field untouched. Only append these official
+    // skill IDs and replace the three approved loadout slots.
+    expected.draft.skillIds.push("armure-de-pointe","attaque-sous-terraine","festin-carnivore");
+    expected.loadout.slots[1].skillId="armure-de-pointe";
+    expected.loadout.slots[2].skillId="attaque-sous-terraine";
+    expected.loadout.slots[4].skillId="festin-carnivore";
   }
   if(entry.id==="gorice"){
     // The signed Nov 3 snapshot remains immutable. A second signed Nov 5
