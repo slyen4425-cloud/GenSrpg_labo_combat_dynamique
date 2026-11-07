@@ -56,6 +56,10 @@ export function planBurrowTerrainFxV2({
     trailWidthPx: preset.trailWidthPx,
     trailLengthPx: distance,
     trailAngleDeg: Math.atan2(dy,dx)*180/Math.PI,
+    // The atlas faces right. Leftward travel mirrors it instead of
+    // rotating the artwork 180 degrees and turning the soil upside down.
+    trailSpriteMirrorX: dx < 0,
+    trailSpriteAngleDeg: Math.atan2(dx < 0 ? -dy : dy, Math.abs(dx))*180/Math.PI,
     trailAtMs,
     trailMs,
     emergeAtMs,

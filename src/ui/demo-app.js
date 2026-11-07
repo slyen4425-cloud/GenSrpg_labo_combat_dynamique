@@ -216,6 +216,24 @@ export function restingTargetCenterForApproachV1(targetSlot) {
   });
 }
 
+
+/**
+ * Burrow travels through the terrain at the target's resting camp, never
+ * toward a temporarily airborne model. Reuse the established resting-slot
+ * projection (including authored offsets and mobile scaling); combat reach
+ * and damage stay exclusively in Combat Runtime.
+ */
+export function burrowGroundPointForApproachV1(targetSlot, arenaRect) {
+  const center = restingTargetCenterForApproachV1(targetSlot);
+  const rect = targetSlot.container.getBoundingClientRect();
+  return Object.freeze({
+    x: center.x - arenaRect.left,
+    y: Math.max(8, Math.min(arenaRect.height - 8,
+      center.y - arenaRect.top + rect.height / 2 -
+      Math.min(25, rect.height * .12)))
+  });
+}
+
 export async function mountCombatDemo({
   root,
   fetchImpl = fetch,
@@ -822,13 +840,13 @@ export async function mountCombatDemo({
 
     const actorCenterX = actorRect.left + actorRect.width / 2;
     const actorCenterY = actorRect.top + actorRect.height / 2;
-    // The aerial dive heads for the opposing camp, not after an enemy
-    // running an overlapping approach. Ground melee also uses the camp
-    // anchor when the target is aloft. Live contact remains authoritative.
+    // Approaches targeting the ground must not chase a model in flight.
+    // Burrow always targets the resting camp; Runtime alone owns hits.
     const airborneTarget =
       approachMode === "ground" &&
       activeApproachBySlot.get(targetSlot)?.approachMode === "aerial";
-    const targetAim = approachMode === "aerial" || airborneTarget
+    const targetAim = approachMode === "aerial" || airborneTarget ||
+      approachMode === "burrow"
       ? restingTargetCenterForApproachV1(target)
       : {
           x: targetRect.left + targetRect.width / 2,
@@ -919,7 +937,7 @@ export async function mountCombatDemo({
         burrowTerrainFx = playDomBurrowTerrainFxV2({
           arena,
           from: toGround(actorRect),
-          to: toGround(targetRect),
+          to: burrowGroundPointForApproachV1(target, arenaRect),
           travelMs,
           sprites: burrowTerrainSprites ?? defaultBurrowSpritesV1()
         });

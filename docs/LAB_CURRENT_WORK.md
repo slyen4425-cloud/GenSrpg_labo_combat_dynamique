@@ -1,3 +1,13 @@
+## 2026-11-07 — Attaque sous-terraine : visuel au sol et orientation adverse (main)
+
+- **Demande auteur** : lors d'une attaque aérienne de la cible, le sprite souterrain ne doit jamais monter à sa poursuite ; face adverse, le trajet ne doit pas retourner le sprite de terre à 180°. Les dégâts et la portée native restent inchangés.
+- **START** : `main@a4ac69af83cc7994e0036bb9726fe310e20ee02e` ; checkpoint `checkpoint/lab-start-burrow-air-ground-facing-2026-11-07`. Publication `main` seulement.
+- **Cause identifiée** : `demo-app.playApproachFor` utilisait `target.motion.getBoundingClientRect()` pour le trajet souterrain et le FX ; `dom-burrow-terrain-fx-v2` appliquait `atan2(dy,dx)` au sprite gauche, le retournant.
+- **Périmètre** : le point de repos du slot, déjà unique dans la géométrie de présentation, alimente la cible de l'animation et le point au sol du FX. Le plan FX partage orientation/mirroir pour toutes les phases, aucun calcul supplémentaire en UI. Aucun changement Combat Runtime, statut, assets, données d'auteur ou GenSrpg.
+- **Tests sentinelles** : cible en vol avec rect animé hors sol, acteur de chaque camp, miroir/sens de pente, vertical, timings, annulation. CI du SHA exact et contrôle vrai HTTPS + smartphone avant GREEN.
+
+---
+
 ## 2026-11-07 — Peste noire : 3 charges Peste + Soin inversé + icône (main)
 
 - **Auteur** : ultime « Peste noire » (ID `cap_shadow_atk_5`) : 3 charges permanentes Peste et Soin inversé sur la cible d'un même projectile ; une icône réutilisée ; texte Bestiaire calculé.

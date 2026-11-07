@@ -86,21 +86,22 @@ export function playDomBurrowTerrainFxV2({arena,from,to,travelMs,sprites=null}) 
         ...visual,
         playbackMode:stage==="travel"?"loop":"stretch"
       },spriteDuration);
+      const flip=fx.trailSpriteMirrorX?" scaleX(-1)":"";
       if(stage==="travel"){
         const dx=fx.to.x-fx.from.x,dy=fx.to.y-fx.from.y;
-        const angle=Math.atan2(dy,dx)*180/Math.PI;
+        const angle=fx.trailSpriteAngleDeg;
         play(node,[
-          {transform:"translate(0px,0px) rotate("+angle+"deg) scale(.86)",opacity:0},
-          {transform:"translate("+(dx*.09)+"px,"+(dy*.09)+"px) rotate("+angle+"deg) scale(1)",opacity:1,offset:.12},
-          {transform:"translate("+(dx*.89)+"px,"+(dy*.89)+"px) rotate("+angle+"deg) scale(1)",opacity:1,offset:.86},
-          {transform:"translate("+dx+"px,"+dy+"px) rotate("+angle+"deg) scale(.8)",opacity:0}
+          {transform:"translate(0px,0px) rotate("+angle+"deg) scale(.86)"+flip,opacity:0},
+          {transform:"translate("+(dx*.09)+"px,"+(dy*.09)+"px) rotate("+angle+"deg) scale(1)"+flip,opacity:1,offset:.12},
+          {transform:"translate("+(dx*.89)+"px,"+(dy*.89)+"px) rotate("+angle+"deg) scale(1)"+flip,opacity:1,offset:.86},
+          {transform:"translate("+dx+"px,"+dy+"px) rotate("+angle+"deg) scale(.8)"+flip,opacity:0}
         ],durationMs,atMs,"linear");
       }else{
         play(node,[
-          {opacity:0,transform:"scale(.45)"},
-          {opacity:1,transform:"scale(1)",offset:.18},
-          {opacity:1,transform:"scale(1.03)",offset:.77},
-          {opacity:0,transform:"scale(1.08)"}
+          {opacity:0,transform:"scale(.45)"+flip},
+          {opacity:1,transform:"scale(1)"+flip,offset:.18},
+          {opacity:1,transform:"scale(1.03)"+flip,offset:.77},
+          {opacity:0,transform:"scale(1.08)"+flip}
         ],spriteDuration,atMs);
       }
     }
