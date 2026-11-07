@@ -24,7 +24,7 @@ test("RED: the UI still has all three editable terrain animations and their save
  const skill=read("data/capture/showcase/attaque-sous-terraine.capture-skill-transfer-v1.json");
  const draft=JSON.parse(skill).draft;
  assert.equal(draft.definition.approachMode,"burrow");
- assert.deepEqual(["start","travel","impact"].map(x=>draft.presentation.visual.burrowTerrain[x].scale),[4,3,4]);
- assert.ok(["start","travel","impact"].every(x=>draft.presentation.visual.burrowTerrain[x].offsetY===-130));
+ assert.deepEqual(["start","travel","impact"].map(x=>draft.presentation.visual.burrowTerrain[x].scale),[1.5,1.5,1]);
+ assert.deepEqual(["start","travel","impact"].map(x=>draft.presentation.visual.burrowTerrain[x].offsetY),[-25,-50,0]);
  assert.equal(draft.requiredLevel,10);
 });

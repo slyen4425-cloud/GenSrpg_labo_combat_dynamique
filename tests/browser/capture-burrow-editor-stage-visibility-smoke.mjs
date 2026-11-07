@@ -32,7 +32,7 @@ try{
    throw Error("Movement disclosure accessibility state did not follow expansion");
  const sizes=["start","travel","impact"].map(x=>Number(document.querySelector("[data-burrow-"+x+"-scale]").value));
  const y=["start","travel","impact"].map(x=>Number(document.querySelector("[data-burrow-"+x+"-y]").value));
- if(JSON.stringify(sizes)!=="[4,3,4]"||JSON.stringify(y)!=="[-130,-130,-130]")
+ if(JSON.stringify(sizes)!=="[1.5,1.5,1]"||JSON.stringify(y)!=="[-25,-50,0]")
    throw Error("authored stages damaged "+JSON.stringify({sizes,y}));
  if(getComputedStyle(stage).display==="none")throw Error("sprite stages hidden in real CSS");
  document.querySelector("[data-skill-new]").click();
@@ -40,9 +40,24 @@ try{
  if(Number(document.querySelector("[data-burrow-start-scale]").value)!==1)
    throw Error("new skill inherited old authored stage scale");
  selectUnderground();
- if(stage.hidden||Number(document.querySelector("[data-burrow-impact-scale]").value)!==4)
+ if(stage.hidden||Number(document.querySelector("[data-burrow-impact-scale]").value)!==1)
    throw Error("reselected underground skill lost its sprite stages");
- document.body.dataset.burrowEditorProbe="pass:loaded:visible:3-stages:new:reloaded";
+ // The second author skill now also uses the underground approach, with WATER
+ // visual assets rather than the three built-in earth animations.
+ if(![...library.options].some(opt=>opt.value==="cap_water_atk_2"))
+   throw Error("Morsure de marée missing from the active library");
+ library.value="cap_water_atk_2";
+ library.dispatchEvent(new Event("change",{bubbles:true}));
+ if(approach.value!=="burrow"||stage.hidden)
+   throw Error("Morsure de marée underground settings are hidden");
+ const actualAssets=["start","travel","impact"].map(x=>document.querySelector("[data-burrow-"+x+"-asset]").value);
+ const expectedAssets=["pack:capture:sprite-pressurized-jet-impact-01","pack:capture:sprite-cast-water-01","burrow:impact"];
+ if(JSON.stringify(actualAssets)!==JSON.stringify(expectedAssets))
+   throw Error("Morsure de marée author sprites lost "+JSON.stringify(actualAssets));
+ const waterSizes=["start","travel","impact"].map(x=>Number(document.querySelector("[data-burrow-"+x+"-scale]").value));
+ if(JSON.stringify(waterSizes)!=="[1.2,1.2,1]")
+   throw Error("Morsure de marée scales modified "+JSON.stringify(waterSizes));
+ document.body.dataset.burrowEditorProbe="pass:two-author-skills:underground-stages:new:reloaded";
 }catch(error){document.body.dataset.burrowEditorProbe="fail:"+String(error.stack??error.message??error);}
 </script>`;
 const mime={".html":"text/html",".js":"text/javascript",".mjs":"text/javascript",".css":"text/css",".json":"application/json",".png":"image/png",".webp":"image/webp",".svg":"image/svg+xml"};

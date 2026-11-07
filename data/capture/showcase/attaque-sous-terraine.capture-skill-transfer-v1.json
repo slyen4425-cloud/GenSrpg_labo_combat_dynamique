@@ -93,23 +93,23 @@
         "burrowTerrain": {
           "start": {
             "assetId": "burrow:start",
-            "scale": 4,
+            "scale": 1.5,
             "offsetX": 0,
-            "offsetY": -130,
+            "offsetY": -25,
             "frameMs": 70
           },
           "travel": {
             "assetId": "burrow:travel",
-            "scale": 3,
+            "scale": 1.5,
             "offsetX": 0,
-            "offsetY": -130,
+            "offsetY": -50,
             "frameMs": 60
           },
           "impact": {
             "assetId": "burrow:impact",
-            "scale": 4,
+            "scale": 1,
             "offsetX": 0,
-            "offsetY": -130,
+            "offsetY": 0,
             "frameMs": 70
           }
         }

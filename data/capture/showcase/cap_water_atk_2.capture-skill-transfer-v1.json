@@ -15,13 +15,14 @@
       "name": "Morsure de marée",
       "category": "offensive",
       "form": "contact",
+      "projectileTargeting": "direct",
       "loadoutSlot": "standard",
       "element": "water",
       "approachMode": "burrow",
       "energyCost": 5,
       "preparationMs": 2000,
-      "travelMs": 650,
-      "recoveryMs": 300,
+      "travelMs": 1100,
+      "recoveryMs": 0,
       "cooldownMs": 20000,
       "maxUsesPerCombat": null,
       "interruptibleDuringPreparation": true,
@@ -41,6 +42,7 @@
         "underground"
       ],
       "dodgeable": true,
+      "hitsIntangible": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": []
@@ -72,7 +74,9 @@
           "kind": "damage",
           "targetScope": "target",
           "amount": 20,
-          "channel": "water"
+          "channel": "water",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
         },
         {
           "kind": "energy_drain",
@@ -83,31 +87,12 @@
     },
     "presentation": {
       "id": "skill:cap_water_atk_2",
-      "version": 9,
+      "version": 13,
       "subjectType": "skill",
       "subjectId": "cap_water_atk_2",
       "visual": {
         "icon": {
           "assetId": "pack:capture:icon-skill-marine-bite-01"
-        },
-        "cast": {
-          "assetId": "pack:capture:sprite-cast-water-01",
-          "displayScale": 2.5,
-          "displayScaleX": 1,
-          "displayScaleY": 1,
-          "attachment": "source",
-          "anchor": null,
-          "offsetX": 0,
-          "offsetY": 0,
-          "trigger": "preparation-start",
-          "playbackMode": "stretch",
-          "rotationDeg": 0,
-          "opacity": 1,
-          "layerByView": {
-            "player": "front",
-            "opponent": "front"
-          },
-          "offsetMode": "same"
         },
         "impact": {
           "assetId": "pack:capture:sprite-impact-physical-01",
@@ -127,6 +112,29 @@
             "opponent": "front"
           },
           "offsetMode": "same"
+        },
+        "burrowTerrain": {
+          "start": {
+            "assetId": "pack:capture:sprite-pressurized-jet-impact-01",
+            "scale": 1.2,
+            "offsetX": 0,
+            "offsetY": -25,
+            "frameMs": 70
+          },
+          "travel": {
+            "assetId": "pack:capture:sprite-cast-water-01",
+            "scale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameMs": 60
+          },
+          "impact": {
+            "assetId": "burrow:impact",
+            "scale": 1,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameMs": 70
+          }
         }
       },
       "audio": {
@@ -161,7 +169,8 @@
           "durationMs": 3,
           "opacity": 0
         }
-      }
+      },
+      "baseVersion": 9
     }
   }
 }

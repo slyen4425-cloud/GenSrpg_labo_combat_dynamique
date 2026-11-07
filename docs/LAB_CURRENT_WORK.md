@@ -1,3 +1,12 @@
+## 2026-11-07 — Remplacement auteur de deux compétences Capture (main)
+
+- **Fichiers auteur reçus** : `gensrpg-capture-skill-cap_water_atk_2.json` et `gensrpg-capture-skill-attaque-sous-terraine.json` (exports complets transférés par l'auteur). IDs identiques à deux entrées déjà publiées ; **seuls les deux transferts actifs canoniques** de `data/capture/showcase/` sont remplacés, sans doublon d'ID, de fichier, de catalogue ou de média.
+- **Morsure de marée — `cap_water_atk_2`** : `approachMode=burrow`, trajet 1 100 ms, récupération 0 ; trois FX de terrain (Jet pressurisé — impact, Charge Eau, émergence native) avec tailles 1,2 / 1,2 / 1 et offsets Y -25 / 0 / 0. Conserver dégâts 20 Eau + drain 3 énergie, effets, audio, feedback, et autres réglages exactement comme dans l'export. Les trois médias personnalisés sont présents une seule fois dans le catalogue officiel `global-assets`.
+- **Attaque sous terraine — `attaque-sous-terraine`** : conserver niveau 10, dégâts 15 Terre, 25 s de recharge, présence et timings ; remplacer les trois tailles par 1,5 / 1,5 / 1 et offsets Y -25 / -50 / 0, selon le nouvel export. L'archive historique signée du 5 novembre reste immuable.
+- **START** : `main@7c9d137caf64e3903b456a4c5f5b1753068c5798` ; `checkpoint/lab-start-author-two-burrow-skills-2026-11-07`. Tests de régression auteur des deux transferts, round-trip, rendu des trois panneaux en Chromium, catalogues et chaîne complète CI/Pages sur le SHA final. Ne pas annoncer GREEN avant validation.
+
+---
+
 ## 2026-11-07 — Attaque souterraine : réglages visuels masqués après sélection (main)
 
 ### Contrôle complémentaire du cache public (7 novembre, même lot)

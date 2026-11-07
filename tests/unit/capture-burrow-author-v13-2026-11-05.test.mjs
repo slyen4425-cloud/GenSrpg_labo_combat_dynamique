@@ -11,11 +11,11 @@ const read=path=>readFileSync(new URL("../../"+path,import.meta.url),"utf8");
 const archive="data/capture/source-exports/gensrpg-capture-skill-attaque-sous-terraine-author-2026-11-05-v13.json";
 const active="data/capture/showcase/attaque-sous-terraine.capture-skill-transfer-v1.json";
 
-test("RED: exact author V13 transfer is active with 25 seconds cooldown and one published ID",()=>{
+test("2026-11-07 author revision replaces only the active underground skill, preserving signed 2026-11-05 archive",()=>{
  const original=read(archive),showcase=read(active);
  assert.equal(createHash("sha256").update(original).digest("hex"),"122c97ceb6fa521ff5090f08c208fdc9787bb92f49984a33b1a2490b22e32b83",
   "uploaded source must remain byte-identical");
- assert.equal(showcase,original,"Showcase must be the exact source, not an approximated rewrite");
+ assert.notEqual(showcase,original,"The latest author update supersedes the archived 2026-11-05 settings without overwriting provenance");
  const payload=JSON.parse(showcase),draft=payload.draft,skill=normalizeSkillDefinition(draft.definition);
  assert.equal(payload.schema,"capture-skill-transfer-v1");
  assert.equal(draft.id,"attaque-sous-terraine");
@@ -27,8 +27,8 @@ test("RED: exact author V13 transfer is active with 25 seconds cooldown and one 
  assert.deepEqual(skill.hitPresenceStates,["surface","underground"]);
  assert.equal(draft.presentation.version,13);
  assert.equal(draft.presentation.visual.burrowTerrain.impact.assetId,"burrow:impact");
- assert.equal(draft.presentation.visual.burrowTerrain.impact.scale,4);
- assert.equal(draft.presentation.visual.burrowTerrain.impact.offsetY,-130);
+ assert.deepEqual(["start","travel","impact"].map(s=>draft.presentation.visual.burrowTerrain[s].scale),[1.5,1.5,1]);
+ assert.deepEqual(["start","travel","impact"].map(s=>draft.presentation.visual.burrowTerrain[s].offsetY),[-25,-50,0]);
  assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(path=>path===active).length,1);
  const loaded=importCaptureTransferJsonV1(showcase);
  assert.equal(loaded.kind,"skill");
