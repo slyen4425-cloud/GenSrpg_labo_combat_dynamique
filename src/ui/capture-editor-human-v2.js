@@ -10817,9 +10817,13 @@ export function mountEditorCardDisclosuresV1({
   return count;
 }
 
-export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null }) {
+export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null, initialTab = "creature" }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root doit être un élément DOM");
+  }
+  // The canonical author UI alone selects the requested initial tab.
+  if (!["creature","skills","combat","music"].includes(initialTab)) {
+    throw new RangeError("Onglet auteur Capture non pris en charge : "+String(initialTab));
   }
 
   const listeners = [];
@@ -10912,7 +10916,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     );
   }
 
-  setTab(root, "creature");
+  setTab(root, initialTab);
 
   const reactionType = one(root, "[data-creature-reaction-type]");
   listen(reactionType, "change", () => syncHumanCreatureReactionControlsV1(root));
