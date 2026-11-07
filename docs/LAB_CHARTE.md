@@ -6,7 +6,7 @@
 
 1. **Une bibliothèque canonique par site** : interdit de recopier intégralement les sprites, atlas, musiques, données et bibliothèques Combat/Capture dans plusieurs prévisualisations. Les publications historiques peuvent conserver leurs URL ou des redirections documentées, mais sans recopier le même arbre lourd. Aucun ZIP auteur dans un site public sans consommation prouvée.
 2. **Budget et inventaire** : chaque site GitHub Pages publie un rapport automatique en octets par catégorie, chemins dupliqués, SHA source, asset count et URL de test. **900 Mio non compressés maximum** tant qu'un changement de budget motivé, explicite et testé n'a pas été validé. Ne jamais contourner par timeout/retry.
-3. **Séparation de version** : `main` est la source de règles/contrats officielle consommée par GenSRPG ; `gh-pages` est historiquement la branche de l'éditeur publié, aujourd'hui distincte. Toute convergence passe par PR ciblée et contrats vérifiés : ni fusion aveugle des historiques, ni double moteur autoritaire.
+3. **Publication depuis une seule source (décision auteur du 7 novembre 2026)** : `main` devient l'unique source officielle des règles, contrats ET de l'éditeur du Labo Combat. Le site GitHub Pages doit utiliser `main` `/ (root)` comme source de publication. `gh-pages` est un ancien support de livraison, conservé en sauvegarde historique, mais il ne reçoit plus de développement ou de correction fonctionnelle indépendante. Tant que la configuration Pages n'est pas réellement passée à `main` et son déploiement HTTPS vérifié, le statut du site reste **NON VALIDÉ**. Ne jamais fusionner aveuglément les historiques divergents ni dupliquer le moteur ou la bibliothèque.
 4. **Aucune suppression** d'assets auteur, sources, sauvegardes, branches, historiques ou fichiers de médias pour faire passer une publication. Le nettoyage porte sur la **copie temporaire du build** uniquement, après inventaire des imports/URLs effectifs, tests PC/mobile et preuve de compatibilité.
 5. **Gate de sortie** : CI exacte, tests navigateur de l'éditeur, vérification des anciens liens et de la source chargée, checkpoint et preuve du SHA servi en HTTPS. La validation d'une PR seule n'est pas une publication ; NON GREEN si n'importe quel maillon échoue.
 
@@ -244,13 +244,16 @@ En cas de contradiction avec une documentation asset plus ancienne, la présente
 
 ## 15. Travail toujours sur une base connue
 
-Avant tout chantier fonctionnel :
+Avant tout chantier fonctionnel (décision auteur du 7 novembre 2026) :
 
-1. relever le SHA exact de la base ;
-2. créer un checkpoint de départ ;
-3. créer une branche de travail depuis exactement ce checkpoint ;
-4. mettre à jour `docs/LAB_CURRENT_WORK.md` ;
-5. ne jamais développer directement sur `main`.
+1. relever le SHA exact de `main` et créer un checkpoint de départ réversible ;
+2. déclarer la modification et les domaines protégés dans `docs/LAB_CURRENT_WORK.md` ;
+3. travailler **sur un seul Labo Combat : `main`**, avec un petit commit cohérent et un test RED / non-régression ciblé ; aucune branche `gh-pages` de développement ;
+4. vérifier la CI sur le SHA exact, le navigateur réel et le site HTTPS publié à partir du même `main` avant de déclarer GREEN ;
+5. si une régression apparaît, revenir au dernier état sain par `git revert` (jamais de `push --force` ou suppression d'assets), puis corriger sa cause racine ;
+6. pour un chantier risqué, une branche `work/*` **temporaire** reste autorisée pour préparer les tests, mais ne constitue jamais une seconde version ou publication du laboratoire : le résultat revient sur `main` uniquement.
+
+Cette règle explicite remplace l'ancienne interdiction du travail direct sur `main` ; le checkpoint, les preuves CI et la protection des données restent obligatoires.
 
 ## 16. Checkpoint obligatoire au début et à la fin
 

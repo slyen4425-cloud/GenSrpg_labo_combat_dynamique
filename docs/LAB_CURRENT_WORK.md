@@ -1,3 +1,13 @@
+## 2026-11-07 — Décision auteur : un seul Labo Combat sur main (publication directe ; BASCULE PAGES NON CONFIRMÉE)
+
+- **Décision** : ne plus faire évoluer `main` et `gh-pages` comme deux éditeurs. Les changements validés doivent être appliqués à `main` et diffusés depuis `main`; une régression peut être corrigée par `git revert` depuis checkpoint, sans historique forcé.
+- **START immuable** : `main@1b4f650e91d785ddc7a3f65c3f0eb50c845899c1`, `checkpoint/lab-before-main-only-publish-2026-11-07`. Public existant `gh-pages@cb9befb137eda6f453f17b29b315ae0803ee461e`. Ce lot porte **uniquement** sur charte, politique de checkpoints, protocole et sentinelle documentaire ; ni moteur ni assets.
+- **Audit des arbres** : 1 929 fichiers identiques, 15 fichiers différents, 21 fichiers seulement sur main, **aucun fichier seulement sur gh-pages** ; éviter toute fusion brute d'historiques. `main` dispose déjà du code Soin inversé fusionné et CI vérifiée.
+- **À faire impérativement avant annonce de publication** : basculer la source GitHub Pages dans `Settings → Pages` vers `main` `/(root)` puis confirmer le nouveau déploiement HTTPS et l'éditeur réel. Ne pas déclarer déjà réalisé. PR #281, branche historique `gh-pages`, à conserver sans nouveau développement jusqu'à validation du basculement. Contrôle PC et smartphone propriétaire séparé.
+- **Contrôle** : `npm run ci` au SHA exact de ce commit de gouvernance. Pas de doublons d'actifs, aucun nouveau site, aucune suppression de versions ou de sauvegardes.
+
+---
+
 ## 2026-11-07 — Soin inversé générique, chantier C2 isolé (NON GREEN)
 
 - **Demande auteur** : feu vert pour développer Soin inversé dans le Labo Combat seul ; aucun changement GenSrpg/Exploration.

@@ -1,52 +1,36 @@
-# Protocole de livraison unique — Combat Lab
+# Labo Combat — livraison unique directement depuis main
 
-Date : 2026-10-26. Complément opérationnel à LAB_CHARTE.md (§14–18, §26–28, §32, §34).
+Décision explicite de l'auteur : **7 novembre 2026**. Ce protocole remplace l'ancienne alternance main / gh-pages en tant que deux éditeurs à faire évoluer séparément.
 
-## 1. Trois rôles, aucune ambiguïté
+## 1. Une seule version fonctionnelle
 
-- `gh-pages` : **version réellement exécutée** par l'éditeur public. Les modifications fonctionnelles y arrivent seulement après tests et validation.
-- `global-assets` : **autorité des médias consommés par l'éditeur**. Le catalogue `data/assets/catalog/global-visual-assets.v1.json` et les fichiers sous `assets/library/` doivent être cohérents sur cette branche.
-- `work/<lot>` : branche temporaire de préparation depuis le SHA publié pertinent. `main` n'est **pas** la base du laboratoire publié ; ne jamais y chercher par défaut l'éditeur ou ses médias.
+- `main` est le code officiel du moteur, des contrats, de l'éditeur et des contenus approuvés. Les consommateurs GenSrpg lisent uniquement les contrats/versions certifiés de `main`.
+- Le site public `https://slyen4425-cloud.github.io/GenSrpg_labo_combat_dynamique/` **doit publier directement le contenu de `main`**, et non suivre un second développement sur `gh-pages`.
+- `gh-pages` est une branche historique à préserver pour retour arrière/provenance. Elle n'est plus autorisée à recevoir des fonctionnalités, des retouches UI ou des imports d'auteur en parallèle. Ne pas supprimer son historique.
+- `global-assets` reste le référentiel des médias canoniques réutilisables, distinct de l'autorité fonctionnelle du Labo. Il ne doit pas devenir une deuxième copie complète du site ni une source concurrente de règles.
+- Une demande = un lot court, un commit `main`, une publication publique au même contenu. L'exception `work/*` sert seulement de tampon temporaire pour un changement risqué ; elle ne crée jamais un deuxième labo.
 
-Ces trois rôles ne doivent pas devenir trois chantiers indépendants. **Une demande = un lot coordonné = une seule livraison utilisateur.**
+## 2. Bascule technique nécessaire (à vérifier, jamais prétendre déjà faite)
 
-## 2. Démarrage obligatoire de chaque fil
+La publication GitHub Pages a historiquement utilisé `gh-pages`. **Avant de déclarer la bascule terminée**, dans le dépôt GitHub :
 
-1. Lire charte, roadmap, current work, architecture et ce protocole directement sur GitHub.
-2. Résoudre les SHAs exacts de `gh-pages` et `global-assets` ; vérifier les chemins et propriétaires réels dans le code, pas dans la mémoire du fil.
-3. Relever l'URL de l'éditeur et la branche d'où elle charge son catalogue.
-4. Créer le checkpoint START et la branche de travail du lot ; documenter la portée et les tests dans `LAB_CURRENT_WORK.md`.
-5. Si plusieurs fils travaillent en parallèle, relire les SHAs distants avant chaque publication ; ne jamais écraser un changement concurrent.
+1. Sous `Settings → Pages → Build and deployment`, choisir `Deploy from a branch`, puis **`main`** et **`/(root)`**, et enregistrer.
+2. Vérifier que le déploiement GitHub Pages a réussi sur le **SHA main exact**, que les URLs des pages et des assets sont accessibles en HTTPS et que l'éditeur fonctionne sur PC et smartphone paysage.
+3. Comparer le code servi au commit `main`; si une ancienne version reste visible, corriger le propriétaire réel du cache ESM sans créer de nouvelle copie de site.
+4. Tant que les réglages Pages et l'HTTPS n'ont pas été confirmés, conserver le statut **NON VALIDÉ** et ne pas supprimer `gh-pages`.
 
-## 3. Pipeline obligatoire pour chaque média
+Contrôle d'inventaire avant bascule le 7 novembre 2026 : `main@1b4f650e91d785ddc7a3f65c3f0eb50c845899c1` et `gh-pages@cb9befb137eda6f453f17b29b315ae0803ee461e`. Sur les arbres Git exacts, **0 fichier exclusif à gh-pages**, 21 fichiers exclusifs à main, 15 fichiers communs de contenus différents et 1 929 blobs identiques. Il ne faut pas fusionner aveuglément 1 268 commits propres à l'historique de gh-pages : l'édition actuelle de main est quasiment le même arbre, avec les ajouts validés.
 
-`source validée -> extraction/normalisation -> fichiers physiques -> manifeste -> catalogue global-assets -> résolution par l'éditeur gh-pages -> test navigateur réel -> validation utilisateur`.
+## 3. Cycle de modification après bascule
 
-Pour chaque `assetId`, contrôler le chemin effectif `GLOBAL_VISUAL_LIBRARY.baseUrl`, la branche, l'URL du catalogue et sa révision de cache. Vérifier aussi l'absence d'ancien ID concurrent et le rendu de la preview. Un dépôt ZIP seul ne constitue jamais une livraison.
+1. Lire charte, roadmap, current work, checkpoint policy ; relever le SHA exact de `main`.
+2. Créer un checkpoint START **léger** pointant sur le commit de départ, identifier les fichiers/domaines touchés ; jamais de duplications d'assets.
+3. Ajouter le test de régression RED et le correctif minimal via le propriétaire officiel. Pour les petits lots explicitement acceptés, un commit direct `main` suffit, sans PR supplémentaire vers un autre labo.
+4. CI sur le nouveau SHA `main`, tests unitaires + navigateur réel ; le site se déploie depuis la même source `main`. Tester l'éditeur réellement servi et l'ancien lien public. Vérifier la preuve HTTPS et la préservation des sources auteur.
+5. Si KO : diagnostic de la cause, retour arrière par commit `git revert` depuis le checkpoint, pas de force-push ; corriger puis nouveau test. Si GREEN : checkpoint final et journal de reprise.
 
-Si l'asset est déjà dans `gh-pages` mais pas dans `global-assets`, le travail est **incomplet**. Si l'asset est dans `global-assets` mais invisible dans l'éditeur, le travail est **incomplet**.
+## 4. Ressources et sécurité
 
-## 4. Publication coordonnée et atomique du point de vue utilisateur
+Une seule bibliothèque canonique ; interdiction de recopier des arbres d'assets, des ZIP de vitrine ou tout le moteur entre plusieurs publications. Budget de 900 Mio, sans perte d'assets auteur ni suppression d'anciennes sauvegardes. Le Labo Combat ne modifie directement ni le dépôt GenSrpg ni le Labo Exploration. Toute dépendance dynamique aux assets canoniques doit conserver sa résolution d'URL et son cache correctement versionné.
 
-1. Préparer les fichiers et le catalogue sur la branche de travail ; vérifier intégrité, orientation, format, frames et provenance.
-2. Tester les chemins de chargement réels et les sentinelles de non-régression.
-3. Publier `global-assets` et vérifier que les médias + catalogue sont accessibles.
-4. Publier `gh-pages` uniquement quand le catalogue attendu est disponible, avec révision de cache actualisée si nécessaire.
-5. Tester l'URL publique de l'éditeur, ouvrir le sélecteur concerné et vérifier que l'asset est réellement proposé et prévisualisé.
-6. Vérifier CI, checkpoint GREEN au SHA exact et journal de reprise. Si la CI est déjà rouge pour des tests historiques, documenter précisément les échecs, ne pas les contourner ni déclarer GREEN.
-7. Ne donner un rapport final qu'après les étapes précédentes, ou annoncer explicitement le blocage réel. Ne pas faire valider à l'utilisateur des étapes intermédiaires techniques.
-
-## 5. Responsabilités et reprise inter-fils
-
-- Un seul registre actif par type d'asset, un seul propriétaire de chargement. Ne jamais créer de catalogue de secours.
-- Les scripts de publication sont réutilisables et versionnés ; éviter les opérations manuelles répétées.
-- Les dépôts ZIP sont des sources d'entrée, pas des destinations runtime.
-- `LAB_CURRENT_WORK.md` indique : lot, branche, base SHAs, source ZIP/sha256, assets concernés, étapes faites/restantes, CI, liens et prochaine action.
-- Une nouvelle conversation reprend ce journal et les SHAs réels ; elle ne repart pas d'une branche historique par intuition.
-- Un lot n'est pas « terminé » parce que GitHub contient les fichiers : **l'éditeur public doit les exposer**.
-
-## 6. Contrôle de livraison en une phrase
-
-« Les données sont sur la bonne branche, le catalogue canonique pointe sur les bons fichiers, l'éditeur public les affiche et le test réel passe. »
-
-Tant qu'une proposition de cette phrase n'est pas démontrée, statut PARTIEL.
+**Critère de fin** : un commit `main` unique, CI valable sur son SHA, URL publique qui sert effectivement les mêmes fonctionnalités, et possibilité de rollback documentée. Un commit ou une PR verts seuls ne prouvent pas que le public a reçu la nouvelle version.
