@@ -602,3 +602,18 @@ Nouvelle exigence auteur : **ne pas limiter les buffs à `sur dégâts infligés
 Premier micro-lot du dispatch générique : `damage_dealt`, `damage_taken`, `movement` (changement tactique de distance confirmé), `evaded` (esquive confirmée). Statut V2 `onEvent:{event,effects}` ; ancien `onDamageDealt` supporté par le même propriétaire sans altération d'exports. Déclenchement réel à partir de Combat Rules/Status Runtime/horloge unique, prévention de récursivité, UI de sélection dans Human Editor. Référence `docs/LAB_EVENT_TRIGGERS_V2.md`.
 
 Autres événements à ajouter par lots propres selon les vrais propriétaires (approches et déplacements visuels, DoT, zones, soin, KO, conditions/charges/hasard et passifs), **sans requalifier rétroactivement les événements déjà existants**. Pas de deuxième moteur et pas de changement de compétences/monstres auteur.
+
+
+## Backlog en attente — Statut générique « Soin inversé » (2026-11-07)
+
+**Statut : conception uniquement. Ne rien développer, activer ni publier tant que le raccord du Labo Combat à GenSrpg n'est pas terminé et que l'auteur n'a pas donné son feu vert.**
+
+**Besoin utilisateur :** une compétence pose une altération sur une créature ; si celle-ci devait récupérer des PV, tout ou partie du soin devient au contraire une perte de PV. Exemple : soin initial +20 PV, taux d'inversion 25 % → −5 PV, 50 % → −10 PV, 100 % → −20 PV. La portion convertie ne soigne pas. Taux, durée, cibles, empilement et dissipation doivent rester paramétrables depuis l'éditeur, jamais en dur.
+
+**Audit lecture seule (2026-11-07) :** `src/core/combat/combat-damage-application-v1.js` possède le propriétaire `applyCombatHealV1` des soins PV directs, des HoT et du vol de vie ; `StatusEffectV1.incoming_effect_modifier` agit déjà sur les soins reçus, mais son multiplicateur se borne à 0, sans conversion en dégâts. `StatusEffectV1` sait gérer durée et cumuls ; l'éditeur Humain connaît déjà `incoming_effect_modifier` et `heal_over_time`.
+
+**Plan proposé, à confirmer lors du futur chantier :** créer un type de statut générique distinct `heal_inversion` dans le contrat canonique `StatusEffectV1`, représenté dans l'éditeur de compétence via l'effet `apply_status`. Intercepter la demande de soin **une seule fois dans l'autorité centrale des PV**, calculer la part convertie avant plafonnement par les PV maximums, router toute perte de PV vers les règles officielles de dégâts/KO et produire des événements explicites (`heal-converted`/impact) pour que l'UI ne présente pas un soin comme une guérison. Les soins ordinaires, HoT, vol de vie, et sources multiples doivent emprunter le même chemin ; aucune seconde formule HP dans l'interface.
+
+**Décisions à tester avant réalisation :** interaction entre bonus aux soins et conversion ; résistance/armure/boucliers/protections/immunités vis-à-vis de la perte de PV convertie ; conversion de soins à PV déjà complets ; attribution de la source des dégâts et récompenses ; priorité/cumul de plusieurs malédictions ; application sur la cible ou sur les alliés ; effets instantanés et périodiques ; cible KO et interdiction de résurrection implicite ; protection contre la récursion `dégâts → soin → dégâts`. Pas de faux buff qui réapplique périodiquement des dégâts sans soin réel.
+
+**Garde-fou :** aucun changement du moteur, des exports auteur, du dépôt GenSrpg, de `main` ni des bibliothèques d'assets dans le cadre de cette inscription documentaire. Après le raccord seulement : conception/contrat → tests RED de soins directs, HoT et vol de vie → implémentation minimale propriétaire unique → vérification KO/1v1/2v2 et affichage → CI GREEN et validation smartphone.
