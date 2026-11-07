@@ -1,3 +1,12 @@
+## 2026-11-07 — Backlog « Soin inversé » (documentation uniquement ; après raccord GenSrpg)
+- BASE `gh-pages@7063384e4db35c7fd837fc55a367965a262c847b` ; START `checkpoint/lab-start-heal-inversion-backlog-2026-11-07` ; WORK `work/lab-heal-inversion-backlog-2026-11-07`.
+- Demande auteur : mémoriser un effet générique transformant les soins reçus en perte de PV. **Aucun développement de ce mécanisme avant la fin du raccord à GenSrpg et nouvel accord**.
+- Lecture seule du moteur : `applyCombatHealV1` dans `src/core/combat/combat-damage-application-v1.js` sert aux soins immédiats, périodiques et au vol de vie ; `incoming_effect_modifier` peut diminuer les soins mais son multiplicateur planche à 0. Ne pas utiliser un pourcentage négatif de soin pour simuler des dégâts.
+- Ce lot modifie **uniquement deux documents** : `docs/LAB_ROADMAP.md` et `docs/LAB_CURRENT_WORK.md`. Aucun contrat, code, données auteur, asset ni test gameplay modifié. Tests/CI habituels avant GREEN.
+- L'intégration vers `main` reste **un autre chantier** de synchronisation ; pas de changement tacite de responsabilité ni de version consommée par GenSrpg.
+
+---
+
 ## 2026-11-05 — Attaque sous terraine : import source auteur V13, contrôle présence et anomalie FX
 - BASE `gh-pages@65eeacdc3ca920c770ef429d781df9b7a14161fa` ; START `checkpoint/lab-start-burrow-author-v13-2026-11-05` ; WORK `work/lab-burrow-author-v13-2026-11-05`.
 - L'auteur a transmis `gensrpg-capture-skill-attaque-sous-terraine (1).json` (SHA256 `122c97ceb6fa521ff5090f08c208fdc9787bb92f49984a33b1a2490b22e32b83`). Identifiant canonique `attaque-sous-terraine` ; aucun ID doublon.
