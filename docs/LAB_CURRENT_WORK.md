@@ -1,3 +1,14 @@
+## 2026-11-07 — Attaque souterraine : réglages visuels masqués après sélection (main)
+
+- **Signalement auteur** : en ouvrant la capacité `attaque-sous-terraine` dans l'éditeur, les trois paramètres auteur « Départ — creusement », « Trajet — sillon » et « Arrivée — émergence » semblent avoir disparu.
+- **Point d'accès** : onglet Compétences, modèle « Attaque sous terraine », carte 5 « Mouvement », sous « Déplacement de la créature » = « Attaque souterraine », panneau « sprites du terrain ». La carte est initialement repliée dans l'éditeur.
+- **Diagnostic confirmé dans le code** : `writeSkillDraftFields` appelait `writeBurrowStageFieldsV1` **avant** de renseigner `[data-skill-approach]`. Or le writer synchronise `[data-burrow-stage-fields].hidden` selon la valeur précédente, qui peut être `none`. La sélection du modèle se fait par JS sans événement `change` du select.
+- **Correction racine** : conserver le seul writer V13 et le seul contrôleur de visibilité existants, mais hydrater les contrôles **après** le select ; déplier la carte Mouvement via le contrôleur de divulgation existant à l'ouverture d'une compétence `burrow`, sans créer un second propriétaire ; remettre les valeurs de terrain par défaut lors de « Nouvelle capacité » ; révision du cache import ESM/entrée publique pour que le navigateur récupère réellement la correction.
+- **Protection** : données de la compétence auteur, 3 atlas, contrats, moteur Combat et copies d'assets inchangés. Régression testée avec vrai Chromium : chargement depuis la bibliothèque, visibilité effective, valeurs 4/3/4, Y=-130, changement Nouvelle capacité, rechargement et préservation.
+- **START** : `main@b2b4c6dfd46bd56eadb4bc4c7fec09348301c37e`, checkpoint `checkpoint/lab-start-burrow-editor-visibility-2026-11-07`. CI et Pages au SHA livré obligatoires avant GREEN.
+
+---
+
 ## 2026-11-07 — Échelle visuelle unique PC/mobile sur tous les réglages (main)
 
 - **Auteur** : tous les réglages visuels de l'éditeur doivent être reproductibles à l'identique sur PC et téléphone, y compris Attaque sous-terraine. Aucune retouche à faire capacité par capacité.

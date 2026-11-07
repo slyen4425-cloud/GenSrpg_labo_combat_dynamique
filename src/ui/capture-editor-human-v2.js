@@ -3737,7 +3737,6 @@ function writeSkillDraftFields(
     );
 
   writeSkillSpriteControlsV1(root, fields.presentation);
-  writeBurrowStageFieldsV1(root, fields.presentation);
   writeSkillFeedbackControlsV1(
     root,
     fields.presentation
@@ -3925,6 +3924,16 @@ function writeSkillDraftFields(
     one(root, selector).value =
       String(value ?? "");
   }
+  // The approach selector is now hydrated. This same field writer owns the
+  // burrow stage controls AND their visibility, avoiding an early "none"
+  // value that used to leave imported underground skills silently hidden.
+  writeBurrowStageFieldsV1(root, fields.presentation);
+  // Cards are collapsed by default. Reveal the actual movement editor when
+  // an underground skill is loaded, through the existing disclosure owner.
+  const movementCard = root.querySelector("[data-burrow-stage-fields]")?.closest(".card");
+  if (fields.approachMode === "burrow" && movementCard?.dataset.collapsed === "true") {
+    movementCard.querySelector("[data-editor-card-toggle]")?.click();
+  }
   syncCaptureBeamStageLayoutV1(root);
   one(root,"[data-skill-charged-enabled]").checked = fields.chargedAttack !== null;
   one(root,"[data-skill-charged-config]").hidden = fields.chargedAttack === null;
@@ -4072,6 +4081,9 @@ function prepareNewSkillDraftFields(
   for (const [selector, value] of values) {
     one(root, selector).value = String(value);
   }
+  // A new skill must not inherit invisible burrow stage controls from the
+  // previously selected skill; reset the editor-only projection to defaults.
+  writeBurrowStageFieldsV1(root);
   syncCaptureBeamStageLayoutV1(root);
   one(root,"[data-skill-charged-enabled]").checked = false;
   one(root,"[data-skill-charged-config]").hidden = true;

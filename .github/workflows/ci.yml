@@ -40,6 +40,8 @@ jobs:
         run: node tests/browser/capture-creature-library-smoke.mjs
       - name: Real Chromium main Adventure author deep-link to skills and combat
         run: node tests/browser/capture-author-tab-deeplink-smoke.mjs
+      - name: Real Chromium underground skill stages visible and editable on library load
+        run: node tests/browser/capture-burrow-editor-stage-visibility-smoke.mjs
       - name: Real Chromium snowball selectors and official WebP atlas previews
         run: node tests/browser/capture-snowball-asset-editor-smoke.mjs
       - name: Real Chromium persistent ice wall summon construction and HP lifetime
