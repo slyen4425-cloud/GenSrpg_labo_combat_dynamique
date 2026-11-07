@@ -37,11 +37,13 @@ const PRESETS = Object.freeze([
   {
     id: "cap_water_atk_2",
     name: "Morsure de marée",
-    digest: "0a7fba75a4f918e75f39f9be2d9dc09522758a271e8072442eed2be7ea89c791",
+    digest: "17037c597c39f9f01bf6c8709d779b9d7ef3b84b10f1fe6cdfae8339eafcfee1",
     assetIds: [
       "pack:capture:icon-skill-marine-bite-01",
+      "pack:capture:sprite-impact-physical-01",
+      "pack:capture:sprite-pressurized-jet-impact-01",
       "pack:capture:sprite-cast-water-01",
-      "pack:capture:sprite-impact-physical-01"
+      "burrow:impact"
     ],
     audioIds: [
       "gensrpg:sound:xel-48520d94",
@@ -65,14 +67,16 @@ test("both author JSON transfers replace existing Showcase entries exactly, with
     assert.equal(transfer.kind, "skill");
     assert.equal(transfer.value.draft.id, preset.id);
     assert.equal(transfer.value.draft.definition.name, preset.name);
-    assert.equal(transfer.value.draft.presentation.version, 9);
+    assert.equal(transfer.value.draft.presentation.version, preset.id==="cap_water_atk_2" ? 13 : 9);
     assert.equal(raw.schema, "capture-skill-transfer-v1");
     assert.equal(raw.version, 1);
 
     const digest = createHash("sha256").update(JSON.stringify(raw), "utf8").digest("hex");
     assert.equal(digest, preset.digest, "The complete " + preset.id + " author export must stay identical; no approximation");
     assert.deepEqual(
-      Object.values(raw.draft.presentation.visual).map(x => x.assetId),
+      Object.values(raw.draft.presentation.visual).flatMap(slot =>
+        slot?.assetId ? [slot.assetId] :
+          slot && typeof slot==="object" ? Object.values(slot).map(x=>x?.assetId).filter(Boolean) : []),
       preset.assetIds
     );
     assert.deepEqual(
@@ -100,19 +104,20 @@ test("Goutte vive preserves projectile timings, loop and impact 650ms + sound", 
   assert.equal(d.presentation.audio.impact.assetId, "gensrpg:sound:sanctuary-17b7fa2c");
 });
 
-test("Morsure de marée preserves burrow, damage + energy drain, 120px camera shake and cast", async () => {
+test("Morsure de marée preserves the new 1100ms burrow, damage + energy drain, 120px camera shake and terrain FX", async () => {
   const d = (await loadAuthorSkill("cap_water_atk_2")).transfer.value.draft;
   assert.equal(d.definition.form, "contact");
   assert.equal(d.definition.approachMode, "burrow");
   assert.equal(d.definition.preparationMs, 2000);
-  assert.equal(d.definition.travelMs, 650);
+  assert.equal(d.definition.travelMs, 1100);
   assert.equal(d.definition.cooldownMs, 20000);
   assert.deepEqual(d.definition.effects, [
-    {kind:"damage",targetScope:"target",amount:20,channel:"water"},
+    {kind:"damage",targetScope:"target",amount:20,channel:"water",ignoreResistancePct:0,ignoreDamageReductionPct:0},
     {kind:"energy_drain",targetScope:"target",amount:3}
   ]);
-  assert.equal(d.presentation.visual.cast.displayScale, 2.5);
-  assert.equal(d.presentation.visual.cast.playbackMode, "stretch");
+  assert.equal(d.definition.recoveryMs,0);
+  assert.equal(d.presentation.visual.cast,undefined,"author explicitly removed the separate cast overlay");
+  assert.deepEqual(["start","travel","impact"].map(s=>d.presentation.visual.burrowTerrain[s].scale),[1.2,1.2,1]);
   assert.equal(d.presentation.feedback.cameraShake.amplitudePx, 120);
   assert.equal(d.presentation.feedback.cameraShake.durationMs, 140);
   assert.equal(d.presentation.audio.impact.assetId, "gensrpg:sound:effect-df32b429");

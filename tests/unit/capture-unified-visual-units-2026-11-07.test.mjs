@@ -79,7 +79,10 @@ test("RED: movement, dodge and wall offsets all share one visual pixel unit",()=
   "src/adapters/renderer/combat-entity-overlay-v1.js"]){
   assert.match(read(file),/fxAuthorPixelsV1\(/,file);
  }
- const original=read("data/capture/showcase/attaque-sous-terraine.capture-skill-transfer-v1.json");
- assert.match(original,/"scale": 4/);
- assert.match(original,/"offsetY": -130/);
+ const current=JSON.parse(read("data/capture/showcase/attaque-sous-terraine.capture-skill-transfer-v1.json"));
+ assert.deepEqual(["start","travel","impact"].map(s=>current.draft.presentation.visual.burrowTerrain[s].scale),[1.5,1.5,1]);
+ assert.deepEqual(["start","travel","impact"].map(s=>current.draft.presentation.visual.burrowTerrain[s].offsetY),[-25,-50,0]);
+ const archive=read("data/capture/source-exports/gensrpg-capture-skill-attaque-sous-terraine-author-2026-11-05-v13.json");
+ assert.match(archive,/"scale": 4/);
+ assert.match(archive,/"offsetY": -130/);
 });

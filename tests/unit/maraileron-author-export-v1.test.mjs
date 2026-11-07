@@ -81,8 +81,8 @@ test("Morsure de maree author export is preserved exactly through Capture Transf
   assert.equal(draft.definition.approachMode, "burrow");
   assert.equal(draft.definition.energyCost, 5);
   assert.equal(draft.definition.preparationMs, 2000);
-  assert.equal(draft.definition.travelMs, 650);
-  assert.equal(draft.definition.recoveryMs, 300);
+  assert.equal(draft.definition.travelMs, 1100);
+  assert.equal(draft.definition.recoveryMs, 0);
   assert.equal(draft.definition.cooldownMs, 20000);
   assert.deepEqual(
     draft.definition.hitPresenceStates,
@@ -96,7 +96,9 @@ test("Morsure de maree author export is preserved exactly through Capture Transf
         kind: "damage",
         targetScope: "target",
         amount: 20,
-        channel: "water"
+        channel: "water",
+        ignoreResistancePct: 0,
+        ignoreDamageReductionPct: 0
       },
       {
         kind: "energy_drain",
@@ -105,7 +107,9 @@ test("Morsure de maree author export is preserved exactly through Capture Transf
       }
     ]
   );
-  assert.equal(draft.presentation.version, 9);
+  assert.equal(draft.presentation.version, 13);
+  assert.deepEqual(["start","travel","impact"].map(s=>draft.presentation.visual.burrowTerrain[s].scale),[1.2,1.2,1]);
+  assert.equal(draft.presentation.visual.burrowTerrain.start.assetId,"pack:capture:sprite-pressurized-jet-impact-01");
   assert.equal(
     draft.presentation.visual.icon.assetId,
     "pack:capture:icon-skill-marine-bite-01"

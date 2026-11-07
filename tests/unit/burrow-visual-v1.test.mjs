@@ -188,7 +188,8 @@ test("authored Morsure de maree routes burrow through the presenter without DOM 
   );
   assert.equal(
     approach.options.travelMs,
-    650
+    skill.travelMs,
+    "the presenter must obey the updated author's underground travel duration"
   );
   assert.equal(
     approach.options.onContact,
