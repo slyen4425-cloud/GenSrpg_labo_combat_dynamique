@@ -1,5 +1,10 @@
 ## 2026-11-07 — Livraison éditeur public : Soin inversé (C2, candidat NON GREEN)
 
+### Gate CI du candidat Pages — correction de cohérence ESM (7 novembre 2026)
+- RUN PR #42383986950 / HEAD `7bf2df795fabb1811d595dfdd192b2e865ad77dc` : quatre navigateurs SUCCESS (dont le vrai éditeur de Soin inversé), Foundation RED 3 assertions de la chaîne ESM publiée, aucune régression Core/HP.
+- Causes précises : `capture-ice-vfx-editor-publish-2026-10-31`, `capture-showcase-skill-cache-coherence-2026-10-28`, `capture-ground-approach-preview-cache-chain-2026-11-05` exigeaient à juste titre le **même token** entre HTML, entrée, Human Editor, runtime loader, Combat preview et HUD 2v2. Le candidat avait actualisé seulement certains maillons.
+- Correctif de cause racine : propager le token officiel `-heal-inversion-20261107` dans les cinq importeurs préexistants ; ne pas toucher aux tests, au moteur ou aux assets. Revalider les 5 jobs sur le nouveau SHA de publication ; conserver le statut NON GREEN avant HTTPS.
+
 - **Base publique figée** : `gh-pages@cb9befb137eda6f453f17b29b315ae0803ee461e`, START `checkpoint/lab-start-heal-inversion-pages-2026-11-07`, WORK `work/lab-heal-inversion-pages-2026-11-07`.
 - **Source Combat main certifiée** : PR #280 fusionnée, `main@1b4f650e91d785ddc7a3f65c3f0eb50c845899c1`, CI de PR #42383388846 cinq jobs SUCCESS. Importation ciblée des quatre propriétaires (statut/soin/dégâts/Bestiaire) et tests, sans duplication de ressources.
 - **Conflit conservé** : l'éditeur `src/ui/capture-editor-human-v2.js` sur `gh-pages` possède des changements autonomes. Les 16 adaptations ciblées incluent le champ et l'import contextualisé, jamais un remplacement complet depuis main. Autres contenus de l'éditeur et anciennes publications conservés.
