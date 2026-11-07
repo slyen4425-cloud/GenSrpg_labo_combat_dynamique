@@ -1929,9 +1929,16 @@ const server = createServer(async (req, res) => {
         let attempts=0;
         const timer=setInterval(()=>{
           const library=document.querySelector("[data-creature-library-select]");
-          if(!library?.querySelector('option[value="crea_foudrillon"]') ||
+          const libraryState=document.querySelector("[data-creature-library-state]");
+          // Catalog options appear *before* asynchronously loaded authored Showcase
+          // creature transfers replace the historical drafts. Only probe the
+          // final official author state, otherwise Moussados reads as "legacy".
+          const showcaseReady=libraryState?.textContent?.includes("3 modèles vitrine chargés")===true;
+          if(!showcaseReady ||
+             !library?.querySelector('option[value="crea_foudrillon"]') ||
              !library?.querySelector('option[value="crea_mossback"]')){
-            if(++attempts>105){clearInterval(timer);document.body.dataset.creatureReactionProbe="timeout";}
+            if(++attempts>105){clearInterval(timer);document.body.dataset.creatureReactionProbe=
+              "timeout:"+(libraryState?.textContent??"no catalogue status");}
             return;
           }
           clearInterval(timer);
