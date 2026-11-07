@@ -33,25 +33,7 @@ test("RED: all gameplay-bearing FX shells use the same 400px arena-height refere
  const scope=css.slice(css.indexOf("/* All Capture visual settings use the SAME 400px arena-height unit"));
  assert.ok(scope.length>300,"unified author CSS FX geometry owner missing");
  for(const [selector,width] of Object.entries(rules)){
-   const escaped=selector.replace(/\W/g,"\\test("RED: all gameplay-bearing FX shells are sized against the real 16:9 arena, not capped viewport px",()=>{
- const rules={
-  ".skill-fx--projectile:not(.skill-fx--sprite-shell)":6.3,
-  ".skill-fx--channel-pulse":6.3,
-  ".skill-fx--sprite-shell":9.7,
-  ".skill-fx--cast":14.2,
-  ".skill-fx--impact":14.2,
-  ".skill-fx--clash-impact":19.4,
-  ".skill-fx--phase":15.5
- };
- const scope=css.slice(css.indexOf("/* Capture phone-reference FX geometry"));
- assert.ok(scope.length>300,"native Capture-only CSS FX geometry owner missing");
- for(const [selector,width] of Object.entries(rules)){
    const escaped=selector.replace(/\W/g,"\\$&");
-   const rx=new RegExp(escaped+"\\s*\\{[^}]*\\bwidth:\\s*"+width+"%;");
-   assert.match(scope,rx,"missing arena-relative native FX width "+selector);
- }
- assert.match(scope,/\.skill-fx--persistent-zone,\s*\n?.*\.skill-fx--tactical-zone\s*\{[^}]*width:\s*25\.8%;/s,"one CSS rule must own the persistent sprite and its tactical ellipse");
-});");
    const rx=new RegExp(escaped+"\\s*\\{[^}]*\\bwidth:\\s*calc\\("+width+"px \\* var\\(--combat-arena-author-offset-scale, 1\\)\\);");
    assert.match(scope,rx,"missing height-projected native FX width "+selector);
  }
