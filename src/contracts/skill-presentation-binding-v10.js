@@ -27,7 +27,7 @@ export function normalizeSkillPresentationBindingV10(input) {
     ...legacyTravel
   } = rawTravel ?? {};
 
-  if (rawMode !== undefined && !["linear", "skyfall"].includes(rawMode)) {
+  if (rawMode !== undefined && !["linear", "skyfall", "under_target"].includes(rawMode)) {
     throw new RangeError("Unsupported visual.travel.trajectoryMode: " + rawMode);
   }
   const mode = rawMode ?? "linear";

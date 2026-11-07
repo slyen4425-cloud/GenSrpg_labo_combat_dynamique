@@ -1,0 +1,211 @@
+{
+  "schema": "capture-creature-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-creature-editor-draft-v3",
+    "id": "gorice",
+    "displayName": "Gorice",
+    "description": "Gorille vivant dans les montagnes de neige éternel , maîtrise la glace , une force de la nature",
+    "level": 1,
+    "sourceStats": {
+      "force": 0,
+      "agility": 0,
+      "intelligence": 0,
+      "spirit": 0,
+      "endurance": 0,
+      "initiative": 0
+    },
+    "elements": [
+      "ice"
+    ],
+    "resistances": [
+      {
+        "kind": "element:fire",
+        "value": -50
+      },
+      {
+        "kind": "element:water",
+        "value": 0
+      },
+      {
+        "kind": "element:earth",
+        "value": 0
+      },
+      {
+        "kind": "element:air",
+        "value": 35
+      },
+      {
+        "kind": "element:electric",
+        "value": 0
+      },
+      {
+        "kind": "element:light",
+        "value": 0
+      },
+      {
+        "kind": "element:shadow",
+        "value": 0
+      },
+      {
+        "kind": "element:nature",
+        "value": 0
+      },
+      {
+        "kind": "element:ice",
+        "value": 35
+      },
+      {
+        "kind": "element:poison",
+        "value": 0
+      },
+      {
+        "kind": "element:steel",
+        "value": 0
+      },
+      {
+        "kind": "element:psy",
+        "value": 0
+      },
+      {
+        "kind": "element:spirit",
+        "value": 0
+      }
+    ],
+    "capture": {
+      "capturable": true,
+      "captureRate": 30,
+      "spawnChance": 10,
+      "spawnTags": [
+        "ice"
+      ],
+      "evolution": null
+    },
+    "combat": {
+      "maxHp": 140,
+      "maxEnergy": 0,
+      "initialEnergy": 0,
+      "energyChargeAmount": 0,
+      "energyChargeIntervalMs": 0,
+      "movementEnergyPerStep": 0,
+      "chargeTimeModifierPct": 0,
+      "approachTimeModifierPct": 0,
+      "reaction": {
+        "type": "defense",
+        "maxCharges": 2,
+        "rechargeMs": 15000,
+        "activeWindowMs": 400,
+        "damageReductionPct": 70
+      }
+    },
+    "skillIds": [
+      "fireball"
+    ],
+    "presentation": {
+      "id": "creature:gorice",
+      "version": 2,
+      "subjectType": "creature",
+      "subjectId": "gorice",
+      "profileId": "biped",
+      "displayScale": 1,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1.7,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 1,
+          "position": {
+            "x": 0,
+            "y": 50
+          }
+        }
+      },
+      "transformOrigin": {
+        "x": "50%",
+        "y": "50%"
+      },
+      "visual": {
+        "front": {
+          "assetId": "pack:capture:creature-gorille-des-glaces-opponent-01"
+        },
+        "back": {
+          "assetId": "pack:capture:creature-gorille-des-glaces-player-01"
+        },
+        "icon": {
+          "assetId": "pack:capture:creature-gorille-des-glaces-icon-01"
+        }
+      },
+      "sockets": [
+        {
+          "id": "mouth",
+          "label": "Bouche",
+          "front": {
+            "x": 0.3835051605619885,
+            "y": 0.5515624682108561
+          },
+          "back": {
+            "x": 0.727835067199541,
+            "y": 0.415798823038737
+          }
+        }
+      ],
+      "audio": {}
+    }
+  },
+  "statValues": {
+    "schema": "capture-creature-stat-values-v1",
+    "creatureId": "gorice",
+    "values": {
+      "health": 140,
+      "speed": 10,
+      "physical": 0,
+      "defense": 50,
+      "fire": 0,
+      "water": 0,
+      "earth": 0,
+      "air": 0,
+      "electric": 0,
+      "light": 0,
+      "shadow": 0,
+      "poison": 0,
+      "acier": 0,
+      "nature": 0,
+      "esprit": 0,
+      "glace": 0
+    }
+  },
+  "loadout": {
+    "schema": "capture-active-skill-loadout-v1",
+    "creatureId": "gorice",
+    "slots": [
+      {
+        "id": "slot-1",
+        "skillId": null
+      },
+      {
+        "id": "slot-2",
+        "skillId": null
+      },
+      {
+        "id": "slot-3",
+        "skillId": null
+      },
+      {
+        "id": "slot-4",
+        "skillId": null
+      },
+      {
+        "id": "slot-ultimate",
+        "skillId": null
+      }
+    ]
+  }
+}

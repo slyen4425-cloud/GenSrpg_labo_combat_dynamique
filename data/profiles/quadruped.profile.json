@@ -116,6 +116,18 @@
         "at": 1,
         "intensity": 0.28
       }
-    ]
+    ],
+    "groundApproach": {
+      "steps": 3,
+      "liftY": -18,
+      "liftScaleX": 1.012,
+      "liftScaleY": 0.99,
+      "landScaleX": 1.006,
+      "landScaleY": 0.994,
+      "rotateDeg": 0.42,
+      "footfallIntensity": 0.22,
+      "liftEasing": "cubic-bezier(0.45,0,0.55,1)",
+      "landEasing": "cubic-bezier(0.45,0,0.55,1)"
+    }
   }
 }

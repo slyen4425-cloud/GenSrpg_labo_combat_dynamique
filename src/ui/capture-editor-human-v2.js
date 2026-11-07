@@ -1,13 +1,14 @@
 import {appendCaptureEffectConditionFieldsV1,readCaptureEffectConditionV1} from "./capture-effect-condition-fields-v1.js";
-import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js";
-import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js?v=marker-life-drain-20261028";
+import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js?v=self-periodic-prose-20261102";
+import { createCaptureReferenceElementFiltersV1 } from "./capture-reference-element-filter-v1.js?v=visual-elements-20261105";
+import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104";
 import { normalizeCaptureMarkerLibraryV1 } from "../contracts/capture-marker-v1.js";
-import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1, captureMarkerZoneSelectV1 } from "./capture-marker-effect-fields-v1.js?v=marker-life-drain-20261028";
+import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1, captureMarkerZoneSelectV1 } from "./capture-marker-effect-fields-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104";
 import { captureEditorElementChannelChoicesV1, captureEditorGeneratedStatIdV1 } from "./capture-editor-element-channel-select-v1.js";
 import {
   mountCaptureBeamStageLayoutV1,
   syncCaptureBeamStageLayoutV1
-} from "./capture-editor-beam-stage-layout-v1.js";
+} from "./capture-editor-beam-stage-layout-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101";
 import {
   captureBeamVisualPackV1,
   applyCaptureBeamVisualPackV1,
@@ -73,7 +74,7 @@ import {
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=projectile-native-bidirectional-20261028";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -89,8 +90,9 @@ import {
 } from "./private-audio-role-groups-v1.js";
 import {
   resolveCaptureSkillSaveModeV1,
-  nextCaptureSkillDraftIdV1
-} from "./capture-editor-skill-save-mode-v1.js";
+  nextCaptureSkillDraftIdV1,
+  suggestCaptureSkillDraftIdFromNameV1
+} from "./capture-editor-skill-save-mode-v1.js?v=reference-elements-skill-id-20261104";
 import {
   resolveCaptureCreatureSaveModeV1,
   nextCaptureCreatureDraftIdV1
@@ -117,7 +119,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=projectile-native-bidirectional-20261028";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -372,6 +374,10 @@ function humanTacticalStatusToContractV1(
   if(output.kind==="outgoing_damage_modifier"){
     output.modifierPct=finiteNumber(status.modifierPct,"Variation dégâts infligés (%)");
   }
+  if(output.kind==="incoming_effect_modifier"){
+    output.modifierPct=finiteNumber(status.modifierPct,"Variation effets reçus (%)");
+    output.affectedPolarity=requiredText(status.affectedPolarity,"Nature des effets reçus");
+  }
   if (output.kind === "stat_modifier") {
     if (status.activationCondition === "moving") output.activationCondition = "moving";
     output.statId = requiredText(
@@ -487,7 +493,7 @@ export function buildHumanTacticalSkillEffectsV1(
       "Cible d’effet tactique"
     );
 
-    if (kind === "apply_marker" || kind === "consume_marker" || kind === "knockout") {
+    if (kind === "apply_marker" || kind === "consume_marker" || kind === "knockout" || kind === "force_reserve_switch" || kind === "summon_entity") {
       return normalizeSkillEffectV1(effect);
     }
 
@@ -505,6 +511,7 @@ export function buildHumanTacticalSkillEffectsV1(
       return normalizeSkillEffectV1({
         kind,
         targetScope,
+        ...(effect.visualCue==="ground_mine"?{visualCue:"ground_mine"}:{}),
         trigger: {
           type: "after_ms",
           delayMs
@@ -517,38 +524,6 @@ export function buildHumanTacticalSkillEffectsV1(
             }
           )
       });
-    }
-
-    if (kind === "scheduled_effect") {
-      const nestedKind = row.querySelector(
-        "[data-skill-scheduled-effect-kind]"
-      ).value;
-      const nested = {
-        kind: nestedKind,
-        targetScope: "target",
-        amount: Number(
-          row.querySelector(
-            "[data-skill-scheduled-effect-amount]"
-          ).value
-        )
-      };
-      if (nestedKind === "damage") {
-        nested.channel =
-          row.querySelector(
-            "[data-skill-scheduled-effect-channel]"
-          ).value || null;
-      }
-
-      return {
-        kind,
-        targetScope: "target",
-        delaySeconds: Number(
-          row.querySelector(
-            "[data-skill-scheduled-delay-seconds]"
-          ).value
-        ),
-        effects: [nested]
-      };
     }
 
     if (kind === "persistent_zone") {
@@ -756,6 +731,9 @@ function targetRelationsForTargetScopedEffectV1(effect) {
     // in humanSkillTargetRelationsFromTacticalEffectsV1 still applies.
     case "consume_marker":
       return [];
+
+    case "force_reserve_switch":
+      return ["enemy"];
 
     case "apply_status": {
       const polarity =
@@ -1859,6 +1837,13 @@ function presentationForSkill(fields) {
     }
     if (arrival !== "same") travel.arrivalLayer = arrival;
   }
+  if (travel !== null && presentation.travelTrajectoryMode === "under_target") {
+    travel.trajectoryMode="under_target";
+    travel.groundMotion=presentation.groundMotion??"fixed";
+    travel.groundOffsetXPx=finiteNumber(presentation.groundOffsetXPx??0,"Décalage sol X");
+    travel.groundOffsetYPx=finiteNumber(presentation.groundOffsetYPx??0,"Décalage sol Y");
+    travel.groundRisePx=finiteNumber(presentation.groundRisePx??80,"Montée visuelle");
+  }
   if (travel !== null && presentation.travelTrajectoryMode === "skyfall") {
     travel.trajectoryMode = "skyfall";
     travel.fallHeightPx = finiteNumber(
@@ -1991,7 +1976,7 @@ function presentationForSkill(fields) {
         ? 12
         : (travel?.frameSpeedMultiplier != null || travel?.perspectiveAmount != null)
           ? 11
-        : travel?.trajectoryMode === "skyfall"
+        : ["skyfall","under_target"].includes(travel?.trajectoryMode)
           ? 10
         : (
         [cast, impact, persistentZone].some(
@@ -2025,8 +2010,9 @@ function presentationForSkill(fields) {
         fields.id,
         "ID capacité"
       ),
-    version: burrowTerrain !== null ? 13 : baseVersion,
+    version: travel?.groundMotion != null ? 14 : burrowTerrain !== null ? 13 : baseVersion,
     ...(burrowTerrain !== null ? {baseVersion} : {}),
+    ...(travel?.groundMotion != null ? {sourceVersion:burrowTerrain!==null?13:baseVersion} : {}),
     subjectType: "skill",
     subjectId: requiredText(
       fields.id,
@@ -2716,6 +2702,7 @@ export function humanSkillEditorFieldsFromDraftV1(
     approachMode:
       definition.approachMode ?? "none",
     contactHold: definition.contactHold ?? null,
+    channeling: definition.channeling ?? null,
     hitPresenceStates:
       definition.hitPresenceStates == null
         ? null
@@ -2727,6 +2714,8 @@ export function humanSkillEditorFieldsFromDraftV1(
       [...(definition.targetLocations ?? ["active"])],
     energyCost: definition.energyCost,
     preparationMs: definition.preparationMs,
+    chargedAttack: definition.chargedAttack ?? null,
+    chargedEffects: definition.chargedEffects ?? null,
     travelMs: definition.travelMs,
     recoveryMs: definition.recoveryMs,
     cooldownMs: definition.cooldownMs ?? 0,
@@ -2772,6 +2761,10 @@ export function humanSkillEditorFieldsFromDraftV1(
       travelArrivalLayer: travel?.arrivalLayer ?? "same",
       travelTrajectoryMode: definition.projectileTargeting === "expanding_wave"
         ? "expanding_wave" : travel?.trajectoryMode ?? "linear",
+      groundMotion: travel?.groundMotion ?? (travel?.trajectoryMode==="under_target"?"rise":"fixed"),
+      groundOffsetXPx: travel?.groundOffsetXPx ?? 0,
+      groundOffsetYPx: travel?.groundOffsetYPx ?? 0,
+      groundRisePx: travel?.groundRisePx ?? 80,
       waveStartRadiusPct: definition.expandingWave?.startRadiusPct ?? 3,
       waveEndRadiusPct: definition.expandingWave?.endRadiusPct ?? 65,
       waveThicknessPct: definition.expandingWave?.thicknessPct ?? 6,
@@ -3014,7 +3007,8 @@ export function buildHumanSkillDraftV1(fields) {
       ),
       form: requiredText(fields.form, "Style de capacité"),
       // The authored trajectory owns projectile targeting in the Capture editor.
-      // A skyfall targets a fixed landing point, not a moving creature;
+      // Skyfall targets fixed terrain; under-target rises from the live
+      // target's feet using the normal direct collision authority.
       // other projectiles remain direct. Combat Rules reads only this definition.
       projectileTargeting:
         fields.form !== "projectile" ? "direct"
@@ -3040,6 +3034,18 @@ export function buildHumanSkillDraftV1(fields) {
         fields.approachMode ?? "none",
         "Déplacement"
       ),
+      ...(fields.channeling ? {channeling:{
+        tickIntervalMs:finiteNumber(fields.channeling.tickIntervalMs,"Intervalle canalisation"),
+        maxDurationMs:finiteNumber(fields.channeling.maxDurationMs ?? 0,"Durée canalisation"),
+        maxTicks:fields.channeling.maxTicks == null || Number(fields.channeling.maxTicks)===0
+          ? null : positiveInteger(fields.channeling.maxTicks,"Maximum ticks"),
+        energyCostPerTick:finiteNumber(fields.channeling.energyCostPerTick,"Énergie par tick"),
+        stopOnDamage:fields.channeling.stopOnDamage !== false,
+        stopOnStun:fields.channeling.stopOnStun !== false,
+        stopOnSilence:fields.channeling.stopOnSilence !== false,
+        effects:buildHumanTacticalSkillEffectsV1(fields.channeling.effects ?? [],
+          {defaultDamageChannel:fields.element??null})
+      }} : {}),
       ...(fields.contactHold ? {
         contactHold: {
           tickIntervalMs: finiteNumber(fields.contactHold.tickIntervalMs, "Intervalle maintien au contact"),
@@ -3070,6 +3076,19 @@ export function buildHumanSkillDraftV1(fields) {
         fields.preparationMs,
         "Temps de préparation"
       ),
+      ...(fields.chargedAttack == null ? {} : {chargedAttack:{
+        baseDamage:finiteNumber(fields.chargedAttack.baseDamage,"Puissance de base chargée"),
+        bonusDamagePerCharge:finiteNumber(fields.chargedAttack.bonusDamagePerCharge,"Bonus de charge"),
+        maxCharges:finiteNumber(fields.chargedAttack.maxCharges,"Activations maximum"),
+        reactivationWindowMs:finiteNumber(fields.chargedAttack.reactivationWindowMs,"Fenêtre de réactivation"),
+        sizeIncreasePct:finiteNumber(fields.chargedAttack.sizeIncreasePct,"Taille par charge")
+      }}),
+      ...(fields.chargedEffects == null ? {} : {chargedEffects:{
+        maxCharges:finiteNumber(fields.chargedEffects.maxCharges,"Maximum charges des effets"),
+        reactivationWindowMs:finiteNumber(fields.chargedEffects.reactivationWindowMs,"Fenêtre de charge des effets"),
+        potencyIncreasePct:finiteNumber(fields.chargedEffects.potencyIncreasePct,"Puissance des effets par charge"),
+        sizeIncreasePct:finiteNumber(fields.chargedEffects.sizeIncreasePct,"Taille du cast par charge")
+      }}),
       travelMs: finiteNumber(
         fields.travelMs,
         "Temps pour atteindre la cible"
@@ -3099,7 +3118,10 @@ export function buildHumanSkillDraftV1(fields) {
       targetRelations:
         usesTacticalEffects
           ? humanSkillTargetRelationsFromTacticalEffectsV1(
-              tacticalEffects,
+              fields.channeling
+                ? buildHumanTacticalSkillEffectsV1(fields.channeling.effects??[],
+                    {defaultDamageChannel:fields.element??null})
+                : tacticalEffects,
               { form: fields.form }
             )
           : stableIds(
@@ -3565,6 +3587,37 @@ export function readHumanProjectilePowerV1(
   };
 }
 
+function writeHumanChannelingFieldsV1(root, channel, statRegistry = null, statusVisuals = {}) {
+  const active=channel != null;
+  one(root,"[data-skill-channeling-enabled]").checked=active;
+  one(root,"[data-skill-channeling-config]").hidden=!active;
+  for(const [selector,value] of [
+    ["[data-skill-channeling-interval]",channel?.tickIntervalMs??1000],
+    ["[data-skill-channeling-duration]",channel?.maxDurationMs??5000],
+    ["[data-skill-channeling-max-ticks]",channel?.maxTicks??0],
+    ["[data-skill-channeling-energy]",channel?.energyCostPerTick??2]
+  ]) one(root,selector).value=String(value);
+  for(const [key,checked] of [
+    ["damage",channel?.stopOnDamage!==false],
+    ["stun",channel?.stopOnStun!==false],
+    ["silence",channel?.stopOnSilence!==false]
+  ]) one(root,"[data-skill-channeling-stop-"+key+"]").checked=checked;
+  renderHumanSkillEffectsV1(root,channel?.effects??[],statRegistry,statusVisuals,
+    "[data-skill-channeling-effects-host]");
+}
+function readHumanChannelingFieldsV1(root) {
+  if(!one(root,"[data-skill-channeling-enabled]").checked)return null;
+  return {
+    tickIntervalMs:numericValue(root,"[data-skill-channeling-interval]"),
+    maxDurationMs:numericValue(root,"[data-skill-channeling-duration]"),
+    maxTicks:numericValue(root,"[data-skill-channeling-max-ticks]")||null,
+    energyCostPerTick:numericValue(root,"[data-skill-channeling-energy]"),
+    stopOnDamage:one(root,"[data-skill-channeling-stop-damage]").checked,
+    stopOnStun:one(root,"[data-skill-channeling-stop-stun]").checked,
+    stopOnSilence:one(root,"[data-skill-channeling-stop-silence]").checked,
+    effects:readHumanSkillEffectsV1(root,"[data-skill-channeling-effects-host]")
+  };
+}
 function writeHumanContactHoldFieldsV1(root, hold, statRegistry = null, statusVisuals = {}) {
   one(root, "[data-skill-contact-hold-enabled]").checked = hold !== null && hold !== undefined;
   one(root, "[data-skill-contact-hold-settings]").hidden = hold === null || hold === undefined;
@@ -3615,6 +3668,8 @@ function writeSkillTemplateFields(
   }
   if(Object.prototype.hasOwnProperty.call(fields,"markerCost"))
     renderHumanSkillMarkerCostV1(root, fields.markerCost);
+  // A legacy template must reset mechanics not owned by that template.
+  writeHumanChannelingFieldsV1(root,fields.channeling??null,statRegistry);
 
   renderHumanSkillEffectsV1(
     root,
@@ -3635,6 +3690,39 @@ function writeSkillTemplateFields(
   }
 }
 
+function syncHumanGuidedSkillEffectPanelsV1(root, selected = null) {
+  const settings = [
+    ["charged","[data-skill-charged-panel]","[data-skill-charged-enabled]"],
+    ["charged-effects","[data-skill-charged-effects-panel]","[data-skill-charged-effects-enabled]"],
+    ["channeling","[data-skill-channeling-section]","[data-skill-channeling-enabled]"],
+    ["contact-hold","[data-skill-contact-hold]","[data-skill-contact-hold-enabled]"]
+  ];
+  // The selected view is NOT a gameplay field. Loading a skill chooses the
+  // existing active owner; changing the view never disables or migrates it.
+  const mode=selected ?? settings.find(([, ,checkbox])=>root.querySelector(checkbox)?.checked)?.[0] ?? "standard";
+  for(const [kind,selector] of settings) {
+    const panel=root.querySelector(selector);
+    if(!panel)continue;
+    panel.hidden=mode!==kind;
+    panel.open=mode===kind;
+  }
+  const immediate=mode==="standard";
+  const host=root.querySelector("[data-skill-effects-host]");
+  const add=root.querySelector("[data-skill-effect-add]");
+  if(host)host.hidden=!immediate;
+  if(add)add.hidden=!immediate;
+  const choice=root.querySelector("[data-skill-effect-add-kind]");
+  if(choice && [...choice.options].some(option=>option.value===mode))
+    choice.value=mode;
+  return mode;
+}
+
+function syncSkillGroundVisualControlsV14(root) {
+  const group=root.querySelector("[data-skill-ground-settings]");
+  if(group)group.hidden=root.querySelector("[data-skill-trajectory-mode]")?.value!=="under_target";
+  const rise=root.querySelector("[data-skill-ground-rise-px]")?.closest("label");
+  if(rise)rise.hidden=root.querySelector("[data-skill-ground-motion]")?.value!=="rise";
+}
 function writeSkillDraftFields(
   root,
   draft,
@@ -3687,6 +3775,15 @@ function writeSkillDraftFields(
       "[data-skill-preparation]",
       fields.preparationMs
     ],
+    ["[data-skill-charged-base-damage]", fields.chargedAttack?.baseDamage ?? 5],
+    ["[data-skill-charged-bonus-damage]", fields.chargedAttack?.bonusDamagePerCharge ?? 5],
+    ["[data-skill-charged-max-charges]", fields.chargedAttack?.maxCharges ?? 3],
+    ["[data-skill-charged-window]", fields.chargedAttack?.reactivationWindowMs ?? 450],
+    ["[data-skill-charged-size-pct]", fields.chargedAttack?.sizeIncreasePct ?? 10],
+    ["[data-skill-charged-effects-max-charges]", fields.chargedEffects?.maxCharges ?? 3],
+    ["[data-skill-charged-effects-window]", fields.chargedEffects?.reactivationWindowMs ?? 450],
+    ["[data-skill-charged-effects-potency]", fields.chargedEffects?.potencyIncreasePct ?? 50],
+    ["[data-skill-charged-effects-size-pct]", fields.chargedEffects?.sizeIncreasePct ?? 10],
     [
       "[data-skill-travel-time]",
       fields.travelMs
@@ -3744,6 +3841,10 @@ function writeSkillDraftFields(
     ["[data-skill-wave-thickness]", fields.presentation.waveThicknessPct],
     ["[data-skill-fall-height]", fields.presentation.fallHeightPx],
     ["[data-skill-fall-offset-x]", fields.presentation.fallOffsetXPx],
+    ["[data-skill-ground-motion]", fields.presentation.groundMotion],
+    ["[data-skill-ground-offset-x]", fields.presentation.groundOffsetXPx],
+    ["[data-skill-ground-offset-y]", fields.presentation.groundOffsetYPx],
+    ["[data-skill-ground-rise-px]", fields.presentation.groundRisePx],
     [
       "[data-skill-cast-layer-player]",
       fields.presentation.castLayerPlayer
@@ -3822,6 +3923,10 @@ function writeSkillDraftFields(
       String(value ?? "");
   }
   syncCaptureBeamStageLayoutV1(root);
+  one(root,"[data-skill-charged-enabled]").checked = fields.chargedAttack !== null;
+  one(root,"[data-skill-charged-config]").hidden = fields.chargedAttack === null;
+  one(root,"[data-skill-charged-effects-enabled]").checked = fields.chargedEffects !== null;
+  one(root,"[data-skill-charged-effects-config]").hidden = fields.chargedEffects === null;
 
   one(
     root,
@@ -3880,10 +3985,14 @@ function writeSkillDraftFields(
   );
   writeHumanContactHoldFieldsV1(root, fields.contactHold, statRegistry,
     fields.presentation.statusVisuals);
+  writeHumanChannelingFieldsV1(root,fields.channeling,statRegistry,
+    fields.presentation.statusVisuals);
   renderHumanProjectilePowerV1(
     root,
     fields.projectileClash
   );
+  syncHumanGuidedSkillEffectPanelsV1(root);
+  syncSkillGroundVisualControlsV14(root);
 
   return fields;
 }
@@ -3905,6 +4014,11 @@ function prepareNewSkillDraftFields(
     ["[data-skill-required-level]", 1],
     ["[data-skill-approach]", "none"],
     ["[data-skill-preparation]", 0],
+    ["[data-skill-charged-base-damage]", 5],
+    ["[data-skill-charged-bonus-damage]", 5],
+    ["[data-skill-charged-max-charges]", 3],
+    ["[data-skill-charged-window]", 450],
+    ["[data-skill-charged-size-pct]", 10],
     ["[data-skill-travel-time]", 0],
     ["[data-skill-recovery]", 0],
     ["[data-skill-cooldown]", 0],
@@ -3956,6 +4070,10 @@ function prepareNewSkillDraftFields(
     one(root, selector).value = String(value);
   }
   syncCaptureBeamStageLayoutV1(root);
+  one(root,"[data-skill-charged-enabled]").checked = false;
+  one(root,"[data-skill-charged-config]").hidden = true;
+  one(root,"[data-skill-charged-effects-enabled]").checked = false;
+  one(root,"[data-skill-charged-effects-config]").hidden = true;
 
   one(
     root,
@@ -4009,10 +4127,14 @@ function prepareNewSkillDraftFields(
     statRegistry
   );
   writeHumanContactHoldFieldsV1(root, null, statRegistry);
+  // New ability means an empty channel contract too. Otherwise the previous
+  // draft's invisible pulse effects survive and silently override presets.
+  writeHumanChannelingFieldsV1(root, null, statRegistry);
   writeSkillFeedbackControlsV1(
     root,
     {}
   );
+  syncHumanGuidedSkillEffectPanelsV1(root,"standard");
 
 }
 
@@ -4752,11 +4874,13 @@ function tacticalEffectKindLabelV1(kind) {
     knockout: "K.O. (immunités respectées)",
     apply_status: "Buff / Debuff / Statut",
     apply_marker: "Poser des marqueurs",
+    force_reserve_switch: "Faire entrer la réserve ennemie choisie",
     consume_marker: "Consommer des marqueurs → effets",
     cleanse: "Nettoyage",
     dispel: "Dissipation",
     persistent_zone: "Zone persistante",
-    scheduled_effect: "Effet différé"
+    scheduled_effect: "Effet différé",
+    summon_entity: "Invoquer un mur / obstacle destructible"
   }[kind] ?? kind;
 }
 
@@ -4777,6 +4901,7 @@ function tacticalStatusKindLabelV1(kind) {
   return {
     stat_modifier: "Modification de stat",
     outgoing_damage_modifier:"Dégâts infligés (tous types, %)",
+    incoming_effect_modifier:"Effets reçus (dégâts et soins, %)",
     stack_counter: "Compteur de charges (sans effet avant le seuil)",
     approach_time_modifier: "Temps de trajet de la créature",
     energy_regen_modifier: "Régénération d’énergie (%)",
@@ -5304,7 +5429,7 @@ function syncHumanSkillEffectRowV1(
     const allActive=Array.from(scope.options).find(option=>option.value==="all_active");
     if(allActive)allActive.hidden=!["apply_marker","consume_marker"].includes(kind);
     if(scope.value==="all_active"&&allActive?.hidden)scope.value="target";
-    if (kind === "scheduled_effect" || kind === "life_steal") {
+    if (kind === "scheduled_effect" || kind === "life_steal" || kind === "force_reserve_switch") {
       scope.value = kind === "life_steal" ? "self" : "target";
       scope.disabled = true;
     } else {
@@ -5453,9 +5578,14 @@ function appendHumanSkillEffectV1(
       tacticalEffectKindLabelV1(value)
     );
   }
-  if (hostSelector === "[data-skill-contact-hold-effects-host]") {
+  if (hostSelector === "[data-skill-contact-hold-effects-host]" ||
+      hostSelector === "[data-skill-channeling-effects-host]") {
     for (const option of kind.options) {
-      if (["persistent_zone", "scheduled_effect"].includes(option.value)) option.disabled = true;
+      const allowed=hostSelector === "[data-skill-channeling-effects-host]"
+        ? ["damage","heal","apply_status","apply_marker"]
+        : SKILL_EFFECT_V1_KINDS.filter(k=>!["persistent_zone","scheduled_effect",
+            "force_reserve_switch","summon_entity"].includes(k));
+      option.disabled=!allowed.includes(option.value);
     }
   }
 
@@ -5472,6 +5602,10 @@ function appendHumanSkillEffectV1(
     );
   }
 
+  if(hostSelector==="[data-skill-channeling-effects-host]"){
+    for(const opt of scope.options)opt.disabled=!["target","self"].includes(opt.value);
+  }
+
   const remove = document.createElement("button");
   remove.type = "button";
   remove.className = "small-action";
@@ -5486,6 +5620,11 @@ function appendHumanSkillEffectV1(
 
   const config = document.createElement("div");
   config.className = "skill-effect-row__config";
+  const forcedNote = document.createElement("p");
+  forcedNote.className = "note";
+  forcedNote.dataset.skillEffectConfigKind = "force_reserve_switch";
+  forcedNote.textContent = "Choisis une créature dans Réserves adverses. Elle remplace l’ennemi actif, puis reçoit les autres effets de cette capacité (ajoute un effet « Poser des marqueurs »). Le rappel volontaire de l’ennemi reste indépendant.";
+  config.append(forcedNote);
   const markerFields = captureMarkerEffectFieldsV1(root,effect);
 
   const amount = tacticalNumberInputV1(
@@ -5758,6 +5897,19 @@ function appendHumanSkillEffectV1(
   outgoingDamageConfig.className="skill-status-config__specific";
   outgoingDamageConfig.dataset.skillStatusConfigKind="outgoing_damage_modifier";
   outgoingDamageConfig.append(tacticalFieldV1("Dégâts infligés, tous éléments (%) — négatif = malus",outgoingDamagePctInput));
+  const incomingEffectPct=tacticalNumberInputV1("skillStatusIncomingEffectModifierPct",status.modifierPct??30,{step:"1"});
+  const incomingEffectScope=document.createElement("select");
+  incomingEffectScope.dataset.skillStatusIncomingEffectPolarity="true";
+  for(const [id,label] of [["detrimental","Négatifs — dégâts reçus"],["beneficial","Positifs — soins reçus"],["both","Les deux — dégâts et soins reçus"]]) createOption(incomingEffectScope,id,label);
+  incomingEffectScope.value=status.affectedPolarity??"detrimental";
+  const incomingEffectConfig=document.createElement("div");
+  incomingEffectConfig.className="skill-status-config__specific";
+  incomingEffectConfig.dataset.skillStatusConfigKind="incoming_effect_modifier";
+  incomingEffectConfig.append(tacticalFieldV1("Variation de puissance reçue (%) — positif = amplification",incomingEffectPct),
+    tacticalFieldV1("Effets concernés",incomingEffectScope));
+  const incomingNote=document.createElement("small");incomingNote.className="note";
+  incomingNote.textContent="Affecte les dégâts et/ou les soins PV reçus (directs, périodiques, zones et drain), indépendamment des défenses. N'amplifie pas la durée des autres statuts.";
+  incomingEffectConfig.append(incomingNote);
   const approachPct = tacticalNumberInputV1(
     "skillStatusApproachModifierPct", status.modifierPct ?? 50, { step: "1" }
   );
@@ -6043,6 +6195,46 @@ function appendHumanSkillEffectV1(
       ""
   );
 
+  // Most status masks are shared between player and opponent. Enable the
+  // second catalog selection only for asymmetric artwork (e.g. spines face/dos).
+  const statusOpponentVisualEnabled = document.createElement("input");
+  statusOpponentVisualEnabled.type = "checkbox";
+  statusOpponentVisualEnabled.setAttribute(
+    "data-skill-status-opponent-visual-enabled", "true"
+  );
+  statusOpponentVisualEnabled.checked =
+    Boolean(statusPresentation?.sprite?.opponentAssetId);
+
+  const statusOpponentVisualAsset = document.createElement("select");
+  statusOpponentVisualAsset.setAttribute(
+    "data-skill-status-opponent-visual-asset", "true"
+  );
+  populateHumanStatusVisualAssetV1(
+    root,
+    statusOpponentVisualAsset,
+    statusPresentation?.sprite?.opponentAssetId ?? ""
+  );
+
+  const statusOpponentVisualLabel = document.createElement("label");
+  statusOpponentVisualLabel.className = "check";
+  statusOpponentVisualLabel.append(
+    statusOpponentVisualEnabled,
+    document.createTextNode(
+      "Utiliser un sprite différent côté adversaire (facultatif)"
+    )
+  );
+  const statusOpponentVisualField = tacticalFieldV1(
+    "Sprite côté adversaire (vue de face)",
+    statusOpponentVisualAsset
+  );
+  const syncStatusOpponentVisualField = () => {
+    statusOpponentVisualField.hidden = !statusOpponentVisualEnabled.checked;
+  };
+  statusOpponentVisualEnabled.addEventListener(
+    "change", syncStatusOpponentVisualField
+  );
+  syncStatusOpponentVisualField();
+
   const statusVisualScale =
     tacticalNumberInputV1(
       "skillStatusVisualScale",
@@ -6103,9 +6295,11 @@ function appendHumanSkillEffectV1(
     "true";
   spriteFields.append(
     tacticalFieldV1(
-      "Sprite du statut",
+      "Sprite du statut (joueur et adversaire par défaut)",
       statusVisualAsset
     ),
+    statusOpponentVisualLabel,
+    statusOpponentVisualField,
     tacticalFieldV1(
       "Échelle du sprite",
       statusVisualScale
@@ -6236,6 +6430,7 @@ function appendHumanSkillEffectV1(
     triggeredBuffBox,
     statConfig,
     outgoingDamageConfig,
+    incomingEffectConfig,
     approachConfig,
     energyRegenConfig,
     skillCooldownConfig,
@@ -6248,12 +6443,184 @@ function appendHumanSkillEffectV1(
     statusVisualBox
   );
 
+
+  // One authored wall, presented in small coherent groups. This is only
+  // authoring markup: CombatEntityOverlay remains the single visual owner.
+  const barrierBox=document.createElement("div");
+  barrierBox.className="skill-status-config skill-barrier-config";
+  barrierBox.dataset.skillEffectConfigKind="summon_entity";
+  const barrierStatId=document.createElement("select");
+  barrierStatId.dataset.skillBarrierStatId="true";
+  fillStatusStatSelectV1(barrierStatId,statRegistry,effect?.statId??"glace");
+  const barrierHpRatio=tacticalNumberInputV1("skillBarrierHpRatio",effect?.hpPerStatPoint??1,
+    {min:0.01,step:"0.1"});
+  const barrierSprite=document.createElement("select");
+  barrierSprite.dataset.skillBarrierSpriteAssetId="true";
+  barrierSprite.dataset.assetRole="zone";
+  populateSelect(barrierSprite,EDITOR_VISUAL_ASSETS_BY_ROOT.get(root)??[],"zone");
+  if(effect?.spriteAssetId && ![...barrierSprite.options].some(o=>o.value===effect.spriteAssetId))
+    createOption(barrierSprite,effect.spriteAssetId,effect.spriteAssetId);
+  barrierSprite.value=effect?.spriteAssetId??"";
+  const barrierOpponentSprite=document.createElement("select");
+  barrierOpponentSprite.dataset.skillBarrierOpponentSpriteAssetId="true";
+  barrierOpponentSprite.dataset.assetRole="zone";
+  populateSelect(barrierOpponentSprite,EDITOR_VISUAL_ASSETS_BY_ROOT.get(root)??[],"zone");
+  if(effect?.opponentSpriteAssetId && ![...barrierOpponentSprite.options].some(o=>o.value===effect.opponentSpriteAssetId))
+    createOption(barrierOpponentSprite,effect.opponentSpriteAssetId,effect.opponentSpriteAssetId);
+  barrierOpponentSprite.value=effect?.opponentSpriteAssetId??"";
+
+  const wallScale=tacticalNumberInputV1("skillBarrierVisualScale",effect?.visualScale??1,{min:0.25,max:12,step:0.05});
+  const wallScaleX=tacticalNumberInputV1("skillBarrierVisualScaleX",effect?.visualScaleX??1,{min:0.25,max:8,step:0.05});
+  const wallScaleY=tacticalNumberInputV1("skillBarrierVisualScaleY",effect?.visualScaleY??1,{min:0.25,max:8,step:0.05});
+  const wallForward=tacticalNumberInputV1("skillBarrierOffsetForward",effect?.offsetForwardPx??0,{min:-150,max:150,step:1});
+  const wallUp=tacticalNumberInputV1("skillBarrierOffsetUp",effect?.offsetUpPx??0,{min:-150,max:150,step:1});
+  const wallPlacement=document.createElement("select");
+  wallPlacement.dataset.skillBarrierPlacementMode="true";
+  createOption(wallPlacement,"protected","Devant la créature protégée");
+  createOption(wallPlacement,"behind","Derrière la créature protégée");
+  createOption(wallPlacement,"arena","Libre dans l'arène (X / Y)");
+  wallPlacement.value=effect?.placementMode??"protected";
+  const wallArenaX=tacticalNumberInputV1("skillBarrierArenaX",effect?.arenaXPct??50,{min:0,max:100,step:1});
+  const wallArenaY=tacticalNumberInputV1("skillBarrierArenaY",effect?.arenaYPct??50,{min:0,max:100,step:1});
+  const wallXField=tacticalFieldV1("X (%)",wallArenaX);
+  const wallYField=tacticalFieldV1("Y (%)",wallArenaY);
+  const wallForwardField=tacticalFieldV1("Distance avant/arrière (px)",wallForward);
+  const wallUpField=tacticalFieldV1("Décalage hauteur (px)",wallUp);
+  const wallArenaHelp=document.createElement("small");
+  wallArenaHelp.className="note skill-barrier-help";
+  wallArenaHelp.dataset.skillBarrierArenaHelp="true";
+  wallArenaHelp.textContent="Position libre : X = 0 bord gauche, 50 centre, 100 bord droit ; Y = 0 en haut, 50 centre, 100 en bas.";
+
+  // Optional overrides: empty inputs mean 'same as player'. Older skills
+  // therefore keep their historical opposite-side projection unchanged.
+  const opponentWallScale=tacticalNumberInputV1("skillBarrierOpponentVisualScale",effect?.opponentVisualScale??"",
+    {min:0.25,max:12,step:0.05});
+  const opponentWallScaleX=tacticalNumberInputV1("skillBarrierOpponentVisualScaleX",effect?.opponentVisualScaleX??"",
+    {min:0.25,max:8,step:0.05});
+  const opponentWallScaleY=tacticalNumberInputV1("skillBarrierOpponentVisualScaleY",effect?.opponentVisualScaleY??"",
+    {min:0.25,max:8,step:0.05});
+  const opponentPlacement=document.createElement("select");
+  opponentPlacement.dataset.skillBarrierOpponentPlacementMode="true";
+  createOption(opponentPlacement,"","Même placement que le joueur");
+  createOption(opponentPlacement,"protected","Devant la créature adverse");
+  createOption(opponentPlacement,"behind","Derrière la créature adverse");
+  createOption(opponentPlacement,"arena","Libre dans l'arène (X / Y)");
+  opponentPlacement.value=effect?.opponentPlacementMode??"";
+  const opponentArenaX=tacticalNumberInputV1("skillBarrierOpponentArenaX",effect?.opponentArenaXPct??"",
+    {min:0,max:100,step:1});
+  const opponentArenaY=tacticalNumberInputV1("skillBarrierOpponentArenaY",effect?.opponentArenaYPct??"",
+    {min:0,max:100,step:1});
+  const opponentForward=tacticalNumberInputV1("skillBarrierOpponentOffsetForward",effect?.opponentOffsetForwardPx??"",
+    {min:-150,max:150,step:1});
+  const opponentUp=tacticalNumberInputV1("skillBarrierOpponentOffsetUp",effect?.opponentOffsetUpPx??"",
+    {min:-150,max:150,step:1});
+  for(const input of [opponentWallScale,opponentWallScaleX,opponentWallScaleY,
+    opponentArenaX,opponentArenaY,opponentForward,opponentUp])
+    input.placeholder="Hérité";
+  const opponentXField=tacticalFieldV1("X adverse (%) — vide = auto",opponentArenaX);
+  const opponentYField=tacticalFieldV1("Y adverse (%) — vide = joueur",opponentArenaY);
+  const opponentForwardField=tacticalFieldV1("Distance adverse (px)",opponentForward);
+  const opponentUpField=tacticalFieldV1("Hauteur adverse (px)",opponentUp);
+  const opponentArenaHelp=document.createElement("small");
+  opponentArenaHelp.className="note skill-barrier-help";
+  opponentArenaHelp.textContent="Avec X adverse renseigné, la position est exacte ; si X reste vide, l'ancien placement automatique près de l'adversaire est conservé.";
+  function syncWallPlacementFields(){
+    const arenaPlacement=wallPlacement.value==="arena";
+    wallXField.hidden=!arenaPlacement;wallYField.hidden=!arenaPlacement;
+    wallArenaHelp.hidden=!arenaPlacement;
+    wallForwardField.hidden=arenaPlacement;wallUpField.hidden=arenaPlacement;
+    const enemyArena=(opponentPlacement.value||wallPlacement.value)==="arena";
+    opponentXField.hidden=!enemyArena;opponentYField.hidden=!enemyArena;
+    opponentArenaHelp.hidden=!enemyArena;
+    opponentForwardField.hidden=enemyArena;opponentUpField.hidden=enemyArena;
+  }
+  wallPlacement.addEventListener("change",syncWallPlacementFields);
+  opponentPlacement.addEventListener("change",syncWallPlacementFields);
+  syncWallPlacementFields();
+
+  function barrierSection(title,extraClass,fields){
+    const section=document.createElement("section");
+    section.className="skill-barrier-section "+extraClass;
+    const heading=document.createElement("h4");
+    heading.textContent=title;
+    const grid=document.createElement("div");
+    grid.className="skill-barrier-fields";
+    grid.append(...fields);
+    section.append(heading,grid);
+    return section;
+  }
+  const barrierVitals=barrierSection("Résistance du mur","skill-barrier-vitals",[
+    tacticalFieldV1("Statistique utilisée",barrierStatId),
+    tacticalFieldV1("PV par point de statistique",barrierHpRatio)
+  ]);
+  const playerArt=barrierSection("Apparence — joueur","skill-barrier-player-art",[
+    tacticalFieldV1("Sprite du mur",barrierSprite),
+    tacticalFieldV1("Échelle générale (× 0,25 à 12)",wallScale),
+    tacticalFieldV1("Largeur X (× 0,25 à 8)",wallScaleX),
+    tacticalFieldV1("Hauteur Y (× 0,25 à 8)",wallScaleY)
+  ]);
+  const playerPosition=barrierSection("Position — joueur","skill-barrier-player-position",[
+    tacticalFieldV1("Placement",wallPlacement),
+    wallXField,wallYField,wallForwardField,wallUpField
+  ]);
+  playerPosition.append(wallArenaHelp);
+  const opponentDetails=document.createElement("details");
+  opponentDetails.className="skill-barrier-opponent";
+  opponentDetails.dataset.skillBarrierOpponentSettings="true";
+  const existingOpponentOverrides=[
+    "opponentSpriteAssetId","opponentVisualScale","opponentVisualScaleX","opponentVisualScaleY",
+    "opponentPlacementMode","opponentArenaXPct","opponentArenaYPct",
+    "opponentOffsetForwardPx","opponentOffsetUpPx"
+  ].some(key=>effect?.[key]!=null);
+  opponentDetails.open=existingOpponentOverrides;
+  const opponentSummary=document.createElement("summary");
+  opponentSummary.textContent="Réglages côté adversaire (facultatifs)";
+  const opponentHint=document.createElement("p");
+  opponentHint.className="note skill-barrier-help";
+  opponentHint.textContent="Laisse un champ vide pour reprendre le réglage du joueur ; le mur adverse conserve alors son placement automatique historique.";
+  const opponentArt=barrierSection("Apparence — adversaire","skill-barrier-opponent-art",[
+    tacticalFieldV1("Sprite adverse (vide = joueur)",barrierOpponentSprite),
+    tacticalFieldV1("Échelle adverse (vide = joueur)",opponentWallScale),
+    tacticalFieldV1("Largeur X adverse",opponentWallScaleX),
+    tacticalFieldV1("Hauteur Y adverse",opponentWallScaleY)
+  ]);
+  const opponentPosition=barrierSection("Position — adversaire","skill-barrier-opponent-position",[
+    tacticalFieldV1("Placement adverse",opponentPlacement),
+    opponentXField,opponentYField,opponentForwardField,opponentUpField
+  ]);
+  opponentPosition.append(opponentArenaHelp);
+  opponentDetails.append(opponentSummary,opponentHint,opponentArt,opponentPosition);
+
+  const barrierKinds=document.createElement("fieldset");
+  barrierKinds.className="editor-choice-group skill-barrier-intercepts";
+  const barrierLegend=document.createElement("legend");
+  barrierLegend.textContent="Types d'attaques interceptés";
+  barrierKinds.append(barrierLegend);
+  for(const [value,label] of [["projectile","Projectiles"],["beam","Rayons"],["contact","Corps à corps"]]){
+    const wrap=document.createElement("label"),check=document.createElement("input");
+    wrap.className="skill-barrier-choice";
+    check.type="checkbox";check.value=value;check.dataset.skillBarrierInterceptKind="true";
+    check.checked=(effect?.interceptKinds??["projectile","beam","contact"]).includes(value);
+    wrap.append(check,document.createTextNode(label));barrierKinds.append(wrap);
+  }
+  const barrierHelp=document.createElement("small");
+  barrierHelp.className="note skill-barrier-help";
+  barrierHelp.textContent="PV = statistique × coefficient. Une attaque interceptée s'arrête sur le mur, même détruit ; les zones et effets périodiques ne sont pas interceptés. Réinvoquer remplace le mur précédent.";
+  barrierBox.append(barrierVitals,playerArt,playerPosition,opponentDetails,barrierKinds,barrierHelp);
+
   const scheduledBox =
     document.createElement("div");
   scheduledBox.className =
     "skill-status-config";
   scheduledBox.dataset.skillEffectConfigKind =
     "scheduled_effect";
+  const mineCue=document.createElement("label");
+  mineCue.className="switch-line";
+  const mineCheck=document.createElement("input");
+  mineCheck.type="checkbox";mineCheck.dataset.skillScheduledMine="true";
+  mineCheck.checked=effect?.visualCue==="ground_mine";
+  mineCue.append(mineCheck,document.createTextNode(" Mine : petit cercle au sol avant explosion"));
+  scheduledBox.append(mineCue);
 
   const scheduledDelay =
     tacticalNumberInputV1(
@@ -6550,6 +6917,12 @@ function appendHumanSkillEffectV1(
     })(),
     zoneStatusNumber("Dégâts infligés, tous types (%) — positif = bonus","skillZoneStatusOutgoingDamageModifierPct",
       zs.modifierPct ?? 0,{step:"1"},"outgoing_damage_modifier"),
+    zoneStatusNumber("Variation dégâts / soins reçus (%)","skillZoneStatusIncomingEffectModifierPct",
+      zs.modifierPct ?? 30,{step:"1"},"incoming_effect_modifier"),
+    (() => {const s=document.createElement("select");s.dataset.skillZoneStatusIncomingEffectPolarity="true";
+      for(const [v,label] of [["detrimental","Négatifs — dégâts"],["beneficial","Positifs — soins"],["both","Les deux"]])createOption(s,v,label);
+      s.value=zs.affectedPolarity??"detrimental";const f=tacticalFieldV1("Effets reçus concernés",s);
+      f.dataset.skillZoneStatusConfigKind="incoming_effect_modifier";return f;})(),
     zoneStatusNumber("Temps de trajet (%)","skillZoneStatusApproachModifierPct",
       zs.modifierPct ?? 50,{step:"1"},"approach_time_modifier"),
     zoneStatusNumber("Régénération d'énergie (%)","skillZoneStatusEnergyRegenModifierPct",
@@ -6619,6 +6992,7 @@ function appendHumanSkillEffectV1(
     filterTagsField,
     statusBox,
     scheduledBox,
+    barrierBox,
     zoneBox,
     markerFields.applyBox,
     markerFields.consumeBox
@@ -6693,7 +7067,7 @@ function refreshHumanSkillEffectStatOptionsV1(
   refreshHumanElementChannelSelectsV1(root,statRegistry);
   for (
     const select of root.querySelectorAll(
-      "[data-skill-status-stat-id]"
+      "[data-skill-status-stat-id], [data-skill-barrier-stat-id]"
     )
   ) {
     fillStatusStatSelectV1(
@@ -6729,7 +7103,84 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
     if (kind === "apply_marker" || kind === "consume_marker") {
       return readCaptureMarkerEffectFieldsV1(root,row,kind,targetScope);
     }
-    if (kind === "knockout") return {kind,targetScope};
+    if (kind === "knockout" || kind === "force_reserve_switch") return {kind,targetScope};
+    if (kind === "summon_entity") return {
+      kind,targetScope,entityKind:"barrier",
+      statId:row.querySelector("[data-skill-barrier-stat-id]").value,
+      hpPerStatPoint:Number(row.querySelector("[data-skill-barrier-hp-ratio]").value),
+      visualScale:Number(row.querySelector("[data-skill-barrier-visual-scale]").value),
+       ...(Number(row.querySelector("[data-skill-barrier-visual-scale-x]").value)!==1?
+         {visualScaleX:Number(row.querySelector("[data-skill-barrier-visual-scale-x]").value)}:{}),
+       ...(Number(row.querySelector("[data-skill-barrier-visual-scale-y]").value)!==1?
+         {visualScaleY:Number(row.querySelector("[data-skill-barrier-visual-scale-y]").value)}:{}),
+      offsetForwardPx:Number(row.querySelector("[data-skill-barrier-offset-forward]").value),
+      offsetUpPx:Number(row.querySelector("[data-skill-barrier-offset-up]").value),
+      ...(row.querySelector("[data-skill-barrier-placement-mode]").value==="arena"?{
+        placementMode:"arena",
+        arenaXPct:Number(row.querySelector("[data-skill-barrier-arena-x]").value),
+        arenaYPct:Number(row.querySelector("[data-skill-barrier-arena-y]").value)
+      }:row.querySelector("[data-skill-barrier-placement-mode]").value==="behind"?
+        {placementMode:"behind"}:{}),
+      ...(row.querySelector("[data-skill-barrier-sprite-asset-id]")?.value
+        ? {spriteAssetId:row.querySelector("[data-skill-barrier-sprite-asset-id]").value}:{}),
+      ...(row.querySelector("[data-skill-barrier-opponent-sprite-asset-id]")?.value
+        ? {opponentSpriteAssetId:row.querySelector("[data-skill-barrier-opponent-sprite-asset-id]").value}:{}),
+      // Empty enemy fields retain the original shared author values.
+      ...(["opponentVisualScale","opponentVisualScaleX","opponentVisualScaleY",
+        "opponentArenaXPct","opponentArenaYPct","opponentOffsetForwardPx","opponentOffsetUpPx"]
+        .reduce((values,key,index)=>{
+          const selectors=[
+            "[data-skill-barrier-opponent-visual-scale]",
+            "[data-skill-barrier-opponent-visual-scale-x]",
+            "[data-skill-barrier-opponent-visual-scale-y]",
+            "[data-skill-barrier-opponent-arena-x]",
+            "[data-skill-barrier-opponent-arena-y]",
+            "[data-skill-barrier-opponent-offset-forward]",
+            "[data-skill-barrier-opponent-offset-up]"
+          ];
+          const raw=row.querySelector(selectors[index])?.value.trim()??"";
+          if(raw!=="")values[key]=Number(raw);
+          return values;
+        },{})),
+      ...(row.querySelector("[data-skill-barrier-opponent-placement-mode]")?.value
+        ?{opponentPlacementMode:row.querySelector("[data-skill-barrier-opponent-placement-mode]").value}:{}),
+      interceptKinds:[...row.querySelectorAll("[data-skill-barrier-intercept-kind]")]
+        .filter(input=>input.checked).map(input=>input.value)
+    };
+
+    if (kind === "scheduled_effect") {
+      const nestedKind = row.querySelector(
+        "[data-skill-scheduled-effect-kind]"
+      ).value;
+      const nested = {
+        kind: nestedKind,
+        targetScope: "target",
+        amount: Number(
+          row.querySelector(
+            "[data-skill-scheduled-effect-amount]"
+          ).value
+        )
+      };
+      if (nestedKind === "damage") {
+        nested.channel =
+          row.querySelector(
+            "[data-skill-scheduled-effect-channel]"
+          ).value || null;
+      }
+
+      return {
+        kind,
+        targetScope: "target",
+        ...(row.querySelector("[data-skill-scheduled-mine]")?.checked?{visualCue:"ground_mine"}:{}),
+        delaySeconds: Number(
+          row.querySelector(
+            "[data-skill-scheduled-delay-seconds]"
+          ).value
+        ),
+        effects: [nested]
+      };
+    }
+
 
     if (kind === "persistent_zone") {
       const zoneEffectKind=row.querySelector("[data-skill-zone-effect-kind]").value;
@@ -6745,6 +7196,9 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
       };
       if(zsKind==="outgoing_damage_modifier"){
         zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-outgoing-damage-modifier-pct]").value);
+      } else if(zsKind==="incoming_effect_modifier"){
+        zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-incoming-effect-modifier-pct]").value);
+        zs.affectedPolarity=row.querySelector("[data-skill-zone-status-incoming-effect-polarity]").value;
       } else if(zsKind==="stat_modifier"){
         zs.statId=row.querySelector("[data-skill-zone-status-stat-id]").value;
         zs.deltaPoints=Number(row.querySelector("[data-skill-zone-status-delta-points]").value);
@@ -6878,6 +7332,9 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
         );
       } else if(statusKind==="outgoing_damage_modifier"){
         status.modifierPct=Number(row.querySelector("[data-skill-status-outgoing-damage-modifier-pct]").value);
+      } else if(statusKind==="incoming_effect_modifier"){
+        status.modifierPct=Number(row.querySelector("[data-skill-status-incoming-effect-modifier-pct]").value);
+        status.affectedPolarity=row.querySelector("[data-skill-status-incoming-effect-polarity]").value;
       } else if (statusKind === "approach_time_modifier") {
         status.modifierPct = Number(row.querySelector("[data-skill-status-approach-modifier-pct]").value);
       } else if (statusKind === "energy_regen_modifier") {
@@ -7089,9 +7546,26 @@ function readHumanStatusVisualsV1(root) {
         );
       }
 
+      const separateOpponentSprite =
+        row.querySelector(
+          "[data-skill-status-opponent-visual-enabled]"
+        )?.checked === true;
+      const opponentAssetId = String(
+        row.querySelector(
+          "[data-skill-status-opponent-visual-asset]"
+        )?.value ?? ""
+      ).trim();
+      if (separateOpponentSprite && !opponentAssetId) {
+        throw new Error(
+          "Choisis le sprite côté adversaire pour le statut « " +
+            statusId + " », ou désactive le visuel différent."
+        );
+      }
+
       presentation.sprite = {
         ...readStatusSpriteControlsV1(row),
         assetId,
+        ...(separateOpponentSprite ? { opponentAssetId } : {}),
         displayScale: Number(
           row.querySelector(
             "[data-skill-status-visual-scale]"
@@ -7628,7 +8102,8 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
     return (
       !creatureOwned &&
       (role !== "travel" || asset.category === "travel" ||
-        (asset.category === "skill" && tags.includes("expanding"))) &&
+        (asset.category === "skill" && tags.includes("expanding")) ||
+        asset.compatibility?.editorRoles?.includes("travel") === true) &&
       asset.mediaType === "image" &&
       (
         asset.assetType === "sprite" ||
@@ -8437,6 +8912,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
   }
   syncHumanCreatureReactionControlsV1(root);
   captureMarkerRefreshReferenceChoicesV1(root);
+  root.dispatchEvent(new Event("capture-visual-assets-changed"));
 
   function preview(select, image) {
     const asset = byId.get(select.value);
@@ -8526,6 +9002,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
     }
     syncHumanCreatureReactionControlsV1(root);
     captureMarkerRefreshReferenceChoicesV1(root);
+    root.dispatchEvent(new Event("capture-visual-assets-changed"));
   }
 
   function mountCreatorVisualImporter(
@@ -9210,6 +9687,7 @@ function readSkillFields(root) {
       root,
       "[data-skill-approach]"
     ),
+    channeling:readHumanChannelingFieldsV1(root),
     contactHold: one(root, "[data-skill-contact-hold-enabled]").checked
       ? {
           tickIntervalMs: numericValue(root, "[data-skill-contact-hold-interval]"),
@@ -9246,6 +9724,19 @@ function readSkillFields(root) {
       root,
       "[data-skill-preparation]"
     ),
+    chargedAttack: one(root,"[data-skill-charged-enabled]").checked ? {
+      baseDamage:numericValue(root,"[data-skill-charged-base-damage]"),
+      bonusDamagePerCharge:numericValue(root,"[data-skill-charged-bonus-damage]"),
+      maxCharges:numericValue(root,"[data-skill-charged-max-charges]"),
+      reactivationWindowMs:numericValue(root,"[data-skill-charged-window]"),
+      sizeIncreasePct:numericValue(root,"[data-skill-charged-size-pct]")
+    } : null,
+    chargedEffects: one(root,"[data-skill-charged-effects-enabled]").checked ? {
+      maxCharges:numericValue(root,"[data-skill-charged-effects-max-charges]"),
+      reactivationWindowMs:numericValue(root,"[data-skill-charged-effects-window]"),
+      potencyIncreasePct:numericValue(root,"[data-skill-charged-effects-potency]"),
+      sizeIncreasePct:numericValue(root,"[data-skill-charged-effects-size-pct]")
+    } : null,
     travelMs: numericValue(
       root,
       "[data-skill-travel-time]"
@@ -9333,6 +9824,10 @@ function readSkillFields(root) {
       waveThicknessPct: numericValue(root, "[data-skill-wave-thickness]"),
       fallHeightPx: numericValue(root, "[data-skill-fall-height]"),
       fallOffsetXPx: numericValue(root, "[data-skill-fall-offset-x]"),
+      groundMotion: selectedValue(root,"[data-skill-ground-motion]"),
+      groundOffsetXPx: numericValue(root,"[data-skill-ground-offset-x]"),
+      groundOffsetYPx: numericValue(root,"[data-skill-ground-offset-y]"),
+      groundRisePx: numericValue(root,"[data-skill-ground-rise-px]"),
       castLayerPlayer: selectedValue(
         root,
         "[data-skill-cast-layer-player]"
@@ -10191,6 +10686,10 @@ function writeCaptureFxStarterPresentationFieldsV1(
     ["[data-skill-wave-thickness]", presentation.waveThicknessPct ?? 6],
     ["[data-skill-fall-height]", presentation.fallHeightPx],
     ["[data-skill-fall-offset-x]", presentation.fallOffsetXPx],
+    ["[data-skill-ground-motion]", presentation.groundMotion ?? "fixed"],
+    ["[data-skill-ground-offset-x]", presentation.groundOffsetXPx ?? 0],
+    ["[data-skill-ground-offset-y]", presentation.groundOffsetYPx ?? 0],
+    ["[data-skill-ground-rise-px]", presentation.groundRisePx ?? 80],
     ["[data-skill-travel-layer-player]", presentation.travelLayerPlayer],
     ["[data-skill-travel-layer-opponent]", presentation.travelLayerOpponent],
     ["[data-skill-impact-fx]", presentation.impactAssetId],
@@ -10318,14 +10817,9 @@ export function mountEditorCardDisclosuresV1({
   return count;
 }
 
-export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null, initialTab = "creature" }) {
+export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root doit être un élément DOM");
-  }
-  // A ?tab= deep link is interpreted only by the official Lab editor owner.
-  // The GenSrpg consumer must never click or rewrite native editor tabs.
-  if (!["creature","skills","combat","music"].includes(initialTab)) {
-    throw new RangeError("Onglet auteur Capture non pris en charge : "+String(initialTab));
   }
 
   const listeners = [];
@@ -10418,7 +10912,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     );
   }
 
-  setTab(root, initialTab);
+  setTab(root, "creature");
 
   const reactionType = one(root, "[data-creature-reaction-type]");
   listen(reactionType, "change", () => syncHumanCreatureReactionControlsV1(root));
@@ -10501,6 +10995,16 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     root,
     "[data-skill-new]"
   );
+  const skillNameInput=one(root,"[data-skill-name]");
+  const skillIdInput=one(root,"[data-skill-id]");
+  let newSkillDraftMode=false;
+  listen(skillNameInput,"input",()=>{
+    if (!newSkillDraftMode || librarySelect.value!=="") return;
+    skillIdInput.value=suggestCaptureSkillDraftIdFromNameV1({
+      name:skillNameInput.value,
+      configuredSkillIds:[...configuredSkills.keys()]
+    });
+  });
   const createSkillButton = one(
     root,
     "[data-skill-create]"
@@ -10509,6 +11013,23 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     root,
     "[data-skill-update]"
   );
+  const chargedEnabled = root.querySelector("[data-skill-charged-enabled]");
+  const chargedEffectsEnabled = root.querySelector("[data-skill-charged-effects-enabled]");
+  if (chargedEnabled) listen(chargedEnabled,"change",()=>{
+    const config=root.querySelector("[data-skill-charged-config]");
+    if(config)config.hidden=!chargedEnabled.checked;
+    if(chargedEnabled.checked&&chargedEffectsEnabled){
+      chargedEffectsEnabled.checked=false;
+      one(root,"[data-skill-charged-effects-config]").hidden=true;
+    }
+  });
+  if(chargedEffectsEnabled)listen(chargedEffectsEnabled,"change",()=>{
+    one(root,"[data-skill-charged-effects-config]").hidden=!chargedEffectsEnabled.checked;
+    if(chargedEffectsEnabled.checked&&chargedEnabled){
+      chargedEnabled.checked=false;
+      one(root,"[data-skill-charged-config]").hidden=true;
+    }
+  });
   const skillActivationEnabled = one(
     root,
     "[data-skill-activation-enabled]"
@@ -10533,10 +11054,32 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     root,
     "[data-skill-effect-add]"
   );
+  listen(one(root,"[data-skill-trajectory-mode]"),"change",()=>syncSkillGroundVisualControlsV14(root));
+  listen(one(root,"[data-skill-ground-motion]"),"change",()=>syncSkillGroundVisualControlsV14(root));
+  syncSkillGroundVisualControlsV14(root);
+  const channelingEnabled=one(root,"[data-skill-channeling-enabled]");
+  const channelingConfig=one(root,"[data-skill-channeling-config]");
+  const channelEffectsHost=one(root,"[data-skill-channeling-effects-host]");
+  const channelEffectAdd=one(root,"[data-skill-channeling-effect-add]");
+  const channelIcePreset=one(root,"[data-skill-channel-ice-preset]");
+  const channelIceSpriteJump=one(root,"[data-skill-channel-ice-sprite-jump]");
   const contactHoldEnabled = one(root, "[data-skill-contact-hold-enabled]");
   const contactHoldSettings = one(root, "[data-skill-contact-hold-settings]");
   const contactHoldEffectsHost = one(root, "[data-skill-contact-hold-effects-host]");
   const contactHoldEffectAddButton = one(root, "[data-skill-contact-hold-effect-add]");
+  const effectChooser = one(root, "[data-skill-effect-add-kind]");
+  const effectGuide = one(root, "[data-skill-effect-guide]");
+  // UI-only choices from canonical SkillEffect kinds; no second effect schema.
+  const nativeEffects = document.createElement("optgroup");
+  nativeEffects.label = "Effets tactiques";
+  for (const kind of SKILL_EFFECT_V1_KINDS)
+    createOption(nativeEffects, "effect:" + kind, tacticalEffectKindLabelV1(kind));
+  effectChooser.insertBefore(nativeEffects, effectChooser.querySelector('[value="wall"]'));
+  function syncGuidedEffectPanelsV1(selected = null) {
+    return syncHumanGuidedSkillEffectPanelsV1(root,selected);
+  }
+  const guideEffectV1 = message => {effectGuide.textContent=message;};
+  syncGuidedEffectPanelsV1();
   const creatureLibrarySelect = one(
     root,
     "[data-creature-library-select]"
@@ -11486,6 +12029,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
 
     select.value = previous ?? "";
+    refreshHumanSkillElementFiltersV1();
   }
 
   function syncLoadoutAvailability() {
@@ -11605,6 +12149,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     preferredId = null
   ) {
     combatTeamControls.refresh();
+    refreshHumanSkillElementFiltersV1();
     const previous =
       preferredId ??
       selectedCreatureId ??
@@ -11647,6 +12192,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     ) {
       creatureLibrarySelect.value = previous;
     }
+    refreshHumanSkillElementFiltersV1();
   }
 
   function currentCreatureRecord() {
@@ -11869,6 +12415,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     ).readOnly = true;
     creatureLibrarySelect.value = creatureId;
     combatTeamControls.refresh();
+    refreshHumanSkillElementFiltersV1();
     updateCreatureLibraryState(
       "Modification de « " +
         record.draft.displayName +
@@ -11899,6 +12446,32 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     libraryState.dataset.tone =
       state.runtimeReady ? "ok" : "warning";
   }
+
+  // One registry-backed filter owner handles all existing creature/skill
+  // dropdowns, including team rosters and evolution candidates. Filtering
+  // rebuilds actual options for Android; it never edits the chosen IDs.
+  const referenceElementFilters=createCaptureReferenceElementFiltersV1({
+    root,configuredSkills,configuredCreatures,
+    elementMeta:humanSkillSelectorElementMetaV1,
+    visualAssets:()=>EDITOR_VISUAL_ASSETS_BY_ROOT.get(root)??[],
+    visualAssetElement:humanVisualAssetElementV1,listen
+  });
+  function refreshHumanSkillElementFiltersV1() {
+    referenceElementFilters.refresh();
+  }
+  // The official catalog notifies this editor when sprite options change.
+  listen(root,"capture-visual-assets-changed",refreshHumanSkillElementFiltersV1);
+  // Refresh the existing owner only after new/replaced effect controls.
+  listen(root,"click",(event)=>{
+    if(event.target?.closest?.(
+      "[data-skill-effect-add], [data-skill-channeling-effect-add], [data-skill-contact-hold-effect-add], [data-skill-new]"
+    )) refreshHumanSkillElementFiltersV1();
+  });
+  listen(root,"change",(event)=>{
+    if(event.target?.matches?.(
+      "[data-skill-library-select], [data-skill-effect-kind]"
+    )) refreshHumanSkillElementFiltersV1();
+  });
 
   function refreshSkillLibraryOptions(
     preferredId = null
@@ -11955,6 +12528,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     ) {
       librarySelect.value = previous;
     }
+    refreshHumanSkillElementFiltersV1();
   }
 
   function refreshLoadoutOptions(preferredId = null) {
@@ -12093,6 +12667,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
 
     syncLoadoutAvailability();
+    refreshHumanSkillElementFiltersV1();
   }
 
   function persistCurrentSkill(intent) {
@@ -12122,6 +12697,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     ].map((select) => select.value);
 
     configuredSkills.set(draft.id, draft);
+    newSkillDraftMode=false;
     refreshSkillLibraryOptions(draft.id);
 
     if (saveMode.mode === "create") {
@@ -12263,6 +12839,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
 
   listen(librarySelect, "change", () => {
     const abilityId = librarySelect.value;
+    if (abilityId) newSkillDraftMode=false;
 
     if (!abilityId) {
       updateLibraryState(null);
@@ -12310,6 +12887,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   });
 
   listen(newSkillButton, "click", () => {
+    newSkillDraftMode=true;
     const nextId = nextCaptureSkillDraftIdV1({
       configuredSkillIds: [...configuredSkills.keys()]
     });
@@ -12321,10 +12899,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       nextId,
       statRegistry
     );
-    one(
-      root,
-      "[data-skill-id]"
-    ).readOnly = false;
+    skillIdInput.readOnly = true;
+    skillIdInput.value=suggestCaptureSkillDraftIdFromNameV1({
+      name:skillNameInput.value,configuredSkillIds:[...configuredSkills.keys()]
+    });
     selectedLegacyState = null;
 
     setStatus(
@@ -12444,11 +13022,265 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
   );
 
+  function autoConfigureStandaloneWallV1() {
+    const rows=[...skillEffectsHost.querySelectorAll("[data-skill-effect-row]")];
+    const onlyWall=rows.length===1 &&
+      rows[0].querySelector("[data-skill-effect-kind]")?.value==="summon_entity";
+    const otherMechanics=chargedEnabled?.checked||chargedEffectsEnabled?.checked||
+      contactHoldEnabled.checked;
+    if(!onlyWall||otherMechanics){
+      setStatus(root,
+        "Mur ajouté. Cette capacité comporte d'autres effets ou mécaniques : vérifie la forme et les cibles dans les réglages avancés.",
+        "warn");
+      return false;
+    }
+    // A standalone wall is a defensive self-cast, never a melee strike.
+    // SkillEffect still owns the summoned entity, and targetRelations are
+    // inferred by the existing author exporter (no duplicate authority).
+    one(root,"[data-skill-category]").value="defensive";
+    one(root,"[data-skill-form]").value="self";
+    one(root,"[data-skill-approach]").value="none";
+    one(root,"[data-skill-travel-time]").value="0";
+    rows[0].querySelector("[data-skill-effect-scope]").value="self";
+    for(const box of root.querySelectorAll("[data-skill-location-scope]"))
+      box.checked=box.value==="active";
+    beamStageLayout.sync();
+    updateBurrowStageVisibilityV1(root);
+    setStatus(root,
+      "Mur configuré automatiquement : Protection · Sur soi · Aucun déplacement. Choisis la statistique, le coefficient de PV et le sprite. Pour qu'il apparaisse, la créature doit avoir des points dans cette statistique.",
+      "ok");
+    return true;
+  }
   listen(skillEffectAddButton, "click", () => {
-    appendHumanSkillEffectV1(root, null, statRegistry);
+    const choice = effectChooser;
+    if (choice.value.startsWith("effect:")) {
+      const effectKind = choice.value.slice(7);
+      if (!SKILL_EFFECT_V1_KINDS.includes(effectKind)) return;
+      // Channeling has one owner for tick damage; never add initial hits.
+      const onChannel=channelingEnabled.checked;
+      if(onChannel && !["damage","heal","apply_status","apply_marker"].includes(effectKind)){
+        choice.value="standard";
+        setStatus(root,"Une canalisation accepte uniquement dégâts, soins, statuts et marqueurs par pulsation. Aucun autre effet ajouté.","warn");
+        return;
+      }
+      if(chargedEnabled.checked && ["damage","life_steal"].includes(effectKind)){
+        choice.value="standard";
+        setStatus(root,"L'attaque chargée gère déjà ses dégâts ; aucun effet de dégâts supplémentaire ajouté.","warn");
+        return;
+      }
+      const row = appendHumanSkillEffectV1(root, {kind:effectKind}, statRegistry, null,
+        onChannel ? "[data-skill-channeling-effects-host]" : "[data-skill-effects-host]");
+      syncGuidedEffectPanelsV1(onChannel ? "channeling" : "standard");
+      row.querySelector("[data-skill-effect-kind]")?.dispatchEvent(
+        new Event("change", {bubbles:true}));
+      choice.value="standard";
+      guideEffectV1("Effet ajouté : "+tacticalEffectKindLabelV1(effectKind)+
+        ". Ses réglages sont dans la nouvelle ligne ci-dessous.");
+      row.scrollIntoView?.({block:"nearest"});
+      row.querySelector("[data-skill-effect-kind]")?.focus?.();
+      return;
+    }
+    if(["charged","charged-effects","mine","wall"].includes(choice.value) &&
+       (channelingEnabled.checked ||
+        (contactHoldEnabled.checked && ["charged","charged-effects"].includes(choice.value)))){
+      choice.value="standard";
+      setStatus(root,"Mécanique incompatible avec la canalisation ou le maintien au contact déjà actif. Aucun réglage effacé.","warn");
+      return;
+    }
+    if (choice.value==="channeling" || choice.value==="contact-hold") {
+      const selected=choice.value;
+      syncGuidedEffectPanelsV1(selected);
+      guideEffectV1(selected==="channeling"
+        ? "Canalisation : active la case du panneau ouvert, puis règle les pulsations."
+        : "Maintien au contact : active la case du panneau ouvert, puis règle les effets répétés.");
+      return;
+    }
+    if(choice.value==="mine"){
+      // Only ONE native scheduled_effect record. Its optional visualCue
+      // projects an arena warning from Combat State; no duplicate timer.
+      appendHumanSkillEffectV1(root,{
+        kind:"scheduled_effect",targetScope:"target",visualCue:"ground_mine",
+        trigger:{type:"after_ms",delayMs:3000},
+        effects:[{kind:"damage",targetScope:"target",amount:20,channel:"ice"}]
+      },statRegistry);
+      choice.value="standard";
+      guideEffectV1("Mine ajoutée : configure son délai et ses dégâts dans la ligne.");
+      one(root,"[data-skill-category]").value="offensive";
+      one(root,"[data-skill-form]").value="area";
+      one(root,"[data-skill-approach]").value="none";
+      beamStageLayout.sync();
+      setStatus(root,"Mine créée : règle le délai, les dégâts, le sprite et le son d’impact ; le cercle suit la position de pose au sol.","ok");
+      return;
+    }
+    if (choice.value === "wall") {
+      appendHumanSkillEffectV1(root,{
+        kind:"summon_entity",targetScope:"self",entityKind:"barrier",
+        statId:"glace",hpPerStatPoint:1,
+        interceptKinds:["projectile","beam","contact"],
+        visualScale:1,offsetForwardPx:0,offsetUpPx:0
+      },statRegistry);
+      choice.value="standard";
+      guideEffectV1("Mur ajouté : configure les PV, le placement et le sprite dans la ligne d'invocation.");
+      autoConfigureStandaloneWallV1();
+      return;
+    }
+    if (choice.value === "charged-effects") {
+      chargedEffectsEnabled.checked=true;
+      one(root,"[data-skill-charged-effects-config]").hidden=false;
+      chargedEnabled.checked=false;
+      one(root,"[data-skill-charged-config]").hidden=true;
+      syncGuidedEffectPanelsV1("charged-effects");
+      guideEffectV1("Charge d'effets : paramètres ouverts ci-dessous.");
+      setStatus(root,"Charge d'effets activée : ajoute un soin ou un statut numérique puis règle la puissance par activation.","ok");
+      return;
+    }
+    if (choice.value === "charged") {
+      // One author control, one chargedAttack contract: never insert a
+      // second normal damage effect alongside the projectile's base damage.
+      const hasOtherDamage = [...skillEffectsHost.querySelectorAll("[data-skill-effect-kind]")]
+        .some(select => ["damage", "life_steal"].includes(select.value));
+      if (hasOtherDamage) {
+        setStatus(root,
+          "Retire d'abord l'effet Dégâts ou Drain de vie classique : Attaque chargée possède déjà ses dégâts de base.",
+          "warn");
+        return;
+      }
+      one(root,"[data-skill-form]").value = "projectile";
+      one(root,"[data-skill-trajectory-mode]").value = "linear";
+      beamStageLayout.sync();
+      chargedEnabled.checked = true;
+      chargedEffectsEnabled.checked=false;
+      one(root,"[data-skill-charged-effects-config]").hidden=true;
+      one(root,"[data-skill-charged-config]").hidden = false;
+      syncGuidedEffectPanelsV1("charged");
+      guideEffectV1("Attaque chargée : paramètres ouverts ci-dessous.");
+      setStatus(root,"Attaque chargée ajoutée : règle les dégâts, charges et taille ici, puis choisis tes sprites Cast et Projectile.", "ok");
+      return;
+    }
+    const row=appendHumanSkillEffectV1(root, null, statRegistry);
+    syncGuidedEffectPanelsV1("standard");
+    guideEffectV1("Dégâts ajoutés : configure la valeur et le canal dans la nouvelle ligne.");
+    row.scrollIntoView?.({block:"nearest"});
   });
+  listen(effectChooser, "change", () => {
+    // A selected mechanism is an editing view, not a second saved definition.
+    if(effectChooser.value==="standard"){
+      syncGuidedEffectPanelsV1("standard");
+      guideEffectV1("Effets immédiats : édite les lignes ci-dessous. Les mécaniques restent intactes.");
+    } else {
+      skillEffectAddButton.click();
+    }
+  });
+  function prepareIceSpikeChannelV1({preset=false}={}) {
+    if(chargedEnabled.checked||chargedEffectsEnabled.checked||contactHoldEnabled.checked){
+      setStatus(root,"Pics de glace canalisés : désactive d'abord Charge ou Maintien au contact. Les données actuelles sont conservées.","warn");
+      return false;
+    }
+    // One native owner for damage: migrate only compatible immediate effects
+    // into the existing channeling.effects list, never copy or merge silently.
+    const immediate=readHumanSkillEffectsV1(root);
+    const pulse=readHumanSkillEffectsV1(root,"[data-skill-channeling-effects-host]");
+    const allowed=immediate.every(e=>["damage","heal","apply_status","apply_marker"].includes(e.kind)
+      && ["target","self"].includes(e.targetScope));
+    if(!allowed || (immediate.length&&pulse.length)){
+      setStatus(root,"Canalisation : plusieurs effets différents sont déjà configurés. Ajuste les lignes existantes avant de continuer ; aucune donnée n'a été écrasée.","warn");
+      return false;
+    }
+    if(immediate.length){
+      renderHumanSkillEffectsV1(root,immediate,statRegistry,{},"[data-skill-channeling-effects-host]");
+      renderHumanSkillEffectsV1(root,[],statRegistry);
+    }else if(preset&&!pulse.length){
+      renderHumanSkillEffectsV1(root,[{kind:"damage",targetScope:"target",amount:12,channel:"ice"}],
+        statRegistry,{},"[data-skill-channeling-effects-host]");
+    }
+    if(preset && !channelingEnabled.checked){
+      for(const [selector,value] of [
+        ["[data-skill-channeling-interval]",1000],
+        ["[data-skill-channeling-duration]",5000],
+        ["[data-skill-channeling-max-ticks]",4],
+        ["[data-skill-channeling-energy]",3]
+      ]) one(root,selector).value=String(value);
+    }
+    channelingEnabled.checked=true;
+    channelingConfig.hidden=false;
+    syncGuidedEffectPanelsV1("channeling");
+    one(root,"[data-skill-channeling-section]").open=true;
+    one(root,"[data-skill-category]").value="offensive";
+    one(root,"[data-skill-form]").value="area";
+    one(root,"[data-skill-approach]").value="none";
+    one(root,"[data-skill-travel-time]").value="0";
+    if(preset){
+      one(root,"[data-skill-element]").value="ice";
+      one(root,"[data-skill-trajectory-mode]").value="under_target";
+      one(root,"[data-skill-projectile-power]").value="0";
+    }
+    beamStageLayout.sync();
+    return true;
+  }
+  listen(channelIcePreset,"click",()=>{
+    if(!prepareIceSpikeChannelV1({preset:true}))return;
+    setStatus(root,"Pics de glace canalisés prêts : choisis le sprite montant dans Effets visuels → Personnaliser les animations → Trajet. Le son Impact se rejouera à chaque pulsation. Enregistre puis teste.","ok");
+  });
+  listen(channelIceSpriteJump,"click",()=>{
+    const personalization=one(root,"[data-skill-fx-advanced]");
+    const visualCard=personalization.closest(".card");
+    // Use the existing disclosure owner's real toggle (and its ARIA
+    // state), not a second independent visibility flag for this card.
+    if(visualCard?.dataset.collapsed==="true")
+      visualCard.querySelector(".card-title")?.click();
+    personalization.open=true;
+    const sprite=one(root,"[data-skill-travel-fx]");
+    sprite.scrollIntoView?.({block:"center",behavior:"smooth"});
+    sprite.focus?.();
+  });
+  listen(one(root,"[data-skill-form]"),"change",()=>{
+    if(!channelingEnabled.checked || one(root,"[data-skill-form]").value!=="projectile")return;
+    const rising=one(root,"[data-skill-trajectory-mode]").value==="under_target";
+    one(root,"[data-skill-form]").value=rising?"area":"beam";
+    beamStageLayout.sync();
+    setStatus(root,rising
+      ?"La canalisation de pics au sol utilise la forme Zone : « Sous la cible » règle le sprite, pas un projectile physique."
+      :"Un projectile physique ne peut pas être canalisé : utilise Rayon ou Zone pour les effets répétés.","warn");
+  });
+  listen(channelingEnabled,"change",()=>{
+    channelingConfig.hidden=!channelingEnabled.checked;
+    if(channelingEnabled.checked)syncGuidedEffectPanelsV1("channeling");
+    if(channelingEnabled.checked){
+      if(chargedEnabled.checked||chargedEffectsEnabled.checked||contactHoldEnabled.checked){
+        channelingEnabled.checked=false;channelingConfig.hidden=true;
+        setStatus(root,"La canalisation ne se combine pas avec charge ou maintien au contact. Désactive d’abord cette mécanique.","warn");
+        return;
+      }
+      // The initial skill cannot apply a second duplicate effect; move only
+      // native allowed tick effects to the existing nested channel owner.
+      const immediate=readHumanSkillEffectsV1(root);
+      if(immediate.length){
+        const allowed=immediate.every(e=>["damage","heal","apply_status","apply_marker"].includes(e.kind)
+          && ["target","self"].includes(e.targetScope));
+        if(allowed){
+          renderHumanSkillEffectsV1(root,immediate,statRegistry,{},"[data-skill-channeling-effects-host]");
+          renderHumanSkillEffectsV1(root,[],statRegistry);
+        }else{
+          channelingEnabled.checked=false;channelingConfig.hidden=true;
+          setStatus(root,"La canalisation ne peut pas conserver simultanément les effets initiaux. Retire les zones ou programmations avant de l'activer.","warn");
+          return;
+        }
+      }
+      one(root,"[data-skill-form]").value="beam";
+      one(root,"[data-skill-approach]").value="none";
+      one(root,"[data-skill-travel-time]").value="0";
+      beamStageLayout.sync();
+    }
+  });
+  listen(channelEffectAdd,"click",()=>appendHumanSkillEffectV1(root,null,statRegistry,null,
+    "[data-skill-channeling-effects-host]"));
   listen(contactHoldEnabled, "change", () => {
+    if(contactHoldEnabled.checked&&channelingEnabled.checked){
+      contactHoldEnabled.checked=false;
+      setStatus(root,"Désactive la canalisation avant le maintien au contact.","warn");
+    }
     contactHoldSettings.hidden = !contactHoldEnabled.checked;
+    if(contactHoldEnabled.checked)syncGuidedEffectPanelsV1("contact-hold");
   });
   listen(contactHoldEffectAddButton, "click", () => {
     appendHumanSkillEffectV1(root, null, statRegistry, null,
@@ -12457,10 +13289,20 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   // The same tactical row owner handles both lists, but each host is a
   // separate explicit source. A repeated effect cannot silently become an
   // immediate impact effect (or vice versa).
-  for (const effectsHost of [skillEffectsHost, contactHoldEffectsHost]) {
+  for (const effectsHost of [skillEffectsHost, contactHoldEffectsHost, channelEffectsHost]) {
     listen(effectsHost, "change", event => {
       const row = event.target?.closest?.("[data-skill-effect-row]");
       if (!row) return;
+      if (event.target.matches("[data-skill-effect-kind]") && event.target.value === "summon_entity") {
+        row.querySelector("[data-skill-effect-scope]").value="self";
+        if(effectsHost===skillEffectsHost)autoConfigureStandaloneWallV1();
+      }
+      if (event.target.matches("[data-skill-effect-kind]") && event.target.value === "force_reserve_switch") {
+        // Author-only convenience: an enemy bench target must never be an
+        // active target. These are the existing canonical location controls.
+        for (const input of root.querySelectorAll("[data-skill-location-scope]"))
+          input.checked = input.value === "reserve";
+      }
       if (event.target.matches(
         "[data-skill-effect-kind], " +
         "[data-skill-status-kind], " +
@@ -13145,6 +13987,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         loadCreatureRecord(selectedCreatureId);
       }
       combatTeamControls.refresh();
+    refreshHumanSkillElementFiltersV1();
       const teamSizes = Object.values(lastExport.teams).map(actorIds =>
         lastExport.rosters.filter(roster => actorIds.includes(roster.slotId))
           .reduce((size, roster) => size + roster.members.length, 0)
@@ -13364,12 +14207,30 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           importReplaceExisting.checked
             ? "replace"
             : "reject";
-        const plan =
-          planCaptureTransferImportV1({
+        let plan;
+        try {
+          plan = planCaptureTransferImportV1({
             currentDatabase,
             transfer,
             mode
           });
+        } catch (error) {
+          // A catalog preset can already occupy this exact skill ID.
+          // Preserve explicit replacement approval, but never leave the player
+          // thinking that the incoming required level was imported.
+          if (transfer.kind === "skill" &&
+              error.message.startsWith("Capture import conflict for existing skill:")) {
+            const incoming = transfer.value.draft;
+            const existing = configuredSkills.get(incoming.id);
+            throw new Error(
+              "Import refusé : « " + incoming.definition.name +
+              " » existe déjà (niveau " + (existing?.requiredLevel ?? "?") +
+              "). Ton fichier demande le niveau " + incoming.requiredLevel +
+              ". Pour conserver la version du fichier, coche « Remplacer explicitement les IDs existants », puis importe-le à nouveau."
+            );
+          }
+          throw error;
+        }
         const applyResult =
           applyCaptureTransferPlanToEditorStateV1({
             plan,
@@ -13384,6 +14245,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         progressionRules =
           applyResult.progressionRules;
 
+        newSkillDraftMode=false;
         refreshEditorAfterTransferV1({
           plan,
           applyResult

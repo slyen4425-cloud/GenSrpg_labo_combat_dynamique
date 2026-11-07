@@ -1,4 +1,4 @@
-import {captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRegisterFromSkillV1, captureMarkerStatusTemplatesV1, captureMarkerChannelOptionsV1, captureMarkerStatusTagOptionsV1} from "./capture-marker-library-v1.js?v=marker-life-drain-20261028";
+import {captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRegisterFromSkillV1, captureMarkerStatusTemplatesV1, captureMarkerChannelOptionsV1, captureMarkerStatusTagOptionsV1} from "./capture-marker-library-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104";
 
 const field=(name)=>{const node=document.createElement("label");node.textContent=name;return node;};
 function choice(name,options,value){

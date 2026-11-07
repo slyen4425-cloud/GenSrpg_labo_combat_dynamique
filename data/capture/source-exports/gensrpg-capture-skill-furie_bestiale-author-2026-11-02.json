@@ -1,0 +1,135 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "furie_bestiale",
+    "description": "NA",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "furie_bestiale",
+      "name": "Furie bestiale",
+      "category": "buff_debuff",
+      "form": "self",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "ultimate",
+      "element": "ice",
+      "approachMode": "none",
+      "energyCost": 6,
+      "preparationMs": 1200,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "ally",
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "status-1",
+            "kind": "stat_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 60000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "statId": "glace",
+            "modifierMode": "points",
+            "deltaPoints": 100
+          }
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "id": "status-2",
+            "kind": "damage_over_time",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 60000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "amount": 10,
+            "channel": "ice",
+            "damageMode": "combat",
+            "tickIntervalMs": 10000
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:furie_bestiale",
+      "version": 3,
+      "subjectType": "skill",
+      "subjectId": "furie_bestiale",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-armure-de-glace-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {
+        "status-1": {
+          "mode": "sprite",
+          "tintBlinkEnabled": false,
+          "tintBlinkPeriodMs": 600,
+          "tintColor": "#9b59d0",
+          "tintOpacity": 0.35,
+          "sprite": {
+            "assetId": "pack:capture:sprite-air-wind-charge-01",
+            "displayScale": 2.1,
+            "opacity": 0.6
+          }
+        }
+      }
+    }
+  }
+}

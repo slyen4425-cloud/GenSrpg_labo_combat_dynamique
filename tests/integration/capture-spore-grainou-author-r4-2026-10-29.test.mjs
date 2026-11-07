@@ -15,7 +15,14 @@ const creatureActive="data/capture/showcase/crea_nat_1.capture-creature-transfer
 test("Spore soporifique r2 author bytes, canonical active identity and true expansion media",async()=>{
  const src=await read(skillSrc);
  assert.equal(sha(src),"45deeb29b981dd33d54b378b09a619d9efeb7ef8d9804b72a8a45550594b0a63");
- assert.equal(await read(skillActive),src);
+ const expected=JSON.parse(src);
+ expected.draft.presentation.visual.icon={assetId:"pack:capture:icon-skill-spore-soporifique-01"};
+ expected.draft.presentation.audio={
+   travel:{assetId:"gensrpg:sound:genrpg-pack2-879fc11a",volume:1,loop:true},
+   impact:{assetId:"gensrpg:sound:tower-ccc16d37",volume:1,loop:false}
+ };
+ assert.deepEqual(JSON.parse(await read(skillActive)),expected,
+   "archive r2 is immutable; Oct 30 author adds only icon and two sounds");
  const d=JSON.parse(src).draft;
  assert.equal(d.id,"Spore_soporifique");
  assert.equal(d.definition.projectileTargeting,"expanding_wave");
@@ -31,7 +38,7 @@ test("Spore soporifique r2 author bytes, canonical active identity and true expa
 test("Grainou r4 author bytes, active reaction defense and skill slot unchanged",async()=>{
  const src=await read(creatureSrc);
  assert.equal(sha(src),"56af0e17f4aad906429bb25ed86330ef75c5b576dda1a367d739e4840e23fa9e");
- assert.equal(await read(creatureActive),src);
+ assert.notEqual(await read(creatureActive),src,"Grainou r5 supersedes the archived r4 author file");
  const d=JSON.parse(src);
  assert.equal(d.draft.id,"crea_nat_1");
  assert.equal(d.draft.combat.reaction.type,"defense");

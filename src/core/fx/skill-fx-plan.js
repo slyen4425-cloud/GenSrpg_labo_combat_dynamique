@@ -11,9 +11,11 @@ export function planSkillPreparationFx({
       type: "cast",
       skillId: action.skill.id,
       actorSlot,
+      ...(action.skill.channeling ? {holdUntilCancelled:true} : {}),
+      ...(action.chargeState ? {sizeMultiplier:action.chargeState.sizeMultiplier} : {}),
       durationMs: Math.max(
         0,
-        Number(action.preparationMs) || 0
+        Number(action.chargeState ? action.releaseAtMs : action.preparationMs) || 0
       )
     })
   ]);
@@ -38,6 +40,7 @@ export function planSkillReleaseFx({
       element: action.skill.element ?? null,
       fromSlot: actorSlot,
       targetSlot,
+      ...(action.chargeState ? {sizeMultiplier:action.chargeState.sizeMultiplier} : {}),
       ...(Number(action.skill.projectileClash?.power) > 0
         ? { projectilePower: action.skill.projectileClash.power }
         : {}),
@@ -107,6 +110,14 @@ export function planSkillOutcomeFx({
     ]);
   }
 
+  if (resolution.channelingStart === true ||
+    (resolution.events?.some(e=>e.type==="scheduled-effect-created"&&e.visualCue==="ground_mine") &&
+      !resolution.events?.some(e=>e.type==="damage"||e.type==="heal"))) {
+    // No fake initial impact on the target. The existing Runtime
+    // callback / scheduled State replay the correct FX when effects apply.
+    return Object.freeze([]);
+  }
+
   if (
     resolution.persistentZoneOnly === true
   ) {
@@ -139,6 +150,22 @@ export function planSkillOutcomeFx({
           Math.max(0, Number(clashEvent.progress) || 0)
         ),
         durationMs: 520
+      })
+    ]);
+  }
+
+  // An intercepted strike ends on its physical wall, not the protected
+  // fighter. Preserve the existing outcome type and impact sprite.
+  const wallHit = resolution.events?.find(event=>event.type==="combat-entity-hit");
+  if (wallHit && resolution.outcome === "hit" && resolution.skillId) {
+    return Object.freeze([
+      Object.freeze({
+        type: "impact",
+        skillId: resolution.skillId,
+        targetSlot,
+        combatEntityId: wallHit.entityId,
+        ...(resolution.barrierImpactPoint?{impactPoint:resolution.barrierImpactPoint}:{}),
+        durationMs: 420
       })
     ]);
   }

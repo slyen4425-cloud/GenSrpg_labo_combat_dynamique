@@ -4,10 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>GenSrpG Lab — Éditeur Capture</title>
-  <link rel="stylesheet" href="./demo.css?v=fire-zone-ring-20261016">
-  <link rel="stylesheet" href="./capture-editor-v2.css">
+  <link rel="stylesheet" href="./demo.css?v=wall-layer-scale-xy-20261101-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103">
+  <link rel="stylesheet" href="./capture-editor-v2.css?v=phone-pc-arena-parity-20261103-reflection-layout-20261104-barrier-side-layout-20261105">
   <style>
     [data-creature-view-settings][hidden] { display: none; }
+    [data-skill-charged-effects-config][hidden] { display: none !important; }
     .editor-tabs a.bestiary-link {
       display: grid; gap: .08rem; align-content: center;
       min-height: 3.6rem; padding: .58rem .65rem; border-radius: .65rem;
@@ -1235,6 +1236,9 @@
         </div>
 
         <label>Modèle de départ (optionnel)
+          <select data-skill-element-filter aria-label="Filtrer les capacités par élément">
+            <option value="">Tous les éléments</option>
+          </select>
           <select data-skill-library-select>
             <option value="">Aucun modèle — partir de zéro</option>
           </select>
@@ -1270,8 +1274,9 @@
         </details>
         <div class="grid two">
           <label>Nom<input data-skill-name value="Boule de feu"></label>
-          <label class="technical-field">Identifiant<input data-skill-id value="fireball"></label>
+          <label class="technical-field">Identifiant (généré depuis le nom)<input data-skill-id value="fireball" readonly aria-label="Identifiant stable de la capacité"></label>
         </div>
+        <p class="note">Nouvelle capacité : écris seulement son nom. L’identifiant se crée automatiquement, sans accents ni espaces et sans écraser une capacité existante. Une fois enregistrée, son identité reste fixe.</p>
         <label>Description<textarea data-skill-description rows="2">Projectile de feu.</textarea></label>
 
         <div class="grid two">
@@ -1403,15 +1408,89 @@
 
         <details class="editor-context-help"><summary>ⓘ Cibles, dégâts, buffs et zones</summary>
           <p class="note">Les dégâts sont des valeurs de base : Défense et résistances les modifient avant de retirer des PV. Une zone persistante peut toucher plusieurs ennemis régulièrement. Un soin rend des PV et un statut dure un temps précis. Ouvrez « Que fait cette capacité ? » pour lire vos réglages.</p>
+          <p class="note">Effets tactiques : Dégâts de zone, Soin, Gain d’énergie, Drain d’énergie, Buff / Debuff, Dégâts périodiques, Soin périodique, Bouclier, Immobilisation, Silence, Stun, Provocation, Nettoyage et Dissipation. Tous ces types sont sélectionnables dans le menu principal.</p>
+          <p class="note">Zone persistante : elle peut réappliquer des dégâts à intervalles réguliers, augmenter son rayon et se renforcer lors de la réactivation. Les réglages correspondants apparaissent lorsque cet effet est sélectionné.</p>
         </details>
+        <label>Quel effet veux-tu ajouter ou régler ?
+          <select data-skill-effect-add-kind aria-describedby="effect-guide">
+            <option value="standard" selected>Effets immédiats : voir / modifier</option>
+            <option value="wall">Invoquer un mur destructible</option>
+            <option value="mine">Mine : explosion différée au sol</option>
+            <option value="charged">Attaque chargée : projectile renforcé</option>
+            <option value="charged-effects">Charge de buffs, debuffs et soins</option>
+            <option value="channeling">Canalisation : dégâts ou soins répétés</option>
+            <option value="contact-hold">Maintien au contact : effets répétés</option>
+          </select>
+        </label>
+        <p class="note" id="effect-guide" data-skill-effect-guide>Choisis un effet : ses paramètres apparaissent directement. Les autres mécanismes restent repliés, sans perte de tes configurations.</p>
+        <button type="button" class="secondary-action" data-skill-effect-add>Ajouter un effet de dégâts</button>
         <div class="skill-effects-list" data-skill-effects-host></div>
 
-        <button type="button" class="secondary-action" data-skill-effect-add>
-          Ajouter un effet
-        </button>
+        <details class="projectile-clash-config" aria-label="Attaque chargée" data-skill-charged-panel hidden>
+          <summary><strong>Attaque chargée — réactiver avant le tir</strong></summary>
+          <label class="switch-line"><input type="checkbox" data-skill-charged-enabled>
+            <span>Activer l'attaque chargée (projectile direct uniquement)</span>
+          </label>
+          <div class="timing-grid" data-skill-charged-config hidden>
+            <label>Puissance de base (dégâts)
+              <input type="number" min="0" step="1" data-skill-charged-base-damage value="5"></label>
+            <label>Dégâts supplémentaires par activation
+              <input type="number" min="0" step="1" data-skill-charged-bonus-damage value="5"></label>
+            <label>Nombre d'activations maximum (premier tir inclus)
+              <input type="number" min="2" max="20" step="1" data-skill-charged-max-charges value="3"></label>
+            <label>Fenêtre pour appuyer à nouveau, après chaque activation (ms)
+              <input type="number" min="1" step="1" data-skill-charged-window value="450"></label>
+            <label>Augmentation de taille par activation (%)
+              <input type="number" min="0" max="100" step="1" data-skill-charged-size-pct value="10"></label>
+          </div>
+          <p class="note">« Préparation » (section Timing) est le temps de préparation de CHAQUE charge. Une pression trop rapide ne donne aucun bonus. Après chaque préparation, une fenêtre s'ouvre pour appuyer de nouveau. Chaque activation validée consomme l'énergie définie dans Timing : sans énergie, aucune nouvelle charge. Un seul projectile part après la dernière préparation et l'expiration de la fenêtre, ou dès que la préparation de la charge maximale est finie. Le cast grossit après chaque activation valide ; le cooldown et le nombre d'utilisations ne sont engagés qu'au premier appui.</p>
+        </details>
 
-        <section class="skill-contact-hold" data-skill-contact-hold aria-label="Maintien au contact">
-          <h3>Sangsue / Maintien au contact</h3>
+        <details class="projectile-clash-config" aria-label="Charge des effets tactiques" data-skill-charged-effects-panel hidden>
+          <summary><strong>Charge de buffs, debuffs et soins</strong></summary>
+          <label class="switch-line"><input type="checkbox" data-skill-charged-effects-enabled>
+            <span>Renforcer les effets à chaque activation</span></label>
+          <div class="timing-grid" data-skill-charged-effects-config hidden>
+            <label>Activations maximum
+              <input type="number" min="2" max="20" step="1" value="3" data-skill-charged-effects-max-charges></label>
+            <label>Fenêtre après chaque préparation (ms)
+              <input type="number" min="1" step="1" value="450" data-skill-charged-effects-window></label>
+            <label>Puissance supplémentaire par activation (%)
+              <input type="number" min="0" max="500" step="1" value="50" data-skill-charged-effects-potency></label>
+            <label>Agrandissement du cast par activation (%)
+              <input type="number" min="0" max="100" step="1" value="10" data-skill-charged-effects-size-pct></label>
+          </div>
+          <p class="note">Mêmes coûts, préparation et fenêtre que l'attaque chargée. Amplifie uniquement dégâts, soins et puissance des statuts numériques ; ne prolonge pas les durées et ne contourne pas les immunités.</p>
+        </details>
+
+        <details class="skill-channeling" data-skill-channeling-section hidden>
+          <summary><strong>Canalisation — dégâts, soins ou statuts à chaque pulsation</strong></summary>
+          <p class="note">Pour des pics sortant du sol : ce n'est pas un projectile physique. L'attaque est une Zone canalisée ; le sprite Trajet (animé) surgit sous la cible à chaque pulsation. La compétence reste esquivable selon ses règles, sans dégâts au lancement.</p>
+          <button type="button" class="secondary-action" data-skill-channel-ice-preset>Configurer Pics de glace canalisés</button>
+          <button type="button" class="secondary-action" data-skill-channel-ice-sprite-jump>Choisir le sprite des pics (Trajet)</button>
+          <p class="note">Ce réglage conserve ton nom, ton ID et tes sprites existants. Il initialise 12 dégâts de Glace par seconde, pendant 4 pulsations au maximum, à 3 énergie par pulsation. Les réglages restent modifiables.</p>
+          <label class="switch-line"><input type="checkbox" data-skill-channeling-enabled>
+            <span>Activer la canalisation (rayon, zone, aura ou sur soi)</span></label>
+          <div data-skill-channeling-config hidden>
+            <p class="note">Le lanceur reste occupé. Chaque tick paie l'énergie et applique les effets ci-dessous.
+              Aucun dégât supplémentaire à l'impact initial. Ne pas combiner avec charge ou maintien au contact.</p>
+            <div class="timing-grid">
+              <label>Intervalle des ticks (ms)<input type="number" data-skill-channeling-interval min="100" max="60000" step="50" value="1000"></label>
+              <label>Durée maximale (ms, 0 = aucune)<input type="number" data-skill-channeling-duration min="0" max="120000" step="100" value="5000"></label>
+              <label>Nombre max de ticks (0 = illimité)<input type="number" data-skill-channeling-max-ticks min="0" max="500" step="1" value="5"></label>
+              <label>Énergie par tick<input type="number" data-skill-channeling-energy min="0" step="0.1" value="2"></label>
+            </div>
+            <label class="switch-line"><input type="checkbox" data-skill-channeling-stop-damage checked> Interrompre si le lanceur subit des dégâts</label>
+            <label class="switch-line"><input type="checkbox" data-skill-channeling-stop-stun checked> Interrompre si étourdi</label>
+            <label class="switch-line"><input type="checkbox" data-skill-channeling-stop-silence checked> Interrompre si réduit au silence</label>
+            <div class="skill-effects-list" data-skill-channeling-effects-host></div>
+            <button type="button" class="secondary-action" data-skill-channeling-effect-add>+ Ajouter un effet répété (par tick)</button>
+            <p class="note">Sprites : ouvre ci-dessous « Personnaliser les animations » (section Effets visuels). <strong>Cast</strong> = une fois au lancement. <strong>Trajet</strong> = sprite des pics à faire surgir du sol, rejoué à chaque pulsation avec le mode « Sous la cible ». <strong>Impact</strong> = sprite utilisé pour les autres canalisations, ou en repli si aucun Trajet n'est choisi. <strong>Son Impact</strong> = son joué à chaque pulsation. Ne choisis pas la forme Projectile : elle reste réservée aux projectiles physiques.</p>
+          </div>
+        </details>
+
+        <details class="skill-contact-hold" data-skill-contact-hold aria-label="Maintien au contact" hidden>
+          <summary><strong>Sangsue / Maintien au contact (facultatif)</strong></summary>
           <label><input type="checkbox" data-skill-contact-hold-enabled>
             Rester au corps à corps après l'impact et appliquer des effets régulièrement
           </label>
@@ -1432,31 +1511,9 @@
             </button>
             <p class="note">Les effets périodiques utilisent le moteur de combat existant (dégâts, drain, soins, statuts…). Les zones persistantes et les programmations différées ne peuvent pas être imbriquées ici.</p>
           </div>
-        </section>
+        </details>
 
-        <p class="note">
-          Chaque effet possède sa propre portée. Les durées de statut sont réglées en secondes ici puis converties vers le contrat gameplay.
-        </p>
 
-        <div class="tactical-effect-help" aria-label="Effets tactiques disponibles">
-          <span>Dégâts de zone</span>
-          <span>Soin</span>
-          <span>Gain d’énergie</span>
-          <span>Drain d’énergie</span>
-          <span>Buff / Debuff</span>
-          <span>Dégâts périodiques</span>
-          <span>Soin périodique</span>
-          <span>Bouclier</span>
-          <span>Immobilisation</span>
-          <span>Silence</span>
-          <span>Stun</span>
-          <span>Provocation</span>
-          <span>Nettoyage</span>
-          <span>Dissipation</span>
-          <span>Immunité dégâts / états négatifs</span>
-          <span>Effet différé après délai</span>
-          <span>Zone persistante évolutive</span>
-        </div>
 
         <template data-skill-expressiveness-prototypes>
           <label class="check">
@@ -1472,9 +1529,7 @@
           </label>
         </template>
 
-        <p class="note">
-          Une zone persistante peut durer plusieurs secondes, infliger des dégâts à intervalles réguliers et être renforcée par plusieurs réactivations. Son rayon gameplay utilise les distances Proche → Moyen → Loin ; chaque renforcement peut augmenter ce rayon jusqu’au maximum configuré.
-        </p>
+
       </article>
 
 
@@ -1598,6 +1653,8 @@
         </p>
 
 
+
+
         <div class="projectile-clash-config">
           <h3>Collision entre projectiles et rayons</h3>
           <label>Puissance de collision (projectile / rayon)
@@ -1644,6 +1701,7 @@
                 <select data-skill-trajectory-mode>
                   <option value="linear" selected>Lanceur → cible (classique)</option>
                   <option value="skyfall">Chute du ciel (vers la cible)</option>
+                  <option value="under_target">Sous la cible — pique de glace surgissante</option>
                   <option value="expanding_wave">Onde sphérique expansive (depuis la créature)</option>
                 </select>
               </label>
@@ -1741,7 +1799,7 @@
         <section class="beam-visual-editor" data-skill-beam-stage-editor data-beam-active="false">
         <div class="beam-visual-editor__heading">
           <h3>Rayon continu — 3 phases</h3>
-          <p>Un clic prépare les 3 phases : départ / charge à la bouche, corps continu et impact. Ensuite, choisis tes propres sprites, tailles et sons ci-dessous. Le même modèle reste accessible même si la capacité est actuellement de style Projectile.</p>
+          <p>Un clic prépare les 3 phases : départ / charge à la bouche, corps continu et impact. Choisis ici les sprites et tailles ; les quatre sons Cast, Trajet, Impact et Zone / Aura restent accessibles ensemble dans « Audio de la capacité » (étape 8). Le même modèle reste accessible même si la capacité est actuellement de style Projectile.</p>
         </div>
         <p class="note">Pour un rayon personnalisé sans modèle Eau, choisis simplement « Rayon » à l'étape 2 : les trois phases apparaîtront ici. Dans les deux cas, les dégâts, l'énergie et le cooldown sont inchangés.</p>
         <div data-skill-beam-pack>
@@ -1760,7 +1818,7 @@
           </fieldset>
           <fieldset class="editor-choice-group" data-beam-stage="body" hidden>
             <legend>2 — Corps continu du rayon</legend>
-            <p class="note">Il s’étire automatiquement de la source jusqu’à la cible, sans projectile qui se déplace. Le son du corps peut tourner pendant le tir, puis s’arrête au contact.</p>
+            <p class="note">Il s’étire automatiquement de la source jusqu’à la cible, sans projectile qui se déplace. Le son de trajet se règle dans « Audio de la capacité », avec une seule sélection partagée pour les projectiles et rayons ; il s'arrête au contact.</p>
             <div class="grid two" data-beam-stage-fields="body"></div>
           </fieldset>
           <fieldset class="editor-choice-group" data-beam-stage="impact" hidden>
@@ -1858,7 +1916,7 @@
           </label>
           <p class="note">Disponible pour Style « Rayon ». Ce sprite reste connecté au point de sortie et suit automatiquement le corps du rayon. L'impact garde son animation au contact de la cible.</p>
           <h3 class="skill-fx-stage-heading">PROJECTILE / RAYON</h3>
-          <label>Projectile / trajet
+          <label>Trajet / projectile / pics surgissant du sol
             <select data-skill-travel-fx data-asset-role="travel"><option value="">Aucun</option><option value="pack:capture:sprite-fireball-travel-01" selected>Boule de feu — projectile</option></select>
           </label>
           <label>Scale projectile
@@ -1902,6 +1960,25 @@
             <label>Décalage horizontal du départ (px)
               <input type="number" min="-700" max="700" step="10" value="0" data-skill-fall-offset-x>
             </label>
+            <fieldset class="editor-choice-group" data-skill-ground-settings hidden>
+              <legend>Sous la cible — emplacement et déplacement</legend>
+              <p class="note">Si les 12 images du sprite montrent déjà une pointe qui surgit, utilise Sur place. Monter déplace le sprite en plus de son animation.</p>
+              <label>Déplacement du sprite
+                <select data-skill-ground-motion>
+                  <option value="fixed" selected>Sur place — animation seule</option>
+                  <option value="rise">Montée — translation vers le haut</option>
+                </select>
+              </label>
+              <label>Position horizontale (px, négatif = gauche)
+                <input type="number" min="-400" max="400" step="5" value="0" data-skill-ground-offset-x>
+              </label>
+              <label>Position verticale (px, positif = plus bas)
+                <input type="number" min="-400" max="400" step="5" value="0" data-skill-ground-offset-y>
+              </label>
+              <label>Distance de montée en mode Montée (px)
+                <input type="number" min="0" max="400" step="5" value="80" data-skill-ground-rise-px>
+              </label>
+            </fieldset>
             <fieldset class="editor-choice-group" data-skill-wave-settings>
               <legend>Onde expansive — collision sur le rayon visible</legend>
               <label>Rayon initial (% largeur de l'arène)
@@ -2533,6 +2610,6 @@
     </template>
   </section>
 
-  <script type="module" src="./capture-editor-v2.js?v=sleep-conditions-20261028"></script>
+  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105"></script>
 </body>
 </html>

@@ -1,12 +1,12 @@
 import {
-  withFighterEnergy,
-  withFighterHp
+  withFighterEnergy
 } from "./combat-state.js";
 import {
   computeCombatDamageV1
 } from "./combat-damage-v1.js";
 import {
-  applyCombatDamageV1
+  applyCombatDamageV1,
+  applyCombatHealV1
 } from "./combat-damage-application-v1.js";
 import {
   resolveTacticalEffectTargetIdsV1
@@ -25,6 +25,7 @@ import {
   scheduleSkillEffectV1
 } from "./scheduled-effect-runtime-v1.js";
 import { markerStatusDefinitionV1 } from "../../contracts/capture-marker-v1.js";
+import {createCombatBarrierV1} from "./combat-entity-v1.js";
 
 const SUPPORTED_KINDS = new Set([
   "damage",
@@ -39,7 +40,8 @@ const SUPPORTED_KINDS = new Set([
   "cleanse",
   "dispel",
   "persistent_zone",
-  "scheduled_effect"
+  "scheduled_effect",
+  "summon_entity"
 ]);
 
 const MULTI_TARGET_SCOPES = new Set([
@@ -158,7 +160,8 @@ function applyDamageEffect({
   skill,
   effect,
   atMs,
-  combatAtMs
+  combatAtMs,
+  contactedEntityId = undefined
 }) {
   const damage = computeCombatDamageV1({
     state,
@@ -183,7 +186,8 @@ function applyDamageEffect({
     damage: damage.damage,
     atMs: combatAtMs,
     hitsIntangible: skill.hitsIntangible === true,
-    incomingKind: skill.form ?? "scheduled"
+    incomingKind: skill.form ?? "scheduled",
+    contactedEntityId
   });
 
   return Object.freeze({
@@ -240,6 +244,8 @@ export function applyImmediateTacticalEffectsV1({
   battleFormat = null,
   thresholdDepth = 0,
   directDamageApplied = 0,
+  contactedEntityId = undefined,
+  blockedByBarrierTargetId = null,
   allowLifeSteal = true
 }) {
   const unsupported =
@@ -309,6 +315,10 @@ export function applyImmediateTacticalEffectsV1({
     }
 
     if (effect.kind === "scheduled_effect") {
+      // A target-bound payload cannot be scheduled through a wall that
+      // physically intercepted this same attack at its actual impact.
+      if (blockedByBarrierTargetId === targetId && actorId !== targetId &&
+          effect.targetScope !== "self") continue;
       const scheduled =
         scheduleSkillEffectV1({
           state: nextState,
@@ -330,6 +340,7 @@ export function applyImmediateTacticalEffectsV1({
         skillId: skill.id,
         scheduledEffectId:
           scheduled.record.id,
+        ...(scheduled.record.visualCue?{visualCue:scheduled.record.visualCue}:{}),
         dueAtMs:
           scheduled.record.dueAtMs
       }));
@@ -347,6 +358,17 @@ export function applyImmediateTacticalEffectsV1({
       });
 
     for (const affectedId of affectedIds) {
+      const interceptedTarget = blockedByBarrierTargetId === affectedId && actorId !== affectedId;
+      if (interceptedTarget) {
+        if (effect.kind === "damage") {
+          // Tactical-only damage still hits the physical wall, but NEVER
+          // continues to the fighter if an earlier component destroyed it.
+          if (!(nextState.combatEntities ?? []).some(entry =>
+            entry.id === contactedEntityId && entry.hp > 0)) continue;
+        } else if (isHostileEffect(effect) || effect.kind === "consume_marker") {
+          continue;
+        }
+      }
       // The impact snapshot is immutable: an earlier hit in the same skill
       // cannot suppress its explicitly authored bonus against a sleeper.
       if(!targetMeetsEffectConditionV1({state:conditionState,targetActorId:affectedId,
@@ -375,6 +397,17 @@ export function applyImmediateTacticalEffectsV1({
           }
           continue;
         }
+      }
+      if (effect.kind === "summon_entity") {
+        const summoned=createCombatBarrierV1({state:nextState,sourceActorId:actorId,
+          protectedActorId:affectedId,sourceSkillId:skill.id,effect,atMs:combatAtMs});
+        nextState=summoned.state;
+        events.push(Object.freeze({type:summoned.record?"combat-entity-created":"combat-entity-rejected",
+          atMs,actorId:affectedId,sourceActorId:actorId,skillId:skill.id,
+          entityId:summoned.record?.id??null,
+          maxHp:summoned.record?.maxHp??0,
+          reason:summoned.record?null:summoned.outcome}));
+        continue;
       }
       if (effect.kind === "knockout") {
         const victim=fighterOf(nextState,affectedId);
@@ -411,7 +444,8 @@ export function applyImmediateTacticalEffectsV1({
           skill,
           effect,
           atMs,
-          combatAtMs
+          combatAtMs,
+          contactedEntityId
         });
         nextState = applied.state;
         // Only damage dealt by this immediate skill to its designated enemy
@@ -420,24 +454,17 @@ export function applyImmediateTacticalEffectsV1({
             ["target", "all_enemies"].includes(effect.targetScope)) {
           lifeStealDamage += applied.event.appliedDamage;
         }
-        events.push(applied.event);
+        events.push(interceptedTarget
+          ? Object.freeze({...applied.event,type:"combat-entity-hit",entityId:contactedEntityId})
+          : applied.event);
         continue;
       }
 
       if (effect.kind === "heal") {
-        const before = fighterOf(
-          nextState,
-          affectedId
-        ).hp;
-        nextState = withFighterHp(
-          nextState,
-          affectedId,
-          before + effect.amount
-        );
-        const after = fighterOf(
-          nextState,
-          affectedId
-        ).hp;
+        const healed=applyCombatHealV1({state:nextState,targetActorId:affectedId,amount:effect.amount,atMs:combatAtMs});
+        nextState=healed.state;
+        const before=healed.hpBefore;
+        const after=healed.hpAfter;
         events.push(Object.freeze({
           type: "heal",
           atMs,
@@ -445,7 +472,7 @@ export function applyImmediateTacticalEffectsV1({
           sourceActorId: actorId,
           skillId: skill.id,
           requested: effect.amount,
-          applied: after - before,
+          applied: healed.applied,
           hpBefore: before,
           hpAfter: after
         }));
@@ -703,14 +730,15 @@ export function applyImmediateTacticalEffectsV1({
         Math.round(lifeStealDamage * effect.percent) / 100
       );
       if (requested <= 0) continue;
-      const before = fighterOf(nextState, actorId).hp;
-      nextState = withFighterHp(nextState, actorId, before + requested);
-      const after = fighterOf(nextState, actorId).hp;
+      const healed=applyCombatHealV1({state:nextState,targetActorId:actorId,amount:requested,atMs:combatAtMs});
+      nextState=healed.state;
+      const before=healed.hpBefore;
+      const after=healed.hpAfter;
       events.push(Object.freeze({
         type: "heal", lifeSteal: true, atMs, actorId,
         sourceActorId: actorId, skillId: skill.id,
         damageBasis: lifeStealDamage, requested,
-        applied: after - before, hpBefore: before, hpAfter: after
+        applied: healed.applied, hpBefore: before, hpAfter: after
       }));
     }
   }

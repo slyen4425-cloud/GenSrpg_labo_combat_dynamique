@@ -1,0 +1,139 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "armure-de-pointe",
+    "description": "NA",
+    "requiredLevel": 5,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "armure-de-pointe",
+      "name": "Armure de pointe",
+      "category": "counter",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "nature",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 700,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 30000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "id": "status-1",
+            "kind": "damage_reflection",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 10000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "percent": 100,
+            "incomingKinds": [
+              "contact"
+            ]
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:armure-de-pointe",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "armure-de-pointe",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-armure-de-pointe-01"
+        }
+      },
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-a3d02c0f",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {
+        "status-1": {
+          "mode": "sprite",
+          "tintBlinkEnabled": false,
+          "tintBlinkPeriodMs": 600,
+          "tintColor": "#9b59d0",
+          "tintOpacity": 0.35,
+          "sprite": {
+            "playbackMode": "hold-last",
+            "offsetX": 19,
+            "offsetY": 0,
+            "assetId": "pack:capture:sprite-armure-ronces-plante-carnivore-back-01",
+            "opponentAssetId": "pack:capture:sprite-armure-ronces-plante-carnivore-01",
+            "displayScale": 1.01,
+            "opacity": 1,
+            "offsetMode": "custom",
+            "opponentOffsetX": -18,
+            "opponentOffsetY": -30
+          }
+        }
+      },
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}

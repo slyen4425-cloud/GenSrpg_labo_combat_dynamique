@@ -50,6 +50,7 @@ function simpleChange(s){
     return modifier(stat(s.statId),(s.modifierMode==="percent"?s.percent:s.deltaPoints),unit);
   }
   if(s.kind==="outgoing_damage_modifier")return modifier("les dégâts infligés",s.modifierPct,"%");
+  if(s.kind==="incoming_effect_modifier")return modifier(s.affectedPolarity==="beneficial"?"les soins reçus":s.affectedPolarity==="both"?"les dégâts et soins reçus":"les dégâts reçus",s.modifierPct,"%");
   if(s.kind==="energy_regen_modifier")return modifier("la régénération d'énergie",s.modifierPct,"%");
   if(s.kind==="skill_cooldown_rate_modifier")return modifier("la vitesse de recharge des compétences",s.modifierPct,"%");
   if(s.kind==="approach_time_modifier")return modifier("le temps d'approche",s.modifierPct,"%");
@@ -101,7 +102,7 @@ function statusStory(s){
     case "triggered_buff":line="Déclenche un effet sous certaines conditions";break;
     default:{
       const change=simpleChange(s);
-      if(change)return finish((change.positive?"Augmente ":"Réduit ")+change.text+" "+end);
+      if(change)return [finish((change.positive?"Augmente ":"Réduit ")+change.text+" "+end)];
       line="Applique un effet (« "+(s.label??s.kind)+" »)";
     }
   }
@@ -141,10 +142,25 @@ function statusStory(s){
 }
 function statusSentence(effect){
   const result=statusStory(effect.status);
-  if(effect.targetScope==="self"||effect.status.kind==="triggered_buff")return result;
+  if(effect.targetScope==="self") {
+    // The caster is the recipient. Harmful periodic effects must never
+    // read like attacks on the selected enemy, regardless of the skill form.
+    const verb=effect.status.kind==="damage_over_time"?"Inflige ":
+      effect.status.kind==="heal_over_time"?"Rend ":null;
+    const replacement=effect.status.kind==="damage_over_time"?
+      "La créature qui utilise cette capacité subit ":
+      "La créature qui utilise cette capacité récupère ";
+    return verb?result.map((line,i)=>i===0?line.replace(verb,replacement):line):result;
+  }
+  if(effect.status.kind==="triggered_buff")return result;
   // Present targets only when they differ from the default self-effect.
   return result.map((line,i)=>i===0?
     line.replace(/\.$/,"")+" "+(effect.targetScope==="target"?"sur la cible":"sur "+subject(effect.targetScope))+".":line);
+}
+// The skill editor and the Bestiary share this status projection; neither
+// owns a parallel translation of durations, target scopes or periodic ticks.
+export function describeCaptureStatusEffectV1(effect) {
+  return Object.freeze(statusSentence(effect));
 }
 function penetrates(e){
   const clauses=[];
@@ -154,16 +170,29 @@ function penetrates(e){
     "ignore la réduction des dégâts":"ignore "+num(e.ignoreDamageReductionPct)+" % de la réduction des dégâts");
   return clauses;
 }
-function effectSentence(e){
+function effectSentence(e,{perCharge=false}={}){
   switch(e.kind){
-    case "damage":return [finish("Inflige "+num(e.amount)+" dégâts"+(e.channel?" "+elementOf(e.channel):"")+
+    case "damage":return [finish((e.targetScope==="self"?
+      "La créature qui utilise cette capacité subit ":"Inflige ")+num(e.amount)+" dégâts"+
+      (e.channel?" "+elementOf(e.channel):"")+
+      (perCharge?" par charge consommée":"")+
       onTarget(e.targetScope)+(penetrates(e).length?" et "+words(penetrates(e)):""))];
-    case "heal":return [finish("Rend "+num(e.amount)+" PV"+onTarget(e.targetScope))];
-    case "energy_restore":return [finish("Rend "+num(e.amount)+" points d'énergie"+onTarget(e.targetScope))];
-    case "energy_drain":return [finish("Retire "+num(e.amount)+" points d'énergie"+onTarget(e.targetScope))];
+    case "heal":return [finish("Rend "+num(e.amount)+" PV"+(perCharge?" par charge consommée":"")+onTarget(e.targetScope))];
+    case "energy_restore":return [finish("Rend "+num(e.amount)+" points d'énergie"+(perCharge?" par charge consommée":"")+onTarget(e.targetScope))];
+    case "energy_drain":return [finish("Retire "+num(e.amount)+" points d'énergie"+(perCharge?" par charge consommée":"")+onTarget(e.targetScope))];
     case "life_steal":return [finish("Récupère "+num(e.percent)+" % des dégâts infligés sous forme de PV"+
       (e.maxHeal!=null?" (maximum "+num(e.maxHeal)+" PV)":""))];
     case "knockout":return [finish("Met "+subject(e.targetScope)+" K.O.")];
+    case "summon_entity":return [finish("Invoque une barrière destructible protégeant "+
+      (e.targetScope==="self"?"la créature":"sa cible")+
+      " : "+num(e.hpPerStatPoint)+" PV par point de la statistique "+
+      (e.statId==="glace"?"Glace":e.statId)+
+      " du lanceur au moment de l'invocation. Intercepte : "+
+      words(e.interceptKinds.map(k=>k==="contact"?"contact":k==="beam"?"rayons":"projectiles"))+
+      " ; la frappe s'arrête au mur même si celui-ci est détruit.")];
+    case "force_reserve_switch":return [
+      "Force la créature ennemie choisie dans sa réserve à entrer en combat à la place de la créature adverse active, si l'attaque touche."
+    ];
     case "apply_status":return statusSentence(e);
     case "cleanse":return [finish(e.statusTags.length===0?
       (e.targetScope==="target"?"Supprime tous les effets et marqueurs négatifs de la cible":
@@ -199,8 +228,8 @@ function effectSentence(e){
     case "consume_marker":return [
       finish("Consomme "+(e.count==="all"?"les charges":num(e.count)+" charges")+" de "+e.markerId+
         onTarget(e.targetScope)+(e.minimum>1?" (au moins "+num(e.minimum)+")":"")+
-        (e.perCharge?" ; les effets augmentent avec les charges consommées":"")),
-      ...descriptions(e.effects)];
+        ""),
+      ...descriptions(e.effects,{perCharge:e.perCharge===true})];
     case "scheduled_effect":return [finish("Après "+duration(e.trigger.delayMs)+", "+
       descriptions(e.effects).map(x=>lowerSentence(x)).join(" et "))];
     case "persistent_zone":return groupZones([e]);
@@ -246,7 +275,7 @@ function groupZones(zones){
     " après un rappel";
   return [finish(text)];
 }
-function descriptions(effects){
+function descriptions(effects,{perCharge=false}={}){
   const list=effects??[], used=new Set(),out=[];
   for(let i=0;i<list.length;i++){
     if(used.has(i))continue;
@@ -261,7 +290,7 @@ function descriptions(effects){
       const clause=e.targetScope==="target"?
         "et supprime tous ses effets et marqueurs négatifs":
         "et supprime tous les effets et marqueurs négatifs"+onTarget(e.targetScope);
-      out.push(finish("Rend "+num(e.amount)+" PV "+subject+" "+clause));
+      out.push(finish("Rend "+num(e.amount)+" PV"+(perCharge?" par charge consommée":"")+" "+subject+" "+clause));
     }else if(e.kind==="persistent_zone"){
       const same=[];
       for(let j=i;j<list.length;j++){
@@ -303,7 +332,7 @@ function descriptions(effects){
       }
       out.push(groupChangeSentence(list,same));
     }else{
-      out.push(...effectSentence(e));
+      out.push(...effectSentence(e,{perCharge}));
     }
   }
   return out.filter(Boolean);
@@ -359,7 +388,11 @@ function specialRules(d){
   const list=[];
   const exceptionalReach=exceptionalReachSentence(d);
   if(exceptionalReach)list.push(exceptionalReach);
-  if(d.dodgeable===false)list.push("Cette attaque ne peut pas être esquivée.");
+  // Dodgeability describes a hostile attack only; a wall or heal is not
+  // an attack, even when its SkillDefinition explicitly marks false.
+  if(d.dodgeable===false && d.category==="offensive" &&
+     d.targetRelations.includes("enemy") && d.form!=="self")
+    list.push("Cette attaque ne peut pas être esquivée.");
   if(d.reaction.reflectForms.length)list.push(finish("Renvoie les attaques "+
     words(d.reaction.reflectForms)));
   if(d.reaction.blockForms.length)list.push(finish("Bloque les attaques "+
@@ -377,11 +410,38 @@ function specialRules(d){
 export function describeCaptureSkillV1(input) {
   const d=normalizeSkillDefinition(input);
   const phrases=[];
+  if(d.chargedAttack){
+    const c=d.chargedAttack;
+    const maxDamage=c.baseDamage+(c.maxCharges-1)*c.bonusDamagePerCharge;
+    phrases.push(finish("Inflige "+num(c.baseDamage)+" dégâts de base. Après chaque préparation, une nouvelle activation pendant la fenêtre de "+duration(c.reactivationWindowMs)+
+      " ajoute "+num(c.bonusDamagePerCharge)+
+      " dégâts supplémentaires et augmente la taille du cast et du projectile de "+num(c.sizeIncreasePct)+
+      " %, jusqu'à "+num(c.maxCharges)+" activations ("+num(maxDamage)+" dégâts maximum). Chaque activation exige une préparation complète et consomme "+num(d.energyCost)+" énergie. La fenêtre pour réactiver commence après chaque préparation ; à la charge maximale, le tir part une fois la dernière préparation terminée."));
+  }
+  if(d.chargedEffects){
+    const c=d.chargedEffects;
+    phrases.push(finish("Charge les soins, buffs ou debuffs : chaque activation après une préparation complète augmente leur intensité de "+num(c.potencyIncreasePct)+
+      " % (maximum "+num(c.maxCharges)+" activations), sans changer leurs durées. Chaque activation consomme "+num(d.energyCost)+
+      " énergie et peut agrandir le cast de "+num(c.sizeIncreasePct)+" %. Nouvelle activation possible pendant "+duration(c.reactivationWindowMs)+
+      " après la préparation. Une seule application à l'impact, immunités conservées."));
+  }
   if(d.effect.damage>0)phrases.push(finish("Inflige "+num(d.effect.damage)+" dégâts"));
   if(d.effect.heal>0)phrases.push(finish("Rend "+num(d.effect.heal)+" PV"));
   if(d.effect.stunMs>0)phrases.push(finish("Étourdit pendant "+duration(d.effect.stunMs)));
   if(d.effect.interruptsPreparation)phrases.push("Interrompt l'action en préparation.");
   phrases.push(...descriptions(d.effects));
+  if(d.channeling){
+    const ch=d.channeling;
+    const pulses=descriptions(ch.effects).map(x=>lowerSentence(x));
+    phrases.push(finish("Canalise "+(pulses.length?pulses.join(" et "):"ses effets")+
+      " "+frequency(ch.tickIntervalMs)+
+      (ch.energyCostPerTick>0?", consommant "+num(ch.energyCostPerTick)+" énergie par pulsation":"")+
+      (ch.maxTicks!=null?", pendant "+num(ch.maxTicks)+" pulsations maximum":"")+
+      (ch.maxDurationMs>0?", durant "+duration(ch.maxDurationMs)+" maximum":"")+
+      (ch.stopOnDamage?", interrompue par les dégâts reçus":"")+
+      (ch.stopOnStun?", l'étourdissement":"")+
+      (ch.stopOnSilence?", le silence":"")));
+  }
   if(d.contactHold){
     const hold=d.contactHold,damage=hold.effects.filter(x=>x.kind==="damage");
     const steal=hold.effects.filter(x=>x.kind==="life_steal");

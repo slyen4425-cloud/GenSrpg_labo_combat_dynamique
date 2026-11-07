@@ -68,7 +68,8 @@ export function createRosterSession({
   roster,
   fighterConfigs,
   battleFormat = null,
-  recallCooldownMs
+  recallCooldownMs,
+  cancelActiveActionForForcedSwitch = () => {}
 }) {
   const voluntaryCooldownMs = normalizeRosterVoluntarySwitchCooldownMsV1(recallCooldownMs);
   if (!combatSession || typeof combatSession.snapshot !== "function") {
@@ -82,6 +83,8 @@ export function createRosterSession({
   }
 
   const teams = new Map();
+  // Runtime resolutions are consumable once; roster effects never execute twice.
+  const consumedTimedReserveResolutions = new WeakSet();
 
   for (const [teamId, rawTeam] of Object.entries(roster.teams)) {
     const slotId = requiredString(rawTeam.slotId, `${teamId}.slotId`);
@@ -218,7 +221,7 @@ export function createRosterSession({
 
   function reserveEffectsForSkill(skill) {
     const effects = [
-      ...(skill.effects ?? [])
+      ...(skill.effects ?? []).filter(effect => effect.kind !== "force_reserve_switch")
     ];
 
     if (
@@ -481,6 +484,29 @@ export function createRosterSession({
       recalledMemberId, memberId: member.id, creatureId: member.creatureId, displayName: member.displayName });
   }
 
+  // No new roster authority: this is the existing atomic slot replacement,
+  // but unlike a voluntary recall it does not start/reset recall cooldown.
+  function forceSwitchMemberBySkill(team, member) {
+    const recalledMemberId = team.activeMemberId;
+    cancelActiveActionForForcedSwitch(team.slotId);
+    syncActiveSnapshot(team);
+    const fighter = cloneFighterForSlot(
+      member.fighterConfig, team.slotId, member.savedFighter,
+      combatSession.snapshot().elapsedMs
+    );
+    combatSession.replaceFighter(team.slotId, fighter, {
+      clearSourceZones: true,
+      departingMemberId: recalledMemberId
+    });
+    team.activeMemberId = member.id;
+    team.selectedReserveMemberId = recalledMemberId;
+    return Object.freeze({
+      ok:true,outcome:"forced_switched",teamId:team.id,slotId:team.slotId,
+      recalledMemberId,memberId:member.id,creatureId:member.creatureId,
+      displayName:member.displayName
+    });
+  }
+
   function replaceKnockedOut(teamId) {
     const team = teamOf(teamId);
     if (!team.activeMemberId) {
@@ -613,7 +639,9 @@ export function createRosterSession({
     actorId,
     targetRef: targetRefInput,
     skill,
-    preview = false
+    preview = false,
+    completedResolution = null,
+    expectedActiveMemberId = null
   }) {
     const targetRef =
       normalizeCombatTargetRefV1(
@@ -631,6 +659,9 @@ export function createRosterSession({
     }
 
     if (targetRef.scope === "active") {
+      if (skill.effects?.some(effect => effect.kind === "force_reserve_switch")) {
+        return Object.freeze({ok:false,outcome:"reserve_target_required"});
+      }
       return (preview ? combatSession.previewSkill : combatSession.useSkill)({
         actorId,
         targetId: targetRef.actorId,
@@ -674,6 +705,32 @@ export function createRosterSession({
       });
     }
 
+    // Timed reserve casts are paid and resolved by CombatRuntime against the
+    // active opponent. RosterSession alone settles the bench effects on hit.
+    // A missed, dodged, blocked, reflected or interrupted cast does nothing.
+    if (completedResolution !== null) {
+      if (preview || typeof completedResolution !== "object" ||
+          !completedResolution.ok || completedResolution.outcome !== "hit" ||
+          completedResolution.actionType !== "skill" ||
+          completedResolution.actorId !== actorId ||
+          completedResolution.targetId !== team.slotId ||
+          completedResolution.skillId !== skill.id ||
+          consumedTimedReserveResolutions.has(completedResolution)) {
+        return Object.freeze({ok:false,outcome:"unconfirmed_reserve_hit",targetRef});
+      }
+      if (expectedActiveMemberId !== null && team.activeMemberId !== expectedActiveMemberId)
+        return Object.freeze({ok:false,outcome:"reserve_target_changed",targetRef});
+    }
+
+    const forced = skill.effects?.some(effect => effect.kind === "force_reserve_switch") === true;
+    if (forced && relation !== "enemy") {
+      return Object.freeze({ok:false,outcome:"force_switch_enemy_only",targetRef});
+    }
+    if (forced && (!team.activeMemberId ||
+        Number(combatSession.snapshot().fighters[team.slotId]?.hp) <= 0)) {
+      return Object.freeze({ok:false,outcome:"force_switch_active_required",targetRef});
+    }
+
     const reserveEffects =
       reserveEffectsForSkill(skill);
     if (!reserveEffects.ok) {
@@ -710,7 +767,7 @@ export function createRosterSession({
           targetRelations: Object.freeze([...new Set([...skill.targetRelations, "self"])])
         })
       : stagedSkill;
-    const started = resolveSkillStart({
+    const started = completedResolution === null ? resolveSkillStart({
       state: currentState,
       actorId,
       targetId: team.slotId,
@@ -718,7 +775,7 @@ export function createRosterSession({
       skillSpeedMultiplier:
         combatSession.skillSpeedMultiplier,
       battleFormat
-    });
+    }) : Object.freeze({ok:true,action:completedResolution,events:Object.freeze([]),state:currentState});
     if (!started.ok) {
       return started;
     }
@@ -815,9 +872,12 @@ export function createRosterSession({
         ]
       );
 
+    const forcedResult = forced ? forceSwitchMemberBySkill(team, member) : null;
+    if (completedResolution !== null) consumedTimedReserveResolutions.add(completedResolution);
     return Object.freeze({
       ok: true,
-      outcome: "resolved",
+      outcome: forcedResult ? "forced_switched" : "resolved",
+      ...(forcedResult ?? {}),
       actorId,
       targetRef,
       relation,
@@ -825,13 +885,36 @@ export function createRosterSession({
       state: combatSession.snapshot(),
       events: Object.freeze([
         ...started.events,
-        ...tactical.events
+        ...tactical.events,
+        ...(forcedResult ? [Object.freeze({
+          type:"roster-forced-switch",atMs:now,actorId:team.slotId,
+          sourceActorId:actorId,teamId:team.id,
+          recalledMemberId:forcedResult.recalledMemberId,memberId:member.id
+        })] : [])
       ])
     });
   }
 
   function previewSkillOnTarget(options) {
     return useSkillOnTarget({...options,preview:true});
+  }
+
+  // The reserve selection is validated by RosterSession, but the cast against
+  // the currently visible defender uses the existing Combat Runtime clock,
+  // native reaction/dodge/counter and standard beam FX pipeline.
+  function prepareSkillOnTarget({actorId,targetRef,skill}) {
+    const preview = previewSkillOnTarget({actorId,targetRef,skill});
+    if (!preview.ok) return preview;
+    const team = teamOf(targetRef.teamId);
+    const staged = zeroEffectSkill(skill);
+    const relation = relationToReserveTeam(actorId,team);
+    return Object.freeze({
+      ok:true,outcome:"ready",targetId:team.slotId,
+      expectedActiveMemberId:team.activeMemberId,
+      skill:team.slotId === actorId && relation === "ally"
+        ? Object.freeze({...staged,targetRelations:Object.freeze([...new Set([...skill.targetRelations,"self"])])})
+        : staged
+    });
   }
 
   function applyCommandResolution(teamId, resolution) {
@@ -861,6 +944,7 @@ export function createRosterSession({
     reserveMemberSnapshot,
     useSkillOnTarget,
     previewSkillOnTarget,
+    prepareSkillOnTarget,
     selectReserve,
     recall,
     summon,

@@ -146,6 +146,15 @@ function resolvedVisual(
       ...(slot.trajectoryMode === "skyfall" ? {
         fallHeightPx: slot.fallHeightPx,
         fallOffsetXPx: slot.fallOffsetXPx
+      } : {}),
+      // V14 under-target position and motion belong to this same authored
+      // visual. Forward them to the FX renderer; do not rederive a second
+      // movement rule from the asset or the skill's gameplay definition.
+      ...(slot.trajectoryMode === "under_target" && slot.groundMotion != null ? {
+        groundMotion: slot.groundMotion,
+        groundOffsetXPx: slot.groundOffsetXPx,
+        groundOffsetYPx: slot.groundOffsetYPx,
+        groundRisePx: slot.groundRisePx
       } : {})
     })
   });
@@ -188,7 +197,7 @@ function resolvedAudio(audioAssetForId, slot) {
 }
 
 function semanticView(context) {
-  const actorView = ["impact", "clash-impact"].includes(context?.fxType)
+  const actorView = ["impact", "channel-pulse", "clash-impact"].includes(context?.fxType)
     ? context?.targetView : context?.sourceView;
   const view = context?.view ?? (["player", "opponent"].includes(actorView) ? actorView : "player");
   if (
@@ -275,6 +284,12 @@ function resolvedStatusPresentation(
         assetForId,
         {
           ...presentation.sprite,
+          // One status presentation, one sprite resolver: an authored second
+          // mask is exceptional; all ordinary statuses keep their main asset.
+          assetId:
+            view === "opponent" && presentation.sprite.opponentAssetId
+              ? presentation.sprite.opponentAssetId
+              : presentation.sprite.assetId,
           playbackMode:
             presentation.sprite.playbackMode ??
             "loop",
@@ -494,6 +509,11 @@ export function createCaptureSkillPresentationAssetsV2({
   return Object.freeze({
     presentationForSkill,
     statusPresentationFor,
+    // Share the canonical catalog resolver with persistent CombatEntity visuals.
+    // No duplicate asset registry or ID-to-URL translation in the battle UI.
+    visualAsset(assetId) {
+      return resolveAsset(assetId);
+    },
     audioAsset(assetId) {
       return resolveAudio(assetId);
     }

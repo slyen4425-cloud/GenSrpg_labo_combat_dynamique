@@ -106,6 +106,7 @@ export function scheduleSkillEffectV1({
         ? null
         : String(skillElement),
     hitsIntangible: hitsIntangible === true,
+    ...(effect.visualCue==="ground_mine"?{visualCue:"ground_mine"}:{}),
     scheduledAtMs: appliedAtMs,
     dueAtMs,
     effects: Object.freeze([

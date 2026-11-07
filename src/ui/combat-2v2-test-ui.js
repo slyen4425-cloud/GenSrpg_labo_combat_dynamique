@@ -1,3 +1,4 @@
+import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-bestiary-hp-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-barrier-dual-view-20261105-barrier-side-layout-20261105";
 import { captureReactionRechargeClockV1 } from "./capture-reaction-recharge-clock-v1.js";
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
@@ -9,23 +10,23 @@ import {
 import { captureCreatureReactionActionIdV1 } from "../contracts/capture-creature-defensive-reaction-v1.js";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-definition.js";
-import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js";
+import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105";
 import { createCombatSession } from "../core/combat/combat-session.js";
 import { createEmbeddedCombatLifecycleV1 } from "./embedded-combat-lifecycle-v1.js";
-import { createCombatRuntime } from "../core/combat/combat-runtime.js";
-import { createBattleActorAiController, CAPTURE_AI_TACTICS_V1_DEFAULT } from "../core/combat/battle-actor-ai-controller.js";
+import { createCombatRuntime } from "../core/combat/combat-runtime.js?v=wall-state-20261031-wall-geometry-20261031-wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-solar-beneficial-contact-20261103";
+import { createBattleActorAiController, CAPTURE_AI_TACTICS_V1_DEFAULT } from "../core/combat/battle-actor-ai-controller.js?v=ai-charge-hold-20261105";
 import {
   isSkillTargetAllowed,
   targetRelation
 } from "../core/combat/targeting.js";
-import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
-import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-native-bidirectional-20261028";
+import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-wall-channel-loop-audio-20261103-solar-beneficial-contact-20261103";
+import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-native-bidirectional-20261028-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-wall-live-r2-20261101-wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-wall-channel-loop-audio-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103";
 import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
 import { createCombatEnergyOrbsRendererV1 } from "../adapters/renderer/combat-energy-orbs-v1.js";
 import { createCombatCastChargePresenterV1 } from "../adapters/renderer/combat-cast-charge-presentation-v1.js";
-import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
+import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js?v=wall-channel-loop-audio-20261103";
 import { createPersistentZoneAudioSyncV1 } from "../adapters/audio/persistent-zone-audio-sync-v1.js";
 
 const DATA_URLS = Object.freeze({
@@ -362,7 +363,6 @@ function normalizedInjectedCombatSource(input) {
     roster: input.roster ?? null,
     fighterConfigs: input.fighterConfigs ?? null,
     skillIdsByCreature: input.skillIdsByCreature ?? null,
-    skillIdsByRosterMember: input.skillIdsByRosterMember ?? null,
     ...(input.recallPreparationMs === undefined ? {} : { recallPreparationMs: input.recallPreparationMs }),
     gameOptions:
       normalizeCaptureGameOptionsV1(
@@ -593,7 +593,7 @@ export async function mountCoop2v2Test({
     skills,
     skillsById,
     skillIdsByActor,
-    roster: rosterDefinition, fighterConfigs, skillIdsByCreature, skillIdsByRosterMember,
+    roster: rosterDefinition, fighterConfigs, skillIdsByCreature,
     skillSpeedMultiplier, recallPreparationMs, gameOptions
   } = await loadCoop2v2CombatSource({
     nativeCombatSource,
@@ -601,28 +601,28 @@ export async function mountCoop2v2Test({
     formatUrl
   });
 
-  // The Capture consumer only supplies its validated HP snapshot. Combat
-  // owns the sole session, clock, damage, AI, and result lifecycle.
+  // An embedded host supplies only an already validated, Capture-owned HP
+  // snapshot. The Lab still constructs the ONLY CombatSession and controls
+  // all rules, state, effects and the single native combat clock.
   const initialHpByActor = embeddedBattle?.initialHpByActor ?? null;
-  if (embeddedBattle !== null && (!initialHpByActor ||
-      typeof initialHpByActor !== "object" || Array.isArray(initialHpByActor) ||
-      Object.keys(initialHpByActor).length !== fighters.length ||
-      fighters.some(fighter =>
-        !Object.prototype.hasOwnProperty.call(initialHpByActor, fighter.id) ||
-        !Number.isFinite(initialHpByActor[fighter.id]) ||
-        initialHpByActor[fighter.id] <= 0 ||
-        initialHpByActor[fighter.id] > fighter.maxHp))) {
+  if(embeddedBattle!==null&&(!initialHpByActor||
+     typeof initialHpByActor!=="object"||Array.isArray(initialHpByActor)||
+     Object.keys(initialHpByActor).length!==fighters.length||
+     fighters.some(fighter=>!Object.prototype.hasOwnProperty.call(initialHpByActor,fighter.id)||
+       !Number.isFinite(initialHpByActor[fighter.id])||
+       initialHpByActor[fighter.id]<=0||
+       initialHpByActor[fighter.id]>fighter.maxHp))) {
     throw new TypeError("Embedded native Combat HP snapshot must match every active Lab fighter");
   }
-  const nativeFighters = initialHpByActor === null ? fighters :
-    fighters.map(fighter => ({...fighter,initialHp:initialHpByActor[fighter.id]}));
+  const nativeFighters = initialHpByActor===null ? fighters :
+    fighters.map(fighter=>({...fighter,initialHp:initialHpByActor[fighter.id]}));
   const session = createCombatSession({
     distance: "medium",
     battleFormat: format,
     fighters: nativeFighters,
     skillSpeedMultiplier
   });
-  const embeddedLifecycle = embeddedBattle === null ? null :
+  const embeddedLifecycle=embeddedBattle===null?null:
     createEmbeddedCombatLifecycleV1({format});
 
   const arena = requiredElement(root, "[data-combat-arena]");
@@ -738,6 +738,11 @@ export async function mountCoop2v2Test({
     ])
   );
 
+  const combatEntityOverlay=createCombatEntityOverlayV1({fighterContainers,arenaHost:arena,
+    teamOf:actorId=>format.teamOf(actorId),
+    assetForId:assetId=>presentationAssets?.visualAsset?.(assetId)??null
+  });
+
   const motionAnchors = Object.fromEntries(
     format.actors.map((actor) => [
       actor.actorId,
@@ -801,6 +806,9 @@ export async function mountCoop2v2Test({
   let disposed = false;
   let selectedTargetId = previewFormat.initialTargetId;
   let pendingSkillId = null;
+  // Only the selected reserve reference lives in UI; CombatRuntime owns the
+  // entire clock/reactions, and RosterSession owns all applied bench effects.
+  const pendingTimedReserveByActor = new Map();
   let runtime = null;
   let rosterController = null;
   let rosterPanel = null;
@@ -883,6 +891,9 @@ export async function mountCoop2v2Test({
     },
     targetCollisionModelFor(slotId) {
       return visuals.getCollisionModelFor(slotId);
+    },
+    barrierCollisionRectsFor({sourceActorId,targetActorId,kind}) {
+      return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId,kind});
     },
     waveTargetsFor(fromSlot) {
       // This is only a list of visible opponent models. The Runtime
@@ -977,8 +988,14 @@ export async function mountCoop2v2Test({
     visuals,
     fx,
     audio: combatAudio,
+    barrierRectsFor({sourceActorId,targetActorId,kind}) {
+      return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId,kind});
+    },
     onActionContact(contact) {
       return runtime?.reportActionContact(contact) ?? null;
+    },
+    onActionTravelEnd(approach) {
+      return runtime?.reportGroundApproachEnd(approach) ?? null;
     }
   });
 
@@ -1111,6 +1128,7 @@ export async function mountCoop2v2Test({
 
   function renderState(state = session.snapshot()) {
     statusFx?.sync(state);
+    combatEntityOverlay.render(state);
     for (const actor of format.actors) {
       const fighter = state.fighters[actor.actorId];
       const refs = hpRefs[actor.actorId];
@@ -1138,6 +1156,10 @@ export async function mountCoop2v2Test({
     fx.syncPersistentZones(
       state.persistentZones ?? []
     );
+    const mines=fx.syncScheduledMines(state);
+    for(const mine of mines.triggered)
+      combatAudio.play({type:"impact",skillId:mine.skillId,
+        actorSlot:mine.actorId,targetSlot:mine.targetId,loop:false});
     zoneAudio.sync(
       state.persistentZones ?? []
     );
@@ -1182,8 +1204,10 @@ export async function mountCoop2v2Test({
           ? "true" : "false";
       button.dataset.targeting =
         pendingSkillId === skill.id ? "true" : "false";
-      button.title =
-        button.dataset.targetRequired === "true"
+      const statMissing = preview?.outcome === "no_stat_points";
+      button.title = statMissing
+        ? `Invocation impossible : ${preview.statId} = 0 point`
+        : button.dataset.targetRequired === "true"
           ? skill.name + " — choisir une cible autorisée"
           : skill.name;
 
@@ -1204,11 +1228,12 @@ export async function mountCoop2v2Test({
             )
           : 1;
 
-      cooldown.textContent =
-        remainingCooldownMs > 0
+      cooldown.textContent = statMissing
+        ? `${preview.statId} : 0 point — mur impossible`
+        : remainingCooldownMs > 0
           ? `Recharge ${(remainingCooldownMs / 1000).toFixed(1)} s`
           : "";
-      cooldown.hidden = remainingCooldownMs <= 0;
+      cooldown.hidden = !statMissing && remainingCooldownMs <= 0;
       button.dataset.combatCooldown =
         remainingCooldownMs > 0
           ? String(Math.ceil(remainingCooldownMs))
@@ -1220,8 +1245,24 @@ export async function mountCoop2v2Test({
         String(cooldownProgress)
       );
 
+      const chargePreview = runtime.previewChargedSkillRetrigger({
+        actorId:controlledActorId(),skillId:skill.id
+      });
+      const canCharge = chargePreview.ok;
+      const owned = runtime.activeActionFor(controlledActorId());
+      const charge = owned?.actionId === skill.id ? owned.chargeState : null;
+      if (charge && !owned.released) {
+        cooldown.textContent = chargePreview.outcome === "charge_preparing"
+          ? `Charge ${charge.chargeCount}/${charge.maxCharges} · ${(chargePreview.remainingCastMs/1000).toFixed(1)} s`
+          : canCharge ? `Renforcer ${charge.chargeCount}/${charge.maxCharges}`
+          : chargePreview.outcome === "insufficient_energy" ? "Énergie insuffisante"
+          : `Charge ${charge.chargeCount}/${charge.maxCharges}`;
+        cooldown.hidden = false;
+        button.dataset.cooldownActive = "false";
+      }
       button.disabled =
-        !localAlive || lockedByAction || (options.availableIds.length === 0 && reserveOptions.length === 0);
+        !localAlive || (!canCharge && (lockedByAction ||
+          (options.availableIds.length === 0 && reserveOptions.length === 0)));
     }
 
     if (dodgeButton) {
@@ -1454,17 +1495,30 @@ export async function mountCoop2v2Test({
       renderAvailability();
       return false;
     }
-    const result = rosterController.useSkillOnTarget({actorId:controlledActorId(),targetRef,skill});
+    const actorId=controlledActorId();
+    const staged=rosterController.prepareSkillOnTarget({actorId,targetRef,skill});
+    if (!staged.ok) {
+      setStatus(skill.name + " : " + staged.outcome + ".", "warn");
+      renderAvailability();
+      return false;
+    }
+    // Register the selected bench member before starting: a zero-duration
+    // skill can be resolved synchronously by the canonical Runtime.
+    const intent={skill,targetRef,expectedActiveMemberId:staged.expectedActiveMemberId,
+      targetId:staged.targetId};
+    pendingTimedReserveByActor.set(actorId,intent);
+    const result=runtime.startSkill({actorId,targetId:staged.targetId,skill:staged.skill});
     if (!result.ok) {
+      if (pendingTimedReserveByActor.get(actorId)===intent)pendingTimedReserveByActor.delete(actorId);
       setStatus(skill.name + " : " + result.outcome + ".", "warn");
       renderAvailability();
       return false;
     }
-    pendingSkillId = null;
-    const member = rosterController.snapshot()[targetRef.teamId]?.members.find(x=>x.id===targetRef.memberId);
-    setStatus(skill.name + " sur " + (member?.displayName ?? targetRef.memberId) + " (réserve) : effet appliqué.", "ok");
-    renderState();
-    queueAiDecisions();
+    pendingSkillId=null;
+    const member=rosterController.snapshot()[targetRef.teamId]?.members.find(x=>x.id===targetRef.memberId);
+    setStatus(skill.name + " se prépare : liane vers " +
+      (member?.displayName ?? targetRef.memberId) + ". L'adversaire peut esquiver ou contrer.", "accent");
+    renderAvailability();
     return true;
   }
 
@@ -1560,6 +1614,17 @@ export async function mountCoop2v2Test({
     button.append(label, cooldown);
 
     const onClick = () => {
+      const active = runtime.activeActionFor(controlledActorId());
+      if (active?.actionId === skill.id && active.chargeState) {
+        const next = runtime.startSkill({
+          actorId:controlledActorId(),targetId:active.targetId,skill
+        });
+        setStatus(next.ok
+          ? `${skill.name} renforcée : ${next.chargeCount}/${next.maxCharges} activations.`
+          : `${skill.name} : ${next.outcome}.`,next.ok?"accent":"warn");
+        renderAvailability();
+        return;
+      }
       const options = skillTargetOptions(skill);
       const reserveOptions = reserveSkillTargetOptions(skill);
       if (reserveOptions.length > 0) {
@@ -1642,7 +1707,7 @@ export async function mountCoop2v2Test({
         const actorId = controller.snapshot().actorId;
         if (
           Number(state.elapsedMs) <
-          Number(aiReadyAt.get(actorId) ?? 0)
+          Number(aiReadyAt.get(actorId) ?? 0) && !controller.pendingCharge()
         ) {
           continue;
         }
@@ -1671,7 +1736,11 @@ export async function mountCoop2v2Test({
 
   runtime = createCombatRuntime({
     session,
+    groundContactResolution: "visible",
     enableExpandingWaveMultiTarget: previewFormat.enemyActorIds.length === 2,
+    readBarrierContact({sourceActorId,targetActorId,kind,skillId}) {
+      return fx.barrierContactFor({sourceActorId,targetActorId,kind,skillId});
+    },
     readZoneSpatialContext: state => fx.sampleZoneSpatialContext(state.persistentZones ?? []),
     onState(state) {
       impactHealthCue.clear();
@@ -1698,6 +1767,21 @@ export async function mountCoop2v2Test({
         damageFeedback?.flash(feedback.actorId, { delayMs });
       }
     },
+    onChannelStart({actorId,targetId}) {
+      presenter.presentChannelStart({actorSlot:actorId,targetSlot:targetId});
+      if(actionRefs[actorId])actionRefs[actorId].textContent="Canalisation";
+    },
+    onChannelTick({actorId,targetId,skillId,tick}) {
+      // Same native tick and same FX/audio adapter in 1v1 and 2v2.
+      fx.play({type:"channel-pulse",skillId,fromSlot:actorId,targetSlot:targetId,durationMs:420});
+      combatAudio.play({type:"channel-pulse",skillId,actorSlot:actorId,targetSlot:targetId,loop:false});
+      if(actionRefs[actorId])actionRefs[actorId].textContent="Canalisation · "+tick;
+    },
+    onChannelEnd({actorId,reason}) {
+      presenter.endChannelPose({actorSlot:actorId});
+      if(actionRefs[actorId])actionRefs[actorId].textContent="Prêt";
+      renderState();queueAiDecisions();
+    },
     onContactHoldStart({actorId}) {
       if (actionRefs[actorId]) actionRefs[actorId].textContent = "Au contact";
     },
@@ -1711,6 +1795,7 @@ export async function mountCoop2v2Test({
     onClock(state) {
       statusFx?.syncCountdowns(state);
       renderAvailability();
+      if(aiControllers.some(controller=>controller.pendingCharge()))queueAiDecisions();
       for (const controller of aiControllers) {
         const decision = controller.maybeDodge({ elapsedMs: state.elapsedMs });
         if (decision.status === "dodged" || decision.status === "defended") {
@@ -1747,6 +1832,9 @@ export async function mountCoop2v2Test({
       const preparing =
         Boolean(progress.actionId) &&
         progress.phase === "preparation";
+      if (preparing && progress.chargeCount) {
+        presenter.presentChargeAmplification({actorSlot:progress.actorId,sizeMultiplier:progress.sizeMultiplier,durationMs:progress.preparationMs});
+      }
 
       setCharge(progress.actorId, {
         value: preparing ? progress.chargeProgress : 0,
@@ -1759,7 +1847,7 @@ export async function mountCoop2v2Test({
         ref.textContent = "Prêt";
       } else if (preparing) {
         ref.textContent =
-          `${progress.actionName} · ${(progress.remainingPreparationMs / 1000).toFixed(1)} s`;
+          `${progress.actionName} · ${(progress.remainingPreparationMs / 1000).toFixed(1)} s${progress.chargeCount ? ` · ${progress.chargeCount}/${progress.chargeMax} charges` : ""}`;
       } else {
         ref.textContent =
           `${progress.actionName} · ${progress.phase}`;
@@ -1796,6 +1884,30 @@ export async function mountCoop2v2Test({
         renderState();
         queueAiDecisions();
         return;
+      }
+      const reserveIntent=pendingTimedReserveByActor.get(resolution.actorId);
+      if (reserveIntent && reserveIntent.skill.id===resolution.skillId &&
+          reserveIntent.targetId===resolution.targetId) {
+        pendingTimedReserveByActor.delete(resolution.actorId);
+        if (resolution.ok && resolution.outcome==="hit") {
+          const result=rosterController.completeTimedSkillOnTarget({
+            actorId:resolution.actorId,targetRef:reserveIntent.targetRef,
+            skill:reserveIntent.skill,expectedActiveMemberId:reserveIntent.expectedActiveMemberId,
+            completedResolution:resolution
+          });
+          if (result.ok) {
+            const member=rosterController.snapshot()[reserveIntent.targetRef.teamId]?.members.find(
+              x=>x.id===reserveIntent.targetRef.memberId);
+            setStatus(reserveIntent.skill.name + " : " +
+              (member?.displayName ?? reserveIntent.targetRef.memberId) +
+              (result.outcome==="forced_switched" ? " capturée par la liane et forcée d'entrer en combat." : " touchée en réserve."), "ok");
+          } else {
+            setStatus(reserveIntent.skill.name + " : " + result.outcome + ".", "warn");
+          }
+        } else {
+          setStatus(reserveIntent.skill.name + " : " + resolution.outcome +
+            " — aucun remplacement ni marqueur appliqué.", "warn");
+        }
       }
       const presentation = presenter.presentOutcome({
         resolution,
@@ -1845,6 +1957,7 @@ export async function mountCoop2v2Test({
     },
     onInterrupted(result) {
       const actorId = result.action?.actorId;
+      if (actorId) pendingTimedReserveByActor.delete(actorId);
       if (actorId && actionRefs[actorId]) {
         actionRefs[actorId].textContent = "Interrompu";
         setCharge(actorId);
@@ -1901,10 +2014,11 @@ export async function mountCoop2v2Test({
       recallPreparationMs
     );
     rosterController = createCaptureCombatRosterControllerV1({
-      session, rosterDefinition, fighterConfigs, skillIdsByCreature, skillIdsByRosterMember, visuals,
+      session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals,
       battleFormat:format,
       recallCooldownMs: gameOptions.recallCooldownMs,
       beforeActorChanged: actorId => presenter.cancelActionPresentation(actorId),
+      cancelActiveActionForForcedSwitch: actorId => runtime?.cancelActionsForActor(actorId,{reason:"forced_switch"}),
       onActorChanged(actorId, result) {
         presenter.presentRosterArrival({ actorSlot: actorId, result });
         const actor = actorMeta(actorId);
@@ -1942,10 +2056,11 @@ export async function mountCoop2v2Test({
     session,
     runtime,
     rosterSnapshot: () => rosterController?.snapshot() ?? null,
-    // Native outcome and HP always come from the authoritative Lab session.
+    // An embedded host receives a native Lab outcome and actual native
+    // snapshots, never a fabricated GenSrpg UI result or a second runtime.
     completion: embeddedLifecycle?.completion ?? null,
-    flee() {
-      if (!embeddedLifecycle || disposed) return false;
+    flee(){
+      if(!embeddedLifecycle||disposed)return false;
       return embeddedLifecycle.flee(session.snapshot());
     },
     get selectedTargetId() {
@@ -1970,6 +2085,7 @@ export async function mountCoop2v2Test({
       }
       runtime.dispose();
       presenter.dispose();
+      combatEntityOverlay.dispose();
       statusFx?.dispose();
       damageFeedback?.dispose();
       fx.dispose();

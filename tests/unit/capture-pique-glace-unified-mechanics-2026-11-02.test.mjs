@@ -1,0 +1,39 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {normalizeCaptureSkillEditorDraftV1} from "../../src/contracts/capture-skill-editor-draft-v1.js";
+const raw = path=>readFileSync(new URL("../../"+path,import.meta.url),"utf8");
+test("Pique de glace author export is installed as canonical showcase preserving tick energy and damage",()=>{
+ const manifest=raw("src/catalogs/capture-showcase-skill-presets-v1.js");
+ assert.match(manifest,/data\/capture\/showcase\/pique_glace\.capture-skill-transfer-v1\.json/);
+ const t=JSON.parse(raw("data/capture/showcase/pique_glace.capture-skill-transfer-v1.json"));
+ assert.equal(t.draft.id,"pique_glace");
+ assert.equal(t.draft.definition.form,"area");
+ assert.equal(t.draft.definition.channeling.maxTicks,10);
+ assert.equal(t.draft.definition.channeling.energyCostPerTick,1);
+ assert.deepEqual(t.draft.definition.effects,[]);
+ assert.equal(t.draft.definition.channeling.effects[0].amount,7);
+ const canonical=normalizeCaptureSkillEditorDraftV1(t.draft);
+ assert.equal(canonical.definition.channeling.effects[0].amount,7);
+ assert.equal(canonical.definition.channeling.energyCostPerTick,1);
+ assert.equal(canonical.presentation.visual.travel.trajectoryMode,"under_target");
+ assert.equal(t.draft.definition.cooldownMs,45000);
+ assert.equal(t.draft.presentation.visual.travel.displayScale,3);
+ assert.equal(t.draft.presentation.visual.travel.groundOffsetYPx,15);
+ assert.equal(t.draft.presentation.version,14);
+ assert.equal(t.draft.presentation.sourceVersion,10);
+ assert.equal(t.draft.presentation.visual.travel.groundMotion,"fixed");
+ assert.equal(t.draft.presentation?.visual?.travel?.assetId,"pack:capture:sprite-pointe-glace-01");
+ assert.equal(t.draft.presentation?.visual?.travel?.trajectoryMode,"under_target");
+});
+test("Unified effect selector owns mechanics visibility without displaying independent disclosure headers",()=>{
+ const html=raw("examples/dom-demo/capture-editor-v2.html");
+ const js=raw("src/ui/capture-editor-human-v2.js");
+ assert.match(html,/data-skill-effect-add-kind/);
+ for(const attr of ["data-skill-charged-panel","data-skill-charged-effects-panel","data-skill-channeling-section","data-skill-contact-hold"]){
+   assert.match(html,new RegExp(attr+"[^>]* hidden"));
+ }
+ assert.match(js,/syncGuidedEffectPanelsV1/);
+ assert.match(js,/panel\.hidden\s*=\s*mode\s*!==\s*kind/);
+ assert.match(js,/writeSkillDraftFields\([\s\S]*?syncHumanGuidedSkillEffectPanelsV1/);
+});

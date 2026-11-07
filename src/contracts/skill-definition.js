@@ -3,6 +3,7 @@ import {
   isReserveEffectTargetScopeV2
 } from "./skill-effect-v1.js";
 import { normalizeContactHoldV1 } from "./contact-hold-v1.js";
+import { normalizeChannelingV1 } from "./channeling-v1.js";
 import {
   normalizeProjectilePowerV1
 } from "./projectile-power-v1.js";
@@ -353,6 +354,10 @@ export function normalizeSkillDefinition(input) {
   }
 
   const contactHold = input.contactHold == null ? null : normalizeContactHoldV1(input.contactHold);
+  const channeling = input.channeling == null ? null : normalizeChannelingV1(input.channeling);
+  if(channeling&&(contactHold||["projectile"].includes(form)||projectileTargeting==="expanding_wave"||
+      input.chargedAttack!=null||input.chargedEffects!=null))
+    throw new RangeError("channeling cannot combine with contactHold/charged skills/expanding projectiles");
   if (contactHold && (form !== "contact" || approachMode !== "ground")) {
     throw new RangeError("contactHold requires contact form and ground approach");
   }
@@ -444,6 +449,66 @@ export function normalizeSkillDefinition(input) {
       { form }
     );
 
+  // One optional native owner for repeated taps and the sliding charge window.
+  // Its direct damage replaces legacy/tactical damage; no second damage authority.
+  let chargedAttack = null;
+  if (input.chargedAttack != null) {
+    const config = input.chargedAttack;
+    if (!config || typeof config !== "object" || Array.isArray(config)) {
+      throw new TypeError("chargedAttack must be an object");
+    }
+    for (const key of Object.keys(config)) {
+      if (!["baseDamage","bonusDamagePerCharge","maxCharges","reactivationWindowMs","sizeIncreasePct"].includes(key)) {
+        throw new TypeError("Unknown chargedAttack field: " + key);
+      }
+    }
+    if (form !== "projectile" || projectileTargeting !== "direct" || contactHold) {
+      throw new RangeError("chargedAttack requires a direct projectile without contact hold");
+    }
+    const baseDamage = Number(config.baseDamage);
+    const bonusDamagePerCharge = Number(config.bonusDamagePerCharge);
+    const maxCharges = Number(config.maxCharges);
+    const reactivationWindowMs = Number(config.reactivationWindowMs);
+    const sizeIncreasePct = Number(config.sizeIncreasePct ?? 10);
+    if (!Number.isFinite(baseDamage) || baseDamage < 0 ||
+        !Number.isFinite(bonusDamagePerCharge) || bonusDamagePerCharge < 0) {
+      throw new RangeError("chargedAttack damage values must be nonnegative finite numbers");
+    }
+    if (!Number.isInteger(maxCharges) || maxCharges < 2 || maxCharges > 20) {
+      throw new RangeError("chargedAttack.maxCharges must be 2..20 total activations");
+    }
+    if (!Number.isFinite(Number(input.preparationMs)) || Number(input.preparationMs) <= 0) {
+      throw new RangeError("chargedAttack requires a positive preparationMs for each charge stage");
+    }
+    if (!Number.isFinite(reactivationWindowMs) || reactivationWindowMs <= 0) {
+      throw new RangeError("chargedAttack.reactivationWindowMs must be positive");
+    }
+    if (!Number.isFinite(sizeIncreasePct) || sizeIncreasePct < 0 || sizeIncreasePct > 100) {
+      throw new RangeError("chargedAttack.sizeIncreasePct must be 0..100");
+    }
+    chargedAttack = Object.freeze({baseDamage,bonusDamagePerCharge,maxCharges,reactivationWindowMs,sizeIncreasePct});
+  }
+
+  let chargedEffects=null;
+  if(input.chargedEffects!=null){
+    const config=input.chargedEffects;
+    if(!config||typeof config!=="object"||Array.isArray(config))throw new TypeError("chargedEffects must be an object");
+    if(chargedAttack)throw new RangeError("chargedEffects and chargedAttack are mutually exclusive");
+    for(const key of Object.keys(config)){
+      if(!["maxCharges","reactivationWindowMs","sizeIncreasePct","potencyIncreasePct"].includes(key))
+        throw new TypeError("Unknown chargedEffects field: "+key);
+    }
+    if(contactHold||projectileTargeting==="expanding_wave")throw new RangeError("chargedEffects cannot combine with contactHold or expanding_wave");
+    const maxCharges=Number(config.maxCharges),reactivationWindowMs=Number(config.reactivationWindowMs);
+    const sizeIncreasePct=Number(config.sizeIncreasePct??0),potencyIncreasePct=Number(config.potencyIncreasePct);
+    if(!Number.isInteger(maxCharges)||maxCharges<2||maxCharges>20)throw new RangeError("chargedEffects.maxCharges must be 2..20");
+    if(!Number.isFinite(Number(input.preparationMs))||Number(input.preparationMs)<=0)throw new RangeError("chargedEffects requires positive preparationMs");
+    if(!Number.isFinite(reactivationWindowMs)||reactivationWindowMs<=0)throw new RangeError("chargedEffects.reactivationWindowMs must be positive");
+    if(!Number.isFinite(sizeIncreasePct)||sizeIncreasePct<0||sizeIncreasePct>100)throw new RangeError("chargedEffects.sizeIncreasePct must be 0..100");
+    if(!Number.isFinite(potencyIncreasePct)||potencyIncreasePct<0||potencyIncreasePct>500)throw new RangeError("chargedEffects.potencyIncreasePct must be 0..500");
+    chargedEffects=Object.freeze({maxCharges,reactivationWindowMs,sizeIncreasePct,potencyIncreasePct});
+  }
+
   const effect = input.effect ?? {};
   if (typeof effect !== "object" || Array.isArray(effect)) {
     throw new TypeError("effect must be an object");
@@ -466,6 +531,33 @@ export function normalizeSkillDefinition(input) {
       normalizeSkillEffectV1(entry)
     )
   );
+
+  if(chargedEffects){
+    if(normalizedLegacyEffect.damage||normalizedLegacyEffect.heal||
+       normalizedLegacyEffect.stunMs||normalizedLegacyEffect.interruptsPreparation||
+       effects.length===0)throw new RangeError("chargedEffects needs modern numeric effects only");
+    const numeric=new Set(["incoming_effect_modifier","outgoing_damage_modifier","approach_time_modifier",
+      "energy_regen_modifier","skill_cooldown_rate_modifier","stat_modifier",
+      "damage_over_time","heal_over_time","shield"]);
+    for(const item of effects){
+      if(["heal","damage"].includes(item.kind))continue;
+      if(item.kind!=="apply_status"||!numeric.has(item.status.kind))
+        throw new RangeError("chargedEffects supports heals, damage and numeric buff/debuff statuses only");
+    }
+  }
+
+  // The single canonical owner of forced switching is RosterSession.
+  // Never route this through active-target Combat Rules or ally recall.
+  const forced = effects.filter(entry => entry.kind === "force_reserve_switch");
+  if (forced.length > 0 && (
+    forced.length !== 1 || targetLocations.length !== 1 ||
+    targetLocations[0] !== "reserve" ||
+    targetRelations.length !== 1 || targetRelations[0] !== "enemy" ||
+    effects.some(entry => entry.targetScope !== "target") ||
+    normalizedLegacyEffect.damage > 0 || normalizedLegacyEffect.heal > 0
+  )) {
+    throw new RangeError("force_reserve_switch requires exactly one enemy reserve target and target-scoped effects");
+  }
 
   if (effects.some(entry => isReserveEffectTargetScopeV2(entry.targetScope)) &&
       !targetLocations.includes("active")) {
@@ -490,17 +582,29 @@ export function normalizeSkillDefinition(input) {
     );
   }
 
+  if (chargedAttack && (normalizedLegacyEffect.damage !== 0 ||
+      effects.some(entry => ["damage","life_steal"].includes(entry.kind)))) {
+    throw new RangeError("chargedAttack must be the only direct damage authority");
+  }
+
+  if(channeling && (normalizedLegacyEffect.damage>0||normalizedLegacyEffect.heal>0||
+     normalizedLegacyEffect.stunMs>0||normalizedLegacyEffect.interruptsPreparation||effects.length>0))
+    throw new RangeError("channeling uses one pulse-only effect authority, not initial damage/effects");
+
   return Object.freeze({
     id,
     name,
     category,
     form,
     projectileTargeting,
+    ...(chargedAttack ? {chargedAttack} : {}),
+    ...(chargedEffects ? {chargedEffects} : {}),
     ...(projectileTargeting === "expanding_wave" ? { expandingWave: Object.freeze({startRadiusPct,endRadiusPct,thicknessPct}) } : {}),
     loadoutSlot,
     element,
     approachMode,
     ...(contactHold ? { contactHold } : {}),
+    ...(channeling ? { channeling } : {}),
     energyCost: nonNegativeNumber(input.energyCost, "energyCost"),
     preparationMs: nonNegativeNumber(input.preparationMs, "preparationMs"),
     travelMs: nonNegativeNumber(input.travelMs, "travelMs"),

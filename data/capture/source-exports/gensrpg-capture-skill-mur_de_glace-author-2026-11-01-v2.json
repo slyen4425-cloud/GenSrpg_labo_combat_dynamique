@@ -1,0 +1,111 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "mur_de_glace",
+    "description": "Invoque un mur destructible devant le lanceur. PV du mur = 1 par point de Glace. Si la créature possède 0 point de Glace, le mur ne peut pas apparaître.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "mur_de_glace",
+      "name": "Mur de glace",
+      "category": "defensive",
+      "form": "self",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "ice",
+      "approachMode": "none",
+      "energyCost": 5,
+      "preparationMs": 900,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 45000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": false,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "summon_entity",
+          "targetScope": "self",
+          "entityKind": "barrier",
+          "statId": "glace",
+          "hpPerStatPoint": 2,
+          "interceptKinds": [
+            "projectile",
+            "beam",
+            "contact"
+          ],
+          "placementMode": "arena",
+          "arenaXPct": 47,
+          "arenaYPct": 55,
+          "spriteAssetId": "pack:capture:sprite-mur-glace-arcanique-01",
+          "visualScale": 4,
+          "visualScaleX": 1.5,
+          "offsetForwardPx": 0,
+          "offsetUpPx": 50
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:mur_de_glace",
+      "version": 2,
+      "subjectType": "skill",
+      "subjectId": "mur_de_glace",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-barriere-de-glace-01"
+        }
+      },
+      "audio": {
+        "impact": {
+          "assetId": "gensrpg:sound:effect-2bcfd413",
+          "volume": 1,
+          "loop": false
+        }
+      }
+    }
+  }
+}

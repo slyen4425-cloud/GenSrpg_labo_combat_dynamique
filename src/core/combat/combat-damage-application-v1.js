@@ -7,6 +7,7 @@ import {
 import {
   isStatusEffectRuntimeInstanceActiveV1
 } from "./status-effect-instance-v1.js";
+import {interceptCombatBarrierV1} from "./combat-entity-v1.js";
 import {
   combatProtectionForIncomingV1
 } from "./combat-protection-v1.js";
@@ -32,6 +33,30 @@ function activeShield(instance, atMs) {
   );
 }
 
+// The one incoming HP quantity modifier, evaluated against the target's active statuses.
+// Detrimental = damage; beneficial = healing. Never adjusts shields, defense,
+// immunity, energy, or arbitrary status durations/strength.
+export function incomingEffectMultiplierV1({state,targetActorId,affectedPolarity,atMs=state.elapsedMs}) {
+  const target=fighterOf(state,targetActorId);
+  const pct=(target.statusEffects ?? []).reduce((sum,instance)=>{
+    const d=instance.definition;
+    if (d.kind !== "incoming_effect_modifier" ||
+        !["both",affectedPolarity].includes(d.affectedPolarity) ||
+        !isStatusEffectRuntimeInstanceActiveV1(instance,atMs)) return sum;
+    return sum+d.modifierPct*instance.stacks;
+  },0);
+  return Math.max(0,1+pct/100);
+}
+
+export function applyCombatHealV1({state,targetActorId,amount,atMs=state.elapsedMs}) {
+  const before=fighterOf(state,targetActorId).hp;
+  const requested=Math.max(0,Number(amount)||0);
+  const adjusted=Math.round(requested*incomingEffectMultiplierV1({state,targetActorId,affectedPolarity:"beneficial",atMs})*100)/100;
+  const nextState=withFighterHp(state,targetActorId,before+adjusted);
+  const after=fighterOf(nextState,targetActorId).hp;
+  return Object.freeze({state:nextState,requested,adjusted,applied:after-before,hpBefore:before,hpAfter:after});
+}
+
 export function applyCombatDamageV1({
   state,
   sourceActorId,
@@ -40,49 +65,31 @@ export function applyCombatDamageV1({
   atMs = state.elapsedMs,
   allowReflection = true,
   hitsIntangible = false,
-  incomingKind = "other"
+  incomingKind = "other",
+  contactedEntityId = undefined
 }) {
-  const requested = Math.max(
-    0,
-    Number(damage) || 0
-  );
-  const time = Number(atMs);
-  if (!Number.isFinite(time) || time < 0) {
-    throw new RangeError(
-      "atMs must be a non-negative finite number"
-    );
-  }
-
-  let nextState = state;
-  let remaining = requested;
-  let absorbedByShield = 0;
-
-  const target = fighterOf(
-    nextState,
-    targetActorId
-  );
-  const protection =
-    combatProtectionForIncomingV1({
-      state: nextState,
-      targetActorId,
-      domain: "damage",
-      atMs: time,
-      hitsIntangible
-    });
-
-  if (protection.protected) {
-    return Object.freeze({
-      state: nextState,
-      requestedDamage: requested,
-      absorbedByShield: 0,
-      immuneDamage: requested,
-      appliedDamage: 0,
-      reflection: null,
-      hpBefore: target.hp,
-      hpAfter: target.hp,
-      protectingStatusIds:
-        protection.protectingStatusIds
-    });
+  const time=Number(atMs);
+  if(!Number.isFinite(time)||time<0)throw new RangeError("atMs must be a non-negative finite number");
+  const target=fighterOf(state,targetActorId);
+  // The visible obstacle is in front of the fighter. It takes the raw physical
+  // hit first; a fighter's immunity/debuffs must never protect or amplify it.
+  const intercepted=interceptCombatBarrierV1({state,sourceActorId,targetActorId,
+    damage:Math.round(Math.max(0,Number(damage)||0)*100)/100,incomingKind,contactedEntityId});
+  let nextState=intercepted.state;
+  const remainingAfterBarrier=Math.round(intercepted.remainingDamage*
+    incomingEffectMultiplierV1({state:nextState,targetActorId,affectedPolarity:"detrimental",atMs})*100)/100;
+  const requested=Math.round((intercepted.absorbedByEntity+remainingAfterBarrier)*100)/100;
+  let remaining=remainingAfterBarrier;
+  let absorbedByShield=0;
+  const protection=combatProtectionForIncomingV1({state:nextState,targetActorId,
+    domain:"damage",atMs:time,hitsIntangible});
+  if(protection.protected){
+    return Object.freeze({state:nextState,requestedDamage:requested,absorbedByShield:0,
+      absorbedByEntity:intercepted.absorbedByEntity,entityId:intercepted.entityId,
+      destroyedEntityId:intercepted.destroyedEntityId,entityHpBefore:intercepted.entityHpBefore,
+      entityHpAfter:intercepted.entityHpAfter,
+      immuneDamage:remaining,appliedDamage:0,reflection:null,hpBefore:target.hp,hpAfter:target.hp,
+      protectingStatusIds:protection.protectingStatusIds});
   }
   const statuses = [
     ...(target.statusEffects ?? [])
@@ -218,6 +225,11 @@ export function applyCombatDamageV1({
     state: nextState,
     requestedDamage: requested,
     absorbedByShield,
+    absorbedByEntity:intercepted.absorbedByEntity,
+    entityId:intercepted.entityId,
+    destroyedEntityId:intercepted.destroyedEntityId,
+    entityHpBefore:intercepted.entityHpBefore,
+    entityHpAfter:intercepted.entityHpAfter,
     immuneDamage: 0,
     appliedDamage,
     reflection,

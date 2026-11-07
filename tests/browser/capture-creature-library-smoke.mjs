@@ -39,8 +39,12 @@ const server = createServer(async (req, res) => {
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-editor-preview-heading")) {
       const html=contents.toString("utf8");
+      // Intercept the actual public module requested by the HTML.
+      // Never hardcode an obsolete versioned script URL in the browser probe.
+      const currentScript = html.match(/src="\.\/capture-editor-v2\.js\?v=[^"]+"/)?.[0];
+      if (!currentScript) throw Error("Public editor has no revisioned entry script");
       contents=Buffer.from(html.replace(
-        'src="./capture-editor-v2.js?v=sleep-conditions-20261028"',
+        currentScript,
         'src="./capture-editor-v2.js?verify-editor-preview-heading=1"'
       ));
     }
@@ -77,8 +81,12 @@ const server = createServer(async (req, res) => {
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-sleep-author-ui")) {
       const html=contents.toString("utf8");
+      // Intercept the actual public module requested by the HTML.
+      // Never hardcode an obsolete versioned script URL in the browser probe.
+      const currentScript = html.match(/src="\.\/capture-editor-v2\.js\?v=[^"]+"/)?.[0];
+      if (!currentScript) throw Error("Public editor has no revisioned entry script");
       contents=Buffer.from(html.replace(
-        'src="./capture-editor-v2.js?v=sleep-conditions-20261028"',
+        currentScript,
         'src="./capture-editor-v2.js?verify-sleep-author-ui=1"'
       ));
     }
@@ -1406,6 +1414,12 @@ const server = createServer(async (req, res) => {
         'h.dataset.fxOrderProbe=order+":"+(choices&&controls.length===3&&controls.every(x=>choices.contains(x))?"visible":"misplaced");' +
         'h.dataset.beamProbe=["start","body","impact"].map(x=>' +
         'document.querySelectorAll("[data-beam-stage-fields="+x+"] label").length).join(",");' +
+        'h.dataset.beamAudioCardProbe=["cast","travel","impact","zone"].every(slot=>{' +
+        'const sel=document.querySelector("[data-skill-"+slot+"-audio]");' +
+        'const card=sel?.closest("article");' +
+        'return card && !card.hidden && card.querySelector("h2")?.textContent?.trim()==="Audio de la capacité" &&' +
+        '!h.contains(sel) && !sel.closest("[data-beam-stage]");' +
+        '})?"ok":"missing";' +
         '});</script>';
       contents = Buffer.from(html.replace("</head>", probe + "</head>"));
     }
@@ -1648,7 +1662,7 @@ const server = createServer(async (req, res) => {
               if (!["Feu","Eau"].every(x=>skillGroups.includes(x)))
                 throw Error("skill groups: "+skillGroups.join(","));
               const ids=[...creature.options].map(x=>x.value).filter(Boolean);
-              if(ids.length!==104 || new Set(ids).size!==104)
+              if(ids.length!==105 || new Set(ids).size!==105)
                 throw Error("creature identity count "+ids.length);
               creature.value="crea_aquafin";
               creature.dispatchEvent(new Event("change",{bubbles:true}));
@@ -1667,7 +1681,7 @@ const server = createServer(async (req, res) => {
               const assetGroups=fx ? groups(fx) : [];
               if(assetGroups.length && assetGroups.some(x=>!x.includes(" · ")))
                 throw Error("asset provenance + element grouping missing: "+assetGroups.join(","));
-              document.body.dataset.elementLibraryProbe="ok:104:multi:skill:asset";
+              document.body.dataset.elementLibraryProbe="ok:105:multi:skill:asset";
             }catch(error){document.body.dataset.elementLibraryProbe="fail:"+error.message;}
           },200);
         });
@@ -1956,12 +1970,12 @@ const server = createServer(async (req, res) => {
             if(!q("[data-creature-library-state]").textContent.includes("mise à jour"))
               throw Error("real update refused: "+q("[data-editor-status]")?.textContent?.slice(0,120));
             selectCreature("crea_mossback");
-            // Moussado now has its own approved Defense: distinguish it from
-            // the edited Foudrillon, not from an outdated legacy setting.
-            if(field("type").value!=="defense" || field("charges").value!=="2" ||
-               field("recharge").value!=="30" || field("window").value!=="0.25" ||
-               field("reduction").value!=="50" || field("icon").value!=="")
-              throw Error("Foudrillon icon/settings leaked to approved Moussado Defense");
+            // Moussados now owns an authored Defense (not the legacy Dodge).
+            // Test exact independent values and reject cross-creature icon leakage.
+            if(field("type").value!=="defense" || field("icon").value!=="" ||
+               field("charges").value!=="2" || field("recharge").value!=="30" ||
+               field("window").value!=="0.25" || field("reduction").value!=="50")
+              throw Error("Moussados independent Defense or Foudrillon icon/settings leaked: "+JSON.stringify({type:field("type").value,icon:field("icon").value,charges:field("charges").value,recharge:field("recharge").value,window:field("window").value,reduction:field("reduction").value}));
             selectCreature("crea_foudrillon");
             if(field("type").value!=="defense" || field("charges").value!=="3" ||
                field("recharge").value!=="26" || field("window").value!=="0.55" ||
@@ -2040,7 +2054,7 @@ function assertCreatures(dom, scenario) {
   if (!select) throw new Error(scenario + ": creature library <select> missing");
   const options = [...select[1].matchAll(/<option\b[^>]*value="([^"]+)"/g)]
     .map((match) => match[1]).filter(Boolean);
-  const required = ["crea_maraileron", "crea_mossback", "crea-loup", "kitsune_lunaire"];
+  const required = ["crea_maraileron", "crea_mossback", "crea-loup", "kitsune_lunaire", "gorice"];
   for (const id of required) {
     if (!options.includes(id)) {
       const libraryStatus = dom.match(/data-creature-library-state[^>]*>([^<]*)/i)?.[1]?.trim() ?? "not mounted";
@@ -2051,8 +2065,8 @@ function assertCreatures(dom, scenario) {
         "; jsError=" + error.slice(0,600));
     }
   }
-  if (options.length !== 104 || new Set(options).size !== 104) {
-    throw new Error(scenario + ": expected 104 unique creature ids; got " + options.length);
+  if (options.length !== 105 || new Set(options).size !== 105) {
+    throw new Error(scenario + ": expected 105 unique creature ids; got " + options.length);
   }
   console.log(scenario + ": " + options.length + " active creatures, all required IDs present");
 }
@@ -2088,6 +2102,9 @@ try {
   // Validates the complete browser module graph and real Human Editor DOM projection.
   const normalDom = await dumpDom(url);
   assertCreatures(normalDom, "normal browser bootstrap");
+  if (!/data-stat-definition="glace"/.test(normalDom)) {
+    throw new Error("normal browser bootstrap: Glace stat absent from real rendered editor");
+  }
   assertAquaHealSkill(normalDom, "normal browser bootstrap");
   const soundtrackDom=await dumpDom(url+"?verify-soundtrack-authoring=1");
   assertCreatures(soundtrackDom,"soundtrack authoring real Chrome");
@@ -2208,15 +2225,15 @@ try {
   const elementDom=await dumpDom(url+"?verify-element-library=1");
   assertCreatures(elementDom,"element groups actual browser bootstrap");
   const elementProbe=elementDom.match(/data-element-library-probe="([^"]+)"/)?.[1] ?? "missing";
-  if(elementProbe!=="ok:104:multi:skill:asset")
+  if(elementProbe!=="ok:105:multi:skill:asset")
     throw Error("Real editor element grouping / identity regression: "+elementProbe);
-  console.log("Element library UI: 104 unique creatures, fire/water/air groups, multi-element and same-name IDs retained, asset groups");
+  console.log("Element library UI: 105 unique creatures, fire/water/air groups, multi-element and same-name IDs retained, asset groups");
   const markerDom=await dumpDom(url+"?verify-markers=1");
   assertCreatures(markerDom,"marker library and active skill editor real browser bootstrap");
   const markerProbe=markerDom.match(/data-marker-probe="([^"]+)"/)?.[1] ?? "missing";
   if(markerProbe!=="ok:library:periodic:cost:placement:consume:roundtrip:combat-export:permanent")
     throw Error("Native marker authoring / skill roundtrip regression: "+markerProbe);
-  console.log("Shared marker library and skill UI: real Chrome authoring, 104 creatures, placement/consume and combat export");
+  console.log("Shared marker library and skill UI: real Chrome authoring, 105 creatures, placement/consume and combat export");
   const guardDom=await dumpDom(url+"?verify-creature-reaction=1");
   assertCreatures(guardDom,"per-creature reaction real browser bootstrap");
   const guardProbe=guardDom.match(/data-creature-reaction-probe="([^"]+)"/)?.[1] ?? "missing";
@@ -2247,7 +2264,7 @@ try {
   const reflectionProbe=reflectionDom.match(/data-damage-reflection-probe="([^"]+)"/)?.[1] ?? "missing";
   if(reflectionProbe!=="ok:35:12000")
     throw Error("Human Editor saved reflection status is missing from real export: "+reflectionProbe);
-  console.log("Damage reflection real editor: 35% during 12s saved and exported, 104 creatures retained");
+  console.log("Damage reflection real editor: 35% during 12s saved and exported, 105 creatures retained");
   const zoneStatusDom=await dumpDom(url+"?verify-zone-status=1");
   assertCreatures(zoneStatusDom,"zone status actual editor bootstrap");
   const zoneStatusProbe=zoneStatusDom.match(/data-zone-status-probe="([^"]+)"/)?.[1] ?? "missing";
@@ -2265,11 +2282,12 @@ try {
   if (!/data-fx-order-probe="icon,form,trajectory:visible"/.test(rayonDom)) {
     throw new Error("FX browser UI did not show icon, form and trajectory first as canonical controls");
   }
-  if (!/data-beam-probe="7,4,4"/.test(rayonDom) ||
+  if (!/data-beam-audio-card-probe="ok"/.test(rayonDom) ||
+       !/data-beam-probe="6,3,3"/.test(rayonDom) ||
       !/data-beam-active="true"/.test(rayonDom)) {
-    throw new Error("Rayon browser UI did not move the original 15 controls (including skill sounds) into 3 phases");
+    throw new Error("Rayon browser UI did not expose 12 visuals and all 4 canonical sounds in Audio: "+(rayonDom.match(/data-beam-(?:audio-card-)?probe="[^"]*"/g)??[]).join(" | "));
   }
-  console.log("Rayon browser UI: 7 + 4 + 4 canonical labels grouped successfully");
+  console.log("Rayon browser UI: 6+3+3 visuals, four audio selectors always in Audio card");
   // Optional global presentation host unavailable: creatures must still load.
   assertCreatures(await dumpDom(url, [
     "--host-resolver-rules=MAP raw.githubusercontent.com 127.0.0.1,EXCLUDE localhost"

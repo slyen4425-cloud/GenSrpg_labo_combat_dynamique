@@ -781,6 +781,92 @@ body[data-editor-view="preview"] {
   gap: 0.55rem;
 }
 
+/* Author statuses: checkbox labels are action choices, not full-width text
+   fields. Scope this to the status editor; combat HUD controls are untouched. */
+.skill-status-config label.check,
+.skill-status-config__specific label.check,
+.skill-status-config__grid > label:has(> input[type="checkbox"]) {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.skill-status-config label.check > input[type="checkbox"],
+.skill-status-config__specific label.check > input[type="checkbox"],
+.skill-status-config__grid > label > input[type="checkbox"] {
+  flex: 0 0 1.125rem;
+  width: 1.125rem;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  min-height: 1.125rem;
+  margin: 0;
+  padding: 0;
+  accent-color: #8adfeb;
+}
+
+/* The native reflection sub-form was a three-column grid nested into ONE
+   column of another three-column grid. Give it the full author section.
+   Layout only: input names, values, native timers and combat semantics stay. */
+.skill-status-config__specific > [data-reflection-controls] {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.skill-status-config__specific[data-skill-status-config-kind="damage_reflection"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.skill-status-config__specific[data-skill-status-config-kind="damage_reflection"] > label {
+  max-width: 24rem;
+}
+
+[data-reflection-controls] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.7rem;
+  padding: 0.8rem;
+  min-width: 0;
+  border: 1px solid rgba(131, 230, 247, 0.18);
+  border-radius: 0.65rem;
+  background: rgba(9, 34, 45, 0.58);
+}
+
+[data-reflection-controls] > label.check,
+[data-reflection-controls] .skill-status-config__grid > label.check {
+  padding: 0.65rem 0.7rem;
+  border: 1px solid rgba(131, 230, 247, 0.16);
+  border-radius: 0.55rem;
+  background: rgba(22, 60, 74, 0.45);
+  cursor: pointer;
+}
+
+[data-reflection-controls] > label.check:focus-within,
+[data-reflection-controls] .skill-status-config__grid > label.check:focus-within {
+  border-color: rgba(144, 225, 241, 0.85);
+}
+
+[data-reflection-controls] .skill-status-config__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+[data-reflection-controls] > label:not(.check) {
+  width: min(100%, 26rem);
+}
+
+[data-reflection-controls] > .note {
+  display: block;
+  max-width: 74ch;
+  margin: 0;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
 .skill-effect-row [hidden],
 .skill-status-config [hidden] {
   display: none !important;
@@ -979,26 +1065,28 @@ body[data-preview-landscape-active="true"] {
   border-radius: 0.75rem;
 }
 
-/* Keep perceived creature size tied to the short edge in landscape.
-   Data-owned displayScale remains untouched. */
+/* Phone-approved 16:9 arena composition is the one spatial reference on
+   every screen. Convert the original N*dvh phone widths to N*9/16 percent of
+   the actual 16:9 arena width. No desktop rem cap or viewport-height drift.
+   Data-owned displayScale and all authored positions remain untouched. */
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2 .fighter--player {
-  width: min(29dvh, 15.5rem);
+  width: 16.3125%;
 }
 
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2 .fighter--ally {
-  width: min(27dvh, 14.5rem);
+  width: 15.1875%;
 }
 
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2 .fighter--opponent {
-  width: min(31dvh, 16.5rem);
+  width: 17.4375%;
 }
 
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2 .fighter--opponent-b {
-  width: min(30dvh, 16rem);
+  width: 16.875%;
 }
 
 /* Compact landscape HUD: preserve hierarchy without covering the combat. */
@@ -1222,6 +1310,16 @@ body[data-preview-landscape-active="true"] {
   gap: 12px;
   margin-top: 14px;
 }
+/* The original data remains in the native controls; the single effects
+   selector alone chooses which mechanics panel is visible. */
+[data-skill-charged-panel][hidden],
+[data-skill-charged-effects-panel][hidden],
+[data-skill-channeling-section][hidden],
+[data-skill-contact-hold][hidden],
+[data-skill-effects-host][hidden],
+[data-skill-effect-add][hidden] {
+  display: none !important;
+}
 
 .projectile-clash-config h3 {
   margin: 0;
@@ -1396,13 +1494,13 @@ html {
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2[data-combat-active-count="2"] .fighter--opponent {
   left: 68%;
-  width: min(24dvh, 13rem);
+  width: 13.5%;
 }
 
 .capture-preview-shell[data-landscape-required="true"]
   .arena--coop-2v2[data-combat-active-count="2"] .fighter--opponent-b {
   left: 46%;
-  width: min(23dvh, 12.5rem);
+  width: 12.9375%;
 }
 
 
@@ -1828,3 +1926,148 @@ html {
 }
 
 .creature-animation-chapter label[hidden] { display: none !important; }
+
+/* Optional charged-projectile controls obey the same editor disclosure state. */
+[data-skill-charged-config][hidden] { display:none !important; }
+
+/* Ground editing owns the existing trajectory fields: a hidden state must
+ * win over .editor-choice-group display:flex/grid on Android. */
+[data-skill-ground-settings][hidden],
+[data-skill-ground-settings] label[hidden] { display:none !important; }
+
+
+/* Wall authoring — grouped, readable and touch-sized without stretching the
+   checkboxes. No geometry changes: these controls only author SkillEffectV1. */
+.skill-effect-row .skill-barrier-config{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:0.85rem;
+  min-width:0;
+  padding-top:0.35rem;
+}
+.skill-barrier-section,
+.skill-barrier-opponent,
+.skill-barrier-intercepts{
+  min-width:0;
+  margin:0;
+  padding:0.9rem;
+  border:1px solid rgba(131,230,247,.23);
+  border-radius:.75rem;
+  background:rgba(8,32,43,.58);
+}
+.skill-barrier-section h4{
+  margin:0 0 .75rem;
+  color:#ddf9ff;
+  font-size:.94rem;
+  font-weight:800;
+  line-height:1.3;
+}
+.skill-barrier-fields{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));
+  align-items:end;
+  gap:.7rem .85rem;
+}
+.skill-barrier-fields > label{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  gap:.36rem;
+  margin:0;
+  min-width:0;
+  width:100%;
+  color:#e8f6fa;
+  font-size:.83rem;
+  font-weight:650;
+  line-height:1.45;
+}
+.skill-barrier-fields input:not([type="checkbox"]),
+.skill-barrier-fields select{
+  display:block;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  min-height:40px;
+  margin:0;
+  font-size:.88rem;
+}
+.skill-barrier-help{
+  display:block;
+  margin:.6rem 0 0;
+  line-height:1.55;
+  font-size:.78rem;
+  color:#a8c8d3;
+}
+.skill-barrier-opponent{
+  padding:0;
+  overflow:clip;
+}
+.skill-barrier-opponent > summary{
+  padding:.9rem 1rem;
+  min-height:44px;
+  cursor:pointer;
+  color:#e6faff;
+  font-size:.91rem;
+  font-weight:800;
+  line-height:1.5;
+}
+.skill-barrier-opponent > summary:focus-visible{
+  outline:2px solid #b3edff;
+  outline-offset:-3px;
+}
+.skill-barrier-opponent[open] > summary{
+  border-bottom:1px solid rgba(131,230,247,.23);
+}
+.skill-barrier-opponent > .skill-barrier-help{
+  margin:.8rem 1rem;
+}
+.skill-barrier-opponent > .skill-barrier-section{
+  margin:.75rem;
+}
+.skill-barrier-intercepts{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:.55rem;
+}
+.skill-barrier-intercepts legend{
+  padding:0 .25rem;
+  color:#e6faff;
+  font-size:.88rem;
+  font-weight:800;
+}
+.skill-barrier-intercepts .skill-barrier-choice{
+  display:inline-flex;
+  flex:1 1 155px;
+  align-items:center;
+  justify-content:flex-start;
+  gap:.65rem;
+  min-height:42px;
+  margin:0;
+  padding:.52rem .7rem;
+  border:1px solid rgba(131,230,247,.22);
+  border-radius:.5rem;
+  color:#ecfaff;
+  background:rgba(13,54,70,.65);
+  font-size:.87rem;
+  line-height:1.3;
+  cursor:pointer;
+}
+.skill-barrier-intercepts .skill-barrier-choice input[type="checkbox"]{
+  display:inline-block;
+  flex:0 0 18px;
+  width:18px !important;
+  height:18px !important;
+  min-width:18px !important;
+  min-height:18px !important;
+  margin:0;
+  padding:0;
+  accent-color:#8bc9ff;
+}
+@media(max-width:620px){
+  .skill-barrier-section,
+  .skill-barrier-opponent{padding:.65rem;}
+  .skill-barrier-opponent > .skill-barrier-section{margin:.45rem 0;}
+  .skill-barrier-fields{grid-template-columns:minmax(0,1fr);}
+  .skill-barrier-intercepts .skill-barrier-choice{flex:1 1 100%;}
+}

@@ -30,8 +30,13 @@ const targets = [
 test("each author JSON is archived byte-exact, has one canonical active preset and passes Transfer import", async () => {
   for (const spec of targets) {
     const [active, original] = await Promise.all([file(spec.active), file(spec.source)]);
-    assert.equal(active, original, "active and archived source must be byte-identical");
-    assert.equal(hash(active), spec.sha256, "author source bytes must never be silently changed");
+    assert.equal(hash(original), spec.sha256, "dated historical author source must be immutable");
+    if(spec.id==="sangsue"){
+      assert.equal(hash(active),"5afcd8493028eec52736bc32cd6ba131295d550c6c30ebb8644bac8065d15502",
+        "newly provided Sangsue author export must be byte exact, without modifying archived source");
+    }else{
+      assert.equal(active, original, "unchanged Rust active source must remain archival-exact");
+    }
     assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(x => x === spec.active).length, 1);
     assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.includes(spec.source), false);
     const transfer = importCaptureTransferJsonV1(active);
@@ -58,10 +63,12 @@ test("Sangsue: 1s confirmed native contactHold, original 6 Nature damage + 100% 
   assert.equal(d.definition.contactHold.effects[0].channel, "nature");
   assert.equal(d.definition.contactHold.effects[1].percent, 100);
   assert.equal(d.definition.effects.length, 0);
-  assert.equal(d.presentation, null);
+  assert.equal(d.presentation?.version,2);
+  assert.equal(d.presentation.visual.icon.assetId,"pack:capture:icon-skill-drain-de-vie-01");
+  assert.equal(d.presentation.audio.impact.assetId,"gensrpg:sound:effect-ee93278c");
   const edited = buildHumanSkillDraftV1(humanSkillEditorFieldsFromDraftV1(d));
   assert.deepEqual(edited.definition.contactHold, d.definition.contactHold);
-  assert.equal(edited.presentation, null);
+  assert.equal(edited.presentation?.audio?.impact?.assetId,"gensrpg:sound:effect-ee93278c");
 });
 
 test("Tempête de rouille: updated stable ID/ultimate/level and 15-second zone, visual binding unchanged", async () => {

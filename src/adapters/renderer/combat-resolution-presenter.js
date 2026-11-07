@@ -1,9 +1,10 @@
+import { isPureBeneficialAllySkillV1 } from "../../contracts/skill-beneficial-contact-v1.js";
 import {
   planSkillFx,
   planSkillOutcomeFx,
   planSkillPreparationFx,
   planSkillReleaseFx
-} from "../../core/fx/skill-fx-plan.js";
+} from "../../core/fx/skill-fx-plan.js?v=wall-impact-20261101-channel-ground-mine-filter-20261102-wall-channel-loop-audio-20261103";
 
 // Presentation anticipation only: Combat Runtime retains exclusive ownership of hit timing.
 const DEFAULT_INSTANT_ATTACK_ANTICIPATION_MS = 250;
@@ -21,6 +22,8 @@ export function createCombatResolutionPresenter({
   fx = null,
   audio = null,
   onActionContact = null,
+  onActionTravelEnd = null,
+  barrierRectsFor = null,
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer,
   instantAttackAnticipationMs = DEFAULT_INSTANT_ATTACK_ANTICIPATION_MS
@@ -46,6 +49,12 @@ export function createCombatResolutionPresenter({
       "onActionContact must be a function when supplied"
     );
   }
+  if (onActionTravelEnd !== null && typeof onActionTravelEnd !== "function") {
+    throw new TypeError("onActionTravelEnd must be a function");
+  }
+  if (barrierRectsFor !== null && typeof barrierRectsFor !== "function") {
+    throw new TypeError("barrierRectsFor must be a function");
+  }
   if (typeof setTimer !== "function" || typeof clearTimer !== "function") {
     throw new TypeError("timer functions are required");
   }
@@ -58,6 +67,8 @@ export function createCombatResolutionPresenter({
   const timers = new Set();
   const preparedAttacksByActor = new Map();
   const preparationFxByActor = new Map();
+  // A persistent cast is still the ONE preparation FX, not a new timer or actor.
+  const channelCastByActor = new Set();
   const preparationAudioByActor = new Map();
   const travelAudioByActor = new Map();
   const footfallAudioByActor = new Map();
@@ -66,6 +77,7 @@ export function createCombatResolutionPresenter({
   const outcomeByActor = new Map();
   const rosterVisualsByActor = new Map();
   const approachVisualsByActor = new Map();
+  const heldAttackPoseByActor = new Map();
 
   function presentRosterVisual(actorSlot, type, options = {}) {
     const record = { type };
@@ -78,7 +90,7 @@ export function createCombatResolutionPresenter({
     return Object.freeze({ status: type === "recall" ? "preparing" : "arriving", finished });
   }
 
-  function presentRosterArrival({ actorSlot, result }) {
+   function presentRosterArrival({ actorSlot, result }) {
     if (disposed) return Object.freeze({ status: "disposed" });
     if (!result?.ok || !["summoned", "switched", "ko_replaced"].includes(result.outcome)) return Object.freeze({ status: "no_fx" });
     return presentRosterVisual(actorSlot, "enter");
@@ -152,13 +164,14 @@ export function createCombatResolutionPresenter({
 
   function cancelPreparation(
     actorSlot = "player",
-    { audioMode = "all" } = {}
+    { audioMode = "all", preserveChannelCast = false } = {}
   ) {
     let cancelled = cancelPreparedAttack(actorSlot);
 
     const fxHandle = preparationFxByActor.get(actorSlot);
-    if (fxHandle) {
+    if (fxHandle && !(preserveChannelCast && channelCastByActor.has(actorSlot))) {
       preparationFxByActor.delete(actorSlot);
+      channelCastByActor.delete(actorSlot);
       fxHandle.animation?.cancel?.();
       cancelled = true;
     }
@@ -256,9 +269,44 @@ export function createCombatResolutionPresenter({
     playOnce();
   }
 
+  function releaseAttackPose(actorSlot) {
+    heldAttackPoseByActor.delete(actorSlot);
+    return visuals.releaseHeldAttackPoseFor?.(actorSlot) === true;
+  }
+
+  function beginAttackPose({ actorSlot, targetSlot }) {
+    if (heldAttackPoseByActor.has(actorSlot) && visuals.hasHeldAttackPoseFor?.(actorSlot)) return false;
+    if (typeof visuals.hasHeldAttackPoseFor !== "function") return false;
+    // An old animation promise may reject after this actor has started a NEW
+    // cast; its rejection only owns this cast token, never the replacement.
+    const poseToken = {};
+    heldAttackPoseByActor.set(actorSlot, poseToken);
+    Promise.resolve(visuals.playEventFor(actorSlot, "attack", {
+      targetSlot,
+      metadata: { useRangedAppearance: true, holdAttackPose: true }
+    })).catch(() => {
+      if (heldAttackPoseByActor.get(actorSlot) === poseToken) releaseAttackPose(actorSlot);
+    });
+    return true;
+  }
+
+  // A channel starts at native arrival, which may follow a contact approach.
+  function presentChannelStart({ actorSlot = "player", targetSlot = "opponent" }) {
+    if (disposed) return false;
+    return beginAttackPose({ actorSlot, targetSlot });
+  }
+
+  function endChannelPose({ actorSlot = "player" }) {
+    // Native onChannelEnd is the sole end signal for both the creature pose
+    // and the single cast FX loop. The next cast is free to start afterward.
+    const castStopped = cancelPreparation(actorSlot);
+    return releaseAttackPose(actorSlot) || castStopped;
+  }
+
   function cancelActionPresentation(
     actorSlot = "player"
   ) {
+    const poseCancelled = releaseAttackPose(actorSlot);
     const rosterCancelled = rosterVisualsByActor.delete(actorSlot);
     // Movement is started through playApproachFor, outside the roster map.
     // Cancel the creature only if an owned visual is actually active.
@@ -278,6 +326,7 @@ export function createCombatResolutionPresenter({
       ) || 0;
 
     return (
+      poseCancelled ||
       preparationCancelled ||
       travelCancelled ||
       footfallCancelled ||
@@ -297,12 +346,23 @@ export function createCombatResolutionPresenter({
 
     cancelPreparation(actorSlot);
 
+    // A charged cast and an unmoving channel keep their authored attack
+    // sprite's LAST frame from the first native preparation until release/end.
+    // Combat Runtime owns when either phase ends; no visual polling/timer.
+    if (action?.actionType === "skill" &&
+        (action.chargeState || action.skill?.channeling) &&
+        (action.skill?.approachMode ?? "none") === "none") {
+      beginAttackPose({ actorSlot, targetSlot: action.targetId });
+    }
+
     // For an instant-impact ranged attack, release and damage occur on the
     // same native combat tick. Start its creature pose near the end of the
     // existing preparation, before the hit. Do not postpone gameplay damage.
     if (action?.actionType === "skill" &&
         ["projectile", "beam", "area"].includes(action.skill?.form) &&
         (action.skill?.approachMode ?? "none") === "none" &&
+        !action.chargeState &&
+        !action.skill?.channeling &&
         Number(action.travelMs) === 0 &&
         Number(action.preparationMs) > 0 &&
         instantAttackAnticipationMs > 0) {
@@ -343,6 +403,7 @@ export function createCombatResolutionPresenter({
 
     if (handle) {
       preparationFxByActor.set(actorSlot, handle);
+      if (action?.skill?.channeling && handle.holdUntilCancelled === true) channelCastByActor.add(actorSlot);
       Promise.resolve(handle.finished)
         .finally(() => {
           if (preparationFxByActor.get(actorSlot) === handle) {
@@ -382,6 +443,15 @@ export function createCombatResolutionPresenter({
     });
   }
 
+  // Presentation-only update on the one native cast. Combat Runtime owns
+  // charge count and scale; this does not create another animation/timer.
+  function presentChargeAmplification({actorSlot = "player", sizeMultiplier, durationMs = null}) {
+    if (disposed || !Number.isFinite(sizeMultiplier) || sizeMultiplier <= 0) return false;
+    const cast=preparationFxByActor.get(actorSlot);
+    if (durationMs !== null) cast?.setDuration?.(durationMs);
+    return cast?.setSizeMultiplier?.(sizeMultiplier) ?? false;
+  }
+
   function presentRelease({
     action,
     actorSlot = "player",
@@ -392,9 +462,14 @@ export function createCombatResolutionPresenter({
     }
 
     const preparedAttack = consumePreparedAttack(actorSlot);
+    const chargedPoseReleased = Boolean(action.chargeState) &&
+      visuals.hasHeldAttackPoseFor?.(actorSlot) === true;
+    // Charged attacks unfreeze at launch; channeling stays held through the
+    // native tick lifecycle (and only the native onChannelEnd frees it).
+    if (!action.skill?.channeling) releaseAttackPose(actorSlot);
     cancelPreparation(
       actorSlot,
-      { audioMode: "loop-only" }
+      { audioMode: "loop-only", preserveChannelCast: Boolean(action.skill?.channeling) }
     );
     cancelFootfallAudio(actorSlot);
 
@@ -404,20 +479,7 @@ export function createCombatResolutionPresenter({
     // beneficial ally/self status. Never turn those into a live-model
     // collision or a one-millisecond self-approach. Only the Presentation
     // owner opts out; Combat Rules and the author's export remain unchanged.
-    const skill = action.skill;
-    const supportiveOnly = skill &&
-      Array.isArray(skill.targetRelations) &&
-      skill.targetRelations.length > 0 &&
-      skill.targetRelations.every(relation => relation === "self" || relation === "ally") &&
-      Number(skill.effect?.damage ?? 0) === 0 &&
-      Array.isArray(skill.effects) &&
-      skill.effects.length > 0 &&
-      skill.effects.every(effect =>
-        (effect.kind === "apply_status" && effect.status?.polarity === "beneficial") ||
-        effect.kind === "heal" ||
-        effect.kind === "energy_restore" ||
-        effect.kind === "cleanse"
-      );
+    const supportiveOnly = isPureBeneficialAllySkillV1(action.skill);
     if (
       !supportiveOnly &&
       ["ground", "teleport", "aerial", "burrow"].includes(approachMode) &&
@@ -436,6 +498,13 @@ export function createCombatResolutionPresenter({
           // duration: use a 1ms visual-only envelope, never mutate action.
           travelMs: Math.max(1, Number(action.travelMs) || 0),
           holdOnContact: Boolean(action.skill?.contactHold),
+          obstacleRectsFor: approachMode === "ground" &&
+            action.skill?.form === "contact" && barrierRectsFor
+              ? () => barrierRectsFor({
+                  sourceActorId: actorSlot, targetActorId: targetSlot,
+                  kind: "contact", skillId
+                })
+              : null,
           burrowTerrainSprites: approachMode === "burrow"
             ? fx?.burrowTerrainForSkill?.(skillId,actorSlot,targetSlot) ?? null
             : null,
@@ -447,16 +516,35 @@ export function createCombatResolutionPresenter({
             approachMode !== "burrow" &&
             action.skill?.form === "contact" &&
             typeof onActionContact === "function"
-              ? () =>
+              ? contact =>
                   onActionContact(
                     Object.freeze({
                       actorId: actorSlot,
                       targetId: targetSlot,
-                      skillId
+                      skillId,
+                      ...(contact?.combatEntityId ? {
+                        combatEntityId: contact.combatEntityId,
+                        contactPoint: contact.contactPoint ?? null
+                      } : {})
                     })
                   )
               : null,
           onPhase({ label, phaseDurationMs }) {
+            if (label === "ground-home" && approachMode === "ground" &&
+                action.skill?.form === "contact" &&
+                typeof onActionTravelEnd === "function") {
+              // The existing collision watcher's rAF receives the last
+              // outbound frame before declaring an uncontacted approach over.
+              const complete = () => {
+                if (!disposed && approachVisualsByActor.get(actorSlot) === approachToken)
+                  onActionTravelEnd(Object.freeze({
+                    actorId:actorSlot,targetId:targetSlot,skillId
+                  }));
+              };
+              if (typeof globalThis.requestAnimationFrame === "function")
+                globalThis.requestAnimationFrame(complete);
+              else complete();
+            }
             if (!skillId) {
               return;
             }
@@ -485,7 +573,8 @@ export function createCombatResolutionPresenter({
             }
           }
         });
-    } else if (!action.mirrorReturn && !preparedAttack?.started) {
+    } else if (!action.mirrorReturn && !preparedAttack?.started &&
+               !chargedPoseReleased && !visuals.hasHeldAttackPoseFor?.(actorSlot)) {
       // Only an explicitly authored ranged creature pose replaces the
       // default attacking silhouette; FX projectiles/beams remain unchanged.
       visuals
@@ -572,6 +661,16 @@ export function createCombatResolutionPresenter({
       });
     }
 
+    // onResolved is emitted BEFORE onChannelStart; only a successful native
+    // channelingStart may retain the pose after skill arrival.
+    if (heldAttackPoseByActor.has(actorSlot) && resolution.channelingStart !== true) {
+      releaseAttackPose(actorSlot);
+    }
+    // Failed arrival or blocked channel must not leak the held cast FX.
+    if (resolution.channelingStart !== true && channelCastByActor.has(actorSlot)) {
+      cancelPreparation(actorSlot);
+    }
+
     let ko = false;
     let koActorId = null;
     let finished = Promise.resolve({ status: "presented" });
@@ -636,6 +735,12 @@ export function createCombatResolutionPresenter({
 
     switch (resolution.outcome) {
       case "hit": {
+        // The native combat-entity-hit event proves the wall intercepted
+        // this strike. No fighter body contact: no hit, recoil or KO pose.
+        // Its impact sprite/audio are handled by the existing FX plan.
+        if (resolution.events?.some(event=>event.type==="combat-entity-hit")) {
+          break;
+        }
         const hitEvent = resolution.events?.find(
           (item) =>
             item.type === "hit" &&
@@ -780,6 +885,7 @@ export function createCombatResolutionPresenter({
     approachVisualsByActor.clear();
     const presentationActors = new Set([
       ...preparationFxByActor.keys(),
+      ...channelCastByActor,
       ...preparationAudioByActor.keys(),
       ...travelAudioByActor.keys(),
       ...footfallAudioByActor.keys(),
@@ -794,6 +900,8 @@ export function createCombatResolutionPresenter({
       cancelTravelAudio(actorSlot);
       cancelFootfallAudio(actorSlot);
     }
+    channelCastByActor.clear();
+    for (const actorSlot of heldAttackPoseByActor.keys()) releaseAttackPose(actorSlot);
     disposed = true;
     outcomeByActor.clear();
   }
@@ -801,8 +909,11 @@ export function createCombatResolutionPresenter({
   return Object.freeze({
     present,
     presentPreparation,
+    presentChargeAmplification,
+    presentChannelStart,
+    endChannelPose,
     presentRosterArrival,
-    presentRelease,
+     presentRelease,
     presentOutcome,
     cancelPreparation,
     cancelActionPresentation,

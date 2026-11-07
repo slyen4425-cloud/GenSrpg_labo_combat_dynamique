@@ -335,6 +335,7 @@ export function createCombatState({
     distance,
     elapsedMs: finiteNonNegative(elapsedMs, "elapsedMs"),
     fighters: Object.freeze(Object.fromEntries(entries)),
+    combatEntities: Object.freeze([]),
     persistentZones: Object.freeze([]),
     scheduledEffects: Object.freeze([])
   });
