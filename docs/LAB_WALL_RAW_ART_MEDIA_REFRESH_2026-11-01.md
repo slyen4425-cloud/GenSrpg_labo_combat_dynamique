@@ -1,0 +1,9 @@
+# Labo Combat — affichage du Mur de glace brut validé (2026-11-01)
+
+- Autorité unique des images : `global-assets`. Livraison média PR #192 fusionnée en `1cc24f0c179680a3d88bdfefbc97819669080454`, contient 12 PNG et l'atlas WebP pixel-identiques au ZIP auteur. ID de la compétence inchangé : `pack:capture:sprite-mur-glace-arcanique-01`, pas de fork du catalogue ni de nouvel identifiant.
+- Constat du rendu historique : l'atlas natif est composé de cases **512×512**, mais le renderer le projetait dans un cadre **70×92**, étirant verticalement l'objet et compromettant l'angle 2.5D validé.
+- Correctif de cause : `CombatEntityOverlayV1` conserve **exactement le cadre et rectangle de collision 70×92** à scale=1, mais y centre un `visualViewport` **carré** pour les pixels natifs. Animation des 12 frames toujours sur l'élément image réel, une seule fois, dernière frame conservée et sans reset après perte de PV. Pas de seconde logique de collision ou de durée de vie ; le sprite seule la présentation.
+- Le résolveur `GlobalVisualLibrary` conserve sa base `global-assets` et son catalogue uniques, avec révision `2026-11-01-v49-approved-raw-ice-wall-12f` au lieu de v48 pour éviter de charger le vieux WebP depuis le cache.
+- Chromium `tests/browser/capture-ice-wall-persistent-atlas-smoke.mjs` étendu pour vérifier, sur les **3 variantes** de murs, une image carrée et un hitbox intact, plus apparition, maintien de la dernière frame après dégâts et disparition à 0 PV.
+- Scope : uniquement fichiers asset resolver, overlay et sentinelle navigateur, ce rapport et `LAB_CURRENT_WORK` ; aucune modification `main`, compétence, combat damage, autres créatures.
+- Contrôle requis : 5 jobs CI/Pages au SHA exact, checkpoint GREEN, PR vers `gh-pages`, validation Android paysage de l'angle du mur par l'auteur.

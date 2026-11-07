@@ -1,0 +1,36 @@
+# 2026-11-03 — Parité générale des FX entre téléphone et PC
+
+## Source de la demande / périmètre étendu avant code
+Le dernier retour utilisateur confirme que le problème n'est pas limité à l'ultime feu : **Boule de neige, Pique de glace et les autres sprites de compétences** sont visuellement plus petits et déplacés sur PC, alors qu'ils sont bien configurés sur téléphone. Le lot initial « zone » est donc élargi explicitement à la projection partagée des FX, **pas** à des exceptions par capacité.
+
+BASE `gh-pages@a64efa5927d3c3aa8a173c8789405c2011a6d58f`; START `checkpoint/lab-start-zone-phone-pc-footprint-2026-11-03`; WORK `work/lab-zone-phone-pc-footprint-2026-11-03`.
+Charte / roadmap / architecture / checkpoint policy LIVE lues. `main`, `global-assets`, Exploration, GensRPG et JSON auteur strictement protégés.
+
+## Cause racine reconnue
+- L'arène de combat Capture reste en 16:9 et les modèles suivent déjà sa hauteur via `--combat-arena-author-offset-scale` (un unique propriétaire sur `[data-combat-arena]`).
+- `examples/dom-demo/demo.css` : tailles de `.skill-fx--projectile`, `--sprite-shell`, `--cast`, `--impact`, `--persistent-zone`, `--tactical-zone`, `--clash-impact`, `--phase` plafonnées en `rem` ou liées au viewport en `vw` ; cela rompt la parité PC/téléphone. Les zones longues ont déjà leur propre 100% : ne pas toucher au contrat long.
+- `src/adapters/renderer/dom-skill-fx.js` : offsets X/Y d'auteur et offsets verticaux sous cible / tombants restent en pixels absolus. Exemple officiel `boule_neige` : cast joueur X=85, Y=15 et adversaire X=-70, Y=15 ; `pique_glace` : zone sous cible Y=15, rise=80 ; `cap_fire_atk_6` : zone short/medium, scale auteur X=1.6 Y=0.8. Ces données ne doivent pas être modifiées.
+
+## Correction contractuelle
+1. Un seul propriétaire CSS : tailles **en pourcentage de la largeur de l'arène 16:9 réelle**, seulement pour les prévisualisations Combat Capture paysage. La composition de référence est une arène d'environ 711×400 pixels CSS, le rendu téléphone validé ; dimensions calibrées à son visuel préexistant, sans plafonds PC. Préserver non-Capture et les tailles des autres UI.
+2. Le propriétaire unique `DomSkillFxRenderer` projette les offsets auteur X/Y et unités visuelles px **avec le même facteur déjà fourni à l'arène** (CSS variable `--combat-arena-author-offset-scale`), sans réimplémenter un calcul viewport. Les trajectoires de mouvement calculées depuis les rectangles réels sont déjà en pixels de l'arène et **ne doivent pas être re-multipliées**.
+3. Conserver animation, frame, scale auteur, profondeur, gameplay, dégâts, collisions et occupation zone sur les **mêmes bounds DOM du sprite**. Ne pas créer une autorité visuelle concurrente ou changer les JSON.
+4. Préserver le 1v1, le 2v2, le mobile paysage, la disposition réelle des créatures et leurs ombres.
+
+## TDD + preuves nécessaires
+- RED : sentinelle d'intégration sur CSS et vraies fiches `cap_fire_atk_6`, `boule_neige`, `pique_glace` et un test Chromium sur vrais gabarit/CSS/renderer en comparaison téléphone et PC.
+- GREEN : `getBoundingClientRect()` normalisé de zone, projectile, cast et impact, offsets X/Y, et zone cible dans une arène 16:9, en 1v1/2v2 ; aucun test testant seulement les wrappers.
+- CI Foundation + quatre suites Chromium sur SHA exact ; checkpoint GREEN, PR `gh-pages`, revalidation CI et Pages post-merge. Les confirmations visuelles utilisateur sur appareil physique restent distinctes.
+
+## Résultats et preuves
+- **RED en code source de base** : le CSS `a64efa59` contient les plafonds `width:clamp(2.9rem,7.5vw,5rem)` pour les projectiles sprites et `width:clamp(6rem,20vw,12rem)` pour les zones ; il ne contient aucun propriétaire de taille FX basé sur l'arène. Le renderer ne contient pas `fxAuthorPixelsV1`. Sentinelle créée **avant le correctif** dans `tests/unit/capture-global-fx-phone-pc-parity-2026-11-03.test.mjs` (commit `c34e018`). Exécution RED historique annulée par la suite de commits de la branche ; ne pas prétendre un run RED complet.
+- **Cause corrigée** : une seule autorité CSS `demo.css` pour les tailles des FX Capture paysage (projectile normal et sprite, cast, impact, zone, rayon tactique, canalisation glace, clash et phase), dans des **pourcentages de la vraie arène 16:9**, sans plafond `rem` sur PC. Les tailles de référence mobile sont préservées à quelques dixièmes de pixel près pour une arène 716×403. Les états longue portée gardent leur unique nœud natif à 100% de l'arène.
+- **Offsets auteurs et unités visuelles** : `fxAuthorPixelsV1(arena, px)` consomme le facteur déjà présent sur le vrai élément `[data-combat-arena]` (`--combat-arena-author-offset-scale`, propriété du renderer de créatures), défaut 1 hors Combat Capture. Appliqué aux offsets cast/impact/zone, skyfall et projectile sous cible, montée des pics, beams (caps/épaisseur/recouvrement), particules cast/impact/trail/smoke, glow et télégraphes de mines. Aucune translation de mouvement issue des rectangles réels n'est remultipliée.
+- **Données officielles conservées** : `boule_neige` cast joueur `X=+85,Y=+15`, adverse `X=-70,Y=+15`, travelScale=1.5 ; `pique_glace` scale=3, groundY=+15, rise=80 ; `cap_fire_atk_6` zone scale 1.2, X 1.6, Y 0.8. Les JSON source et exports ne sont pas touchés, idem les comportements de lancement, de dégâts, d'occupation et de collision.
+- **Vrai Chromium** : `tests/browser/capture-global-fx-phone-pc-parity-smoke.mjs` part du vrai template HTML de l'éditeur, de ses vrais CSS, des 3 JSON officiels et du moteur `mountCombatDemo` puis `createDomSkillFxRenderer` ; une image SVG neutre sert seulement à rendre les dimensions de chaque média observable, sans copier le sprite officiel. En `920×490` (arène `716.44×402.98`) et `1920×1080` (arène `1765.33×992.98`), `PASS` sur **1v1 ET 2v2, joueur ET adversaire** : largeur normalisée de chaque FX, centre de zone, offsets cast `+85/-70,+15`, glace sous cible `+15`. Tests de la vraie progression Firestorm et des projectiles conservés séparément.
+- **Validation code** : SHA `2d506ee8efb5195248e99271230a6eb13308abdb`, [CI #41646458652](https://github.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/actions/runs/41646458652) **5/5 SUCCESS** (Foundation + Firestorm Chromium + mobile/PC et deux autres jobs Chromium). L'ancien contrôle indépendant des ombres a eu un échec intermittent lors d'un run intermédiaire, sans rapport avec ce CSS limité à la preview ; aucun contournement ni désactivation.
+- **Cache client** : URL CSS `demo.css` et chaîne ESM canonique `capture-editor-v2` → `capture-combat-preview` → `combat-2v2-test-ui` → `dom-skill-fx` versionnées avec `global-fx-phone-pc-20261103`. Le chemin 1v1 consomme aussi le nouveau renderer.
+- **Bornes explicites de ce lot** : les effets de statut sur modèle, esquive spéciale et les **murs destructibles** possèdent d'autres modules et n'ont pas été déclarés visuellement validés par ces tests ; ils sont identifiés pour des lots dédiés si leur projection diverge, sans ajouter de seconde autorité.
+- **À faire** : CI sur SHA exact du journal final, checkpoint GREEN, PR `gh-pages`, CI et Pages post-fusion. Contrôle visuel artistique par le créateur sur les deux appareils reste distinct de la CI.
+
+
