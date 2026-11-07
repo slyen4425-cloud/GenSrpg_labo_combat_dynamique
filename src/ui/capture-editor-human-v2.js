@@ -378,6 +378,9 @@ function humanTacticalStatusToContractV1(
     output.modifierPct=finiteNumber(status.modifierPct,"Variation effets reçus (%)");
     output.affectedPolarity=requiredText(status.affectedPolarity,"Nature des effets reçus");
   }
+  if(output.kind==="heal_inversion"){
+    output.percent=finiteNumber(status.percent,"Soin inversé (%)");
+  }
   if (output.kind === "stat_modifier") {
     if (status.activationCondition === "moving") output.activationCondition = "moving";
     output.statId = requiredText(
@@ -4902,6 +4905,7 @@ function tacticalStatusKindLabelV1(kind) {
     stat_modifier: "Modification de stat",
     outgoing_damage_modifier:"Dégâts infligés (tous types, %)",
     incoming_effect_modifier:"Effets reçus (dégâts et soins, %)",
+    heal_inversion:"Soin inversé — convertir les soins en dégâts",
     stack_counter: "Compteur de charges (sans effet avant le seuil)",
     approach_time_modifier: "Temps de trajet de la créature",
     energy_regen_modifier: "Régénération d’énergie (%)",
@@ -5313,7 +5317,7 @@ function appendStackThresholdEffectRowV1(host, effect = {}, { damageBuff = false
   addField(statusBox, "Durée du statut (secondes)", "stackThresholdStatusDuration",
     st.durationMs == null ? 3 : humanTacticalMsToSecondsV1(st.durationMs),
     {number:true,min:0.1,step:"0.1"});
-  const stAmount = addField(statusBox, "Valeur (PV, shield ou points)",
+  const stAmount = addField(statusBox, "Valeur (PV, bouclier, points ou soin inversé %)",
     "stackThresholdStatusAmount", st.amount ?? st.deltaPoints ?? st.percent ?? st.modifierPct ?? 10,
     {number:true,step:"0.1"});
   const stTick = addField(statusBox, "Intervalle DoT / HoT (secondes)",
@@ -5347,13 +5351,14 @@ function appendStackThresholdEffectRowV1(host, effect = {}, { damageBuff = false
     stAmount.parentElement.hidden = ![
       "stat_modifier","approach_time_modifier","energy_regen_modifier",
       "skill_cooldown_rate_modifier","damage_over_time","heal_over_time",
-      "shield","damage_reflection"
+      "shield","damage_reflection","heal_inversion"
     ].includes(sk);
     stTick.parentElement.hidden = !["damage_over_time","heal_over_time"].includes(sk);
     stChannel.parentElement.hidden = sk !== "damage_over_time";
     stStat.parentElement.hidden = sk !== "stat_modifier";
     immunity.hidden = sk !== "immunity";
     reflectionSubform.hidden = sk !== "damage_reflection";
+    if (sk === "heal_inversion") pol.value = "detrimental";
     if (sk === "projectile_mirror" || (sk === "immunity" && intangible.checked)) {
       pol.value = "beneficial";
     }
@@ -5363,7 +5368,7 @@ function appendStackThresholdEffectRowV1(host, effect = {}, { damageBuff = false
   }
   kind.addEventListener("change",sync);
   stKind.addEventListener("change",()=>{
-    pol.value = ["damage_over_time","stun","immobilize","silence","taunt"]
+    pol.value = ["heal_inversion","damage_over_time","stun","immobilize","silence","taunt"]
       .includes(stKind.value) ? "detrimental" : "beneficial";
     sync();
   });
@@ -5401,6 +5406,8 @@ function readStackThresholdEffectRowsV1(host) {
         if (sk === "damage_over_time") st.channel = field("stack-threshold-status-channel");
       } else if (sk === "shield") {
         st.amount = amount;
+      } else if (sk === "heal_inversion") {
+        st.percent = amount;
       } else if (sk === "damage_reflection") {
         st.percent = amount;
         readReflectionAuthorControlsV1(row.querySelector('[data-reflection-controls="stack-result"]'), st);
@@ -5465,8 +5472,8 @@ function syncHumanSkillEffectRowV1(
     if (intangibleSelected) domain.checked = true;
     domain.disabled = intangibleSelected;
   }
-  if (statusPolarity && (sleeping || statusKind === "projectile_mirror" || statusKind === "auto_dodge" || intangibleSelected)) {
-    statusPolarity.value = sleeping ? "detrimental" : "beneficial";
+  if (statusPolarity && (sleeping || statusKind === "heal_inversion" || statusKind === "projectile_mirror" || statusKind === "auto_dodge" || intangibleSelected)) {
+    statusPolarity.value = sleeping || statusKind === "heal_inversion" ? "detrimental" : "beneficial";
     statusPolarity.disabled = true;
   } else if (statusPolarity) {
     statusPolarity.disabled = false;
@@ -5491,6 +5498,11 @@ function syncHumanSkillEffectRowV1(
     node.hidden = !node.dataset.skillZoneEffectConfigKind.split(",").includes(zoneEffectKind);
   }
   const zoneStatusKind=row.querySelector("[data-skill-zone-status-kind]")?.value ?? "stat_modifier";
+  const zonePolarity=row.querySelector("[data-skill-zone-status-polarity]");
+  if(zonePolarity){
+    if(zoneStatusKind==="heal_inversion")zonePolarity.value="detrimental";
+    zonePolarity.disabled=zoneStatusKind==="heal_inversion";
+  }
   for(const node of row.querySelectorAll("[data-skill-zone-status-config-kind]")){
     node.hidden = !node.dataset.skillZoneStatusConfigKind.split(",").includes(zoneStatusKind);
   }
@@ -5902,6 +5914,15 @@ function appendHumanSkillEffectV1(
   incomingEffectScope.dataset.skillStatusIncomingEffectPolarity="true";
   for(const [id,label] of [["detrimental","Négatifs — dégâts reçus"],["beneficial","Positifs — soins reçus"],["both","Les deux — dégâts et soins reçus"]]) createOption(incomingEffectScope,id,label);
   incomingEffectScope.value=status.affectedPolarity??"detrimental";
+  const inversionPct=tacticalNumberInputV1("skillStatusHealInversionPercent",status.percent??100,
+    {min:0,max:100,step:"1"});
+  const inversionConfig=document.createElement("div");
+  inversionConfig.className="skill-status-config__specific";
+  inversionConfig.dataset.skillStatusConfigKind="heal_inversion";
+  inversionConfig.append(tacticalFieldV1("Part des soins convertie en dégâts (%)",inversionPct));
+  const inversionNote=document.createElement("small");inversionNote.className="note";
+  inversionNote.textContent="Soin direct, périodique ou vol de vie : la partie convertie devient des dégâts, le reste soigne. Boucliers et immunités restent actifs. Purification possible.";
+  inversionConfig.append(inversionNote);
   const incomingEffectConfig=document.createElement("div");
   incomingEffectConfig.className="skill-status-config__specific";
   incomingEffectConfig.dataset.skillStatusConfigKind="incoming_effect_modifier";
@@ -6431,6 +6452,7 @@ function appendHumanSkillEffectV1(
     statConfig,
     outgoingDamageConfig,
     incomingEffectConfig,
+    inversionConfig,
     approachConfig,
     energyRegenConfig,
     skillCooldownConfig,
@@ -6917,6 +6939,8 @@ function appendHumanSkillEffectV1(
     })(),
     zoneStatusNumber("Dégâts infligés, tous types (%) — positif = bonus","skillZoneStatusOutgoingDamageModifierPct",
       zs.modifierPct ?? 0,{step:"1"},"outgoing_damage_modifier"),
+    zoneStatusNumber("Soins convertis en dégâts (%)","skillZoneStatusHealInversionPercent",
+      zs.percent??100,{min:0,max:100,step:"1"},"heal_inversion"),
     zoneStatusNumber("Variation dégâts / soins reçus (%)","skillZoneStatusIncomingEffectModifierPct",
       zs.modifierPct ?? 30,{step:"1"},"incoming_effect_modifier"),
     (() => {const s=document.createElement("select");s.dataset.skillZoneStatusIncomingEffectPolarity="true";
@@ -7025,7 +7049,7 @@ function appendHumanSkillEffectV1(
   zoneStatusPolarity.value = zs.polarity ?? "beneficial";
   zoneStatusStacking.value = zs.stacking ?? "refresh";
   zoneStatusKind.addEventListener("change",()=> {
-    zoneStatusPolarity.value = ["damage_over_time","stun","immobilize","silence","taunt"]
+    zoneStatusPolarity.value = ["heal_inversion","damage_over_time","stun","immobilize","silence","taunt"]
       .includes(zoneStatusKind.value) ? "detrimental" : "beneficial";
   });
   syncHumanSkillEffectRowV1(row);
@@ -7196,6 +7220,8 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
       };
       if(zsKind==="outgoing_damage_modifier"){
         zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-outgoing-damage-modifier-pct]").value);
+      } else if(zsKind==="heal_inversion"){
+        zs.percent=Number(row.querySelector("[data-skill-zone-status-heal-inversion-percent]").value);
       } else if(zsKind==="incoming_effect_modifier"){
         zs.modifierPct=Number(row.querySelector("[data-skill-zone-status-incoming-effect-modifier-pct]").value);
         zs.affectedPolarity=row.querySelector("[data-skill-zone-status-incoming-effect-polarity]").value;
@@ -7332,6 +7358,8 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
         );
       } else if(statusKind==="outgoing_damage_modifier"){
         status.modifierPct=Number(row.querySelector("[data-skill-status-outgoing-damage-modifier-pct]").value);
+      } else if(statusKind==="heal_inversion"){
+        status.percent=Number(row.querySelector("[data-skill-status-heal-inversion-percent]").value);
       } else if(statusKind==="incoming_effect_modifier"){
         status.modifierPct=Number(row.querySelector("[data-skill-status-incoming-effect-modifier-pct]").value);
         status.affectedPolarity=row.querySelector("[data-skill-status-incoming-effect-polarity]").value;

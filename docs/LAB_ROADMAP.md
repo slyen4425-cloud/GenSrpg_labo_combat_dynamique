@@ -606,7 +606,7 @@ Autres événements à ajouter par lots propres selon les vrais propriétaires (
 
 ## Backlog en attente — Statut générique « Soin inversé » (2026-11-07)
 
-**Statut : conception uniquement. Ne rien développer, activer ni publier tant que le raccord du Labo Combat à GenSrpg n'est pas terminé et que l'auteur n'a pas donné son feu vert.**
+**Statut au 7 novembre 2026 : feu vert explicite de l'auteur reçu pour développer la mécanique dans le Labo Combat uniquement. Candidat de lot isolé `work/lab-heal-inversion-2026-11-07` ; NON GREEN jusqu'aux tests CI sur SHA exact et validation de l'éditeur. Aucun raccord ni publication automatique GenSrpg.**
 
 **Besoin utilisateur :** une compétence pose une altération sur une créature ; si celle-ci devait récupérer des PV, tout ou partie du soin devient au contraire une perte de PV. Exemple : soin initial +20 PV, taux d'inversion 25 % → −5 PV, 50 % → −10 PV, 100 % → −20 PV. La portion convertie ne soigne pas. Taux, durée, cibles, empilement et dissipation doivent rester paramétrables depuis l'éditeur, jamais en dur.
 

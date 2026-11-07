@@ -1,3 +1,15 @@
+## 2026-11-07 — Soin inversé générique, chantier C2 isolé (NON GREEN)
+
+- **Demande auteur** : feu vert pour développer Soin inversé dans le Labo Combat seul ; aucun changement GenSrpg/Exploration.
+- **Base immuable** : `main@e0af88367f57a334c486b2b120d417439dd2d7be` (Laboratory CI #42357986175 SUCCESS), `gh-pages@cb9befb137eda6f453f17b29b315ae0803ee461e`. START `checkpoint/lab-start-heal-inversion-2026-11-07`, work `work/lab-heal-inversion-2026-11-07`.
+- **Source unique** : `StatusEffectV1.heal_inversion` pour le contrat ; `applyCombatHealV1` pour les soins et conversion via `applyCombatDamageV1`, sans second moteur ; interface/Bestiaire sans calcul PV.
+- **Décisions V1** : taux 0–100 % sur soin ajusté avant plafond PV ; stacking natif plafonné à 100 %, source de la dernière malédiction active ; dommages avant soin résiduel ; boucliers/immunités/KO natifs et aucune réflexion récursive ; effet négatif purifiable ; événement `heal-converted`.
+- **Fichiers autorisés** : contrat, `combat-damage-application-v1.js`, `immediate-tactical-effects-v1.js`, `capture-editor-human-v2.js`, `capture-skill-explanation-v1.js`, `tests/unit/capture-heal-inversion-2026-11-07.test.mjs`, `tests/browser/capture-heal-inversion-editor-smoke.mjs`, `.github/workflows/ci.yml`, `docs/LAB_HEAL_INVERSION_2026-11-07.md`, roadmap, journal.
+- **Protégés** : toutes les capacités/créatures existantes, assets/sprites/sons, engine d'Exploration, GenSrpg, sauvegardes, source main et gh-pages avant les contrôles.
+- **Gates** : tests RED sur base, cas direct/HoT/vol de vie/bouclier/immunité/KO/expiration/stack/purification, 1v1/2v2, export/import, vrai Chromium paysage ; revue d'un unique commit, cinq jobs CI au SHA exact. Pas de GREEN avant tests et publication vérifiés ; test téléphone auteur distinct.
+
+---
+
 ## 2026-11-07 — Synchronisation contrôlée Labo Combat Pages vers main (demande auteur)
 - BASE `main@ebaea5dc40c4803add76563029a9dff67b964d55` ; START `checkpoint/lab-start-pages-to-main-2026-11-07` ; WORK `work/lab-pages-to-main-2026-11-07`; source Pages `gh-pages@7063384e4db35c7fd837fc55a367965a262c847b` (à réévaluer si Pages avance).
 - Contraintes RÈGLE 0 : `main` est l'autorité de règles/contrats pour consommateurs ; `gh-pages` la prévisualisation. Ne pas fusionner aveuglément les historiques divergents (1265 commits spécifiques Pages et 73 sur main), pas de seconde bibliothèque/double moteur. Transfert sélectif des sources et des données approuvées via blobs déjà existants dans le **même dépôt**, sans nouvelle copie physique de bibliothèque.

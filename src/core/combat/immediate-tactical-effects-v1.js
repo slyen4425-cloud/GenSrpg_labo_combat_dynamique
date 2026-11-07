@@ -465,7 +465,14 @@ export function applyImmediateTacticalEffectsV1({
         nextState=healed.state;
         const before=healed.hpBefore;
         const after=healed.hpAfter;
-        events.push(Object.freeze({
+        if(healed.convertedRequested>0) events.push(Object.freeze({
+          type:"heal-converted",atMs,actorId:affectedId,
+          sourceActorId:healed.curseSourceActorId,healerActorId:actorId,
+          skillId:skill.id,requested:healed.convertedRequested,
+          appliedDamage:healed.convertedDamage,absorbedByShield:healed.absorbedByShield,
+          immuneDamage:healed.immuneDamage
+        }));
+        if(healed.applied>0||healed.convertedRequested===0) events.push(Object.freeze({
           type: "heal",
           atMs,
           actorId: affectedId,
@@ -734,7 +741,14 @@ export function applyImmediateTacticalEffectsV1({
       nextState=healed.state;
       const before=healed.hpBefore;
       const after=healed.hpAfter;
-      events.push(Object.freeze({
+      if(healed.convertedRequested>0) events.push(Object.freeze({
+        type:"heal-converted",lifeSteal:true,atMs,actorId,
+        sourceActorId:healed.curseSourceActorId,healerActorId:actorId,
+        skillId:skill.id,requested:healed.convertedRequested,
+        appliedDamage:healed.convertedDamage,absorbedByShield:healed.absorbedByShield,
+        immuneDamage:healed.immuneDamage
+      }));
+      if(healed.applied>0||healed.convertedRequested===0) events.push(Object.freeze({
         type: "heal", lifeSteal: true, atMs, actorId,
         sourceActorId: actorId, skillId: skill.id,
         damageBasis: lifeStealDamage, requested,
