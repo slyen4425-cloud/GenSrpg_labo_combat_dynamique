@@ -1,8 +1,10 @@
 import { isReserveEffectTargetScopeV2 } from "../../contracts/skill-effect-v1.js";
+import {hasActiveStatusKindV1} from "./status-effect-runtime-v1.js";
 import {
   addChargeTimeEffect,
   advanceCombatTime,
   createCombatState,
+  withFighterEnergy,
   withFighterMovementActiveV1,
   replaceFighter as replaceCombatFighter
 } from "./combat-state.js";
@@ -77,6 +79,21 @@ export function createCombatSession({
 
   function snapshot() {
     return state;
+  }
+
+  // One transaction owner for incremental charged-attack energy payments.
+  // Normal skill-start cost/use/cooldown remains owned by resolveSkillStart.
+  function payChargedActivationEnergy({actorId,cost}) {
+    const fighter=state.fighters[actorId];
+    const amount=Number(cost);
+    if (!fighter || !Number.isFinite(amount) || amount < 0) {
+      return Object.freeze({ok:false,outcome:"invalid_charge_payment"});
+    }
+    if (fighter.energy < amount) {
+      return Object.freeze({ok:false,outcome:"insufficient_energy",cost:amount,availableEnergy:fighter.energy});
+    }
+    if (amount > 0) state=withFighterEnergy(state,actorId,fighter.energy-amount);
+    return Object.freeze({ok:true,outcome:"charge_energy_paid",cost:amount,remainingEnergy:state.fighters[actorId].energy});
   }
 
   function setMovementActiveV1(actorId, active) {
@@ -334,7 +351,8 @@ export function createCombatSession({
     reaction = null,
     targetActionContext = null,
     resolutionAtMs = null,
-    forcedOutcome = null
+    forcedOutcome = null,
+    confirmedVisibleBodyContact = false
   }) {
     const result = resolveSkillCompletion({
       state,
@@ -343,7 +361,8 @@ export function createCombatSession({
       targetActionContext,
       battleFormat,
       resolutionAtMs,
-      forcedOutcome
+      forcedOutcome,
+      confirmedVisibleBodyContact
     });
     const committed = action.mirrorReturn
       ? (state = result.state, result)
@@ -404,7 +423,8 @@ export function createCombatSession({
     reaction = null,
     targetActionContext = null,
     resolutionAtMs = null,
-    forcedOutcome = null
+    forcedOutcome = null,
+    confirmedVisibleBodyContact = false
   }) {
     return action.actionType === "command"
       ? completeCommand({ action })
@@ -413,7 +433,8 @@ export function createCombatSession({
           reaction,
           targetActionContext,
           resolutionAtMs,
-          forcedOutcome
+          forcedOutcome,
+          confirmedVisibleBodyContact
         });
   }
 
@@ -494,7 +515,7 @@ export function createCombatSession({
 
   // Pulse effects are resolved through the SINGLE native tactical HP/status
   // application path. ContactHold does not own a private damage calculator.
-  function applyContactHoldTickV1({ actorId, targetId, skill, atMs }) {
+  function applyContactHoldTickV1({ actorId, targetId, skill, atMs, contactedEntityId = null }) {
     if (!skill?.contactHold || !state.fighters[actorId] ||
         !state.fighters[targetId] ||
         Number(state.fighters[actorId].hp) <= 0 ||
@@ -515,11 +536,40 @@ export function createCombatSession({
       },
       atMs,
       combatAtMs: atMs,
-      battleFormat
+      battleFormat,
+      contactedEntityId
     });
     state = result.state;
     return Object.freeze({ ok: true, outcome: "contact_tick", state,
       events: result.events });
+  }
+
+  // Channeling uses the existing tactical effects and fighter energy owner.
+  // Invalid ticks must leave both energy and targets untouched atomically.
+  function applyChannelingTickV1({actorId,targetId,skill,atMs}){
+    const config=skill?.channeling;
+    const source=state.fighters[actorId],target=state.fighters[targetId];
+    if(!config)return Object.freeze({ok:false,outcome:"not_channeling",state});
+    if(!source||!target||source.hp<=0||target.hp<=0)
+      return Object.freeze({ok:false,outcome:"channel_ko_or_absent",state});
+    if(config.stopOnStun&&hasActiveStatusKindV1(state,actorId,"stun"))
+      return Object.freeze({ok:false,outcome:"stun",state});
+    if(config.stopOnSilence&&hasActiveStatusKindV1(state,actorId,"silence"))
+      return Object.freeze({ok:false,outcome:"silence",state});
+    const cost=config.energyCostPerTick;
+    if(source.energy<cost)
+      return Object.freeze({ok:false,outcome:"insufficient_energy",state});
+    const paid=cost>0?withFighterEnergy(state,actorId,source.energy-cost):state;
+    const effects=applyImmediateTacticalEffectsV1({
+      state:paid,actorId,targetId,
+      skill:{id:skill.id,category:skill.category,form:skill.form,
+        element:skill.element,hitsIntangible:skill.hitsIntangible,
+        effects:config.effects},
+      atMs,combatAtMs:atMs,battleFormat
+    });
+    state=effects.state;
+    return Object.freeze({ok:true,outcome:"channel_tick",state,
+      energyPaid:cost,events:effects.events});
   }
 
   function addChargeEffect(fighterId, effect) {
@@ -562,6 +612,7 @@ export function createCombatSession({
     },
     snapshot,
     setMovementActiveV1,
+    payChargedActivationEnergy,
     registerReserveSkillResolver,
     previewMovement,
     previewSkill,
@@ -584,6 +635,7 @@ export function createCombatSession({
     advanceMs,
     advance,
     applyContactHoldTickV1,
+    applyChannelingTickV1,
     addChargeEffect,
     replaceFighter,
     departFighter,

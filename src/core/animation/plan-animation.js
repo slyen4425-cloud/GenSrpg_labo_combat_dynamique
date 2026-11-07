@@ -1,3 +1,4 @@
+import { groundApproachLocomotionFromProfileV1 } from "./ground-approach-steps-v1.js";
 import { createAnimationPlan } from "./animation-plan.js";
 import { ROSTER_TRANSITION_PROFILE_V1 } from "../profiles/roster-transition-profile-v1.js";
 import {
@@ -90,6 +91,11 @@ function locomotionShape({
     throw new RangeError("locomotion.phases must be a non-empty array");
   }
 
+  // Animation Core must preserve each authored footstep even when a native
+  // instantaneous approach supplies fewer milliseconds than visual phases.
+  // Stretch *only* this visual plan; Combat Runtime still owns the true hit time.
+  const visualDurationMs = Math.max(totalDurationMs, cfg.phases.length);
+
   let previousAt = 0;
   let elapsedMs = 0;
   const segments = cfg.phases.map((phase, index) => {
@@ -98,14 +104,17 @@ function locomotionShape({
       throw new RangeError("locomotion phase offsets must increase from 0 to 1");
     }
 
-    // A native zero-travel attack may request a 1ms presentation envelope.
-    // Keep the authored phase order by expanding VISUAL-only milliseconds as
-    // needed. Never change Combat Session action deadlines or its travelMs.
-    const requestedEndMs =
+    const remainingPhases = cfg.phases.length - index - 1;
+    const endMs =
       at === 1
-        ? totalDurationMs
-        : Math.round(totalDurationMs * at);
-    const endMs = Math.max(elapsedMs + 1, requestedEndMs);
+        ? visualDurationMs
+        : Math.max(elapsedMs + 1, Math.min(
+            visualDurationMs - remainingPhases,
+            Math.round(visualDurationMs * at)
+          ));
+    if (endMs <= elapsedMs) {
+      throw new RangeError("locomotion duration is too short for configured phases");
+    }
     const phaseDurationMs = endMs - elapsedMs;
     elapsedMs = endMs;
     previousAt = at;
@@ -188,7 +197,7 @@ function locomotionShape({
     }
     return {
       type: "footfall",
-      atMs: Math.round(totalDurationMs * at),
+      atMs: Math.round(visualDurationMs * at),
       intensity: cueIntensity * intensity
     };
   });
@@ -422,11 +431,13 @@ export function planAnimation({ event, actor, profile }) {
 
     case "attack": {
       const cfg = profile.attack;
+      const holdAttackPose = event.metadata?.holdAttackPose === true;
       const anticipationMs = Math.max(60, Math.round(cfg.durationMs * 0.28));
       const strikeMs = Math.max(80, cfg.durationMs - anticipationMs);
       return createAnimationPlan({
         actorId: actor.id,
         eventType: event.type,
+        restoreBaseState: !holdAttackPose,
         segments: [
           {
             label: "anticipation",
@@ -452,7 +463,7 @@ export function planAnimation({ event, actor, profile }) {
               rotateDeg: directed(3 * intensity, sign)
             }
           },
-          {
+          ...(!holdAttackPose ? [{
             label: "recover",
             durationMs: cfg.recoveryMs,
             easing: "ease-out",
@@ -463,7 +474,7 @@ export function planAnimation({ event, actor, profile }) {
               scaleY: 1,
               rotateDeg: 0
             }
-          }
+          }] : [])
         ]
       });
     }
@@ -489,7 +500,7 @@ export function planAnimation({ event, actor, profile }) {
         );
 
       const approach = locomotionShape({
-        cfg: locomotion,
+        cfg: groundApproachLocomotionFromProfileV1(locomotion),
         durationMs: target.travelMs,
         intensity,
         sign,

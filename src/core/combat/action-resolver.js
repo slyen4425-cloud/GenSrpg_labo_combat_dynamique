@@ -29,6 +29,7 @@ import {
   applyCombatContactRetaliationV1
 } from "./combat-damage-application-v1.js";
 import { combatProtectionForIncomingV1 } from "./combat-protection-v1.js";
+import { previewCombatBarrierStatsV1 } from "./combat-entity-v1.js";
 import {
   projectStatusStatEffectsV1
 } from "./status-effect-projection-v1.js";
@@ -543,6 +544,20 @@ export function resolveSkillStart({
     });
   }
 
+  // Reject zero-HP summons before spending the skill's energy or registering
+  // cooldown/use. The barrier's own native stat budget is the only authority.
+  for (const effect of skill.effects ?? []) {
+    if (effect.kind !== "summon_entity") continue;
+    const budget = previewCombatBarrierStatsV1({state,sourceActorId:actorId,effect});
+    if (budget.canCreate) continue;
+    return Object.freeze({
+      ok:false,outcome:"no_stat_points",statId:effect.statId,skillId:skill.id,
+      state,events:Object.freeze([event("skill-rejected",0,{
+        actorId,skillId:skill.id,reason:"no_stat_points",statId:effect.statId
+      })])
+    });
+  }
+
   const remainingCooldownMs = skillCooldownRemainingMs(
     state,
     actorId,
@@ -908,7 +923,8 @@ export function resolveSkillCompletion({
   targetActionContext = null,
   battleFormat = null,
   resolutionAtMs = null,
-  forcedOutcome = null
+  forcedOutcome = null,
+  confirmedVisibleBodyContact = false
 }) {
   const {
     actorId,
@@ -921,13 +937,19 @@ export function resolveSkillCompletion({
     impactAtMs
   } = action;
 
-  const presence =
-    presenceEvasionFor(
-      skill,
-      targetActionContext
-    );
+  const presenceAtImpact = presenceEvasionFor(skill,targetActionContext);
+  // Physical overlapping bodies are stronger evidence than a broad airborne
+  // phase flag, but only for confirmed ground melee contact (not projectiles).
+  const observedBodyContact = confirmedVisibleBodyContact === true &&
+    skill.form === "contact" && skill.approachMode === "ground" &&
+    // Actual ground contact may beat a broad airborne movement cue, but
+    // cannot make a subterranean creature physically present on the surface.
+    presenceAtImpact.reach.presence !== "underground";
+  const presence = observedBodyContact
+    ? Object.freeze({...presenceAtImpact,evasion:null})
+    : presenceAtImpact;
   const mobilityEvasion =
-    reaction == null &&
+    !observedBodyContact && reaction == null &&
     !(
       presence.reach.configured &&
       presence.reach.transientPresence
@@ -957,6 +979,7 @@ export function resolveSkillCompletion({
     mobilityEvasion?.outcome ??
     "hit";
   let nextState = state;
+  let barrierIntercepted = false;
   const events = [
     event("skill-start", 0, {
       actorId,
@@ -1030,10 +1053,19 @@ export function resolveSkillCompletion({
           damage: damage.damage,
           atMs: combatImpactAtMs,
           hitsIntangible: skill.hitsIntangible === true,
-          incomingKind: skill.form
+          incomingKind: skill.form,
+          contactedEntityId: action.barrierContactId
         });
       nextState = applied.state;
+      barrierIntercepted = applied.entityId !== null;
 
+      if (barrierIntercepted) {
+        events.push(event("combat-entity-hit", impactAtMs, {
+          actorId: targetId, sourceActorId: actorId, skillId: skill.id,
+          entityId: applied.entityId, absorbedByEntity: applied.absorbedByEntity,
+          destroyedEntityId: applied.destroyedEntityId
+        }));
+      } else {
       events.push(event("hit", impactAtMs, {
         actorId: targetId,
         sourceActorId: actorId,
@@ -1050,10 +1082,11 @@ export function resolveSkillCompletion({
         hpBefore: applied.hpBefore,
         hpAfter: applied.hpAfter
       }));
+      }
 
       // A confirmed melee hit can trigger spikes even when its HP damage
       // was zero or shielded. Evades and mirror interceptions do not hit.
-      if (skill.form === "contact") {
+      if (skill.form === "contact" && !barrierIntercepted) {
         const thorns = applyCombatContactRetaliationV1({
           state: nextState, attackerId: actorId, defenderId: targetId,
           atMs: combatImpactAtMs
@@ -1070,7 +1103,7 @@ export function resolveSkillCompletion({
         }
       }
 
-      if (skill.effect.interruptsPreparation && !combatProtectionForIncomingV1({
+      if (!barrierIntercepted && skill.effect.interruptsPreparation && !combatProtectionForIncomingV1({
         state: nextState, targetActorId: targetId,
         domain: "negative_status", atMs: combatImpactAtMs,
         hitsIntangible: skill.hitsIntangible === true
@@ -1098,6 +1131,8 @@ export function resolveSkillCompletion({
           battleFormat,
           // No lifesteal from the return leg of a mirrored projectile.
           directDamageApplied: action.mirrorReturn ? 0 : applied.appliedDamage,
+          contactedEntityId: action.barrierContactId,
+          blockedByBarrierTargetId: barrierIntercepted ? targetId : null,
           allowLifeSteal: !action.mirrorReturn
         });
       nextState = tactical.state;
@@ -1274,6 +1309,7 @@ export function resolveSkillCompletion({
     outcome,
     persistentZoneOnly:
       isPurePersistentZoneSkill(skill),
+    barrierIntercepted,
     state: nextState,
     reactionApplied: reaction?.skillId ?? null,
     evasionApplied:

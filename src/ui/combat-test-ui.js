@@ -1,17 +1,18 @@
+import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-geometry-20261031-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-bestiary-hp-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-barrier-dual-view-20261105-barrier-side-layout-20261105";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
 import { normalizeCombatCommandDefinition } from "../contracts/combat-command-definition.js";
 import { normalizeOpponentAiPolicy } from "../contracts/opponent-ai-policy.js";
 import { createCombatSession } from "../core/combat/combat-session.js";
-import { createCombatRuntime } from "../core/combat/combat-runtime.js";
+import { createCombatRuntime } from "../core/combat/combat-runtime.js?v=wall-state-20261031-wall-geometry-20261031-wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102";
 import { createRosterSession } from "../core/combat/roster-session.js";
 import { createOpponentDecisionController } from "../core/combat/opponent-decision-controller.js";
-import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js";
-import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-facing-grainou-20261028";
+import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-wall-channel-loop-audio-20261103";
+import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=projectile-facing-grainou-20261028-wall-geometry-20261031-wall-live-r2-20261101-wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-wall-channel-loop-audio-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103";
 import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
 import { createDomDistancePresenter } from "../adapters/renderer/dom-distance-presenter.js";
-import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js";
+import { createDomCombatAudio } from "../adapters/audio/dom-combat-audio.js?v=wall-channel-loop-audio-20261103";
 import { createPersistentZoneAudioSyncV1 } from "../adapters/audio/persistent-zone-audio-sync-v1.js";
 
 const DATA_URLS = Object.freeze({
@@ -100,6 +101,13 @@ const ELEMENT_LABELS = Object.freeze({
   shadow: "Ombre"
 });
 
+// Self-only abilities follow the same Skill Contract in 1v1 as in 2v2.
+export function combat1v1SkillTargetIdV1(actorId,skill) {
+  if ((skill?.targetRelations ?? []).includes("self") &&
+      !(skill?.targetRelations ?? []).includes("enemy")) return actorId;
+  return actorId === "player" ? "opponent" : "player";
+}
+
 const OUTCOME_LABELS = Object.freeze({
   hit: "touche",
   reflected: "renvoyée",
@@ -111,6 +119,7 @@ const OUTCOME_LABELS = Object.freeze({
   interrupted: "interrompue",
   out_of_range: "hors portée",
   insufficient_energy: "énergie insuffisante",
+  no_stat_points: "Invocation impossible : statistique requise à 0",
   action_in_progress: "action déjà en cours",
   no_active_member: "aucun monstre actif",
   active_member_present: "rappelle d'abord ton monstre",
@@ -319,6 +328,12 @@ export async function mountCombatTest({
     opponent: requiredElement(root, '[data-demo-slot="opponent"]')
   };
 
+  const combatEntityOverlay=createCombatEntityOverlayV1({fighterContainers,arenaHost:arena,
+    // The same author-selected visual asset resolver used by the 2v2 scene.
+    assetForId:assetId=>presentationAssets?.visualAsset?.(assetId)
+      ??presentationAssets?.asset?.(assetId)??null
+  });
+
   const hpRefs = {
     player: {
       bar: requiredElement(root, '[data-combat-hp="player"]'),
@@ -422,6 +437,11 @@ export async function mountCombatTest({
     targetCollisionModelFor(slotId) {
       return visuals.getCollisionModelFor(slotId);
     },
+    barrierCollisionRectsFor({sourceActorId,targetActorId,kind}) {
+      // Read only the visible wall sprite's live rectangle. Combat Damage
+      // alone decides whether an observed ID absorbs an incoming projectile.
+      return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId,kind});
+    },
     anchors: {
       player: requiredElement(
         root,
@@ -521,8 +541,14 @@ export async function mountCombatTest({
     visuals,
     fx,
     audio: combatAudio,
+    barrierRectsFor({sourceActorId,targetActorId,kind}) {
+      return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId,kind});
+    },
     onActionContact(contact) {
       return runtime?.reportActionContact(contact) ?? null;
+    },
+    onActionTravelEnd(approach) {
+      return runtime?.reportGroundApproachEnd(approach) ?? null;
     }
   });
 
@@ -642,7 +668,7 @@ export async function mountCombatTest({
 
         const result = runtime.startSkill({
           actorId: "player",
-          targetId: "opponent",
+          targetId: combat1v1SkillTargetIdV1("player",skill),
           skill
         });
 
@@ -657,6 +683,11 @@ export async function mountCombatTest({
         }
 
         closeMenus();
+        if (result.outcome === "charged") {
+          setStatus(`${skill.name} : ${result.chargeCount}/${result.maxCharges} activations — projectile renforcé.`,"accent");
+          render();
+          return;
+        }
 
         const reactionDecision =
           opponentAi?.maybeReactToActiveAction();
@@ -871,15 +902,32 @@ export async function mountCombatTest({
       const preview = hasActive && hasOpponent
         ? session.previewSkill({
             actorId: "player",
-            targetId: "opponent",
+            targetId: combat1v1SkillTargetIdV1("player",skill),
             skill
           })
         : { ok: false };
 
+      const chargedPreview = runtime.previewChargedSkillRetrigger({
+        actorId:"player",skillId:skill.id
+      });
+      const canCharge = chargedPreview.ok;
+      const statMissing = preview.outcome === "no_stat_points";
+      const help = button.querySelector("[data-combat-rejection-help]") ??
+        root.ownerDocument.createElement("small");
+      help.dataset.combatRejectionHelp = "true";
+      if (!help.parentNode) button.append(help);
+      help.hidden = !statMissing;
+      help.textContent = statMissing
+        ? `Invocation impossible : ${preview.statId} = 0 point`
+        : "";
+      button.title = statMissing ? help.textContent :
+        chargedPreview.outcome === "charge_preparing"
+          ? `Charge en cours : ${(chargedPreview.remainingCastMs/1000).toFixed(1)} s`
+          : chargedPreview.outcome === "insufficient_energy" ? "Énergie insuffisante pour renforcer"
+          : skill.name;
       button.disabled =
         koTransitionPending ||
-        runtime.hasActiveActionFor("player") ||
-        !preview.ok;
+        (!canCharge && (runtime.hasActiveActionFor("player") || !preview.ok));
     }
 
     const itemRef = commandRefs.get("item");
@@ -930,6 +978,11 @@ export async function mountCombatTest({
       return;
     }
     lastState = state;
+    combatEntityOverlay.render(state);
+    const mines=fx.syncScheduledMines(state);
+    for(const mine of mines.triggered)
+      combatAudio.play({type:"impact",skillId:mine.skillId,
+        actorSlot:mine.actorId,targetSlot:mine.targetId,loop:false});
     renderHp(state);
     renderEnergy(state);
     zoneAudio.sync(
@@ -1167,6 +1220,10 @@ export async function mountCombatTest({
 
   runtime = createCombatRuntime({
     session,
+    groundContactResolution: "visible",
+    readBarrierContact({sourceActorId,targetActorId,kind,skillId}) {
+      return fx.barrierContactFor({sourceActorId,targetActorId,kind,skillId});
+    },
     readZoneSpatialContext: state => fx.sampleZoneSpatialContext(state.persistentZones ?? []),
     onState(state) {
       impactHealthCue.clear();
@@ -1183,6 +1240,22 @@ export async function mountCombatTest({
     },
     onClock(state) {
       statusFx?.syncCountdowns(state);
+    },
+    onChannelStart({actorId,targetId,skillId}) {
+      presenter.presentChannelStart({actorSlot:actorId,targetSlot:targetId});
+      setStatus("Canalisation en cours : "+skillId+".","accent");
+    },
+    onChannelTick({actorId,targetId,skillId,tick}) {
+      // Native Combat Runtime owns the ONLY pulse clock; the existing FX/
+      // audio adapters replay the authored impact, never apply damage.
+      fx.play({type:"channel-pulse",skillId,fromSlot:actorId,targetSlot:targetId,durationMs:420});
+      combatAudio.play({type:"channel-pulse",skillId,actorSlot:actorId,targetSlot:targetId,loop:false});
+      setStatus("Canalisation · pulsation "+tick+".","accent");
+    },
+    onChannelEnd({actorId,reason}) {
+      presenter.endChannelPose({actorSlot:actorId});
+      setStatus("Canalisation terminée ("+reason+").","info");
+      renderAvailability();
     },
     onContactHoldStart({actorId}) {
       setStatus(actorId === "player"
@@ -1226,6 +1299,9 @@ export async function mountCombatTest({
         return;
       }
 
+      if (progress.phase === "preparation" && progress.chargeCount) {
+        presenter.presentChargeAmplification({actorSlot:progress.actorId,sizeMultiplier:progress.sizeMultiplier,durationMs:progress.preparationMs});
+      }
       setCharge({
         slotId: progress.actorId,
         value:
@@ -1431,6 +1507,7 @@ export async function mountCombatTest({
       }
       runtime.dispose();
       presenter.dispose();
+      combatEntityOverlay.dispose();
       statusFx?.dispose();
       damageFeedback?.dispose();
       combatAudio.dispose();

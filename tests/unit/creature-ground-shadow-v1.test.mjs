@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { normalizeCombatVisualEvent } from "../../src/contracts/combat-visual-event.js";
 import { normalizeVisualActor } from "../../src/contracts/visual-actor.js";
 import { planAnimation } from "../../src/core/animation/plan-animation.js";
+import { groundApproachLocomotionFromProfileV1 } from "../../src/core/animation/ground-approach-steps-v1.js";
 import { createProfileRegistry } from "../../src/core/profiles/profile-registry.js";
 import { animationPlanToDomTimeline } from "../../src/adapters/renderer/dom-keyframes.js";
 import { createDomActorRenderer } from "../../src/adapters/renderer/dom-actor-renderer.js";
@@ -54,10 +55,11 @@ for (const view of ["player", "opponent"]) {
       const timeline = animationPlanToDomTimeline(plan, actor);
       assert.ok(timeline.shadowKeyframes, "the canonical timeline must include the ground projection");
       assert.equal(timeline.shadowKeyframes.length, timeline.keyframes.length);
-      let elapsed = 0;
+      // The animator uses exact normalized phase offsets, while segment
+      // durations are rounded to integer milliseconds (notably thirds).
+      const phases = groundApproachLocomotionFromProfileV1(registry.get(profile).locomotion).phases;
       for (let i = 0; i < plan.segments.length - 1; i++) {
-        elapsed += plan.segments[i].durationMs;
-        const p = registry.get(profile).locomotion.phases[i].at, frame = timeline.shadowKeyframes[i + 1];
+        const p = phases[i].at, frame = timeline.shadowKeyframes[i + 1];
         assert.equal(frame.offset, timeline.keyframes[i + 1].offset);
         assert.equal(frame.easing, timeline.keyframes[i + 1].easing);
         assert.equal(translation(frame)[0], translation(timeline.keyframes[i + 1])[0]);

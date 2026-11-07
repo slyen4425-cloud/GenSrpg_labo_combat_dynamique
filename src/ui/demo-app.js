@@ -1,6 +1,6 @@
 import { normalizeCombatVisualEvent } from "../contracts/combat-visual-event.js";
 import { normalizeVisualActor } from "../contracts/visual-actor.js";
-import { planAnimation } from "../core/animation/plan-animation.js";
+import { planAnimation } from "../core/animation/plan-animation.js?v=ground-approach-steps-20261105";
 import { createProfileRegistry } from "../core/profiles/profile-registry.js";
 import { createDomActorRenderer } from "../adapters/renderer/dom-actor-renderer.js";
 import { createDomCreatureMovementVisualV1 } from "../adapters/renderer/dom-creature-movement-visual-v1.js";
@@ -16,7 +16,7 @@ import {
   createDomVisibleModelCollisionModel,
   visibleModelOpaqueRect,
   watchVisibleModelContact
-} from "../adapters/renderer/dom-visible-model-contact.js";
+} from "../adapters/renderer/dom-visible-model-contact.js?v=wall-ground-stop-20261101";
 import { createDomCameraFxRenderer } from "../adapters/renderer/dom-camera-fx.js";
 import {
   playDomCreatureDodgeFxV1
@@ -25,6 +25,18 @@ import { planLocomotionCueFx } from "../core/fx/locomotion-fx-plan.js";
 import { playDomBurrowTerrainFxV2 } from "../adapters/renderer/dom-burrow-terrain-fx-v2.js";
 import {defaultBurrowSpritesV1} from "../assets/burrow-terrain-builtins-v1.js";
 import { globalVisualAssetUrl } from "../assets/global-visual-library.js";
+
+// Author positioning is calibrated in a ~400 CSS-px high landscape phone
+// arena. Keep the author X/Y intact; project only the display translation
+// using the actual arena, not the device viewport or the fighter's width.
+export const CAPTURE_PHONE_REFERENCE_ARENA_HEIGHT_PX = 400;
+export const CAPTURE_ARENA_AUTHOR_OFFSET_CSS_VAR = "--combat-arena-author-offset-scale";
+
+export function captureArenaAuthorPositionScaleV1(arena) {
+  const height=Number(arena?.getBoundingClientRect?.()?.height ?? arena?.clientHeight ?? 0);
+  return Number.isFinite(height) && height > 0
+    ? height / CAPTURE_PHONE_REFERENCE_ARENA_HEIGHT_PX : 1;
+}
 
 // Pure presentation choice: slot "player" sees the creature's back,
 // slot "opponent" sees its front. V5 single-sprite authors retain fallback.
@@ -193,11 +205,14 @@ export function restingTargetCenterForApproachV1(targetSlot) {
     Number.isFinite(nativeWidth) && nativeWidth > 0
       ? rect.width / nativeWidth
       : 1;
+  const authoredScale = targetSlot.actor?.positionScaleVar
+    ? captureArenaAuthorPositionScaleV1(container.closest?.("[data-combat-arena]"))
+    : 1;
   return Object.freeze({
     x: rect.left + rect.width / 2 +
-      (Number(targetSlot.actor?.position?.x) || 0) * scale,
+      (Number(targetSlot.actor?.position?.x) || 0) * authoredScale * scale,
     y: rect.top + rect.height / 2 +
-      (Number(targetSlot.actor?.position?.y) || 0) * scale
+      (Number(targetSlot.actor?.position?.y) || 0) * authoredScale * scale
   });
 }
 
@@ -252,6 +267,23 @@ export async function mountCombatDemo({
 
   let disposed = false;
   const arena = requiredElement(root, "[data-combat-arena]");
+  const phoneArenaAuthorOffsets = Boolean(
+    root.closest?.('[data-capture-preview-shell][data-landscape-required="true"]')
+  );
+  const applyArenaPositionScale = () => {
+    if (!phoneArenaAuthorOffsets) return;
+    arena.style?.setProperty?.(
+      CAPTURE_ARENA_AUTHOR_OFFSET_CSS_VAR,
+      String(captureArenaAuthorPositionScaleV1(arena))
+    );
+  };
+  // First paint + each resize: the one actual arena owns this scale.
+  // CSS-var-based body and shadow timelines automatically follow it.
+  applyArenaPositionScale();
+  const authorOffsetResizeObserver =
+    phoneArenaAuthorOffsets && typeof globalThis.ResizeObserver === "function"
+      ? new globalThis.ResizeObserver(applyArenaPositionScale) : null;
+  authorOffsetResizeObserver?.observe(arena);
   const cameraFx = createDomCameraFxRenderer({
     element: arena
   });
@@ -330,7 +362,8 @@ export async function mountCombatDemo({
           profiles,
           container,
           initialVisible: container.hidden !== true,
-          getArenaLight: () => arenaLight
+          getArenaLight: () => arenaLight,
+          usePhoneArenaAuthorOffsets: phoneArenaAuthorOffsets
         })
       ];
     })
@@ -343,6 +376,8 @@ export async function mountCombatDemo({
   lightControls?.addEventListener?.("change", onLightControlInput);
 
   const activeApproachBySlot = new Map();
+  // Visual State owns ONE retained attack pose per slot; Runtime owns its lifetime.
+  const heldAttackBySlot = new Map();
   const activeDodgeFxBySlot = new Map();
   const activeBurrowTerrainFxBySlot = new Map();
 
@@ -464,7 +499,7 @@ export async function mountCombatDemo({
     }
 
     const slot = slotOf(slotKey);
-    if (!slot.visible) {
+    if (!slot.visible || heldAttackBySlot.has(slotKey)) {
       return null;
     }
 
@@ -631,6 +666,18 @@ export async function mountCombatDemo({
       );
     }
 
+    const heldAttack = heldAttackBySlot.get(slotKey);
+    if (type === "hit" && heldAttack) {
+      // A non-lethal hit cannot restart idle over an unbroken channel pose.
+      return Promise.resolve({ status: "held" });
+    }
+    if (type === "attack" && metadata?.holdAttackPose === true && heldAttack) {
+      return Promise.resolve({ status: "held" });
+    }
+    if (heldAttack && type !== "defense" && type !== "hit") {
+      releaseHeldAttackPoseFor(slotKey);
+    }
+
     const activeApproach = activeApproachBySlot.get(slotKey);
     if (type === "hit" && activeApproach) {
       return Promise.resolve(activeApproach.finished).then(
@@ -673,12 +720,13 @@ export async function mountCombatDemo({
       // The slot's real camera view chooses the pose. A V5 single-sprite
       // creature continues using its original rangedAttackFx for both sides.
       const rangedVisual = creatureRangedAppearanceForViewV1(slot.meta, slot.view);
+      const holdAttackPose = type === "attack" && metadata?.holdAttackPose === true;
       const rangedAppearance =
         type === "attack" &&
         metadata?.useRangedAppearance === true &&
         rangedVisual?.url
           ? slot.playMovementAppearance(
-              rangedVisual,
+              holdAttackPose ? { ...rangedVisual, playbackMode: "hold-last" } : rangedVisual,
               plan.segments.reduce((sum, segment) => sum + segment.durationMs, 0),
               slot.view === "player" ? 1 : -1
             )
@@ -701,17 +749,25 @@ export async function mountCombatDemo({
         throw error;
       }
 
+      if (holdAttackPose) {
+        heldAttackBySlot.set(slotKey, { appearance: rangedAppearance });
+      }
       return handle.finished.then((result) => {
         if (
           result?.status === "finished" &&
           !disposed &&
+          !holdAttackPose &&
           !["idle", "ko", "recall"].includes(type) &&
           slot.visible
         ) {
           startIdleFor(slotKey);
         }
         return result;
-      }).finally(() => rangedAppearance?.cancel?.());
+      }).finally(() => {
+        if (!holdAttackPose || !heldAttackBySlot.has(slotKey)) {
+          rangedAppearance?.cancel?.();
+        }
+      });
     } catch (error) {
       return Promise.reject(error);
     }
@@ -725,6 +781,7 @@ export async function mountCombatDemo({
       targetSlot = null,
       onPhase = null,
       onContact = null,
+      obstacleRectsFor = null,
       onFootfall = null,
       holdOnContact = false,
       burrowTerrainSprites = null
@@ -888,7 +945,11 @@ export async function mountCombatDemo({
             sourceModel: slot.collisionModel,
             targetModel: target.collisionModel,
             continuous: approachMode !== "teleport",
-            onContact() {
+            // The same actor-body watcher checks live CombatEntityOverlay
+            // wall bounds, not a second RAF or an inferred hit at timeout.
+            obstacleRectsFor: approachMode === "ground" ? obstacleRectsFor : null,
+            sourceRectFor: () => slot.motion.getBoundingClientRect(),
+            onContact(contact) {
               // Aerial contact resolves damage once through CombatRuntime,
               // but the creature must complete its planned dive and normal
               // home phase. Only ground contact can stop outbound travel.
@@ -911,7 +972,7 @@ export async function mountCombatDemo({
                 const paused = holdOnContact === true &&
                   typeof slot.renderer.pauseActive === "function" &&
                   slot.renderer.pauseActive();
-                const contactResult = onContact();
+                const contactResult = onContact(contact);
                 if (paused && contactResult?.outcome === "contact_held") {
                   heldAtContact = true;
                   contactWatcher?.cancel();
@@ -922,7 +983,7 @@ export async function mountCombatDemo({
                 return;
               }
 
-              onContact();
+              onContact(contact);
             }
           })
         : null;
@@ -1034,8 +1095,23 @@ export async function mountCombatDemo({
     return active?.releaseHold?.() === true;
   }
 
+  function hasHeldAttackPoseFor(slotKey) {
+    return heldAttackBySlot.has(slotKey);
+  }
+
+  function releaseHeldAttackPoseFor(slotKey) {
+    const held = heldAttackBySlot.get(slotKey);
+    if (!held) return false;
+    heldAttackBySlot.delete(slotKey);
+    held.appearance?.cancel?.();
+    const slot = slotOf(slotKey);
+    if (slot.visible) startIdleFor(slotKey);
+    return true;
+  }
+
   function cancelFor(slotKey) {
     const slot = slotOf(slotKey);
+    heldAttackBySlot.delete(slotKey);
     const activeApproach =
       activeApproachBySlot.get(slotKey) ?? null;
     activeApproach?.contactWatcher?.cancel();
@@ -1065,6 +1141,7 @@ export async function mountCombatDemo({
     }
 
     const slot = slotOf(slotKey);
+    heldAttackBySlot.delete(slotKey);
     cancelDodgeAppearanceFx(slotKey);
     cancelBurrowTerrainFxFor(slotKey);
     slot.setCreature(meta, displayName);
@@ -1082,6 +1159,7 @@ export async function mountCombatDemo({
   function setSlotVisible(slotKey, visible) {
     const slot = slotOf(slotKey);
     if (!visible) {
+      heldAttackBySlot.delete(slotKey);
       cancelDodgeAppearanceFx(slotKey);
       cancelBurrowTerrainFxFor(slotKey);
     }
@@ -1115,6 +1193,8 @@ export async function mountCombatDemo({
     playMovementFor,
     playApproachFor,
     releaseHeldApproachFor,
+    releaseHeldAttackPoseFor,
+    hasHeldAttackPoseFor,
     cancelFor,
     startIdleFor,
     setCreatureFor,
@@ -1137,10 +1217,13 @@ export async function mountCombatDemo({
     // Actor profile alone owns its base placement. The FX renderer uses
     // this resting offset without following transient flight/burrow motion.
     getRestingOffsetFor(slotKey) {
-      const position = slotOf(slotKey).actor?.position;
+      const actor = slotOf(slotKey).actor;
+      const position = actor?.position;
+      const factor = actor?.positionScaleVar
+        ? captureArenaAuthorPositionScaleV1(arena) : 1;
       return Object.freeze({
-        x: Number(position?.x) || 0,
-        y: Number(position?.y) || 0
+        x: (Number(position?.x) || 0) * factor,
+        y: (Number(position?.y) || 0) * factor
       });
     },
     getStatusPresentationTargetFor(slotKey) {
@@ -1185,6 +1268,11 @@ export async function mountCombatDemo({
       }
       movementCueTimers.clear();
       cameraFx.dispose();
+      authorOffsetResizeObserver?.disconnect();
+      if (phoneArenaAuthorOffsets) {
+        arena.style?.removeProperty?.(CAPTURE_ARENA_AUTHOR_OFFSET_CSS_VAR);
+      }
+      heldAttackBySlot.clear();
       for (const slot of Object.values(slots)) {
         slot.dispose();
       }
@@ -1200,7 +1288,8 @@ function createSlot({
   profiles,
   container = null,
   initialVisible = true,
-  getArenaLight = () => normalizeArenaShadowLightV1()
+  getArenaLight = () => normalizeArenaShadowLightV1(),
+  usePhoneArenaAuthorOffsets = false
 }) {
   const slotContainer =
     container ??
@@ -1271,7 +1360,7 @@ function createSlot({
   function rebuildActor(asset) {
     renderer?.dispose();
 
-    actor = normalizeVisualActor({
+    const normalizedActor = normalizeVisualActor({
       id: `${meta.id}-${key}`,
       creatureId: meta.id,
       profile: meta.profile,
@@ -1282,6 +1371,14 @@ function createSlot({
       transformOrigin:
         meta.transformOrigin ?? { x: "50%", y: "50%" }
     });
+    // Renderer-only option; authored data and VisualActor canonical schema
+    // remain untouched, including the wolf's opponent Y=+60.
+    actor = usePhoneArenaAuthorOffsets
+      ? Object.freeze({
+          ...normalizedActor,
+          positionScaleVar: CAPTURE_ARENA_AUTHOR_OFFSET_CSS_VAR
+        })
+      : normalizedActor;
 
     slotContainer.style?.setProperty?.(
       "--creature-display-scale",

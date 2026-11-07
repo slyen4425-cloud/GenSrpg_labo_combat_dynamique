@@ -160,7 +160,18 @@
           "offsetMode": "same"
         }
       },
-      "audio": {},
+      "audio": {
+        "travel": {
+          "assetId": "gensrpg:sound:genrpg-pack2-3e95d6c6",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:genrpg-pack2-a3d02c0f",
+          "volume": 1,
+          "loop": false
+        }
+      },
       "statusVisuals": {},
       "feedback": {
         "glow": null,

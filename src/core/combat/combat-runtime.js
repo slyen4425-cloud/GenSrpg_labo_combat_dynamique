@@ -1,3 +1,5 @@
+import { isPureBeneficialAllySkillV1 } from "../../contracts/skill-beneficial-contact-v1.js";
+import {amplifyChargedEffectSkillV1} from "./charged-effects-v1.js";
 import {
   combatHealthDeltaEventsV1
 } from "./combat-health-feedback-v1.js";
@@ -29,7 +31,9 @@ export function createCombatRuntime({
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer,
   readZoneSpatialContext = null,
+  readBarrierContact = null,
   enableExpandingWaveMultiTarget = false,
+  groundContactResolution = "timed",
   onState = () => {},
   onHealthDelta = () => {},
   onClock = () => {},
@@ -40,7 +44,10 @@ export function createCombatRuntime({
   onInterrupted = () => {},
   onContactHoldStart = () => {},
   onContactHoldTick = () => {},
-  onContactHoldEnd = () => {}
+  onContactHoldEnd = () => {},
+  onChannelStart = () => {},
+  onChannelTick = () => {},
+  onChannelEnd = () => {}
 }) {
   if (!session || typeof session.advanceMs !== "function") {
     throw new TypeError("session with advanceMs() is required");
@@ -49,6 +56,7 @@ export function createCombatRuntime({
     throw new RangeError("tickMs must be greater than 0");
   }
   if (readZoneSpatialContext !== null && typeof readZoneSpatialContext !== "function") throw new TypeError("readZoneSpatialContext must be a function");
+  if (readBarrierContact !== null && typeof readBarrierContact !== "function") throw new TypeError("readBarrierContact must be a function");
 
   let disposed = false;
   let running = false;
@@ -81,7 +89,12 @@ export function createCombatRuntime({
         })
       ),
       persistentZones:
-        state.persistentZones ?? []
+        state.persistentZones ?? [],
+      // Combat State owns summoned entities. A wall can be created, damaged
+      // or destroyed without changing any fighter HP; never suppress that
+      // state projection merely because the roster is unchanged.
+      combatEntities:
+        state.combatEntities ?? []
     });
   }
 
@@ -89,8 +102,10 @@ export function createCombatRuntime({
     const record = contactHoldsByActor.get(actorId);
     if (!record) return false;
     contactHoldsByActor.delete(actorId);
-    onContactHoldEnd(Object.freeze({ actorId, targetId:record.targetId,
-      skillId:record.skill.id, reason }));
+    const info=Object.freeze({ actorId, targetId:record.targetId,
+      skillId:record.skill.id, reason });
+    if(record.kind==="channeling")onChannelEnd(info);
+    else onContactHoldEnd(info);
     return true;
   }
   function syncContactHoldsWithState(state) {
@@ -101,33 +116,57 @@ export function createCombatRuntime({
         endContactHold(hold.actorId,"ko_or_absent");
       else if(!Number.isFinite(taken)||taken<hold.damageTakenTotalAtStart)
         endContactHold(hold.actorId,"actor_replaced");
-      else if(taken>hold.damageTakenTotalAtStart)
+      else if(hold.kind==="channeling"&&
+          hold.skill.channeling.stopOnStun&&hasActiveStatusKindV1(state,hold.actorId,"stun"))
+        endContactHold(hold.actorId,"stun");
+      else if(hold.kind==="channeling"&&
+          hold.skill.channeling.stopOnSilence&&hasActiveStatusKindV1(state,hold.actorId,"silence"))
+        endContactHold(hold.actorId,"silence");
+      else if(taken>hold.damageTakenTotalAtStart&&
+          (hold.kind!=="channeling"||hold.skill.channeling.stopOnDamage))
         endContactHold(hold.actorId,"damage_taken");
     }
   }
   function pulseContactHolds(atNowMs) {
     for(const hold of [...contactHoldsByActor.values()]){
       if(contactHoldsByActor.get(hold.actorId)!==hold)continue;
-      const duration=hold.skill.contactHold.maxDurationMs;
+      const config=hold.kind==="channeling"?hold.skill.channeling:hold.skill.contactHold;
+      const duration=config.maxDurationMs;
       const endAt=duration?hold.startedAtClockMs+duration:Infinity;
       const until=Math.min(endAt,atNowMs);
       let count=0;
       while(contactHoldsByActor.get(hold.actorId)===hold &&
           hold.nextTickClockMs<=until){
-        const result=session.applyContactHoldTickV1({
-          actorId:hold.actorId,targetId:hold.targetId,skill:hold.skill,
-          atMs:Math.max(0,Number(session.snapshot().elapsedMs)-
-            (atNowMs-hold.nextTickClockMs))
-        });
+        if(hold.kind==="channeling"&&config.maxTicks!==null&&hold.ticks>=config.maxTicks){
+          endContactHold(hold.actorId,"max_ticks");break;
+        }
+        const tickAtMs=Math.max(0,Number(session.snapshot().elapsedMs)-
+          (atNowMs-hold.nextTickClockMs));
+        const result=hold.kind==="channeling"
+          ?session.applyChannelingTickV1({
+              actorId:hold.actorId,targetId:hold.targetId,skill:hold.skill,atMs:tickAtMs
+            })
+          :session.applyContactHoldTickV1({
+              actorId:hold.actorId,targetId:hold.targetId,skill:hold.skill,
+              contactedEntityId:readBarrierContact?.({sourceActorId:hold.actorId,
+                targetActorId:hold.targetId,kind:"contact",skillId:hold.skill.id})?.entityId??null,
+              atMs:tickAtMs
+            });
         if(!result.ok){endContactHold(hold.actorId,result.outcome);break;}
-        hold.nextTickClockMs+=hold.skill.contactHold.tickIntervalMs;
-        onContactHoldTick(Object.freeze({actorId:hold.actorId,targetId:hold.targetId,
-          skillId:hold.skill.id,events:result.events}));
+        hold.ticks=(hold.ticks??0)+1;
+        hold.nextTickClockMs+=config.tickIntervalMs;
+        const event=Object.freeze({actorId:hold.actorId,targetId:hold.targetId,
+          skillId:hold.skill.id,tick:hold.ticks,events:result.events});
+        if(hold.kind==="channeling")onChannelTick(event);
+        else onContactHoldTick(event);
         syncContactHoldsWithState(session.snapshot());
         if(++count>2000)throw new Error("contactHold max pulse safety exceeded");
       }
       if(contactHoldsByActor.get(hold.actorId)===hold&&atNowMs>=endAt)
         endContactHold(hold.actorId,"duration_expired");
+      else if(hold.kind==="channeling"&&contactHoldsByActor.get(hold.actorId)===hold&&
+        config.maxTicks!==null&&hold.ticks>=config.maxTicks)
+        endContactHold(hold.actorId,"max_ticks");
     }
   }
 
@@ -205,7 +244,10 @@ export function createCombatRuntime({
   }
 
   function progressSnapshot(record, elapsedMs) {
-    const preparationMs = record.action.preparationMs;
+    // For a charged attack, the cast stays in preparation until the actual
+    // projectile release. The authored wind-up is a minimum, not a deadline.
+    const preparationMs = record.action.chargeState
+      ? record.action.releaseAtMs : record.action.preparationMs;
     const chargeProgress =
       preparationMs <= 0 ? 1 : Math.min(1, elapsedMs / preparationMs);
 
@@ -303,7 +345,12 @@ export function createCombatRuntime({
       chargeProgress,
       phase,
       released: record.released,
-      reaction
+      reaction,
+      ...(record.action.chargeState ? {
+        chargeCount:record.action.chargeState.chargeCount,
+        chargeMax:record.action.chargeState.maxCharges,
+        sizeMultiplier:record.action.chargeState.sizeMultiplier
+      } : {})
     });
   }
 
@@ -703,6 +750,19 @@ export function createCombatRuntime({
 
     record.released = true;
 
+    if (!earlyCounter && record.action.chargeState) {
+      const skill=record.action.skill,config=skill.chargedAttack??skill.chargedEffects;
+      const count=record.action.chargeState.chargeCount;
+      const damage=skill.chargedAttack?config.baseDamage+(count-1)*config.bonusDamagePerCharge:null;
+      const sizeMultiplier=record.action.chargeState.sizeMultiplier;
+      record.action=Object.freeze({...record.action,
+        chargeState:Object.freeze({...record.action.chargeState,...(damage===null?{}:{damage}),sizeMultiplier}),
+        skill:skill.chargedAttack
+          ?Object.freeze({...skill,effect:Object.freeze({...skill.effect,damage})})
+          :amplifyChargedEffectSkillV1(skill,count)});
+
+    }
+
     if (!earlyCounter) {
       // One combat-owned movement gate, not a sprite timer or HUD guess.
       const action = record.action;
@@ -797,7 +857,8 @@ export function createCombatRuntime({
     record,
     atNowMs,
     { impactAtMs = null, visibleContact = false, contactPoint = null,
-      mirrorSpritePresent = false, mirrorSpriteContact = false } = {}
+      combatEntityId = undefined, mirrorSpritePresent = false, mirrorSpriteContact = false,
+      forcedOutcomeOverride = null } = {}
   ) {
     if (
       !recordIsActive(record) ||
@@ -899,15 +960,37 @@ export function createCombatRuntime({
     const mirrorContact = mirrorCanIntercept(record, effectiveAction, resolutionCombatMs, visibleContact,
       {mirrorSpritePresent, mirrorSpriteContact});
     // An uncaught returning projectile cannot inflict damage at a timer boundary.
-    const forcedOutcome = mirrorContact ? "mirrored" :
+    const forcedOutcome = forcedOutcomeOverride ?? (mirrorContact ? "mirrored" :
       (record.mirrorReturn && !visibleContact ? "evaded" :
         (effectiveAction.actionType === "skill" &&
          effectiveAction.skill?.projectileTargeting === "expanding_wave" &&
-         !visibleContact ? "evaded" : null));
+         !visibleContact ? "evaded" : null)));
 
+    // One spatial observation at the existing semantic impact. Never infer a
+    // wall from the attack kind or expiry clock. Projectile evidence comes
+    // from its own swept sprite sensor; beam/contact from the same FX adapter.
+    const physicalKind=effectiveAction.actionType==="skill"
+      ? effectiveAction.skill?.form : null;
+    const spatialBarrierContact=["projectile","beam","contact"].includes(physicalKind)
+      ? readBarrierContact?.({sourceActorId:effectiveAction.actorId,
+          targetActorId:effectiveAction.targetId,kind:physicalKind,
+          skillId:effectiveAction.skill.id})??null
+      : null;
+    const spatialBarrierId=spatialBarrierContact?.entityId??null;
+    const barrierContactId=physicalKind==="projectile"
+      ? (visibleContact?combatEntityId??spatialBarrierId:spatialBarrierId)
+      : physicalKind==="contact" && visibleContact && combatEntityId
+        ? combatEntityId : spatialBarrierId;
+    const resolvedAction=["projectile","beam","contact"].includes(physicalKind)
+      ? Object.freeze({...effectiveAction,barrierContactId})
+      : effectiveAction;
     const resolution = session.completeAction({
-      action: effectiveAction,
+      action: resolvedAction,
       forcedOutcome,
+      confirmedVisibleBodyContact: visibleContact && !combatEntityId &&
+        effectiveAction.actionType === "skill" &&
+        effectiveAction.skill?.form === "contact" &&
+        effectiveAction.skill?.approachMode === "ground",
       reaction: effectiveReaction,
       targetActionContext,
       resolutionAtMs:
@@ -949,12 +1032,45 @@ export function createCombatRuntime({
       });
     }
 
-    onResolved(resolution);
+    // Presentation-only position from the SAME swept wall contact already
+    // observed by the runtime. Never compute new collision/HP authority.
+    // Keep it even if the strike destroys the entity in Combat State.
+    const barrierHit=resolution.events?.some(e=>e.type==="combat-entity-hit");
+    const wallPoint=combatEntityId?contactPoint:spatialBarrierContact?.point??null;
+    const presentationResolution=barrierHit&&
+      Number.isFinite(wallPoint?.x)&&Number.isFinite(wallPoint?.y)
+      ? Object.freeze({...resolution,barrierImpactPoint:Object.freeze({
+          x:wallPoint.x,y:wallPoint.y
+        })})
+      : resolution;
+    // Channeling effects begin on the first native tick, never at the
+    // initial skill arrival. Signal this only to the visual presenter.
+    const canStartChanneling=resolution.ok&&resolution.outcome==="hit"&&
+      effectiveAction.actionType==="skill"&&Boolean(effectiveAction.skill?.channeling)&&
+      Number(session.snapshot().fighters[effectiveAction.actorId]?.hp)>0&&
+      Number(session.snapshot().fighters[effectiveAction.targetId]?.hp)>0&&
+      !contactHoldsByActor.has(effectiveAction.actorId)&&!barrierHit;
+    const authoredPresentation=canStartChanneling
+      ? Object.freeze({...presentationResolution,channelingStart:true})
+      : presentationResolution;
+    onResolved(authoredPresentation);
+    if(canStartChanneling){
+      const hold={
+        kind:"channeling",actorId:effectiveAction.actorId,targetId:effectiveAction.targetId,
+        skill:effectiveAction.skill,startedAtClockMs:atNowMs,
+        nextTickClockMs:atNowMs+effectiveAction.skill.channeling.tickIntervalMs,
+        ticks:0,damageTakenTotalAtStart:
+          Number(session.snapshot().fighters[effectiveAction.actorId]?.damageTakenTotal)||0
+      };
+      contactHoldsByActor.set(hold.actorId,hold);
+      onChannelStart(Object.freeze({actorId:hold.actorId,targetId:hold.targetId,
+        skillId:hold.skill.id}));
+    }
     if (mirrorContact) {
       returnMirroredProjectile(effectiveAction, atNowMs, contactPoint);
     }
     emitStateIfChanged({ force: true });
-    return resolution;
+    return authoredPresentation;
   }
 
   function processProjectileClash({
@@ -1147,6 +1263,14 @@ export function createCombatRuntime({
         } else if (item.type === "clash") {
           processProjectileClash(item);
         } else if (item.type === "resolution") {
+          const action = item.record.action;
+          if (groundContactResolution === "visible" &&
+              action.actionType === "skill" && action.skill?.form === "contact" &&
+              action.skill?.approachMode === "ground" && !item.record.mirrorReturn &&
+              !isPureBeneficialAllySkillV1(action.skill)) {
+            // The same outbound AnimationPlan owns the final contact opportunity.
+            return;
+          }
           processResolution(item.record, atNowMs);
         } else {
           processRecoveryComplete(
@@ -1204,7 +1328,8 @@ export function createCombatRuntime({
       });
     }
     if (contactHoldsByActor.has(actorId))
-      return Object.freeze({ok:false,outcome:"contact_hold_active"});
+      return Object.freeze({ok:false,outcome:contactHoldsByActor.get(actorId).kind==="channeling"
+        ?"channeling_active":"contact_hold_active"});
     if (activeByActor.has(actorId)) {
       const record =
         activeByActor.get(actorId);
@@ -1245,7 +1370,25 @@ export function createCombatRuntime({
 
     const current = now();
     const record = {
-      action: result.action,
+      action: (result.action.skill?.chargedAttack || result.action.skill?.chargedEffects)
+        ? Object.freeze({
+            ...result.action,
+            // Each successful activation owns a COMPLETE cast stage, then an
+            // optional reactivation window. The first paid stage starts now.
+            releaseAtMs:result.action.preparationMs+
+              (result.action.skill.chargedAttack??result.action.skill.chargedEffects).reactivationWindowMs,
+            impactAtMs:result.action.preparationMs+
+              (result.action.skill.chargedAttack??result.action.skill.chargedEffects).reactivationWindowMs+result.action.travelMs,
+            chargeState:Object.freeze({
+              chargeCount:1,
+              maxCharges:(result.action.skill.chargedAttack??result.action.skill.chargedEffects).maxCharges,
+              lastTapAtMs:current,
+              chargeReadyAtMs:current+result.action.preparationMs,
+              ...(result.action.skill.chargedAttack?{damage:result.action.skill.chargedAttack.baseDamage}:{}),
+              sizeMultiplier:1
+            })
+          })
+        : result.action,
       reaction: null,
       startedAtClockMs: current,
       startedAtCombatMs:
@@ -1270,7 +1413,7 @@ export function createCombatRuntime({
     emitStateIfChanged({ force: true });
     onProgress(progressSnapshot(record, 0));
 
-    if (result.action.releaseAtMs === 0) {
+    if (record.action.releaseAtMs === 0) {
       processRelease(record);
     }
 
@@ -1279,11 +1422,75 @@ export function createCombatRuntime({
     return Object.freeze({
       ok: true,
       outcome: "started",
-      action: result.action
+      action: record.action
     });
   }
 
+  function previewChargedSkillRetrigger({actorId,skillId}) {
+    const record = activeByActor.get(actorId);
+    if (!record || record.action.actionType !== "skill" ||
+        record.action.actionId !== skillId || !record.action.chargeState ||
+        record.resolved) {
+      return Object.freeze({ok:false,outcome:"action_in_progress"});
+    }
+    const config = record.action.skill.chargedAttack ?? record.action.skill.chargedEffects;
+    const charge = record.action.chargeState;
+    const elapsed = elapsedFor(record,now());
+    if (record.released || elapsed >= record.action.releaseAtMs) {
+      return Object.freeze({ok:false,outcome:"charge_released"});
+    }
+    if (charge.chargeCount >= config.maxCharges) {
+      return Object.freeze({ok:false,outcome:"charge_max"});
+    }
+    const remainingCastMs=Math.max(0,charge.chargeReadyAtMs-now());
+    if (remainingCastMs>0) {
+      return Object.freeze({ok:false,outcome:"charge_preparing",remainingCastMs,
+        chargeCount:charge.chargeCount,maxCharges:config.maxCharges});
+    }
+    const remainingWindowMs=record.action.releaseAtMs-elapsed;
+    if (remainingWindowMs<=0) {
+      return Object.freeze({ok:false,outcome:"charge_window_expired"});
+    }
+    const cost=record.action.skill.energyCost;
+    const energy=session.snapshot().fighters[actorId]?.energy ?? 0;
+    if (energy<cost) return Object.freeze({ok:false,outcome:"insufficient_energy",cost,availableEnergy:energy});
+    return Object.freeze({ok:true,outcome:"charge_ready",
+      chargeCount:charge.chargeCount,maxCharges:config.maxCharges,remainingWindowMs});
+  }
+
   function startSkill({ actorId, targetId, skill }) {
+    const active = activeByActor.get(actorId);
+    if (active && active.action.actionType === "skill" &&
+        active.action.actionId === skill?.id && active.action.chargeState) {
+      const preview = previewChargedSkillRetrigger({actorId,skillId:skill.id});
+      if (!preview.ok) return preview;
+      if (active.action.targetId !== targetId) {
+        return Object.freeze({ok:false,outcome:"charge_target_locked"});
+      }
+      // Recheck and commit energy atomically BEFORE changing damage or size.
+      // A rejected spam tap or an empty energy bar is never an amplification.
+      const payment=session.payChargedActivationEnergy({
+        actorId,cost:active.action.skill.energyCost
+      });
+      if (!payment.ok) return payment;
+      const previous = active.action.chargeState;
+      const next = Object.freeze({
+        ...previous,chargeCount:previous.chargeCount+1,lastTapAtMs:now(),
+        chargeReadyAtMs:now()+active.action.preparationMs,
+        sizeMultiplier:1 + previous.chargeCount * (active.action.skill.chargedAttack??active.action.skill.chargedEffects).sizeIncreasePct / 100
+      });
+      // Every activation must finish its OWN preparation, even the final one.
+      // The optional window starts AFTER that cast stage has finished.
+      const elapsed = elapsedFor(active,now());
+      const releaseAtMs = elapsed+active.action.preparationMs+
+        (next.chargeCount >= next.maxCharges ? 0 : (active.action.skill.chargedAttack??active.action.skill.chargedEffects).reactivationWindowMs);
+      active.action = Object.freeze({...active.action,
+        releaseAtMs,impactAtMs:releaseAtMs+active.action.travelMs,chargeState:next});
+      onProgress(progressSnapshot(active,elapsedFor(active,now())));
+      emitStateIfChanged({force:true});
+      return Object.freeze({ok:true,outcome:"charged",chargeCount:next.chargeCount,
+        maxCharges:next.maxCharges,action:active.action});
+    }
     const rejected = canStartAction(actorId);
     if (rejected) {
       return rejected;
@@ -1662,6 +1869,7 @@ export function createCombatRuntime({
 
     return (
       form === "contact" &&
+      !isPureBeneficialAllySkillV1(action.skill) &&
       ["ground", "aerial", "teleport"].includes(
         action.skill?.approachMode ?? "none"
       )
@@ -1799,11 +2007,34 @@ export function createCombatRuntime({
     });
   }
 
+  function reportGroundApproachEnd({actorId,targetId,skillId = null}) {
+    if (disposed || groundContactResolution !== "visible")
+      return Object.freeze({ok:false,outcome:"not_authoritative"});
+    const current = now();
+    advanceSessionToClock(current);
+    settleDue(current);
+    const record = activeByActor.get(actorId) ?? null;
+    if (!record || record.resolved || !record.released ||
+        record.action.actionType !== "skill" ||
+        record.action.skill?.form !== "contact" ||
+        record.action.skill?.approachMode !== "ground" ||
+        isPureBeneficialAllySkillV1(record.action.skill) ||
+        record.action.targetId !== targetId ||
+        (skillId !== null && String(record.action.skill.id) !== String(skillId)))
+      return Object.freeze({ok:false,outcome:"no_matching_ground_approach"});
+    // No visible model intersection throughout the outbound path -> miss.
+    const resolution = processResolution(record,current,{
+      forcedOutcomeOverride:"evaded"
+    });
+    return Object.freeze({ok:Boolean(resolution),outcome:"travel_finished",resolution});
+  }
+
   function reportActionContact({
     actorId,
     targetId,
     skillId = null,
     contactPoint = null,
+    combatEntityId = null,
     mirrorSpritePresent = false,
     mirrorSpriteContact = false
   }) {
@@ -1883,8 +2114,12 @@ export function createCombatRuntime({
 
     if (record.action.skill.approachMode === "ground") {
       const spatial = zoneSpatialContext({ state: session.snapshot(), intervalStartClockMs: current });
+      // A visible wall is not body-to-body contact: movement-zone crossings
+      // still update, but the defender's body is not falsely reached.
       session.advanceMs(0, { zoneSpatialContext: Object.freeze({ ...spatial,
-        contacts: Object.freeze([Object.freeze({ actorId, targetId, approachMode: "ground" })])
+        contacts: combatEntityId
+          ? Object.freeze([])
+          : Object.freeze([Object.freeze({ actorId, targetId, approachMode: "ground" })])
       }) });
       for (const fighter of Object.values(session.snapshot().fighters)) {
         if (fighter.hp <= 0) cancelActionsForActor(fighter.id, { includeTargeted: true, reason: "ko" });
@@ -1909,7 +2144,7 @@ export function createCombatRuntime({
       record,
       current,
       { impactAtMs: contactImpactAtMs, visibleContact: true, contactPoint: visualPoint,
-        mirrorSpritePresent, mirrorSpriteContact }
+        combatEntityId, mirrorSpritePresent, mirrorSpriteContact }
     );
 
     if (!resolution) {
@@ -1923,7 +2158,8 @@ export function createCombatRuntime({
         record.action.skill?.contactHold &&
         Number(session.snapshot().fighters[actorId]?.hp) > 0 &&
         Number(session.snapshot().fighters[targetId]?.hp) > 0 &&
-        !contactHoldsByActor.has(actorId)) {
+        !contactHoldsByActor.has(actorId) &&
+        !resolution.events?.some(event=>event.type==="combat-entity-hit")) {
       const hold = {
         actorId, targetId, skill: record.action.skill,
         startedAtClockMs: current,
@@ -1985,6 +2221,7 @@ export function createCombatRuntime({
   return Object.freeze({
     start,
     startSkill,
+    previewChargedSkillRetrigger,
     startCommand,
     previewReaction,
     react,
@@ -1996,6 +2233,7 @@ export function createCombatRuntime({
     interruptActive,
     applyResolutionInterrupt,
     reportActionContact,
+    reportGroundApproachEnd,
     reportExpandingWaveTargetContact,
     reportProjectileClashContact,
     cancelActionsForActor,

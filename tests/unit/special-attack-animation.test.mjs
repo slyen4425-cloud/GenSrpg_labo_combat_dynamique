@@ -703,7 +703,7 @@ test("ground attack consumes morphology locomotion while still arriving exactly 
 });
 
 
-test("motion tuning v2 gives quadruped two bounds and a stronger but smaller biped hop", () => {
+test("motion tuning v4 gives quadruped three bounds and five small biped hops", () => {
   const travelMs = 1000;
   const metadata = {
     targetTranslateX: 200,
@@ -749,8 +749,8 @@ test("motion tuning v2 gives quadruped two bounds and a stronger but smaller bip
   );
   assert.equal(
     quadrupedLifts.length,
-    2,
-    "quadruped approach should expose two distinct airborne bounds"
+    3,
+    "quadruped approach should expose three distinct airborne bounds"
   );
   assert.ok(
     Math.max(...quadrupedLifts.map((segment) => -segment.transform.translateY)) >
@@ -817,10 +817,10 @@ test("hop fluidity v3 uses regular small arcs with equal step distances", () => 
     (segment) => Math.abs(segment.transform.translateY) < 1e-9
   );
 
-  assert.equal(bipedAirborne.length, 3);
-  assert.equal(bipedLandings.length, 3);
-  assert.equal(quadrupedAirborne.length, 2);
-  assert.equal(quadrupedLandings.length, 2);
+  assert.equal(bipedAirborne.length, 5);
+  assert.equal(bipedLandings.length, 5);
+  assert.equal(quadrupedAirborne.length, 3);
+  assert.equal(quadrupedLandings.length, 3);
 
   const equalLandingSteps = (segments, expectedStep) => {
     let previousX = 0;
@@ -834,8 +834,8 @@ test("hop fluidity v3 uses regular small arcs with equal step distances", () => 
     }
   };
 
-  equalLandingSteps(bipedLandings, targetX / 3);
-  equalLandingSteps(quadrupedLandings, targetX / 2);
+  equalLandingSteps(bipedLandings, targetX / 5);
+  equalLandingSteps(quadrupedLandings, targetX / 3);
 
   const bipedLift = Math.max(
     ...bipedAirborne.map((segment) => -segment.transform.translateY)

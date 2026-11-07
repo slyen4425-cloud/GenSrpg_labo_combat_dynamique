@@ -1,3 +1,4 @@
+import {captureAuthorSlugV1} from "./capture-author-id-v1.js";
 function nonEmptyId(value, field) {
   if (typeof value !== "string" || value.trim() === "") {
     throw new TypeError(field + " must be a non-empty skill id");
@@ -66,4 +67,12 @@ export function nextCaptureSkillDraftIdV1({
   }
 
   return base + "-" + suffix;
+}
+
+/** Authoring-time only. Existing saved skill IDs are never regenerated. */
+export function suggestCaptureSkillDraftIdFromNameV1({
+  name, configuredSkillIds = []
+} = {}) {
+  const slug=captureAuthorSlugV1(name) || "nouvelle-capacite";
+  return nextCaptureSkillDraftIdV1({configuredSkillIds,baseId:slug});
 }

@@ -1,0 +1,10 @@
+# Labo Combat — Armure de ronces DOS, sélection Nature/statut (2026-11-04)
+
+- Dépendance médias : `global-assets@090c8f830caa9ca839b6773bbda4fedfb1757053` (PR #237). Un seul catalogue officiel, deux assets différents : FACE `pack:capture:sprite-armure-ronces-plante-carnivore-01` et DOS `pack:capture:sprite-armure-ronces-plante-carnivore-back-01`.
+- Source client START : `gh-pages@2b4b194d7b1fac24d04bf64dc3c7522d7894b329`. Checkpoint `checkpoint/lab-start-thorn-armor-back-selector-2026-11-04` et lot `work/lab-thorn-armor-back-selector-2026-11-04`.
+- Nouvelle révision du **même** catalogue `GLOBAL_VISUAL_LIBRARY` : `2026-11-04-v57-thorn-armor-plante-carnivore-back6f`. Aucune table/autorité additionnelle.
+- Rôle : catégorie `skill`, tags `nature,defense,status,overlay,player,back` ; disponible dans le sélecteur des sprites de **statut / nature**. Le rôle mouvement/attaque créature est exclu. Pas d'affectation automatique à un personnage/une capacité.
+- Asset visuel : `capture/sprites/skills/armure_ronces_plante_carnivore/back/atlases/armure_ronces_dos_6f.webp` (WebP lossless, 6 x 512×512, `once`, `holdLastFrame` index 5). La preview avec la créature est revue artistique, jamais le sprite servi au jeu.
+- Cause racine du précédent blocage de cache : des tests plus anciens exigeaient littéralement la révision `v56`, empêchant une évolution légitime du catalogue. Remplacer par une sentinelle `v56+` qui protège l'accès aux médias et le rôle sans figer la version du cache. Conserver tous les contrôles médias et navigateur.
+- Périmètre : fichier de révision unique, sept tests antérieurs corrigeant l'exact-match, nouveau test back, journal/document. Aucun runtime/gameplay/UI autre que la révision cache, aucune modification des profils ou autres assets.
+- Critères : `npm run ci`, 5 jobs GitHub dont Chrome réel, checkpoint GREEN au SHA exact, PR vers `gh-pages`, CI post-fusion, Pages SUCCESS. Tester URL réelle de l'éditeur et sélection du nouveau masque ; validation smartphone par l'auteur distincte.

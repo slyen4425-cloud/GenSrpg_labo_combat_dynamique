@@ -32,9 +32,9 @@ const visuals={
 };
 test("Esprit appends to original 14 canonical stats; channels preserved as authored",()=>{
  const ids=registry.stats.map(s=>s.id);
- assert.equal(ids.length,15);
- assert.deepEqual(ids.slice(-3),["acier","nature","esprit"]);
- assert.equal(new Set(ids).size,15);
+ assert.equal(ids.length,16);
+ assert.deepEqual(ids.slice(-4),["acier","nature","esprit","glace"]);
+ assert.equal(new Set(ids).size,16);
  const spirit=captureStatDefinitionForIdV1(registry,"esprit");
  assert.equal(spirit.label,"Esprit");
  assert.equal(spirit.damageChannel,"esprit");
@@ -51,10 +51,12 @@ test("Kitsune is unique in the active catalog; old source remains immutable",()=
  for(const id of [kitsune,moss]){
    assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.includes(archive(id)),false);
    if(id===moss){
-     // Original 22 October author export is immutable; the approved Defense
-     // revision gets a NEW byte-exact archive, never a rewritten original.
-     assert.notEqual(read(active(id)),read(archive(id)));
-     assert.equal(read(active(id)),read("data/capture/source-exports/gensrpg-capture-creature-crea_mossback-2026-10-30-defense-approved.json"));
+     const original=JSON.parse(read(archive(id)));
+     const current=JSON.parse(read(active(id)));
+     assert.equal(original.draft.combat.reaction,undefined,"immutable 2026-10-22 source remains unmodified");
+     assert.equal(current.draft.combat.reaction.type,"defense");
+     delete current.draft.combat.reaction;
+     assert.deepEqual(current,original,"only separately authorized Defense authoring may differ from original");
    }
    else {
      const author=JSON.parse(read("data/capture/source-exports/gensrpg-capture-creature-kitsune_lunaire-2026-10-22-r2.json"));

@@ -17,7 +17,18 @@ for(const [id,kind] of [["crea_nat_1","creature"],["coupe_feuille","skill"]]){
     const historic=JSON.parse(await read(archived));
     assert.equal(historic.draft.presentation.version,9);
     const currentSource="data/capture/source-exports/gensrpg-capture-skill-"+id+"-2026-10-28.json";
-    assert.deepEqual(JSON.parse(await read(live)),JSON.parse(await read(currentSource)));
+    const previous=JSON.parse(await read(currentSource));
+    assert.equal(previous.draft.definition.projectileClash.power,0,
+      "2026-10-28 authored source is immutable historical provenance");
+    const expected=structuredClone(previous);
+    expected.draft.definition.projectileClash.power=1;
+    expected.draft.presentation.audio={
+      cast:{assetId:"gensrpg:sound:conflux-43060f16",volume:1,loop:false},
+      travel:{assetId:"gensrpg:sound:genrpg-pack2-9320854b",volume:1,loop:true},
+      impact:{assetId:"gensrpg:sound:effect-7b158ebd",volume:1,loop:false}
+    };
+    assert.deepEqual(JSON.parse(await read(live)),expected,
+      "Nov 5 author retains collision power and adds exactly three audio cues, no gameplay changes");
   }else{
     const historical=JSON.parse(await read(archived));
     assert.equal(historical.draft.id,id,"2026-10-27 author creature archive remains untouched");
@@ -28,9 +39,14 @@ for(const [id,kind] of [["crea_nat_1","creature"],["coupe_feuille","skill"]]){
     const r3="data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r3.json";
     assert.equal(JSON.parse(await read(r3)).draft.combat.reaction.maxCharges,2,
       "prior r3 remains untouched");
-    const latest="data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r4.json";
-    assert.equal(await read(live),await read(latest),
-      "active creature must equal newest author export, without erasing historical provenance");
+    const priorR4="data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r4.json";
+    assert.equal(JSON.parse(await read(priorR4)).loadout.slots[3].skillId,null,"historical r4 is immutable");
+    const latest="data/capture/source-exports/gensrpg-capture-creature-crea_nat_1-2026-10-29-r5.json";
+    const expected=JSON.parse(await read(latest));
+    expected.draft.skillIds.push("liane_venimeuse");
+    expected.loadout.slots[4].skillId="liane_venimeuse";
+    assert.deepEqual(JSON.parse(await read(live)),expected,
+      "historical r5 remains immutable; Oct 30 author added only Liane in skillIds and ultimate");
   }
   const catalog=kind==="creature"?CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1:CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1;
   assert.equal(catalog.filter(p=>p===live).length,1);

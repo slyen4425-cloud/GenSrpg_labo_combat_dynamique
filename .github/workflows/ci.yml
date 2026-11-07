@@ -1,5 +1,10 @@
 name: Laboratory CI
 
+# Same-ref CI supersession only; no cross-branch or Pages cancellation.
+concurrency:
+  group: lab-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
   pull_request:
@@ -7,6 +12,7 @@ on:
 jobs:
   foundation:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -16,22 +22,56 @@ jobs:
 
   creature-library-browser:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Real Chromium unified reference element filters and skill ID authoring
+        run: node tests/browser/capture-reference-filters-skill-ids-smoke.mjs
+      - name: Real Chromium optional player/opponent status mask with native author controls
+        run: node tests/browser/capture-status-sprite-side-assets-smoke.mjs
+      - name: Real Chromium reflection status author PC/phone responsive geometry
+        run: node tests/browser/capture-reflection-editor-responsive-smoke.mjs
+      - name: Real Chromium channeling, ground mines, under-target projectiles and element filters
+        run: node tests/browser/capture-channel-mine-editor-smoke.mjs
       - name: Real Chromium creature library startup smoke
         run: node tests/browser/capture-creature-library-smoke.mjs
+      - name: Real Chromium main Adventure author deep-link to skills and combat
+        run: node tests/browser/capture-author-tab-deeplink-smoke.mjs
+      - name: Real Chromium snowball selectors and official WebP atlas previews
+        run: node tests/browser/capture-snowball-asset-editor-smoke.mjs
+      - name: Real Chromium persistent ice wall summon construction and HP lifetime
+        run: node tests/browser/capture-ice-wall-persistent-atlas-smoke.mjs
+      - name: Real Chromium Gorice player/opponent official movement 12f media and resolver
+        run: node tests/browser/capture-gorice-movement-media-smoke.mjs
+      - name: Real Chromium Renard magique dore official 12f movement and resolver
+        run: node tests/browser/capture-renard-dore-movement-media-smoke.mjs
+      - name: Real Chromium Lumilo opponent attack official 12f and once playback
+        run: node tests/browser/capture-renard-dore-attack-opponent-media-smoke.mjs
+      - name: Real Chromium Heriplante player attack and movement 12f from official catalog
+        run: node tests/browser/capture-heriplante-player-animations-media-smoke.mjs
+      - name: Real Chromium Heriplante opponent attack 12f from official catalog
+        run: node tests/browser/capture-heriplante-attack-opponent-media-smoke.mjs
+      - name: Real Chromium Heriplante opponent run 12f and Grainou catalog resolver
+        run: node tests/browser/capture-heriplante-opponent-run-media-smoke.mjs
+      - name: Real Chromium Ice VFX zone floor spike fog selectors and 3 actual WebP images
+        run: node tests/browser/capture-ice-ground-spike-fog-editor-smoke.mjs
+      - name: Real Chromium charged projectile author fields
+        run: node tests/browser/capture-charged-projectile-editor-smoke.mjs
+      - name: Real Chromium charged buff-debuff editor
+        run: node tests/browser/capture-charged-effects-smoke.mjs
+      - name: Real Chromium ice barrier author and entity HUD
+        run: node tests/browser/capture-ice-barrier-editor-smoke.mjs
       - name: Real Chromium 2.5D arena shadow and flying light projection
         run: node tests/browser/shadow-light-real-render-smoke.mjs
       - name: Real Chromium Capture Bestiaire (front only)
         run: node tests/browser/capture-bestiary-smoke.mjs
-      - name: Real Chromium Lab editor author deep-link creature skills combat
-        run: node tests/browser/capture-author-tab-deeplink-smoke.mjs
 
   firestorm-zone-growth-browser:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -42,6 +82,7 @@ jobs:
 
   expanding-wave-2v2-browser:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -52,6 +93,7 @@ jobs:
 
   expanding-wave-mobile-preview-browser:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -59,3 +101,9 @@ jobs:
           node-version: 22
       - name: Real Chromium standalone 2v2 mobile preview startup
         run: node tests/browser/expanding-wave-mini-preview-smoke.mjs
+      - name: Real Chromium mobile/PC creature feet and proportions, 1v1 and 2v2
+        run: node tests/browser/capture-pc-phone-arena-parity-smoke.mjs
+      - name: Real Chromium Loup volcanique author Y+60 offset phone/PC, 1v1 and 2v2
+        run: node tests/browser/capture-wolf-phone-pc-author-offset-smoke.mjs
+      - name: Real Chromium authored Gorice ice and Firestorm FX phone/PC geometry, 1v1 and 2v2
+        run: node tests/browser/capture-global-fx-phone-pc-parity-smoke.mjs

@@ -1,4 +1,5 @@
-import { sweptPointHitsOpaqueMask, sweptPointHitsSpriteEllipseV1, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1, sweptExpandingWaveMeetsProjectileV1 } from "./dom-visible-model-contact.js";
+import {sweptSegmentRectContactV1,nearestBarrierSegmentContactV1,barrierContactAllowedForTrajectoryV1} from "../../core/combat/combat-barrier-spatial-v1.js";
+import { sweptPointHitsOpaqueMask, sweptPointHitsSpriteEllipseV1, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1, sweptExpandingWaveMeetsProjectileV1 } from "./dom-visible-model-contact.js?v=wall-ground-stop-20261101";
 
 function defaultAnimate(element, keyframes, options) {
   if (typeof element.animate !== "function") {
@@ -34,6 +35,20 @@ function centerRelativeTo(rect, arenaRect) {
     x: rect.left - arenaRect.left + rect.width / 2,
     y: rect.top - arenaRect.top + rect.height / 2
   });
+}
+
+/* One presentation unit for every Capture visual, shared with the existing
+   actor/ground-shadow renderer. The actual arena owns this CSS variable.
+   Standalone demos with no owner keep their original 1:1 pixel units.
+   NEVER multiply native movement deltas or actual DOM contact rectangles. */
+export function fxArenaScaleV1(arena) {
+  const value = Number(arena?.style?.getPropertyValue?.(
+    "--combat-arena-author-offset-scale"
+  ));
+  return Number.isFinite(value) && value > 0 ? value : 1;
+}
+export function fxAuthorPixelsV1(arena, value) {
+  return (Number(value) || 0) * fxArenaScaleV1(arena);
 }
 
 function clampUnit(value, fallback = 0.5) {
@@ -363,6 +378,7 @@ export function createDomSkillFxRenderer({
   onProjectileContact = null,
   onProjectileClashContact = null,
   targetCollisionModelFor = null,
+  barrierCollisionRectsFor = null,
   waveTargetsFor = null,
   playCameraFx = null
 }) {
@@ -402,6 +418,9 @@ export function createDomSkillFxRenderer({
       typeof onProjectileClashContact !== "function") {
     throw new TypeError("onProjectileClashContact must be a function");
   }
+  if (barrierCollisionRectsFor !== null && typeof barrierCollisionRectsFor !== "function") {
+    throw new TypeError("barrierCollisionRectsFor must be a function");
+  }
   if (waveTargetsFor !== null && typeof waveTargetsFor !== "function") {
     throw new TypeError("waveTargetsFor must be a function when supplied");
   }
@@ -425,6 +444,9 @@ export function createDomSkillFxRenderer({
   let disposed = false;
   const active = new Set();
   const persistentZones = new Map();
+  // Scheduled mines have NO visual clock or gameplay state here. This Map
+  // projects the existing Combat State records into the same FX renderer.
+  const scheduledMineNodes=new Map();
 
   function anchor(collection, slot, label) {
     const element = collection[slot];
@@ -503,20 +525,17 @@ export function createDomSkillFxRenderer({
       return;
     }
 
+    // The opaque fighter mask may still be loading while an authored wall
+    // already exists. It must never disable the independent, visible barrier
+    // sensor: both remain observations of the SAME projectile FX frame.
     const collisionModel =
-      targetCollisionModelFor(record.targetSlot);
-    if (
-      !collisionModel ||
-      typeof collisionModel.snapshot !== "function"
-    ) {
-      return;
-    }
+      targetCollisionModelFor?.(record.targetSlot) ?? null;
 
     record.previousProjectilePoint = rectCenter(
       record.node.getBoundingClientRect()
     );
     record.previousTargetFrame =
-      collisionModel.snapshot();
+      collisionModel?.snapshot?.() ?? null;
 
     // The native status renderer already owns and mounts this live sprite.
     // Observe its actual scaled/offset screen bounds on the same FX frame.
@@ -542,7 +561,7 @@ export function createDomSkillFxRenderer({
         record.node.getBoundingClientRect()
       );
       const targetFrame =
-        collisionModel.snapshot();
+        collisionModel?.snapshot?.() ?? null;
 
       const mirrorRect = mirrorSurface()?.getBoundingClientRect?.() ?? null;
       const spriteContactPoint = mirrorRect
@@ -553,6 +572,24 @@ export function createDomSkillFxRenderer({
             rect: mirrorRect
           })
         : null;
+      // Ground spikes and skyfall do not traverse a lateral wall lane.
+      const barrierContacts=barrierContactAllowedForTrajectoryV1(record.trajectoryMode)
+        ? (barrierCollisionRectsFor?.({
+            sourceActorId:record.fromSlot,targetActorId:record.targetSlot
+          })??[]).map(entry=>({entityId:entry.entityId,
+            point:sweptSegmentRectContactV1({from:record.previousProjectilePoint,to:projectilePoint,rect:entry.rect})
+          })).filter(entry=>entry.point!==null)
+        : [];
+      barrierContacts.sort((a,b)=>
+        Math.hypot(a.point.x-record.previousProjectilePoint.x,a.point.y-record.previousProjectilePoint.y)-
+        Math.hypot(b.point.x-record.previousProjectilePoint.x,b.point.y-record.previousProjectilePoint.y));
+      if(barrierContacts.length){
+        record.contactReported=true;
+        onProjectileContact(Object.freeze({actorId:record.fromSlot,targetId:record.targetSlot,
+          skillId:record.skillId??null,contactPoint:barrierContacts[0].point,
+          combatEntityId:barrierContacts[0].entityId}));
+        return;
+      }
       const contacted =
         spriteContactPoint !== null ||
         (targetFrame !== null &&
@@ -608,7 +645,7 @@ export function createDomSkillFxRenderer({
 
     const radiusPx = Math.max(
       1,
-      Number(glow.radiusPx) || 1
+      fxAuthorPixelsV1(arena, glow.radiusPx) || 1
     );
     const strength = clampUnit(
       glow.strength,
@@ -702,11 +739,11 @@ export function createDomSkillFxRenderer({
 
     const lengthPx = Math.max(
       1,
-      Number(trail.lengthPx) || 1
+      fxAuthorPixelsV1(arena, trail.lengthPx) || 1
     );
     const sizePx = Math.max(
       1,
-      Number(trail.sizePx) || 1
+      fxAuthorPixelsV1(arena, trail.sizePx) || 1
     );
     const opacity = clampUnit(
       trail.opacity,
@@ -893,15 +930,15 @@ export function createDomSkillFxRenderer({
 
     const spreadPx = Math.max(
       1,
-      Number(burst.spreadPx) || 1
+      fxAuthorPixelsV1(arena, burst.spreadPx) || 1
     );
     const sizePx = Math.max(
       1,
-      Number(burst.sizePx) || 1
+      fxAuthorPixelsV1(arena, burst.sizePx) || 1
     );
     const risePx = Math.max(
       1,
-      Number(burst.risePx) || 1
+      fxAuthorPixelsV1(arena, burst.risePx) || 1
     );
     const durationMs = Math.max(
       1,
@@ -1064,11 +1101,11 @@ export function createDomSkillFxRenderer({
 
     const spreadPx = Math.max(
       1,
-      Number(burst.spreadPx) || 1
+      fxAuthorPixelsV1(arena, burst.spreadPx) || 1
     );
     const sizePx = Math.max(
       1,
-      Number(burst.sizePx) || 1
+      fxAuthorPixelsV1(arena, burst.sizePx) || 1
     );
     const durationMs = Math.max(
       1,
@@ -1262,15 +1299,15 @@ export function createDomSkillFxRenderer({
 
     const spreadPx = Math.max(
       1,
-      Number(smoke.spreadPx) || 1
+      fxAuthorPixelsV1(arena, smoke.spreadPx) || 1
     );
     const sizePx = Math.max(
       1,
-      Number(smoke.sizePx) || 1
+      fxAuthorPixelsV1(arena, smoke.sizePx) || 1
     );
     const risePx = Math.max(
       1,
-      Number(smoke.risePx) || 1
+      fxAuthorPixelsV1(arena, smoke.risePx) || 1
     );
     const durationMs = Math.max(
       1,
@@ -1703,6 +1740,7 @@ export function createDomSkillFxRenderer({
     visual,
     skillId,
     point,
+    combatEntityId = null,
     durationMs,
     layer = "front",
     type = "impact",
@@ -1713,10 +1751,10 @@ export function createDomSkillFxRenderer({
       Object.freeze({
         x:
           point.x +
-          (Number(feedbackOffset?.x) || 0),
+          fxAuthorPixelsV1(arena, feedbackOffset?.x),
         y:
           point.y +
-          (Number(feedbackOffset?.y) || 0)
+          fxAuthorPixelsV1(arena, feedbackOffset?.y)
       });
     const visualDelayMs = type === "impact" && playCameraFx !== null
       ? impactVisualDelayForCameraShakeV1(feedback?.cameraShake)
@@ -1756,8 +1794,9 @@ export function createDomSkillFxRenderer({
     if (layer === "behind") node.className += " skill-fx--layer-behind";
     node.dataset.skillFx = type;
     node.dataset.skillId = skillId ?? "";
-    node.style.left = `${point.x + (Number(visual.offsetX) || 0)}px`;
-    node.style.top = `${point.y + (Number(visual.offsetY) || 0)}px`;
+    if (combatEntityId) node.dataset.combatEntityImpactId = combatEntityId;
+    node.style.left = `${point.x + fxAuthorPixelsV1(arena, visual.offsetX)}px`;
+    node.style.top = `${point.y + fxAuthorPixelsV1(arena, visual.offsetY)}px`;
 
     const spriteVisual = applySpriteVisual(
       node,
@@ -1784,9 +1823,27 @@ export function createDomSkillFxRenderer({
     const peakScale = isClash ? 1.2 : 1.08;
     const endScale = isClash ? 1.48 : 1.28;
 
+    // A channel pulse is the SAME authored sprite animation, but rooted
+    // at the ground below the target. This visual never detects collision
+    // or decides damage; native Combat Runtime already accepted the tick.
+    const groundPulse=type==="channel-pulse";
+    const groundFixed=groundPulse && visual.groundMotion==="fixed";
+    const groundRise=groundPulse && !groundFixed;
+    if(groundPulse) node.style.transformOrigin="50% 100%";
+    const fixedFrames=[
+      {transform:`translate(-50%, -100%) scale(${displayScale})`,opacity},
+      {transform:`translate(-50%, -100%) scale(${displayScale})`,opacity}
+    ];
+    const riseStart=visual.groundMotion==="rise" && Number.isFinite(visual.groundRisePx)
+      ? `translate(-50%, calc(-100% + ${fxAuthorPixelsV1(arena, visual.groundRisePx)}px))`
+      : "translate(-50%, -4%)";
     const animation = animate(
       node,
-      [
+      groundFixed ? fixedFrames : groundRise ? [
+        {transform:`${riseStart} scale(${0.3 * displayScale}, ${0.08 * displayScale})`,opacity:0.1 * opacity},
+        {transform:`translate(-50%, -100%) scale(${displayScale}, ${displayScale})`,opacity,offset:0.65},
+        {transform:`translate(-50%, -100%) scale(${displayScale}, ${displayScale})`,opacity:animatedSprite ? opacity : 0.45 * opacity}
+      ] : [
         {
           transform:
             `translate(-50%, -50%) scale(${startScale * displayScale})`,
@@ -1832,6 +1889,49 @@ export function createDomSkillFxRenderer({
       animation,
       finished
     });
+  }
+
+  function syncScheduledMines(state) {
+    if(disposed)return Object.freeze({status:"disposed",triggered:[]});
+    const records=(state?.scheduledEffects??[]).filter(x=>x.visualCue==="ground_mine");
+    const expected=new Set(),triggered=[];
+    const arenaRect=arena.getBoundingClientRect();
+    for(const record of records) {
+      expected.add(record.id);
+      let item=scheduledMineNodes.get(record.id);
+      if(!item){
+        const target=projectileTargetRect(record.targetActorId);
+        const x=target.left+target.width/2-arenaRect.left;
+        const y=target.bottom-arenaRect.top;
+        const node=arena.ownerDocument.createElement("span");
+        node.className="skill-fx skill-fx--mine-telegraph";
+        node.dataset.skillFx="mine-telegraph";
+        node.dataset.scheduledMineId=record.id;
+        node.style.cssText=`position:absolute;width:${fxAuthorPixelsV1(arena,42)}px;height:${fxAuthorPixelsV1(arena,19)}px;border-radius:50%;border:${fxAuthorPixelsV1(arena,2)}px solid rgba(255,214,92,.9);background:rgba(255,105,56,.24);box-shadow:0 0 ${fxAuthorPixelsV1(arena,7)}px #ffbb50;pointer-events:none;transform:translate(-50%,-50%);z-index:5;`;
+        node.style.left=x+"px";node.style.top=y+"px";
+        arena.append(node);
+        item={node,x,y,record};scheduledMineNodes.set(record.id,item);
+      }
+      const left=Math.max(0,record.dueAtMs-Number(state.elapsedMs??0));
+      const total=Math.max(1,record.dueAtMs-record.scheduledAtMs);
+      item.node.style.opacity=String(Math.max(.35,Math.min(1,1-left/total*.65)));
+    }
+    for(const [id,item] of [...scheduledMineNodes]){
+      if(expected.has(id))continue;
+      scheduledMineNodes.delete(id);
+      item.node.remove();
+      // The actual native scheduled-effect owner decided this trigger:
+      // never apply damage from the renderer, never animate a cancelled mine.
+      if(Number(state.elapsedMs)>=item.record.dueAtMs){
+        const r=arena.getBoundingClientRect();
+        play({type:"impact",skillId:item.record.sourceSkillId,
+          fromSlot:item.record.sourceActorId,targetSlot:item.record.targetActorId,
+          impactPoint:{x:r.left+item.x,y:r.top+item.y},durationMs:450});
+        triggered.push(Object.freeze({skillId:item.record.sourceSkillId,
+          actorId:item.record.sourceActorId,targetId:item.record.targetActorId}));
+      }
+    }
+    return Object.freeze({status:"synced",triggered:Object.freeze(triggered)});
   }
 
   function syncPersistentZones(zones = []) {
@@ -1979,9 +2079,9 @@ export function createDomSkillFxRenderer({
 
       if (!fixedAtGround || !record.zoneCenter) record.zoneCenter = source;
       const offsetX =
-        Number(visual.offsetX) || 0;
+        fxAuthorPixelsV1(arena, visual.offsetX);
       const offsetY =
-        Number(visual.offsetY) || 0;
+        fxAuthorPixelsV1(arena, visual.offsetY);
 
       // Native "long" is *the entire battlefield*, not the 1.9x ellipse.
       // The same persistent-zone sprite must reflect that authoritative
@@ -2060,11 +2160,15 @@ export function createDomSkillFxRenderer({
     fromSlot,
     targetSlot,
     fromPoint = null,
+    impactPoint = null,
+    combatEntityId = null,
     phase = null,
     progress = null,
     amount = null,
     expandingWave = null,
     projectilePower = 0,
+    sizeMultiplier = 1,
+    holdUntilCancelled = false,
     durationMs,
     delayMs = 0
   }) {
@@ -2075,7 +2179,7 @@ export function createDomSkillFxRenderer({
       });
     }
     if (
-      !["cast", "projectile", "beam", "impact", "clash-impact", "miss", "damage", "heal", "phase"].includes(type)
+      !["cast", "projectile", "beam", "impact", "channel-pulse", "clash-impact", "miss", "damage", "heal", "phase"].includes(type)
     ) {
       return Object.freeze({
         status: "ignored",
@@ -2095,7 +2199,11 @@ export function createDomSkillFxRenderer({
       : null;
 
     if (type === "cast") {
-      const visual = presentation?.cast ?? null;
+      // For native channeling, the authored cast cycles until Runtime emits
+      // onChannelEnd. The one preparation FX remains its only playback owner.
+      const visual = holdUntilCancelled && presentation?.cast
+        ? {...presentation.cast, playbackMode:"loop"}
+        : presentation?.cast ?? null;
       if (!hasSpriteVisual(visual)) {
         return Object.freeze({
           status: "ignored",
@@ -2120,11 +2228,15 @@ export function createDomSkillFxRenderer({
       }
       node.dataset.skillFx = "cast";
       node.dataset.skillId = skillId ?? "";
+      node.dataset.fxActorSide = anchors[sourceSlot]?.closest?.("[data-demo-view]")?.dataset?.demoView ?? "unknown";
+      // The independent CSS scale composes with the authored cast keyframe
+      // transform. The ongoing sprite animation is never restarted per tap.
+      node.style.scale = String(Number.isFinite(sizeMultiplier) && sizeMultiplier > 0 ? sizeMultiplier : 1);
       if (castAnchor) {
         node.dataset.fxAnchor = castAnchor;
       }
-      node.style.left = `${from.x + (Number(visual.offsetX) || 0)}px`;
-      node.style.top = `${from.y + (Number(visual.offsetY) || 0)}px`;
+      node.style.left = `${from.x + (fxAuthorPixelsV1(arena, visual.offsetX))}px`;
+      node.style.top = `${from.y + (fxAuthorPixelsV1(arena, visual.offsetY))}px`;
       const spriteVisual = applySpriteVisual(
         node,
         visual,
@@ -2177,6 +2289,11 @@ export function createDomSkillFxRenderer({
         }
       );
 
+      let settleHeld = null;
+      const heldFinished = holdUntilCancelled
+        ? new Promise(resolve => { settleHeld = resolve; })
+        : null;
+      if (holdUntilCancelled) Promise.resolve(spriteAnimation?.finished).catch(() => {});
       const animation = {
         cancel() {
           spriteAnimation?.cancel?.();
@@ -2186,15 +2303,17 @@ export function createDomSkillFxRenderer({
           ) {
             particleAnimation?.cancel?.();
           }
+          if (holdUntilCancelled) {
+            cleanup(record);
+            settleHeld?.({status:"cancelled"});
+          }
         },
-        finished:
-          spriteAnimation?.finished ??
-          Promise.resolve()
+        finished: heldFinished ?? spriteAnimation?.finished ?? Promise.resolve()
       };
 
       record.animation = animation;
 
-      const finished = Promise.resolve(animation.finished)
+      const finished = holdUntilCancelled ? heldFinished : Promise.resolve(animation.finished)
         .then(() => {
           cleanup(record);
           return { status: "finished" };
@@ -2209,8 +2328,21 @@ export function createDomSkillFxRenderer({
 
       return Object.freeze({
         status: "running",
+        holdUntilCancelled: Boolean(holdUntilCancelled),
         animation,
-        finished
+        finished,
+        setDuration(nextDurationMs) {
+          if (!active.has(record) || !Number.isFinite(nextDurationMs) || nextDurationMs < 0) return false;
+          // One WAAPI timeline, extended in place when the last charge tap
+          // holds the release. No new sprite and no second playback owner.
+          spriteAnimation?.effect?.updateTiming?.({duration:Math.max(1,nextDurationMs)});
+          return true;
+        },
+        setSizeMultiplier(next) {
+          if (!active.has(record) || !Number.isFinite(next) || next <= 0) return false;
+          node.style.scale = String(next);
+          return true;
+        }
       });
     }
 
@@ -2531,17 +2663,55 @@ export function createDomSkillFxRenderer({
       });
     }
 
+    if (type === "channel-pulse") {
+      // The authored under-target sprite is a purely visual rising ice
+      // spike played once PER ACCEPTED native tick, never at the first cast.
+      // Any other channeled ability keeps its existing impact-at-target.
+      const groundVisual=presentation?.travel?.trajectoryMode==="under_target"
+        ? presentation.travel : null;
+      if(groundVisual){
+        const feet=projectileTargetRect(targetSlot);
+        return playImpactVisual({
+          visual:groundVisual,skillId,
+          point:{x:feet.left+feet.width/2-arenaRect.left+fxAuthorPixelsV1(arena, groundVisual.groundOffsetXPx),
+                 y:feet.bottom-arenaRect.top+fxAuthorPixelsV1(arena, groundVisual.groundOffsetYPx)},
+          durationMs,
+          layer:presentation?.travelLayer ?? "front",
+          type:"channel-pulse"
+        });
+      }
+      return play({type:"impact",skillId,actorSlot,fromSlot,targetSlot,durationMs});
+    }
+
     if (type === "impact") {
       const visual = presentation?.impact ?? null;
-      const point = centerRelativeTo(
-        anchor(anchors, targetSlot, "live target").getBoundingClientRect(),
-        arenaRect
-      );
+      // Reuse the physical contact point from the one native runtime sensor.
+      // The DOM fallback reads the SAME displayed wall sprite (no duplicate
+      // geometry), useful if the observed point was unavailable.
+      const worldPoint = Number.isFinite(impactPoint?.x) &&
+        Number.isFinite(impactPoint?.y) ? impactPoint : null;
+      const wallSprite = combatEntityId && !worldPoint
+        ? [...arena.querySelectorAll("[data-combat-entity-id]")]
+            .find(node=>node.dataset.combatEntityId===combatEntityId)
+            ?.querySelector("[data-combat-entity-sprite]")
+        : null;
+      const point = worldPoint
+        ? {x:worldPoint.x-arenaRect.left,y:worldPoint.y-arenaRect.top}
+        : wallSprite
+          ? centerRelativeTo(wallSprite.getBoundingClientRect(),arenaRect)
+          : combatEntityId ? null
+          : centerRelativeTo(
+              anchor(anchors, targetSlot, "live target").getBoundingClientRect(),
+              arenaRect
+            );
+      // Never render a wall's impact on the protected fighter as fallback.
+      if (!point) return Object.freeze({status:"ignored",finished:Promise.resolve({status:"ignored"})});
 
       return playImpactVisual({
         visual,
         skillId,
         point,
+        combatEntityId,
         durationMs,
         layer: presentation?.impactLayer ?? "front",
         type: "impact",
@@ -2821,7 +2991,7 @@ export function createDomSkillFxRenderer({
       const displayScaleY = Math.min(
         8, Math.max(0.25, Number(travelVisual.displayScaleY) || 1)
       );
-      const thicknessPx = BEAM_CAP_BASE_SIZE_PX * displayScale * displayScaleY;
+      const thicknessPx = BEAM_CAP_BASE_SIZE_PX * displayScale * displayScaleY * fxArenaScaleV1(arena);
 
       const node = arena.ownerDocument.createElement("span");
       node.className = "skill-fx skill-fx--beam skill-fx--sprite-shell";
@@ -2869,7 +3039,7 @@ export function createDomSkillFxRenderer({
         const scale = Math.min(
           8, Math.max(0.25, Number(visual.displayScale) || 1)
         );
-        const size = BEAM_CAP_BASE_SIZE_PX * scale;
+        const size = BEAM_CAP_BASE_SIZE_PX * scale * fxArenaScaleV1(arena);
         cap.style.width = `${size}px`;
         cap.style.height = `${size * Math.min(8, Math.max(0.25, Number(visual.displayScaleY) || 1))}px`;
         cap.style.transform = "translate(-50%, -50%)";
@@ -2893,6 +3063,7 @@ export function createDomSkillFxRenderer({
         targetVisual, "target", "100%", presentation?.impactLayer
       );
 
+      let beamSegment = null;
       function positionBeam() {
         const currentArena = arena.getBoundingClientRect();
         const from = centerRelativeTo(
@@ -2908,11 +3079,11 @@ export function createDomSkillFxRenderer({
         // offsets. An older beam without cast may use start/travel offsets.
         // The contact sprite's V9 offset also defines the beam end point.
         const sourceVisual = presentation?.cast ?? startVisual ?? travelVisual;
-        const startX = from.x + (Number(sourceVisual?.offsetX) || 0);
-        const startY = from.y + (Number(sourceVisual?.offsetY) || 0);
+        const startX = from.x + fxAuthorPixelsV1(arena, sourceVisual?.offsetX);
+        const startY = from.y + fxAuthorPixelsV1(arena, sourceVisual?.offsetY);
         const targetOffset = presentation?.impactFeedbackOffset ?? targetVisual;
-        const endX = to.x + (Number(targetOffset?.x ?? targetOffset?.offsetX) || 0);
-        const endY = to.y + (Number(targetOffset?.y ?? targetOffset?.offsetY) || 0);
+        const endX = to.x + fxAuthorPixelsV1(arena, targetOffset?.x ?? targetOffset?.offsetX);
+        const endY = to.y + fxAuthorPixelsV1(arena, targetOffset?.y ?? targetOffset?.offsetY);
         const distancePx = Math.max(
           1, Math.hypot(endX - startX, endY - startY)
         );
@@ -2922,7 +3093,7 @@ export function createDomSkillFxRenderer({
         const capOverlap = (visual) => hasSpriteVisual(visual)
           ? BEAM_CAP_BASE_SIZE_PX *
             Math.min(8, Math.max(0.25, Number(visual.displayScale) || 1)) *
-            BEAM_CAP_OVERLAP_RATIO
+            BEAM_CAP_OVERLAP_RATIO * fxArenaScaleV1(arena)
           : 0;
         const fromOverlap = Math.min(distancePx / 3, capOverlap(startVisual));
         const toOverlap = Math.min(distancePx / 3, capOverlap(targetVisual));
@@ -2939,6 +3110,11 @@ export function createDomSkillFxRenderer({
         node.style.width = `${distancePx}px`;
         node.style.transform =
           `translateY(-50%) rotate(${rotationRad}rad)`;
+        // Source and target are the actual rendered beam anchors, including
+        // authored offsets. This is observation only, never HP resolution.
+        beamSegment = Object.freeze({from:Object.freeze({
+          x:startX+currentArena.left,y:startY+currentArena.top
+        }),to:Object.freeze({x:endX+currentArena.left,y:endY+currentArena.top})});
       }
       positionBeam();
       applyPresentationGlow(node, presentation?.feedback?.glow);
@@ -2958,6 +3134,7 @@ export function createDomSkillFxRenderer({
         skillId,
         fromSlot,
         targetSlot,
+        barrierSegment: beamSegment,
         contactFrameId: null,
         contactReported: false
       };
@@ -2967,6 +3144,7 @@ export function createDomSkillFxRenderer({
         record.contactFrameId = null;
         if (disposed || !active.has(record)) return;
         positionBeam();
+        record.barrierSegment = beamSegment;
         record.contactFrameId = requestFrame(followAnchors);
       }
       record.contactFrameId = requestFrame(followAnchors);
@@ -3009,17 +3187,18 @@ export function createDomSkillFxRenderer({
 
     const travelVisual = presentation?.travel ?? null;
     const skyfall = travelVisual?.trajectoryMode === "skyfall";
+    const underTarget = travelVisual?.trajectoryMode === "under_target";
     const travelSourceAnchor =
       presentation?.travelSourceAnchor ?? null;
     // Direct fire keeps the actor's AUTHORED rest placement and a point
     // on its existing physical alpha mask. Only transient translations
     // disappear from the projected resting lane. Skyfall remains live.
-    const opaquePoint = !skyfall && targetCollisionModelFor
+    const opaquePoint = !skyfall && !underTarget && targetCollisionModelFor
       ? visibleModelOpaqueAimPoint(
           targetCollisionModelFor(targetSlot)?.snapshot?.() ?? null
         )
       : null;
-    const to = centerRelativeTo(
+    let to = centerRelativeTo(
       skyfall
         ? projectileTargetRect(targetSlot)
         : restingProjectileAimRectV1({
@@ -3039,12 +3218,25 @@ export function createDomSkillFxRenderer({
           }),
       arenaRect
     );
+    // V14 only changes drawing; the native Runtime still owns contact.
+    const groundConfigured=underTarget && ["fixed","rise"].includes(travelVisual?.groundMotion);
+    const feet=underTarget ? projectileTargetRect(targetSlot) : null;
+    const groundStart=groundConfigured
+      ? {x:feet.left+feet.width/2-arenaRect.left+fxAuthorPixelsV1(arena, travelVisual.groundOffsetXPx),
+         y:feet.bottom-arenaRect.top+fxAuthorPixelsV1(arena, travelVisual.groundOffsetYPx)}
+      : null;
+    if(groundConfigured)to={
+      x:groundStart.x,
+      y:groundStart.y-(travelVisual.groundMotion==="rise" ? fxAuthorPixelsV1(arena, travelVisual.groundRisePx):0)
+    };
     // Skyfall is authored on visual.travel: the source actor never becomes
     // the origin. The same Runtime travel duration and contact sensor apply.
-    const from = skyfall
+    const from = underTarget
+      ? (groundConfigured ? groundStart : {x:to.x,y:projectileTargetRect(targetSlot).bottom-arenaRect.top})
+      : skyfall
       ? {
-          x: to.x + travelVisual.fallOffsetXPx,
-          y: to.y - travelVisual.fallHeightPx
+          x: to.x + fxAuthorPixelsV1(arena, travelVisual.fallOffsetXPx),
+          y: to.y - fxAuthorPixelsV1(arena, travelVisual.fallHeightPx)
         }
       : fromPoint && Number.isFinite(fromPoint.x) && Number.isFinite(fromPoint.y)
         ? { x: fromPoint.x - arenaRect.left, y: fromPoint.y - arenaRect.top }
@@ -3059,6 +3251,7 @@ export function createDomSkillFxRenderer({
       node.className += " skill-fx--layer-behind";
     }
     node.dataset.skillFx = "projectile";
+    node.dataset.fxActorSide = anchors[fromSlot]?.closest?.("[data-demo-view]")?.dataset?.demoView ?? "unknown";
     if (skillId) {
       node.dataset.skillId = skillId;
     }
@@ -3075,7 +3268,7 @@ export function createDomSkillFxRenderer({
     const deltaY = to.y - from.y;
     const travelDisplayScale = Math.min(
       8,
-      Math.max(0.25, Number(travelVisual?.displayScale) || 1)
+      Math.max(0.25, (Number(travelVisual?.displayScale) || 1) * (Number.isFinite(sizeMultiplier) && sizeMultiplier > 0 ? sizeMultiplier : 1))
     );
     // The only depth authority is this projectile visual. Its shell remains
     // centered on the exact same trajectory/contact core; the scaling is
@@ -3110,13 +3303,13 @@ export function createDomSkillFxRenderer({
       const hasDirectionalHeading = typeof headingRad === "number" &&
         Number.isFinite(headingRad);
       const nativeLeftward = hasDirectionalHeading && Math.cos(headingRad) < 0;
-      const mirrorHorizontally = !skyfall && hasDirectionalHeading &&
+      const mirrorHorizontally = !skyfall && !underTarget && hasDirectionalHeading &&
         (deltaX < 0) !== nativeLeftward;
       const travelAngle = Math.atan2(deltaY, deltaX);
       // Preserve the existing rotations of all right-facing sprites; only
       // native-left artworks require an inverted mirror decision and an
       // angular wrap to avoid a nearly full-turn rotation for upper lanes.
-      let rotationRad = skyfall || !hasDirectionalHeading
+      let rotationRad = skyfall || underTarget || !hasDirectionalHeading
         ? 0
         : nativeLeftward
           ? travelAngle - (mirrorHorizontally ? Math.PI - headingRad : headingRad)
@@ -3175,33 +3368,38 @@ export function createDomSkillFxRenderer({
       contactFrameId: null,
       contactReported: false,
       projectilePower: Math.max(0,Number(projectilePower)||0),
-      mirrorSurfaceEligible: !skyfall
+      mirrorSurfaceEligible: !skyfall,
+      trajectoryMode:travelVisual?.trajectoryMode ?? null,
+      // Native impact can query this SAME rendered flight lane if RAF is late.
+      barrierSegment:Object.freeze({from:Object.freeze({x:from.x+arenaRect.left,y:from.y+arenaRect.top}),
+        to:Object.freeze({x:to.x+arenaRect.left,y:to.y+arenaRect.top})})
     };
     active.add(record);
 
+    const groundedAnchor=groundConfigured ? "translate(-50%, -100%)" : "translate(-50%, -50%)";
     const keyframes = spriteBound
       ? [
           {
-            transform: `translate(-50%, -50%) translate3d(0, 0, 0) scale(${0.94 * travelDisplayScale * startDepth})`,
+            transform: `${groundedAnchor} translate3d(0, 0, 0) scale(${0.94 * travelDisplayScale * startDepth})`,
             opacity: 0.95
           },
           {
-            transform: `translate(-50%, -50%) translate3d(${deltaX * 0.5}px, ${deltaY * 0.5}px, 0) scale(${1.04 * travelDisplayScale * midwayDepth})`,
+            transform: `${groundedAnchor} translate3d(${deltaX * 0.5}px, ${deltaY * 0.5}px, 0) scale(${1.04 * travelDisplayScale * midwayDepth})`,
             opacity: 1,
             offset: 0.5
           },
           {
-            transform: `translate(-50%, -50%) translate3d(${deltaX}px, ${deltaY}px, 0) scale(${0.98 * travelDisplayScale * endDepth})`,
+            transform: `${groundedAnchor} translate3d(${deltaX}px, ${deltaY}px, 0) scale(${0.98 * travelDisplayScale * endDepth})`,
             opacity: 1
           }
         ]
       : [
           {
-            transform: "translate(-50%, -50%) translate3d(0, 0, 0) scale(0.75)",
+            transform: "${groundedAnchor} translate3d(0, 0, 0) scale(0.75)",
             opacity: 0.25
           },
           {
-            transform: `translate(-50%, -50%) translate3d(${deltaX}px, ${deltaY}px, 0) scale(1)`,
+            transform: `${groundedAnchor} translate3d(${deltaX}px, ${deltaY}px, 0) scale(1)`,
             opacity: 1
           }
         ];
@@ -3210,9 +3408,16 @@ export function createDomSkillFxRenderer({
     // leave the caster behind, then clear the enemy in FRONT before impact.
     // No second RAF/timeout, no change to core trajectory or collision.
     const startLayer = presentation?.travelLayer === "behind" ? "behind" : "front";
+    const behindLayer=arena.dataset?.combatEntityArenaActive==="true"&&node.dataset.fxActorSide==="player"
+      ? "3" : "2";
     const endLayer = !skyfall && ["front", "behind"].includes(presentation?.travelArrivalLayer)
       ? presentation.travelArrivalLayer : startLayer;
-    const actualKeyframes = spriteBound && startLayer !== endLayer
+    const actualKeyframes = groundConfigured && travelVisual.groundMotion==="fixed"
+      ? [
+          {transform:`${groundedAnchor} scale(${travelDisplayScale})`,opacity:1},
+          {transform:`${groundedAnchor} scale(${travelDisplayScale})`,opacity:1}
+        ]
+      : spriteBound && startLayer !== endLayer
       ? [0, 0.37, 0.38, 0.5, 1].map((ratio) => {
           const pulse = ratio <= 0.5
             ? 0.94 + 0.1 * (ratio / 0.5)
@@ -3222,8 +3427,8 @@ export function createDomSkillFxRenderer({
             offset: ratio,
             transform: `translate(-50%, -50%) translate3d(${deltaX * ratio}px, ${deltaY * ratio}px, 0) scale(${Number((pulse * travelDisplayScale * depth).toFixed(6))})`,
             opacity: ratio === 0 ? 0.95 : 1,
-            zIndex: ratio < 0.38 ? (startLayer === "behind" ? "2" : "7")
-              : (endLayer === "behind" ? "2" : "7")
+            zIndex: ratio < 0.38 ? (startLayer === "behind" ? behindLayer : "7")
+              : (endLayer === "behind" ? behindLayer : "7")
           };
         })
       : keyframes;
@@ -3257,6 +3462,33 @@ export function createDomSkillFxRenderer({
       animation,
       finished
     });
+  }
+
+  // Synchronous visual query on the authoritative Runtime impact tick.
+  // No second RAF, hit logic or entity HP authority. An active beam supplies
+  // its exact rendered endpoints; contact uses the moving fighter and target.
+  function barrierContactFor({sourceActorId,targetActorId,kind,skillId=null}){
+    if(disposed||!["projectile","beam","contact"].includes(kind)||barrierCollisionRectsFor===null)return null;
+    if(skillId&&!barrierContactAllowedForTrajectoryV1(
+      presentationForSkill(skillId,{sourceView:sourceActorId,targetView:targetActorId,fxType:kind})?.travel?.trajectoryMode
+    ))return null;
+    const activeProjectile=kind==="projectile"?[...active].find(record=>
+      record.type==="projectile"&&record.fromSlot===sourceActorId&&
+      record.targetSlot===targetActorId&&
+      (skillId===null||String(record.skillId)===String(skillId))) : null;
+    if(kind==="projectile"&&(!activeProjectile||
+      !barrierContactAllowedForTrajectoryV1(activeProjectile.trajectoryMode)))return null;
+    const barriers=barrierCollisionRectsFor({sourceActorId,targetActorId,kind})??[];
+    if(!Array.isArray(barriers)||barriers.length===0)return null;
+    const activeBeam=kind==="beam"?[...active].find(record=>
+      record.type==="beam"&&record.fromSlot===sourceActorId&&
+      record.targetSlot===targetActorId&&
+      (skillId===null||String(record.skillId)===String(skillId))) : null;
+    const observed=kind==="projectile"
+      ? activeProjectile?.barrierSegment??null : activeBeam?.barrierSegment??null;
+    const source=observed?.from??rectCenter(sourceRect(sourceActorId));
+    const target=observed?.to??rectCenter(projectileTargetRect(targetActorId));
+    return nearestBarrierSegmentContactV1({from:source,to:target,barriers});
   }
 
   function sampleZoneSpatialContext(zones) {
@@ -3351,6 +3583,8 @@ export function createDomSkillFxRenderer({
       return;
     }
     cancelAll();
+    for(const item of scheduledMineNodes.values())item.node.remove();
+    scheduledMineNodes.clear();
     disposed = true;
   }
 
@@ -3360,7 +3594,9 @@ export function createDomSkillFxRenderer({
       return presentationForSkill(skillId,{sourceView,targetView,fxType:"burrow"})?.burrowTerrain ?? null;
     },
     syncPersistentZones,
+    syncScheduledMines,
     sampleZoneSpatialContext,
+    barrierContactFor,
     cancelProjectileFor,
     cancelAll,
     dispose,
