@@ -1,0 +1,217 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "festin-carnivore",
+    "description": "Gemmor déploie ses lianes carnivores : 50 dégâts Nature à la cible, drain de 100 % des PV effectivement retirés, immobilisation 4 s et deux charges de Graine sansue qui volent de la vie pendant 20 s.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "festin-carnivore",
+      "name": "Festin carnivore",
+      "category": "offensive",
+      "form": "beam",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "ultimate",
+      "element": "nature",
+      "approachMode": "none",
+      "energyCost": 8,
+      "preparationMs": 2500,
+      "travelMs": 800,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "life_steal",
+          "targetScope": "self",
+          "percent": 100
+        },
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 50,
+          "channel": "nature",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "festin-carnivore-entrave",
+            "kind": "immobilize",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 4000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": []
+          }
+        },
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "graine-sansue",
+            "name": "Graine sansue",
+            "polarity": "detrimental",
+            "durationMs": 20000,
+            "maxStacks": 2,
+            "iconAssetId": "pack:capture:icon-skill-sangsue-01",
+            "periodic": {
+              "kind": "life_steal",
+              "amount": 5,
+              "intervalMs": 3000,
+              "damageMode": "combat",
+              "channel": "nature",
+              "percent": 100
+            }
+          },
+          "charges": 2
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:festin-carnivore",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "festin-carnivore",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-ronce-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-cast-nature-01",
+          "displayScale": 1.25,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.8,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-liane-epineuse-rayon-01",
+          "displayScale": 1.25,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-spores-expansives-projectile-sphere-02",
+          "displayScale": 1.9,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.85,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {
+        "travel": {
+          "assetId": "gensrpg:sound:genrpg-pack2-879fc11a",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:effect-ee93278c",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": {
+          "color": "#6cba58",
+          "strength": 0.65,
+          "radiusPx": 30
+        },
+        "impactFlash": null,
+        "cameraShake": {
+          "amplitudePx": 4,
+          "durationMs": 180
+        },
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}

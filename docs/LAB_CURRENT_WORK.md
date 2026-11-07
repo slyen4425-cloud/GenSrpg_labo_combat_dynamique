@@ -1,3 +1,13 @@
+## 2026-11-07 — Gemmor : Festin carnivore et parcours 1/5/10/15/20 (main)
+
+- **Validation auteur** : ultime Festin carnivore (50 dégâts Nature directs, drain natif à 100 % du dommage réel, immobilisation 4 secondes, 2 charges du marqueur officiel Graine sansue) ; niveau 20, une utilisation par combat, 8 énergie, préparation 2,5 secondes. Les graines conservent leur règle canonique de vol de vie : 5 par charge toutes les 3 secondes sur 20 secondes.
+- **Demande complémentaire** : 2e compétence Armure de ronce = ID officiel `armure-de-pointe` avec sprites de ronces carnivores, niveau 5 ; 3e compétence Attaque sous-terraine = `attaque-sous-terraine`, niveau 10. Parcours final Gemmor : Coupe feuille (1), Armure de pointe/ronces (5), Attaque sous-terraine (10), Sangsue (15), Festin carnivore (20).
+- **START** : `main@0099e7d82bc5fa016ceabd1f4edb018df5e7173c`, checkpoint `checkpoint/lab-start-gemmor-festin-2026-11-07`. Seulement sur main ; aucune seconde bibliothèque, aucun doublon de capacité ou de marqueur.
+- **Propriétaires** : unique nouveau transfert skill `data/capture/showcase/festin-carnivore.capture-skill-transfer-v1.json` ajouté au catalogue officiel ; Gemmor mis à jour dans son seul transfert vitrine. Combat Rules, Skill Contract, marqueurs officiels, média global et données historiques ne changent pas.
+- **Tests RED/sentinelles** : contrats de skill/creature, liens catalogue et loadout, niveaux officiels, effets natifs et drain sur PV réellement perdus, effet d'immobilisation, marqueur 2 charges, usage unique, round-trip import/export, assets existants. Aucun GREEN sans CI du SHA exact, test navigateur réel et preuve HTTPS de la version main.
+
+---
+
 ## 2026-11-07 — Attaque sous-terraine : visuel au sol et orientation adverse (main)
 
 - **Demande auteur** : lors d'une attaque aérienne de la cible, le sprite souterrain ne doit jamais monter à sa poursuite ; face adverse, le trajet ne doit pas retourner le sprite de terre à 180°. Les dégâts et la portée native restent inchangés.

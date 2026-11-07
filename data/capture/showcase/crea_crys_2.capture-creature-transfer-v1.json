@@ -120,7 +120,10 @@
       "cap_light_special_1",
       "cap_light_special_2",
       "coupe_feuille",
-      "sangsue"
+      "sangsue",
+      "armure-de-pointe",
+      "attaque-sous-terraine",
+      "festin-carnivore"
     ],
     "presentation": {
       "id": "creature:crea_crys_2",
@@ -207,11 +210,11 @@
       },
       {
         "id": "slot-2",
-        "skillId": "cap_earth_atk_2"
+        "skillId": "armure-de-pointe"
       },
       {
         "id": "slot-3",
-        "skillId": "cap_earth_atk_4"
+        "skillId": "attaque-sous-terraine"
       },
       {
         "id": "slot-4",
@@ -219,7 +222,7 @@
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "festin-carnivore"
       }
     ]
   }
