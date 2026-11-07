@@ -68,8 +68,20 @@ try {
           bodyIdle.effect.getTiming().duration !== groundIdle.effect.getTiming().duration) {
         throw Error("flight idle shadow is out of phase with body");
       }
-      const verticalOf = frame => Number(String(frame.transform)
-        .match(/translate3d\([^,]+, (-?[\d.]+)px, 0(?:px)?\)/)?.[1]);
+      // The single author unit is encoded as calc(basePx * arenaScale +
+      // transientPx) by native keyframes; decode both that and plain px.
+      // Compare the REAL projected hover displacement, not serialization.
+      const verticalOf = frame => {
+        const transform = String(frame.transform);
+        const scale = Number.parseFloat(getComputedStyle(query("[data-combat-arena]"))
+          .getPropertyValue("--combat-arena-author-offset-scale")) || 1;
+        const projected = transform.match(
+          /,\s*calc\(([-\d.]+)px \* var\(--combat-arena-author-offset-scale, 1\) \+ ([-\d.]+)px\),\s*0(?:px)?\)/
+        );
+        if (projected) return Number(projected[1]) * scale + Number(projected[2]);
+        const plain = transform.match(/,\s*([-\d.]+)px,\s*0(?:px)?\)/);
+        return Number(plain?.[1]);
+      };
       const scaleOf = frame => Number(String(frame.transform)
         .match(/scale\(([-\d.]+)\)/)?.[1]);
       const bodyRise = verticalOf(bodyFrames[1]) - verticalOf(bodyFrames[0]);
