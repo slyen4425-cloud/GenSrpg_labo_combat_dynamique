@@ -66,14 +66,54 @@
         "stunMs": 0,
         "tags": []
       },
-      "effects": []
+      "effects": [
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "peste",
+            "name": "Peste",
+            "polarity": "detrimental",
+            "permanent": true,
+            "maxStacks": 20,
+            "iconAssetId": "pack:capture:icon-skill-toxine-01",
+            "periodic": {
+              "kind": "damage",
+              "amount": 15,
+              "intervalMs": 30000,
+              "damageMode": "combat",
+              "channel": "shadow"
+            }
+          },
+          "charges": 3
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "peste-noire-soin-inverse",
+            "kind": "heal_inversion",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 30000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "percent": 100
+          }
+        }
+      ]
     },
     "presentation": {
       "id": "skill:cap_shadow_atk_5",
       "version": 8,
       "subjectType": "skill",
       "subjectId": "cap_shadow_atk_5",
-      "visual": {},
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-toxine-01"
+        }
+      },
       "audio": {},
       "statusVisuals": {},
       "feedback": {

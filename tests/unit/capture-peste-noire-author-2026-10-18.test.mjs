@@ -18,8 +18,10 @@ test("Peste noire: raw author export is preserved and loaded exactly once in ski
   assert.equal(skillCatalog.filter(p=>p===path).length,1);
   assert.equal(new Set(skillCatalog).size,skillCatalog.length);
   const raw=await read(path);
-  assert.equal(raw,await read(archive),"archive and active preset must be exactly the author file");
-  assert.equal(createHash("sha256").update(raw).digest("hex"),sourceSha256);
+  const original=await read(archive);
+  assert.equal(createHash("sha256").update(original).digest("hex"),sourceSha256,
+    "immutable author original must retain its original SHA");
+  assert.notEqual(raw,original,"active skill now contains the two author-approved effects");
   const transfer=importCaptureTransferJsonV1(raw);
   assert.equal(transfer.kind,"skill");
   const draft=transfer.value.draft;
@@ -29,7 +31,7 @@ test("Peste noire: raw author export is preserved and loaded exactly once in ski
   assert.deepEqual(importCaptureTransferJsonV1(exportCaptureSkillTransferJsonV1(draft)).value.draft,draft);
 });
 
-test("Peste noire: author gameplay is kept without a fabricated Peste marker effect",async()=>{
+test("Peste noire: approved dual effects retain all other original gameplay",async()=>{
   const {draft}=JSON.parse(await read(path));
   const def=draft.definition;
   assert.equal(draft.requiredLevel,20);
@@ -43,8 +45,17 @@ test("Peste noire: author gameplay is kept without a fabricated Peste marker eff
   assert.equal(def.cooldownMs,0);
   assert.equal(def.maxUsesPerCombat,1);
   assert.equal(def.projectileClash.power,3);
-  assert.deepEqual(def.effects,[],"author has not attached Peste marker yet");
-  assert.deepEqual(draft.presentation.visual,{});
+  assert.equal(def.effects.length,2);
+  assert.equal(def.effects[0].kind,"apply_marker");
+  assert.equal(def.effects[0].targetScope,"target");
+  assert.equal(def.effects[0].marker.id,"peste");
+  assert.equal(def.effects[0].charges,3);
+  assert.equal(def.effects[1].kind,"apply_status");
+  assert.equal(def.effects[1].targetScope,"target");
+  assert.equal(def.effects[1].status.kind,"heal_inversion");
+  assert.equal(def.effects[1].status.percent,100);
+  assert.equal(def.effects[1].status.durationMs,30000);
+  assert.equal(draft.presentation.visual.icon.assetId,def.effects[0].marker.iconAssetId);
   assert.deepEqual(draft.presentation.audio,{});
 });
 

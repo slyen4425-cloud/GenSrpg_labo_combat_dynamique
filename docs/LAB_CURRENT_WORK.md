@@ -1,3 +1,14 @@
+## 2026-11-07 — Peste noire : 3 charges Peste + Soin inversé + icône (main)
+
+- **Auteur** : ultime « Peste noire » (ID `cap_shadow_atk_5`) : 3 charges permanentes Peste et Soin inversé sur la cible d'un même projectile ; une icône réutilisée ; texte Bestiaire calculé.
+- **START** : `main@548f216ea1622a77fc137e502bc9321d305388ab` ; checkpoint `checkpoint/lab-start-peste-noire-double-effect-2026-11-07`. Publication uniquement depuis `main` ; `gh-pages` historique inchangé.
+- **Données** : transfert actif seul modifié ; export d'origine du 18 octobre intact. Marqueur `peste` officiel (15 dégâts Ombre par charge toutes les 30 s, permanent, 20 charges maximum). Soin inversé 100 %, 30 s (valeur par défaut de ce lot, réglable ensuite), rafraîchi en cas de nouvelle application. Pas de dégâts immédiats supplémentaires.
+- **Icône** : `pack:capture:icon-skill-toxine-01` existe dans `global-assets`, aucun nouveau média ni copie. Les timings, coût, niveau et limitation 1/combat restent inchangés.
+- **Bestiaire** : `describeCaptureSkillV1` génère déjà les descriptions de `apply_marker` et `heal_inversion` (taux, durée, cible) ; test ciblé ajouté sur la capacité active.
+- **Validation** : test sentinelle conçu contre l'ancien `effects: []` (RED attendu), tests ciblés + CI du SHA et contrôle réel navigateur/HTTPS avant GREEN, contrôle smartphone auteur distinct.
+
+---
+
 ## 2026-11-07 — Décision auteur : un seul Labo Combat sur main (publication directe ; BASCULE PAGES NON CONFIRMÉE)
 
 - **Décision** : ne plus faire évoluer `main` et `gh-pages` comme deux éditeurs. Les changements validés doivent être appliqués à `main` et diffusés depuis `main`; une régression peut être corrigée par `git revert` depuis checkpoint, sans historique forcé.
