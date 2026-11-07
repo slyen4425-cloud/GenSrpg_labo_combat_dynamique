@@ -82,6 +82,7 @@ function statusStory(s){
   switch(s.kind){
     case "damage_over_time":line="Inflige "+num(s.amount)+" dégâts "+elementOf(s.channel)+" "+tick;break;
     case "heal_over_time":line="Rend "+num(s.amount)+" PV "+tick;break;
+    case "heal_inversion":line="Transforme "+num(s.percent)+" % des soins reçus en dégâts (la part restante soigne)";break;
     case "shield":line="Accorde un bouclier de "+num(s.amount)+" points";break;
     case "damage_reflection":
       line="Renvoie "+num(s.percent)+" % des dégâts reçus";
@@ -246,6 +247,7 @@ function zoneClause(zone){
     (zone.damageTrigger==="entry_only"?" à l'entrée dans la zone":
       zone.damageTrigger==="entry_and_tick"?" à l'entrée puis "+frequency(zone.tickIntervalMs):
       " "+frequency(zone.tickIntervalMs));
+  if(status?.kind==="heal_inversion")return "convertissent "+num(status.percent)+" % des soins reçus en dégâts";
   if(status?.kind==="heal_over_time")return "rendent "+num(status.amount)+" PV "+
     (status.tickIntervalMs?frequency(status.tickIntervalMs):"après chaque action");
   if(status?.kind==="damage_over_time")return "infligent "+num(status.amount)+" dégâts"+

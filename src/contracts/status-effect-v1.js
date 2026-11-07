@@ -4,6 +4,7 @@ export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "stat_modifier",
   "outgoing_damage_modifier",
   "incoming_effect_modifier",
+  "heal_inversion",
   "stack_counter",
   "approach_time_modifier",
   "energy_regen_modifier",
@@ -121,6 +122,7 @@ const FIELDS_BY_KIND = Object.freeze({
   ]),
   outgoing_damage_modifier: new Set([...COMMON_FIELDS,"modifierPct"]),
   incoming_effect_modifier: new Set([...COMMON_FIELDS,"modifierPct","affectedPolarity"]),
+  heal_inversion: new Set([...COMMON_FIELDS,"percent"]),
   stat_modifier: new Set([
     ...COMMON_FIELDS,
     "statId",
@@ -567,6 +569,16 @@ export function normalizeStatusEffectV1(input) {
       throw new RangeError("Unsupported StatusEffectV1.affectedPolarity: " + affectedPolarity);
     }
     output.affectedPolarity = affectedPolarity;
+  }
+
+  if (kind === "heal_inversion") {
+    if (polarity !== "detrimental") {
+      throw new RangeError("StatusEffectV1.heal_inversion must be detrimental");
+    }
+    output.percent = finiteNumber(value.percent, "StatusEffectV1.percent");
+    if (output.percent < 0 || output.percent > 100) {
+      throw new RangeError("StatusEffectV1.heal_inversion percent must be between 0 and 100");
+    }
   }
 
   if (kind === "damage_over_time") {
