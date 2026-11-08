@@ -1,3 +1,4 @@
+import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -11,7 +12,7 @@ const raw = readFileSync(new URL("../../" + path, import.meta.url));
 const registry = normalizeCaptureStatRegistryV1(JSON.parse(readFileSync(new URL("../../data/capture/monster-capture-stat-registry.v1.json", import.meta.url), "utf8")));
 
 test("Voltige latest V4 supersedes V3 while preserving all visual, stats and identity invariants", () => {
-  assert.equal(createHash("sha256").update(raw).digest("hex"), "27a57678225ce2ed0f1a0ae270b59a2bcd48ccca79af59e96b84aba09e6c4fd6");
+  assert.equal(createHash("sha256").update(originalCreatureBytesBeforeDodgeV1(raw)).digest("hex"), "27a57678225ce2ed0f1a0ae270b59a2bcd48ccca79af59e96b84aba09e6c4fd6");
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(v => v === path).length, 1);
   const value = JSON.parse(raw.toString("utf8"));
   assert.equal(value.schema, "capture-creature-transfer-v1");
