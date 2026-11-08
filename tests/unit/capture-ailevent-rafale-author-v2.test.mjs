@@ -1,3 +1,4 @@
+import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -30,7 +31,7 @@ test("Exact author JSON files and single canonical showcase ownership",()=>{
  for(const f of files){
   const raw=read(f.path);
   const historicAuthorBytes=f.kind==="skill" ? raw.replace('"assetId": "pack:capture:icon-skill-rafale-01"','"assetId": "core:icon-skill-energy-beam-01"') : (()=>{
-    const previous=JSON.parse(raw);
+    const previous=withoutNewDefaultDodgeV1(JSON.parse(raw));
     previous.draft.presentation.viewOverrides.opponent.displayScale=1.4;
     previous.draft.presentation.viewOverrides.opponent.position.y=0;
     previous.loadout.slots[3].skillId=null;
