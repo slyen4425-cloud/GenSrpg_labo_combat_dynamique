@@ -91,7 +91,14 @@
       "energyChargeIntervalMs": 0,
       "movementEnergyPerStep": 0,
       "chargeTimeModifierPct": 0,
-      "approachTimeModifierPct": -40
+      "approachTimeModifierPct": -40,
+      "reaction": {
+        "type": "dodge",
+        "maxCharges": 2,
+        "rechargeMs": 30000,
+        "activeWindowMs": 250,
+        "damageReductionPct": 50
+      }
     },
     "skillIds": [
       "cap_electric_atk_1",

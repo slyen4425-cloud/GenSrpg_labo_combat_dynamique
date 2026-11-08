@@ -1,3 +1,4 @@
+import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -14,7 +15,7 @@ const imported=importCaptureTransferJsonV1(raw,{statRegistry:registry});
 const record=imported.value;
 
 test("Ailevent author file and showcase catalog preserve exact export, only one canonical creature ID",async()=>{
-  const previous=JSON.parse(raw);
+  const previous=withoutNewDefaultDodgeV1(JSON.parse(raw));
   previous.draft.presentation.viewOverrides.opponent.displayScale=1.4;
   previous.draft.presentation.viewOverrides.opponent.position.y=0;
   previous.loadout.slots[3].skillId=null;

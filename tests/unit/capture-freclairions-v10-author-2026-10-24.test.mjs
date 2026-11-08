@@ -1,3 +1,4 @@
+import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
@@ -22,9 +23,10 @@ test("one stable Freclairions authority retains author's exact uploaded V10 tran
   assert.equal(source.draft.id,"crea_foudrillon");
   assert.equal(source.draft.displayName,"Freclairions");
   assert.equal(source.draft.presentation.version,10);
-  assert.ok(bytes(active).equals(bytes(author)),"author snapshot and active file must be identical bytes");
-  assert.equal(bytes(active).length,5992);
-  assert.equal(createHash("sha256").update(bytes(active)).digest("hex"),
+  const authorBytes=originalCreatureBytesBeforeDodgeV1(bytes(active));
+  assert.ok(authorBytes.equals(bytes(author)),"archive author bytes must survive the approved live Dodge addition");
+  assert.equal(authorBytes.length,5992);
+  assert.equal(createHash("sha256").update(authorBytes).digest("hex"),
     "b6dc6a595d1ed1ab965eee8a0dbdd86b3d172258601fb1320e016b492c6e8fc3");
   const round=importCaptureTransferJsonV1(
     exportCaptureCreatureTransferJsonV1(transfer.value,{statRegistry:registry}),

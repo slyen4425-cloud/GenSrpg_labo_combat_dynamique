@@ -1,3 +1,4 @@
+import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
@@ -28,8 +29,9 @@ function imported() {
 }
 test("exact uploaded Loup transfer is the one and only active preset; the source remains archived", ()=>{
   const raw=root(activePath);
-  assert.equal(raw,root(sourcePath));
-  assert.equal(createHash("sha256").update(raw).digest("hex"), authorHash);
+  const authorBytes=originalCreatureBytesBeforeDodgeV1(raw);
+  assert.equal(authorBytes.toString("utf8"),root(sourcePath));
+  assert.equal(createHash("sha256").update(authorBytes).digest("hex"), authorHash);
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(x=>x===activePath).length,1);
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.includes(sourcePath),false);
   const payload=JSON.parse(raw);

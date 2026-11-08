@@ -1949,9 +1949,14 @@ const server = createServer(async (req, res) => {
               e.dispatchEvent(new Event("change",{bubbles:true}));};
             const selectCreature=id=>{set(library,id);};
             selectCreature("crea_foudrillon");
-            if(field("type").value!=="legacy")throw Error("old author export must stay legacy");
+            if(field("type").value!=="dodge" ||
+               field("charges").value!=="2" ||
+               field("recharge").value!=="30" ||
+               field("window").value!=="0.25" ||
+               field("reduction").value!=="50")
+              throw Error("Freclairions standard author Dodge failed to load");
             if(!q("[data-creature-reaction-defense-field]").hidden)
-              throw Error("guard-only field displayed on legacy");
+              throw Error("guard-only field displayed during Dodge");
             set(field("type"),"defense");
             if(q("[data-creature-reaction-defense-field]").hidden ||
                field("reduction").disabled)throw Error("defense reduction not editable");
@@ -1994,7 +1999,7 @@ const server = createServer(async (req, res) => {
             set(field("type"),"dodge");
             if(!q("[data-creature-reaction-defense-field]").hidden)
               throw Error("reduction must be hidden in Dodge");
-            document.body.dataset.creatureReactionProbe="ok:legacy:defense:60:three:26000:550:dodge";
+            document.body.dataset.creatureReactionProbe="ok:standard-dodge:defense:60:three:26000:550:dodge";
           }catch(e){document.body.dataset.creatureReactionProbe="fail:"+e.message;}
         },100);
       });
@@ -2244,9 +2249,9 @@ try {
   const guardDom=await dumpDom(url+"?verify-creature-reaction=1");
   assertCreatures(guardDom,"per-creature reaction real browser bootstrap");
   const guardProbe=guardDom.match(/data-creature-reaction-probe="([^"]+)"/)?.[1] ?? "missing";
-  if(guardProbe!=="ok:legacy:defense:60:three:26000:550:dodge")
+  if(guardProbe!=="ok:standard-dodge:defense:60:three:26000:550:dodge")
     throw Error("Real creature reaction settings did not persist: "+guardProbe);
-  console.log("Creature reaction editor: Chrome verified legacy -> Defense 60%, 3 charges, 26s recharge, 0.55s window, save/reselect and Dodge visibility");
+  console.log("Creature reaction editor: Chrome verified authored default Dodge -> custom Defense, save/reselect and reaction isolation");
   const healEvolutionDom=await dumpDom(url+"?verify-heal-evolution-isolation=1");
   assertCreatures(healEvolutionDom, "healing skill evolution validation browser bootstrap");
   const healEvolutionProbe=healEvolutionDom.match(/data-heal-evolution-probe="([^"]+)"/)?.[1] ?? "missing";

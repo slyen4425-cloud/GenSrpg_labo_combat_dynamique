@@ -1,3 +1,4 @@
+import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
@@ -13,7 +14,7 @@ const registry=normalizeCaptureStatRegistryV1(read("data/capture/monster-capture
 test("Maraileron active Showcase transfer matches the archived author export without replacing its owner",()=>{
   const current=read(currentPath);
   const author=read(sourcePath);
-  assert.deepEqual(current,author);
+  assert.deepEqual(withoutNewDefaultDodgeV1(current),author);
   assert.equal(current.draft.id,"crea_maraileron");
   assert.equal(current.draft.presentation.version,9);
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(p=>p===currentPath).length,1);

@@ -1,3 +1,4 @@
+import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
@@ -36,7 +37,7 @@ test("RED: both fresh author transfers replace only the same two stable canonica
   assert.equal(new Set(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1).size,CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.length);
   assert.equal(new Set(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1).size,CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length);
   for(const {path,bytes,sha256} of originals){
-    const source=await read(path);
+    const source=path===CREATURE ? originalCreatureBytesBeforeDodgeV1(await read(path)) : await read(path);
     assert.equal(source.length,bytes,path+" must retain uploaded exact bytes");
     assert.equal(createHash("sha256").update(source).digest("hex"),sha256,path+" exact author SHA-256");
   }
