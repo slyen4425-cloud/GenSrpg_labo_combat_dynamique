@@ -1,3 +1,5 @@
+import {projectCaptureEncounterMaxHpV1} from "../core/combat/capture-adventure-hp-policy-v1.js";
+export {projectCaptureEncounterMaxHpV1} from "../core/combat/capture-adventure-hp-policy-v1.js";
 import { adaptCaptureCombatExportStackV1 } from "../adapters/input/capture/capture-export-adapter-stack-v1.js";
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
 import { buildCaptureEditorCombatTestV1 } from "./capture-editor-combat-test-v1.js";
@@ -16,17 +18,6 @@ function requireParticipant(participant, side) {
 // Authored creature definitions, saved participant HP, skills, levels and
 // the historical level-20 Tester remain entirely outside this projection.
 const ADVENTURE_HP_PROJECTED_V1 = Symbol("capture-adventure-hp-projected");
-// The SAME pure, Combat-owned integer rule powers fighter configs, Combat HUD
-// (via session.maxHp) and the read-only GenSRPG Adventure health sheet.
-// Never scale a persisted current-HP snapshot or an authored creature.
-export function projectCaptureEncounterMaxHpV1(amount, multiplier = 1) {
-  if (typeof amount !== "number" || !Number.isFinite(amount) || amount < 0)
-    throw new RangeError("Capture maximum HP must be a finite non-negative number");
-  if (typeof multiplier !== "number" || !Number.isFinite(multiplier) ||
-      multiplier <= 0 || multiplier > 1)
-    throw new RangeError("Adventure HP multiplier must be in (0, 1]");
-  return amount === 0 ? 0 : Math.max(1, Math.ceil(amount * multiplier));
-}
 export function applyCaptureEncounterHpMultiplierV1(source, multiplier = 1) {
   // Validate even at 100%, before returning the unmodified Tester source.
   projectCaptureEncounterMaxHpV1(0, multiplier);
