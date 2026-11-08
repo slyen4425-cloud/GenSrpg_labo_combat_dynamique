@@ -22,6 +22,8 @@ export function projectCaptureEncounterMaxHpV1(authoredMaxHp,multiplier=1){
   throw new RangeError('Authored Combat maxHp must be nonnegative finite');
  if(!Number.isFinite(multiplier)||multiplier<=0||multiplier>1)
   throw new RangeError('Adventure HP multiplier must be in (0, 1]');
+ // 100% means the original Combat fighter bytes are unchanged, including fractions.
+ if(multiplier===1)return authoredMaxHp;
  return authoredMaxHp===0?0:Math.max(1,Math.ceil(authoredMaxHp*multiplier));
 }
 const ADVENTURE_HP_PROJECTED_V1 = Symbol("capture-adventure-hp-projected");
