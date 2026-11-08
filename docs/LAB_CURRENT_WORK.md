@@ -1,3 +1,11 @@
+## 2026-11-08 — Combat sauvage : réserve native de 1 à 6 monstres (owner Combat)
+- **Base START :** `main@ef4e9315b40e2dc88e25c1a50b0cd2ce9fc3a15e`, checkpoint `checkpoint/lab-start-adventure-wild-reserve-2026-11-08`, branche `work/lab-adventure-wild-reserve-2026-11-08`.
+- **Périmètre :** extension facultative de `buildCaptureEncounterCombatSourceV1` par `localReserve` (0–5), sans modifier le Tester sans équipe. Le moteur existant `RosterSession` détient membres, commandes de rappel et KO. Projection des statistiques et PV de chaque instance par l'unique constructeur Combat, même pour plusieurs occurrences de la même espèce ; source auteur inchangée. Le cycle `embedded-combat-lifecycle-v1` ne déclare pas défaite tant que Combat possède une réserve vivante ; snapshot officiel du roster dans le résultat de combat.
+- **Interdictions :** aucune save GenSRPG ni transport Exploration écrit ici, aucune nouvelle bibliothèque d'assets, aucun second Damage/KO/XP/roster, aucun traitement scénario/PvP/Dungeon. Les compétences et les réglages auteur d'esquive restent intacts.
+- **Tests :** `tests/unit/capture-adventure-wild-reserve-2026-11-08.test.mjs` compare 3 membres avec deux espèces identiques, leurs niveaux/PV individuels, 25% de PV, KO, impossibilité de 7 membres et sortie équipe. CI complète `42504995587` GREEN (suite finale avant documentation) ; certification du nouveau commit + Pages/main obligatoire avant consommation par Explorer et GenSRPG.
+
+---
+
 ## 2026-11-08 — Audit des réactions défensives Showcase (15 espèces)
 - **Signalement Android GenSRPG :** Ailevent ne présente aucune commande d'Esquive. Audit de tous les 15 transferts Showcase officiels, pas d'une seule espèce.
 - **Diagnostic source :** 9 espèces ont un `draft.combat.reaction` explicite (5 Défense, 4 Esquive). Six transferts historiques n'ont pas ce champ : `crea-loup`, `crea_ailevent`, `crea_dracendre`, `crea_foudrillon`, `crea_maraileron`, `crea_voltik`. Le fallback `CaptureGameOptionsV1.dodge.enabled=false` masque leur bouton dans le combat Explorer si aucun réglage explicite ne le réactive. Le skill autonome `dodge` de Voltige n'est pas cette commande.
