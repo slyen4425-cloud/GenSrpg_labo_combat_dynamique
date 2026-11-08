@@ -1750,7 +1750,7 @@ export async function mountCoop2v2Test({
         }
       }
       renderState(state);
-      embeddedLifecycle?.observe(state);
+      embeddedLifecycle?.observe(state,rosterController?.snapshot() ?? null);
       queueAiDecisions();
     },
     onHealthDelta(feedback) {
@@ -2061,7 +2061,7 @@ export async function mountCoop2v2Test({
     completion: embeddedLifecycle?.completion ?? null,
     flee(){
       if(!embeddedLifecycle||disposed)return false;
-      return embeddedLifecycle.flee(session.snapshot());
+      return embeddedLifecycle.flee(session.snapshot(),rosterController?.snapshot() ?? null);
     },
     get selectedTargetId() {
       return selectedTargetId;
