@@ -1,3 +1,4 @@
+import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
@@ -15,7 +16,7 @@ const registry=normalizeCaptureStatRegistryV1(JSON.parse(readFileSync(new URL(".
 const expected="27a57678225ce2ed0f1a0ae270b59a2bcd48ccca79af59e96b84aba09e6c4fd6";
 
 test("RED before transfer replacement: Voltige V4 is byte-identical to the authored 5458-byte export",()=>{
- const b=source();
+ const b=originalCreatureBytesBeforeDodgeV1(source());
  assert.equal(b.byteLength,5458);
  assert.equal(createHash("sha256").update(b).digest("hex"),expected);
  assert.equal(JSON.parse(b.toString("utf8")).draft.id,"crea_voltik");
