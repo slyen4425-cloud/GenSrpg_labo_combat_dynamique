@@ -1,3 +1,12 @@
+## 2026-11-08 — PV de partie : une seule projection Combat consommable par les fiches GenSRPG
+- START : Combat main `8f29e32c57792ea0e39063223bd61250e91b8433`, checkpoint `checkpoint/combat-start-game-hp-projection-2026-11-08`, branche `work/combat-game-hp-projection-2026-11-08`.
+- Retour Pixel 10a : créature 140 PV Labo à 25 % (35 PV en partie) affichée « 46 / 140 » dans les fiches et peut-être à l'entrée Combat.
+- Cause : `applyCaptureEncounterHpMultiplierV1` projetait correctement les PV maximum pendant le vrai Combat, mais l'interface GenSRPG consommait les stats brutes et n'avait pas accès à la fonction numérique partagée. Expose le pur `projectCaptureEncounterMaxHpV1`, réutilisé **dans la fonction de Combat existante**, et consommable par la fiche en lecture seule. Ne modifie aucun champ auteur, statut, XP, énergie, avatar ni niveau du mode Tester.
+- TDD `tests/unit/capture-adventure-hp-scale-2026-11-05.test.mjs` compare la projection directe et les véritables fighters/fighterConfigs aux pourcentages 1%, 25%, 40%, 50%, 100 %, dont 140→35 et 83→21.
+- Conditions : npm test/CI native GREEN SHA exact, aucune duplication d'autorité ni nouvelle bibliothèque copiée ; publier main puis repinner dans GenSRPG seulement après preuve.
+
+---
+
 ## 2026-11-07 — Remplacement auteur de deux compétences Capture (main)
 
 - **Fichiers auteur reçus** : `gensrpg-capture-skill-cap_water_atk_2.json` et `gensrpg-capture-skill-attaque-sous-terraine.json` (exports complets transférés par l'auteur). IDs identiques à deux entrées déjà publiées ; **seuls les deux transferts actifs canoniques** de `data/capture/showcase/` sont remplacés, sans doublon d'ID, de fichier, de catalogue ou de média.

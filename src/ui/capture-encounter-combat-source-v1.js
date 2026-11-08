@@ -15,6 +15,17 @@ function requireParticipant(participant, side) {
 // The official Combat builder owns the sole encounter-only HP projection.
 // Authored creature definitions, saved participant HP, skills, levels and
 // the historical level-20 Tester remain entirely outside this projection.
+// Public read-only scalar: the same official Combat rule is consumed by
+// actual fighters AND the GenSRPG game sheet. No duplicated HP arithmetic.
+export function projectCaptureEncounterMaxHpV1(authoredMaxHp,multiplier=1){
+ if(typeof authoredMaxHp!=='number'||!Number.isFinite(authoredMaxHp)||authoredMaxHp<0)
+  throw new RangeError('Authored Combat maxHp must be nonnegative finite');
+ if(!Number.isFinite(multiplier)||multiplier<=0||multiplier>1)
+  throw new RangeError('Adventure HP multiplier must be in (0, 1]');
+ // 100% means the original Combat fighter bytes are unchanged, including fractions.
+ if(multiplier===1)return authoredMaxHp;
+ return authoredMaxHp===0?0:Math.max(1,Math.ceil(authoredMaxHp*multiplier));
+}
 const ADVENTURE_HP_PROJECTED_V1 = Symbol("capture-adventure-hp-projected");
 export function applyCaptureEncounterHpMultiplierV1(source, multiplier = 1) {
   if (!Number.isFinite(multiplier) || multiplier <= 0 || multiplier > 1)
@@ -22,7 +33,7 @@ export function applyCaptureEncounterHpMultiplierV1(source, multiplier = 1) {
   if (source?.[ADVENTURE_HP_PROJECTED_V1])
     throw new RangeError("Adventure HP already scaled on this Combat source");
   if (multiplier === 1) return source;
-  const scale = amount => amount === 0 ? 0 : Math.max(1, Math.ceil(amount * multiplier));
+  const scale = amount => projectCaptureEncounterMaxHpV1(amount,multiplier);
   const change = fighter => Object.freeze({
     ...fighter,
     maxHp: scale(fighter.maxHp),
