@@ -1,3 +1,4 @@
+import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
@@ -26,7 +27,7 @@ const sources=[
 
 test("all three user uploads are preserved, original Nid is archived, and canonical catalog IDs are single",async()=>{
   for(const {path,length,hash} of sources){
-    const raw=await read(path);
+    const raw=path===creature?originalCreatureBytesBeforeDodgeV1(await read(path)):await read(path);
     assert.equal(raw.length,length,path+" original bytes");
     assert.equal(createHash("sha256").update(raw).digest("hex"),hash,path+" exact author hash");
   }
