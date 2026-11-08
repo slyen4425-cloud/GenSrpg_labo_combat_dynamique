@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {applyCaptureEncounterHpMultiplierV1} from "../../src/ui/capture-encounter-combat-source-v1.js";
+import {applyCaptureEncounterHpMultiplierV1,projectCaptureEncounterMaxHpV1} from "../../src/ui/capture-encounter-combat-source-v1.js";
 
 const base=()=>{
  const local={id:"local-1",maxHp:100,initialHp:80,maxEnergy:9,defensiveCreatureId:"crea_nature"};
@@ -55,4 +55,22 @@ test("RED: no rounding down to zero and no second scaling after applying a Comba
  assert.equal(result.fighters[0].initialHp,1);
  assert.equal(result.fighterConfigs.a.maxHp,1);
  assert.throws(()=>applyCaptureEncounterHpMultiplierV1(result,0.25),/already scaled/i);
+});
+
+test('single Combat-owned maxHp projection is identical in native battle and game sheet',()=>{
+ for(const hp of [0,1,1.5,34,35,46,83,140,171,300]){
+  for(const factor of [0.01,0.25,0.4,0.5,1]){
+   const raw={fighters:[{maxHp:hp}],fighterConfigs:{owned:{maxHp:hp}}};
+   const expected=projectCaptureEncounterMaxHpV1(hp,factor);
+   const actual=applyCaptureEncounterHpMultiplierV1(raw,factor);
+   assert.equal(actual.fighters[0].maxHp,expected,
+    'the published sheet and actual combat must use identical rounding');
+   assert.equal(actual.fighterConfigs.owned.maxHp,expected);
+  }
+ }
+ assert.equal(projectCaptureEncounterMaxHpV1(140,0.25),35);
+ assert.equal(projectCaptureEncounterMaxHpV1(83,0.25),21);
+ assert.throws(()=>projectCaptureEncounterMaxHpV1(-1,0.25));
+ assert.throws(()=>projectCaptureEncounterMaxHpV1(Infinity,0.25));
+ assert.throws(()=>projectCaptureEncounterMaxHpV1(140,0));
 });
