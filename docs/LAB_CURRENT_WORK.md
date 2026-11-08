@@ -1,3 +1,13 @@
+## 2026-11-08 — Audit des réactions défensives Showcase (15 espèces)
+- **Signalement Android GenSRPG :** Ailevent ne présente aucune commande d'Esquive. Audit de tous les 15 transferts Showcase officiels, pas d'une seule espèce.
+- **Diagnostic source :** 9 espèces ont un `draft.combat.reaction` explicite (5 Défense, 4 Esquive). Six transferts historiques n'ont pas ce champ : `crea-loup`, `crea_ailevent`, `crea_dracendre`, `crea_foudrillon`, `crea_maraileron`, `crea_voltik`. Le fallback `CaptureGameOptionsV1.dodge.enabled=false` masque leur bouton dans le combat Explorer si aucun réglage explicite ne le réactive. Le skill autonome `dodge` de Voltige n'est pas cette commande.
+- **Périmètre propriétaire C1 données auteur :** uniquement les six transferts canoniques manquants, sans changer l'éditeur, les cinq compétences, l'énergie, les PV, les assets, les réactions des neuf autres, le HUD, le moteur ou les sauvegardes. Déclarer pour chacun le contrat standard existant `CAPTURE_CREATURE_DEFENSIVE_REACTION_DEFAULT_V1` : Dodge, 2 charges, recharge 30 s, fenêtre 250 ms, réduction de défense non applicable.
+- **Base / START :** `main@a182ebf252e4327692fc3515f2d261dcc7af4458`, `checkpoint/lab-start-showcase-defensive-reactions-2026-11-08`, branche `work/lab-showcase-defensive-reactions-2026-11-08`. Test global `tests/unit/capture-showcase-defensive-reactions-2026-11-08.test.mjs` créé avant correction. Aucun code GenSRPG ou Exploration modifié par ce lot.
+- **Gate :** CI complète Labo Combat sur HEAD exact, test des 15 configurations et du vrai adaptateur de fighter, contrôles HUD/roster/Legacy et publication Pages `main`. Après certification uniquement, les consommateurs Exploration et GenSRPG devront repinner leur source Combat immuable dans leurs propres lots C2 ; pas d'adoption de la branche de travail, ni publication GenSRPG sans vérification des SHAs et de sa vraie PWA Android.
+- **Reste :** vérifier le statut CI/PR, publication Combat main, puis la chaîne officielle d'adoption Exploration et GenSRPG. Dernier checkpoint GREEN inchangé tant que les gates ne sont pas terminés.
+
+---
+
 ## 2026-11-08 — PV de partie : une seule projection Combat consommable par les fiches GenSRPG
 - START : Combat main `8f29e32c57792ea0e39063223bd61250e91b8433`, checkpoint `checkpoint/combat-start-game-hp-projection-2026-11-08`, branche `work/combat-game-hp-projection-2026-11-08`.
 - Retour Pixel 10a : créature 140 PV Labo à 25 % (35 PV en partie) affichée « 46 / 140 » dans les fiches et peut-être à l'entrée Combat.
