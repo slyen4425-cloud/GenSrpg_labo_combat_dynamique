@@ -1,3 +1,4 @@
+import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -86,8 +87,9 @@ test("Showcase has one unique Gorice entry and preserves Loup volcanique as a di
     CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.length);
 
   const [original, active] = await Promise.all([repoFile(loupSourcePath), repoFile(loupPath)]);
-  assert.equal(active, original, "Loup original and its archived author source remain byte-identical");
-  assert.equal(createHash("sha256").update(active).digest("hex"),
+  const authorBytes=originalCreatureBytesBeforeDodgeV1(active).toString("utf8");
+  assert.equal(authorBytes, original, "Loup historical author source is untouched; only explicit Dodge differs in the active transfer");
+  assert.equal(createHash("sha256").update(authorBytes).digest("hex"),
     "d757279d7dcc0ca413dc27fa700ea342aac62dbd12f89af8e2e7f60c869641eb",
     "Loup V9 must not be overwritten by Gorice or by any other author import");
 
