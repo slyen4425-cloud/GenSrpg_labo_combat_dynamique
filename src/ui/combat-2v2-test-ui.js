@@ -363,6 +363,9 @@ function normalizedInjectedCombatSource(input) {
     roster: input.roster ?? null,
     fighterConfigs: input.fighterConfigs ?? null,
     skillIdsByCreature: input.skillIdsByCreature ?? null,
+    ...(input.skillIdsByRosterMember === undefined ? {} : {
+      skillIdsByRosterMember: input.skillIdsByRosterMember
+    }),
     ...(input.recallPreparationMs === undefined ? {} : { recallPreparationMs: input.recallPreparationMs }),
     gameOptions:
       normalizeCaptureGameOptionsV1(
@@ -593,7 +596,7 @@ export async function mountCoop2v2Test({
     skills,
     skillsById,
     skillIdsByActor,
-    roster: rosterDefinition, fighterConfigs, skillIdsByCreature,
+    roster: rosterDefinition, fighterConfigs, skillIdsByCreature, skillIdsByRosterMember,
     skillSpeedMultiplier, recallPreparationMs, gameOptions
   } = await loadCoop2v2CombatSource({
     nativeCombatSource,
@@ -1750,7 +1753,7 @@ export async function mountCoop2v2Test({
         }
       }
       renderState(state);
-      embeddedLifecycle?.observe(state);
+      embeddedLifecycle?.observe(state,rosterController?.snapshot() ?? null);
       queueAiDecisions();
     },
     onHealthDelta(feedback) {
@@ -2014,7 +2017,7 @@ export async function mountCoop2v2Test({
       recallPreparationMs
     );
     rosterController = createCaptureCombatRosterControllerV1({
-      session, rosterDefinition, fighterConfigs, skillIdsByCreature, visuals,
+      session, rosterDefinition, fighterConfigs, skillIdsByCreature, skillIdsByRosterMember, visuals,
       battleFormat:format,
       recallCooldownMs: gameOptions.recallCooldownMs,
       beforeActorChanged: actorId => presenter.cancelActionPresentation(actorId),
@@ -2061,7 +2064,7 @@ export async function mountCoop2v2Test({
     completion: embeddedLifecycle?.completion ?? null,
     flee(){
       if(!embeddedLifecycle||disposed)return false;
-      return embeddedLifecycle.flee(session.snapshot());
+      return embeddedLifecycle.flee(session.snapshot(),rosterController?.snapshot() ?? null);
     },
     get selectedTargetId() {
       return selectedTargetId;

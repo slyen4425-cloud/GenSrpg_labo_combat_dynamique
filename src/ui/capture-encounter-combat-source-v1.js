@@ -49,7 +49,124 @@ export function applyCaptureEncounterHpMultiplierV1(source, multiplier = 1) {
   });
 }
 
-export function buildCaptureEncounterCombatSourceV1({ local, opponent, hpMultiplier = 1, ...options } = {}) {
+// A wild encounter is still one visible fighter against one wild opponent.
+// The existing Combat roster owns every extra saved team member; the
+// AdventureSession retains its own durable instance order, HP and XP.
+function buildCaptureWildReserveSourceV1({local,opponent,localReserve,hpMultiplier,options}) {
+ const members=[local,...localReserve];
+ if(members.length>6)throw new RangeError('Adventure Combat roster must have 1 to 6 members');
+ const identities=new Set();
+ for(const [i,member] of members.entries()){
+  requireParticipant(member,'Adventure member '+i);
+  const id=member.instanceId;
+  if(typeof id!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_:.-]{0,129}$/.test(id))
+   throw new RangeError('Adventure roster member instanceId required');
+  if(identities.has(id))throw new RangeError('Duplicate Adventure roster instanceId');
+  identities.add(id);
+  if(member.hp!==undefined&&member.hp!==null&&
+   (typeof member.hp!=='number'||!Number.isFinite(member.hp)||member.hp<0))
+   throw new RangeError('Invalid saved Adventure member HP');
+ }
+ requireParticipant(opponent,'Opponent');
+ if(opponent.statAllocations!==undefined)
+  throw new RangeError('Opponent statAllocations require an official NPC instance contract');
+ if(!options.configuredCreatures||!options.configuredSkills)
+  throw new TypeError('Official configured Capture creatures and skills required');
+ const levelMap=Object.fromEntries([local,...localReserve,opponent]
+  .map(member=>[member.speciesId,member.level]).reverse());
+ // Preserve the first local species level on duplicate IDs. Exact levels and
+ // stat allocations are subsequently projected on EACH instance separately.
+ for(const member of members)if(levelMap[member.speciesId]===undefined)
+  levelMap[member.speciesId]=member.level;
+ levelMap[local.speciesId]=local.level;
+ const fullExport=buildCaptureEditorCombatTestV1({
+  ...options,configuredCreatures:options.configuredCreatures,
+  localCreatureIds:members.map(member=>member.speciesId),
+  opponentCreatureIds:[opponent.speciesId],activePerTeam:1,
+  creatureLevelsById:levelMap
+ });
+ const full=adaptCaptureCombatExportStackV1(fullExport);
+ const localActorId=full.battleFormat.localActorId;
+ const enemyActorId=full.battleFormat.teams['enemy-team'][0];
+ const team=full.roster.teams[localActorId],enemyTeam=full.roster.teams[enemyActorId];
+ if(!team||team.members.length!==members.length||!enemyTeam)
+  throw new RangeError('Official Combat roster does not match the saved Adventure party');
+ const fighterConfigs={...full.fighterConfigs};
+ const instanceMap={};
+ const perMemberSkills={};
+ let firstPlayer=null,enemyFighter=null;
+ const changedMembers=team.members.map((rosterMember,index)=>{
+  const member=members[index];
+  if(rosterMember.creatureId!==member.speciesId)
+   throw new RangeError('Official Combat member order differs from AdventureSession');
+  // No second stats formula: the SAME single-player owner projects each
+  // instance independently (including duplicate species and rival mirrors).
+  const single=buildCaptureEncounterCombatSourceV1({
+   ...options,local:member,opponent,hpMultiplier:1
+  });
+  const fighter=single.fighters.find(f=>f.id===localActorId);
+  const opponentFighter=single.fighters.find(f=>f.id===enemyActorId);
+  if(!fighter||!opponentFighter)
+   throw new RangeError('Official Combat participant projection missing');
+  const configId='roster/'+localActorId+'/'+rosterMember.id;
+  fighterConfigs[configId]=Object.freeze({...fighter,id:member.speciesId});
+  instanceMap[rosterMember.id]=member.instanceId;
+  perMemberSkills[rosterMember.id]=single.skillIdsByActor[localActorId];
+  if(index===0){firstPlayer=fighter;enemyFighter=opponentFighter;}
+  return Object.freeze({...rosterMember,fighterConfigId:configId});
+ });
+ const enemyMember=enemyTeam.members.find(m=>m.id===enemyTeam.activeMemberId);
+ const enemyConfigId='roster/'+enemyActorId+'/'+enemyMember.id;
+ fighterConfigs[enemyConfigId]=Object.freeze({...enemyFighter,id:opponent.speciesId});
+ const wrappedEnemyTeam=Object.freeze({...enemyTeam,members:Object.freeze(
+  enemyTeam.members.map(m=>Object.freeze({...m,fighterConfigId:enemyConfigId})))});
+ const output=Object.freeze({
+  ...full,exported:fullExport,
+  battleFormat:normalizeBattleFormatDefinition({
+   ...full.battleFormat,
+   actors:full.battleFormat.actors.map(actor=>
+    actor.actorId===localActorId
+     ? {...actor,fighterConfigId:changedMembers[0].fighterConfigId}
+     : actor.actorId===enemyActorId
+      ? {...actor,fighterConfigId:enemyConfigId}
+      : actor)
+  }),
+  fighters:Object.freeze(full.fighters.map(f=>f.id===localActorId?firstPlayer:
+   f.id===enemyActorId?enemyFighter:f)),
+  fighterConfigs:Object.freeze(fighterConfigs),
+  roster:Object.freeze({teams:Object.freeze({
+   ...full.roster.teams,
+   [localActorId]:Object.freeze({...team,members:Object.freeze(changedMembers)}),
+   [enemyActorId]:wrappedEnemyTeam
+  })}),
+  skillIdsByRosterMember:Object.freeze({[localActorId]:Object.freeze(perMemberSkills)}),
+  localInstanceIdsByMemberId:Object.freeze(instanceMap)
+ });
+ const scaled=applyCaptureEncounterHpMultiplierV1(output,hpMultiplier);
+ // The Combat-owned max is the sole HP authority in play. A saved reserve KO
+ // remains KO, and older saved HP is bounded without mutating the Core save.
+ const initialHp=(saved,config)=>saved===null||saved===undefined?config.maxHp:
+  Math.min(saved,config.maxHp);
+ const configs={...scaled.fighterConfigs};
+ for(const [index,member] of changedMembers.entries()){
+  const config=configs[member.fighterConfigId];
+  configs[member.fighterConfigId]=Object.freeze({...config,
+   initialHp:initialHp(members[index].hp,config)});
+ }
+ const nativeFighters=scaled.fighters.map(f=>{
+  if(f.id!==localActorId)return f;
+  return Object.freeze({...f,initialHp:configs[changedMembers[0].fighterConfigId].initialHp});
+ });
+ return Object.freeze({...scaled,
+  fighterConfigs:Object.freeze(configs),
+  fighters:Object.freeze(nativeFighters)});
+}
+
+export function buildCaptureEncounterCombatSourceV1({ local, opponent, localReserve = [], hpMultiplier = 1, ...options } = {}) {
+  if(!Array.isArray(localReserve))throw new TypeError('Adventure localReserve must be an array');
+  if(localReserve.length)return buildCaptureWildReserveSourceV1({
+    local,opponent,localReserve,hpMultiplier,options
+  });
   requireParticipant(local, "Local");
   requireParticipant(opponent, "Opponent");
   // Only Combat projects stat allocations. GenSRPG owns the saved wallet,

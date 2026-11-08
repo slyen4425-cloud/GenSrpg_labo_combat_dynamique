@@ -32,27 +32,49 @@ export function createEmbeddedCombatLifecycleV1({format}) {
     }
     return state;
   }
-  function finish(outcome,state){
+  function validateRoster(roster){
+    if(roster===null||roster===undefined)return null; // Legacy 1v1/2v2 snapshot.
+    if(typeof roster!=='object'||Array.isArray(roster))
+      throw new TypeError("Official Combat roster snapshot required");
+    for(const actor of actors){
+      const team=roster[actor.actorId];
+      if(!team||!Array.isArray(team.members)||!team.members.length||
+         team.members.some(m=>typeof m.id!=='string'||!Number.isFinite(m.hp)||m.hp<0))
+        throw new TypeError("Official Combat roster member HP missing: "+actor.actorId);
+    }
+    return roster;
+  }
+  function finish(outcome,state,roster=null){
     if(settled)return false;
     lastState=validate(state);
+    const snapshot=validateRoster(roster);
     settled=true;
-    resolveCompletion(Object.freeze({outcome,state:lastState}));
+    resolveCompletion(Object.freeze({outcome,state:lastState,
+      ...(snapshot===null?{}:{roster:snapshot})}));
     return true;
   }
-  function observe(state){
+  function observe(state,roster=null){
     if(settled)return false;
     lastState=validate(state);
+    const snapshot=validateRoster(roster);
     const allDown=team=>actors.filter(actor=>format.teamOf(actor.actorId)===team)
-      .every(actor=>state.fighters[actor.actorId].hp<=0);
+      .every(actor=>{
+        if(state.fighters[actor.actorId].hp>0)return false;
+        // A single active creature KO is NOT a team defeat while the native
+        // Roster Session still contains an available reserve. The same
+        // Combat-owned member HP also decides victory for NPC rosters.
+        const members=snapshot?.[actor.actorId]?.members;
+        return !members?.some(member=>member.hp>0);
+      });
     const ownOut=allDown(ownTeam),enemyOut=allDown(enemyTeam);
     if(ownOut&&enemyOut)throw new Error("Simultaneous team KO cannot be inferred as victory or defeat");
-    if(ownOut)return finish("defeat",state);
-    if(enemyOut)return finish("victory",state);
+    if(ownOut)return finish("defeat",state,snapshot);
+    if(enemyOut)return finish("victory",state,snapshot);
     return false;
   }
   return Object.freeze({
     completion,observe,
-    flee(state){return finish("flee",state);},
+    flee(state,roster=null){return finish("flee",state,roster);},
     get settled(){return settled;},
     get lastState(){return lastState;}
   });
