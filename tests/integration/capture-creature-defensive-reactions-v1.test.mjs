@@ -1,3 +1,4 @@
+import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -45,7 +46,8 @@ test("one strict creature reaction contract validates mode, charges, time and re
 });
 
 test("author creature export stays legacy-compatible; explicit defense roundtrips through the only transfer owner", () => {
-  const old = normalizeCaptureCreatureEditorDraftV3(author.draft);
+  const old = normalizeCaptureCreatureEditorDraftV3({...author.draft,
+    combat:withoutNewDefaultDodgeV1(author).draft.combat});
   assert.equal(Object.hasOwn(old.combat,"reaction"),false);
   const draft = normalizeCaptureCreatureEditorDraftV3({
     ...author.draft,
