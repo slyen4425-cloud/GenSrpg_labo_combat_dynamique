@@ -5,7 +5,7 @@ import {createEmbeddedCombatLifecycleV1} from '../../src/ui/embedded-combat-life
 import {createCaptureCombatRosterControllerV1} from '../../src/ui/capture-combat-roster-controller-v1.js';
 
 const record=(id)=>({
- draft:{schema:'capture-creature-editor-draft-v3',id,displayName:id,description:'',level:1,
+ draft:{schema:'capture-creature-editor-draft-v3',id,displayName:id,description:'Test creature',level:1,
  sourceStats:{force:0,agility:0,intelligence:0,spirit:0,endurance:0,initiative:0},
  elements:[],resistances:[],capture:{capturable:true,captureRate:50,spawnChance:10,spawnTags:[],evolution:null},
  combat:{maxHp:100,maxEnergy:10,initialEnergy:10},skillIds:['basic'],presentation:null},
@@ -14,7 +14,7 @@ const record=(id)=>({
  {id:'slot-3',skillId:null},{id:'slot-4',skillId:null},{id:'slot-ultimate',skillId:null}]},
  statValues:null
 });
-const skill={schema:'capture-skill-editor-draft-v1',id:'basic',description:'',requiredLevel:1,
+const skill={schema:'capture-skill-editor-draft-v1',id:'basic',description:'Test skill',requiredLevel:1,
  usageScopes:['capture','combat'],definition:{id:'basic',name:'Basic',category:'offensive',form:'projectile',
  element:null,approachMode:'none',energyCost:0,preparationMs:0,travelMs:0,recoveryMs:0,cooldownMs:0,
  allowedDistances:['short','medium','long'],targetRelations:['enemy'],
