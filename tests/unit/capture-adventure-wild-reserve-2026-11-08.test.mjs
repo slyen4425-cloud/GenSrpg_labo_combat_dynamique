@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {buildCaptureEncounterCombatSourceV1} from '../../src/ui/capture-encounter-combat-source-v1.js';
 import {createEmbeddedCombatLifecycleV1} from '../../src/ui/embedded-combat-lifecycle-v1.js';
 import {createCaptureCombatRosterControllerV1} from '../../src/ui/capture-combat-roster-controller-v1.js';
@@ -56,6 +57,16 @@ test('missing or duplicate instance identity and over-sized roster fail closed',
   localReserve:Array.from({length:6},(_,i)=>({instanceId:'i'+i,speciesId:'b',level:1}))}),/1.to.6|6|reserve/i);
  assert.throws(()=>buildCaptureEncounterCombatSourceV1({...base,
   localReserve:[{instanceId:'ko',speciesId:'bad',level:1}]}),/missing|absent|introuvable|Unknown/i);
+});
+test('personal reserved skill sets reach the only native roster UI controller',()=>{
+ const source=team();
+ const members=source.roster.teams['local-1'].members;
+ assert.equal(Object.keys(source.skillIdsByRosterMember['local-1']).length,members.length);
+ for(const member of members)
+  assert.ok(Array.isArray(source.skillIdsByRosterMember['local-1'][member.id]));
+ const ui=readFileSync(new URL('../../src/ui/combat-2v2-test-ui.js',import.meta.url),'utf8');
+ assert.match(ui,/skillIdsByRosterMember: input\.skillIdsByRosterMember/);
+ assert.match(ui,/skillIdsByCreature, skillIdsByRosterMember, visuals/);
 });
 test('embedded Combat native team defeat waits for the last real reserve, not first active KO',async()=>{
  const source=team();
