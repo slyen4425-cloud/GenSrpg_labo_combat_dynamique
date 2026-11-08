@@ -12,7 +12,7 @@ const record=(id)=>({
  loadout:{schema:'capture-active-skill-loadout-v1',creatureId:id,
  slots:[{id:'slot-1',skillId:'basic'},{id:'slot-2',skillId:null},
  {id:'slot-3',skillId:null},{id:'slot-4',skillId:null},{id:'slot-ultimate',skillId:null}]},
- statValues:null
+ statValues:{schema:'capture-creature-stat-values-v1',creatureId:id,values:{health:100}}
 });
 const skill={schema:'capture-skill-editor-draft-v1',id:'basic',description:'Test skill',requiredLevel:1,
  usageScopes:['capture','combat'],definition:{id:'basic',name:'Basic',category:'offensive',form:'projectile',
