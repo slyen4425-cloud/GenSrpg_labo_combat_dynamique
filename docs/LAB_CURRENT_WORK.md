@@ -1,3 +1,12 @@
+## 2026-11-08 — PV jeu 25 % : une seule formule Combat pour les combattants ET la fiche GenSRPG
+- START : `main@8f29e32c57792ea0e39063223bd61250e91b8433`, checkpoint `checkpoint/lab-start-adventure-hp-display-2026-11-08`, lot temporaire `work/lab-adventure-hp-display-2026-11-08`.
+- **Règle propriétaire** : le Core Combat `src/core/combat/capture-adventure-hp-policy-v1.js` expose `projectCaptureEncounterMaxHpV1`, la **même formule préexistante** désormais importée par le builder de combat et utilisable dans les fiches GenSRPG (sans charger un second runtime). La projection est `0 → 0`, autre PV positif → `Math.max(1,Math.ceil(PV * ratio))`. Validations strictes des PV et du ratio (0,1]. Aucun changement de formule, dégâts, sauvegarde, PV courant, Editor ou mode Tester.
+- Intégration attendue : GenSRPG produit la fiche et les statistiques Santé depuis `projectCaptureStatEffectsV1` du Core Combat et `projectCaptureEncounterMaxHpV1` de ce module, avec le pourcentage de la **session**, jamais depuis un catalogue de stats dupliqué. Combat HUD existe déjà via `fighter.hp / fighter.maxHp` ; sentinelle ajoutée.
+- Tests RED/GREEN `tests/unit/capture-adventure-hp-one-authority-20261108.test.mjs` : 140 à 25 % → 35, 187 → 47, 141 → 36, 100 %, autres ratios, refus invalides, cohérence Combat HUD, Tester non modifié.
+- CI de source exacte, navigateur et Pages officiel requises avant GREEN, puis pin immuable dans GenSRPG. Aucun changement de la bibliothèque médias ni d'Exploration.
+
+---
+
 ## 2026-11-07 — Remplacement auteur de deux compétences Capture (main)
 
 - **Fichiers auteur reçus** : `gensrpg-capture-skill-cap_water_atk_2.json` et `gensrpg-capture-skill-attaque-sous-terraine.json` (exports complets transférés par l'auteur). IDs identiques à deux entrées déjà publiées ; **seuls les deux transferts actifs canoniques** de `data/capture/showcase/` sont remplacés, sans doublon d'ID, de fichier, de catalogue ou de média.

@@ -1,3 +1,5 @@
+import {projectCaptureEncounterMaxHpV1} from "../core/combat/capture-adventure-hp-policy-v1.js";
+export {projectCaptureEncounterMaxHpV1} from "../core/combat/capture-adventure-hp-policy-v1.js";
 import { adaptCaptureCombatExportStackV1 } from "../adapters/input/capture/capture-export-adapter-stack-v1.js";
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
 import { buildCaptureEditorCombatTestV1 } from "./capture-editor-combat-test-v1.js";
@@ -17,12 +19,12 @@ function requireParticipant(participant, side) {
 // the historical level-20 Tester remain entirely outside this projection.
 const ADVENTURE_HP_PROJECTED_V1 = Symbol("capture-adventure-hp-projected");
 export function applyCaptureEncounterHpMultiplierV1(source, multiplier = 1) {
-  if (!Number.isFinite(multiplier) || multiplier <= 0 || multiplier > 1)
-    throw new RangeError("Adventure HP multiplier must be in (0, 1]");
+  // Validate even at 100%, before returning the unmodified Tester source.
+  projectCaptureEncounterMaxHpV1(0, multiplier);
   if (source?.[ADVENTURE_HP_PROJECTED_V1])
     throw new RangeError("Adventure HP already scaled on this Combat source");
   if (multiplier === 1) return source;
-  const scale = amount => amount === 0 ? 0 : Math.max(1, Math.ceil(amount * multiplier));
+  const scale = amount => projectCaptureEncounterMaxHpV1(amount, multiplier);
   const change = fighter => Object.freeze({
     ...fighter,
     maxHp: scale(fighter.maxHp),
