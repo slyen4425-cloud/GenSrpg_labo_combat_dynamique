@@ -178,8 +178,11 @@ function renderProfile(){
     }
     const label=element("span","skill__title");
     label.append(element("small",null,slotLabel(skill.slot)),element("strong",null,skill.name));
+    const recharge=skill.cooldownMs>0
+      ? "Recharge : "+new Intl.NumberFormat("fr-FR",{maximumFractionDigits:1}).format(skill.cooldownMs/1000)+" s"
+      : "Recharge : 0 s";
     const sub=[skill.element?bestiaryElementLabelV1(skill.element):null,
-      skill.requiredLevel!=null?"Niv. "+skill.requiredLevel:null].filter(Boolean).join(" · ");
+      skill.requiredLevel!=null?"Niv. "+skill.requiredLevel:null,recharge].filter(Boolean).join(" · ");
     if(sub)label.append(element("small",null,sub));
     toggle.append(label,element("span","skill__chevron","⌄"));
     const details=element("div","skill__details");

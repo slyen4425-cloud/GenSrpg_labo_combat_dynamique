@@ -54,7 +54,7 @@
           "long"
         ],
         "effect": {
-          "damage": 18
+          "damage": 10
         },
         "approachMode": "ground"
       }

@@ -1,3 +1,13 @@
+## 2026-11-09 — Confort combat lot 1 : décompte et Griffe / Bestiaire
+- START `main@fe1b6623d0a1bf4f27a61287e36668d78068d1e3`, checkpoint `checkpoint/lab-start-combat-ux-cooldowns-claw-bestiary-2026-11-09`.
+- HUD : compte à rebours entier et stable en secondes tiré des échéances de `CombatState.skillCooldowns`, jamais de l'état transitoire du preview, aucun timer gameplay parallèle.
+- Capacité native `claw` : dégâts de base 18 -> 10 ; timings, coût, catégorie et autres compétences inchangés.
+- Bestiaire : recharge de chaque capacité affichée à partir de la définition autoritaire, y compris 0 s ; pas de base de données UI parallèle.
+- Suite : fermeture du menu Rappel, exclusivité et expiration des infobulles de statut, icônes stats et canaux après preuve de médias réels.
+- Validation attendue : tests ciblés, CI exacte, publication Pages main ; essais mobiles à part.
+
+---
+
 ## 2026-11-09 — Sentinelles historiques descriptions Bestiaire conservées
 - START `main@700a833b31b96ec170a59275713e2ba3b32c6adc`, checkpoint `checkpoint/lab-start-krakenor-prose-legacy-regressions-2026-11-09`.
 - CI du lot Krakenor : 2695/2697 tests verts, deux sentinelles historiques RED sur la forme texte non modifiée de Graine sansue et l'appel existant sans options du projecteur natif.

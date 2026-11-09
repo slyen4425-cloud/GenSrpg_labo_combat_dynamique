@@ -69,6 +69,7 @@ export function captureBestiaryCardsV1({
     skillsById.set(definition.id, {
       name:definition.name, element:definition.element ?? null,
       requiredLevel:null, icon:null,
+      cooldownMs:Math.max(0,Number(definition.cooldownMs)||0),
       explanation:describeCaptureSkillV1(definition)
     });
   }
@@ -82,6 +83,7 @@ export function captureBestiaryCardsV1({
       name:definition.name,
       element:definition.element || null,
       requiredLevel: statNumber(draft.requiredLevel),
+      cooldownMs:Math.max(0,Number(definition.cooldownMs)||0),
       icon,
       explanation:describeCaptureSkillV1(definition,{markerNames})
     });

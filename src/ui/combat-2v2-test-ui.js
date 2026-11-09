@@ -1214,10 +1214,12 @@ export async function mountCoop2v2Test({
           ? skill.name + " — choisir une cible autorisée"
           : skill.name;
 
-      const remainingCooldownMs =
-        preview?.outcome === "cooldown"
-          ? Number(preview.remainingCooldownMs) || 0
-          : 0;
+      // The CombatState owns each deadline, even while another action makes
+      // previewSkill report 'busy'. Never derive the HUD timer from that preview.
+      const remainingCooldownMs = Math.max(0,
+        (Number(state.fighters[controlledActorId()]?.skillCooldowns?.[skill.id]) || 0)
+        - state.elapsedMs);
+      const remainingSeconds = Math.ceil(remainingCooldownMs / 1000);
       const totalCooldownMs =
         Math.max(0, Number(skill.cooldownMs) || 0);
       const cooldownProgress =
@@ -1233,13 +1235,14 @@ export async function mountCoop2v2Test({
 
       cooldown.textContent = statMissing
         ? `${preview.statId} : 0 point — mur impossible`
-        : remainingCooldownMs > 0
-          ? `Recharge ${(remainingCooldownMs / 1000).toFixed(1)} s`
+        : remainingSeconds > 0
+          ? remainingSeconds + " s"
           : "";
+      if (remainingSeconds > 0) button.title += " · recharge dans " + remainingSeconds + " s";
       cooldown.hidden = !statMissing && remainingCooldownMs <= 0;
       button.dataset.combatCooldown =
         remainingCooldownMs > 0
-          ? String(Math.ceil(remainingCooldownMs))
+          ? String(remainingSeconds)
           : "";
       button.dataset.cooldownActive =
         remainingCooldownMs > 0 ? "true" : "false";
