@@ -1,3 +1,11 @@
+## 2026-11-09 — Sentinelle icônes : repli sans média et expression numérique
+- START `main@99b3aeac1d115fb33f54fc0f06e43a872f18465e`, checkpoint `checkpoint/lab-start-stat-icon-renderer-sentinelles-2026-11-09`.
+- Bestiaire : champs d'icônes optionnels uniquement lorsqu'ils existent dans la bibliothèque. Les exports de carte historiques sans médias restent de forme identique (tests de non-régression).
+- Réparation de l'expression régulière de phrase numérique de dégâts : interprétation réelle de `8 dégâts d'Eau`, pas recherche de caractères anti-slash.
+- Toujours aucun média `core:ui-*` prétendu publié sur `global-assets`. CI exacte + test navigateur requis.
+
+---
+
 ## 2026-11-09 — UI : icônes de statistiques et canaux de dégâts (raccord conditionnel)
 - START `main@ee4e1e95616e3c3934f81e77e455f005dee059cc` ; checkpoint `checkpoint/lab-start-bestiary-ui-icon-adoption-2026-11-09`.
 - Pack validé `GenSRPG_UI_Icons_V1_2026-11-09_READY.zip` retrouvé : 16 stats réelles, 2 symboles UI. Les WebP ne sont pas encore sur `global-assets`, donc seul le raccordement conditionnel est activé.

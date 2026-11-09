@@ -199,12 +199,12 @@ function renderProfile(){
         air:/dégâts (?:de |d')Air/i,nature:/dégâts (?:de |d')Nature/i,
         acier:/dégâts (?:de |d')Acier/i,light:/dégâts (?:de |d')Lumière/i,
         shadow:/dégâts (?:de |d')Ombre/i,esprit:/dégâts (?:de |d')Esprit/i,
-        physical:/dégâts physiques|\\d+(?:[,.]\\d+)? dégâts(?! (?:de |d'))/i
+        physical:/dégâts physiques|\d+(?:[,.]\d+)? dégâts(?! (?:de |d'))/i
       });
       for(const sentence of skill.explanation.sentences){
         const line=element("p");
         // A numeric damage statement only: not an outgoing-damage modifier.
-        if(/\\d+(?:[,.]\\d+)? dégâts/i.test(sentence)){
+        if(/\d+(?:[,.]\d+)? dégâts/i.test(sentence)){
           for(const entry of skill.damageIcons??[]){
             if(damageTextByChannel[entry.channel]?.test(sentence))
               line.append(picture(entry.icon,"Dégâts "+bestiaryElementLabelV1(entry.channel),"skill__damage-icon"));

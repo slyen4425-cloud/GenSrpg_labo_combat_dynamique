@@ -31,3 +31,10 @@ test("editor and bestiary use the one published-media resolver",async()=>{
  assert.ok(sources[1].includes("captureUiPublishedStatIconV1"));
  assert.ok(sources[2].includes("skill__damage-icon"));
 });
+
+test("Bestiary numeric damage regex is executable rather than escaped as literal slash",async()=>{
+ const source=await read("examples/dom-demo/bestiary.js");
+ assert.match(source,/if\(\/\\d\+\(\?:\[,.\]\\d\+\)\? dégâts\/i\.test\(sentence\)\)/);
+ assert.ok(/\d+(?:[,.]\d+)? dégâts/i.test("Inflige 8 dégâts d'Eau"));
+ assert.equal(/\d+(?:[,.]\d+)? dégâts/i.test("Réduit les dégâts de 20 %"),false);
+});

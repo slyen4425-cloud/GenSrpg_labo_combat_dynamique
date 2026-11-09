@@ -117,7 +117,8 @@ export function captureBestiaryCardsV1({
         const definition = definitionsById.get(key);
         return Object.freeze({
           key, label:definition?.label ?? bestiaryElementLabelV1(key), value,
-          icon:captureUiPublishedStatIconV1(assetCatalog,key),
+          ...(captureUiPublishedStatIconV1(assetCatalog,key)
+            ? {icon:captureUiPublishedStatIconV1(assetCatalog,key)} : {}),
           ...(definition ? {
             effectSummary:captureStatEffectSummaryV1({definition,value})
           } : {})
@@ -126,13 +127,12 @@ export function captureBestiaryCardsV1({
     const resistances = (Array.isArray(draft.resistances) ? draft.resistances : [])
       .filter(item => typeof item?.kind === "string" &&
         statNumber(item.value) !== null && item.value !== 0)
-      .map(item => ({
-        element:item.kind.startsWith("element:")
-          ? item.kind.slice("element:".length) : item.kind,
-        amount:item.value,
-        icon:captureUiPublishedStatIconV1(assetCatalog,
-          item.kind.startsWith("element:")?item.kind.slice("element:".length):item.kind)
-      }));
+      .map(item => {
+        const element=item.kind.startsWith("element:")
+          ? item.kind.slice("element:".length):item.kind;
+        const icon=captureUiPublishedStatIconV1(assetCatalog,element);
+        return {element,amount:item.value,...(icon?{icon}:{})};
+      });
     // Canonical five slot loadout, including an unassigned ultimate.
     const loadout = normalizeCaptureActiveSkillLoadoutV1(transfer.loadout);
     if (loadout.creatureId !== id) {
