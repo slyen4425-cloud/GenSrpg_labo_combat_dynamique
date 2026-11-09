@@ -1,3 +1,11 @@
+## 2026-11-09 — Confort combat lot 2 : menu Rappel et fiches de statuts
+- START `main@3d7b195764e22ea7d076dfff6f96a870d62b506c`, checkpoint `checkpoint/lab-start-combat-ux-roster-status-cards-2026-11-09`.
+- Menu Rappel : sélectionner une créature vivante disponible déclenche le **même** `switch` natif si autorisé, puis ferme le panneau ; sinon garde le choix et l'accès au bouton. Toute commande de rappel acceptée ferme son panneau. Sélection de cible réserve de compétence ferme aussi le panneau.
+- HUD : une seule fiche buff/debuff ouverte pour toute l'arène, ouverture clavier/tactile intacte, disparition à 5 secondes de l'horloge de combat, pas de `setTimeout` ni d'horloge indépendante.
+- Tests ciblés et CI/Pages exactes requis. Pas de changement Combat Rules, assets ou timings.
+
+---
+
 ## 2026-11-09 — Confort combat lot 1 : décompte et Griffe / Bestiaire
 - START `main@fe1b6623d0a1bf4f27a61287e36668d78068d1e3`, checkpoint `checkpoint/lab-start-combat-ux-cooldowns-claw-bestiary-2026-11-09`.
 - HUD : compte à rebours entier et stable en secondes tiré des échéances de `CombatState.skillCooldowns`, jamais de l'état transitoire du preview, aucun timer gameplay parallèle.

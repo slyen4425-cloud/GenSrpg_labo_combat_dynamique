@@ -273,12 +273,29 @@ export function mountCaptureCombatRosterPanelV1({
       const memberRef = memberRefs.get(reserve.dataset.rosterMemberId);
       if (memberRef && reserve.dataset.skillReserveCandidate === "true") {
         if (onTargetReserve({scope:"reserve",teamId:memberRef.actorId,memberId:reserve.dataset.rosterMemberId})) {
+          panel.open=false;
           render(); return;
         }
       }
       if (!memberRef || memberRef.actorId !== getControlledActorId()) return;
       const result = controller.selectReserve(getControlledActorId(), reserve.dataset.rosterMemberId);
-      if (result.ok) setStatus(`Réserve sélectionnée. Lance Rappel et invocation : remplacement gratuit après ${recallDuration}.`, "info");
+      if (result.ok) {
+        // Selecting a living replacement immediately executes the SAME native
+        // switch command as the existing explicit button, then closes the picker.
+        // If switching is blocked, keep the selection and the menu available.
+        const preview = previewCommand("switch");
+        if (preview.ok) {
+          const switched = getRuntime().startCommand({
+            actorId:getControlledActorId(),command:preview.action.command
+          });
+          if (switched.ok) {
+            panel.open=false;
+            setStatus("Rappel et invocation en préparation…", "accent");
+            render(); return;
+          }
+        }
+        setStatus(`Réserve sélectionnée. Lance Rappel et invocation dès que possible : remplacement gratuit après ${recallDuration}.`, "info");
+      }
       render(); return;
     }
     const button = event.target.closest?.("[data-combat-roster-command]");
@@ -288,6 +305,7 @@ export function mountCaptureCombatRosterPanelV1({
     if (!preview.ok) return;
     const result = getRuntime().startCommand({ actorId: getControlledActorId(), command: preview.action.command });
     setStatus(result.ok ? commands[kind].name + " en préparation…" : "Commande indisponible : " + result.outcome, result.ok ? "accent" : "warn");
+    if(result.ok)panel.open=false;
     render();
   }
   function onEnemyClick(event) {

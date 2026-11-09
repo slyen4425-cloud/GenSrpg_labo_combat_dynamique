@@ -95,6 +95,24 @@ export function createDomStatusFxRenderer({
 
   const records = new Map();
   let disposed = false;
+  // Only one HUD detail may remain expanded across all combat actors.
+  // Expiry follows the existing CombatState clock, never a second timer.
+  let openHudKey = null;
+  let openHudUntilMs = 0;
+  let lastElapsedMs = 0;
+
+  function closeHudDetails() {
+    for (const entry of records.values()) {
+      if (entry.detailsNode) entry.detailsNode.hidden = true;
+    }
+    openHudKey = null;
+    openHudUntilMs = 0;
+  }
+
+  function followStatusClock(state) {
+    lastElapsedMs = Number(state?.elapsedMs) || 0;
+    if (openHudKey !== null && lastElapsedMs >= openHudUntilMs) closeHudDetails();
+  }
 
   function recordKey(actorId, statusId, kind, sourceSkillId = null) {
     // HUD, sprite and tint must use the same identity as the Status Runtime.
@@ -110,6 +128,7 @@ export function createDomStatusFxRenderer({
     record.frameAnimation?.cancel?.();
     record.node.remove?.();
     records.delete(key);
+    if (openHudKey === key) closeHudDetails();
     return true;
   }
 
@@ -278,6 +297,7 @@ export function createDomStatusFxRenderer({
   // Lightweight existing-clock-only refresh; never rebuilds sprite FX.
   function syncCountdowns(state) {
     if (disposed || !state?.fighters) return;
+    followStatusClock(state);
     const elapsedMs = Number(state.elapsedMs) || 0;
     for (const [actorId, fighter] of Object.entries(state.fighters)) {
       for (const instance of statusInstances(fighter)) {
@@ -361,17 +381,16 @@ export function createDomStatusFxRenderer({
           record.detailsNode = detailsNode;
         }
 
-        record.detailsNode.hidden =
-          !record.detailsNode.hidden;
-
-        if (
-          !record.detailsNode.hidden &&
-          record.currentInfo
-        ) {
-          record.detailsNode.textContent =
-            statusEffectInfoTextV1(
-              record.currentInfo
-            );
+        const wasOpen = !record.detailsNode.hidden;
+        closeHudDetails();
+        if (!wasOpen) {
+          openHudKey = key;
+          openHudUntilMs = lastElapsedMs + 5000;
+          record.detailsNode.hidden = false;
+          if (record.currentInfo) {
+            record.detailsNode.textContent =
+              statusEffectInfoTextV1(record.currentInfo);
+          }
         }
       };
 
@@ -572,6 +591,7 @@ export function createDomStatusFxRenderer({
       );
     }
 
+    followStatusClock(state);
     const expected = new Set();
 
     for (
