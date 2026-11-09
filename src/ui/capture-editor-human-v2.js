@@ -71,6 +71,7 @@ import {
 import {
   exportCaptureEditorDraftsToCombatExportV3
 } from "../adapters/input/capture/capture-editor-exporter-v3.js";
+import {captureUiPublishedStatIconV1} from "../assets/capture-ui-stat-icon-bindings-v1.js";
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
@@ -7650,6 +7651,26 @@ function statDefinitionField(caption, input) {
   return field;
 }
 
+// Update only image nodes; never reset unsaved stat input values on hydration.
+function refreshHumanStatValueIconsV1(root){
+  const assets=EDITOR_VISUAL_ASSETS_BY_ROOT.get(root)??[];
+  for(const input of root.querySelectorAll("[data-stat-value]")){
+    const title=input.closest(".stat-value-card")?.querySelector(".stat-value-card__title");
+    if(!title)continue;
+    const current=title.querySelector(".stat-value-card__icon");
+    const media=captureUiPublishedStatIconV1(assets,input.dataset.statValue);
+    if(!media){current?.remove();continue;}
+    if(current?.dataset.assetId===media.assetId)continue;
+    current?.remove();
+    const img=document.createElement("img");
+    img.className="stat-value-card__icon";
+    img.dataset.assetId=media.assetId;
+    img.src=globalVisualAssetUrl(media.file);
+    img.width=25;img.height=25;img.alt="";
+    title.prepend(img);
+  }
+}
+
 function renderHumanStatValuesV1(
   root,
   registry,
@@ -7698,6 +7719,7 @@ function renderHumanStatValuesV1(
     label.append(title, input, meta);
     host.append(label);
   }
+  refreshHumanStatValueIconsV1(root);
 }
 
 function renderHumanStatRegistryV1(
@@ -8941,6 +8963,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
     root,
     Object.freeze([...assets])
   );
+  refreshHumanStatValueIconsV1(root);
   populateBurrowStageAssetChoicesV1(root, assets);
 
   for (const select of root.querySelectorAll("[data-asset-role]")) {
@@ -9028,6 +9051,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
       root,
       Object.freeze([...assets])
     );
+    refreshHumanStatValueIconsV1(root);
     populateBurrowStageAssetChoicesV1(root, assets);
     for (
       const select of root.querySelectorAll(

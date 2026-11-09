@@ -1,3 +1,13 @@
+## 2026-11-09 — UI : icônes de statistiques et canaux de dégâts (raccord conditionnel)
+- START `main@ee4e1e95616e3c3934f81e77e455f005dee059cc` ; checkpoint `checkpoint/lab-start-bestiary-ui-icon-adoption-2026-11-09`.
+- Pack validé `GenSRPG_UI_Icons_V1_2026-11-09_READY.zip` retrouvé : 16 stats réelles, 2 symboles UI. Les WebP ne sont pas encore sur `global-assets`, donc seul le raccordement conditionnel est activé.
+- Éditeur et Bestiaire : résolvent par assetId à travers le catalogue canonique. Sans ressource réelle, préservent le texte et les valeurs (jamais d'URL inventée).
+- Bestiaire : détecte les canaux depuis les dégâts de `SkillDefinition` y compris effets imbriqués et n'affiche l'icône de canal qu'à côté des phrases de dégâts numériques. Réduit les faux symboles sur les buffs.
+- Aucune nouvelle statistique, aucune donnée gameplay modifiée. Import des 18 médias et preuve visuelle Android/PC restent à faire.
+- Tests ciblés et CI/Pages SHA exact requis avant validation du lot.
+
+---
+
 ## 2026-11-09 — Confort combat, réparation CI sans retrait des contrôles historiques
 - START `main@3a0d0d87eb3e96d58bd8f824bbce93b77ef9825a`, checkpoint `checkpoint/lab-start-combat-ux-ci-regression-repair-2026-11-09`.
 - **Source de vérité** du compte à rebours : `skillCooldownRemainingMs` exportée par le CombatState, sans lecture du dictionnaire brut ni état UI dupliqué ; l'ancienne sentinelle de non-mutabilité reste inchangée.

@@ -1,5 +1,6 @@
 import {normalizeCaptureActiveSkillLoadoutV1} from "../contracts/capture-active-skill-loadout-v1.js";
 import {captureStatEffectSummaryV1} from "./capture-stat-effect-summary-v1.js";
+import {captureUiPublishedStatIconV1,captureSkillDamageChannelsV1} from "../assets/capture-ui-stat-icon-bindings-v1.js";
 import {describeCaptureSkillV1} from "./capture-skill-explanation-v1.js?v=-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-self-periodic-prose-20261102";
 
 // The existing Capture loadout owns equipment; the Bestiary is read-only.
@@ -61,6 +62,10 @@ export function captureBestiaryCardsV1({
       }
     }
   }
+  // Resolve only media already published by the one canonical asset catalog.
+  const damageIconsFor=definition=>Object.freeze(captureSkillDamageChannelsV1(definition)
+    .map(channel=>({channel,icon:captureUiPublishedStatIconV1(assetCatalog,channel)}))
+    .filter(entry=>entry.icon).map(Object.freeze));
   // Native catalog then authored Showcase: same precedence as the editor.
   for (const entry of nativeSkills) {
     const definition = entry?.definition;
@@ -70,6 +75,7 @@ export function captureBestiaryCardsV1({
       name:definition.name, element:definition.element ?? null,
       requiredLevel:null, icon:null,
       cooldownMs:Math.max(0,Number(definition.cooldownMs)||0),
+      damageIcons:damageIconsFor(definition),
       explanation:describeCaptureSkillV1(definition)
     });
   }
@@ -84,6 +90,7 @@ export function captureBestiaryCardsV1({
       element:definition.element || null,
       requiredLevel: statNumber(draft.requiredLevel),
       cooldownMs:Math.max(0,Number(definition.cooldownMs)||0),
+      damageIcons:damageIconsFor(definition),
       icon,
       explanation:describeCaptureSkillV1(definition,{markerNames})
     });
@@ -110,6 +117,7 @@ export function captureBestiaryCardsV1({
         const definition = definitionsById.get(key);
         return Object.freeze({
           key, label:definition?.label ?? bestiaryElementLabelV1(key), value,
+          icon:captureUiPublishedStatIconV1(assetCatalog,key),
           ...(definition ? {
             effectSummary:captureStatEffectSummaryV1({definition,value})
           } : {})
@@ -121,7 +129,9 @@ export function captureBestiaryCardsV1({
       .map(item => ({
         element:item.kind.startsWith("element:")
           ? item.kind.slice("element:".length) : item.kind,
-        amount:item.value
+        amount:item.value,
+        icon:captureUiPublishedStatIconV1(assetCatalog,
+          item.kind.startsWith("element:")?item.kind.slice("element:".length):item.kind)
       }));
     // Canonical five slot loadout, including an unassigned ultimate.
     const loadout = normalizeCaptureActiveSkillLoadoutV1(transfer.loadout);

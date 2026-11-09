@@ -110,6 +110,7 @@ function renderValues(host,values){
   host.replaceChildren(...(values.length?values.map(value=>{
     const stat=element("div","stat");
     const line=element("div","stat__line");
+    if(value.icon)line.append(picture(value.icon,value.label+" — icône","stat__icon"));
     line.append(element("span",null,value.label),element("strong",null,value.value));
     stat.append(line);
     if(value.effectSummary){
@@ -145,6 +146,7 @@ function renderProfile(){
     card.resistances.map(item=>{
       const tag=element("span","resistance");
       tag.dataset.weak=String(item.amount<0);
+      if(item.icon)tag.append(picture(item.icon,bestiaryElementLabelV1(item.element)+" — icône","stat__icon"));
       tag.append(element("span",null,bestiaryElementLabelV1(item.element)),
         element("strong",null,(item.amount>0?"+":"")+item.amount+" %"));
       return tag;
@@ -190,8 +192,27 @@ function renderProfile(){
     details.hidden=true;
     if(skill.explanation){
       const prose=element("div","skill__prose");
-      for(const sentence of skill.explanation.sentences)
-        prose.append(element("p",null,sentence));
+      const damageTextByChannel=Object.freeze({
+        fire:/dégâts (?:de |d')Feu/i,water:/dégâts (?:de |d')Eau/i,
+        electric:/dégâts (?:de |d')Électricité/i,glace:/dégâts (?:de |d')Glace/i,
+        poison:/dégâts (?:de |d')Poison/i,earth:/dégâts (?:de |d')Terre/i,
+        air:/dégâts (?:de |d')Air/i,nature:/dégâts (?:de |d')Nature/i,
+        acier:/dégâts (?:de |d')Acier/i,light:/dégâts (?:de |d')Lumière/i,
+        shadow:/dégâts (?:de |d')Ombre/i,esprit:/dégâts (?:de |d')Esprit/i,
+        physical:/dégâts physiques|\\d+(?:[,.]\\d+)? dégâts(?! (?:de |d'))/i
+      });
+      for(const sentence of skill.explanation.sentences){
+        const line=element("p");
+        // A numeric damage statement only: not an outgoing-damage modifier.
+        if(/\\d+(?:[,.]\\d+)? dégâts/i.test(sentence)){
+          for(const entry of skill.damageIcons??[]){
+            if(damageTextByChannel[entry.channel]?.test(sentence))
+              line.append(picture(entry.icon,"Dégâts "+bestiaryElementLabelV1(entry.channel),"skill__damage-icon"));
+          }
+        }
+        line.append(element("span",null,sentence));
+        prose.append(line);
+      }
       details.append(prose);
     }else details.append(element("p",null,"Description de compétence indisponible."));
     toggle.addEventListener("click",()=>{

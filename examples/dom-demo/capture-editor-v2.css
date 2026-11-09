@@ -1236,8 +1236,9 @@ body[data-preview-landscape-active="true"] {
 }
 
 .stat-value-card__title {
-  font-weight: 800;
+  display:flex;align-items:center;gap:7px;font-weight:800;
 }
+.stat-value-card__icon{width:25px;height:25px;flex:0 0 25px;object-fit:contain}
 
 .stat-value-card small {
   opacity: 0.75;
