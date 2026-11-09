@@ -1,3 +1,11 @@
+## 2026-11-09 — Publication d'affichage 18 icônes UI (raccord sans double autorité)
+- BASE `main@7984aac05a30919422614205013f9962f79542b5` ; START `checkpoint/lab-start-ui-icons-runtime-2026-11-09` ; WORK `work/lab-ui-icons-runtime-2026-11-09`.
+- Les 18 icônes réelles sont déjà enregistrées dans le seul catalogue `global-assets` ; les écrans Bestiaire/éditeur consomment déjà `captureUiPublishedStatIconV1`. Changer seulement la révision de cache `global-visual-library.js` et la sentinelle de révision, ne pas copier les médias.
+- Protéger stats, compétences, gameplay, sauvegardes, moteur, Exploration, GenSRPG PWA. Tests complets et Pages sur SHA exact ; Android à vérifier séparément.
+- Détails : `docs/LAB_UI_STATS_ICONS_RUNTIME_2026_11_09.md`.
+
+---
+
 ## 2026-11-09 — Sentinelle icônes : repli sans média et expression numérique
 - START `main@99b3aeac1d115fb33f54fc0f06e43a872f18465e`, checkpoint `checkpoint/lab-start-stat-icon-renderer-sentinelles-2026-11-09`.
 - Bestiaire : champs d'icônes optionnels uniquement lorsqu'ils existent dans la bibliothèque. Les exports de carte historiques sans médias restent de forme identique (tests de non-régression).
