@@ -1,0 +1,106 @@
+name: Import approved 18 UI stat and element icons (2026-11-09)
+
+on:
+  push:
+    branches:
+      - work/lab-ui-icons-18-2026-11-09
+    paths:
+      - .github/workflows/import-ui-icons-18-2026-11-09.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ui-icons-18-2026-11-09
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verify exact approved GitHub ZIP before extraction
+        run: |
+          echo "0f19d0e96898ee954f0d8b774ee5b018a0d976090f6e53baaafeb49126f3c724  GenSRPG_UI_Icons_V1_2026-11-09_READY.zip" | sha256sum --check
+          python - <<'PY'
+          from zipfile import ZipFile
+          from pathlib import Path, PurePosixPath
+          import os, stat
+          archive = Path('GenSRPG_UI_Icons_V1_2026-11-09_READY.zip')
+          target = Path(os.environ['RUNNER_TEMP']) / 'ui-icons-pack'
+          with ZipFile(archive) as z:
+              bad = z.testzip()
+              assert bad is None, f'ZIP CRC failure: {bad}'
+              for entry in z.infolist():
+                  p = PurePosixPath(entry.filename)
+                  assert not p.is_absolute() and '..' not in p.parts, f'Unsafe ZIP path: {p}'
+                  assert not stat.S_ISLNK(entry.external_attr >> 16), f'ZIP symlink blocked: {p}'
+              z.extractall(target)
+          print('Approved ZIP verified and extracted outside Git worktree')
+          PY
+
+      - name: Verify all 18 transparent icons and their SHA256 manifest
+        run: |
+          python -m pip install 'Pillow>=10,<13'
+          python "$RUNNER_TEMP/ui-icons-pack/tests/check_pack.py"
+
+      - name: Strict collision checks (dry-run) before touching catalog
+        run: |
+          python "$RUNNER_TEMP/ui-icons-pack/tools_install_pack.py" --repo "$GITHUB_WORKSPACE"
+
+      - name: Install 18 icons into the ONE canonical global-assets catalog
+        run: |
+          python "$RUNNER_TEMP/ui-icons-pack/tools_install_pack.py" --repo "$GITHUB_WORKSPACE" --apply
+          cp "$RUNNER_TEMP/ui-icons-pack/catalog/ui-icon-manifest.v1.json" assets/library/core/icons/ui/ui_icons_v1_2026_11_09.provenance.json
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify exact catalog IDs, paths and sizes, then run full CI
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image
+          root = Path('.')
+          data = json.loads((root/'data/assets/catalog/global-visual-assets.v1.json').read_text())
+          old = 386
+          assert len(data['assets']) == data['counts']['assets'] == old + 18
+          assert data['counts']['icons'] == 192
+          ids = set()
+          new = [x for x in data['assets'] if x['id'].startswith('core:ui-')]
+          assert len(new) == 18
+          for entry in new:
+              ident = entry['id']
+              assert ident not in ids
+              ids.add(ident)
+              path = root/'assets/library'/entry['resource']['file']
+              assert path.is_file(), path
+              with Image.open(path) as img:
+                  assert img.format == 'WEBP' and img.size == (128, 128)
+                  assert 'A' in img.getbands()
+          print('PASS: 18 real UI assets in the sole catalog; 404 assets, 192 icons')
+          PY
+          npm run ci
+
+      - name: Commit only approved new media and canonical catalog to isolated work branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- assets/library/core/icons/ui data/assets/catalog/global-visual-assets.v1.json
+          git diff --cached --quiet && { echo "Missing generated icon assets"; exit 1; }
+          git diff --cached --name-status
+          git commit -m "assets(ui): register 18 approved transparent stat and element icons"
+          git fetch origin work/lab-ui-icons-18-2026-11-09
+          git rebase origin/work/lab-ui-icons-18-2026-11-09
+          git push origin HEAD:work/lab-ui-icons-18-2026-11-09
