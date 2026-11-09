@@ -69,6 +69,11 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/fleche_spirituel.capture-skill-transfer-v1.json",
     "data/capture/showcase/aura-lunaire.capture-skill-transfer-v1.json",
     "data/capture/showcase/Sacrifice_kitsune.capture-skill-transfer-v1.json",
+    "data/capture/showcase/krakenor-perle-pression.capture-skill-transfer-v1.json",
+    "data/capture/showcase/krakenor-etau-tentaculaire.capture-skill-transfer-v1.json",
+    "data/capture/showcase/krakenor-voile-encre.capture-skill-transfer-v1.json",
+    "data/capture/showcase/krakenor-bulle-implosion.capture-skill-transfer-v1.json",
+    "data/capture/showcase/krakenor-abysse-huit-bras.capture-skill-transfer-v1.json",
   ]);
 
 // Author-approved retirement from the ACTIVE Capture skill library.

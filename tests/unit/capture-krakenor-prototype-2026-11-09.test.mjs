@@ -37,7 +37,7 @@ const cases = [
   }
 ];
 const expectedIds = cases.map(entry => entry.id);
-test("Krakenor prototypes are five distinct valid native skill transfers, pending activation", async () => {
+test("Krakenor prototypes are five distinct valid native skill transfers activated in the single canonical Showcase", async () => {
   assert.equal(new Set(expectedIds).size, 5);
   assert.deepEqual(cases.map(c=>c.level),[1,5,10,15,20]);
   for (const c of cases) {
@@ -51,7 +51,7 @@ test("Krakenor prototypes are five distinct valid native skill transfers, pendin
     assert.equal(transfer.draft.definition.energyCost,c.energy);
     assert.equal(transfer.draft.definition.cooldownMs,c.cd);
     assert.ok(transfer.draft.definition.effects.length > 0);
-    assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.some(p=>p.endsWith("/"+c.id+".capture-skill-transfer-v1.json")),false,"must not activate without approved visuals");
+    assert.equal(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p.endsWith("/"+c.id+".capture-skill-transfer-v1.json")).length,1,"one canonical active skill per ID");
   }
 });
 test("Pressure rupture, ink weakening, delayed detonation and ultimate consumption are native", async () => {

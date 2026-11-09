@@ -3,8 +3,8 @@
 ## Gouvernance et état
 - Créature du catalogue historique : `crea_mer_3` — Krakenor (Eau), profil offensif et faible à l'Électricité. Aucun remplacement silencieux des compétences historiques de `crea_mer_3`.
 - Source unique : Labo Combat `main`. Point de départ : `4f62760a7ef41dca573b86fe2245ef1451f70f0d` ; checkpoint `checkpoint/lab-start-krakenor-skill-kit-2026-11-09`.
-- **Statut : PROTOTYPE NON GREEN, non activé dans le catalogue Showcase et non assigné à la créature.** Les cinq exports sont importables séparément pour des tests manuels. Ne pas les annoncer visibles ou validés sur le site avant raccord réel, CI et validation utilisateur.
-- Visuels FACE / DOS, sprites de capacités et positions de tentacules : **en attente des images fournies par l'auteur**. Les assetIds existants du Labo sont réutilisés provisoirement dans les exports pour permettre l'édition, sans nouvelle bibliothèque média ni fausse intégration. Les contrôles de parité téléphone/PC et les deux vues restent obligatoires.
+- **Historique :** ces cinq transferts ont été enregistrés initialement comme prototypes inactifs. Leur activation est documentée ci-dessous. Ne pas assimiler l'enregistrement des fichiers à une validation de combat ou des médias finaux.
+- Visuels FACE / DOS et portrait de la pieuvre validés et présents dans la bibliothèque. Les sprites de mouvement/attaque de la créature ne sont pas disponibles et ne sont pas nécessaires au raccord statique. Les FX des compétences restent provisoires.
 - Nouvelle mécanique **de composition**, pas de nouveau propriétaire moteur : jetons `krakenor-pression` et `krakenor-encre`, seuil, délai et consommation sont des contrats déjà natifs. Pas de faux aveuglement, projection d'étourdissement ou déplacement forcé inventé.
 
 ## Capacités et budgets de départ
@@ -24,9 +24,21 @@
 - Respecter esquive, immunité, dommages réels, état souterrain, KO, rappels, 1v1 et 2v2. Tester notamment : trois charges, expiration, consommation à zéro, réserve, changement de cible, bulle après rappel, zone multi-cibles, dégâts sous réduction et ralentissement à -20 %.
 - Le graphisme de `ground_mine` est un signal de gameplay natif provisoire ; remplacer par une bulle d'implosion dédiée une fois l'animation approuvée.
 
-## Conditions d'activation (à venir, après visuels utilisateur)
-1. Valider les faces/dos et les FX en prévisualisation animée, ainsi que les ancrages de tentacules.
+## Ancienne liste de conditions du prototype — progression à vérifier
+1. Vues FACE/DOS existantes validées et inspectées ; FX de compétences provisoires et ancrages à tester en combat.
 2. Enregistrer une seule fois les médias dans le catalogue canonique, et relier les jetons au HUD avec des icônes propres.
-3. Enregistrer les cinq IDs dans **la liste existante** `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` et créer/valider le transfert auteur de `crea_mer_3` avec les 5 slots. Ne pas créer de second bestiaire.
+3. Inscription des cinq IDs dans **la liste existante** `CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1` et création du transfert auteur `crea_mer_3` avec les 5 slots, sans second bestiaire : réalisée dans le lot de raccord.
 4. Tests d'import/round-trip, de simulation réelle (1v1 et 2v2), CI SHA exact, navigateur et publication Pages `main`, puis validation mobile par l'auteur.
 
+
+---
+
+## Mise à jour — 9 novembre 2026 : raccord statique à la bibliothèque
+
+Le lot `krakenor-bind-pieuvre-icons` active dans le **catalogue Showcase canonique** les cinq compétences au format transfert et le transfert créature `crea_mer_3`. Les cinq compétences restent les mêmes que dans le prototype ; le lot remplace seulement les icônes et raccorde la fiche.
+- Creature visuels **existants et inspectés** dans `global-assets` : `pack:capture:creature-pieuvre-opponent-01` (face), `pack:capture:creature-pieuvre-player-01` (dos), `pack:capture:creature-pieuvre-icon-01` (portrait), depuis `capture/creatures/pieuvre/runtime/`. La note « méduse » de l'utilisateur correspond aux médias rangés sous le nom **pieuvre**, vérifiés dans la bibliothèque. Aucun média copié dans `main`.
+- **Pas d'animation créature ajoutée** : pas de `movement`, `movementBack`, `rangedAttack` ni `rangedAttackBack`. Animation de base du profil `serpentine` seulement et FX de compétence déjà existants, en attente des sprites auteurs.
+- 5 icônes de compétences distinctes tirées des **80 nouveaux médias**, publiés le 9/11 et inutilisés par les autres capacités vitrine : `Cascade percutante`, `Harpon des marées`, `Brume du néant` (image d'encre uniquement, gameplay Eau), `Bulles captives` et `Spirale des abysses`.
+- Les nouveaux jetons `krakenor-pression` et `krakenor-encre` réutilisent respectivement `Cascade percutante` et `Brume du néant` comme icône, aucun propriétaire marqueur bis. La mise à jour du token de cache du catalogue `global-assets` sur `main` évite l'ancien catalogue v60, sans dupliquer de fichiers.
+- Pour l'équilibre de test : base `maxHp=180`, Défense 12, Eau 25, Vitesse 18 ; statistiques-source et résistances élémentaires historiques de `crea_mer_3` conservées (Eau, feu +35, eau +35, électricité -50). Elles pourront être rééquilibrées avec les essais 1v1/2v2.
+- Point de départ `main@d539e43367a2c221bc183a5cb12c0a158524ad60` et checkpoint `checkpoint/lab-start-krakenor-bind-pieuvre-icons-2026-11-09`. Interdit de déclarer GREEN sans suite CI sur SHA exact et preuve de rendu réel mobile PC/Android. Unités et métadonnées sont des **tests techniques** et non une validation artistique des FX. GenSRPG n'est pas repinné par ce lot.

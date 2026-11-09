@@ -94,7 +94,7 @@
                 "polarity": "detrimental",
                 "durationMs": 20000,
                 "maxStacks": 3,
-                "iconAssetId": "pack:capture:icon-skill-water-drop-01",
+                "iconAssetId": "pack:capture:icon-skill-cascade-percutante-01",
                 "onStackThreshold": {
                   "count": 3,
                   "consume": "reset",
@@ -135,7 +135,7 @@
       "subjectId": "krakenor-bulle-implosion",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-water-drop-01"
+          "assetId": "pack:capture:icon-skill-bulles-captives-01"
         },
         "cast": {
           "assetId": "pack:capture:sprite-cast-water-01",

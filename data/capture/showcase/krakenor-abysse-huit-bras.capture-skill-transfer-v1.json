@@ -115,7 +115,7 @@
       "subjectId": "krakenor-abysse-huit-bras",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-barrier-dome-01"
+          "assetId": "pack:capture:icon-skill-spirale-des-abysses-01"
         },
         "cast": {
           "assetId": "pack:capture:sprite-cast-water-01",

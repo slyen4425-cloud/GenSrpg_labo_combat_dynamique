@@ -1,0 +1,238 @@
+{
+  "schema": "capture-creature-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-creature-editor-draft-v3",
+    "id": "crea_mer_3",
+    "displayName": "Krakenor",
+    "description": "Créature abyssale Eau à huit tentacules. Pose des Pressions abyssales et affaiblit par l'encre.",
+    "level": 1,
+    "sourceStats": {
+      "force": 42,
+      "agility": 43,
+      "intelligence": 0,
+      "spirit": 45,
+      "endurance": 41,
+      "initiative": 46
+    },
+    "elements": [
+      "water"
+    ],
+    "resistances": [
+      {
+        "kind": "element:fire",
+        "value": 35
+      },
+      {
+        "kind": "element:water",
+        "value": 35
+      },
+      {
+        "kind": "element:earth",
+        "value": 0
+      },
+      {
+        "kind": "element:air",
+        "value": 0
+      },
+      {
+        "kind": "element:electric",
+        "value": -50
+      },
+      {
+        "kind": "element:light",
+        "value": 0
+      },
+      {
+        "kind": "element:shadow",
+        "value": 0
+      },
+      {
+        "kind": "element:nature",
+        "value": 0
+      },
+      {
+        "kind": "element:ice",
+        "value": 0
+      },
+      {
+        "kind": "element:poison",
+        "value": 0
+      },
+      {
+        "kind": "element:steel",
+        "value": 0
+      },
+      {
+        "kind": "element:psy",
+        "value": 0
+      },
+      {
+        "kind": "element:spirit",
+        "value": 0
+      }
+    ],
+    "capture": {
+      "capturable": true,
+      "captureRate": 9,
+      "spawnChance": 0.5,
+      "spawnTags": [
+        "water"
+      ],
+      "evolution": null
+    },
+    "combat": {
+      "maxHp": 180,
+      "maxEnergy": 0,
+      "initialEnergy": 0,
+      "energyChargeAmount": 0,
+      "energyChargeIntervalMs": 0,
+      "movementEnergyPerStep": 0,
+      "chargeTimeModifierPct": 0,
+      "approachTimeModifierPct": 0,
+      "reaction": {
+        "type": "dodge",
+        "maxCharges": 2,
+        "rechargeMs": 30000,
+        "activeWindowMs": 250,
+        "damageReductionPct": 50
+      }
+    },
+    "skillIds": [
+      "krakenor-perle-pression",
+      "krakenor-etau-tentaculaire",
+      "krakenor-voile-encre",
+      "krakenor-bulle-implosion",
+      "krakenor-abysse-huit-bras"
+    ],
+    "presentation": {
+      "id": "creature:crea_mer_3",
+      "version": 9,
+      "subjectType": "creature",
+      "subjectId": "crea_mer_3",
+      "profileId": "serpentine",
+      "displayScale": 1,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1.2,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 0.84,
+          "position": {
+            "x": 0,
+            "y": 20
+          }
+        }
+      },
+      "transformOrigin": {
+        "x": "50%",
+        "y": "88%"
+      },
+      "visual": {
+        "front": {
+          "assetId": "pack:capture:creature-pieuvre-opponent-01"
+        },
+        "back": {
+          "assetId": "pack:capture:creature-pieuvre-player-01"
+        },
+        "icon": {
+          "assetId": "pack:capture:creature-pieuvre-icon-01"
+        }
+      },
+      "sockets": [
+        {
+          "id": "mouth",
+          "label": "Bouche",
+          "front": {
+            "x": 0.4,
+            "y": 0.46
+          },
+          "back": {
+            "x": 0.66,
+            "y": 0.49
+          }
+        },
+        {
+          "id": "head",
+          "label": "Tête",
+          "front": {
+            "x": 0.5,
+            "y": 0.32
+          },
+          "back": {
+            "x": 0.5,
+            "y": 0.32
+          }
+        },
+        {
+          "id": "tentacle",
+          "label": "Tentacule",
+          "front": {
+            "x": 0.68,
+            "y": 0.71
+          },
+          "back": {
+            "x": 0.32,
+            "y": 0.71
+          }
+        }
+      ],
+      "audio": {}
+    }
+  },
+  "statValues": {
+    "schema": "capture-creature-stat-values-v1",
+    "creatureId": "crea_mer_3",
+    "values": {
+      "health": 180,
+      "speed": 18,
+      "physical": 10,
+      "defense": 12,
+      "fire": 0,
+      "water": 25,
+      "earth": 0,
+      "air": 0,
+      "electric": 0,
+      "light": 0,
+      "shadow": 0,
+      "poison": 0,
+      "acier": 0,
+      "nature": 0,
+      "esprit": 0
+    }
+  },
+  "loadout": {
+    "schema": "capture-active-skill-loadout-v1",
+    "creatureId": "crea_mer_3",
+    "slots": [
+      {
+        "id": "slot-1",
+        "skillId": "krakenor-perle-pression"
+      },
+      {
+        "id": "slot-2",
+        "skillId": "krakenor-etau-tentaculaire"
+      },
+      {
+        "id": "slot-3",
+        "skillId": "krakenor-voile-encre"
+      },
+      {
+        "id": "slot-4",
+        "skillId": "krakenor-bulle-implosion"
+      },
+      {
+        "id": "slot-ultimate",
+        "skillId": "krakenor-abysse-huit-bras"
+      }
+    ]
+  }
+}

@@ -11,6 +11,11 @@ export const CAPTURE_CREATURE_VISUAL_BINDINGS_V1 =
         "capture/creatures/maraileron/maraileron.meta.json"
     }),
     Object.freeze({
+      creatureId: "crea_mer_3",
+      metaId: "pieuvre",
+      metaFile: "capture/creatures/pieuvre/pieuvre.meta.json"
+    }),
+    Object.freeze({
       creatureId: "crea_voltik",
       metaId: "voltige",
       metaFile:

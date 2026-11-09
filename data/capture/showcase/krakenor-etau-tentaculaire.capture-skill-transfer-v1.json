@@ -94,7 +94,7 @@
             "polarity": "detrimental",
             "durationMs": 20000,
             "maxStacks": 3,
-            "iconAssetId": "pack:capture:icon-skill-water-drop-01",
+            "iconAssetId": "pack:capture:icon-skill-cascade-percutante-01",
             "onStackThreshold": {
               "count": 3,
               "consume": "reset",
@@ -133,7 +133,7 @@
       "subjectId": "krakenor-etau-tentaculaire",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-marine-bite-01"
+          "assetId": "pack:capture:icon-skill-harpon-des-marees-01"
         },
         "cast": {
           "assetId": "pack:capture:sprite-cast-water-01",

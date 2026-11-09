@@ -98,7 +98,8 @@
                   }
                 }
               ]
-            }
+            },
+            "iconAssetId": "pack:capture:icon-skill-brume-du-neant-01"
           },
           "charges": 1
         }
@@ -111,7 +112,7 @@
       "subjectId": "krakenor-voile-encre",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-spore-soporifique-01"
+          "assetId": "pack:capture:icon-skill-brume-du-neant-01"
         },
         "cast": {
           "assetId": "pack:capture:sprite-cast-water-01",

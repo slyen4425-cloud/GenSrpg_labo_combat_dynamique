@@ -1,3 +1,10 @@
+## 2026-11-09 — Raccord Krakenor, pieuvre et cinq icônes nouvelles (owner Capture + lecture global-assets)
+- Base : `main@d539e43367a2c221bc183a5cb12c0a158524ad60` ; checkpoint `checkpoint/lab-start-krakenor-bind-pieuvre-icons-2026-11-09`.
+- Activer cinq transferts `krakenor-*` et une fiche `crea_mer_3` dans les catalogues Showcase existants ; face/dos/portrait de `global-assets/capture/creatures/pieuvre` ; cinq icônes issues des 80 nouvelles. Aucun sprite de créature mouvement/attaque ajouté. Actualisation du token de cache global existant ; metadata `pieuvre` raccordée.
+- Tests : imports/contrats, ID unique, 5 slots, assetId présents dans le vrai catalogue, aucune régression des anciens presets, CI et Pages sur SHA exact. Reste validation PC et Android ; statut non GREEN utilisateur tant que celle-ci manque. Voir `docs/LAB_KRAKENOR_EXPERIMENT_2026-11-09.md`.
+
+---
+
 ## 2026-11-09 — Krakenor : cinq compétences originales en exports NON ACTIVÉS (owner Capture)
 - START : `main@4f62760a7ef41dca573b86fe2245ef1451f70f0d`, checkpoint `checkpoint/lab-start-krakenor-skill-kit-2026-11-09`.
 - Périmètre : cinq nouveaux transferts d'auteur `krakenor-*`, documentation et tests de contrat. Les nouveaux jetons Pression et Encre s'appuient sur les propriétaires natifs. Aucune modification au catalogue actif ni aux visuels auteur, aucun changement de combat, de GenSRPG ou du mode Exploration.

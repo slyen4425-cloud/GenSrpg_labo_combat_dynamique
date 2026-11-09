@@ -53,7 +53,8 @@ test("showcase preset catalog discovers authored transfer files without duplicat
       "data/capture/showcase/crea_foudrillon.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea_lumilo.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea_ombre_2.capture-creature-transfer-v1.json",
-      "data/capture/showcase/crea_scar_2.capture-creature-transfer-v1.json"
+      "data/capture/showcase/crea_scar_2.capture-creature-transfer-v1.json",
+      "data/capture/showcase/crea_mer_3.capture-creature-transfer-v1.json"
     ]
   );
 });
