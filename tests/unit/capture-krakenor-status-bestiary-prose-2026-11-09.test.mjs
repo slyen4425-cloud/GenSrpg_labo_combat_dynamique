@@ -15,7 +15,7 @@ test("Pression HUD reveals real threshold, water damage, immobilization, reset a
  assert.equal(info.typeLabel,"Marqueur");
  assert.match(text,/À 3 charges/);
  assert.match(text,/8 dégâts d.Eau/i);
- assert.match(text,/immobilise la cible pendant 1,1 seconde/i);
+ assert.match(text,/immobilise la cible pendant 1,1 s/i);
  assert.match(text,/charges sont remises à zéro/i);
  assert.doesNotMatch(text,/apply_status|damage, apply_status|effet configuré/);
 });

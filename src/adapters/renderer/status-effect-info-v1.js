@@ -2,7 +2,7 @@ import {
   projectStatusStatEffectsV1
 } from "../../core/combat/status-effect-projection-v1.js";
 import { isCaptureMarkerStatusV1 } from "../../contracts/capture-marker-v1.js";
-import { describeCaptureStatusEffectV1 } from "../../ui/capture-skill-explanation-v1.js";
+
 
 const POLARITY_LABELS = Object.freeze({
   beneficial: "Buff",
@@ -241,6 +241,43 @@ function semanticStatModifierLines({
   return Object.freeze(lines);
 }
 
+// Compact status HUD prose is derived from the SAME native effect definitions
+// as Bestiary; it does not create another gameplay rule or import from UI.
+// Keep renderer-to-UI module boundaries intact.
+function shortMarkerEffectLabelV1(effect) {
+  const target = effect.targetScope === "self" ? "la créature" : "la cible";
+  if (effect.kind === "damage") {
+    const channel = String(effect.channel ?? "").trim();
+    const element = channel === "water" ? "d’Eau" :
+      channel === "electric" ? "d’Électricité" :
+      channel === "physical" ? "physiques" :
+      "de " + channelLabel(channel);
+    return "inflige " + compactNumber(effect.amount) + " dégâts " + element +
+      (effect.targetScope === "self" ? " à la créature" : "");
+  }
+  if (effect.kind === "heal") return "rend " + compactNumber(effect.amount) + " PV à " + target;
+  if (effect.kind === "energy_restore") return "rend " + compactNumber(effect.amount) + " énergie à " + target;
+  if (effect.kind === "energy_drain") return "retire " + compactNumber(effect.amount) + " énergie à " + target;
+  if (effect.kind === "knockout") return "met " + target + " K.O.";
+  if (effect.kind === "cleanse") return "retire les états négatifs de " + target;
+  if (effect.kind === "dispel") return "retire les bonus de " + target;
+  if (effect.kind === "apply_status") {
+    const status = effect.status ?? {};
+    const remaining = status.durationMs == null ? "" : " pendant " +
+      secondsLabel(status.durationMs).replace(".", ",");
+    if (status.kind === "immobilize") return "immobilise " + target + remaining;
+    if (status.kind === "stun") return "étourdit " + target + remaining;
+    if (status.kind === "silence") return "empêche " + target + " d'utiliser les compétences à distance" + remaining;
+    if (status.kind === "outgoing_damage_modifier") {
+      const n = finiteNumber(status.modifierPct);
+      return (n < 0 ? "réduit" : "augmente") +
+        " les dégâts infligés par " + target + " de " + compactNumber(Math.abs(n)) + " %" + remaining;
+    }
+    return "applique " + (status.label ?? humanIdentifier(status.kind)) + " à " + target + remaining;
+  }
+  return "déclenche un effet sur " + target;
+}
+
 function effectLinesFor(
   definition,
   instance,
@@ -329,15 +366,15 @@ function effectLinesFor(
             secondsLabel(Math.max(0, instance.nextTickAtMs - elapsedMs)));
         }
       }
-      if (definition.onStackThreshold != null || definition.onStackAdded != null) {
-        // Display actual consequences via the same canonical explanatory
-        // projection as the Bestiary, never raw types like "apply_status".
-        const described = describeCaptureStatusEffectV1({
-          kind: "apply_status",
-          targetScope: "target",
-          status: definition
-        });
-        lines.push(...described.slice(1));
+      if (definition.onStackThreshold != null) {
+        const rule = definition.onStackThreshold;
+        lines.push("À " + compactNumber(rule.count) + " charges : " +
+          (rule.effects ?? []).map(shortMarkerEffectLabelV1).join(" et ") +
+          (rule.consume === "reset" ? " ; les charges sont remises à zéro" : ""));
+      }
+      if (definition.onStackAdded?.effects?.length) {
+        lines.push("À chaque charge ajoutée : " +
+          definition.onStackAdded.effects.map(shortMarkerEffectLabelV1).join(" et "));
       }
       return Object.freeze(lines);
     }

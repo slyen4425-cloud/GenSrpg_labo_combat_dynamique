@@ -1,3 +1,11 @@
+## 2026-11-09 — Réparation sentinelle Renderer → UI (correctif Krakenor)
+- START `main@c2446213a0afbd9957f4aebb700f8cf13a8da2cf`, checkpoint `checkpoint/lab-start-krakenor-marker-renderer-boundary-2026-11-09`.
+- Cause CI : `check:structure` interdit un import `src/ui/*` depuis `src/adapters/renderer/*`. L’import de la description Bestiaire ajouté dans le HUD n’est pas conforme.
+- Correction : projection courte du marqueur dans l’actuel `status-effect-info-v1.js`, depuis les mêmes définitions d’effets natives, sans import UI ni nouvelles données gameplay ; le Bestiaire conserve son unique projecteur long existant. Sentinelle de libellé et tous les autres contrôles conservés.
+- CI/Pages au SHA corrigé obligatoires avant GREEN.
+
+---
+
 ## 2026-11-09 — Correctif Krakenor : marqueur Pression + Bestiaire (présentation seulement)
 - START `main@f832fd14478c3cce0d88a46dfe5906d8b447191e` ; checkpoint `checkpoint/lab-start-krakenor-marker-bestiary-prose-2026-11-09`.
 - HUD : projection de seuil d'un marqueur avec des verbes français, dégâts, immobilisation et remise à zéro, sans afficher `apply_status` ou `damage` brut.
