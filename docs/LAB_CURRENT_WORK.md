@@ -1,3 +1,15 @@
+## 2026-11-09 — Import des 80 icônes futures capacités Monster Capture (2 séries de 40)
+
+- **Demande** : importer les 80 icônes validées, depuis leurs deux ZIP déjà déposés dans la bibliothèque GitHub, vers les médias individuels et le sélecteur officiel des compétences. Ne créer aucune mécanique de compétence ni modifier les fiches auteur.
+- **Charte** : une seule source visuelle `global-assets` et son catalogue `data/assets/catalog/global-visual-assets.v1.json`. `main` reste seul propriétaire de l'éditeur, des règles et du site. Ne pas développer l'éditeur sur `gh-pages` ni copier le moteur.
+- **BASE** : `global-assets@453a6c6a8a666bbf80008fc1b3be1960dc4072fe`, CI success. START `checkpoint/lab-start-future-skill-icons-80-2026-11-09`. WORK `work/lab-future-skill-icons-80-2026-11-09`.
+- **Sources exactes déjà présentes** : `assets/library/capture/icons/skills/Monster_Capture_40_icones_futures_capacites.zip` (14 686 804 octets, SHA256 `2921d374bbe3f782f12115d4200f6c20623b563d4c1af5eb098297b20c3bf110`, Git blob `633f3183db2f04dc77290f878225668608d58059`) et `Monster_Capture_Serie_2_40_icones.zip` (22 762 699 octets, SHA256 `891dea383160d05424f569046e7414baf4a6638740f8dbbab473e55fd4460351`, Git blob `9513b6c08172cb2525c3c5e1994a3776255e2da6`). Deux manifestes attestent chacun de 40 WebP réels 128×128 et des 40 sources PNG 512px.
+- **Périmètre** : ajout strict de 80 WebP optimisés dans `assets/library/capture/icons/skills/icon_skill_*.webp`, 80 nouvelles entrées `pack:capture:icon-skill-...-01` au catalogue, manifeste de provenance, importeur reproductible, sentinelle, document de ce lot et journal. Les ZIP déposés restent intacts, aucune seconde copie des sources.
+- **Protections** : toutes les 94 icônes déjà enregistrées et tous les autres assets, créatures, compétences, stats, systèmes, données de jeu, `main`, `gh-pages`, Exploration, PWA. Aucun auto-binding des capacités par leur nom.
+- **Gates** : vérification ZIP complets et CRC, octets SHA256 et blob Git, exactement 80 WebP 128px distincts, unicité IDs et chemins, catalogue cohérent, CI entière, diff et checkpoint GREEN sur SHA final avant publication fast-forward sécurisée de `global-assets`. Vérification d'affichage dans l'éditeur publié distincte et sans annonce d'essai Android fictif.
+
+---
+
 ## 2026-11-04 — Plante carnivore : armure de ronces DOS, masque de pointes 6f (lot médias)
 - BASE `global-assets@2fb20599155718940c743a72557eb1d5d6d1ec86`, START `checkpoint/lab-start-thorn-armor-back-overlay-2026-11-04`, WORK `work/lab-thorn-armor-back-overlay-2026-11-04`.
 - Source approuvée `_incoming/armure_ronces_plante_carnivore_dos_6f.zip`, 4 597 874 octets, Git blob `0587d83efb6a1a1f18f822e406065afec552a2d5`, SHA256 `d3cdba93cc9102b760a7fd0e0dc49e0b0f0ad9d6d524a10f6940388f7688a276`.
