@@ -11,3 +11,10 @@
 - Aucun remplacement, aucun changement de mécanique, pas d'auto-affectation aux capacités, aux sauvegardes ou aux autres modules.
 - Gate : contrôle CRC + SHA source + 36 images + compteurs et IDs uniques, sentinelle de médias réels, CI `npm run ci`, checkpoint GREEN, mise à jour fast-forward de `global-assets`.
 - Lot client séparé sur `main` : conserver la cartographie de statistiques déjà existante, invalider la seule révision cache, CI et Pages puis vérification Android. Ne pas écrire de nouvelles valeurs gameplay.
+
+## Contrôle après import sur WORK
+- Importeur GitHub Actions #42636899067 : SUCCESS, extraction des 18 WebP 128x128 et 18 maîtres PNG 256x256, contrôle du ZIP exact et des 18 empreintes runtime.
+- CI complète `npm run ci` exécutée avec les médias réels : SUCCESS dans le job d'import, avant commit de médias.
+- Commit médias générés : `1d3943f21cd6d9a6ca2e0a80dd086248ed35dd70`.
+- Diff audité depuis BASE : 43 fichiers, tous dans le périmètre déclaré, aucune modification de moteur ou de gameplay.
+- CI indépendante à exécuter sur le dernier SHA documentaire puis promotion en fast-forward avec contrôle du SHA attendu.
