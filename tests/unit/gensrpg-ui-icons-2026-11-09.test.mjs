@@ -26,7 +26,8 @@ test("18 approved UI icons: unique genuine transparent media, IDs and registry m
     const entry=match[0];
     assert.equal(entry.assetType,"icon");
     assert.equal(entry.category,"ui");
-    assert.equal(entry.resource.file,item.runtime.replace(/^assets\\/library\\//,""));
+    assert.ok(item.runtime.startsWith("assets/library/"));
+    assert.equal(entry.resource.file,item.runtime.slice("assets/library/".length));
     assert.ok(!existingPaths.has(entry.resource.file));
     existingPaths.add(entry.resource.file);
     const webp=read(item.runtime);
