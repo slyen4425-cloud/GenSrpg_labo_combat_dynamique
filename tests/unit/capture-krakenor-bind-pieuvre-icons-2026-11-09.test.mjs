@@ -14,7 +14,7 @@ test("Krakenor uses exactly one canonical creature transfer and five active uniq
  const registry=normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
  const file="data/capture/showcase/crea_mer_3.capture-creature-transfer-v1.json";
  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(x=>x===file).length,1);
- const imported=importCaptureTransferJsonV1(await read(file),{statRegistry});
+ const imported=importCaptureTransferJsonV1(await read(file),{statRegistry:registry});
  assert.equal(imported.kind,"creature");
  const c=imported.value;
  assert.equal(c.draft.id,"crea_mer_3");

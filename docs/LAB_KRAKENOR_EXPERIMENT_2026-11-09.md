@@ -1,3 +1,9 @@
+## Correctif de régression CI — 9 novembre 2026
+- Défaillances constatées sur `main@1b8cd7ba6294bc0cc3af059ec2d3e751d6fa279a` : deux tests anciens comptaient exactement 15 créatures (Krakenor est la 16e) ; un test nouveau invoquait `statRegistry` au lieu de `registry`. Les anciens contrôles sont prolongés à 16 sans retirer les sentinelles sur les 15 créatures historiques.
+- En présence d'une erreur navigateur, le smoke affiche maintenant l'état d'erreur de l'éditeur (diagnostic seulement), sans masquer la cause ni augmenter les délais.
+- Un test natif supplémentaire vérifie l'import des 5 capacités suivi du transfert Krakenor via `applyCaptureTransferBatchToEditorStateV1` sans deuxième autorité.
+- START `main@1b8cd7ba6294bc0cc3af059ec2d3e751d6fa279a` ; checkpoint `checkpoint/lab-start-krakenor-ci-repair-2026-11-09` ; GREEN uniquement après CI/browser/Pages sur le SHA réparé.
+
 # Krakenor — kit de combat expérimental (9 novembre 2026)
 
 ## Gouvernance et état

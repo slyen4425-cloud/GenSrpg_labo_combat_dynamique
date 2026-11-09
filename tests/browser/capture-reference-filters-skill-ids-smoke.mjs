@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       const creatures=[...creature.options].map(o=>o.value);
       if(!skills.includes("coupe_feuille")||!creatures.includes("crea_crys_2")){
         if(++attempts<55)return setTimeout(inspect,210);
-        throw Error("official showcases not hydrated");
+        throw Error("official showcases not hydrated: "+(one("[data-editor-status]")?.textContent||"no editor status"));
       }
       const verify=(condition,message)=>{if(!condition)throw Error(message);};
       const choose=(select,id)=>{select.value=id;select.dispatchEvent(new Event("change",{bubbles:true}));};

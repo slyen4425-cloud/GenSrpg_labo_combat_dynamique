@@ -18,10 +18,10 @@ const defenseIds=["crea_crys_2","crea_mossback","crea_nat_1","crea_scar_2","gori
 const ownDodgeIds=["crea_lumilo","crea_ombre_2","crea_tox_2","kitsune_lunaire"];
 
 test("every published Showcase creature has an explicit combat-owned defensive action",()=>{
- assert.equal(transfers.length,15,"check the full official author roster");
+ assert.equal(transfers.length,16,"check the full official author roster");
  assert.equal(byId.size,transfers.length,"one authority per species");
  assert.deepEqual([...byId.keys()].sort(),
-  [...legacyIds,...defenseIds,...ownDodgeIds].sort());
+  [...legacyIds,...defenseIds,...ownDodgeIds,"crea_mer_3"].sort());
  for(const [id,record] of byId){
   const reaction=record.draft.combat.reaction;
   assert.ok(reaction,id+" must not silently inherit disabled legacy gameOptions");
