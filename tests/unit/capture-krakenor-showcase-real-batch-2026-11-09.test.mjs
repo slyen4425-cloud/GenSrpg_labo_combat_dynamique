@@ -14,7 +14,7 @@ import {importMonsterCaptureCreatureRecordV1} from "../../src/adapters/input/cap
 import {importMonsterCaptureStatValuesV1} from "../../src/adapters/input/capture/monster-capture-stat-values-v1.js";
 
 const read=relative=>readFile(new URL("../../"+relative,import.meta.url),"utf8");
-test("real official Showcase transfer batch imports Krakenor from canonical configured skills and creature owner",async()=>{
+test("targeted Krakenor transfer batch imports five skills and creature through canonical existing owner",async()=>{
  const statRegistry=normalizeCaptureStatRegistryV1(JSON.parse(await read("data/capture/monster-capture-stat-registry.v1.json")));
  const progressionRules=normalizeCaptureProgressionRulesV1(JSON.parse(await read("data/capture/monster-capture-progression-rules.v1.json")));
  const skills=new Map();
@@ -28,7 +28,12 @@ test("real official Showcase transfer batch imports Krakenor from canonical conf
    const base=importMonsterCaptureCreatureRecordV1(entry);
    creatures.set(base.draft.id,{draft:base.draft,statValues:importMonsterCaptureStatValuesV1(entry,statRegistry),loadout:base.loadout});
  }
- const paths=[...CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,...CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1];
+ // Targeted batch verifies Krakenor alone. The complete Showcase catalog also
+ // depends on laboratory skills such as claw, already covered by real-browser CI.
+ const paths=[
+  ...CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.filter(p=>p.includes("/krakenor-")),
+  ...CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(p=>p.endsWith("/crea_mer_3.capture-creature-transfer-v1.json"))
+ ];
  const transfers=[];
  for(const p of paths)transfers.push(importCaptureTransferJsonV1(await read(p),{statRegistry}));
  const result=applyCaptureTransferBatchToEditorStateV1({transfers,configuredCreatures:creatures,configuredSkills:skills,statRegistry,progressionRules,mode:"replace",metadata:{producer:"krakenor-2026-11-09-batch-test"}});

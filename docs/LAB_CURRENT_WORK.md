@@ -1,3 +1,8 @@
+## Sentinelle du lot Krakenor — périmètre corrigé (9 novembre 2026)
+- START `main@ea6d64a0a516470596d4a159d3cb92c2fe073129`, checkpoint `checkpoint/lab-start-krakenor-batch-test-scope-2026-11-09`.
+- Le test de batch intégral isolé partait d'un catalogue natif sans les neuf compétences de laboratoire historiques (`claw` notamment) et échouait donc avant Krakenor. Le test unitaire teste désormais le **lot Krakenor complet** (cinq transferts + créature) avec le véritable propriétaire de batch, sans prétendre simuler tous les autres presets. Le test Chromium autonome couvre la chaîne publique entière, sans modifier ni désactiver les sentinelles existantes.
+- Le premier test Chromium de filtres et hydratation a réussi au SHA précédent après retrait du mapping de métadonnées Pieuvre incomplet. Reste la CI complète et le test mobile utilisateur.
+
 ## Correctif d'intégration — 9 novembre 2026
 - Base `main@673956799cea61e5e24ce3f2f4bbac1d25244c04`, checkpoint `checkpoint/lab-start-krakenor-metadata-resolver-fix-2026-11-09`.
 - Échec navigateur expliqué : la métadonnée du dossier approuvé `pieuvre.meta.json` ne déclare pas `displayScale.player` requis par l'ancien adaptateur facultatif `CAPTURE_CREATURE_VISUAL_BINDINGS_V1`. Ne pas inventer une échelle dans `global-assets`, ne pas créer de deuxième résolveur. Le transfert créature `crea_mer_3` référence déjà directement FACE/DOS/portrait via `presentation.visual` et ses propres `viewOverrides` normalisés : retrait **uniquement** du mapping additionnel inutile. Les trois images restent les mêmes et ne sont ni copiées ni modifiées.
