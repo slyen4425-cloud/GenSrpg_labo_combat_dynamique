@@ -5,6 +5,7 @@ on:
       - work/lab-ui-icons-18-2026-11-09
     paths:
       - scripts/install_gensrpg_ui_icons_2026_11_09.py
+      - tests/unit/gensrpg-ui-icons-2026-11-09.test.mjs
       - .github/workflows/import-gensrpg-ui-icons-2026-11-09.yml
   workflow_dispatch:
 permissions:
