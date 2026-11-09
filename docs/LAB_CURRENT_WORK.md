@@ -1,3 +1,10 @@
+## 2026-11-09 — Krakenor : cinq compétences originales en exports NON ACTIVÉS (owner Capture)
+- START : `main@4f62760a7ef41dca573b86fe2245ef1451f70f0d`, checkpoint `checkpoint/lab-start-krakenor-skill-kit-2026-11-09`.
+- Périmètre : cinq nouveaux transferts d'auteur `krakenor-*`, documentation et tests de contrat. Les nouveaux jetons Pression et Encre s'appuient sur les propriétaires natifs. Aucune modification au catalogue actif ni aux visuels auteur, aucun changement de combat, de GenSRPG ou du mode Exploration.
+- Gate : imports/contrats puis CI SHA exact à vérifier ; **ne pas déclarer GREEN** sans visuels FACE/DOS, simulation combat, validation utilisateur et Pages. Voir `docs/LAB_KRAKENOR_EXPERIMENT_2026-11-09.md`.
+
+---
+
 ## 2026-11-08 — Combat sauvage : réserve native de 1 à 6 monstres (owner Combat)
 - **Base START :** `main@ef4e9315b40e2dc88e25c1a50b0cd2ce9fc3a15e`, checkpoint `checkpoint/lab-start-adventure-wild-reserve-2026-11-08`, branche `work/lab-adventure-wild-reserve-2026-11-08`.
 - **Périmètre :** extension facultative de `buildCaptureEncounterCombatSourceV1` par `localReserve` (0–5), sans modifier le Tester sans équipe. Le moteur existant `RosterSession` détient membres, commandes de rappel et KO. Projection des statistiques et PV de chaque instance par l'unique constructeur Combat, même pour plusieurs occurrences de la même espèce ; source auteur inchangée. Le cycle `embedded-combat-lifecycle-v1` ne déclare pas défaite tant que Combat possède une réserve vivante ; snapshot officiel du roster dans le résultat de combat.

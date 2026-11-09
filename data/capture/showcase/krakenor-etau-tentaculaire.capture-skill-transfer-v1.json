@@ -1,0 +1,207 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "krakenor-etau-tentaculaire",
+    "description": "Saisie au contact : 15 dégâts Eau, immobilise 1,4 s et pose 1 Pression abyssale.",
+    "requiredLevel": 5,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "krakenor-etau-tentaculaire",
+      "name": "Étau tentaculaire",
+      "category": "offensive",
+      "form": "contact",
+      "loadoutSlot": "standard",
+      "element": "water",
+      "approachMode": "ground",
+      "energyCost": 5,
+      "preparationMs": 1200,
+      "travelMs": 800,
+      "recoveryMs": 250,
+      "cooldownMs": 23000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 15,
+          "channel": "water"
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "krakenor-etau-entrave",
+            "kind": "immobilize",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 1400,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": []
+          }
+        },
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "krakenor-pression",
+            "name": "Pression abyssale",
+            "polarity": "detrimental",
+            "durationMs": 20000,
+            "maxStacks": 3,
+            "iconAssetId": "pack:capture:icon-skill-water-drop-01",
+            "onStackThreshold": {
+              "count": 3,
+              "consume": "reset",
+              "effects": [
+                {
+                  "kind": "damage",
+                  "targetScope": "target",
+                  "amount": 8,
+                  "channel": "water"
+                },
+                {
+                  "kind": "apply_status",
+                  "targetScope": "target",
+                  "status": {
+                    "id": "krakenor-pression-rupture",
+                    "kind": "immobilize",
+                    "polarity": "detrimental",
+                    "durationModel": "time_ms",
+                    "durationMs": 1100,
+                    "stacking": "refresh",
+                    "maxStacks": 1,
+                    "tags": []
+                  }
+                }
+              ]
+            }
+          },
+          "charges": 1
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:krakenor-etau-tentaculaire",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "krakenor-etau-tentaculaire",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-marine-bite-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-cast-water-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 30,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "mirror_x"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-physical-01",
+          "displayScale": 1.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "stretch",
+          "durationMs": 650,
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:xel-cbc6cf88",
+          "volume": 1,
+          "loop": false
+        },
+        "travel": {
+          "assetId": "gensrpg:sound:xel-48520d94",
+          "volume": 1,
+          "loop": true
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:sanctuary-17b7fa2c",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}
