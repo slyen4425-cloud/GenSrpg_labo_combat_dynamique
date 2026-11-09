@@ -1,3 +1,14 @@
+## 2026-11-09 — Import du pack UI 18 icônes approuvées (Stats + Éléments)
+
+- **BASE**: `global-assets@bfe94ebccfe53ed1a01f759b343bb8751565302e`; START `checkpoint/lab-start-ui-icons-18-2026-11-09`; WORK `work/lab-ui-icons-18-2026-11-09`.
+- **Source validée**: `GenSRPG_UI_Icons_V1_2026-11-09_READY.zip` en racine de la branche `global-assets` (2 948 507 octets; Git blob `9e83238ac606547acdb8f8c59494047c5250583c`; SHA256 `0f19d0e96898ee954f0d8b774ee5b018a0d976090f6e53baaafeb49126f3c724`).
+- **Propriétaire unique**: `data/assets/catalog/global-visual-assets.v1.json` de `global-assets`. Le code `main` reste propriétaire de l'éditeur et des règles. Aucune nouvelle statistique, aucun écrasement et aucun binding implicite.
+- **Lot strict**: 18 entrées d'icônes `core:ui-*`, 18 WebP 128×128 + 18 PNG maîtres 256×256 au seul chemin `assets/library/core/icons/ui/`, manifeste de provenance. Import sur WORK par GitHub Actions depuis l'archive d'origine, sans copier de catalogue ou de ressources vers `main`.
+- **Protégés**: tous les 386 assets déjà publiés, 174 icônes existantes, les compétences/créatures, `main`, `gh-pages`, Exploration, PWA et le ZIP source.
+- **Gates**: SHA256 source, CRC, fichiers réels et alpha, 18 IDs/chemins uniques, compteurs 404 assets/192 icônes, `npm run ci`, diff strict, CI au SHA exact, checkpoint GREEN, promotion fast-forward de WORK vers `global-assets` puis validation du consommateur `main`/cache/Pages sans fiction d'essai Android.
+
+---
+
 ## 2026-11-09 — Publication des 18 icônes de stats/éléments validées (global-assets)
 - START global-assets@bfe94ebccfe53ed1a01f759b343bb8751565302e ; checkpoint `checkpoint/lab-start-ui-icons-18-2026-11-09` ; WORK `work/lab-ui-icons-18-2026-11-09`.
 - ZIP auteur déposé `GenSRPG_UI_Icons_V1_2026-11-09_READY.zip`, SHA256 `0f19d0e96898ee954f0d8b774ee5b018a0d976090f6e53baaafeb49126f3c724`.
