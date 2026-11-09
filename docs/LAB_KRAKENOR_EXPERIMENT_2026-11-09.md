@@ -1,3 +1,9 @@
+## Correctif d'intégration — 9 novembre 2026
+- Base `main@673956799cea61e5e24ce3f2f4bbac1d25244c04`, checkpoint `checkpoint/lab-start-krakenor-metadata-resolver-fix-2026-11-09`.
+- Échec navigateur expliqué : la métadonnée du dossier approuvé `pieuvre.meta.json` ne déclare pas `displayScale.player` requis par l'ancien adaptateur facultatif `CAPTURE_CREATURE_VISUAL_BINDINGS_V1`. Ne pas inventer une échelle dans `global-assets`, ne pas créer de deuxième résolveur. Le transfert créature `crea_mer_3` référence déjà directement FACE/DOS/portrait via `presentation.visual` et ses propres `viewOverrides` normalisés : retrait **uniquement** du mapping additionnel inutile. Les trois images restent les mêmes et ne sont ni copiées ni modifiées.
+- Test natif de batch : initialiser d'abord les espèces canoniques natives, car les transferts Showcase existants contiennent des évolutions vers des espèces non présentes dans un Map vide. Le vrai éditeur initialise ce registre avant les Showcase ; reproduire cet ordre dans la sentinelle.
+- CI/Pages à revérifier SHA exact, puis essai graphique PC et Android requis.
+
 ## Correctif de régression CI — 9 novembre 2026
 - Défaillances constatées sur `main@1b8cd7ba6294bc0cc3af059ec2d3e751d6fa279a` : deux tests anciens comptaient exactement 15 créatures (Krakenor est la 16e) ; un test nouveau invoquait `statRegistry` au lieu de `registry`. Les anciens contrôles sont prolongés à 16 sans retirer les sentinelles sur les 15 créatures historiques.
 - En présence d'une erreur navigateur, le smoke affiche maintenant l'état d'erreur de l'éditeur (diagnostic seulement), sans masquer la cause ni augmenter les délais.

@@ -9,6 +9,9 @@ import {capturePortableNativeSkillDraftsV1} from "../../src/catalogs/capture-por
 import {captureComplexNativeSkillDraftsV1} from "../../src/catalogs/capture-complex-native-skill-catalog-v1.js";
 import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 import {CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
+import {canonicalCaptureCreatureRecordsV1} from "../../src/catalogs/capture-canonical-creature-catalog-v1.js";
+import {importMonsterCaptureCreatureRecordV1} from "../../src/adapters/input/capture/monster-capture-creature-import-v1.js";
+import {importMonsterCaptureStatValuesV1} from "../../src/adapters/input/capture/monster-capture-stat-values-v1.js";
 
 const read=relative=>readFile(new URL("../../"+relative,import.meta.url),"utf8");
 test("real official Showcase transfer batch imports Krakenor from canonical configured skills and creature owner",async()=>{
@@ -18,6 +21,13 @@ test("real official Showcase transfer batch imports Krakenor from canonical conf
  for(const draft of capturePortableNativeSkillDraftsV1())skills.set(draft.id,draft);
  for(const draft of captureComplexNativeSkillDraftsV1())if(!skills.has(draft.id))skills.set(draft.id,draft);
  const creatures=new Map();
+ // Seed the REAL native source first, as the Human Editor does: evolutionary targets
+ // such as crea_nat_2 are otherwise absent and the batch cannot validate references.
+ const source=JSON.parse(await read("data/capture/monster-capture-creatures.v1.json"));
+ for(const entry of canonicalCaptureCreatureRecordsV1(source.entries)){
+   const base=importMonsterCaptureCreatureRecordV1(entry);
+   creatures.set(base.draft.id,{draft:base.draft,statValues:importMonsterCaptureStatValuesV1(entry,statRegistry),loadout:base.loadout});
+ }
  const paths=[...CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,...CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1];
  const transfers=[];
  for(const p of paths)transfers.push(importCaptureTransferJsonV1(await read(p),{statRegistry}));

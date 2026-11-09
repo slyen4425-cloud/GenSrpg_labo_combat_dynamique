@@ -30,7 +30,7 @@ test("Krakenor uses exactly one canonical creature transfer and five active uniq
   c.draft.presentation.visual.back.assetId,
   c.draft.presentation.visual.icon.assetId
  ],["pack:capture:creature-pieuvre-opponent-01","pack:capture:creature-pieuvre-player-01","pack:capture:creature-pieuvre-icon-01"]);
- assert.equal(captureCreatureVisualBindingForIdV1("crea_mer_3").metaId,"pieuvre");
+ assert.equal(captureCreatureVisualBindingForIdV1("crea_mer_3"),null,"explicit authored presentation must remain the sole owner, no incomplete metadata override");
  assert.match(GLOBAL_VISUAL_LIBRARY.revision,/2026-11-09-v61/);
 });
 test("Five unused Nov-9 skill icons are new, unique and not assigned to another Showcase skill",async()=>{
