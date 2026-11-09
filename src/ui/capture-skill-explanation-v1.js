@@ -156,7 +156,10 @@ function statusSentence(effect){
   if(effect.status.kind==="triggered_buff")return result;
   // Present targets only when they differ from the default self-effect.
   return result.map((line,i)=>i===0?
-    line.replace(/\.$/,"")+" "+(effect.targetScope==="target"?"sur la cible":"sur "+subject(effect.targetScope))+".":line);
+    (effect.targetScope==="target" && ["immobilize","silence","stun","taunt"].includes(effect.status.kind)
+      ? line
+      : line.replace(/\.$/,"")+" "+(effect.targetScope==="target"?"sur la cible":"sur "+subject(effect.targetScope))+".")
+    :line);
 }
 // The skill editor and the Bestiary share this status projection; neither
 // owns a parallel translation of durations, target scopes or periodic ticks.
@@ -171,7 +174,7 @@ function penetrates(e){
     "ignore la réduction des dégâts":"ignore "+num(e.ignoreDamageReductionPct)+" % de la réduction des dégâts");
   return clauses;
 }
-function effectSentence(e,{perCharge=false}={}){
+function effectSentence(e,{perCharge=false,markerNames={}}={}){
   switch(e.kind){
     case "damage":return [finish((e.targetScope==="self"?
       "La créature qui utilise cette capacité subit ":"Inflige ")+num(e.amount)+" dégâts"+
@@ -227,10 +230,10 @@ function effectSentence(e,{perCharge=false}={}){
       return lines;
     }
     case "consume_marker":return [
-      finish("Consomme "+(e.count==="all"?"les charges":num(e.count)+" charges")+" de "+e.markerId+
-        onTarget(e.targetScope)+(e.minimum>1?" (au moins "+num(e.minimum)+")":"")+
-        ""),
-      ...descriptions(e.effects,{perCharge:e.perCharge===true})];
+      finish("Consomme "+(e.count==="all"?"les charges":"jusqu'à "+num(e.count)+" charges")+
+        " de "+(markerNames[e.markerId]??e.markerId.replace(/[_-]+/g," "))+
+        onTarget(e.targetScope)+(e.minimum>1?" (au moins "+num(e.minimum)+")":"")),
+      ...descriptions(e.effects,{perCharge:e.perCharge===true,markerNames})];
     case "scheduled_effect":return [finish("Après "+duration(e.trigger.delayMs)+", "+
       descriptions(e.effects).map(x=>lowerSentence(x)).join(" et "))];
     case "persistent_zone":return groupZones([e]);
@@ -277,7 +280,7 @@ function groupZones(zones){
     " après un rappel";
   return [finish(text)];
 }
-function descriptions(effects,{perCharge=false}={}){
+function descriptions(effects,{perCharge=false,markerNames={}}={}){
   const list=effects??[], used=new Set(),out=[];
   for(let i=0;i<list.length;i++){
     if(used.has(i))continue;
@@ -316,14 +319,14 @@ function descriptions(effects,{perCharge=false}={}){
           x.kind==="apply_marker"&&x.targetScope===reserve&&
           x.charges===e.charges&&JSON.stringify(x.marker)===JSON.stringify(e.marker));
       }
-      const lines=effectSentence(e);
+      const lines=effectSentence(e,{markerNames});
       if(reserveIndex>=0){
         used.add(reserveIndex);
         lines[0]=lines[0].replace(/\.$/,"")+
           (reserve==="all_enemy_reserves"?", y compris ceux en réserve.":", y compris ceux en réserve.");
       }
       out.push(...lines);
-    }else if(e.kind==="apply_status" && simpleChange(e.status)){
+    }else if(e.kind==="apply_status" && !e.condition && simpleChange(e.status)){
       const same=[];
       for(let j=i;j<list.length;j++){
         const y=list[j];
@@ -334,7 +337,14 @@ function descriptions(effects,{perCharge=false}={}){
       }
       out.push(groupChangeSentence(list,same));
     }else{
-      out.push(...effectSentence(e,{perCharge}));
+      const lines=effectSentence(e,{perCharge,markerNames});
+      if(e.condition?.type==="marker"){
+        const name=markerNames[e.condition.value]??e.condition.value.replace(/[_-]+/g," ");
+        const premise="Si la cible "+(e.condition.invert?"ne ":"")+
+          "possède "+(e.condition.minimum===1?"au moins une charge":"au moins "+num(e.condition.minimum)+" charges")+
+          " de "+name+", ";
+        out.push(...lines.map(line=>finish(premise+lowerSentence(line))));
+      }else out.push(...lines);
     }
   }
   return out.filter(Boolean);
@@ -409,7 +419,7 @@ function specialRules(d){
     words(d.evasion.incomingForms)));
   return list;
 }
-export function describeCaptureSkillV1(input) {
+export function describeCaptureSkillV1(input,{markerNames={}}={}) {
   const d=normalizeSkillDefinition(input);
   const phrases=[];
   if(d.chargedAttack){
@@ -431,7 +441,7 @@ export function describeCaptureSkillV1(input) {
   if(d.effect.heal>0)phrases.push(finish("Rend "+num(d.effect.heal)+" PV"));
   if(d.effect.stunMs>0)phrases.push(finish("Étourdit pendant "+duration(d.effect.stunMs)));
   if(d.effect.interruptsPreparation)phrases.push("Interrompt l'action en préparation.");
-  phrases.push(...descriptions(d.effects));
+  phrases.push(...descriptions(d.effects,{markerNames}));
   if(d.channeling){
     const ch=d.channeling;
     const pulses=descriptions(ch.effects).map(x=>lowerSentence(x));

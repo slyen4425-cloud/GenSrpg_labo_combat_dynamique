@@ -1,3 +1,11 @@
+## 2026-11-09 — Correctif Krakenor : marqueur Pression + Bestiaire (présentation seulement)
+- START `main@f832fd14478c3cce0d88a46dfe5906d8b447191e` ; checkpoint `checkpoint/lab-start-krakenor-marker-bestiary-prose-2026-11-09`.
+- HUD : projection de seuil d'un marqueur avec des verbes français, dégâts, immobilisation et remise à zéro, sans afficher `apply_status` ou `damage` brut.
+- Bestiaire : noms de marqueurs issus des définitions auteur et conditions d'application révélées, sans registre supplémentaire ni modification de mécanique, sprite, statistique ou média.
+- Sentinelle `capture-krakenor-status-bestiary-prose-2026-11-09.test.mjs` ; CI + Pages `main` SHA exact avant GREEN.
+
+---
+
 ## Sentinelle du lot Krakenor — périmètre corrigé (9 novembre 2026)
 - START `main@ea6d64a0a516470596d4a159d3cb92c2fe073129`, checkpoint `checkpoint/lab-start-krakenor-batch-test-scope-2026-11-09`.
 - Le test de batch intégral isolé partait d'un catalogue natif sans les neuf compétences de laboratoire historiques (`claw` notamment) et échouait donc avant Krakenor. Le test unitaire teste désormais le **lot Krakenor complet** (cinq transferts + créature) avec le véritable propriétaire de batch, sans prétendre simuler tous les autres presets. Le test Chromium autonome couvre la chaîne publique entière, sans modifier ni désactiver les sentinelles existantes.

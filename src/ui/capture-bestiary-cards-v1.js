@@ -52,6 +52,15 @@ export function captureBestiaryCardsV1({
     .filter(asset => asset && typeof asset.id === "string")
     .map(asset => [asset.id, asset]));
   const skillsById = new Map();
+  // Derive marker names from authored skills; no secondary authoritative catalog.
+  const markerNames=Object.create(null);
+  for(const transfer of skillTransfers){
+    for(const effect of transfer?.draft?.definition?.effects??[]){
+      if(effect.kind==="apply_marker"&&effect.marker?.id&&effect.marker?.name){
+        markerNames[effect.marker.id]=effect.marker.name;
+      }
+    }
+  }
   // Native catalog then authored Showcase: same precedence as the editor.
   for (const entry of nativeSkills) {
     const definition = entry?.definition;
@@ -60,7 +69,7 @@ export function captureBestiaryCardsV1({
     skillsById.set(definition.id, {
       name:definition.name, element:definition.element ?? null,
       requiredLevel:null, icon:null,
-      explanation:describeCaptureSkillV1(definition)
+      explanation:describeCaptureSkillV1(definition,{markerNames})
     });
   }
   for (const transfer of skillTransfers) {
@@ -74,7 +83,7 @@ export function captureBestiaryCardsV1({
       element:definition.element || null,
       requiredLevel: statNumber(draft.requiredLevel),
       icon,
-      explanation:describeCaptureSkillV1(definition)
+      explanation:describeCaptureSkillV1(definition,{markerNames})
     });
   }
   const definitionsById = new Map((Array.isArray(statRegistry?.stats) ? statRegistry.stats : [])

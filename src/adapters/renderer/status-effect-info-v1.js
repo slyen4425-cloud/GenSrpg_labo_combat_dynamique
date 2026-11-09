@@ -2,6 +2,7 @@ import {
   projectStatusStatEffectsV1
 } from "../../core/combat/status-effect-projection-v1.js";
 import { isCaptureMarkerStatusV1 } from "../../contracts/capture-marker-v1.js";
+import { describeCaptureStatusEffectV1 } from "../../ui/capture-skill-explanation-v1.js";
 
 const POLARITY_LABELS = Object.freeze({
   beneficial: "Buff",
@@ -328,14 +329,15 @@ function effectLinesFor(
             secondsLabel(Math.max(0, instance.nextTickAtMs - elapsedMs)));
         }
       }
-      if (definition.onStackThreshold != null) {
-        const threshold = definition.onStackThreshold;
-        const effects = threshold.effects ?? [];
-        const trigger = effects.some(e => e.kind === "knockout")
-          ? "KO"
-          : effects.map(e => e.kind).join(", ") || "effet configuré";
-        lines.push("À " + threshold.count + " charges : " + trigger +
-          (threshold.consume === "reset" ? " (charges réinitialisées)" : ""));
+      if (definition.onStackThreshold != null || definition.onStackAdded != null) {
+        // Display actual consequences via the same canonical explanatory
+        // projection as the Bestiary, never raw types like "apply_status".
+        const described = describeCaptureStatusEffectV1({
+          kind: "apply_status",
+          targetScope: "target",
+          status: definition
+        });
+        lines.push(...described.slice(1));
       }
       return Object.freeze(lines);
     }
