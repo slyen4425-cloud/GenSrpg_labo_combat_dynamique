@@ -1,0 +1,171 @@
+{
+  "schema": "gensrpg-ui-icon-media-provenance-v1",
+  "owner": "global-assets",
+  "sourceZip": "GenSRPG_UI_Icons_V1_2026-11-09_READY.zip",
+  "sourceZipSha256": "0f19d0e96898ee954f0d8b774ee5b018a0d976090f6e53baaafeb49126f3c724",
+  "approvedOn": "2026-11-09",
+  "assets": [
+    {
+      "assetId": "core:ui-stat-health-01",
+      "label": "Santé / PV",
+      "type": "stat",
+      "registryStatId": "health",
+      "master": "assets/library/core/icons/ui/stat/icon_ui_stat_health_256.png",
+      "runtime": "assets/library/core/icons/ui/stat/icon_ui_stat_health_128.webp",
+      "sha256Runtime": "338629410c63f9b72bc5acb8c1fb712ba4e85077599cb17a2fbbc08bd52c1da9"
+    },
+    {
+      "assetId": "core:ui-symbol-energy-01",
+      "label": "Énergie",
+      "type": "symbol",
+      "registryStatId": null,
+      "master": "assets/library/core/icons/ui/symbol/icon_ui_symbol_energy_256.png",
+      "runtime": "assets/library/core/icons/ui/symbol/icon_ui_symbol_energy_128.webp",
+      "sha256Runtime": "842a66e7766943685d73c0fdb60f16c29f5f39ec4bb63f565f924507f55d8bf9"
+    },
+    {
+      "assetId": "core:ui-stat-physical-01",
+      "label": "Puissance physique",
+      "type": "stat",
+      "registryStatId": "physical",
+      "master": "assets/library/core/icons/ui/stat/icon_ui_stat_physical_256.png",
+      "runtime": "assets/library/core/icons/ui/stat/icon_ui_stat_physical_128.webp",
+      "sha256Runtime": "ef6160986d3b6337eb79cd984af0a5bcf7f267572dd9d117f92c60243d543fe5"
+    },
+    {
+      "assetId": "core:ui-stat-defense-01",
+      "label": "Défense",
+      "type": "stat",
+      "registryStatId": "defense",
+      "master": "assets/library/core/icons/ui/stat/icon_ui_stat_defense_256.png",
+      "runtime": "assets/library/core/icons/ui/stat/icon_ui_stat_defense_128.webp",
+      "sha256Runtime": "23727f6a06d9312cbc32744b6cc2a76c28be4661a07ac8f2c655e1c06ccaf9b8"
+    },
+    {
+      "assetId": "core:ui-symbol-endurance-01",
+      "label": "Endurance",
+      "type": "symbol",
+      "registryStatId": null,
+      "master": "assets/library/core/icons/ui/symbol/icon_ui_symbol_endurance_256.png",
+      "runtime": "assets/library/core/icons/ui/symbol/icon_ui_symbol_endurance_128.webp",
+      "sha256Runtime": "bea97d7a1df9da4469c2e280c1798f841857e03fd346bc0bdcf6abd13ed29b5e"
+    },
+    {
+      "assetId": "core:ui-stat-speed-01",
+      "label": "Vitesse",
+      "type": "stat",
+      "registryStatId": "speed",
+      "master": "assets/library/core/icons/ui/stat/icon_ui_stat_speed_256.png",
+      "runtime": "assets/library/core/icons/ui/stat/icon_ui_stat_speed_128.webp",
+      "sha256Runtime": "0ce8e59dc9c3f0750595f2db1d6c3ab33a79c4529269747a0cbd51849d024554"
+    },
+    {
+      "assetId": "core:ui-element-fire-01",
+      "label": "Feu",
+      "type": "element",
+      "registryStatId": "fire",
+      "master": "assets/library/core/icons/ui/element/icon_ui_element_fire_256.png",
+      "runtime": "assets/library/core/icons/ui/element/icon_ui_element_fire_128.webp",
+      "sha256Runtime": "1ab9f3c3fb7877bc2b74a6f7e17eb72ad6d1a9a4d29f01599be932dfdda484ee"
+    },
+    {
+      "assetId": "core:ui-element-water-01",
+      "label": "Eau",
+      "type": "element",
+      "registryStatId": "water",
+      "master": "assets/library/core/icons/ui/element/icon_ui_element_water_256.png",
+      "runtime": "assets/library/core/icons/ui/element/icon_ui_element_water_128.webp",
+      "sha256Runtime": "40f5b8656598f25a0792c70681e5e9f3ba2d93926d1a5a11d940bc82757bec95"
+    },
+    {
+      "assetId": "core:ui-element-electric-01",
+      "label": "Électricité",
+      "type": "element",
+      "registryStatId": "electric",
+      "master": "assets/library/core/icons/ui/element/icon_ui_element_electric_256.png",
+      "runtime": "assets/library/core/icons/ui/element/icon_ui_element_electric_128.webp",
+      "sha256Runtime": "79e3426bd7eaa2c029550190c4c47abc1b8b7f4421ac7fbea64089bc329f1c10"
+    },
+    {
+      "assetId": "core:ui-element-glace-01",
+      "label": "Glace",
+      "type": "element",
+      "registryStatId": "glace",
+      "master": "assets/library/core/icons/ui/element/icon_ui_element_glace_256.png",
+      "runtime": "assets/library/core/icons/ui/element/icon_ui_element_glace_128.webp",
+      "sha256Runtime": "ea692e8054d6bb0c2175beb1b786995a54b4619bf6f51324fbb616e169afb323"
+    },
+    {
+      "assetId": "core:ui-element-poison-01",
+      "label": "Poison",
+      "type": "element",
+      "registryStatId": "poison",
+      "master": "assets/library/core/icons/ui/element/icon_ui_element_poison_256.png",
+      "runtime": "assets/library/core/icons/ui/element/icon_ui_element_poison_128.webp",
+      "sha256Runtime": "e36629ee1b9beb6e8f022ea462ff86ace9d0cd9b1343a961125e9782668d1c04"
+    },
+    {
+      "assetId": "core:ui-element-earth-01",
+      "label": "Terre",
+      "type": "element",
+      "registryStatId": "earth",
+      "master": "assets/library/core/icons/ui/element/icon_ui_element_earth_256.png",
+      "runtime": "assets/library/core/icons/ui/element/icon_ui_element_earth_128.webp",
+      "sha256Runtime": "8d37f1e4b541e3db7615b212656594e43ec26a4b2891fab1139b666e1a339225"
+    },
+    {
+      "assetId": "core:ui-element-air-01",
+      "label": "Air",
+      "type": "element",
+      "registryStatId": "air",
+      "master": "assets/library/core/icons/ui/element/icon_ui_element_air_256.png",
+      "runtime": "assets/library/core/icons/ui/element/icon_ui_element_air_128.webp",
+      "sha256Runtime": "b1544096c0b82bec25533a2a33791d95a39adc5fd1ea931cb30705a6e3533940"
+    },
+    {
+      "assetId": "core:ui-element-nature-01",
+      "label": "Nature",
+      "type": "element",
+      "registryStatId": "nature",
+      "master": "assets/library/core/icons/ui/element/icon_ui_element_nature_256.png",
+      "runtime": "assets/library/core/icons/ui/element/icon_ui_element_nature_128.webp",
+      "sha256Runtime": "01548862cc57387eba124be63539b1474404fd63aea11a8ecc069229a6271222"
+    },
+    {
+      "assetId": "core:ui-element-acier-01",
+      "label": "Acier",
+      "type": "element",
+      "registryStatId": "acier",
+      "master": "assets/library/core/icons/ui/element/icon_ui_element_acier_256.png",
+      "runtime": "assets/library/core/icons/ui/element/icon_ui_element_acier_128.webp",
+      "sha256Runtime": "737be3927f50c9f11bc574daaea7f44ba9129c4c0f31b82cb8a770cb4ad31701"
+    },
+    {
+      "assetId": "core:ui-element-light-01",
+      "label": "Lumière",
+      "type": "element",
+      "registryStatId": "light",
+      "master": "assets/library/core/icons/ui/element/icon_ui_element_light_256.png",
+      "runtime": "assets/library/core/icons/ui/element/icon_ui_element_light_128.webp",
+      "sha256Runtime": "5d296c447ac353d8aa83881f2d2034d183ef29484c269997dc24d8b0aca5f95d"
+    },
+    {
+      "assetId": "core:ui-element-shadow-01",
+      "label": "Ombre",
+      "type": "element",
+      "registryStatId": "shadow",
+      "master": "assets/library/core/icons/ui/element/icon_ui_element_shadow_256.png",
+      "runtime": "assets/library/core/icons/ui/element/icon_ui_element_shadow_128.webp",
+      "sha256Runtime": "93e215b095170beb524773e2bdec26c33630e00b673afe9843c928275684239f"
+    },
+    {
+      "assetId": "core:ui-element-esprit-01",
+      "label": "Esprit",
+      "type": "element",
+      "registryStatId": "esprit",
+      "master": "assets/library/core/icons/ui/element/icon_ui_element_esprit_256.png",
+      "runtime": "assets/library/core/icons/ui/element/icon_ui_element_esprit_128.webp",
+      "sha256Runtime": "b1e8672856205d54d3e47a654dd7ad6261f3a7414a2c8d7eb777150e69408b29"
+    }
+  ]
+}

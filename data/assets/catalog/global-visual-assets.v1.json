@@ -14,8 +14,8 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 386,
-    "icons": 174,
+    "assets": 404,
+    "icons": 192,
     "sprites": 188,
     "fx": 2,
     "portraits": 17,
@@ -13057,6 +13057,526 @@
       "compatibility": {
         "uses": [
           "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-stat-health-01",
+      "label": "Santé / PV",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "stat",
+        "health"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/stat/icon_ui_stat_health_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-symbol-energy-01",
+      "label": "Énergie",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "symbol"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/symbol/icon_ui_symbol_energy_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-stat-physical-01",
+      "label": "Puissance physique",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "stat",
+        "physical"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/stat/icon_ui_stat_physical_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-stat-defense-01",
+      "label": "Défense",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "stat",
+        "defense"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/stat/icon_ui_stat_defense_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-symbol-endurance-01",
+      "label": "Endurance",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "symbol"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/symbol/icon_ui_symbol_endurance_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-stat-speed-01",
+      "label": "Vitesse",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "stat",
+        "speed"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/stat/icon_ui_stat_speed_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-element-fire-01",
+      "label": "Feu",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "element",
+        "fire"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/element/icon_ui_element_fire_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-element-water-01",
+      "label": "Eau",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "element",
+        "water"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/element/icon_ui_element_water_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-element-electric-01",
+      "label": "Électricité",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "element",
+        "electric"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/element/icon_ui_element_electric_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-element-glace-01",
+      "label": "Glace",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "element",
+        "glace"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/element/icon_ui_element_glace_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-element-poison-01",
+      "label": "Poison",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "element",
+        "poison"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/element/icon_ui_element_poison_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-element-earth-01",
+      "label": "Terre",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "element",
+        "earth"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/element/icon_ui_element_earth_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-element-air-01",
+      "label": "Air",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "element",
+        "air"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/element/icon_ui_element_air_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-element-nature-01",
+      "label": "Nature",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "element",
+        "nature"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/element/icon_ui_element_nature_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-element-acier-01",
+      "label": "Acier",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "element",
+        "acier"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/element/icon_ui_element_acier_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-element-light-01",
+      "label": "Lumière",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "element",
+        "light"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/element/icon_ui_element_light_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-element-shadow-01",
+      "label": "Ombre",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "element",
+        "shadow"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/element/icon_ui_element_shadow_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "core:ui-element-esprit-01",
+      "label": "Esprit",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "ui",
+        "gensrpg",
+        "element",
+        "esprit"
+      ],
+      "source": {
+        "scope": "core",
+        "packId": null,
+        "author": "GenSRPG / auteur : validation visuelle 2026-11-09",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "core/icons/ui/element/icon_ui_element_esprit_128.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
           "capture",
           "editor"
         ]
