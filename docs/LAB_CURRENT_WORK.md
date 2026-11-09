@@ -1,3 +1,12 @@
+## 2026-11-09 — Publication des 18 icônes de stats/éléments validées (global-assets)
+- START global-assets@bfe94ebccfe53ed1a01f759b343bb8751565302e ; checkpoint `checkpoint/lab-start-ui-icons-18-2026-11-09` ; WORK `work/lab-ui-icons-18-2026-11-09`.
+- ZIP auteur déposé `GenSRPG_UI_Icons_V1_2026-11-09_READY.zip`, SHA256 `0f19d0e96898ee954f0d8b774ee5b018a0d976090f6e53baaafeb49126f3c724`.
+- Propriétaire unique `global-assets`; 18 WebP runtime, 18 PNG maîtres, +18 références au catalogue central existant, provenance et test. Aucun changement de gameplay ni nouveau registre de stats.
+- CI exacte + checkpoint GREEN et publication en fast-forward, puis raccord client `main` (catalogue et cache) à vérifier.
+- Détails `docs/LAB_UI_STATS_ICONS_2026_11_09.md`.
+
+---
+
 ## 2026-11-09 — Import des 80 icônes futures capacités Monster Capture (2 séries de 40)
 
 - **Demande** : importer les 80 icônes validées, depuis leurs deux ZIP déjà déposés dans la bibliothèque GitHub, vers les médias individuels et le sélecteur officiel des compétences. Ne créer aucune mécanique de compétence ni modifier les fiches auteur.
