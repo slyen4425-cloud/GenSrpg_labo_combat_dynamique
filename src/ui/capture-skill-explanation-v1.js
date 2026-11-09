@@ -229,11 +229,19 @@ function effectSentence(e,{perCharge=false,markerNames={}}={}){
       }
       return lines;
     }
-    case "consume_marker":return [
-      finish("Consomme "+(e.count==="all"?"les charges":"jusqu'à "+num(e.count)+" charges")+
-        " de "+(markerNames[e.markerId]??e.markerId.replace(/[_-]+/g," "))+
-        onTarget(e.targetScope)+(e.minimum>1?" (au moins "+num(e.minimum)+")":"")),
-      ...descriptions(e.effects,{perCharge:e.perCharge===true,markerNames})];
+    case "consume_marker":{
+      // Existing authors with no published marker name keep their historic
+      // string exactly. Only named markers get the clearer natural-language
+      // wording; gameplay and the stored marker ID never change.
+      const knownName=markerNames[e.markerId];
+      return [
+        finish("Consomme "+(knownName && e.count!=="all"
+          ?"jusqu'à "+num(e.count)+" charges"
+          :e.count==="all"?"les charges":num(e.count)+" charges")+
+          " de "+(knownName??e.markerId)+onTarget(e.targetScope)+
+          (e.minimum>1?" (au moins "+num(e.minimum)+")":"")),
+        ...descriptions(e.effects,{perCharge:e.perCharge===true,markerNames})];
+    }
     case "scheduled_effect":return [finish("Après "+duration(e.trigger.delayMs)+", "+
       descriptions(e.effects).map(x=>lowerSentence(x)).join(" et "))];
     case "persistent_zone":return groupZones([e]);

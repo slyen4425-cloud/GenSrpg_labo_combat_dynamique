@@ -69,7 +69,7 @@ export function captureBestiaryCardsV1({
     skillsById.set(definition.id, {
       name:definition.name, element:definition.element ?? null,
       requiredLevel:null, icon:null,
-      explanation:describeCaptureSkillV1(definition,{markerNames})
+      explanation:describeCaptureSkillV1(definition)
     });
   }
   for (const transfer of skillTransfers) {

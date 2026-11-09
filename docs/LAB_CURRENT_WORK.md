@@ -1,3 +1,11 @@
+## 2026-11-09 — Sentinelles historiques descriptions Bestiaire conservées
+- START `main@700a833b31b96ec170a59275713e2ba3b32c6adc`, checkpoint `checkpoint/lab-start-krakenor-prose-legacy-regressions-2026-11-09`.
+- CI du lot Krakenor : 2695/2697 tests verts, deux sentinelles historiques RED sur la forme texte non modifiée de Graine sansue et l'appel existant sans options du projecteur natif.
+- Réparation sans contournement : garder l'ancien libellé quand aucun nom de marqueur n'existe, réserver les noms humains à la source auteur Krakenor ; garder le chemin natif original du Bestiaire, tout en passant les noms dérivés uniquement aux transferts Showcase.
+- Ne modifier aucun moteur ni suppression de test ; refaire CI exacte et Pages.
+
+---
+
 ## 2026-11-09 — Réparation sentinelle Renderer → UI (correctif Krakenor)
 - START `main@c2446213a0afbd9957f4aebb700f8cf13a8da2cf`, checkpoint `checkpoint/lab-start-krakenor-marker-renderer-boundary-2026-11-09`.
 - Cause CI : `check:structure` interdit un import `src/ui/*` depuis `src/adapters/renderer/*`. L’import de la description Bestiaire ajouté dans le HUD n’est pas conforme.
