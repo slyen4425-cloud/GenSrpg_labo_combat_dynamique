@@ -47,8 +47,8 @@ def main():
                 m = re.fullmatch(r"pack:capture:icon-skill-([a-z0-9-]+)-01", ident)
                 assert m, "invalid proposed canonical ID: " + ident
                 slug = m.group(1)
-                filename = "icon_skill_" + slug.replace("-", "_") + "_01.webp"
-                resource = "capture/icons/skills/" + filename
+                icon_filename = "icon_skill_" + slug.replace("-", "_") + "_01.webp"
+                resource = "capture/icons/skills/" + icon_filename
                 assert ident not in old_ids | seen_ids, "ID collision: " + ident
                 assert resource not in old_paths | seen_paths, "path collision: " + resource
                 source_name = "icones_webp_128/" + i["file_webp"]
@@ -62,7 +62,7 @@ def main():
                 assert blob[:4] == b"RIFF" and blob[8:12] == b"WEBP" and blob[12:16] == b"VP8 "
                 assert digest(blob) not in seen_hash, "duplicate image among 80"
                 seen_ids.add(ident); seen_paths.add(resource); seen_hash.add(digest(blob))
-                output.append((DIR / filename, blob))
+                output.append((DIR / icon_filename, blob))
                 cat["assets"].append({
                     "id": ident, "label": i["name"], "assetType": "icon", "mediaType": "image", "category": "skill",
                     "tags": ["skill", "capture", "future", "series-" + str(series), tag(i["element"])],

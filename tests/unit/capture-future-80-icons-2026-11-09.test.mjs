@@ -11,6 +11,10 @@ const git=b=>createHash('sha1').update(Buffer.from('blob '+b.length+String.fromC
 test('80 approved future Capture icons have unique real 128px WebPs and canonical IDs',()=>{
  const prov=JSON.parse(read('assets/library/capture/icons/skills/capture_future_80_icons_2026_11_09.provenance.json'));
  const cat=JSON.parse(read('data/assets/catalog/global-visual-assets.v1.json'));
+ assert.deepEqual(prov.sources.map(s=>s.zip),[
+  'Monster_Capture_40_icones_futures_capacites.zip',
+  'Monster_Capture_Serie_2_40_icones.zip'
+ ]);
  assert.equal(prov.assets.length,80);
  assert.deepEqual(prov.assets.map(a=>a.number),Array.from({length:80},(_,i)=>i+1));
  assert.equal(cat.storage.branch,'global-assets');

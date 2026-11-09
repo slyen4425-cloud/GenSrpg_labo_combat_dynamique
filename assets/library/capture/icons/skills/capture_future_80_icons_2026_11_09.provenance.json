@@ -6,12 +6,12 @@
   "note": "80 user-approved WebP 128px copied without re-encoding from two original ZIPs; PNG masters remain inside ZIPs. No skill definitions or automatic bindings.",
   "sources": [
     {
-      "zip": "icon_skill_eclipse_astrale_01.webp",
+      "zip": "Monster_Capture_40_icones_futures_capacites.zip",
       "sha256": "2921d374bbe3f782f12115d4200f6c20623b563d4c1af5eb098297b20c3bf110",
       "gitBlobSHA": "633f3183db2f04dc77290f878225668608d58059"
     },
     {
-      "zip": "icon_skill_frappe_heroique_01.webp",
+      "zip": "Monster_Capture_Serie_2_40_icones.zip",
       "sha256": "891dea383160d05424f569046e7414baf4a6638740f8dbbab473e55fd4460351",
       "gitBlobSHA": "9513b6c08172cb2525c3c5e1994a3776255e2da6"
     }
