@@ -470,10 +470,9 @@ export function createDomStatusFxRenderer({
       statusEffectInfoTextV1(info) + (thresholdCount ? " · " + stacks + "/" + thresholdCount + " stacks" : "")
     );
 
-    if (
-      record.detailsNode &&
-      !record.detailsNode.hidden
-    ) {
+    // Keep the model's details text current even when auto-collapsed;
+    // opening it again must never expose an out-of-date native duration.
+    if (record.detailsNode) {
       record.detailsNode.textContent =
         statusEffectInfoTextV1(info);
     }

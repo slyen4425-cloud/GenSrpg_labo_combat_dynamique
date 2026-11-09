@@ -14,7 +14,8 @@ test("native Claw uses 10 base damage with the original timings",async()=>{
 });
 test("live cooldown derives from CombatState deadline, not action preview or a UI timer",async()=>{
  const src=await source("src/ui/combat-2v2-test-ui.js");
- assert.match(src,/skillCooldowns\?\.\[skill\.id\]/);
+ assert.match(src,/skillCooldownRemainingMs\(/);
+ assert.doesNotMatch(src,/skillCooldowns/);
  assert.match(src,/state\.elapsedMs/);
  assert.match(src,/Math\.ceil\(remainingCooldownMs \/ 1000\)/);
  assert.doesNotMatch(src,/preview\?\.outcome === "cooldown"/);
@@ -33,6 +34,11 @@ test("Bestiary exposes skill cooldowns from the native and authored definition",
  const cards=captureBestiaryCardsV1({creatureTransfers:[creature],skillTransfers:[authored],assetCatalog:catalogue});
  const s=cards[0].skills.find(x=>x.name==="Perle de pression");
  assert.equal(s.cooldownMs,15000);
- const native=captureBestiaryCardsV1({creatureTransfers:[creature],nativeSkills:[{definition:{id:"claw",name:"Griffe",element:null,effect:{damage:10}}}],assetCatalog:catalogue});
- assert.equal(native[0].skills.some(x=>x.cooldownMs===0),false);
+ const nativeCatalog=JSON.parse(await source("data/combat/skills/catalog.v1.json"));
+ const claw=nativeCatalog.entries.find(x=>x.id==="claw").definition;
+ const nativeCreature={...creature,loadout:{...creature.loadout,slots:creature.loadout.slots.map(x=>
+   x.id==="slot-1"?{...x,skillId:"claw"}:x)}};
+ const native=captureBestiaryCardsV1({creatureTransfers:[nativeCreature],nativeSkills:[{definition:claw}],assetCatalog:catalogue});
+ assert.equal(native[0].skills[0].name,"Griffe");
+ assert.equal(native[0].skills[0].cooldownMs,0);
 });

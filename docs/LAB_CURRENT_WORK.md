@@ -1,3 +1,12 @@
+## 2026-11-09 — Confort combat, réparation CI sans retrait des contrôles historiques
+- START `main@3a0d0d87eb3e96d58bd8f824bbce93b77ef9825a`, checkpoint `checkpoint/lab-start-combat-ux-ci-regression-repair-2026-11-09`.
+- **Source de vérité** du compte à rebours : `skillCooldownRemainingMs` exportée par le CombatState, sans lecture du dictionnaire brut ni état UI dupliqué ; l'ancienne sentinelle de non-mutabilité reste inchangée.
+- Fiche d'état fermée automatiquement : le texte continue de se rafraîchir depuis l'état natif même si la fiche est masquée ; sentinelle historique élargie au nouveau comportement exclusif, pas supprimée.
+- Tests : utiliser une réelle définition native de Griffe dans l'essai Bestiaire ; fixture de sélection réserve simule explicitement un switch indisponible. Aucune modification de Combat Rules, de données auteur ou de tests de mécanique.
+- Revalider CI complète et Pages sur SHA exact.
+
+---
+
 ## 2026-11-09 — Confort combat lot 2 : menu Rappel et fiches de statuts
 - START `main@3d7b195764e22ea7d076dfff6f96a870d62b506c`, checkpoint `checkpoint/lab-start-combat-ux-roster-status-cards-2026-11-09`.
 - Menu Rappel : sélectionner une créature vivante disponible déclenche le **même** `switch` natif si autorisé, puis ferme le panneau ; sinon garde le choix et l'accès au bouton. Toute commande de rappel acceptée ferme son panneau. Sélection de cible réserve de compétence ferme aussi le panneau.

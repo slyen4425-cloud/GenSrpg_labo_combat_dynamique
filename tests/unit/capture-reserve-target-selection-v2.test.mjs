@@ -76,7 +76,8 @@ test("real Rappel menu is allied-only; enemy reserve skill uses its separate pan
   const snapshot=roster();
   const controller={
     snapshot(){return snapshot;},
-    selectReserve(actorId,memberId){recallSelection=[actorId,memberId];return{ok:true};}
+    selectReserve(actorId,memberId){recallSelection=[actorId,memberId];return{ok:true};},
+    previewCommand(){return{ok:false,outcome:"switch_unavailable"};}
   };
   const ui=mountCaptureCombatRosterPanelV1({
     root,controller,format,

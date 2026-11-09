@@ -292,7 +292,7 @@ test("same status renderer exposes own-creature buffs and enemy debuffs with ind
   enemy.onclick({ stopPropagation() {} });
   const ownDetails = own.children.find(node => node.dataset.statusFx === "hud-details");
   const enemyDetails = enemy.children.find(node => node.dataset.statusFx === "hud-details");
-  assert.equal(ownDetails.hidden, false);
+  assert.equal(ownDetails.hidden, true,"opening enemy debuff must auto-close own buff");
   assert.match(ownDetails.textContent, /Buff/);
   assert.match(ownDetails.textContent, /Aura de soin/);
   assert.match(ownDetails.textContent, /3 PV toutes les 2 s/);

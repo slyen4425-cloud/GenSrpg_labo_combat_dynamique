@@ -12,6 +12,7 @@ import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-pr
 import { configureCombatRecallCommandsV1 } from "../contracts/combat-command-definition.js";
 import { createCaptureCombatRosterControllerV1, mountCaptureCombatRosterPanelV1 } from "./capture-combat-roster-controller-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107";
 import { createCombatSession } from "../core/combat/combat-session.js";
+import {skillCooldownRemainingMs} from "../core/combat/combat-state.js";
 import { createEmbeddedCombatLifecycleV1 } from "./embedded-combat-lifecycle-v1.js";
 import { createCombatRuntime } from "../core/combat/combat-runtime.js?v=wall-state-20261031-wall-geometry-20261031-wall-ground-stop-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-solar-beneficial-contact-20261103";
 import { createBattleActorAiController, CAPTURE_AI_TACTICS_V1_DEFAULT } from "../core/combat/battle-actor-ai-controller.js?v=ai-charge-hold-20261105";
@@ -1216,9 +1217,8 @@ export async function mountCoop2v2Test({
 
       // The CombatState owns each deadline, even while another action makes
       // previewSkill report 'busy'. Never derive the HUD timer from that preview.
-      const remainingCooldownMs = Math.max(0,
-        (Number(state.fighters[controlledActorId()]?.skillCooldowns?.[skill.id]) || 0)
-        - state.elapsedMs);
+      const remainingCooldownMs = skillCooldownRemainingMs(
+        state, controlledActorId(), skill.id);
       const remainingSeconds = Math.ceil(remainingCooldownMs / 1000);
       const totalCooldownMs =
         Math.max(0, Number(skill.cooldownMs) || 0);
