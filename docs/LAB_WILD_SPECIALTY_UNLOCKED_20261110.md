@@ -1,0 +1,7 @@
+# Combat — spécialisation sauvage limitée aux capacités débloquées (2026-11-10)
+
+- **START immuable :** `main@6031db7648de5edaf9c2caa6b131b59869a4b03a`, checkpoint `checkpoint/combat-wild-specialty-unlocked-start-2026-11-10`, branche `work/combat-wild-specialty-unlocked-2026-11-10`.
+- **Incident visé :** revue PR #287 : au niveau 2, un sort de feu d'un slot qui ne s'ouvre qu'au niveau 5 ne peut influencer l'allocation des points élémentaires du PNJ. L'ancien calcul lisait tous les slots authored selon `requiredLevel`, sans la progression de déverrouillage.
+- **Unique propriétaire :** `src/ui/capture-encounter-combat-source-v1.js` délègue les slots vraiment disponibles au projecteur existant `projectCapturePlannedLoadoutsToCombatV1`. Le solveur `allocateCaptureWildLevelStatsV1` et ses coefficients sont **inchangés**. Aucun calcul de stats/XP dupliqué dans Exploration ou GenSRPG.
+- **Tests sentinelles :** fichier natif de combat `tests/unit/capture-adventure-instance-stat-allocations-2026-11-05.test.mjs`, niveau 2 slot feu verrouillé (aucun point feu) puis niveau 6 après déblocage (spécialité feu valide), auteurs et sauvegardes inchangés, compatibilité sans profil `progressionRules` conservée.
+- **Validation/promotion :** Laboratory CI de la PR #288 et matrice native, checkpoint GREEN après succès, fusion ciblée `main` à SHA exact, puis repin des sources Capture V2 et du publisher GenSRPG. Ne jamais publier une copie source ou mettre à jour un SHA sans test.
