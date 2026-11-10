@@ -7,7 +7,7 @@ on:
       - .github/workflows/sylvorne-original-art-inspection.yml
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   inspect-original-art:
     runs-on: ubuntu-latest
@@ -41,3 +41,48 @@ jobs:
           path: sylvorne-art-review/
           if-no-files-found: error
           retention-days: 7
+
+      - name: Prepare reference-faithful 512px tree candidates in this isolated work branch
+        shell: bash
+        run: |
+          python3 -m venv /tmp/sylvorne-art-venv
+          /tmp/sylvorne-art-venv/bin/python -m pip install -q Pillow==11.3.0
+          /tmp/sylvorne-art-venv/bin/python - <<'PY'
+          import zipfile, io, pathlib, hashlib
+          from PIL import Image
+          output=pathlib.Path('assets/capture/candidates/sylvorne')
+          output.mkdir(parents=True,exist_ok=True)
+          with zipfile.ZipFile('gensrpg_serpent_arbre_icones_modeles.zip') as z:
+              master=Image.open(io.BytesIO(z.read('modele_arbre_reference.png'))).convert('RGBA')
+              assert master.size==(2172,724)
+              for name,left,right in (('sylvorne_face_512.png',0,720),('sylvorne_dos_512.png',720,1522)):
+                  panel=master.crop((left,0,right,724))
+                  alpha=panel.getchannel('A')
+                  bounds=alpha.point(lambda v:255 if v>4 else 0).getbbox()
+                  assert bounds
+                  x0=max(0,bounds[0]-10);y0=max(0,bounds[1]-10)
+                  x1=min(panel.width,bounds[2]+10);y1=min(panel.height,bounds[3]+10)
+                  body=panel.crop((x0,y0,x1,y1))
+                  scale=min(420/body.width,420/body.height)
+                  width=round(body.width*scale);height=round(body.height*scale)
+                  frame=Image.new('RGBA',(512,512),(0,0,0,0))
+                  frame.alpha_composite(body.resize((width,height),Image.Resampling.LANCZOS),((512-width)//2,466-height))
+                  bb=frame.getchannel('A').getbbox()
+                  assert min(bb[0],bb[1],512-bb[2],512-bb[3])>=42
+                  frame.save(output/name,optimize=True)
+                  print('SYLVORNE_ART_CANDIDATE',name,bb,hashlib.sha256((output/name).read_bytes()).hexdigest())
+              icon=z.read('icone_arbre_512.png')
+              image=Image.open(io.BytesIO(icon))
+              assert image.size==(512,512) and image.mode=='RGBA'
+              (output/'sylvorne_icone_512.png').write_bytes(icon)
+          PY
+      - name: Record candidate artwork only on isolated review branch, never main or global-assets
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- assets/capture/candidates/sylvorne/
+          if ! git diff --staged --quiet; then
+            git commit -m "art(capture): stage verified Sylvorne tree face back and original icon for review"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
