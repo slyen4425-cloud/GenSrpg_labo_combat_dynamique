@@ -2,6 +2,7 @@ import { adaptCaptureCombatExportStackV1 } from "../adapters/input/capture/captu
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
 import { buildCaptureEditorCombatTestV1 } from "./capture-editor-combat-test-v1.js";
 import {projectCaptureEncounterOwnedStatsV1} from "../adapters/input/capture/capture-encounter-owned-stats-v1.js";
+import {allocateCaptureWildLevelStatsV1} from "../adapters/input/capture/capture-wild-level-stats-v1.js";
 
 function requireParticipant(participant, side) {
   if (typeof participant?.speciesId !== "string" || !participant.speciesId.trim()) {
@@ -47,6 +48,27 @@ export function applyCaptureEncounterHpMultiplierV1(source, multiplier = 1) {
     ...source, fighterConfigs, fighters,
     [ADVENTURE_HP_PROJECTED_V1]: true
   });
+}
+
+// Combat alone turns a WorldArea NPC profile into actual fighter stat effects.
+// Only equipped and already-unlocked ability elements influence specialization.
+// The authored species, local instance wallet and saved game are never mutated.
+function projectCaptureWildOpponentStatsV1({opponent,configuredCreatures,configuredSkills,statRegistry,profile}){
+ const record=configuredCreatures.get(opponent.speciesId);
+ if(!record)throw new RangeError('Wild opponent absent from official Combat creature registry');
+ const attackChannels=[...new Set((record.loadout?.slots??[])
+  .map(slot=>configuredSkills.get(slot.skillId))
+  .filter(skill=>skill&&skill.requiredLevel<=opponent.level)
+  .map(skill=>skill.definition?.element)
+  .filter(channel=>typeof channel==='string'&&channel.trim()))];
+ const bonus=allocateCaptureWildLevelStatsV1({
+  level:opponent.level,statRegistry,
+  baseStatValues:record.statValues?.values??{},attackChannels,profile
+ });
+ if(!Object.keys(bonus).length)return configuredCreatures;
+ return projectCaptureEncounterOwnedStatsV1({
+  configuredCreatures,statRegistry,speciesId:opponent.speciesId,statAllocations:bonus
+ });
 }
 
 // A wild encounter is still one visible fighter against one wild opponent.
@@ -175,12 +197,20 @@ export function buildCaptureEncounterCombatSourceV1({ local, opponent, localRese
   if (opponent.statAllocations !== undefined)
     throw new RangeError('Opponent statAllocations require an official NPC instance contract');
   const authoredCreatures=options.configuredCreatures;
+  const npcCreatures=options.wildStatProfile===undefined?authoredCreatures:
+   projectCaptureWildOpponentStatsV1({opponent,configuredCreatures:authoredCreatures,
+    configuredSkills:options.configuredSkills,statRegistry:options.statRegistry,
+    profile:options.wildStatProfile});
+  const hasNpcOverride=npcCreatures!==authoredCreatures;
   const ownedCreatures=projectCaptureEncounterOwnedStatsV1({
     configuredCreatures:authoredCreatures,statRegistry:options.statRegistry,
     speciesId:local.speciesId,statAllocations:local.statAllocations
   });
   const hasOwnedStatOverride=ownedCreatures!==authoredCreatures;
   const mirror = local.speciesId === opponent.speciesId;
+  const combinedCreatures=(!mirror&&hasNpcOverride)
+   ?new Map([...ownedCreatures,[opponent.speciesId,npcCreatures.get(opponent.speciesId)]])
+   :ownedCreatures;
   const build = (creatureLevelsById, configuredCreatures=ownedCreatures) => buildCaptureEditorCombatTestV1({
     ...options,configuredCreatures,
     localCreatureIds: [local.speciesId],
@@ -190,15 +220,15 @@ export function buildCaptureEncounterCombatSourceV1({ local, opponent, localRese
   });
   const exported = build(mirror
     ? { [local.speciesId]: local.level }
-    : { [local.speciesId]: local.level, [opponent.speciesId]: opponent.level });
+    : { [local.speciesId]: local.level, [opponent.speciesId]: opponent.level },combinedCreatures);
   const source = adaptCaptureCombatExportStackV1(exported);
-  if (!mirror || (local.level === opponent.level && !hasOwnedStatOverride)) {
+  if (!mirror || (local.level === opponent.level && !hasOwnedStatOverride && !hasNpcOverride)) {
     return applyCaptureEncounterHpMultiplierV1(Object.freeze({ ...source, exported }), hpMultiplier);
   }
 
   // The author export is keyed by species. Project the opponent separately
   // through the same exporter, then bind its config to the existing roster slot.
-  const rival = adaptCaptureCombatExportStackV1(build({ [opponent.speciesId]: opponent.level }, authoredCreatures));
+  const rival = adaptCaptureCombatExportStackV1(build({ [opponent.speciesId]: opponent.level }, npcCreatures));
   const actorId = source.battleFormat.teams["enemy-team"][0];
   const team = source.roster.teams[actorId];
   const memberId = team.activeMemberId;

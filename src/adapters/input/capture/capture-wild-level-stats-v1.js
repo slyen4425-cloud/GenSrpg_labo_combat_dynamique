@@ -9,7 +9,10 @@ export function allocateCaptureWildLevelStatsV1({
  if(!Number.isSafeInteger(level)||level<1)throw new RangeError('NPC level must be a positive safe integer');
  if(!Number.isSafeInteger(pointsPerLevel)||pointsPerLevel<0)
   throw new RangeError('NPC pointsPerLevel must be a nonnegative safe integer');
- const total=(level-1)*pointsPerLevel;
+ const effectivePointsPerLevel=profile?.pointsPerLevel??pointsPerLevel;
+ if(!Number.isSafeInteger(effectivePointsPerLevel)||effectivePointsPerLevel<0||effectivePointsPerLevel>1000)
+  throw new RangeError('NPC profile pointsPerLevel must be between 0 and 1000');
+ const total=(level-1)*effectivePointsPerLevel;
  if(!Number.isSafeInteger(total))throw new RangeError('NPC stat point budget overflow');
  const registry=normalizeCaptureStatRegistryV1(statRegistry);
  const ids=new Set(registry.stats.map(s=>s.id));
@@ -23,7 +26,7 @@ export function allocateCaptureWildLevelStatsV1({
   throw new TypeError('NPC attackChannels must be an array of strings');
  if(!profile||typeof profile!=='object'||Array.isArray(profile)||Object.getPrototypeOf(profile)!==Object.prototype)
   throw new TypeError('NPC profile must be a plain object');
- const permitted=new Set(['healthMinimumPct','defenseMinimumPct','speedMinimumPct','specialtyMultiplier']);
+ const permitted=new Set(['healthMinimumPct','defenseMinimumPct','speedMinimumPct','specialtyMultiplier','pointsPerLevel']);
  for(const key of Object.keys(profile))if(!permitted.has(key))
   throw new RangeError('Unknown NPC profile setting: '+key);
  const pct=(key)=>{const value=profile[key]??15;
