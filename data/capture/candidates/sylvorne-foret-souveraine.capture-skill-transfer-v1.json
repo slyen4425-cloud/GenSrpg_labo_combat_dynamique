@@ -1,0 +1,125 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "sylvorne-foret-souveraine",
+    "description": "Ultime : 24 dégâts Nature à tous les ennemis actifs. Consomme jusqu’à 2 Germinations sur la cible principale (+6 dégâts chacune), avec immobilisation 1,2 s si marquée.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "sylvorne-foret-souveraine",
+      "name": "Forêt souveraine",
+      "category": "offensive",
+      "form": "area",
+      "loadoutSlot": "ultimate",
+      "element": "nature",
+      "approachMode": "none",
+      "energyCost": 10,
+      "preparationMs": 2300,
+      "travelMs": 0,
+      "recoveryMs": 500,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "all_enemies",
+          "amount": 24,
+          "channel": "nature"
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "sylvorne-foret-souveraine-entrave",
+            "kind": "immobilize",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 1200,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": []
+          },
+          "condition": {
+            "type": "marker",
+            "value": "sylvorne-germination",
+            "minimum": 1
+          }
+        },
+        {
+          "kind": "consume_marker",
+          "targetScope": "target",
+          "markerId": "sylvorne-germination",
+          "count": 2,
+          "minimum": 1,
+          "perCharge": true,
+          "effects": [
+            {
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 6,
+              "channel": "nature"
+            }
+          ]
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:sylvorne-foret-souveraine",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "sylvorne-foret-souveraine",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-ronce-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

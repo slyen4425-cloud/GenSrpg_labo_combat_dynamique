@@ -1,0 +1,143 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "sylvorne-vrilles-du-sous-bois",
+    "description": "14 dégâts Nature, immobilisation 1,1 s et 1 Germination sur la même cible.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "sylvorne-vrilles-du-sous-bois",
+      "name": "Vrilles du sous-bois",
+      "category": "offensive",
+      "form": "beam",
+      "loadoutSlot": "standard",
+      "element": "nature",
+      "approachMode": "none",
+      "energyCost": 5,
+      "preparationMs": 1200,
+      "travelMs": 700,
+      "recoveryMs": 300,
+      "cooldownMs": 23000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 14,
+          "channel": "nature"
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "sylvorne-vrilles-entrave",
+            "kind": "immobilize",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 1100,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": []
+          }
+        },
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "sylvorne-germination",
+            "name": "Germination",
+            "polarity": "detrimental",
+            "durationMs": 20000,
+            "maxStacks": 2,
+            "iconAssetId": "core:icon-skill-thorn-vines-01",
+            "onStackThreshold": {
+              "count": 2,
+              "consume": "reset",
+              "effects": [
+                {
+                  "kind": "damage",
+                  "targetScope": "target",
+                  "amount": 6,
+                  "channel": "nature"
+                },
+                {
+                  "kind": "apply_status",
+                  "targetScope": "target",
+                  "status": {
+                    "id": "sylvorne-germination-entrave",
+                    "kind": "immobilize",
+                    "polarity": "detrimental",
+                    "durationModel": "time_ms",
+                    "durationMs": 1000,
+                    "stacking": "refresh",
+                    "maxStacks": 1,
+                    "tags": []
+                  }
+                }
+              ]
+            }
+          },
+          "charges": 1
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:sylvorne-vrilles-du-sous-bois",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "sylvorne-vrilles-du-sous-bois",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-ronce-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

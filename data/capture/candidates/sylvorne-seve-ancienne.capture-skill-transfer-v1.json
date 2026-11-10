@@ -1,0 +1,105 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "sylvorne-seve-ancienne",
+    "description": "Soin immédiat de 22 PV puis régénération de 3 PV toutes les 3 s pendant 12 s, non cumulable.",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "sylvorne-seve-ancienne",
+      "name": "Sève ancienne",
+      "category": "heal",
+      "form": "self",
+      "loadoutSlot": "standard",
+      "element": "nature",
+      "approachMode": "none",
+      "energyCost": 7,
+      "preparationMs": 1600,
+      "travelMs": 0,
+      "recoveryMs": 300,
+      "cooldownMs": 42000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "heal",
+          "targetScope": "self",
+          "amount": 22
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "id": "sylvorne-seve-ancienne-regeneration",
+            "kind": "heal_over_time",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 12000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "amount": 3,
+            "tickIntervalMs": 3000
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:sylvorne-seve-ancienne",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "sylvorne-seve-ancienne",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-recall-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

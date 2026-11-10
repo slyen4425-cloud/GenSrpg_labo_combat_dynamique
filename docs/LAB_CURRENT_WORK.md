@@ -1,3 +1,10 @@
+## 2026-11-10 — Sylvorne : prototype arbre, statistiques et 5 capacités (C2, CANDIDAT NON PUBLIÉ)
+- START `main@7c00030ac32cfff5e38bc516db3df25ba4bbe4a4`, checkpoint `checkpoint/lab-start-creature-tree-sylvorne-2026-11-10`, branche `work/lab-creature-tree-sylvorne-2026-11-10`; source historique et ZIP auteur protégés.
+- Six transferts natifs isolés dans `data/capture/candidates`, aucune entrée du Bestiaire/Showcase activée, média d'arbre non inventé. Référence `docs/LAB_TREE_SYLVORNE_CANDIDATE_2026_11_10.md`.
+- Tests : schémas Skill/Creature Transfer, mécaniques de Germination, progression et résistances, preuve d'absence de faux asset ; CI avant green puis médias certifiés FACE/DOS/ICON, tests navigateur et Pages avant activation.
+
+---
+
 ## 2026-11-09 — Publication d'affichage 18 icônes UI (raccord sans double autorité)
 - BASE `main@7984aac05a30919422614205013f9962f79542b5` ; START `checkpoint/lab-start-ui-icons-runtime-2026-11-09` ; WORK `work/lab-ui-icons-runtime-2026-11-09`.
 - Les 18 icônes réelles sont déjà enregistrées dans le seul catalogue `global-assets` ; les écrans Bestiaire/éditeur consomment déjà `captureUiPublishedStatIconV1`. Changer seulement la révision de cache `global-visual-library.js` et la sentinelle de révision, ne pas copier les médias.
