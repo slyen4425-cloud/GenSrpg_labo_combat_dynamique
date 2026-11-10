@@ -1,0 +1,43 @@
+name: Sylvorne original art inspection (read-only)
+on:
+  push:
+    branches:
+      - work/lab-sylvorne-source-art-preflight-2026-11-10
+    paths:
+      - .github/workflows/sylvorne-original-art-inspection.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-original-art:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract the exact approved tree original (no crop or palette changes)
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import zipfile, struct, pathlib, hashlib
+          root=pathlib.Path("sylvorne-art-review")
+          root.mkdir(exist_ok=True)
+          approved=("modele_arbre_reference.png","icone_arbre_512.png","manifest.json")
+          with zipfile.ZipFile("gensrpg_serpent_arbre_icones_modeles.zip") as archive:
+              assert set(approved).issubset(set(archive.namelist()))
+              for name in approved:
+                  source=archive.read(name)
+                  if name.endswith(".png"):
+                      assert source[:8]==b"\x89PNG\r\n\x1a\n"
+                      width,height=struct.unpack(">II",source[16:24])
+                      assert (width,height) in ((2172,724),(512,512))
+                      assert source[25]==6 # genuine RGBA, not opaque RGB
+                      print("AUTHOR_ART",name,width,height,"sha256",hashlib.sha256(source).hexdigest())
+                  (root/name).write_bytes(source)
+          PY
+      - name: Upload original art for visual inspection, not publication
+        uses: actions/upload-artifact@v4
+        with:
+          name: sylvorne-original-art-review
+          path: sylvorne-art-review/
+          if-no-files-found: error
+          retention-days: 7
