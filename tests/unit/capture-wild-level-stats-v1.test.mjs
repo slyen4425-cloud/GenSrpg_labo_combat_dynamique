@@ -8,7 +8,7 @@ test('level one has no extra stats; level ten receives exactly 180 official poin
  assert.deepEqual(allocate({...args,level:1}),{});
  const bonus=allocate({...args,level:10});
  assert.equal(Object.values(bonus).reduce((a,b)=>a+b,0),180);
- assert.ok(bonus.health>0&&bonus.defense>0&&bonus.speed>0&&bonus.fire>0);
+ assert.ok(bonus.health>=27&&bonus.defense>=27&&bonus.speed>=27&&bonus.fire>0);
  assert.equal(bonus.water,undefined,'unused elements must not receive points');
  assert.deepEqual(allocate({...args,level:10}),bonus,'stable and repeatable');
  assert.equal(Object.isFrozen(bonus),true);
