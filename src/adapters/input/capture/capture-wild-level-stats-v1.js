@@ -4,12 +4,15 @@
 import {normalizeCaptureStatRegistryV1} from '../../../contracts/capture-stat-registry-v1.js';
 
 export function allocateCaptureWildLevelStatsV1({
- level, pointsPerLevel=20, statRegistry, baseStatValues={}, attackChannels=[]
+ level, pointsPerLevel=20, statRegistry, baseStatValues={}, attackChannels=[], profile={}
 }={}){
  if(!Number.isSafeInteger(level)||level<1)throw new RangeError('NPC level must be a positive safe integer');
  if(!Number.isSafeInteger(pointsPerLevel)||pointsPerLevel<0)
   throw new RangeError('NPC pointsPerLevel must be a nonnegative safe integer');
- const total=(level-1)*pointsPerLevel;
+ const effectivePointsPerLevel=profile?.pointsPerLevel??pointsPerLevel;
+ if(!Number.isSafeInteger(effectivePointsPerLevel)||effectivePointsPerLevel<0||effectivePointsPerLevel>1000)
+  throw new RangeError('NPC profile pointsPerLevel must be between 0 and 1000');
+ const total=(level-1)*effectivePointsPerLevel;
  if(!Number.isSafeInteger(total))throw new RangeError('NPC stat point budget overflow');
  const registry=normalizeCaptureStatRegistryV1(statRegistry);
  const ids=new Set(registry.stats.map(s=>s.id));
@@ -21,6 +24,25 @@ export function allocateCaptureWildLevelStatsV1({
  }
  if(!Array.isArray(attackChannels)||attackChannels.some(c=>typeof c!=='string'))
   throw new TypeError('NPC attackChannels must be an array of strings');
+ if(!profile||typeof profile!=='object'||Array.isArray(profile)||Object.getPrototypeOf(profile)!==Object.prototype)
+  throw new TypeError('NPC profile must be a plain object');
+ const permitted=new Set(['healthMinimumPct','defenseMinimumPct','speedMinimumPct','specialtyMultiplier','pointsPerLevel']);
+ for(const key of Object.keys(profile))if(!permitted.has(key))
+  throw new RangeError('Unknown NPC profile setting: '+key);
+ const pct=(key)=>{const value=profile[key]??15;
+  if(typeof value!=='number'||!Number.isFinite(value)||value<0||value>100)
+   throw new RangeError('Invalid NPC profile percentage: '+key);
+  return value;
+ };
+ const healthMinimumPct=pct('healthMinimumPct');
+ const defenseMinimumPct=pct('defenseMinimumPct');
+ const speedMinimumPct=pct('speedMinimumPct');
+ const specialtyMultiplier=profile.specialtyMultiplier??1;
+ if(typeof specialtyMultiplier!=='number'||!Number.isFinite(specialtyMultiplier)||
+   specialtyMultiplier<0||specialtyMultiplier>10)
+  throw new RangeError('Invalid NPC specialtyMultiplier');
+ if(healthMinimumPct+defenseMinimumPct+speedMinimumPct>100)
+  throw new RangeError('NPC profile minimum percentages exceed 100');
  const used=new Set(attackChannels);
  const weights=registry.stats.map(stat=>{
   const id=stat.id,base=baseStatValues[id]??0;
@@ -28,12 +50,13 @@ export function allocateCaptureWildLevelStatsV1({
   // offensive channels receive higher weight. Never award unused elements.
   const core=id==='health'||id==='defense'||id==='speed';
   const offense=stat.damageChannel!=null&&used.has(stat.damageChannel);
-  return {id,weight:core||offense?1+base+(offense?2:0):0};
+  return {id,weight:core||offense?(1+base+(offense?2:0))*(offense?specialtyMultiplier:1):0};
  }).filter(x=>x.weight>0);
  if(total>0&&!weights.length)throw new RangeError('NPC needs official core or used attack stats');
  const sum=weights.reduce((a,b)=>a+b.weight,0);
  if(!Number.isFinite(sum)||sum<=0)throw new RangeError('Invalid NPC stat weights');
- const floors=new Map(['health','defense','speed'].filter(id=>ids.has(id)).map(id=>[id,Math.floor(total*0.15)]));
+ const percentages={health:healthMinimumPct,defense:defenseMinimumPct,speed:speedMinimumPct};
+ const floors=new Map(['health','defense','speed'].filter(id=>ids.has(id)).map(id=>[id,Math.floor(total*percentages[id]/100)]));
  const floorTotal=[...floors.values()].reduce((a,b)=>a+b,0);
  const variableTotal=total-floorTotal;
  const shares=weights.map((entry,index)=>{

@@ -135,3 +135,29 @@ test('RED: historical Tester and Adventure without wallet preserve previous auth
  assert.equal(empty.fighters.find(f=>f.id==='local-1').maxHp,100);
  assert.equal(plain.fighters.find(f=>f.id==='opponent-1').maxHp,60);
 });
+
+test('official wild level 10 gets 180 auto-distributed points while level 1 stays authored',()=>{
+ const x=options();
+ const base=buildCaptureEncounterCombatSourceV1({...x,local:{speciesId:'local',level:1},
+  opponent:{speciesId:'enemy',level:1},wildStatProfile:{}});
+ const high=buildCaptureEncounterCombatSourceV1({...x,local:{speciesId:'local',level:1},
+  opponent:{speciesId:'enemy',level:10},wildStatProfile:{}});
+ const normal=base.fighters.find(f=>f.id==='opponent-1');
+ const wild=high.fighters.find(f=>f.id==='opponent-1');
+ assert.equal(normal.maxHp,60);
+ assert.ok(wild.maxHp>normal.maxHp,'NPC health must increase with level');
+ assert.ok(wild.damagePctByChannel.fire>normal.damagePctByChannel.fire,'authored fire ability must specialize the NPC');
+ assert.equal(high.fighters.find(f=>f.id==='local-1').maxHp,100,'player must not inherit wild points');
+ assert.equal(x.configuredCreatures.get('enemy').statValues.values.health,60,'author stays unchanged');
+});
+test('editable NPC profile is applied in actual Combat and keeps mirror opponents independent',()=>{
+ const x=options();x.configuredCreatures.delete('enemy');
+ const base=buildCaptureEncounterCombatSourceV1({...x,
+  local:{speciesId:'local',level:10,statAllocations:{health:7}},opponent:{speciesId:'local',level:10},
+  wildStatProfile:{pointsPerLevel:20,healthMinimumPct:25,defenseMinimumPct:15,speedMinimumPct:15,specialtyMultiplier:2}});
+ const local=base.fighters.find(f=>f.id==='local-1');
+ const enemy=base.fighters.find(f=>f.id==='opponent-1');
+ assert.equal(local.maxHp,107,'local only receives its own points');
+ assert.ok(enemy.maxHp>local.maxHp,'wild mirror receives its own derived points');
+ assert.equal(x.configuredCreatures.get('local').statValues.values.health,100);
+});
