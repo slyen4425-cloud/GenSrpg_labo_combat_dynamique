@@ -14,11 +14,11 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 404,
+    "assets": 407,
     "icons": 192,
-    "sprites": 188,
+    "sprites": 190,
     "fx": 2,
-    "portraits": 17,
+    "portraits": 18,
     "backgrounds": 5,
     "creatures": 72
   },
@@ -13577,6 +13577,107 @@
       },
       "compatibility": {
         "uses": [
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-sylvorne-opponent-01",
+      "label": "Sylvorne — adversaire (face)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "sylvorne",
+        "tree",
+        "opponent",
+        "face",
+        "nature",
+        "earth"
+      ],
+      "resource": {
+        "file": "capture/creatures/sylvorne/runtime/sylvorne_face.png",
+        "mime": "image/png"
+      },
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / composition originale déposée par auteur le 2026-11-10, triptyque 512px préparé pour revue",
+        "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-sylvorne-player-01",
+      "label": "Sylvorne — joueur (dos)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "sylvorne",
+        "tree",
+        "player",
+        "back",
+        "nature",
+        "earth"
+      ],
+      "resource": {
+        "file": "capture/creatures/sylvorne/runtime/sylvorne_dos.png",
+        "mime": "image/png"
+      },
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / composition originale déposée par auteur le 2026-11-10, triptyque 512px préparé pour revue",
+        "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-sylvorne-icon-01",
+      "label": "Sylvorne — portrait original",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "capture",
+        "creature",
+        "sylvorne",
+        "tree",
+        "icon",
+        "nature",
+        "earth"
+      ],
+      "resource": {
+        "file": "capture/creatures/sylvorne/runtime/sylvorne_icone.png",
+        "mime": "image/png"
+      },
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / composition originale déposée par auteur le 2026-11-10, triptyque 512px préparé pour revue",
+        "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
           "capture",
           "editor"
         ]

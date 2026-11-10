@@ -1,0 +1,51 @@
+{
+  "id": "sylvorne",
+  "name": "Sylvorne",
+  "profile": "massive",
+  "views": {
+    "player": "runtime/sylvorne_dos.png",
+    "opponent": "runtime/sylvorne_face.png",
+    "icon": "runtime/sylvorne_icone.png"
+  },
+  "runtimePreview": {
+    "player": "runtime/sylvorne_dos.png",
+    "opponent": "runtime/sylvorne_face.png",
+    "icon": "runtime/sylvorne_icone.png"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [
+      512,
+      512
+    ],
+    "icon": [
+      512,
+      512
+    ]
+  },
+  "displayScale": {
+    "player": 1.2,
+    "opponent": 0.85
+  },
+  "transformOrigin": {
+    "x": "50%",
+    "y": "88%"
+  },
+  "assetIds": {
+    "opponent": "pack:capture:creature-sylvorne-opponent-01",
+    "player": "pack:capture:creature-sylvorne-player-01",
+    "icon": "pack:capture:creature-sylvorne-icon-01"
+  },
+  "source": {
+    "scope": "pack",
+    "packId": "capture",
+    "library": "global-assets",
+    "authorArchive": "gensrpg_serpent_arbre_icones_modeles.zip",
+    "archiveGitBlob": "48dcbd6f7cc971ec9e5ed832169e16c1faa329bf"
+  },
+  "visualRevision": "source-faithful-512-2026-11-10-review",
+  "notes": "Candidat artistique. Deux vues extraites de la planche RGBA d’origine (2172×724), recadrage indépendant sans inversion ni redessin ; marge alpha >=42px. L’icône PNG est la création originale byte-identique. Aucun changement aux créatures existantes."
+}
