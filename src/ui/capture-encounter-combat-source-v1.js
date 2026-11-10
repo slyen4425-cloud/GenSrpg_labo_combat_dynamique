@@ -3,6 +3,7 @@ import { normalizeBattleFormatDefinition } from "../contracts/battle-format-defi
 import { buildCaptureEditorCombatTestV1 } from "./capture-editor-combat-test-v1.js";
 import {projectCaptureEncounterOwnedStatsV1} from "../adapters/input/capture/capture-encounter-owned-stats-v1.js";
 import {allocateCaptureWildLevelStatsV1} from "../adapters/input/capture/capture-wild-level-stats-v1.js";
+import {projectCapturePlannedLoadoutsToCombatV1} from "../adapters/input/capture/capture-planned-loadout-to-combat-v1.js";
 
 function requireParticipant(participant, side) {
   if (typeof participant?.speciesId !== "string" || !participant.speciesId.trim()) {
@@ -53,10 +54,22 @@ export function applyCaptureEncounterHpMultiplierV1(source, multiplier = 1) {
 // Combat alone turns a WorldArea NPC profile into actual fighter stat effects.
 // Only equipped and already-unlocked ability elements influence specialization.
 // The authored species, local instance wallet and saved game are never mutated.
-function projectCaptureWildOpponentStatsV1({opponent,configuredCreatures,configuredSkills,statRegistry,profile}){
+function projectCaptureWildOpponentStatsV1({
+ opponent,configuredCreatures,configuredSkills,statRegistry,profile,progressionRules
+}){
  const record=configuredCreatures.get(opponent.speciesId);
  if(!record)throw new RangeError('Wild opponent absent from official Combat creature registry');
- const attackChannels=[...new Set((record.loadout?.slots??[])
+ // Reuse the SAME official progression-aware exporter that decides which
+ // loadout slots actually exist at the opponent's encounter level. A locked
+ // (though authored) attack must never steal points from usable stat channels.
+ const activeLoadout=progressionRules==null?record.loadout:
+  projectCapturePlannedLoadoutsToCombatV1({
+   progressionRules,
+   creatureDrafts:[{...record.draft,level:opponent.level}],
+   skillDrafts:[...configuredSkills.values()],
+   loadouts:[record.loadout]
+  })[0];
+ const attackChannels=[...new Set((activeLoadout?.slots??[])
   .map(slot=>configuredSkills.get(slot.skillId))
   .filter(skill=>skill&&skill.requiredLevel<=opponent.level)
   .map(skill=>skill.definition?.element)
@@ -200,7 +213,7 @@ export function buildCaptureEncounterCombatSourceV1({ local, opponent, localRese
   const npcCreatures=options.wildStatProfile===undefined?authoredCreatures:
    projectCaptureWildOpponentStatsV1({opponent,configuredCreatures:authoredCreatures,
     configuredSkills:options.configuredSkills,statRegistry:options.statRegistry,
-    profile:options.wildStatProfile});
+    profile:options.wildStatProfile,progressionRules:options.progressionRules});
   const hasNpcOverride=npcCreatures!==authoredCreatures;
   const ownedCreatures=projectCaptureEncounterOwnedStatsV1({
     configuredCreatures:authoredCreatures,statRegistry:options.statRegistry,
