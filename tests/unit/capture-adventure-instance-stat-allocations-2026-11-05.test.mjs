@@ -161,3 +161,44 @@ test('editable NPC profile is applied in actual Combat and keeps mirror opponent
  assert.ok(enemy.maxHp>local.maxHp,'wild mirror receives its own derived points');
  assert.equal(x.configuredCreatures.get('local').statValues.values.health,100);
 });
+
+test('wild elemental specialization ignores abilities in progression-locked slots',()=>{
+ const x=options();
+ const enemy=x.configuredCreatures.get('enemy');
+ x.configuredCreatures.set('enemy',{
+  ...enemy,
+  loadout:{...enemy.loadout,slots:[
+   {id:'slot-1',skillId:null},
+   {id:'slot-2',skillId:'stat-bolt'},
+   {id:'slot-3',skillId:null},
+   {id:'slot-4',skillId:null}
+  ]}
+ });
+ const progressionRules={
+  schema:'capture-progression-rules-v1',
+  maxActiveSkills:4,
+  slotUnlockSchedule:[
+   {level:1,slots:1},{level:5,slots:2},
+   {level:10,slots:3},{level:15,slots:4}
+  ]
+ };
+ const at=level=>buildCaptureEncounterCombatSourceV1({
+  ...x,progressionRules,wildStatProfile:{
+   pointsPerLevel:20,healthMinimumPct:15,
+   defenseMinimumPct:15,speedMinimumPct:15,
+   specialtyMultiplier:3
+  },
+  local:{speciesId:'local',level:1},
+  opponent:{speciesId:'enemy',level}
+ });
+ const locked=at(2);
+ const active=at(6);
+ const fire=source=>source.exported.creatures.find(creature=>creature.id==='enemy')
+  .combat.statValuesById.fire;
+ assert.equal(fire(locked),10,
+  'slot 2 is locked until level 5: cannot receive fire specialty points');
+ assert.ok(fire(active)>10,
+  'the SAME authored fire skill becomes eligible after its official unlock');
+ assert.equal(x.configuredCreatures.get('enemy').statValues.values.fire,10,
+  'NPC projection must never modify the authored definition');
+});
