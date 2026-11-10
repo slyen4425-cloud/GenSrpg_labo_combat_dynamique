@@ -35,3 +35,18 @@ test('reject invalid level, budget, unknown stat and channel shape',()=>{
  assert.throws(()=>allocate({...args,level:10,baseStatValues:{unknown:1}}),/unknown/);
  assert.throws(()=>allocate({...args,level:10,attackChannels:[42]}),/attackChannels/);
 });
+
+test('creator-editable profile changes the allocation without losing core floors',()=>{
+ const profile={healthMinimumPct:20,defenseMinimumPct:20,speedMinimumPct:20,specialtyMultiplier:3};
+ const b=allocate({...args,level:10,profile});
+ assert.equal(Object.values(b).reduce((a,c)=>a+c,0),180);
+ for(const id of ['health','defense','speed'])assert.ok(b[id]>=36,id);
+ assert.ok(b.fire>0);
+ assert.deepEqual(profile,{healthMinimumPct:20,defenseMinimumPct:20,speedMinimumPct:20,specialtyMultiplier:3});
+});
+test('invalid creator profiles fail before combat projection',()=>{
+ assert.throws(()=>allocate({...args,level:10,profile:{healthMinimumPct:50,defenseMinimumPct:40,speedMinimumPct:20}}),/exceed 100/);
+ assert.throws(()=>allocate({...args,level:10,profile:{speedMinimumPct:-1}}),/percentage/);
+ assert.throws(()=>allocate({...args,level:10,profile:{specialtyMultiplier:11}}),/specialtyMultiplier/);
+ assert.throws(()=>allocate({...args,level:10,profile:{unknown:4}}),/Unknown NPC profile/);
+});
