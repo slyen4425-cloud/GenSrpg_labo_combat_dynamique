@@ -33,9 +33,12 @@ export function allocateCaptureWildLevelStatsV1({
  if(total>0&&!weights.length)throw new RangeError('NPC needs official core or used attack stats');
  const sum=weights.reduce((a,b)=>a+b.weight,0);
  if(!Number.isFinite(sum)||sum<=0)throw new RangeError('Invalid NPC stat weights');
+ const floors=new Map(['health','defense','speed'].filter(id=>ids.has(id)).map(id=>[id,Math.floor(total*0.15)]));
+ const floorTotal=[...floors.values()].reduce((a,b)=>a+b,0);
+ const variableTotal=total-floorTotal;
  const shares=weights.map((entry,index)=>{
-  const raw=total*entry.weight/sum;
-  return {...entry,index,points:Math.floor(raw),fraction:raw-Math.floor(raw)};
+  const raw=variableTotal*entry.weight/sum;
+  return {...entry,index,points:Math.floor(raw)+(floors.get(entry.id)??0),fraction:raw-Math.floor(raw)};
  });
  let remainder=total-shares.reduce((n,s)=>n+s.points,0);
  for(const share of [...shares].sort((a,b)=>b.fraction-a.fraction||a.index-b.index)){
