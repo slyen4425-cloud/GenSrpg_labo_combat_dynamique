@@ -33,6 +33,6 @@ test('Sylvorne candidate is a schema-valid slow Nature/Earth tank without fake p
 test('Sylvorne appears exactly once in official skill and creature showcase registries',async()=>{
  const a=await readFile(new URL('../../src/catalogs/capture-showcase-creature-presets-v1.js',import.meta.url),'utf8');
  const b=await readFile(new URL('../../src/catalogs/capture-showcase-skill-presets-v1.js',import.meta.url),'utf8');
- assert.equal((a.match(/crea_sylvorne\\.capture-creature-transfer-v1/g)??[]).length,1);
- for(const id of ids)assert.equal((b.match(new RegExp(id+'\\.capture-skill-transfer-v1','g'))??[]).length,1);
+ assert.equal(a.split('crea_sylvorne.capture-creature-transfer-v1.json').length-1,1);
+ for(const id of ids)assert.equal(b.split(id+'.capture-skill-transfer-v1.json').length-1,1);
 });
