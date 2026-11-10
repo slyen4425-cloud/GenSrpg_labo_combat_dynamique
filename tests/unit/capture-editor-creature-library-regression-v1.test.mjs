@@ -180,8 +180,8 @@ test("real Human Editor startup data keeps historical creature library when auth
 
   assert.equal(
     configuredCreatures.size,
-    105,
-    "Preserve 102 historical creatures; add Loup, Kitsune and Gorice once each"
+    106,
+    "Preserve 102 historical creatures; add Loup, Kitsune, Gorice and Sylvorne once each"
   );
   assert.equal(
     configuredCreatures.get("crea_maraileron")?.draft?.displayName,
@@ -201,6 +201,7 @@ test("real Human Editor startup data keeps historical creature library when auth
   );
   assert.equal(configuredCreatures.get("kitsune_lunaire")?.draft?.displayName,"Kitsune Lunaire");
   assert.equal(configuredCreatures.get("gorice")?.draft?.displayName,"Gorice");
+  assert.equal(configuredCreatures.get("crea_sylvorne")?.draft?.displayName,"Sylvorne");
 
   const historicalIds =
     new Set(
