@@ -26,7 +26,7 @@ test('native transfer batch imports 5 Sylvorne skills and its creature into the 
  }
  assert.equal(creatures.has('crea_sylvorne'),false);
  const prior=creatures.size;
- const paths=[...ids.map(id=>'data/capture/candidates/'+id+'.capture-skill-transfer-v1.json'),'data/capture/candidates/crea_sylvorne.capture-creature-transfer-v1.json'];
+ const paths=[...ids.map(id=>'data/capture/showcase/'+id+'.capture-skill-transfer-v1.json'),'data/capture/showcase/crea_sylvorne.capture-creature-transfer-v1.json'];
  const transfers=[];
  for(const p of paths)transfers.push(importCaptureTransferJsonV1(await read(p),{statRegistry}));
  const result=applyCaptureTransferBatchToEditorStateV1({transfers,configuredCreatures:creatures,configuredSkills:skills,statRegistry,progressionRules,mode:'replace',metadata:{producer:'sylvorne-author-native-batch-test'}});
@@ -34,7 +34,7 @@ test('native transfer batch imports 5 Sylvorne skills and its creature into the 
  assert.equal(result.actions.filter(a=>a.id==='crea_sylvorne').length,1);
  const creature=creatures.get('crea_sylvorne');
  assert.deepEqual(creature.draft.skillIds,ids);
- assert.equal(creature.draft.presentation,null);
+ assert.equal(creature.draft.presentation.visual.front.assetId,'pack:capture:creature-sylvorne-opponent-01');
  for(const id of ids){
   assert.equal(skills.has(id),true);
   assert.equal(result.actions.filter(a=>a.id===id).length,1);

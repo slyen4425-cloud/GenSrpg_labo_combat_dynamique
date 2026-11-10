@@ -74,6 +74,11 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/krakenor-voile-encre.capture-skill-transfer-v1.json",
     "data/capture/showcase/krakenor-bulle-implosion.capture-skill-transfer-v1.json",
     "data/capture/showcase/krakenor-abysse-huit-bras.capture-skill-transfer-v1.json",
+    "data/capture/showcase/sylvorne-eclat-racinaire.capture-skill-transfer-v1.json",
+    "data/capture/showcase/sylvorne-ecorce-vivante.capture-skill-transfer-v1.json",
+    "data/capture/showcase/sylvorne-vrilles-du-sous-bois.capture-skill-transfer-v1.json",
+    "data/capture/showcase/sylvorne-seve-ancienne.capture-skill-transfer-v1.json",
+    "data/capture/showcase/sylvorne-foret-souveraine.capture-skill-transfer-v1.json",
   ]);
 
 // Author-approved retirement from the ACTIVE Capture skill library.

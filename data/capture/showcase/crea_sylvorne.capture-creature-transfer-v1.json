@@ -107,7 +107,76 @@
       "sylvorne-seve-ancienne",
       "sylvorne-foret-souveraine"
     ],
-    "presentation": null
+    "presentation": {
+      "id": "creature:crea_sylvorne",
+      "version": 9,
+      "subjectType": "creature",
+      "subjectId": "crea_sylvorne",
+      "profileId": "massive",
+      "displayScale": 1,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1.18,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 0.85,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      },
+      "transformOrigin": {
+        "x": "50%",
+        "y": "88%"
+      },
+      "visual": {
+        "front": {
+          "assetId": "pack:capture:creature-sylvorne-opponent-01"
+        },
+        "back": {
+          "assetId": "pack:capture:creature-sylvorne-player-01"
+        },
+        "icon": {
+          "assetId": "pack:capture:creature-sylvorne-icon-01"
+        }
+      },
+      "sockets": [
+        {
+          "id": "hand",
+          "label": "Main de bois",
+          "front": {
+            "x": 0.75,
+            "y": 0.57
+          },
+          "back": {
+            "x": 0.24,
+            "y": 0.57
+          }
+        },
+        {
+          "id": "head",
+          "label": "Tête",
+          "front": {
+            "x": 0.42,
+            "y": 0.2
+          },
+          "back": {
+            "x": 0.58,
+            "y": 0.2
+          }
+        }
+      ],
+      "audio": {}
+    }
   },
   "statValues": {
     "schema": "capture-creature-stat-values-v1",

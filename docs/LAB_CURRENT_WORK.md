@@ -1,3 +1,10 @@
+## 2026-11-10 — Sylvorne : promotion du gardien végétal dans Showcase, assetIds certifiés (C2)
+- START SHA `3af25a4a977dfc574d40e6f7617e566068e2314f`, checkpoint `checkpoint/lab-start-sylvorne-showcase-promotion-2026-11-10`, branche `work/lab-sylvorne-showcase-promotion-2026-11-10`, après prototype #289 testé 10/10 GREEN. Dépendance visuelle officielle : `global-assets@9eef5847a2b9907c493d9575a5c148b09d41a5bf` (PR #290 fusionnée, 2/2 checks SUCCESS), originaux ZIP préservés.
+- Un seul propriétaire : six transferts prototypes déplacés de `data/capture/candidates` vers `data/capture/showcase`, deux catalogues existants augmentés d’une seule créature et cinq compétences, sans nouveaux moteurs ni doublons. Modèle original : FACE/DOS/ICONE 512 RGBA, marges 42 px, références visuelles canoniques dans `global-assets` ; mêmes fiches stats et mécaniques. Les 110 entrées historiques et les autres modèles sont inchangés.
+- Gates finaux avant publication : validation native des six transferts, 5 paliers, synergies de Germination, test du batch, vrais parcours navigateur de l’éditeur, CI entière sur le SHA exact, Pages sur `main` et provenance HTTPS. Aucune reprise sur GenSRPG PWA sans mise à jour explicite de ses pins officiels.
+
+---
+
 ## 2026-11-10 — Sylvorne : prototype arbre, statistiques et 5 capacités (C2, CANDIDAT NON PUBLIÉ)
 - START `main@7c00030ac32cfff5e38bc516db3df25ba4bbe4a4`, checkpoint `checkpoint/lab-start-creature-tree-sylvorne-2026-11-10`, branche `work/lab-creature-tree-sylvorne-2026-11-10`; source historique et ZIP auteur protégés.
 - Six transferts natifs isolés dans `data/capture/candidates`, aucune entrée du Bestiaire/Showcase activée, média d'arbre non inventé. Référence `docs/LAB_TREE_SYLVORNE_CANDIDATE_2026_11_10.md`.
