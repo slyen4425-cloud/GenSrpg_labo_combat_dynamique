@@ -43,7 +43,7 @@ export function projectCombatCastChargeV1({
   });
 }
 
-export function createCombatCastChargePresenterV1({ bar }) {
+export function createCombatCastChargePresenterV1({ bar, showSkillIcon = false }) {
   if (!bar?.ownerDocument?.createElement || !bar?.parentNode?.insertBefore) {
     throw new TypeError("Cast charge presenter needs a mounted progress bar");
   }
@@ -53,6 +53,23 @@ export function createCombatCastChargePresenterV1({ bar }) {
   readout.setAttribute("aria-hidden", "true");
   readout.hidden = true;
   bar.parentNode.insertBefore(readout, bar);
+  // The opponent's charged action is identified using its existing,
+  // authored skill icon. No second skill catalog, clock or fallback glyph.
+  let lane=null, icon=null;
+  if (showSkillIcon) {
+    lane=bar.ownerDocument.createElement("span");
+    lane.className="squad-card__charge-lane";
+    lane.setAttribute("data-combat-charge-lane","");
+    icon=bar.ownerDocument.createElement("img");
+    icon.className="squad-card__charge-skill-icon";
+    icon.setAttribute("data-combat-charge-skill-icon","");
+    icon.setAttribute("aria-hidden","true");
+    icon.alt="";
+    icon.hidden=true;
+    bar.parentNode.insertBefore(lane,bar);
+    lane.append(icon,bar);
+    lane.hidden=true;
+  }
   return Object.freeze({
     render(snapshot = {}) {
       const projection = projectCombatCastChargeV1(snapshot);
@@ -63,6 +80,12 @@ export function createCombatCastChargePresenterV1({ bar }) {
       bar.setAttribute("aria-valuetext", projection.accessibleLabel);
       readout.textContent = projection.readout;
       readout.hidden = !projection.active;
+      if (lane) {
+        lane.hidden=!projection.active;
+        const url=typeof snapshot.iconUrl==="string" ? snapshot.iconUrl.trim() : "";
+        icon.hidden=!projection.active || !url;
+        if (!icon.hidden && icon.src!==url) icon.src=url;
+      }
       return projection;
     }
   });

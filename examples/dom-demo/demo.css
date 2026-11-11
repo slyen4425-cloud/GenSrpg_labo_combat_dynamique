@@ -1831,6 +1831,30 @@ button.reserve-card {
   visibility: hidden;
 }
 
+/* Skill identity next to the opponent's live cast bar; hidden outside cast. */
+.squad-card__charge-lane {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  width: 100%;
+  min-width: 0;
+}
+.squad-card__charge-lane[hidden] { display: none; }
+.squad-card__charge-skill-icon {
+  display: block;
+  flex: none;
+  width: clamp(1.1rem, 2.4vw, 1.45rem);
+  height: clamp(1.1rem, 2.4vw, 1.45rem);
+  object-fit: contain;
+  border-radius: 0.24rem;
+}
+.squad-card__charge-skill-icon[hidden] { display: none; }
+.squad-card__charge-lane .squad-card__charge {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+}
+
 .squad-card--local-full .squad-card__charge {
   height: 0.8rem;
 }

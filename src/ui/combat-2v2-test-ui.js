@@ -810,7 +810,9 @@ export async function mountCoop2v2Test({
   const chargePresenters = Object.fromEntries(
     Object.entries(chargeRefs).map(([actorId, bar]) => [
       actorId,
-      createCombatCastChargePresenterV1({ bar })
+      createCombatCastChargePresenterV1({
+        bar, showSkillIcon:previewFormat.enemyActorIds.includes(actorId)
+      })
     ])
   );
 
@@ -1025,6 +1027,18 @@ export async function mountCoop2v2Test({
     status.dataset.tone = tone;
   }
 
+  const opponentSkillIconCache=new Map();
+  function opponentSkillIconUrl(actorId,skillId) {
+    if (!previewFormat.enemyActorIds.includes(actorId) || !skillId) return null;
+    const key=actorId+"::"+skillId;
+    if (!opponentSkillIconCache.has(key)) {
+      const url=presentationForActorSkill(skillId,{sourceActorId:actorId})?.icon?.url
+        ?? presentationAssets?.asset?.("core:icon-skill-"+skillId+"-01")?.url
+        ?? null;
+      opponentSkillIconCache.set(key,url);
+    }
+    return opponentSkillIconCache.get(key);
+  }
   function setCharge(actorId, snapshot = {}) {
     chargePresenters[actorId]?.render(snapshot);
   }
@@ -1870,7 +1884,8 @@ export async function mountCoop2v2Test({
         value: preparing ? progress.chargeProgress : 0,
         active: preparing,
         actionName: progress.actionName,
-        remainingMs: preparing ? progress.remainingPreparationMs : 0
+        remainingMs: preparing ? progress.remainingPreparationMs : 0,
+        iconUrl: preparing ? opponentSkillIconUrl(progress.actorId,progress.actionId) : null
       });
 
       if (!progress.actionId) {

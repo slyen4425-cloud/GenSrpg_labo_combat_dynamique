@@ -53,3 +53,31 @@ test("combat charge adapter reuses one DOM readout, reports snapshots, and reset
   assert.equal(bar.dataset.active, "false");
   assert.equal(inserted[0].child.hidden, true);
 });
+
+test("opponent cast shows the authored skill icon next to the native progress, and clears on release", () => {
+  const siblings=[];
+  const doc={createElement(tag){
+    return {tag,className:"",hidden:false,children:[],textContent:"",
+      setAttribute(name,value){this[name]=value;},
+      append(...children){this.children.push(...children);}
+    };
+  }};
+  const parent={insertBefore(child,before){siblings.push({child,before});}};
+  const bar={ownerDocument:doc,parentNode:parent,dataset:{},max:1,value:0,
+    setAttribute(name,value){this[name]=value;}};
+  const presenter=createCombatCastChargePresenterV1({bar,showSkillIcon:true});
+  assert.equal(siblings.length,2,"readout and one reusable icon+progress lane");
+  const lane=siblings[1].child;
+  assert.equal(lane.children[1],bar,"no duplicate progress bar");
+  const img=lane.children[0];
+  assert.equal(img["aria-hidden"],"true");
+  assert.equal(lane.hidden,true);
+  presenter.render({active:true,value:0.4,actionName:"Griffe",
+    remainingMs:1200,iconUrl:"https://assets.invalid/claw.webp"});
+  assert.equal(img.src,"https://assets.invalid/claw.webp");
+  assert.equal(img.hidden,false);
+  assert.equal(lane.hidden,false);
+  presenter.render({active:false,iconUrl:"https://assets.invalid/claw.webp"});
+  assert.equal(img.hidden,true);
+  assert.equal(lane.hidden,true);
+});
