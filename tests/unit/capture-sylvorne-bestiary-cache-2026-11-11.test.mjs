@@ -43,6 +43,7 @@ test("public editor and Bestiary explicitly refresh the published Sylvorne modul
   const editorOwner=read("src/ui/capture-editor-human-v2.js");
   assert.ok(bestiaryHtml.includes("bestiary.js?v="+token));
   assert.ok(editorHtml.includes("capture-editor-v2.js?v="));
+  assert.ok(editorHtml.includes('href="./bestiary.html?v='+token+'"'),"Editor must navigate to a fresh Bestiary document");
   assert.ok(editorHtml.includes(token));
   for(const module of [
     "capture-showcase-creature-presets-v1.js",
