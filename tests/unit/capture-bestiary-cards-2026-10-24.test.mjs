@@ -99,7 +99,7 @@ test("HTML: no redundant Force table; gallery opens one presentation route",()=>
   assert.match(app,/history.pushState/);
   assert.match(app,/popstate/);
   assert.match(app,/nativeSkills/);
-  assert.match(editor,/href="\.\/bestiary\.html"/);
+  assert.match(editor,/href="\.\/bestiary\.html\?v=sylvorne-showcase-media-20261111"/);
 });
 
 test("effects under each stat derive from the identical editor-owned projection",()=>{

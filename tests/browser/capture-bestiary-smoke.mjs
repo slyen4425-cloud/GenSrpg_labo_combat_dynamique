@@ -11,6 +11,8 @@ const fixture=JSON.parse(readFileSync("data/capture/showcase/crea_tox_2.capture-
 const visual=fixture.presentation.visual;
 const grainou=JSON.parse(readFileSync("data/capture/showcase/crea_nat_1.capture-creature-transfer-v1.json","utf8")).draft;
 const grainouVisual=grainou.presentation.visual;
+const sylvorne=JSON.parse(readFileSync("data/capture/showcase/crea_sylvorne.capture-creature-transfer-v1.json","utf8")).draft;
+const sylvorneVisual=sylvorne.presentation.visual;
 const liane=JSON.parse(readFileSync("data/capture/showcase/liane_venimeuse.capture-skill-transfer-v1.json","utf8")).draft;
 const media=(data,file,assetType="sprite")=>({
   id:data.assetId,assetType,mediaType:"image",resource:{file}
@@ -24,7 +26,10 @@ const catalog={assets:[
   media(grainouVisual.front,"capture/creatures/heriplante/runtime/heriplante_adversaire_face.png"),
   media(grainouVisual.back,"capture/creatures/heriplante/runtime/heriplante_joueur_dos.png"),
   media(grainouVisual.icon,"capture/creatures/heriplante/runtime/heriplante_icone.png","portrait"),
-  media(liane.presentation.visual.icon,"capture/icons/skills/icon_skill_ronce_01.webp","icon")
+  media(liane.presentation.visual.icon,"capture/icons/skills/icon_skill_ronce_01.webp","icon"),
+  media(sylvorneVisual.front,"capture/creatures/sylvorne/runtime/sylvorne_face.png"),
+  media(sylvorneVisual.back,"capture/creatures/sylvorne/runtime/sylvorne_dos.png"),
+  media(sylvorneVisual.icon,"capture/creatures/sylvorne/runtime/sylvorne_icone.png","portrait")
 ]};
 const probe=[
   "<script>",
@@ -52,7 +57,7 @@ const probe=[
   "    try {",
   "      const name=document.querySelector('[data-bestiary-name]').textContent;",
   "      const count=document.querySelector('[data-bestiary-count]').textContent;",
-  "      if(name!=='Venombre'||count!=='2 / 2')throw Error('bad entry:'+name+'/'+count);",
+  "      if(name!=='Venombre'||count!=='3 / 3')throw Error('bad entry:'+name+'/'+count);",
   "      if(!frontSeen)throw Error('front-only image missing');",
   "      if(document.querySelector('[data-bestiary]').dataset.bestiaryView!=='detail')throw Error('gallery did not open a page');",
   "      if(document.querySelectorAll('[data-bestiary-skills] .skill').length!==5)throw Error('equipped five-slot loadout not rendered');",
@@ -77,11 +82,11 @@ const probe=[
   "      if(document.querySelector('[data-bestiary-back]'))throw Error('rear view leaked');",
   "      const input=document.querySelector('[data-bestiary-search]');",
   "      input.value='aucune';input.dispatchEvent(new Event('input',{bubbles:true}));",
-  "      if(document.querySelector('[data-bestiary-count]').textContent!=='0 / 2')throw Error('search not connected');",
+  "      if(document.querySelector('[data-bestiary-count]').textContent!=='0 / 3')throw Error('search not connected');",
   "      input.value='venombre';input.dispatchEvent(new Event('input',{bubbles:true}));",
   "      if(document.querySelectorAll('.creature-choice').length!==1)throw Error('search reset failed');",
   "      input.value='grainou';input.dispatchEvent(new Event('input',{bubbles:true}));",
-"      if(document.querySelector('[data-bestiary-count]').textContent!=='1 / 2')throw Error('Grainou search failed');",
+"      if(document.querySelector('[data-bestiary-count]').textContent!=='1 / 3')throw Error('Grainou search failed');",
 "      const grainouButton=[...document.querySelectorAll('.creature-choice')].find(b=>b.textContent.includes('Grainou'));",
 "      if(!grainouButton)throw Error('Grainou missing from gallery');",
 "      grainouButton.click();",
@@ -96,7 +101,21 @@ const probe=[
 "      if(!details.includes('attaque touche'))throw Error('hit condition missing');",
 "      if(details.includes('force_reserve_switch')||details.includes('Effet non encore décrit'))throw Error('technical code leaked');",
 "      if(!details.includes('2 charges de Graine sansue')||!details.includes('2 charges de Poison'))throw Error('marker explanation lost');",
-"      document.body.dataset.bestiarySmoke='pass:real-transfer:venombre:grainou:force-switch:icon:markers';",
+"      const all=document.querySelector('[data-bestiary-search]');",
+"      all.value='sylvorne';all.dispatchEvent(new Event('input',{bubbles:true}));",
+"      if(document.querySelector('[data-bestiary-count]').textContent!=='1 / 3')throw Error('Sylvorne missing from published Bestiaire');",
+"      const tree=[...document.querySelectorAll('.creature-choice')].find(b=>b.textContent.includes('Sylvorne'));",
+"      if(!tree)throw Error('Sylvorne catalogue entry is absent');",
+"      const treeIcon=tree.querySelector('img');",
+"      if(!treeIcon || !treeIcon.src.includes('sylvorne_icone.png'))throw Error('Sylvorne icon not connected');",
+"      tree.click();",
+"      if(document.querySelector('[data-bestiary-name]').textContent!=='Sylvorne')throw Error('Sylvorne name absent from profile');",
+"      const treeFace=document.querySelector('[data-bestiary-portrait] img');",
+"      if(!treeFace || !treeFace.src.includes('sylvorne_face.png'))throw Error('Sylvorne face not connected');",
+"      if(document.querySelectorAll('[data-bestiary-skills] .skill').length!==5)throw Error('Sylvorne abilities not loaded');",
+"      const treeStats=[...document.querySelectorAll('[data-bestiary-measures] .stat__line')].map(n=>n.textContent);",
+"      if(!treeStats.some(s=>s.includes('Vitesse')&&s.includes('0'))||!treeStats.some(s=>s.toLocaleLowerCase('fr').includes('physique')&&s.includes('0')))throw Error('Sylvorne 0 speed/physical not shown');",
+"      document.body.dataset.bestiarySmoke='pass:real-transfer:venombre:grainou:sylvorne:media:force-switch:markers';",
   "    }catch(error){document.body.dataset.bestiarySmoke='error:'+error.message;}",
   "    observer.disconnect();",
   "  },1700);",
