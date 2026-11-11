@@ -66,6 +66,19 @@ export function captureBestiaryCardsV1({
   const damageIconsFor=definition=>Object.freeze(captureSkillDamageChannelsV1(definition)
     .map(channel=>({channel,icon:captureUiPublishedStatIconV1(assetCatalog,channel)}))
     .filter(entry=>entry.icon).map(Object.freeze));
+  // The global visual catalog is the ONLY icon authority. Native skills may
+  // publish a core icon without authoring a separate Showcase skill transfer.
+  // Match its registered skill label, not an unvalidated guessed asset URL.
+  const nativeSkillIcon=skillId=>{
+    // A published canonical asset ID is stable even if its visible label
+    // changes ("Griffe", "claw", localization). Lookup is read-only: no
+    // fabricated URL, icon record or per-skill mapping.
+    if(typeof skillId!=="string"||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(skillId))
+      return null;
+    const asset=assets.get("core:icon-skill-"+skillId+"-01");
+    return validPublishedImage(asset,"icon")
+      ? Object.freeze({assetId:asset.id,file:asset.resource.file}) : null;
+  };
   // Native catalog then authored Showcase: same precedence as the editor.
   for (const entry of nativeSkills) {
     const definition = entry?.definition;
@@ -73,7 +86,7 @@ export function captureBestiaryCardsV1({
         typeof definition?.name !== "string") continue;
     skillsById.set(definition.id, {
       name:definition.name, element:definition.element ?? null,
-      requiredLevel:null, icon:null,
+      requiredLevel:null, icon:nativeSkillIcon(definition.id),
       cooldownMs:Math.max(0,Number(definition.cooldownMs)||0),
       damageIcons:damageIconsFor(definition),
       explanation:describeCaptureSkillV1(definition)
