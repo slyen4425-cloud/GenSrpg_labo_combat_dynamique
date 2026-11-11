@@ -1,3 +1,14 @@
+## 2026-11-11 — Sylvorne absent du Bestiaire : réconciliation de cache ESM (C1, non encore publiée)
+
+- **Signalement utilisateur** : Sylvorne n'apparaît pas dans le Bestiaire et ses visuels paraissent absents après fusion de #291.
+- **Diagnostic GitHub** : `main@e43c97047f6cb38766207ba3c913d524364e515e` inclut `crea_sylvorne`, ses 5 compétences et 3 assetIds. `global-assets@9eef5847a2b9907c493d9575a5c148b09d41a5bf` contient les originaux face/dos/icône et leurs entrées canoniques. Le code `captureBestiaryCardsV1` exige exactement ces médias mais la page Bestiaire importait toujours les modules avec des URL ESM non versionnées, et le script HTML portait la révision du 02/11 ; l'éditeur portait encore les révisions du 07/11. Un client en cache peut donc conserver l'ancien tableau Showcase ou l'ancien catalogue visuel.
+- **START** `main@e43c97047f6cb38766207ba3c913d524364e515e`, checkpoint `checkpoint/lab-start-sylvorne-bestiary-cache-2026-11-11`, branche tampon `work/lab-sylvorne-bestiary-cache-2026-11-11`. Propriétaire unique : chaîne ESM publique existante, aucun second catalogue, moteur ni asset.
+- **Périmètre** : révision de cache des seules entrées Bestiaire/Éditeur et de leurs imports de manifeste/visuals, sans mutation des données de jeu. Renforcer test Chromium Bestiaire en ajoutant Sylvorne aux fichiers Showcase réels et trois faux URL de test qui reflètent les chemins officiels (jamais en production), et sentinelles unitaires de versionnage.
+- **Protection** : 106 créatures, 5 skills Sylvorne, sauvegardes, autres Labs, moteur Combat, `global-assets`, images auteurs inchangés. CI complète et navigateur réel sur SHA exact, main Pages HTTPS et test Android avant GREEN public. PWA GenSRPG est un publisher distinct : son pin source actuellement antérieur à Sylvorne devra être synchronisé dans un lot de publication séparé et certifié ; pas de contournement par copie locale.
+- **Risque** : des service workers/caches externes peuvent conserver des HTML périmés ; une CI de PR ne démontre pas encore la version servie par Pages.
+
+---
+
 ## 2026-11-11 — Sylvorne, corrections auteur gameplay + réparation du smoke navigateur (PR #291, non publié)
 - Base : branche temporaire `work/lab-sylvorne-showcase-promotion-2026-11-10@d9a6bc61c271bc7e1b81ca717e5f75e0901ecfe3`, checkpoint START `checkpoint/lab-start-sylvorne-balance-2026-11-11`. `main` reste seule source officielle ; pas de duplication de règles, médias, GenSRPG ou Exploration.
 - Nom visible Sylvorne ; description gardien des sous-bois ; Vitesse et Physique 0 (source legacy alignée), +100 Défense sur Écorce vivante 14 s (20 points de % au ratio auteur).
