@@ -157,10 +157,7 @@
             "player": "front",
             "opponent": "front"
           },
-          "offsetMode": "same",
-          "trajectoryMode": "linear",
-          "frameSpeedMultiplier": 1.2,
-          "perspectiveAmount": 0
+          "offsetMode": "same"
         },
         "impact": {
           "assetId": "pack:capture:sprite-impact-nature-01",
