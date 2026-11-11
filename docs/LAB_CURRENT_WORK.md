@@ -1,11 +1,12 @@
-## 2026-11-11 — Sylvorne : raccord automatique des trois visuels dans l'éditeur (C1, candidat)
+## 2026-11-11 — Sylvorne : sélection automatique Face / Dos / Icône dans l'éditeur (lot ciblé)
 
-- Signalement : dans l'onglet Apparence de Sylvorne, Face / Dos / Icône non visibles ou vides ; aucun appariement manuel ne doit être nécessaire.
-- START `main@3fd73a250a58d5d29f9f06b1d5cc2988702063d1`, checkpoint `checkpoint/lab-start-sylvorne-editor-asset-autolink-2026-11-11`, branche de travail `work/lab-sylvorne-editor-asset-autolink-2026-11-11`.
-- Cause démontrée : l'icône originale est un `portrait` de catégorie `ui` marqué `creature` dans le catalogue canonique, mais son sélecteur HTML était déclaré au rôle `creature`. L'option de l'asset ne pouvait pas être proposée et le chargement de la fiche réinitialisait silencieusement sa valeur. Le code de rafraîchissement du même écran utilisait déjà un traitement spécial `creature-icon`, divergent de l'initialisation.
-- Correctif minimal : le rôle `creature-icon` est déclaré directement sur le sélecteur, et le propriétaire de bibliothèque traite les deux chemins avec l'unique rôle déclaré par l'HTML. Face/dos continuent d'utiliser le rôle `creature`. Aucune référence manuelle, aucun changement du transfert Sylvorne, aucun nouveau catalogue ou moteur.
-- Gate : nouveau parcours Chromium réel dans la sentinelle existante : ouvrir le modèle publié Sylvorne, vérifier les options d'assetId, les valeurs des trois sélecteurs, les URLs d'aperçu, changer de créature puis recharger Sylvorne. Préserver le test de rendu combat du commit précédent et toutes les sentinelles d'éditeur.
-- Protections : 106 créatures historiques, autres médias, `global-assets`, stats, compétences, PWA GenSRPG et sauvegardes inchangés. CI sur SHA exact, fusion `main` puis contrôle Pages HTTPS avant GREEN public.
+- **Signalement** : Sylvorne apparaît dans le Bestiaire mais les trois sélecteurs d'images de l'éditeur paraissent vides ; l'auteur souhaite une liaison automatique, sans saisie manuelle.
+- **START** : `main@3fd73a250a58d5d29f9f06b1d5cc2988702063d1`, checkpoint `checkpoint/lab-start-sylvorne-editor-media-2026-11-11`, branche temporaire `work/lab-sylvorne-editor-media-2026-11-11` ; `main` reste l'unique publication.
+- **Propriétaire** : seule UI Capture et son catalogage visuel ; aucune seconde table d'IDs, aucun nouveau fichier image. Source : le transfert Showcase `crea_sylvorne` et les trois références du catalogue `global-assets` existant.
+- **Correctif** : lorsqu'une créature publiée est chargée avant que les options de catalogue soient disponibles, conserver sa référence visuelle dans le sélecteur plutôt que perdre sa valeur ; remplacer l'étiquette d'attente avec les données réelles lors du prochain remplissage. Garder l'aperçu et la sélection native. Le fallback est explicite, ne fabrique aucun média.
+- **Test navigateur réel** : sélection de Sylvorne, Face/Dos/Icône et URL de leurs aperçus issus du catalogue ; simuler la disparition temporaire des seules options Sylvorne, changer de créature, re-sélectionner Sylvorne, vérifier trois références intactes et trois aperçus reconnus. Éviter toute mutation des originaux.
+- **Protégé** : 106 créatures, stats, gameplay et cinq compétences, autres Labos, PWA principale, bibliothèque `global-assets`, fichiers sprites auteurs.
+- **Gate** : CI complète sur SHA exact, Pages HTTPS puis vérification Android ; ne pas confondre fusion de PR, publication et test sur appareil.
 
 ---
 

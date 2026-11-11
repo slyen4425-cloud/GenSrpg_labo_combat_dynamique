@@ -1981,6 +1981,58 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
+    // Regression: opening a published creature automatically reconnects its
+    // FACE/DOS/ICON even if menu options were briefly unavailable to Chrome.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-sylvorne-editor-media")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+        document.addEventListener("DOMContentLoaded",()=>{
+          void(async()=>{
+            const delay=ms=>new Promise(r=>setTimeout(r,ms));
+            const specs=[
+              ["[data-creature-front-select]","pack:capture:creature-sylvorne-opponent-01","[data-preview-front]","sylvorne_face.png"],
+              ["[data-creature-back-select]","pack:capture:creature-sylvorne-player-01","[data-preview-back]","sylvorne_dos.png"],
+              ["[data-creature-icon-select]","pack:capture:creature-sylvorne-icon-01","[data-preview-icon]","sylvorne_icone.png"]
+            ];
+            try {
+              const lib=document.querySelector("[data-creature-library-select]");
+              let ready=false;
+              for(let attempts=0;attempts<140;attempts++){
+                const hasCreature=[...lib?.options??[]].some(o=>o.value==="crea_sylvorne");
+                const hasAssets=specs.every(([selector,id])=>
+                  [...document.querySelector(selector)?.options??[]].some(o=>o.value===id));
+                if(hasCreature&&hasAssets){ready=true;break;}
+                await delay(150);
+              }
+              if(!ready)throw Error("published Sylvorne media absent from canonical editor choices");
+              lib.value="crea_maraileron";
+              lib.dispatchEvent(new Event("change",{bubbles:true}));
+              // Simulate a late/rebuilt select: temporary missing options must
+              // not erase authored assetIds when a creature is reselected.
+              for(const [selector,id] of specs){
+                const select=document.querySelector(selector);
+                [...select.options].find(option=>option.value===id)?.remove();
+              }
+              lib.value="crea_sylvorne";
+              lib.dispatchEvent(new Event("change",{bubbles:true}));
+              await delay(180);
+              for(const [selector,id,imageSelector,filename] of specs){
+                const select=document.querySelector(selector);
+                const image=document.querySelector(imageSelector);
+                if(select.value!==id)throw Error("lost authored menu selection: "+selector);
+                if(!image?.src.includes(filename)||image.dataset.empty!=="false")
+                  throw Error("missing live creature preview: "+filename);
+              }
+              document.body.dataset.sylvorneEditorMediaProbe="ok:face:back:icon:restored";
+            }catch(error){
+              document.body.dataset.sylvorneEditorMediaProbe="fail:"+String(error.message??error).slice(0,150);
+            }
+          })();
+        });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
     // A real Chrome probe for the creator's per-creature guard controls.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-creature-reaction")) {
@@ -2175,6 +2227,14 @@ try {
   // Validates the complete browser module graph and real Human Editor DOM projection.
   const normalDom = await dumpDom(url);
   assertCreatures(normalDom, "normal browser bootstrap");
+  const sylvorneEditorDom=await dumpDom(url+"?verify-sylvorne-editor-media=1");
+  assertCreatures(sylvorneEditorDom,"Sylvorne editor media browser bootstrap");
+  const sylvorneEditorProbe=sylvorneEditorDom.match(/data-sylvorne-editor-media-probe="([^"]+)"/)?.[1]??"missing";
+  if(sylvorneEditorProbe!=="ok:face:back:icon:restored")
+    throw Error("Published Sylvorne FACE/DOS/ICON author binding lost: "+sylvorneEditorProbe+
+      " JS="+(sylvorneEditorDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
+  console.log("Sylvorne editor: three published canonical media auto-selected, shown and preserved through unavailable options");
+
   if (!/data-stat-definition="glace"/.test(normalDom)) {
     throw new Error("normal browser bootstrap: Glace stat absent from real rendered editor");
   }
