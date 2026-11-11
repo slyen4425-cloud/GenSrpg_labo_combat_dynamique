@@ -1,5 +1,5 @@
 import { mountCombatDemo } from "../../src/ui/demo-app.js?v=attack-pose-hold-20261102-wall-ground-stop-20261101";
-import { mountCoop2v2Test } from "../../src/ui/combat-2v2-test-ui.js?v=attack-pose-hold-20261102-wall-ground-stop-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-combat-level-hud-20261111";
+import { mountCoop2v2Test } from "../../src/ui/combat-2v2-test-ui.js?v=attack-pose-hold-20261102-wall-ground-stop-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102";
 import { demoPresentationAssets } from "./demo-assets.js";
 
 const root = document.querySelector("[data-combat-demo]");
