@@ -153,6 +153,67 @@ const server = createServer(async (req, res) => {
       })();`;
       contents=Buffer.from(contents.toString("utf8")+"\n"+script);
     }
+    // Sylvorne's real published transfer drives all three editor selectors.
+    // No test-side visual bindings or manual IDs are inserted in the editor.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-sylvorne-editor-asset-autolink")) {
+      const html=contents.toString("utf8");
+      const probe=`<script>
+      document.addEventListener("DOMContentLoaded",()=>{
+        let attempts=0;
+        const timer=setInterval(()=>{
+          const q=s=>document.querySelector(s);
+          const library=q("[data-creature-library-select]");
+          const state=q("[data-creature-library-state]")?.textContent??"";
+          const face=q("[data-creature-front-select]");
+          const back=q("[data-creature-back-select]");
+          const icon=q("[data-creature-icon-select]");
+          const ready=state.includes("modèles vitrine chargés") &&
+            library?.querySelector('option[value="crea_sylvorne"]') &&
+            face?.querySelector('option[value="pack:capture:creature-sylvorne-opponent-01"]') &&
+            back?.querySelector('option[value="pack:capture:creature-sylvorne-player-01"]') &&
+            icon?.querySelector('option[value="pack:capture:creature-sylvorne-icon-01"]');
+          if(!ready){
+            if(++attempts>90){clearInterval(timer);document.body.dataset.sylvorneAssetProbe=
+              "timeout:"+state.slice(0,100)+":icon="+(icon?.options?.length??0);}
+            return;
+          }
+          clearInterval(timer);
+          try{
+            const selectCreature=id=>{
+              library.value=id;
+              library.dispatchEvent(new Event("change",{bubbles:true}));
+              if(q("[data-creature-id]")?.value!==id)
+                throw Error("selected creature did not load: "+id);
+            };
+            selectCreature("crea_sylvorne");
+            const expected=[
+              [face,"pack:capture:creature-sylvorne-opponent-01",q("[data-preview-front]"),"sylvorne_face.png"],
+              [back,"pack:capture:creature-sylvorne-player-01",q("[data-preview-back]"),"sylvorne_dos.png"],
+              [icon,"pack:capture:creature-sylvorne-icon-01",q("[data-preview-icon]"),"sylvorne_icone.png"]
+            ];
+            const check=()=>{
+              for(const [select,id,image,file] of expected){
+                if(select.value!==id)throw Error("binding empty/wrong: "+id+" selected="+select.value);
+                if(![...select.options].some(option=>option.value===id))
+                  throw Error("published asset not selectable: "+id);
+                if(!image || image.dataset.empty!=="false" || !image.src.includes(file))
+                  throw Error("authored preview has no image: "+id+":"+image?.src);
+              }
+            };
+            check();
+            selectCreature("crea-loup");
+            selectCreature("crea_sylvorne");
+            check();
+            document.body.dataset.sylvorneAssetProbe="ok:face:back:icon:reselect";
+          }catch(error){
+            document.body.dataset.sylvorneAssetProbe="fail:"+error.message;
+          }
+        },160);
+      });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
     // Test-only network-stall simulation: leave the real module graph and data path intact.
     // Only presentation CDN requests remain pending, like a stalled mobile connection.
     if (pathname.endsWith("/capture-editor-v2.html") &&
@@ -2224,6 +2285,13 @@ try {
   if(energyProbe!=="ok:12:5:50%")
     throw Error("Real Chrome energy orbs regression: "+energyProbe);
   console.log("Capture HUD energy orbs: real Chrome 12 circles, partial fill, 180px wrap, capacity 24 and accessible count");
+  const treeDom=await dumpDom(url+"?verify-sylvorne-editor-asset-autolink=1");
+  assertCreatures(treeDom,"Sylvorne published editor visuals");
+  const treeProbe=treeDom.match(/data-sylvorne-asset-probe="([^"]+)"/)?.[1]??"missing";
+  if(treeProbe!=="ok:face:back:icon:reselect")
+    throw Error("Sylvorne Face/Dos/Icône auto-binding failed in REAL editor: "+treeProbe+
+      " JS="+(treeDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
+  console.log("Sylvorne original FACE/DOS/ICONE: real editor selections, previews and reselect survived");
   const editorHeadingDom=await dumpDom(url+"?verify-editor-preview-heading=1");
   const editorHeadingProbe=editorHeadingDom.match(/data-editor-preview-heading-probe="([^"]+)"/)?.[1]??"missing";
   if(editorHeadingProbe!=="ok:editor:opponent:heading:0")

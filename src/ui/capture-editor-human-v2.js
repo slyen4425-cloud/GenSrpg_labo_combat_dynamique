@@ -9076,9 +9076,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
       populateSelect(
         select,
         assets,
-        select.matches?.("[data-creature-icon-select]")
-          ? "creature-icon"
-          : select.dataset.assetRole
+        select.dataset.assetRole
       );
     }
     syncHumanCreatureReactionControlsV1(root);
