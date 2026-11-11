@@ -92,6 +92,25 @@
       "visual": {
         "icon": {
           "assetId": "pack:capture:icon-skill-earth-carapace-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-stone-carapace-cast-01",
+          "displayScale": 1.25,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.85,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
         }
       },
       "audio": {},
