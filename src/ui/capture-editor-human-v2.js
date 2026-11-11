@@ -4168,7 +4168,19 @@ function creatureResistanceValue(draft, element) {
 }
 
 function setFieldValue(root, selector, value) {
-  one(root, selector).value = String(value ?? "");
+  const field = one(root, selector);
+  const publishedValue = String(value ?? "");
+  // The authored creature presentation remains authoritative even if the
+  // canonical asset catalog arrives after a user opens this creature.
+  // A missing <option> must never silently erase FACE/DOS/ICON on save.
+  // populateSelect() later replaces this temporary choice with the real
+  // canonical catalog label; there is no parallel asset mapping here.
+  if (publishedValue && field.matches?.("select[data-asset-role]") &&
+      ![...field.options].some(option => option.value === publishedValue)) {
+    createOption(field, publishedValue,
+      publishedValue + " — média enregistré (catalogue en attente)");
+  }
+  field.value = publishedValue;
 }
 
 function dispatchFieldEvent(element, type) {
