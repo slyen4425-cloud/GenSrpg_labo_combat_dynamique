@@ -1,3 +1,14 @@
+## 2026-11-11 — Niveaux réels des créatures visibles en combat (C1, candidat)
+
+- START Combat `main@6e9682267c02c653c4100c08592284ddfd996284`; branche `work/lab-capture-combat-level-hud-2026-11-11`. Checkpoint de départ: ce SHA public validé.
+- Propriétaire unique du participant réel : adaptateur de construction Combat `capture-encounter-combat-source-v1.js`. Le roster ne stocke pas de nouveaux niveaux de gameplay; sa composition est inchangée.
+- Le HUD lit exclusivement les niveaux fournis par l'EncounterSnapshot pour chaque INSTANCE (y compris doublons d'espèces). `displayLevelsByRosterMember` reste une projection non persistée, sans catalogue parallèle.
+- L'affichage `Nom · Niv. X` se rafraîchit dans le rendu des cartes actives après rappels, échanges et KO, joueur et ennemi. Le Labo hors mode Jouer n'invente pas de niveau si absent.
+- Aucun changement de stats, de sorts, du moteur, des parties, des fichiers artistiques, de GenSRPG ou d'Exploration.
+- Test unitaire : doublons d'espèces niveaux 2/17, ennemi niveau 12, ordre des remplaçants, interdiction de niveaux inventés. Test navigateur et CI complète exact SHA avant fusion; publication main + HTTPS + test smartphone à certifier.
+
+---
+
 ## 2026-11-11 — Sylvorne : sélection automatique Face / Dos / Icône dans l'éditeur (lot ciblé)
 
 - **Signalement** : Sylvorne apparaît dans le Bestiaire mais les trois sélecteurs d'images de l'éditeur paraissent vides ; l'auteur souhaite une liaison automatique, sans saisie manuelle.

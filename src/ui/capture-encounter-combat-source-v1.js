@@ -14,6 +14,32 @@ function requireParticipant(participant, side) {
   }
 }
 
+// Read-only labels for the ACTUAL saved encounter participants. Neither the
+// fighter stats nor the RosterSession has a second level authority.
+export function attachCaptureEncounterDisplayLevelsV1(source,{local,opponent,localReserve=[]}={}){
+  requireParticipant(local,"Local");requireParticipant(opponent,"Opponent");
+  const localId=source?.battleFormat?.localActorId;
+  const enemyId=source?.battleFormat?.teams?.["enemy-team"]?.[0];
+  const own=source?.roster?.teams?.[localId]?.members;
+  const rival=source?.roster?.teams?.[enemyId]?.members;
+  const players=[local,...localReserve];
+  if(!localId||!enemyId||localId===enemyId||!Array.isArray(own)||
+     own.length!==players.length||!Array.isArray(rival)||rival.length!==1)
+    throw new RangeError("Official battle roster cannot be correlated with encounter levels");
+  const levels={};
+  const mapped=own.map((member,index)=>{
+    requireParticipant(players[index],"Local member "+index);
+    if(member.creatureId!==players[index].speciesId)
+      throw new RangeError("Encounter member order/species differs from Combat roster");
+    return [member.id,players[index].level];
+  });
+  if(rival[0].creatureId!==opponent.speciesId)
+    throw new RangeError("Opponent species differs from Combat roster");
+  levels[localId]=Object.freeze(Object.fromEntries(mapped));
+  levels[enemyId]=Object.freeze({[rival[0].id]:opponent.level});
+  return Object.freeze({...source,displayLevelsByRosterMember:Object.freeze(levels)});
+}
+
 // The official Combat builder owns the sole encounter-only HP projection.
 // Authored creature definitions, saved participant HP, skills, levels and
 // the historical level-20 Tester remain entirely outside this projection.
@@ -192,9 +218,9 @@ function buildCaptureWildReserveSourceV1({local,opponent,localReserve,hpMultipli
   if(f.id!==localActorId)return f;
   return Object.freeze({...f,initialHp:configs[changedMembers[0].fighterConfigId].initialHp});
  });
- return Object.freeze({...scaled,
+ return attachCaptureEncounterDisplayLevelsV1(Object.freeze({...scaled,
   fighterConfigs:Object.freeze(configs),
-  fighters:Object.freeze(nativeFighters)});
+  fighters:Object.freeze(nativeFighters)}),{local,opponent,localReserve});
 }
 
 export function buildCaptureEncounterCombatSourceV1({ local, opponent, localReserve = [], hpMultiplier = 1, ...options } = {}) {
@@ -236,7 +262,9 @@ export function buildCaptureEncounterCombatSourceV1({ local, opponent, localRese
     : { [local.speciesId]: local.level, [opponent.speciesId]: opponent.level },combinedCreatures);
   const source = adaptCaptureCombatExportStackV1(exported);
   if (!mirror || (local.level === opponent.level && !hasOwnedStatOverride && !hasNpcOverride)) {
-    return applyCaptureEncounterHpMultiplierV1(Object.freeze({ ...source, exported }), hpMultiplier);
+    return attachCaptureEncounterDisplayLevelsV1(
+      applyCaptureEncounterHpMultiplierV1(Object.freeze({ ...source, exported }), hpMultiplier),
+      {local,opponent});
   }
 
   // The author export is keyed by species. Project the opponent separately
@@ -248,7 +276,7 @@ export function buildCaptureEncounterCombatSourceV1({ local, opponent, localRese
   const configId = "roster/" + actorId + "/" + memberId;
   const rivalFighter = rival.fighters.find(fighter => fighter.id === actorId);
   const rivalSkills = rival.skillIdsByActor[actorId];
-  return applyCaptureEncounterHpMultiplierV1(Object.freeze({
+  return attachCaptureEncounterDisplayLevelsV1(applyCaptureEncounterHpMultiplierV1(Object.freeze({
     ...source,
     exported,
     battleFormat: normalizeBattleFormatDefinition({
@@ -278,5 +306,5 @@ export function buildCaptureEncounterCombatSourceV1({ local, opponent, localRese
     }),
     skills: Object.freeze({ ...source.skills, ...rival.skills }),
     skillPresentations: Object.freeze({ ...source.skillPresentations, ...rival.skillPresentations })
-  }), hpMultiplier);
+  }), hpMultiplier),{local,opponent});
 }

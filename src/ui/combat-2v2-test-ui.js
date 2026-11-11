@@ -293,6 +293,14 @@ export function buildCoop2v2AiControllerSpecs({
   );
 }
 
+// The level comes from the official encounter member, never from species
+// defaults or the visual skin. Missing levels stay hidden in the Lab tester.
+export function captureCombatActorLevelLabelV1(displayName,level){
+  const name=typeof displayName==="string"&&displayName.trim()?displayName:"—";
+  return Number.isSafeInteger(level)&&level>=1
+    ? name+" · Niv. "+level : name;
+}
+
 function normalizedInjectedCombatSource(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     throw new TypeError("nativeCombatSource must be an object");
@@ -362,6 +370,7 @@ function normalizedInjectedCombatSource(input) {
     skillsById,
     skillIdsByActor,
     roster: input.roster ?? null,
+    displayLevelsByRosterMember: input.displayLevelsByRosterMember ?? null,
     fighterConfigs: input.fighterConfigs ?? null,
     skillIdsByCreature: input.skillIdsByCreature ?? null,
     ...(input.skillIdsByRosterMember === undefined ? {} : {
@@ -598,6 +607,7 @@ export async function mountCoop2v2Test({
     skillsById,
     skillIdsByActor,
     roster: rosterDefinition, fighterConfigs, skillIdsByCreature, skillIdsByRosterMember,
+    displayLevelsByRosterMember,
     skillSpeedMultiplier, recallPreparationMs, gameOptions
   } = await loadCoop2v2CombatSource({
     nativeCombatSource,
@@ -1134,6 +1144,19 @@ export async function mountCoop2v2Test({
     statusFx?.sync(state);
     combatEntityOverlay.render(state);
     for (const actor of format.actors) {
+      // One read-only HUD projection: exact instance level from Capture's
+      // official encounter, also after recall, switch and KO replacement.
+      const activeMember=rosterController?.activeMember(actor.actorId);
+      const level=activeMember
+        ? displayLevelsByRosterMember?.[actor.actorId]?.[activeMember.id]
+        : null;
+      const heading=captureCombatActorLevelLabelV1(
+        actorMeta(actor.actorId)?.displayName,level);
+      for(const card of targetNodes(actor.actorId)){
+        if(!card.classList?.contains("squad-card"))continue;
+        const title=card.querySelector("strong");
+        if(title&&title.textContent!==heading)title.textContent=heading;
+      }
       const fighter = state.fighters[actor.actorId];
       const refs = hpRefs[actor.actorId];
       refs.bar.max = fighter.maxHp;
