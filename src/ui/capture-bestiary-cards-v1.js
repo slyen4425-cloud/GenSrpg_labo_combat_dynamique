@@ -26,6 +26,17 @@ function validPublishedImage(asset, role) {
     Number(asset.resource?.frameCount ?? 1) === 1
   );
 }
+// Native skill icons come from the single published visual catalog. Resolve by
+// canonical file naming, never a duplicated per-skill visual mapping.
+function publishedNativeSkillIcon(assets, skillId) {
+  if (typeof skillId !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(skillId)) return null;
+  const filename = "icon_skill_" + skillId.replaceAll("-", "_") + "_01.webp";
+  const match = [...assets.values()].find(asset =>
+    validPublishedImage(asset, "icon") &&
+    asset.resource.file.endsWith("/icons/skills/" + filename)
+  );
+  return match ? Object.freeze({assetId:match.id,file:match.resource.file}) : null;
+}
 function statNumber(value) {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
@@ -73,7 +84,7 @@ export function captureBestiaryCardsV1({
         typeof definition?.name !== "string") continue;
     skillsById.set(definition.id, {
       name:definition.name, element:definition.element ?? null,
-      requiredLevel:null, icon:null,
+      requiredLevel:null, icon:publishedNativeSkillIcon(assets, definition.id),
       cooldownMs:Math.max(0,Number(definition.cooldownMs)||0),
       damageIcons:damageIconsFor(definition),
       explanation:describeCaptureSkillV1(definition)
@@ -84,7 +95,8 @@ export function captureBestiaryCardsV1({
     const definition = draft?.definition;
     if (!definition || typeof definition.id !== "string" ||
         typeof definition.name !== "string") continue;
-    const icon = readyVisual(assets, draft?.presentation?.visual?.icon, "icon");
+    const icon = readyVisual(assets, draft?.presentation?.visual?.icon, "icon") ??
+      skillsById.get(definition.id)?.icon ?? null;
     skillsById.set(definition.id, {
       name:definition.name,
       element:definition.element || null,

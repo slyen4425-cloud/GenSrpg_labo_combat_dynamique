@@ -30,7 +30,10 @@ test("combat charge adapter reuses one DOM readout, reports snapshots, and reset
   const inserted = [];
   const createElement = () => ({
     className: "", hidden: false, textContent: "", dataset: {},
-    setAttribute(name, value) { this[name] = value; }
+    attributes: {},
+    setAttribute(name, value) { this.attributes[name] = value; this[name] = value; },
+    getAttribute(name) { return this.attributes[name] ?? null; },
+    append(...children) { this.children = children; }
   });
   const bar = {
     ownerDocument: { createElement },
@@ -40,15 +43,25 @@ test("combat charge adapter reuses one DOM readout, reports snapshots, and reset
   };
   const presenter = createCombatCastChargePresenterV1({ bar });
   presenter.render({ active: true, value: 0.4, actionName: "Boule de feu", remainingMs: 1250 });
-  assert.equal(inserted.length, 1);
+  assert.equal(inserted.length, 2);
   assert.equal(inserted[0].before, bar);
+  assert.equal(inserted[1].before, bar);
   assert.equal(bar.value, 0.4);
   assert.equal(bar.dataset.active, "true");
   assert.equal(bar["aria-valuetext"], "Préparation : Boule de feu, 40 %, 1,3 secondes restantes");
   assert.equal(inserted[0].child.textContent, "40 % · 1,3 s");
   assert.equal(inserted[0].child.hidden, false);
+  const row=inserted[1].child;
+  assert.equal(row.children[1],bar,"same native progress bar is reused");
+  assert.equal(row.children[0].hidden,true);
+  presenter.render({ active:true, value:0.7, actionName:"Griffe", remainingMs:900,iconUrl:"https://example.test/icon-claw.webp" });
+  assert.equal(row.children[0].hidden,false);
+  assert.equal(row.children[0].src,"https://example.test/icon-claw.webp");
+  assert.equal(row.dataset.hasIcon,"true");
   presenter.render({ active: false });
-  assert.equal(inserted.length, 1, "No duplicate status nodes");
+  assert.equal(inserted.length, 2, "No duplicate status nodes");
+  assert.equal(row.children[0].hidden,true);
+  assert.equal(row.dataset.hasIcon,"false");
   assert.equal(bar.value, 0);
   assert.equal(bar.dataset.active, "false");
   assert.equal(inserted[0].child.hidden, true);

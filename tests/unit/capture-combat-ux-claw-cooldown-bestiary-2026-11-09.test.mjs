@@ -29,7 +29,8 @@ test("Bestiary exposes skill cooldowns from the native and authored definition",
     id:visuals[key].assetId,mediaType:"image",assetType:i===2?"portrait":"sprite",
     resource:{file:"capture/creatures/pieuvre/runtime/"+["pieuvre_face.png","pieuvre_dos.png","pieuvre_icon.png"][i]}
   })),
-  {id:authored.draft.presentation.visual.icon.assetId,mediaType:"image",assetType:"icon",resource:{file:"capture/icons/skills/icon_skill_cascade_percutante_01.webp"}}
+  {id:authored.draft.presentation.visual.icon.assetId,mediaType:"image",assetType:"icon",resource:{file:"capture/icons/skills/icon_skill_cascade_percutante_01.webp"}},
+  {id:"core:icon-skill-claw-01",mediaType:"image",assetType:"icon",resource:{file:"core/icons/skills/icon_skill_claw_01.webp"}}
  ]};
  const cards=captureBestiaryCardsV1({creatureTransfers:[creature],skillTransfers:[authored],assetCatalog:catalogue});
  const s=cards[0].skills.find(x=>x.name==="Perle de pression");
@@ -41,4 +42,9 @@ test("Bestiary exposes skill cooldowns from the native and authored definition",
  const native=captureBestiaryCardsV1({creatureTransfers:[nativeCreature],nativeSkills:[{definition:claw}],assetCatalog:catalogue});
  assert.equal(native[0].skills[0].name,"Griffe");
  assert.equal(native[0].skills[0].cooldownMs,0);
+ assert.deepEqual(native[0].skills[0].icon,{
+  assetId:"core:icon-skill-claw-01",file:"core/icons/skills/icon_skill_claw_01.webp"
+ });
+ const withoutAsset=captureBestiaryCardsV1({creatureTransfers:[nativeCreature],nativeSkills:[{definition:claw}],assetCatalog:{assets:catalogue.assets.filter(x=>x.id!=="core:icon-skill-claw-01")}});
+ assert.equal(withoutAsset[0].skills[0].icon,null,"never invent an unpublished skill icon");
 });

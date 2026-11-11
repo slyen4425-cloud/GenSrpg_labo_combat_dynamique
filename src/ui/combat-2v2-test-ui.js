@@ -1025,6 +1025,17 @@ export async function mountCoop2v2Test({
     status.dataset.tone = tone;
   }
 
+  function chargeSkillIconUrl(progress) {
+    const skillId = progress?.skillId;
+    if (typeof skillId !== "string" || !skillId.trim()) return null;
+    const authored = presentationForActorSkill(skillId, {sourceActorId:progress.actorId});
+    if (authored?.icon?.url) return authored.icon.url;
+    // Built-in skills (such as Griffe) are not always authored transfers.
+    // Resolve their published asset through the existing global library only.
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(skillId)) return null;
+    return presentationAssets?.asset?.("core:icon-skill-" + skillId + "-01")?.url ?? null;
+  }
+
   function setCharge(actorId, snapshot = {}) {
     chargePresenters[actorId]?.render(snapshot);
   }
@@ -1870,7 +1881,8 @@ export async function mountCoop2v2Test({
         value: preparing ? progress.chargeProgress : 0,
         active: preparing,
         actionName: progress.actionName,
-        remainingMs: preparing ? progress.remainingPreparationMs : 0
+        remainingMs: preparing ? progress.remainingPreparationMs : 0,
+        iconUrl: preparing ? chargeSkillIconUrl(progress) : null
       });
 
       if (!progress.actionId) {

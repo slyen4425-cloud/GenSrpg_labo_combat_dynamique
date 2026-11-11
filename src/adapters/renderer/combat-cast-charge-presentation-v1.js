@@ -47,12 +47,24 @@ export function createCombatCastChargePresenterV1({ bar }) {
   if (!bar?.ownerDocument?.createElement || !bar?.parentNode?.insertBefore) {
     throw new TypeError("Cast charge presenter needs a mounted progress bar");
   }
+  const parent = bar.parentNode;
   const readout = bar.ownerDocument.createElement("span");
   readout.className = "squad-card__charge-readout";
   readout.setAttribute("data-combat-charge-readout", "");
   readout.setAttribute("aria-hidden", "true");
   readout.hidden = true;
-  bar.parentNode.insertBefore(readout, bar);
+  parent.insertBefore(readout, bar);
+  const row = bar.ownerDocument.createElement("span");
+  row.className = "squad-card__charge-row";
+  row.dataset.hasIcon = "false";
+  parent.insertBefore(row, bar);
+  const skillIcon = bar.ownerDocument.createElement("img");
+  skillIcon.className = "squad-card__charge-skill-icon";
+  skillIcon.setAttribute("data-combat-charge-skill-icon", "");
+  skillIcon.setAttribute("aria-hidden", "true");
+  skillIcon.alt = "";
+  skillIcon.hidden = true;
+  row.append(skillIcon, bar);
   return Object.freeze({
     render(snapshot = {}) {
       const projection = projectCombatCastChargeV1(snapshot);
@@ -63,6 +75,11 @@ export function createCombatCastChargePresenterV1({ bar }) {
       bar.setAttribute("aria-valuetext", projection.accessibleLabel);
       readout.textContent = projection.readout;
       readout.hidden = !projection.active;
+      const iconUrl = typeof snapshot.iconUrl === "string" ? snapshot.iconUrl.trim() : "";
+      const showIcon = projection.active && iconUrl.length > 0;
+      row.dataset.hasIcon = showIcon ? "true" : "false";
+      skillIcon.hidden = !showIcon;
+      if (showIcon && skillIcon.getAttribute("src") !== iconUrl) skillIcon.src = iconUrl;
       return projection;
     }
   });

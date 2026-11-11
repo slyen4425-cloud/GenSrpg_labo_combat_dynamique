@@ -1793,6 +1793,28 @@ button.reserve-card {
   display: none;
 }
 
+.squad-card__charge-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  align-items: center;
+  min-width: 0;
+}
+
+.squad-card__charge-row[data-has-icon="true"] {
+  grid-template-columns: clamp(1.05rem, 3vw, 1.5rem) minmax(0, 1fr);
+  gap: 0.3rem;
+}
+
+.squad-card__charge-skill-icon {
+  width: 100%;
+  height: clamp(1.05rem, 3vw, 1.5rem);
+  object-fit: contain;
+  border-radius: 0.26rem;
+}
+
+.squad-card__charge-skill-icon[hidden] { display: none; }
+
 .squad-card__charge {
   display: block;
   width: 100%;
