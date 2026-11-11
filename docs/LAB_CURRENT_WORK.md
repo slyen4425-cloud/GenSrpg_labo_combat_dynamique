@@ -1,3 +1,27 @@
+## 2026-11-11 — Sylvorne, corrections auteur gameplay + réparation du smoke navigateur (PR #291, non publié)
+- Base : branche temporaire `work/lab-sylvorne-showcase-promotion-2026-11-10@d9a6bc61c271bc7e1b81ca717e5f75e0901ecfe3`, checkpoint START `checkpoint/lab-start-sylvorne-balance-2026-11-11`. `main` reste seule source officielle ; pas de duplication de règles, médias, GenSRPG ou Exploration.
+- Nom visible Sylvorne ; description gardien des sous-bois ; Vitesse et Physique 0 (source legacy alignée), +100 Défense sur Écorce vivante 14 s (20 points de % au ratio auteur).
+- Vrilles du sous-bois : mine native `scheduled_effect` / `ground_mine`, 15 Nature à 2 s, 4 énergie, cooldown zéro ; stun 2 s conditionné par Germination au déclenchement. Sprite racines futur : pas d'asset fictif.
+- Forêt souveraine : 50 dégâts Nature zone ennemie, immobilisation 10 s, +6 Nature/charge consommée sur la cible principale (max +12). Germination seuil 2 `keep` afin de garder les marques jusqu'à l'ultime, effet seuil une seule fois.
+- CI précédente #291 sur `d9a6bc61c271bc7e1b81ca717e5f75e0901ecfe3` : 4/5 jobs PASS ; browser creature-library KO uniquement sur une attente interne 105 au lieu de 106 (log `creature identity count 106`). Corriger l'attente, **sans supprimer le test** ; ajouter sentinelles contrat et combat réel mine/Germination/ultime, relancer CI complète, vérifier Pages/Android avant GREEN.
+- Fichiers autorisés : les 5 transferts de Sylvorne, tests de Sylvorne, smoke navigateur, ce journal et note C2 ; catalogues/anciens monstres, cœur moteur, sauvegardes et médias protégés.
+
+---
+
+## 2026-11-10 — Sylvorne : promotion du gardien végétal dans Showcase, assetIds certifiés (C2)
+- START SHA `3af25a4a977dfc574d40e6f7617e566068e2314f`, checkpoint `checkpoint/lab-start-sylvorne-showcase-promotion-2026-11-10`, branche `work/lab-sylvorne-showcase-promotion-2026-11-10`, après prototype #289 testé 10/10 GREEN. Dépendance visuelle officielle : `global-assets@9eef5847a2b9907c493d9575a5c148b09d41a5bf` (PR #290 fusionnée, 2/2 checks SUCCESS), originaux ZIP préservés.
+- Un seul propriétaire : six transferts prototypes déplacés de `data/capture/candidates` vers `data/capture/showcase`, deux catalogues existants augmentés d’une seule créature et cinq compétences, sans nouveaux moteurs ni doublons. Modèle original : FACE/DOS/ICONE 512 RGBA, marges 42 px, références visuelles canoniques dans `global-assets` ; mêmes fiches stats et mécaniques. Les 110 entrées historiques et les autres modèles sont inchangés.
+- Gates finaux avant publication : validation native des six transferts, 5 paliers, synergies de Germination, test du batch, vrais parcours navigateur de l’éditeur, CI entière sur le SHA exact, Pages sur `main` et provenance HTTPS. Aucune reprise sur GenSRPG PWA sans mise à jour explicite de ses pins officiels.
+
+---
+
+## 2026-11-10 — Sylvorne : prototype arbre, statistiques et 5 capacités (C2, CANDIDAT NON PUBLIÉ)
+- START `main@7c00030ac32cfff5e38bc516db3df25ba4bbe4a4`, checkpoint `checkpoint/lab-start-creature-tree-sylvorne-2026-11-10`, branche `work/lab-creature-tree-sylvorne-2026-11-10`; source historique et ZIP auteur protégés.
+- Six transferts natifs isolés dans `data/capture/candidates`, aucune entrée du Bestiaire/Showcase activée, média d'arbre non inventé. Référence `docs/LAB_TREE_SYLVORNE_CANDIDATE_2026_11_10.md`.
+- Tests : schémas Skill/Creature Transfer, mécaniques de Germination, progression et résistances, preuve d'absence de faux asset ; CI avant green puis médias certifiés FACE/DOS/ICON, tests navigateur et Pages avant activation.
+
+---
+
 ## 2026-11-09 — Publication d'affichage 18 icônes UI (raccord sans double autorité)
 - BASE `main@7984aac05a30919422614205013f9962f79542b5` ; START `checkpoint/lab-start-ui-icons-runtime-2026-11-09` ; WORK `work/lab-ui-icons-runtime-2026-11-09`.
 - Les 18 icônes réelles sont déjà enregistrées dans le seul catalogue `global-assets` ; les écrans Bestiaire/éditeur consomment déjà `captureUiPublishedStatIconV1`. Changer seulement la révision de cache `global-visual-library.js` et la sentinelle de révision, ne pas copier les médias.

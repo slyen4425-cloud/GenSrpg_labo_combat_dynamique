@@ -1,0 +1,120 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "sylvorne-vrilles-du-sous-bois",
+    "description": "Mine de racines : après 2 s, 15 dégâts Nature. Si la cible porte Germination à l'explosion, étourdissement de 2 s. Aucun temps de recharge, coût 4 énergie. Sprite de racines à fournir.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "sylvorne-vrilles-du-sous-bois",
+      "name": "Vrilles du sous-bois",
+      "category": "offensive",
+      "form": "area",
+      "loadoutSlot": "standard",
+      "element": "nature",
+      "approachMode": "none",
+      "energyCost": 4,
+      "preparationMs": 0,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "scheduled_effect",
+          "targetScope": "target",
+          "trigger": {
+            "type": "after_ms",
+            "delayMs": 2000
+          },
+          "visualCue": "ground_mine",
+          "effects": [
+            {
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 15,
+              "channel": "nature"
+            },
+            {
+              "kind": "apply_status",
+              "targetScope": "target",
+              "condition": {
+                "type": "marker",
+                "value": "sylvorne-germination",
+                "minimum": 1
+              },
+              "status": {
+                "id": "sylvorne-vrilles-germination-stun",
+                "kind": "stun",
+                "polarity": "detrimental",
+                "durationModel": "time_ms",
+                "durationMs": 2000,
+                "stacking": "refresh",
+                "maxStacks": 1,
+                "tags": []
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:sylvorne-vrilles-du-sous-bois",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "sylvorne-vrilles-du-sous-bois",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-ronce-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

@@ -1,0 +1,228 @@
+{
+  "schema": "capture-creature-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-creature-editor-draft-v3",
+    "id": "crea_sylvorne",
+    "displayName": "Sylvorne",
+    "description": "Gardien des sous-bois, arbre vivant immobile et très résistant. Piège ses ennemis avec ses racines, accumule Germination et régénère son écorce.",
+    "level": 1,
+    "sourceStats": {
+      "force": 0,
+      "agility": 0,
+      "intelligence": 0,
+      "spirit": 28,
+      "endurance": 45,
+      "initiative": 0
+    },
+    "elements": [
+      "nature",
+      "earth"
+    ],
+    "resistances": [
+      {
+        "kind": "element:fire",
+        "value": -50
+      },
+      {
+        "kind": "element:water",
+        "value": 35
+      },
+      {
+        "kind": "element:earth",
+        "value": 25
+      },
+      {
+        "kind": "element:air",
+        "value": 0
+      },
+      {
+        "kind": "element:electric",
+        "value": 25
+      },
+      {
+        "kind": "element:light",
+        "value": 0
+      },
+      {
+        "kind": "element:shadow",
+        "value": 0
+      },
+      {
+        "kind": "element:nature",
+        "value": 35
+      },
+      {
+        "kind": "element:ice",
+        "value": -25
+      },
+      {
+        "kind": "element:poison",
+        "value": 0
+      },
+      {
+        "kind": "element:steel",
+        "value": 0
+      },
+      {
+        "kind": "element:psy",
+        "value": 0
+      },
+      {
+        "kind": "element:spirit",
+        "value": 0
+      }
+    ],
+    "capture": {
+      "capturable": true,
+      "captureRate": 25,
+      "spawnChance": 6,
+      "spawnTags": [
+        "nature",
+        "earth"
+      ],
+      "evolution": null
+    },
+    "combat": {
+      "maxHp": 215,
+      "maxEnergy": 0,
+      "initialEnergy": 0,
+      "energyChargeAmount": 0,
+      "energyChargeIntervalMs": 0,
+      "movementEnergyPerStep": 0,
+      "chargeTimeModifierPct": 0,
+      "approachTimeModifierPct": 25,
+      "reaction": {
+        "type": "defense",
+        "maxCharges": 2,
+        "rechargeMs": 30000,
+        "activeWindowMs": 320,
+        "damageReductionPct": 50
+      }
+    },
+    "skillIds": [
+      "sylvorne-eclat-racinaire",
+      "sylvorne-ecorce-vivante",
+      "sylvorne-vrilles-du-sous-bois",
+      "sylvorne-seve-ancienne",
+      "sylvorne-foret-souveraine"
+    ],
+    "presentation": {
+      "id": "creature:crea_sylvorne",
+      "version": 9,
+      "subjectType": "creature",
+      "subjectId": "crea_sylvorne",
+      "profileId": "massive",
+      "displayScale": 1,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1.18,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 0.85,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      },
+      "transformOrigin": {
+        "x": "50%",
+        "y": "88%"
+      },
+      "visual": {
+        "front": {
+          "assetId": "pack:capture:creature-sylvorne-opponent-01"
+        },
+        "back": {
+          "assetId": "pack:capture:creature-sylvorne-player-01"
+        },
+        "icon": {
+          "assetId": "pack:capture:creature-sylvorne-icon-01"
+        }
+      },
+      "sockets": [
+        {
+          "id": "hand",
+          "label": "Main de bois",
+          "front": {
+            "x": 0.75,
+            "y": 0.57
+          },
+          "back": {
+            "x": 0.24,
+            "y": 0.57
+          }
+        },
+        {
+          "id": "head",
+          "label": "Tête",
+          "front": {
+            "x": 0.42,
+            "y": 0.2
+          },
+          "back": {
+            "x": 0.58,
+            "y": 0.2
+          }
+        }
+      ],
+      "audio": {}
+    }
+  },
+  "statValues": {
+    "schema": "capture-creature-stat-values-v1",
+    "creatureId": "crea_sylvorne",
+    "values": {
+      "health": 215,
+      "speed": 0,
+      "physical": 0,
+      "defense": 24,
+      "fire": 0,
+      "water": 0,
+      "earth": 13,
+      "air": 0,
+      "electric": 0,
+      "light": 0,
+      "shadow": 0,
+      "poison": 0,
+      "acier": 0,
+      "nature": 22,
+      "esprit": 8
+    }
+  },
+  "loadout": {
+    "schema": "capture-active-skill-loadout-v1",
+    "creatureId": "crea_sylvorne",
+    "slots": [
+      {
+        "id": "slot-1",
+        "skillId": "sylvorne-eclat-racinaire"
+      },
+      {
+        "id": "slot-2",
+        "skillId": "sylvorne-ecorce-vivante"
+      },
+      {
+        "id": "slot-3",
+        "skillId": "sylvorne-vrilles-du-sous-bois"
+      },
+      {
+        "id": "slot-4",
+        "skillId": "sylvorne-seve-ancienne"
+      },
+      {
+        "id": "slot-ultimate",
+        "skillId": "sylvorne-foret-souveraine"
+      }
+    ]
+  }
+}
