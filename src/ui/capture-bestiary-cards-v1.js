@@ -70,12 +70,14 @@ export function captureBestiaryCardsV1({
   // publish a core icon without authoring a separate Showcase skill transfer.
   // Match its registered skill label, not an unvalidated guessed asset URL.
   const nativeSkillIcon=skillId=>{
-    const matches=[...assets.values()].filter(asset=>
-      asset?.category==="skill" && asset?.source?.scope==="core" &&
-      asset.label===skillId && validPublishedImage(asset,"icon"));
-    return matches.length===1
-      ? Object.freeze({assetId:matches[0].id,file:matches[0].resource.file})
-      : null;
+    // A published canonical asset ID is stable even if its visible label
+    // changes ("Griffe", "claw", localization). Lookup is read-only: no
+    // fabricated URL, icon record or per-skill mapping.
+    if(typeof skillId!=="string"||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(skillId))
+      return null;
+    const asset=assets.get("core:icon-skill-"+skillId+"-01");
+    return validPublishedImage(asset,"icon")
+      ? Object.freeze({assetId:asset.id,file:asset.resource.file}) : null;
   };
   // Native catalog then authored Showcase: same precedence as the editor.
   for (const entry of nativeSkills) {

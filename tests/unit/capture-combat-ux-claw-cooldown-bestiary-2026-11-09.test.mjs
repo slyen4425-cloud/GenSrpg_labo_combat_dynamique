@@ -39,7 +39,7 @@ test("Bestiary exposes skill cooldowns from the native and authored definition",
  const nativeCreature={...creature,loadout:{...creature.loadout,slots:creature.loadout.slots.map(x=>
    x.id==="slot-1"?{...x,skillId:"claw"}:x)}};
  catalogue.assets.push({
-  id:"core:icon-skill-claw-01",label:"claw",category:"skill",
+  id:"core:icon-skill-claw-01",label:"Griffe",category:"skill",
   source:{scope:"core"},mediaType:"image",assetType:"icon",
   resource:{file:"core/icons/skills/icon_skill_claw_01.webp"}
  });
@@ -48,4 +48,9 @@ test("Bestiary exposes skill cooldowns from the native and authored definition",
  assert.equal(native[0].skills[0].cooldownMs,0);
  assert.equal(native[0].skills[0].icon.assetId,"core:icon-skill-claw-01");
  assert.equal(native[0].skills[0].icon.file,"core/icons/skills/icon_skill_claw_01.webp");
+ const absent=captureBestiaryCardsV1({
+   creatureTransfers:[nativeCreature],nativeSkills:[{definition:claw}],
+   assetCatalog:{assets:catalogue.assets.filter(asset=>asset.id!=="core:icon-skill-claw-01")}
+ });
+ assert.equal(absent[0].skills[0].icon,null,"never display unpublished native icons");
 });
