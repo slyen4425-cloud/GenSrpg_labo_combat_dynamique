@@ -70,6 +70,8 @@ jobs:
         run: node tests/browser/capture-ice-barrier-editor-smoke.mjs
       - name: Real Chromium 2.5D arena shadow and flying light projection
         run: node tests/browser/shadow-light-real-render-smoke.mjs
+      - name: Real Chromium Sylvorne original player/back and opponent/front in combat actor slots
+        run: node tests/browser/capture-sylvorne-combat-visual-smoke.mjs
       - name: Real Chromium Capture Bestiaire (front only)
         run: node tests/browser/capture-bestiary-smoke.mjs
 
