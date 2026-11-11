@@ -1,3 +1,15 @@
+## 2026-11-11 — Sylvorne : sélection automatique Face / Dos / Icône dans l'éditeur (lot ciblé)
+
+- **Signalement** : Sylvorne apparaît dans le Bestiaire mais les trois sélecteurs d'images de l'éditeur paraissent vides ; l'auteur souhaite une liaison automatique, sans saisie manuelle.
+- **START** : `main@3fd73a250a58d5d29f9f06b1d5cc2988702063d1`, checkpoint `checkpoint/lab-start-sylvorne-editor-media-2026-11-11`, branche temporaire `work/lab-sylvorne-editor-media-2026-11-11` ; `main` reste l'unique publication.
+- **Propriétaire** : seule UI Capture et son catalogage visuel ; aucune seconde table d'IDs, aucun nouveau fichier image. Source : le transfert Showcase `crea_sylvorne` et les trois références du catalogue `global-assets` existant.
+- **Correctif** : lorsqu'une créature publiée est chargée avant que les options de catalogue soient disponibles, conserver sa référence visuelle dans le sélecteur plutôt que perdre sa valeur ; remplacer l'étiquette d'attente avec les données réelles lors du prochain remplissage. Garder l'aperçu et la sélection native. Le fallback est explicite, ne fabrique aucun média.
+- **Test navigateur réel** : sélection de Sylvorne, Face/Dos/Icône et URL de leurs aperçus issus du catalogue ; simuler la disparition temporaire des seules options Sylvorne, changer de créature, re-sélectionner Sylvorne, vérifier trois références intactes et trois aperçus reconnus. Éviter toute mutation des originaux.
+- **Protégé** : 106 créatures, stats, gameplay et cinq compétences, autres Labos, PWA principale, bibliothèque `global-assets`, fichiers sprites auteurs.
+- **Gate** : CI complète sur SHA exact, Pages HTTPS puis vérification Android ; ne pas confondre fusion de PR, publication et test sur appareil.
+
+---
+
 ## 2026-11-11 — Sylvorne : visuels du combat (C1, lot ciblé en validation)
 
 - **START** : Combat main `83d3aa04f7eca4c9ebe420cac6e215bbf939f501`; checkpoint `checkpoint/lab-start-sylvorne-combat-visuals-2026-11-11`; branche temporaire `work/lab-sylvorne-combat-visuals-2026-11-11` ; aucune nouvelle autorité.
