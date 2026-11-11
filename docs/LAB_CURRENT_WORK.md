@@ -1,3 +1,14 @@
+## 2026-11-11 — Sylvorne : visuels du combat (C1, lot ciblé en validation)
+
+- **START** : Combat main `83d3aa04f7eca4c9ebe420cac6e215bbf939f501`; checkpoint `checkpoint/lab-start-sylvorne-combat-visuals-2026-11-11`; branche temporaire `work/lab-sylvorne-combat-visuals-2026-11-11` ; aucune nouvelle autorité.
+- **Signalement** : Sylvorne est visible dans le Bestiaire mais pas correctement dans l'arène. FACE/DOS/portrait existent sur global-assets et sont référencés dans le transfert Showcase canonique.
+- **Risque démontré dans le code** : le sélecteur d'icône de créature excluait les portraits originaux (`assetType:portrait`), alors que Sylvorne utilise ce type ; modification de la créature pouvant vider sa sélection. La représentation de combat masquait également une image déjà décodée quand le calcul annexe du masque alpha échouait (cas de canvas externe). Les règles de collision restent dans l'autorité Combat native, pas dans l'image.
+- **Périmètre** : réutiliser le sélecteur d'asset existant, accepter uniquement les portraits de créature pour l'icône du modèle, et laisser visible une image chargée même lorsque le masque facultatif n'est pas disponible. Ne jamais fabriquer de sprite, remplacer les PNG auteur ou modifier les règles, dégâts, stats, sauvegardes, GenSRPG ou Exploration.
+- **Preuves à obtenir** : test de transfert Sylvorne réel → export Combat → adaptateur visuel → URLs FACE/DOS/portrait ; tests de sélection d'icône ; Chromium de l'image chargée avec/sans masque ; CI 5/5, publication main et HTTPS/Android avant GREEN final.
+- **Propagation navigateur** : nouvelle révision ESM homogène du document public → éditeur → loader → vue combat → `demo-app.js`, pour que les navigateurs qui ont gardé le script antérieur rechargent le correctif sans double autorité. Vérification statique dans les tests.
+
+---
+
 ## 2026-11-11 — Sylvorne absent du Bestiaire : réconciliation de cache ESM (C1, non encore publiée)
 
 - **Signalement utilisateur** : Sylvorne n'apparaît pas dans le Bestiaire et ses visuels paraissent absents après fusion de #291.
