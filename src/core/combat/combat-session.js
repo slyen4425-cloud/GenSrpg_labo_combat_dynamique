@@ -447,6 +447,7 @@ export function createCombatSession({
     state = advanceScheduledEffectsV1({
       state,
       deltaMs,
+      mineSpatialContext: zoneSpatialContext?.visibleMines ?? null,
       resolveEffects({
         state: scheduledState,
         record,

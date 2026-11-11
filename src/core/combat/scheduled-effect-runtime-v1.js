@@ -126,10 +126,25 @@ export function scheduleSkillEffectV1({
   });
 }
 
+// Les coordonnées proviennent uniquement du rendu réel. La règle décide si
+// l'empreinte au sol de la cible est dans l'ellipse au moment de l'explosion.
+export function scheduledMineContainsTargetV1({mineBounds,targetBounds}={}) {
+  const values=[mineBounds?.left,mineBounds?.top,mineBounds?.width,mineBounds?.height,
+    targetBounds?.left,targetBounds?.top,targetBounds?.width,targetBounds?.height];
+  if(!values.every(value=>typeof value==="number"&&Number.isFinite(value)) ||
+     mineBounds.width<=0||mineBounds.height<=0||targetBounds.width<=0||targetBounds.height<=0)return false;
+  const x=targetBounds.left+targetBounds.width/2;
+  const y=targetBounds.top+targetBounds.height;
+  const cx=mineBounds.left+mineBounds.width/2;
+  const cy=mineBounds.top+mineBounds.height/2;
+  return ((x-cx)/(mineBounds.width/2))**2+((y-cy)/(mineBounds.height/2))**2<=1;
+}
+
 export function advanceScheduledEffectsV1({
   state,
   deltaMs,
-  resolveEffects
+  resolveEffects,
+  mineSpatialContext = null
 }) {
   const delta = nonNegativeNumber(
     deltaMs,
@@ -178,6 +193,16 @@ export function advanceScheduledEffectsV1({
           entry.id !== record.id
       )
     );
+
+    // A ground mine is anchored at placement, never homing on the target.
+    // When live spatial samples are provided by Combat Runtime, a missing
+    // sample or a foot outside the visible ring means NO damage/status.
+    if(record.visualCue==="ground_mine" && mineSpatialContext!==null) {
+      const sample=Array.isArray(mineSpatialContext)
+        ?mineSpatialContext.find(x=>x.mineId===record.id&&x.targetActorId===record.targetActorId)
+        :null;
+      if(!sample||!scheduledMineContainsTargetV1(sample))continue;
+    }
 
     const resolved = resolveEffects({
       state: nextState,

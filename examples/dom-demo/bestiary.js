@@ -186,6 +186,15 @@ function renderProfile(){
     const sub=[skill.element?bestiaryElementLabelV1(skill.element):null,
       skill.requiredLevel!=null?"Niv. "+skill.requiredLevel:null,recharge].filter(Boolean).join(" · ");
     if(sub)label.append(element("small",null,sub));
+    // Show unlock level AND native activation requirements even while collapsed:
+    // no new catalog, invented condition or manual authoring field.
+    const requirements=(skill.explanation?.sentences??[])
+      .filter(sentence=>/^Pour l'utiliser\b|^Consomme\b/.test(sentence));
+    const activation=[
+      ...(skill.requiredLevel!=null?["Déblocage : niveau "+skill.requiredLevel]:[]),
+      ...(requirements.length?requirements:["Activation : aucune condition spéciale"])
+    ];
+    label.append(element("small","skill__activation",activation.join(" · ")));
     toggle.append(label,element("span","skill__chevron","⌄"));
     const details=element("div","skill__details");
     details.id=detailId;
