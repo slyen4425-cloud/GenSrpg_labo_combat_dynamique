@@ -49,8 +49,8 @@ test("Sylvorne: real Showcase -> editor combat export -> native visual adapter -
   assert.equal(meta.runtimePreview.player,globalVisualAssetUrl(media[1][2]));
   assert.equal(meta.runtimePreview.opponent,globalVisualAssetUrl(media[0][2]));
   assert.equal(meta.runtimePreview.icon,globalVisualAssetUrl(media[2][2]));
-  assert.equal(meta.displayScale.player,1.18);
-  assert.equal(meta.displayScale.opponent,0.85);
+  assert.equal(meta.displayScale.player,1.6);
+  assert.equal(meta.displayScale.opponent,1.16);
   const visuals=await loadCombatDemoVisualSource({
     nativeVisualSource:native,
     fetchImpl:()=>{throw Error("Preview must use the injected native visual source, not demo creature fixtures");}
@@ -71,7 +71,7 @@ test("Sylvorne portrait is selectable as creature icon without polluting reactio
 test("public combat preview uses one Sylvorne cache revision from HTML to live actor renderer",async()=>{
   const html=await read("examples/dom-demo/capture-editor-v2.html");
   const rev=html.match(/capture-editor-v2[.]js[?]v=([^"]+)/)?.[1];
-  assert.ok(rev?.endsWith("sylvorne-combat-visuals-20261111"));
+  assert.ok(rev?.endsWith("sylvorne-fx-size-20261111"));
   for(const [path,dependencies] of [
     ["examples/dom-demo/capture-editor-v2.js",["capture-editor-human-v2.js","capture-editor-preview-runtime-loader-v1.js"]],
     ["src/ui/capture-editor-preview-runtime-loader-v1.js",["capture-combat-preview-v1.js"]],

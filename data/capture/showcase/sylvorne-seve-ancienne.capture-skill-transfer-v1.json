@@ -96,6 +96,25 @@
       "visual": {
         "icon": {
           "assetId": "core:icon-skill-recall-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-cast-nature-01",
+          "displayScale": 0.9,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.8,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
         }
       },
       "audio": {},

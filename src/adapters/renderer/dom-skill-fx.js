@@ -1907,7 +1907,7 @@ export function createDomSkillFxRenderer({
         node.className="skill-fx skill-fx--mine-telegraph";
         node.dataset.skillFx="mine-telegraph";
         node.dataset.scheduledMineId=record.id;
-        node.style.cssText=`position:absolute;width:${fxAuthorPixelsV1(arena,42)}px;height:${fxAuthorPixelsV1(arena,19)}px;border-radius:50%;border:${fxAuthorPixelsV1(arena,2)}px solid rgba(255,214,92,.9);background:rgba(255,105,56,.24);box-shadow:0 0 ${fxAuthorPixelsV1(arena,7)}px #ffbb50;pointer-events:none;transform:translate(-50%,-50%);z-index:5;`;
+        node.style.cssText=`position:absolute;width:${fxAuthorPixelsV1(arena,42*1.3)}px;height:${fxAuthorPixelsV1(arena,19*1.3)}px;border-radius:50%;border:${fxAuthorPixelsV1(arena,2)}px solid rgba(255,214,92,.9);background:rgba(255,105,56,.24);box-shadow:0 0 ${fxAuthorPixelsV1(arena,7)}px #ffbb50;pointer-events:none;transform:translate(-50%,-50%);z-index:5;`;
         node.style.left=x+"px";node.style.top=y+"px";
         arena.append(node);
         item={node,x,y,record};scheduledMineNodes.set(record.id,item);

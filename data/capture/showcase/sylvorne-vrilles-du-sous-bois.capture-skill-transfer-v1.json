@@ -111,6 +111,25 @@
       "visual": {
         "icon": {
           "assetId": "pack:capture:icon-skill-ronce-01"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-nature-01",
+          "displayScale": 1.9,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.95,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
         }
       },
       "audio": {},
