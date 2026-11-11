@@ -39,9 +39,10 @@ const original=readFileSync("examples/dom-demo/capture-editor-v2.html","utf8");
 const template=original.match(/<template data-capture-preview-template>([\s\S]*?)<\/template>/)?.[1];
 if(!template?.includes('data-demo-slot="local-1"')||!template.includes('data-demo-slot="opponent-1"'))
   throw Error("Official combat arena actor slots missing");
-const script=String.raw`<script type="module">
-import {mountCombatDemo} from "/src/ui/demo-app.js";
+const script=String.raw`<script>
+(async()=>{
 try {
+  const {mountCombatDemo}=await import("/src/ui/demo-app.js");
   const fallback=new URLSearchParams(location.search).has("mask-readback-denied");
   if(fallback){
     const original=HTMLCanvasElement.prototype.getContext;
@@ -77,7 +78,10 @@ try {
   document.body.dataset.sylvorneCombatSmoke="pass:real-arena:original-png:face-dos:"+(fallback?"mask-fallback":"mask-native");
 }catch(error){
   document.body.dataset.sylvorneCombatSmoke="error:"+String(error.stack||error.message).slice(0,800);
+}finally{
+  await fetch("/__done",{method:"POST"});
 }
+})();
 </script>`;
 const fixture='<!doctype html><html lang="fr"><head><meta charset="utf-8">'+
  '<meta name="viewport" content="width=device-width,initial-scale=1">'+
@@ -86,14 +90,27 @@ const fixture='<!doctype html><html lang="fr"><head><meta charset="utf-8">'+
  '</head><body data-preview-landscape-active="true">'+
  '<section class="capture-preview-shell" data-capture-preview-shell data-landscape-required="true">'+
  '<div class="capture-preview-host">'+template+'</div></section>'+
- script+'</body></html>';
+ script+'<img src="/__hold" alt="" style="display:none"></body></html>';
 const mime={".js":"text/javascript",".mjs":"text/javascript",".json":"application/json",
  ".css":"text/css",".html":"text/html"};
+let released=false;
+const pending=[];
+const tinyGif=Buffer.from("R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=","base64");
+const unblock=()=>{released=true;for(const response of pending)
+  response.writeHead(200,{"Content-Type":"image/gif"}).end(tinyGif);
+  pending.length=0;};
 let server;
 server=createServer((request,response)=>{
   try{
     const url=new URL(request.url,"http://127.0.0.1");
     const path=decodeURIComponent(url.pathname);
+    if(path==="/__hold"){
+      if(released)return void response.writeHead(200,{"Content-Type":"image/gif"}).end(tinyGif);
+      pending.push(response);return;
+    }
+    if(path==="/__done"){
+      unblock();return void response.writeHead(200).end("ok");
+    }
     if(path==="/__page")return void response.writeHead(200,{"Content-Type":"text/html"}).end(fixture);
     if(path==="/__native"){
       const base="http://127.0.0.1:"+server.address().port;
@@ -132,10 +149,11 @@ const chrome=[process.env.CHROME_PATH,"google-chrome","google-chrome-stable","ch
 if(!chrome){server.close();throw Error("Real Chromium is required for Sylvorne combat proof");}
 try{
   for(const mode of ["mask-native","mask-readback-denied"]){
+    released=false;
     const url="http://127.0.0.1:"+server.address().port+"/__page?"+mode;
     const child=spawn(chrome,["--headless=new","--no-sandbox","--disable-gpu",
       "--disable-dev-shm-usage","--no-first-run","--window-size=900,450",
-      "--virtual-time-budget=6000","--dump-dom",url],{stdio:["ignore","pipe","pipe"]});
+      "--virtual-time-budget=16000","--dump-dom",url],{stdio:["ignore","pipe","pipe"]});
     const out=[],err=[];child.stdout.on("data",chunk=>out.push(chunk));child.stderr.on("data",chunk=>err.push(chunk));
     const code=await Promise.race([once(child,"close").then(([n])=>n),
       new Promise((_,reject)=>{const t=setTimeout(()=>{child.kill("SIGKILL");reject(Error("Sylvorne combat Chromium timeout"));},55000);
