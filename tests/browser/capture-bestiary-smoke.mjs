@@ -114,7 +114,7 @@ const probe=[
 "      if(!treeFace || !treeFace.src.includes('sylvorne_face.png'))throw Error('Sylvorne face not connected');",
 "      if(document.querySelectorAll('[data-bestiary-skills] .skill').length!==5)throw Error('Sylvorne abilities not loaded');",
 "      const treeStats=[...document.querySelectorAll('[data-bestiary-measures] .stat__line')].map(n=>n.textContent);",
-"      if(!treeStats.some(s=>s.includes('Vitesse')&&s.includes('0'))||!treeStats.some(s=>s.includes('Physique')&&s.includes('0')))throw Error('Sylvorne 0 speed/physical not shown');",
+"      if(!treeStats.some(s=>s.includes('Vitesse')&&s.includes('0'))||!treeStats.some(s=>s.toLocaleLowerCase('fr').includes('physique')&&s.includes('0')))throw Error('Sylvorne 0 speed/physical not shown');",
 "      document.body.dataset.bestiarySmoke='pass:real-transfer:venombre:grainou:sylvorne:media:force-switch:markers';",
   "    }catch(error){document.body.dataset.bestiarySmoke='error:'+error.message;}",
   "    observer.disconnect();",
