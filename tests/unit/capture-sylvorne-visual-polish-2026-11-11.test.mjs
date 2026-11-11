@@ -1,0 +1,38 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const read=p=>readFileSync(new URL("../../"+p,import.meta.url),"utf8");
+const get=(id,kind="skill")=>JSON.parse(read("data/capture/showcase/"+id+".capture-"+kind+"-transfer-v1.json")).draft;
+const creature=get("crea_sylvorne","creature");
+const shard=get("sylvorne-eclat-racinaire");
+const mine=get("sylvorne-vrilles-du-sous-bois");
+const bark=get("sylvorne-ecorce-vivante");
+const sap=get("sylvorne-seve-ancienne");
+const ultimate=get("sylvorne-foret-souveraine");
+test("Sylvorne grows in both views; authored images, HP and sockets remain untouched",()=>{
+ assert.equal(creature.presentation.viewOverrides.player.displayScale,1.6);
+ assert.equal(creature.presentation.viewOverrides.opponent.displayScale,1.16);
+ assert.equal(creature.combat.maxHp,215);
+ assert.equal(creature.presentation.visual.front.assetId,"pack:capture:creature-sylvorne-opponent-01");
+ assert.equal(creature.presentation.visual.back.assetId,"pack:capture:creature-sylvorne-player-01");
+ assert.equal(creature.presentation.visual.icon.assetId,"pack:capture:creature-sylvorne-icon-01");
+});
+test("Native Sylvorne abilities reuse officially catalogued Nature/Earth FX resource IDs",()=>{
+ assert.equal(shard.presentation.visual.cast.assetId,"pack:capture:sprite-cast-nature-01");
+ assert.equal(shard.presentation.visual.travel.assetId,"pack:capture:sprite-projectile-thorn-01");
+ assert.equal(shard.presentation.visual.impact.assetId,"pack:capture:sprite-impact-nature-01");
+ assert.equal(bark.presentation.visual.cast.assetId,"pack:capture:sprite-stone-carapace-cast-01");
+ assert.equal(sap.presentation.visual.cast.assetId,"pack:capture:sprite-cast-nature-01");
+ assert.equal(ultimate.presentation.visual.impact.assetId,"pack:capture:sprite-impact-nature-01");
+});
+test("Mine expands telegraph 30% and now uses native impact sprite, without changing native damage",()=>{
+ assert.equal(mine.definition.effects[0].visualCue,"ground_mine");
+ assert.equal(mine.definition.effects[0].trigger.delayMs,2000);
+ assert.equal(mine.definition.effects[0].effects[0].amount,15);
+ assert.equal(mine.presentation.visual.impact.assetId,"pack:capture:sprite-impact-nature-01");
+ const renderer=read("src/adapters/renderer/dom-skill-fx.js");
+ assert.ok(renderer.includes("42*1.3"));
+ assert.ok(renderer.includes("19*1.3"));
+ assert.ok(renderer.includes("skillId:item.record.sourceSkillId"));
+ for(const p of ["src/ui/combat-test-ui.js","src/ui/combat-2v2-test-ui.js","src/ui/capture-combat-preview-v1.js","examples/dom-demo/capture-editor-v2.js","examples/dom-demo/capture-editor-v2.html"])assert.ok(read(p).includes("sylvorne-fx-size-20261111"),p+" cached");
+});
