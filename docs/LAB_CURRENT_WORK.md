@@ -1,3 +1,14 @@
+## 2026-11-11 — Sylvorne : raccord automatique des trois visuels dans l'éditeur (C1, candidat)
+
+- Signalement : dans l'onglet Apparence de Sylvorne, Face / Dos / Icône non visibles ou vides ; aucun appariement manuel ne doit être nécessaire.
+- START `main@3fd73a250a58d5d29f9f06b1d5cc2988702063d1`, checkpoint `checkpoint/lab-start-sylvorne-editor-asset-autolink-2026-11-11`, branche de travail `work/lab-sylvorne-editor-asset-autolink-2026-11-11`.
+- Cause démontrée : l'icône originale est un `portrait` de catégorie `ui` marqué `creature` dans le catalogue canonique, mais son sélecteur HTML était déclaré au rôle `creature`. L'option de l'asset ne pouvait pas être proposée et le chargement de la fiche réinitialisait silencieusement sa valeur. Le code de rafraîchissement du même écran utilisait déjà un traitement spécial `creature-icon`, divergent de l'initialisation.
+- Correctif minimal : le rôle `creature-icon` est déclaré directement sur le sélecteur, et le propriétaire de bibliothèque traite les deux chemins avec l'unique rôle déclaré par l'HTML. Face/dos continuent d'utiliser le rôle `creature`. Aucune référence manuelle, aucun changement du transfert Sylvorne, aucun nouveau catalogue ou moteur.
+- Gate : nouveau parcours Chromium réel dans la sentinelle existante : ouvrir le modèle publié Sylvorne, vérifier les options d'assetId, les valeurs des trois sélecteurs, les URLs d'aperçu, changer de créature puis recharger Sylvorne. Préserver le test de rendu combat du commit précédent et toutes les sentinelles d'éditeur.
+- Protections : 106 créatures historiques, autres médias, `global-assets`, stats, compétences, PWA GenSRPG et sauvegardes inchangés. CI sur SHA exact, fusion `main` puis contrôle Pages HTTPS avant GREEN public.
+
+---
+
 ## 2026-11-11 — Sylvorne : visuels du combat (C1, lot ciblé en validation)
 
 - **START** : Combat main `83d3aa04f7eca4c9ebe420cac6e215bbf939f501`; checkpoint `checkpoint/lab-start-sylvorne-combat-visuals-2026-11-11`; branche temporaire `work/lab-sylvorne-combat-visuals-2026-11-11` ; aucune nouvelle autorité.
