@@ -8132,8 +8132,11 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
     );
   }
 
-  if (role === "icon") {
-    return asset.assetType === "icon";
+  if (role === "icon" || role === "creature-icon") {
+    return asset.assetType === "icon" ||
+      (role === "creature-icon" &&
+        asset.assetType === "portrait" &&
+        asset.tags?.includes("creature"));
   }
   if (role === "movement" || role === "attack") {
     // The selectable catalog contains genuine animated creature sprite strips
@@ -9061,7 +9064,9 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
       populateSelect(
         select,
         assets,
-        select.dataset.assetRole
+        select.matches?.("[data-creature-icon-select]")
+          ? "creature-icon"
+          : select.dataset.assetRole
       );
     }
     syncHumanCreatureReactionControlsV1(root);

@@ -1429,9 +1429,14 @@ function createSlot({
       const collisionReady =
         collisionModel.refreshFromImage();
       if (!collisionReady) {
-        assetReady = false;
-        image.hidden = true;
+        // A decoded creature image is still a valid combat appearance even
+        // when its optional pixel-alpha collision mask cannot be read (e.g.
+        // cross-origin canvas restrictions). Combat Rules keep hit authority;
+        // the existing geometry fallback handles unavailable masks.
+        settled = true;
+        assetReady = true;
         slotContainer.dataset.visibleCollisionReady = "false";
+        image.hidden = !visible;
         return;
       }
 
