@@ -4,7 +4,7 @@
   "draft": {
     "schema": "capture-skill-editor-draft-v1",
     "id": "sylvorne-ecorce-vivante",
-    "description": "Renforce sa Défense de 16 points pendant 14 secondes, sans cumul.",
+    "description": "Renforce sa Défense de 100 points (+20 points de pourcentage de réduction) pendant 14 secondes, sans cumul.",
     "requiredLevel": 5,
     "usageScopes": [
       "capture",
@@ -79,7 +79,7 @@
             "tags": [],
             "statId": "defense",
             "modifierMode": "points",
-            "deltaPoints": 16
+            "deltaPoints": 100
           }
         }
       ]

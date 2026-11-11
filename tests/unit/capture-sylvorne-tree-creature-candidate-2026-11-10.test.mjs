@@ -7,23 +7,32 @@ const load=async file=>JSON.parse(await readFile(new URL('../../data/capture/sho
 test('Sylvorne five unique canonical skill contracts, five progression levels and 1 ultimate',async()=>{
  const a=[];for(const id of ids)a.push(normalizeCaptureSkillTransferV1(await load(id+'.capture-skill-transfer-v1.json')).draft);
  assert.deepEqual(a.map(x=>x.requiredLevel),[1,5,10,15,20]);assert.equal(new Set(a.map(x=>x.id)).size,5);
- assert.deepEqual(a.map(x=>x.definition.cooldownMs),[12000,32000,23000,42000,0]);
+ assert.deepEqual(a.map(x=>x.definition.cooldownMs),[12000,32000,0,42000,0]);
  assert.deepEqual(a.map(x=>x.definition.element),Array(5).fill('nature'));
  assert.equal(a[4].definition.maxUsesPerCombat,1);
  const mark=a[0].definition.effects.find(x=>x.kind==='apply_marker').marker;
- assert.equal(mark.maxStacks,2);assert.equal(mark.onStackThreshold.count,2);
+ assert.equal(mark.maxStacks,2);assert.equal(mark.onStackThreshold.count,2);assert.equal(mark.onStackThreshold.consume,'keep');
  assert.equal(mark.onStackThreshold.effects[1].status.kind,'immobilize');
- assert.equal(a[1].definition.effects[0].status.deltaPoints,16);
- assert.equal(a[2].definition.effects.find(x=>x.kind==='apply_marker').marker.id,mark.id);
+ assert.equal(a[1].definition.effects[0].status.deltaPoints,100);
+ assert.equal(a[2].definition.form,'area');assert.equal(a[2].definition.energyCost,4);
+ assert.equal(a[2].definition.cooldownMs,0);
+ const mine=a[2].definition.effects[0];
+ assert.equal(mine.kind,'scheduled_effect');assert.equal(mine.visualCue,'ground_mine');
+ assert.equal(mine.trigger.delayMs,2000);
+ assert.deepEqual(mine.effects.map(e=>e.kind),['damage','apply_status']);
+ assert.equal(mine.effects[0].amount,15);
+ assert.deepEqual(mine.effects[1].condition,{type:'marker',value:mark.id,minimum:1});
+ assert.equal(mine.effects[1].status.kind,'stun');assert.equal(mine.effects[1].status.durationMs,2000);
+ assert.equal(a[4].definition.effects[0].amount,50);assert.equal(a[4].definition.effects[1].targetScope,'all_enemies');assert.equal(a[4].definition.effects[1].status.durationMs,10000);
  assert.equal(a[3].definition.effects[0].amount,22);
  assert.equal(a[3].definition.effects[1].status.kind,'heal_over_time');
  assert.equal(a[4].definition.effects.find(x=>x.kind==='consume_marker').markerId,mark.id);
 });
-test('Sylvorne candidate is a schema-valid slow Nature/Earth tank without fake published media',async()=>{
+test('Sylvorne is a schema-valid immobile Nature/Earth tank with canonical media',async()=>{
  const reg=normalizeCaptureStatRegistryV1(JSON.parse(await readFile(new URL('../../data/capture/monster-capture-stat-registry.v1.json',import.meta.url),'utf8')));
  const c=normalizeCaptureCreatureTransferV1(await load('crea_sylvorne.capture-creature-transfer-v1.json'),reg);
  assert.equal(c.draft.displayName,'Sylvorne');assert.deepEqual(c.draft.elements,['nature','earth']);
- assert.equal(c.statValues.values.health,215);assert.equal(c.statValues.values.speed,6);assert.equal(c.statValues.values.defense,24);assert.equal(c.statValues.values.nature,22);
+ assert.equal(c.statValues.values.health,215);assert.equal(c.statValues.values.speed,0);assert.equal(c.statValues.values.defense,24);assert.equal(c.statValues.values.physical,0);assert.equal(c.draft.sourceStats.force,0);assert.equal(c.draft.sourceStats.initiative,0);assert.equal(c.statValues.values.nature,22);
  assert.equal(c.draft.resistances.find(r=>r.kind==='element:fire').value,-50);
  assert.deepEqual(c.draft.skillIds,ids);assert.deepEqual(c.loadout.slots.map(x=>x.skillId),ids);
  assert.equal(c.draft.presentation.visual.front.assetId,'pack:capture:creature-sylvorne-opponent-01');

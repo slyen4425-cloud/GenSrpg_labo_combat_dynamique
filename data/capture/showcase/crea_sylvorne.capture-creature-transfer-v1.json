@@ -5,15 +5,15 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_sylvorne",
     "displayName": "Sylvorne",
-    "description": "Gardien ancien des sous-bois, arbre vivant lent et très résistant. Immobilise ses proies grâce à Germination et régénère son écorce.",
+    "description": "Gardien des sous-bois, arbre vivant immobile et très résistant. Piège ses ennemis avec ses racines, accumule Germination et régénère son écorce.",
     "level": 1,
     "sourceStats": {
-      "force": 32,
-      "agility": 11,
+      "force": 0,
+      "agility": 0,
       "intelligence": 0,
       "spirit": 28,
       "endurance": 45,
-      "initiative": 10
+      "initiative": 0
     },
     "elements": [
       "nature",
@@ -183,8 +183,8 @@
     "creatureId": "crea_sylvorne",
     "values": {
       "health": 215,
-      "speed": 6,
-      "physical": 12,
+      "speed": 0,
+      "physical": 0,
       "defense": 24,
       "fire": 0,
       "water": 0,

@@ -4,7 +4,7 @@
   "draft": {
     "schema": "capture-skill-editor-draft-v1",
     "id": "sylvorne-vrilles-du-sous-bois",
-    "description": "14 dégâts Nature, immobilisation 1,1 s et 1 Germination sur la même cible.",
+    "description": "Mine de racines : après 2 s, 15 dégâts Nature. Si la cible porte Germination à l'explosion, étourdissement de 2 s. Aucun temps de recharge, coût 4 énergie. Sprite de racines à fournir.",
     "requiredLevel": 10,
     "usageScopes": [
       "capture",
@@ -14,15 +14,15 @@
       "id": "sylvorne-vrilles-du-sous-bois",
       "name": "Vrilles du sous-bois",
       "category": "offensive",
-      "form": "beam",
+      "form": "area",
       "loadoutSlot": "standard",
       "element": "nature",
       "approachMode": "none",
-      "energyCost": 5,
-      "preparationMs": 1200,
-      "travelMs": 700,
-      "recoveryMs": 300,
-      "cooldownMs": 23000,
+      "energyCost": 4,
+      "preparationMs": 0,
+      "travelMs": 0,
+      "recoveryMs": 0,
+      "cooldownMs": 0,
       "maxUsesPerCombat": null,
       "interruptibleDuringPreparation": true,
       "allowedDistances": [
@@ -66,63 +66,40 @@
       },
       "effects": [
         {
-          "kind": "damage",
+          "kind": "scheduled_effect",
           "targetScope": "target",
-          "amount": 14,
-          "channel": "nature"
-        },
-        {
-          "kind": "apply_status",
-          "targetScope": "target",
-          "status": {
-            "id": "sylvorne-vrilles-entrave",
-            "kind": "immobilize",
-            "polarity": "detrimental",
-            "durationModel": "time_ms",
-            "durationMs": 1100,
-            "stacking": "refresh",
-            "maxStacks": 1,
-            "tags": []
-          }
-        },
-        {
-          "kind": "apply_marker",
-          "targetScope": "target",
-          "marker": {
-            "id": "sylvorne-germination",
-            "name": "Germination",
-            "polarity": "detrimental",
-            "durationMs": 20000,
-            "maxStacks": 2,
-            "iconAssetId": "core:icon-skill-thorn-vines-01",
-            "onStackThreshold": {
-              "count": 2,
-              "consume": "reset",
-              "effects": [
-                {
-                  "kind": "damage",
-                  "targetScope": "target",
-                  "amount": 6,
-                  "channel": "nature"
-                },
-                {
-                  "kind": "apply_status",
-                  "targetScope": "target",
-                  "status": {
-                    "id": "sylvorne-germination-entrave",
-                    "kind": "immobilize",
-                    "polarity": "detrimental",
-                    "durationModel": "time_ms",
-                    "durationMs": 1000,
-                    "stacking": "refresh",
-                    "maxStacks": 1,
-                    "tags": []
-                  }
-                }
-              ]
-            }
+          "trigger": {
+            "type": "after_ms",
+            "delayMs": 2000
           },
-          "charges": 1
+          "visualCue": "ground_mine",
+          "effects": [
+            {
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 15,
+              "channel": "nature"
+            },
+            {
+              "kind": "apply_status",
+              "targetScope": "target",
+              "condition": {
+                "type": "marker",
+                "value": "sylvorne-germination",
+                "minimum": 1
+              },
+              "status": {
+                "id": "sylvorne-vrilles-germination-stun",
+                "kind": "stun",
+                "polarity": "detrimental",
+                "durationModel": "time_ms",
+                "durationMs": 2000,
+                "stacking": "refresh",
+                "maxStacks": 1,
+                "tags": []
+              }
+            }
+          ]
         }
       ]
     },

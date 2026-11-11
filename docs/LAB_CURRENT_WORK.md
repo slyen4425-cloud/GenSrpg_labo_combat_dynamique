@@ -1,3 +1,13 @@
+## 2026-11-11 — Sylvorne, corrections auteur gameplay + réparation du smoke navigateur (PR #291, non publié)
+- Base : branche temporaire `work/lab-sylvorne-showcase-promotion-2026-11-10@d9a6bc61c271bc7e1b81ca717e5f75e0901ecfe3`, checkpoint START `checkpoint/lab-start-sylvorne-balance-2026-11-11`. `main` reste seule source officielle ; pas de duplication de règles, médias, GenSRPG ou Exploration.
+- Nom visible Sylvorne ; description gardien des sous-bois ; Vitesse et Physique 0 (source legacy alignée), +100 Défense sur Écorce vivante 14 s (20 points de % au ratio auteur).
+- Vrilles du sous-bois : mine native `scheduled_effect` / `ground_mine`, 15 Nature à 2 s, 4 énergie, cooldown zéro ; stun 2 s conditionné par Germination au déclenchement. Sprite racines futur : pas d'asset fictif.
+- Forêt souveraine : 50 dégâts Nature zone ennemie, immobilisation 10 s, +6 Nature/charge consommée sur la cible principale (max +12). Germination seuil 2 `keep` afin de garder les marques jusqu'à l'ultime, effet seuil une seule fois.
+- CI précédente #291 sur `d9a6bc61c271bc7e1b81ca717e5f75e0901ecfe3` : 4/5 jobs PASS ; browser creature-library KO uniquement sur une attente interne 105 au lieu de 106 (log `creature identity count 106`). Corriger l'attente, **sans supprimer le test** ; ajouter sentinelles contrat et combat réel mine/Germination/ultime, relancer CI complète, vérifier Pages/Android avant GREEN.
+- Fichiers autorisés : les 5 transferts de Sylvorne, tests de Sylvorne, smoke navigateur, ce journal et note C2 ; catalogues/anciens monstres, cœur moteur, sauvegardes et médias protégés.
+
+---
+
 ## 2026-11-10 — Sylvorne : promotion du gardien végétal dans Showcase, assetIds certifiés (C2)
 - START SHA `3af25a4a977dfc574d40e6f7617e566068e2314f`, checkpoint `checkpoint/lab-start-sylvorne-showcase-promotion-2026-11-10`, branche `work/lab-sylvorne-showcase-promotion-2026-11-10`, après prototype #289 testé 10/10 GREEN. Dépendance visuelle officielle : `global-assets@9eef5847a2b9907c493d9575a5c148b09d41a5bf` (PR #290 fusionnée, 2/2 checks SUCCESS), originaux ZIP préservés.
 - Un seul propriétaire : six transferts prototypes déplacés de `data/capture/candidates` vers `data/capture/showcase`, deux catalogues existants augmentés d’une seule créature et cinq compétences, sans nouveaux moteurs ni doublons. Modèle original : FACE/DOS/ICONE 512 RGBA, marges 42 px, références visuelles canoniques dans `global-assets` ; mêmes fiches stats et mécaniques. Les 110 entrées historiques et les autres modèles sont inchangés.

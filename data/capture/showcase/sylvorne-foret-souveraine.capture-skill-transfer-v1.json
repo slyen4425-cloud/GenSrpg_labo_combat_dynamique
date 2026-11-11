@@ -4,7 +4,7 @@
   "draft": {
     "schema": "capture-skill-editor-draft-v1",
     "id": "sylvorne-foret-souveraine",
-    "description": "Ultime : 24 dégâts Nature à tous les ennemis actifs. Consomme jusqu’à 2 Germinations sur la cible principale (+6 dégâts chacune), avec immobilisation 1,2 s si marquée.",
+    "description": "Ultime : 50 dégâts Nature à tous les ennemis actifs et immobilisation 10 s. La cible principale subit +6 dégâts par marque de Germination consommée (jusqu'à +12). Une utilisation par combat.",
     "requiredLevel": 20,
     "usageScopes": [
       "capture",
@@ -68,26 +68,21 @@
         {
           "kind": "damage",
           "targetScope": "all_enemies",
-          "amount": 24,
+          "amount": 50,
           "channel": "nature"
         },
         {
           "kind": "apply_status",
-          "targetScope": "target",
+          "targetScope": "all_enemies",
           "status": {
             "id": "sylvorne-foret-souveraine-entrave",
             "kind": "immobilize",
             "polarity": "detrimental",
             "durationModel": "time_ms",
-            "durationMs": 1200,
+            "durationMs": 10000,
             "stacking": "refresh",
             "maxStacks": 1,
             "tags": []
-          },
-          "condition": {
-            "type": "marker",
-            "value": "sylvorne-germination",
-            "minimum": 1
           }
         },
         {
