@@ -1771,6 +1771,7 @@ export async function mountCoop2v2Test({
       return fx.barrierContactFor({sourceActorId,targetActorId,kind,skillId});
     },
     readZoneSpatialContext: state => fx.sampleZoneSpatialContext(state.persistentZones ?? []),
+    readMineSpatialContext: state => fx.sampleMineSpatialContext(state),
     onState(state) {
       impactHealthCue.clear();
       if (rosterController) for (const actor of format.actors) {

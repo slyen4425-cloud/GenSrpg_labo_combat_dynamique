@@ -153,6 +153,7 @@
 .skill__title{flex:1;min-width:0;display:grid;gap:3px}
 .skill__title strong{font-size:.9rem;overflow-wrap:anywhere}
 .skill__title small{font-size:.73rem}
+.skill__activation{display:block;color:#c7e8ca;line-height:1.4;overflow-wrap:anywhere}
 .skill__chevron{font-size:1.45rem;color:#aed4e2;transition:transform .16s}
 .skill__toggle[aria-expanded="true"] .skill__chevron{transform:rotate(180deg)}
 .skill__details{border-top:1px solid #46627b;background:#102137;padding:15px 13px 17px;min-width:0}

@@ -31,6 +31,7 @@ export function createCombatRuntime({
   setTimer = defaultSetTimer,
   clearTimer = defaultClearTimer,
   readZoneSpatialContext = null,
+  readMineSpatialContext = null,
   readBarrierContact = null,
   enableExpandingWaveMultiTarget = false,
   groundContactResolution = "timed",
@@ -56,6 +57,7 @@ export function createCombatRuntime({
     throw new RangeError("tickMs must be greater than 0");
   }
   if (readZoneSpatialContext !== null && typeof readZoneSpatialContext !== "function") throw new TypeError("readZoneSpatialContext must be a function");
+  if (readMineSpatialContext !== null && typeof readMineSpatialContext !== "function") throw new TypeError("readMineSpatialContext must be a function");
   if (readBarrierContact !== null && typeof readBarrierContact !== "function") throw new TypeError("readBarrierContact must be a function");
 
   let disposed = false;
@@ -480,6 +482,7 @@ export function createCombatRuntime({
     return Object.freeze({
       mode: "approach-bands-v1",
       visibleZones: normalizePersistentZoneSpatialV1(readZoneSpatialContext?.(state) ?? null),
+      visibleMines: readMineSpatialContext?.(state) ?? null,
       approaches:
         Object.freeze(approaches)
     });

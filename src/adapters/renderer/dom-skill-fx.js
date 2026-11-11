@@ -1907,14 +1907,19 @@ export function createDomSkillFxRenderer({
         node.className="skill-fx skill-fx--mine-telegraph";
         node.dataset.skillFx="mine-telegraph";
         node.dataset.scheduledMineId=record.id;
-        node.style.cssText=`position:absolute;width:${fxAuthorPixelsV1(arena,42*1.3)}px;height:${fxAuthorPixelsV1(arena,19*1.3)}px;border-radius:50%;border:${fxAuthorPixelsV1(arena,2)}px solid rgba(255,214,92,.9);background:rgba(255,105,56,.24);box-shadow:0 0 ${fxAuthorPixelsV1(arena,7)}px #ffbb50;pointer-events:none;transform:translate(-50%,-50%);z-index:5;`;
+        node.style.cssText=`position:absolute;width:${fxAuthorPixelsV1(arena,42*1.3)}px;height:${fxAuthorPixelsV1(arena,19*1.3)}px;border-radius:50%;border:${fxAuthorPixelsV1(arena,2)}px solid rgba(255,214,92,.9);background:rgba(255,105,56,.24);box-shadow:0 0 ${fxAuthorPixelsV1(arena,7)}px #ffbb50;pointer-events:none;transform:translate(-50%,-50%);z-index:5;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:${fxAuthorPixelsV1(arena,11)}px;text-shadow:0 1px 3px #000,0 0 5px #000;white-space:nowrap;`;
         node.style.left=x+"px";node.style.top=y+"px";
         arena.append(node);
         item={node,x,y,record};scheduledMineNodes.set(record.id,item);
       }
       const left=Math.max(0,record.dueAtMs-Number(state.elapsedMs??0));
       const total=Math.max(1,record.dueAtMs-record.scheduledAtMs);
-      item.node.style.opacity=String(Math.max(.35,Math.min(1,1-left/total*.65)));
+      const seconds=Math.ceil(left/1000);
+      // One native combat clock: this text is not a separate timer.
+      item.node.textContent=seconds+" s";
+      item.node.dataset.secondsRemaining=String(seconds);
+      item.node.setAttribute("aria-label","Mine : explosion dans "+seconds+" secondes");
+      item.node.style.opacity=String(Math.max(.65,Math.min(1,1-left/total*.35)));
     }
     for(const [id,item] of [...scheduledMineNodes]){
       if(expected.has(id))continue;
@@ -1932,6 +1937,24 @@ export function createDomSkillFxRenderer({
       }
     }
     return Object.freeze({status:"synced",triggered:Object.freeze(triggered)});
+  }
+
+  function sampleMineSpatialContext(state) {
+    if(disposed)return [];
+    // Materialize pending mine visuals before sampling, without applying damage.
+    syncScheduledMines(state);
+    const bounds = value => {
+      const box=typeof value?.getBoundingClientRect==="function"?value.getBoundingClientRect():value;
+      if(!box)return null;
+      return {left:Number(box.left),top:Number(box.top),
+        width:Number(box.width),height:Number(box.height)};
+    };
+    return (state?.scheduledEffects??[]).filter(x=>x.visualCue==="ground_mine")
+      .map(record=>({
+        mineId:record.id,targetActorId:record.targetActorId,
+        mineBounds:bounds(scheduledMineNodes.get(record.id)?.node),
+        targetBounds:bounds(projectileTargetRect(record.targetActorId))
+      }));
   }
 
   function syncPersistentZones(zones = []) {
@@ -3595,6 +3618,7 @@ export function createDomSkillFxRenderer({
     },
     syncPersistentZones,
     syncScheduledMines,
+    sampleMineSpatialContext,
     sampleZoneSpatialContext,
     barrierContactFor,
     cancelProjectileFor,
