@@ -5,6 +5,7 @@
 - **Risque démontré dans le code** : le sélecteur d'icône de créature excluait les portraits originaux (`assetType:portrait`), alors que Sylvorne utilise ce type ; modification de la créature pouvant vider sa sélection. La représentation de combat masquait également une image déjà décodée quand le calcul annexe du masque alpha échouait (cas de canvas externe). Les règles de collision restent dans l'autorité Combat native, pas dans l'image.
 - **Périmètre** : réutiliser le sélecteur d'asset existant, accepter uniquement les portraits de créature pour l'icône du modèle, et laisser visible une image chargée même lorsque le masque facultatif n'est pas disponible. Ne jamais fabriquer de sprite, remplacer les PNG auteur ou modifier les règles, dégâts, stats, sauvegardes, GenSRPG ou Exploration.
 - **Preuves à obtenir** : test de transfert Sylvorne réel → export Combat → adaptateur visuel → URLs FACE/DOS/portrait ; tests de sélection d'icône ; Chromium de l'image chargée avec/sans masque ; CI 5/5, publication main et HTTPS/Android avant GREEN final.
+- **Propagation navigateur** : nouvelle révision ESM homogène du document public → éditeur → loader → vue combat → `demo-app.js`, pour que les navigateurs qui ont gardé le script antérieur rechargent le correctif sans double autorité. Vérification statique dans les tests.
 
 ---
 

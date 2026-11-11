@@ -67,3 +67,18 @@ test("Sylvorne portrait is selectable as creature icon without polluting reactio
   const unsafe={...portrait,compatibility:{uses:["combat"]}};
   assert.equal(captureEditorAssetMatchesRoleV1(unsafe,"creature-icon"),false);
 });
+
+test("public combat preview uses one Sylvorne cache revision from HTML to live actor renderer",async()=>{
+  const html=await read("examples/dom-demo/capture-editor-v2.html");
+  const rev=html.match(/capture-editor-v2[.]js[?]v=([^"]+)/)?.[1];
+  assert.ok(rev?.endsWith("sylvorne-combat-visuals-20261111"));
+  for(const [path,dependencies] of [
+    ["examples/dom-demo/capture-editor-v2.js",["capture-editor-human-v2.js","capture-editor-preview-runtime-loader-v1.js"]],
+    ["src/ui/capture-editor-preview-runtime-loader-v1.js",["capture-combat-preview-v1.js"]],
+    ["src/ui/capture-combat-preview-v1.js",["demo-app.js","combat-2v2-test-ui.js"]]
+  ]){
+    const source=await read(path);
+    for(const dependency of dependencies)
+      assert.ok(source.includes(dependency+"?v="+rev),"stale combat module "+dependency+" in "+path);
+  }
+});
