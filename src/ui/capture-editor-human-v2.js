@@ -1,7 +1,7 @@
 import {appendCaptureEffectConditionFieldsV1,readCaptureEffectConditionV1} from "./capture-effect-condition-fields-v1.js";
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js?v=self-periodic-prose-20261102-sylvorne-fx-size-20261111";
 import { createCaptureReferenceElementFiltersV1 } from "./capture-reference-element-filter-v1.js?v=visual-elements-20261105-sylvorne-fx-size-20261111";
-import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104-sylvorne-fx-size-20261111";
+import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104";
 import { normalizeCaptureMarkerLibraryV1 } from "../contracts/capture-marker-v1.js";
 import { captureMarkerEffectFieldsV1, readCaptureMarkerEffectFieldsV1, captureMarkerZoneSelectV1 } from "./capture-marker-effect-fields-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104-sylvorne-fx-size-20261111";
 import { captureEditorElementChannelChoicesV1, captureEditorGeneratedStatIdV1 } from "./capture-editor-element-channel-select-v1.js";
