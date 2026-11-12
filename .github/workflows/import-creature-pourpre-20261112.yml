@@ -1,0 +1,46 @@
+name: Import Créature pourpre — assets canoniques
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/import-creature-pourpre-20261112.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: source
+          persist-credentials: true
+      - uses: actions/checkout@v4
+        with:
+          ref: global-assets
+          path: canonical
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Pillow for alpha and safe-margin validation
+        run: python -m pip install "Pillow>=11,<13"
+      - name: Extract the approved 3-view artwork only into the canonical asset library
+        run: python source/scripts/publish-creature-pourpre-20261112.py source/creature_pourpre_monster_capture.zip canonical
+      - name: Verify append-only diff and publish to the established global-assets owner
+        working-directory: canonical
+        run: |
+          git diff --check
+          git status --short
+          git diff --name-only
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/library/capture/creatures/creature_pourpre data/assets/catalog/global-visual-assets.v1.json
+          git diff --cached --check
+          git diff --cached --name-only
+          git commit -m "assets(capture): register approved Creature Pourpre face/dos/icon in canonical global-assets"
+          git push origin HEAD:global-assets
