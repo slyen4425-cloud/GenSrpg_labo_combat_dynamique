@@ -43,3 +43,8 @@ Test natif ciblé : `tests/unit/capture-selachombre-shark-2026-11-12.test.mjs`. 
 - Demande auteur prioritaire : adversaire (face) de **1,50 à 1,20** (-20 % sur la précédente proposition) et position Y de **0 à +45** (vers le bas, même convention que le Loup volcanique).
 - Joueur (dos) reste à **1,74** ; portrait/éditeur/icône et échelle générique restent inchangés. Ancrage originel 50 % / 87 % conservé.
 - Le précédent +20 % n'est donc maintenu que côté joueur ; l'adversaire est finalement un peu plus petit que la version 1,25 avant la PR.
+
+## Réglage complémentaire demandé — Sélachombre adversaire encore -20 %
+- Vue adversaire : facteur **1,20 → 0,96** (−20 % supplémentaire, calcul relatif à la version publiée `e7c9269e`).
+- Décalage adversaire **Y +45** conservé, facteur joueur **1,74** et Y 0 inchangés.
+- Conservation intégrale des images, des compétences, des statistiques, du budget et des autres créatures ; correction associée au décalage Y de Sylvorne, branche `work/lab-sylvorne-opponent-y-2026-11-12`.
