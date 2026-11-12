@@ -13,7 +13,7 @@ const ids=["vyrame-griffe-dame","vyrame-crocs-du-voile","vyrame-rugissement-des-
 const read=p=>readFile(new URL('../../'+p,import.meta.url),'utf8');
 const load=async name=>JSON.parse(await read('data/capture/showcase/'+name+'.json'));
 const skills=await Promise.all(ids.map(async id=>(await normalizeCaptureSkillTransferV1(await load(id+'.capture-skill-transfer-v1'))).draft));
-const fighter=(id,hp=200)=>({id,maxHp:hp,initialHp:hp===200?100:hp,maxEnergy:25,initialEnergy:10,energyChargeAmount:0,energyChargeIntervalMs:1000,movementEnergyPerStep:0});
+const fighter=(id,hp=200)=>({id,maxHp:hp,initialHp:hp===200?100:hp,maxEnergy:25,initialEnergy:10,energyChargeAmount:0,energyChargeIntervalMs:1000,movementEnergyPerStep:0,statValuesById:{defense:18},statEffectRulesById:{defense:{damageChannel:null,resistanceChannel:null,damagePctPerPoint:0,resistancePctPerPoint:0,chargeTimeReductionPctPerPoint:0}}});
 const state=()=>createCombatState({fighters:[fighter('vyrame'),fighter('enemy',300)]});
 const battleFormat={actors:[{actorId:'vyrame'},{actorId:'enemy'}],teamOf:id=>id==='vyrame'?'player':'opponent'};
 const apply=(s,skill,at=0)=>applyImmediateTacticalEffectsV1({state:s,actorId:'vyrame',targetId:'enemy',skill,atMs:at,combatAtMs:at,battleFormat}).state;
