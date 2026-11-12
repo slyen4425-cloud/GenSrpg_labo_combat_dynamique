@@ -31,3 +31,15 @@ Test natif ciblé : `tests/unit/capture-selachombre-shark-2026-11-12.test.mjs`. 
 - Gabarit requin agrandi d'environ 32 % côté joueur et 39 % côté adversaire, maintien du centre de support au sol à 87 %, images originales inchangées.
 - Équilibrage auteur standard : un seul calcul partagé `src/contracts/capture-creature-stat-budget-v1.js` lit le registre de statistiques du Labo Combat ; 100 points au niveau 1, PV/5 et chaque point des autres statistiques = 1 point. Sélachombre : 170/5 +20 Vitesse+16 Physique+8 Défense+14 Eau+8 Glace=100.
 - Le barème est pour les **nouvelles créations standards** uniquement ; le bestiaire historique ne reçoit aucune baisse rétroactive. Les barèmes épique/légendaire sont envisagés mais non activés, en attente d'une décision auteur. Les résistances et les capacités font l'objet d'un second examen qualitatif (aucune prétention qu'un total de stats suffit à tout équilibrer).
+
+## Ajustement auteur — taille en combat (+20 % supplémentaire)
+- Source : `main@4e2a25e7d67d5af1299047fb39c97e67401ec3bc`, checkpoint `checkpoint/lab-start-selachombre-combat-scale20-2026-11-12`, branche `work/lab-selachombre-combat-scale20-2026-11-12`.
+- Visuel joueur (dos) : facteur 1,45 → **1,74** (+20 % exact).
+- Visuel adversaire (face) : facteur 1,25 → **1,50** (+20 % exact).
+- Seulement `presentation.viewOverrides` : taille générique 1,15 inchangée, icône et images officielles inchangées, point d'appui au sol `87 %` conservé.
+- Les compétences, stats, budgets et autres créatures ne sont pas modifiés. Tests CI et Pages à valider sur la publication finale.
+
+## Ajustement pendant la PR #304 — adversaire plus petit et plus bas
+- Demande auteur prioritaire : adversaire (face) de **1,50 à 1,20** (-20 % sur la précédente proposition) et position Y de **0 à +45** (vers le bas, même convention que le Loup volcanique).
+- Joueur (dos) reste à **1,74** ; portrait/éditeur/icône et échelle générique restent inchangés. Ancrage originel 50 % / 87 % conservé.
+- Le précédent +20 % n'est donc maintenu que côté joueur ; l'adversaire est finalement un peu plus petit que la version 1,25 avant la PR.
