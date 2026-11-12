@@ -38,3 +38,8 @@ Test natif ciblé : `tests/unit/capture-selachombre-shark-2026-11-12.test.mjs`. 
 - Visuel adversaire (face) : facteur 1,25 → **1,50** (+20 % exact).
 - Seulement `presentation.viewOverrides` : taille générique 1,15 inchangée, icône et images officielles inchangées, point d'appui au sol `87 %` conservé.
 - Les compétences, stats, budgets et autres créatures ne sont pas modifiés. Tests CI et Pages à valider sur la publication finale.
+
+## Ajustement pendant la PR #304 — adversaire plus petit et plus bas
+- Demande auteur prioritaire : adversaire (face) de **1,50 à 1,20** (-20 % sur la précédente proposition) et position Y de **0 à +45** (vers le bas, même convention que le Loup volcanique).
+- Joueur (dos) reste à **1,74** ; portrait/éditeur/icône et échelle générique restent inchangés. Ancrage originel 50 % / 87 % conservé.
+- Le précédent +20 % n'est donc maintenu que côté joueur ; l'adversaire est finalement un peu plus petit que la version 1,25 avant la PR.

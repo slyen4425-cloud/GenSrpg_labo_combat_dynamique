@@ -127,10 +127,10 @@
           }
         },
         "opponent": {
-          "displayScale": 1.5,
+          "displayScale": 1.2,
           "position": {
             "x": 0,
-            "y": 0
+            "y": 45
           }
         }
       },

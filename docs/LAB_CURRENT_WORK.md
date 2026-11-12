@@ -1,3 +1,9 @@
+## 2026-11-12 — Révision utilisateur, PR #304 avant fusion
+- Ajustement du lot toujours non fusionné : Sélachombre joueur 1,74 maintenu ; adversaire 1,50→1,20 (-20 %) et Y 0→+45 (descente).
+- Aucun nouveau moteur, image ou autorité ; uniquement la donnée officielle de cette créature et les tests/documents. L'ancienne CI e59969a appartient à l'ancien état du lot : seule la nouvelle CI exacte autorise la fusion.
+
+---
+
 ## 2026-11-12 — Sélachombre : +20 % sur les visuels de combat (lot isolé)
 - START `main@4e2a25e7d67d5af1299047fb39c97e67401ec3bc`, checkpoint `checkpoint/lab-start-selachombre-combat-scale20-2026-11-12`, branche `work/lab-selachombre-combat-scale20-2026-11-12`.
 - Facteur de combat (joueur/adversaire) : 1,45→1,74 et 1,25→1,50 (+20 % chacun). Base de l'éditeur et du bestiaire inchangée ; ancrage sol 87 % conservé.
