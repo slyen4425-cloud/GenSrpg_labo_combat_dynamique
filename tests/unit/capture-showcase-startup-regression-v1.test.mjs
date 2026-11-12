@@ -209,7 +209,7 @@ test("startup library remains complete while showcase presets are applied throug
       configuredSkills,
       metadata: { producer: "startup-regression-test" }
     }).creatures.length,
-    106
+    107
   );
 });
 

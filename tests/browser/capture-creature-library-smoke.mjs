@@ -2191,7 +2191,7 @@ function assertCreatures(dom, scenario) {
     }
   }
   if (options.length !== 107 || new Set(options).size !== 107) {
-    throw new Error(scenario + ": expected 106 unique creature ids; got " + options.length);
+    throw new Error(scenario + ": expected 107 unique creature ids; got " + options.length);
   }
   console.log(scenario + ": " + options.length + " active creatures, all required IDs present");
 }
