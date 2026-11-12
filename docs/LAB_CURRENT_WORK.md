@@ -1,3 +1,11 @@
+## 2026-11-12 — Sélachombre : +20 % sur les visuels de combat (lot isolé)
+- START `main@4e2a25e7d67d5af1299047fb39c97e67401ec3bc`, checkpoint `checkpoint/lab-start-selachombre-combat-scale20-2026-11-12`, branche `work/lab-selachombre-combat-scale20-2026-11-12`.
+- Facteur de combat (joueur/adversaire) : 1,45→1,74 et 1,25→1,50 (+20 % chacun). Base de l'éditeur et du bestiaire inchangée ; ancrage sol 87 % conservé.
+- Aucune nouvelle image, aucun moteur dupliqué, aucun changement de statistiques ni compétences, aucune synchronisation GenSRPG.
+- Publication conditionnée à CI complète, navigateur, Pages sur SHA exact et checkpoint GREEN.
+
+---
+
 ## 2026-11-12 — Sélachombre : corrections bestiaire, ultime, gabarit et premier budget de stats (en validation)
 - START `main@bf2032ac3ce0dc05c33718cfe0d71d68cee172df` (GREEN) et checkpoint `checkpoint/lab-start-selachombre-balance-2026-11-12` ; branche `work/lab-selachombre-balance-2026-11-12`. Source unique Combat ; GenSRPG non synchronisé.
 - Bestiaire : correction du nom de marqueur dans les compétences canalisées au niveau du générateur de prose partagé ; aucun second catalogue.

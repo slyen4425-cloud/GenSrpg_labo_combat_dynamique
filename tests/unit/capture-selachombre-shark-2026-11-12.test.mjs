@@ -49,8 +49,11 @@ test('Sélachombre original shark 3-view media and balanced Ice/Water stats',asy
  assert.equal(c.statValues.values.glace,8);
  assert.equal(c.statValues.values.physical,16);
  assert.equal(c.statValues.values.defense,8);
- assert.equal(c.draft.presentation.viewOverrides.player.displayScale,1.45);
- assert.equal(c.draft.presentation.viewOverrides.opponent.displayScale,1.25);
+ assert.equal(c.draft.presentation.viewOverrides.player.displayScale,1.74);
+ assert.equal(c.draft.presentation.viewOverrides.player.displayScale/1.45,1.2);
+ assert.equal(c.draft.presentation.viewOverrides.opponent.displayScale,1.5);
+ assert.equal(c.draft.presentation.viewOverrides.opponent.displayScale/1.25,1.2);
+ assert.equal(c.draft.presentation.displayScale,1.15,"Do not enlarge bestiary/edit preview base scale");
  assert.equal(c.draft.presentation.transformOrigin.y,'87%');
  assert.equal(assertCaptureNewCreatureStatBudgetV1({statValues:c.statValues,statRegistry:reg}).spent,100);
  assert.deepEqual(c.draft.skillIds,ids);
