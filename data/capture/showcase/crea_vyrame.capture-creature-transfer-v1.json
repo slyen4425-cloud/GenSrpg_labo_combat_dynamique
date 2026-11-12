@@ -1,0 +1,239 @@
+{
+  "schema": "capture-creature-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-creature-editor-draft-v3",
+    "id": "crea_vyrame",
+    "displayName": "Vyrâme",
+    "description": "Bête cuirassée des sanctuaires pourpres, Vyrâme canalise la force des âmes dans ses griffes. Chaque attaque de base renforce son Combo spirituel, qu'elle dépense pour activer les effets secondaires de ses techniques.",
+    "level": 1,
+    "sourceStats": {
+      "force": 8,
+      "agility": 12,
+      "intelligence": 0,
+      "spirit": 22,
+      "endurance": 40,
+      "initiative": 12
+    },
+    "elements": [
+      "spirit"
+    ],
+    "resistances": [
+      {
+        "kind": "element:fire",
+        "value": 0
+      },
+      {
+        "kind": "element:water",
+        "value": 0
+      },
+      {
+        "kind": "element:earth",
+        "value": 0
+      },
+      {
+        "kind": "element:air",
+        "value": 0
+      },
+      {
+        "kind": "element:electric",
+        "value": 0
+      },
+      {
+        "kind": "element:light",
+        "value": -25
+      },
+      {
+        "kind": "element:shadow",
+        "value": 10
+      },
+      {
+        "kind": "element:nature",
+        "value": 0
+      },
+      {
+        "kind": "element:ice",
+        "value": 0
+      },
+      {
+        "kind": "element:poison",
+        "value": 10
+      },
+      {
+        "kind": "element:steel",
+        "value": 0
+      },
+      {
+        "kind": "element:psy",
+        "value": 0
+      },
+      {
+        "kind": "element:spirit",
+        "value": 30
+      }
+    ],
+    "capture": {
+      "capturable": true,
+      "captureRate": 20,
+      "spawnChance": 4,
+      "spawnTags": [
+        "spirit"
+      ],
+      "evolution": null
+    },
+    "combat": {
+      "maxHp": 200,
+      "maxEnergy": 0,
+      "initialEnergy": 0,
+      "energyChargeAmount": 0,
+      "energyChargeIntervalMs": 0,
+      "movementEnergyPerStep": 0,
+      "chargeTimeModifierPct": 0,
+      "approachTimeModifierPct": 10,
+      "reaction": {
+        "type": "defense",
+        "maxCharges": 2,
+        "rechargeMs": 45000,
+        "activeWindowMs": 500,
+        "damageReductionPct": 55
+      }
+    },
+    "skillIds": [
+      "vyrame-griffe-dame",
+      "vyrame-crocs-du-voile",
+      "vyrame-rugissement-des-limbes",
+      "vyrame-carapace-des-ames",
+      "vyrame-deferlante-spectrale"
+    ],
+    "presentation": {
+      "id": "creature:crea_vyrame",
+      "version": 9,
+      "subjectType": "creature",
+      "subjectId": "crea_vyrame",
+      "profileId": "massive",
+      "displayScale": 1.1,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1.5,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 1.1,
+          "position": {
+            "x": 0,
+            "y": 30
+          }
+        }
+      },
+      "transformOrigin": {
+        "x": "50%",
+        "y": "88%"
+      },
+      "visual": {
+        "front": {
+          "assetId": "pack:capture:creature-pourpre-opponent-01"
+        },
+        "back": {
+          "assetId": "pack:capture:creature-pourpre-player-01"
+        },
+        "icon": {
+          "assetId": "pack:capture:creature-pourpre-icon-01"
+        }
+      },
+      "sockets": [
+        {
+          "id": "mouth",
+          "label": "Gueule",
+          "front": {
+            "x": 0.24,
+            "y": 0.37
+          },
+          "back": {
+            "x": 0.85,
+            "y": 0.37
+          }
+        },
+        {
+          "id": "head",
+          "label": "Tête",
+          "front": {
+            "x": 0.3,
+            "y": 0.31
+          },
+          "back": {
+            "x": 0.8,
+            "y": 0.3
+          }
+        },
+        {
+          "id": "paw",
+          "label": "Patte",
+          "front": {
+            "x": 0.23,
+            "y": 0.76
+          },
+          "back": {
+            "x": 0.73,
+            "y": 0.76
+          }
+        }
+      ],
+      "audio": {}
+    }
+  },
+  "statValues": {
+    "schema": "capture-creature-stat-values-v1",
+    "creatureId": "crea_vyrame",
+    "values": {
+      "health": 200,
+      "speed": 12,
+      "physical": 8,
+      "defense": 18,
+      "fire": 0,
+      "water": 0,
+      "earth": 0,
+      "air": 0,
+      "electric": 0,
+      "light": 0,
+      "shadow": 0,
+      "poison": 0,
+      "acier": 0,
+      "nature": 0,
+      "esprit": 22,
+      "glace": 0
+    }
+  },
+  "loadout": {
+    "schema": "capture-active-skill-loadout-v1",
+    "creatureId": "crea_vyrame",
+    "slots": [
+      {
+        "id": "slot-1",
+        "skillId": "vyrame-griffe-dame"
+      },
+      {
+        "id": "slot-2",
+        "skillId": "vyrame-crocs-du-voile"
+      },
+      {
+        "id": "slot-3",
+        "skillId": "vyrame-rugissement-des-limbes"
+      },
+      {
+        "id": "slot-4",
+        "skillId": "vyrame-carapace-des-ames"
+      },
+      {
+        "id": "slot-ultimate",
+        "skillId": "vyrame-deferlante-spectrale"
+      }
+    ]
+  }
+}

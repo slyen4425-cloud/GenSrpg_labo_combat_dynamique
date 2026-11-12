@@ -84,6 +84,11 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/selachombre-nage-circulaire.capture-skill-transfer-v1.json",
     "data/capture/showcase/selachombre-frenesie-carnassiere.capture-skill-transfer-v1.json",
     "data/capture/showcase/selachombre-abysse-dechainee.capture-skill-transfer-v1.json",
+    "data/capture/showcase/vyrame-griffe-dame.capture-skill-transfer-v1.json",
+    "data/capture/showcase/vyrame-crocs-du-voile.capture-skill-transfer-v1.json",
+    "data/capture/showcase/vyrame-rugissement-des-limbes.capture-skill-transfer-v1.json",
+    "data/capture/showcase/vyrame-carapace-des-ames.capture-skill-transfer-v1.json",
+    "data/capture/showcase/vyrame-deferlante-spectrale.capture-skill-transfer-v1.json",
   ]);
 
 // Author-approved retirement from the ACTIVE Capture skill library.

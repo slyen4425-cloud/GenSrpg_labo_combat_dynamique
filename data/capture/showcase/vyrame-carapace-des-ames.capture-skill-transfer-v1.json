@@ -1,0 +1,134 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "vyrame-carapace-des-ames",
+    "description": "Renforce la défense de Vyrâme de 75 points pendant 12 s. À 3 Combo : les consomme et rend 30 PV.",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "vyrame-carapace-des-ames",
+      "name": "Carapace des âmes",
+      "category": "defensive",
+      "form": "self",
+      "loadoutSlot": "standard",
+      "element": "spirit",
+      "approachMode": "none",
+      "energyCost": 6,
+      "preparationMs": 900,
+      "travelMs": 0,
+      "recoveryMs": 300,
+      "cooldownMs": 30000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "id": "vyrame-carapace-defense",
+            "kind": "stat_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 12000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "statId": "defense",
+            "modifierMode": "points",
+            "deltaPoints": 75
+          }
+        },
+        {
+          "kind": "consume_marker",
+          "targetScope": "self",
+          "markerId": "vyrame-combo",
+          "count": 3,
+          "minimum": 3,
+          "effects": [
+            {
+              "kind": "heal",
+              "targetScope": "self",
+              "amount": 30
+            }
+          ]
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:vyrame-carapace-des-ames",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "vyrame-carapace-des-ames",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-sceau-ethere-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-shadow-spell-cast-01",
+          "displayScale": 1.15,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.85,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

@@ -22,6 +22,7 @@ test('Sélachombre: 5 native skills, original marker combos, channeling and ulti
  assert.deepEqual(skills.map(s=>s.requiredLevel),[1,5,10,15,20]);
  assert.deepEqual(skills.map(s=>s.definition.energyCost),[3,4,5,1,10]);
  assert.deepEqual(skills.map(s=>s.definition.cooldownMs),[10000,18000,24000,32000,0]);
+ assert.equal(skills[0].definition.travelMs,900,"Base attack approach is three times longer");
  assert.equal(skills[0].definition.effects[1].marker.id,'selachombre-traque');
  assert.equal(skills[1].definition.approachMode,'teleport');
  assert.equal(skills[1].definition.effects[1].condition.value,'selachombre-traque');
