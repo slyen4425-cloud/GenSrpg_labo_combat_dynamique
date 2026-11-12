@@ -51,6 +51,8 @@ test("Sylvorne: real Showcase -> editor combat export -> native visual adapter -
   assert.equal(meta.runtimePreview.icon,globalVisualAssetUrl(media[2][2]));
   assert.equal(meta.displayScale.player,1.6);
   assert.equal(meta.displayScale.opponent,1.16);
+  assert.deepEqual(meta.offsetByView.opponent,{x:0,y:45},"Sylvorne opponent must be lowered by 45px");
+  assert.deepEqual(meta.offsetByView.player,{x:0,y:0},"Sylvorne player view must remain anchored at Y=0");
   const visuals=await loadCombatDemoVisualSource({
     nativeVisualSource:native,
     fetchImpl:()=>{throw Error("Preview must use the injected native visual source, not demo creature fixtures");}

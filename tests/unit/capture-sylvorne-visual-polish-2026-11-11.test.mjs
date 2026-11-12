@@ -12,6 +12,9 @@ const ultimate=get("sylvorne-foret-souveraine");
 test("Sylvorne grows in both views; authored images, HP and sockets remain untouched",()=>{
  assert.equal(creature.presentation.viewOverrides.player.displayScale,1.6);
  assert.equal(creature.presentation.viewOverrides.opponent.displayScale,1.16);
+ assert.deepEqual(creature.presentation.viewOverrides.opponent.position,{x:0,y:45});
+ assert.deepEqual(creature.presentation.viewOverrides.player.position,{x:0,y:0});
+ assert.equal(creature.presentation.transformOrigin.y,"88%");
  assert.equal(creature.combat.maxHp,215);
  assert.equal(creature.presentation.visual.front.assetId,"pack:capture:creature-sylvorne-opponent-01");
  assert.equal(creature.presentation.visual.back.assetId,"pack:capture:creature-sylvorne-player-01");
