@@ -79,6 +79,11 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/sylvorne-vrilles-du-sous-bois.capture-skill-transfer-v1.json",
     "data/capture/showcase/sylvorne-seve-ancienne.capture-skill-transfer-v1.json",
     "data/capture/showcase/sylvorne-foret-souveraine.capture-skill-transfer-v1.json",
+    "data/capture/showcase/selachombre-morsure-ecume.capture-skill-transfer-v1.json",
+    "data/capture/showcase/selachombre-aileron-fantome.capture-skill-transfer-v1.json",
+    "data/capture/showcase/selachombre-nage-circulaire.capture-skill-transfer-v1.json",
+    "data/capture/showcase/selachombre-frenesie-carnassiere.capture-skill-transfer-v1.json",
+    "data/capture/showcase/selachombre-abysse-dechainee.capture-skill-transfer-v1.json",
   ]);
 
 // Author-approved retirement from the ACTIVE Capture skill library.

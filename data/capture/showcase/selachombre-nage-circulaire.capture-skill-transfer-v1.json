@@ -1,0 +1,157 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "selachombre-nage-circulaire",
+    "description": "10 dégâts Eau à tous les ennemis actifs, -20 % de dégâts infligés pendant 7 s et une Traque à chaque ennemi.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "selachombre-nage-circulaire",
+      "name": "Nage circulaire",
+      "category": "offensive",
+      "form": "area",
+      "loadoutSlot": "standard",
+      "element": "water",
+      "approachMode": "none",
+      "energyCost": 5,
+      "preparationMs": 1200,
+      "travelMs": 0,
+      "recoveryMs": 250,
+      "cooldownMs": 24000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "all_enemies",
+          "amount": 10,
+          "channel": "water"
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "all_enemies",
+          "status": {
+            "id": "selachombre-nages-affaiblissement",
+            "kind": "outgoing_damage_modifier",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 7000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "modifierPct": -20
+          }
+        },
+        {
+          "kind": "apply_marker",
+          "targetScope": "all_enemies",
+          "marker": {
+            "id": "selachombre-traque",
+            "name": "Traque sanglante",
+            "polarity": "detrimental",
+            "durationMs": 18000,
+            "maxStacks": 3,
+            "iconAssetId": "pack:capture:icon-skill-marine-bite-01"
+          },
+          "charges": 1
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:selachombre-nage-circulaire",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "selachombre-nage-circulaire",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-maree-prismatique-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-cast-water-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-water-01",
+          "displayScale": 1.45,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "stretch",
+          "durationMs": 650,
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

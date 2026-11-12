@@ -182,14 +182,15 @@ test("startup library remains complete while showcase presets are applied throug
 
   assert.equal(
     configuredCreatures.size,
-    106,
-    "Moussados replaces its historical record; Loup, Kitsune, Gorice and Sylvorne insert without deleting the roster"
+    107,
+    "Moussados replaces its historical record; Loup, Kitsune, Gorice, Sylvorne and Sélachombre insert without deleting the roster"
   );
   assert.ok(configuredCreatures.has("crea_mossback"));
   assert.ok(configuredCreatures.has("crea-loup"));
   assert.equal(configuredCreatures.get("kitsune_lunaire")?.draft?.displayName,"Kitsune Lunaire");
   assert.equal(configuredCreatures.get("gorice")?.draft?.displayName,"Gorice");
   assert.equal(configuredCreatures.get("crea_sylvorne")?.draft?.displayName,"Sylvorne");
+  assert.equal(configuredCreatures.get("crea_selachombre")?.draft?.displayName,"Sélachombre");
   const ailevent = configuredCreatures.get("crea_ailevent");
   assert.ok(ailevent,"Ailevent remains the one canonical ID");
   assert.equal(ailevent.statValues.values.health,170);
@@ -208,7 +209,7 @@ test("startup library remains complete while showcase presets are applied throug
       configuredSkills,
       metadata: { producer: "startup-regression-test" }
     }).creatures.length,
-    106
+    107
   );
 });
 
