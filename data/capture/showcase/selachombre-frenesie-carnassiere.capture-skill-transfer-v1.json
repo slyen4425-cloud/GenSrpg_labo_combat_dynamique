@@ -1,0 +1,152 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "selachombre-frenesie-carnassiere",
+    "description": "Canalisation de 3 morsures : chaque frappe inflige 7 dégâts physiques et +3 Glace si la cible porte Traque. Arrêt si interrompu.",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "selachombre-frenesie-carnassiere",
+      "name": "Frénésie carnassière",
+      "category": "offensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "ice",
+      "approachMode": "ground",
+      "channeling": {
+        "tickIntervalMs": 600,
+        "maxDurationMs": 1800,
+        "maxTicks": 3,
+        "energyCostPerTick": 2,
+        "stopOnDamage": true,
+        "stopOnStun": true,
+        "stopOnSilence": true,
+        "effects": [
+          {
+            "kind": "damage",
+            "targetScope": "target",
+            "amount": 7,
+            "channel": "physical"
+          },
+          {
+            "kind": "damage",
+            "targetScope": "target",
+            "amount": 3,
+            "channel": "ice",
+            "condition": {
+              "type": "marker",
+              "value": "selachombre-traque",
+              "minimum": 1
+            }
+          }
+        ]
+      },
+      "energyCost": 1,
+      "preparationMs": 700,
+      "travelMs": 0,
+      "recoveryMs": 300,
+      "cooldownMs": 32000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": []
+    },
+    "presentation": {
+      "id": "skill:selachombre-frenesie-carnassiere",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "selachombre-frenesie-carnassiere",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-poing-de-givre-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-frost-bolt-cast-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-claw-impact-01",
+          "displayScale": 1.45,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "stretch",
+          "durationMs": 650,
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

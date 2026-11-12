@@ -1,0 +1,241 @@
+{
+  "schema": "capture-creature-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-creature-editor-draft-v3",
+    "id": "crea_selachombre",
+    "displayName": "Sélachombre",
+    "description": "Squale cristallin des abysses froids. Il marque ses proies d'une Traque sanglante, plonge sur elles et libère les morsures glacées des profondeurs.",
+    "level": 1,
+    "sourceStats": {
+      "force": 30,
+      "agility": 34,
+      "intelligence": 0,
+      "spirit": 8,
+      "endurance": 23,
+      "initiative": 28
+    },
+    "elements": [
+      "water",
+      "ice"
+    ],
+    "resistances": [
+      {
+        "kind": "element:fire",
+        "value": 10
+      },
+      {
+        "kind": "element:water",
+        "value": 30
+      },
+      {
+        "kind": "element:earth",
+        "value": -10
+      },
+      {
+        "kind": "element:air",
+        "value": 0
+      },
+      {
+        "kind": "element:electric",
+        "value": -40
+      },
+      {
+        "kind": "element:light",
+        "value": -10
+      },
+      {
+        "kind": "element:shadow",
+        "value": 0
+      },
+      {
+        "kind": "element:nature",
+        "value": 0
+      },
+      {
+        "kind": "element:ice",
+        "value": 20
+      },
+      {
+        "kind": "element:poison",
+        "value": 10
+      },
+      {
+        "kind": "element:steel",
+        "value": 0
+      },
+      {
+        "kind": "element:psy",
+        "value": 0
+      },
+      {
+        "kind": "element:spirit",
+        "value": 0
+      }
+    ],
+    "capture": {
+      "capturable": true,
+      "captureRate": 22,
+      "spawnChance": 5,
+      "spawnTags": [
+        "water",
+        "ice"
+      ],
+      "evolution": null
+    },
+    "combat": {
+      "maxHp": 185,
+      "maxEnergy": 0,
+      "initialEnergy": 0,
+      "energyChargeAmount": 0,
+      "energyChargeIntervalMs": 0,
+      "movementEnergyPerStep": 0,
+      "chargeTimeModifierPct": 0,
+      "approachTimeModifierPct": -12,
+      "reaction": {
+        "type": "dodge",
+        "maxCharges": 2,
+        "rechargeMs": 45000,
+        "activeWindowMs": 500,
+        "damageReductionPct": 50
+      }
+    },
+    "skillIds": [
+      "selachombre-morsure-ecume",
+      "selachombre-aileron-fantome",
+      "selachombre-nage-circulaire",
+      "selachombre-frenesie-carnassiere",
+      "selachombre-abysse-dechainee"
+    ],
+    "presentation": {
+      "id": "creature:crea_selachombre",
+      "version": 9,
+      "subjectType": "creature",
+      "subjectId": "crea_selachombre",
+      "profileId": "massive",
+      "displayScale": 1,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1.1,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 0.9,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      },
+      "transformOrigin": {
+        "x": "50%",
+        "y": "87%"
+      },
+      "visual": {
+        "front": {
+          "assetId": "pack:capture:creature-requin-opponent-01"
+        },
+        "back": {
+          "assetId": "pack:capture:creature-requin-player-01"
+        },
+        "icon": {
+          "assetId": "pack:capture:creature-requin-icon-01"
+        }
+      },
+      "sockets": [
+        {
+          "id": "mouth",
+          "label": "Mâchoire",
+          "front": {
+            "x": 0.18,
+            "y": 0.4
+          },
+          "back": {
+            "x": 0.85,
+            "y": 0.39
+          }
+        },
+        {
+          "id": "head",
+          "label": "Tête",
+          "front": {
+            "x": 0.24,
+            "y": 0.35
+          },
+          "back": {
+            "x": 0.8,
+            "y": 0.34
+          }
+        },
+        {
+          "id": "tail",
+          "label": "Queue",
+          "front": {
+            "x": 0.78,
+            "y": 0.55
+          },
+          "back": {
+            "x": 0.5,
+            "y": 0.8
+          }
+        }
+      ],
+      "audio": {}
+    }
+  },
+  "statValues": {
+    "schema": "capture-creature-stat-values-v1",
+    "creatureId": "crea_selachombre",
+    "values": {
+      "health": 185,
+      "speed": 24,
+      "physical": 26,
+      "defense": 10,
+      "fire": 0,
+      "water": 18,
+      "earth": 0,
+      "air": 0,
+      "electric": 0,
+      "light": 0,
+      "shadow": 0,
+      "poison": 0,
+      "acier": 0,
+      "nature": 0,
+      "esprit": 0,
+      "glace": 14
+    }
+  },
+  "loadout": {
+    "schema": "capture-active-skill-loadout-v1",
+    "creatureId": "crea_selachombre",
+    "slots": [
+      {
+        "id": "slot-1",
+        "skillId": "selachombre-morsure-ecume"
+      },
+      {
+        "id": "slot-2",
+        "skillId": "selachombre-aileron-fantome"
+      },
+      {
+        "id": "slot-3",
+        "skillId": "selachombre-nage-circulaire"
+      },
+      {
+        "id": "slot-4",
+        "skillId": "selachombre-frenesie-carnassiere"
+      },
+      {
+        "id": "slot-ultimate",
+        "skillId": "selachombre-abysse-dechainee"
+      }
+    ]
+  }
+}

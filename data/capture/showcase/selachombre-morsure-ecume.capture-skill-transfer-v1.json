@@ -1,0 +1,142 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "selachombre-morsure-ecume",
+    "description": "12 dégâts Eau au contact et 1 Traque sanglante pendant 18 s (maximum 3 charges).",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "selachombre-morsure-ecume",
+      "name": "Morsure d'écume",
+      "category": "offensive",
+      "form": "contact",
+      "loadoutSlot": "standard",
+      "element": "water",
+      "approachMode": "ground",
+      "energyCost": 3,
+      "preparationMs": 700,
+      "travelMs": 300,
+      "recoveryMs": 200,
+      "cooldownMs": 10000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 12,
+          "channel": "water"
+        },
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "selachombre-traque",
+            "name": "Traque sanglante",
+            "polarity": "detrimental",
+            "durationMs": 18000,
+            "maxStacks": 3,
+            "iconAssetId": "pack:capture:icon-skill-marine-bite-01"
+          },
+          "charges": 1
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:selachombre-morsure-ecume",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "selachombre-morsure-ecume",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-marine-bite-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-cast-water-01",
+          "displayScale": 1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-water-01",
+          "displayScale": 1.45,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "stretch",
+          "durationMs": 650,
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

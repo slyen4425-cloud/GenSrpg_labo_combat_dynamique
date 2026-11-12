@@ -17,4 +17,5 @@ export const CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1 =
     "data/capture/showcase/crea_scar_2.capture-creature-transfer-v1.json",
     "data/capture/showcase/crea_mer_3.capture-creature-transfer-v1.json",
     "data/capture/showcase/crea_sylvorne.capture-creature-transfer-v1.json",
+    "data/capture/showcase/crea_selachombre.capture-creature-transfer-v1.json",
   ]);
