@@ -14,11 +14,11 @@ const transfers=CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.map(path=>
 const byId=new Map(transfers.map(record=>[record.draft.id,record]));
 const legacyIds=["crea-loup","crea_ailevent","crea_dracendre",
  "crea_foudrillon","crea_maraileron","crea_voltik"];
-const defenseIds=["crea_crys_2","crea_mossback","crea_nat_1","crea_scar_2","gorice","crea_sylvorne"];
+const defenseIds=["crea_crys_2","crea_mossback","crea_nat_1","crea_scar_2","gorice","crea_sylvorne","crea_vyrame"];
 const ownDodgeIds=["crea_lumilo","crea_ombre_2","crea_tox_2","kitsune_lunaire","crea_selachombre"];
 
 test("every published Showcase creature has an explicit combat-owned defensive action",()=>{
- assert.equal(transfers.length,18,"the 16 previous author species, Sylvorne and Sélachombre remain visible once");
+ assert.equal(transfers.length,19,"the 16 previous author species, Sylvorne, Sélachombre and Vyrâme remain visible once");
  assert.equal(byId.size,transfers.length,"one authority per species");
  assert.deepEqual([...byId.keys()].sort(),
   [...legacyIds,...defenseIds,...ownDodgeIds,"crea_mer_3"].sort());

@@ -1,0 +1,172 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "vyrame-deferlante-spectrale",
+    "description": "Ultime : 55 dégâts Esprit à tous et immobilisation 2 s. À 3 Combo : les consomme, soigne Vyrâme de 25 PV et augmente ses dégâts de 35 % pendant 10 s.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "vyrame-deferlante-spectrale",
+      "name": "Déferlante spectrale",
+      "category": "offensive",
+      "form": "area",
+      "loadoutSlot": "ultimate",
+      "element": "spirit",
+      "approachMode": "none",
+      "energyCost": 10,
+      "preparationMs": 2100,
+      "travelMs": 0,
+      "recoveryMs": 400,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "all_enemies",
+          "amount": 55,
+          "channel": "spirit"
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "all_enemies",
+          "status": {
+            "id": "vyrame-deferlante-entrave",
+            "kind": "immobilize",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 2000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": []
+          }
+        },
+        {
+          "kind": "consume_marker",
+          "targetScope": "self",
+          "markerId": "vyrame-combo",
+          "count": 3,
+          "minimum": 3,
+          "effects": [
+            {
+              "kind": "heal",
+              "targetScope": "self",
+              "amount": 25
+            },
+            {
+              "kind": "apply_status",
+              "targetScope": "self",
+              "status": {
+                "id": "vyrame-deferlante-surcharge",
+                "kind": "outgoing_damage_modifier",
+                "polarity": "beneficial",
+                "durationModel": "time_ms",
+                "durationMs": 10000,
+                "stacking": "refresh",
+                "maxStacks": 1,
+                "tags": [],
+                "modifierPct": 35
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:vyrame-deferlante-spectrale",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "vyrame-deferlante-spectrale",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-totem-spectral-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-shadow-spell-cast-01",
+          "displayScale": 1.6,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-shadow-spell-impact-01",
+          "displayScale": 2.1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "stretch",
+          "durationMs": 650,
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

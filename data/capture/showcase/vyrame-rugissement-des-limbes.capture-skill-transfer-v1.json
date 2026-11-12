@@ -1,0 +1,158 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "vyrame-rugissement-des-limbes",
+    "description": "16 dégâts Esprit à tous les ennemis actifs et -15 % de dégâts infligés durant 7 s. À 3 Combo : les consomme et récupère 4 énergie.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "vyrame-rugissement-des-limbes",
+      "name": "Rugissement des limbes",
+      "category": "offensive",
+      "form": "area",
+      "loadoutSlot": "standard",
+      "element": "spirit",
+      "approachMode": "none",
+      "energyCost": 5,
+      "preparationMs": 1100,
+      "travelMs": 0,
+      "recoveryMs": 350,
+      "cooldownMs": 24000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "all_enemies",
+          "amount": 16,
+          "channel": "spirit"
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "all_enemies",
+          "status": {
+            "id": "vyrame-limbes-affaiblissement",
+            "kind": "outgoing_damage_modifier",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 7000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "modifierPct": -15
+          }
+        },
+        {
+          "kind": "consume_marker",
+          "targetScope": "self",
+          "markerId": "vyrame-combo",
+          "count": 3,
+          "minimum": 3,
+          "effects": [
+            {
+              "kind": "energy_restore",
+              "targetScope": "self",
+              "amount": 4
+            }
+          ]
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:vyrame-rugissement-des-limbes",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "vyrame-rugissement-des-limbes",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-spirale-d-illusion-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-shadow-spell-cast-01",
+          "displayScale": 1.15,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-shadow-spell-impact-01",
+          "displayScale": 1.4,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "stretch",
+          "durationMs": 650,
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

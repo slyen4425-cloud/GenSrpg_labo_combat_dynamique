@@ -1,0 +1,142 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "vyrame-griffe-dame",
+    "description": "12 dégâts Esprit au contact ; applique 1 Combo spirituel sur Vyrâme pendant 32 s, jusqu'à 3 charges.",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "vyrame-griffe-dame",
+      "name": "Griffe d'âme",
+      "category": "offensive",
+      "form": "contact",
+      "loadoutSlot": "standard",
+      "element": "spirit",
+      "approachMode": "ground",
+      "energyCost": 2,
+      "preparationMs": 700,
+      "travelMs": 650,
+      "recoveryMs": 280,
+      "cooldownMs": 6500,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 12,
+          "channel": "spirit"
+        },
+        {
+          "kind": "apply_marker",
+          "targetScope": "self",
+          "marker": {
+            "id": "vyrame-combo",
+            "name": "Combo spirituel",
+            "polarity": "beneficial",
+            "durationMs": 32000,
+            "maxStacks": 3,
+            "iconAssetId": "pack:capture:icon-skill-charge-spirituelle-01"
+          },
+          "charges": 1
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:vyrame-griffe-dame",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "vyrame-griffe-dame",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-charge-spirituelle-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-shadow-spell-cast-01",
+          "displayScale": 1.15,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "stretch",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-claw-impact-01",
+          "displayScale": 1.4,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "stretch",
+          "durationMs": 650,
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

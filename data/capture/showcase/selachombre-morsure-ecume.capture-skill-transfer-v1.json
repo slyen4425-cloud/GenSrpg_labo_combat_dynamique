@@ -20,7 +20,7 @@
       "approachMode": "ground",
       "energyCost": 3,
       "preparationMs": 700,
-      "travelMs": 300,
+      "travelMs": 900,
       "recoveryMs": 200,
       "cooldownMs": 10000,
       "maxUsesPerCombat": null,
