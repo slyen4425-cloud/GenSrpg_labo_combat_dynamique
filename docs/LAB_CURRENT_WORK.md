@@ -1,3 +1,17 @@
+## 2026-11-12 — Créature pourpre : visuels validés, bibliothèque officielle unique
+
+- Source : creature_pourpre_monster_capture.zip sur main (commit e2eedbc ; blob e87f02d060d4da2871f803904cfe716004229ffb).
+- START main@e2eedbc0d0dff7f8e8420271034c93b304594b22 ; checkpoint/lab-start-creature-pourpre-assets-2026-11-12.
+- Propriétaires : main pour le code, global-assets pour les fichiers et catalogue uniques.
+- Import GitHub Actions PASS sur 23f545e ; global-assets@297f3c4cf2fa11890ced75205c55fb5df4bcceb3.
+- Trois PNG RGBA 512x512, marges >=42px ; IDs opponent/player/icon uniques et métadonnées enregistrées.
+- Changement actuel : la révision du seul client GLOBAL_VISUAL_LIBRARY passe de v63 à v64 pour recharger le catalogue.
+- Portée : modèle visuel sélectionnable uniquement, sans fiche Showcase ni statistiques/capacités inventées.
+- Protégé : autres 407 définitions, règles, gameplay, autres labos, médias, sauvegardes.
+- Gates : CI SHA exact, Pages HTTPS et vérification image réelle; Android à valider par l'auteur.
+
+---
+
 ## 2026-11-12 — Équipe adverse des dresseurs dans le moteur Combat
 
 - START `checkpoint/lab-start-capture-trainer-roster-2026-11-12` sur `main@9b8fe770b531abf4f8191a746e0fdcc43f7abbae`, CI `43103011400`, Pages `43103010751`. Branche `work/lab-capture-trainer-roster-2026-11-12`.
