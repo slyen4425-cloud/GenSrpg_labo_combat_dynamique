@@ -84,3 +84,40 @@ test('embedded Combat native team defeat waits for the last real reserve, not fi
  assert.equal(result.outcome,'defeat');
  assert.deepEqual(result.roster,done.roster,'native party KO state remains available for owner save');
 });
+
+test('an authored trainer reserve uses each creature level and the native team victory rule',async()=>{
+ const advanced={...skill,id:'advanced',requiredLevel:10,
+  definition:{...skill.definition,id:'advanced',name:'Advanced'}};
+ const enemy=record('enemy');
+ enemy.draft.skillIds.push(advanced.id);
+ enemy.loadout.slots[1].skillId=advanced.id;
+ const source=buildCaptureEncounterCombatSourceV1({...x,
+  configuredCreatures:new Map([...x.configuredCreatures,['enemy',enemy]]),
+  configuredSkills:new Map([...x.configuredSkills,[advanced.id,advanced]]),
+  progressionRules:JSON.parse(readFileSync(new URL('../../data/capture/monster-capture-progression-rules.v1.json',import.meta.url),'utf8')),
+  local:{instanceId:'owned-1',speciesId:'a',level:1},
+  opponent:{speciesId:'enemy',level:2},
+  opponentReserve:[{speciesId:'enemy',level:17},{speciesId:'b',level:5}]
+ });
+ const rival=source.roster.teams['opponent-1'].members;
+ assert.deepEqual(rival.map(member=>member.creatureId),['enemy','enemy','b']);
+ assert.deepEqual(rival.map(member=>source.displayLevelsByRosterMember['opponent-1'][member.id]),[2,17,5]);
+ const skills=source.skillIdsByRosterMember['opponent-1'];
+ assert.deepEqual(source.skillIdsByActor['opponent-1'],['basic']);
+ assert.deepEqual(skills[rival[0].id],['basic']);
+ assert.deepEqual(skills[rival[1].id],['basic','advanced']);
+ assert.ok(source.skills.advanced,'the native runtime can activate the reserve skill');
+
+ const life=createEmbeddedCombatLifecycleV1({format:source.battleFormat});
+ const battle={fighters:Object.fromEntries(source.fighters.map(fighter=>[fighter.id,{
+  hp:fighter.id==='local-1'?fighter.maxHp:0,maxHp:fighter.maxHp
+ }]))};
+ const roster={
+  'local-1':{members:source.roster.teams['local-1'].members.map(member=>({id:member.id,hp:100}))},
+  'opponent-1':{members:rival.map((member,index)=>({id:member.id,hp:index===1?1:0}))}
+ };
+ assert.equal(life.observe(battle,roster),false);
+ roster['opponent-1'].members[1].hp=0;
+ assert.equal(life.observe(battle,roster),true);
+ assert.equal((await life.completion).outcome,'victory');
+});

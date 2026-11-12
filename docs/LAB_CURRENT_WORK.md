@@ -1,3 +1,12 @@
+## 2026-11-12 — Équipe adverse des dresseurs dans le moteur Combat
+
+- START `checkpoint/lab-start-capture-trainer-roster-2026-11-12` sur `main@9b8fe770b531abf4f8191a746e0fdcc43f7abbae`, CI `43103011400`, Pages `43103010751`. Branche `work/lab-capture-trainer-roster-2026-11-12`.
+- Combat construit les deux équipes via son adaptateur de rencontre et sa réserve native. Les niveaux et les capacités de chaque membre suivent sa position dans l’équipe, y compris pour deux membres de la même espèce.
+- Périmètre C2. Préserver les rencontres sauvages, le calcul des PV, les identités de la partie Aventure, les anciennes sauvegardes et le format de combat une créature active par camp.
+- Valider la préparation de l’équipe adverse, ses capacités par niveau, le premier KO et la victoire après la dernière créature. Tester les sentinelles existantes avant publication et raccord Exploration.
+
+---
+
 ## 2026-11-11 — Niveaux réels des créatures visibles en combat (C1, candidat)
 
 - START Combat `main@6e9682267c02c653c4100c08592284ddfd996284`; branche `work/lab-capture-combat-level-hud-2026-11-11`. Checkpoint de départ: ce SHA public validé.

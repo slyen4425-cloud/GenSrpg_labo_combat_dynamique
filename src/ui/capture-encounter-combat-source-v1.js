@@ -16,27 +16,29 @@ function requireParticipant(participant, side) {
 
 // Read-only labels for the ACTUAL saved encounter participants. Neither the
 // fighter stats nor the RosterSession has a second level authority.
-export function attachCaptureEncounterDisplayLevelsV1(source,{local,opponent,localReserve=[]}={}){
+export function attachCaptureEncounterDisplayLevelsV1(source,{local,opponent,localReserve=[],opponentReserve=[]}={}){
   requireParticipant(local,"Local");requireParticipant(opponent,"Opponent");
   const localId=source?.battleFormat?.localActorId;
   const enemyId=source?.battleFormat?.teams?.["enemy-team"]?.[0];
   const own=source?.roster?.teams?.[localId]?.members;
   const rival=source?.roster?.teams?.[enemyId]?.members;
-  const players=[local,...localReserve];
-  if(!localId||!enemyId||localId===enemyId||!Array.isArray(own)||
-     own.length!==players.length||!Array.isArray(rival)||rival.length!==1)
+  if(!localId||!enemyId||localId===enemyId)
     throw new RangeError("Official battle roster cannot be correlated with encounter levels");
-  const levels={};
-  const mapped=own.map((member,index)=>{
-    requireParticipant(players[index],"Local member "+index);
-    if(member.creatureId!==players[index].speciesId)
-      throw new RangeError("Encounter member order/species differs from Combat roster");
-    return [member.id,players[index].level];
-  });
-  if(rival[0].creatureId!==opponent.speciesId)
-    throw new RangeError("Opponent species differs from Combat roster");
-  levels[localId]=Object.freeze(Object.fromEntries(mapped));
-  levels[enemyId]=Object.freeze({[rival[0].id]:opponent.level});
+  function levelsByMember(roster, participants) {
+    if(!Array.isArray(roster)||roster.length!==participants.length)
+      throw new RangeError("Official battle roster cannot be correlated with encounter levels");
+    return Object.freeze(Object.fromEntries(roster.map((member,index)=>{
+      const participant=participants[index];
+      requireParticipant(participant,"Encounter member "+index);
+      if(member.creatureId!==participant.speciesId)
+        throw new RangeError("Encounter member order/species differs from Combat roster");
+      return [member.id,participant.level];
+    })));
+  }
+  const levels={
+    [localId]:levelsByMember(own,[local,...localReserve]),
+    [enemyId]:levelsByMember(rival,[opponent,...opponentReserve])
+  };
   return Object.freeze({...source,displayLevelsByRosterMember:Object.freeze(levels)});
 }
 
@@ -110,15 +112,15 @@ function projectCaptureWildOpponentStatsV1({
  });
 }
 
-// A wild encounter is still one visible fighter against one wild opponent.
-// The existing Combat roster owns every extra saved team member; the
-// AdventureSession retains its own durable instance order, HP and XP.
-function buildCaptureWildReserveSourceV1({local,opponent,localReserve,hpMultiplier,options}) {
- const members=[local,...localReserve];
- if(members.length>6)throw new RangeError('Adventure Combat roster must have 1 to 6 members');
+// A wild or trainer encounter keeps one visible fighter on each side. Combat
+// owns both reserves. GenSRPG keeps the local team's durable identities and HP.
+function buildCaptureEncounterRosterSourceV1({local,opponent,localReserve,opponentReserve,hpMultiplier,options}) {
+ const players=[local,...localReserve], rivals=[opponent,...opponentReserve];
+ if(players.length>6||rivals.length>6)
+  throw new RangeError('Adventure Combat roster must have 1 to 6 members on each side');
  const identities=new Set();
- for(const [i,member] of members.entries()){
-  requireParticipant(member,'Adventure member '+i);
+ for(const [index,member] of players.entries()){
+  requireParticipant(member,'Adventure member '+index);
   const id=member.instanceId;
   if(typeof id!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_:.-]{0,129}$/.test(id))
    throw new RangeError('Adventure roster member instanceId required');
@@ -128,105 +130,111 @@ function buildCaptureWildReserveSourceV1({local,opponent,localReserve,hpMultipli
    (typeof member.hp!=='number'||!Number.isFinite(member.hp)||member.hp<0))
    throw new RangeError('Invalid saved Adventure member HP');
  }
- requireParticipant(opponent,'Opponent');
- if(opponent.statAllocations!==undefined)
-  throw new RangeError('Opponent statAllocations require an official NPC instance contract');
+ for(const [index,member] of rivals.entries()){
+  requireParticipant(member,'Opponent member '+index);
+  if(member.statAllocations!==undefined)
+   throw new RangeError('Opponent statAllocations require an official NPC instance contract');
+ }
  if(!options.configuredCreatures||!options.configuredSkills)
   throw new TypeError('Official configured Capture creatures and skills required');
- const levelMap=Object.fromEntries([local,...localReserve,opponent]
-  .map(member=>[member.speciesId,member.level]).reverse());
- // Preserve the first local species level on duplicate IDs. Exact levels and
- // stat allocations are subsequently projected on EACH instance separately.
- for(const member of members)if(levelMap[member.speciesId]===undefined)
-  levelMap[member.speciesId]=member.level;
- levelMap[local.speciesId]=local.level;
+
+ // The species-keyed export registers every unlocked skill, then the single
+ // encounter builder gives each roster member its exact level and loadout.
+ const maxLevels=new Map();
+ for(const {speciesId,level} of [...players,...rivals])
+  maxLevels.set(speciesId,Math.max(level,maxLevels.get(speciesId)??1));
  const fullExport=buildCaptureEditorCombatTestV1({
-  ...options,configuredCreatures:options.configuredCreatures,
-  localCreatureIds:members.map(member=>member.speciesId),
-  opponentCreatureIds:[opponent.speciesId],activePerTeam:1,
-  creatureLevelsById:levelMap
+  ...options,localCreatureIds:players.map(member=>member.speciesId),
+  opponentCreatureIds:rivals.map(member=>member.speciesId),activePerTeam:1,
+  creatureLevelsById:Object.fromEntries(maxLevels)
  });
  const full=adaptCaptureCombatExportStackV1(fullExport);
- const localActorId=full.battleFormat.localActorId;
- const enemyActorId=full.battleFormat.teams['enemy-team'][0];
- const team=full.roster.teams[localActorId],enemyTeam=full.roster.teams[enemyActorId];
- if(!team||team.members.length!==members.length||!enemyTeam)
-  throw new RangeError('Official Combat roster does not match the saved Adventure party');
+ const localId=full.battleFormat.localActorId;
+ const enemyId=full.battleFormat.teams['enemy-team'][0];
  const fighterConfigs={...full.fighterConfigs};
- const instanceMap={};
- const perMemberSkills={};
- let firstPlayer=null,enemyFighter=null;
- const changedMembers=team.members.map((rosterMember,index)=>{
-  const member=members[index];
-  if(rosterMember.creatureId!==member.speciesId)
-   throw new RangeError('Official Combat member order differs from AdventureSession');
-  // No second stats formula: the SAME single-player owner projects each
-  // instance independently (including duplicate species and rival mirrors).
-  const single=buildCaptureEncounterCombatSourceV1({
-   ...options,local:member,opponent,hpMultiplier:1
+ const skills={...full.skills};
+ const skillPresentations={...full.skillPresentations};
+ const primary=buildCaptureEncounterCombatSourceV1({...options,local,opponent,hpMultiplier:1});
+
+ function projectTeam(actorId, participants, buildMember) {
+  const team=full.roster.teams[actorId];
+  if(!team||team.members.length!==participants.length)
+   throw new RangeError('Official Combat roster does not match the encounter party');
+  const memberSkills={};
+  let activeFighter;
+  const members=team.members.map((member,index)=>{
+   const participant=participants[index];
+   if(member.creatureId!==participant.speciesId)
+    throw new RangeError('Official Combat member order differs from the encounter party');
+   const single=index===0?primary:buildMember(participant);
+   const fighter=single.fighters.find(entry=>entry.id===actorId);
+   if(!fighter)throw new RangeError('Official Combat participant projection missing');
+   const configId='roster/'+actorId+'/'+member.id;
+   fighterConfigs[configId]=Object.freeze({...fighter,id:participant.speciesId});
+   memberSkills[member.id]=single.skillIdsByActor[actorId];
+   Object.assign(skills,single.skills);
+   Object.assign(skillPresentations,single.skillPresentations);
+   if(member.id===team.activeMemberId)activeFighter=fighter;
+   return Object.freeze({...member,fighterConfigId:configId});
   });
-  const fighter=single.fighters.find(f=>f.id===localActorId);
-  const opponentFighter=single.fighters.find(f=>f.id===enemyActorId);
-  if(!fighter||!opponentFighter)
-   throw new RangeError('Official Combat participant projection missing');
-  const configId='roster/'+localActorId+'/'+rosterMember.id;
-  fighterConfigs[configId]=Object.freeze({...fighter,id:member.speciesId});
-  instanceMap[rosterMember.id]=member.instanceId;
-  perMemberSkills[rosterMember.id]=single.skillIdsByActor[localActorId];
-  if(index===0){firstPlayer=fighter;enemyFighter=opponentFighter;}
-  return Object.freeze({...rosterMember,fighterConfigId:configId});
- });
- const enemyMember=enemyTeam.members.find(m=>m.id===enemyTeam.activeMemberId);
- const enemyConfigId='roster/'+enemyActorId+'/'+enemyMember.id;
- fighterConfigs[enemyConfigId]=Object.freeze({...enemyFighter,id:opponent.speciesId});
- const wrappedEnemyTeam=Object.freeze({...enemyTeam,members:Object.freeze(
-  enemyTeam.members.map(m=>Object.freeze({...m,fighterConfigId:enemyConfigId})))});
+  const activeMember=members.find(member=>member.id===team.activeMemberId);
+  return {
+   team:Object.freeze({...team,members:Object.freeze(members)}),activeMember,
+   activeFighter,memberSkills:Object.freeze(memberSkills)
+  };
+ }
+ const own=projectTeam(localId,players,member=>buildCaptureEncounterCombatSourceV1({
+  ...options,local:member,opponent,hpMultiplier:1
+ }));
+ const enemy=projectTeam(enemyId,rivals,member=>buildCaptureEncounterCombatSourceV1({
+  ...options,local,opponent:member,hpMultiplier:1
+ }));
+ const teams={[localId]:own,[enemyId]:enemy};
  const output=Object.freeze({
   ...full,exported:fullExport,
   battleFormat:normalizeBattleFormatDefinition({
    ...full.battleFormat,
-   actors:full.battleFormat.actors.map(actor=>
-    actor.actorId===localActorId
-     ? {...actor,fighterConfigId:changedMembers[0].fighterConfigId}
-     : actor.actorId===enemyActorId
-      ? {...actor,fighterConfigId:enemyConfigId}
-      : actor)
+   actors:full.battleFormat.actors.map(actor=>({
+    ...actor,fighterConfigId:teams[actor.actorId].activeMember.fighterConfigId
+   }))
   }),
-  fighters:Object.freeze(full.fighters.map(f=>f.id===localActorId?firstPlayer:
-   f.id===enemyActorId?enemyFighter:f)),
+  fighters:Object.freeze(full.fighters.map(fighter=>teams[fighter.id].activeFighter)),
   fighterConfigs:Object.freeze(fighterConfigs),
-  roster:Object.freeze({teams:Object.freeze({
-   ...full.roster.teams,
-   [localActorId]:Object.freeze({...team,members:Object.freeze(changedMembers)}),
-   [enemyActorId]:wrappedEnemyTeam
-  })}),
-  skillIdsByRosterMember:Object.freeze({[localActorId]:Object.freeze(perMemberSkills)}),
-  localInstanceIdsByMemberId:Object.freeze(instanceMap)
+  roster:Object.freeze({teams:Object.freeze({[localId]:own.team,[enemyId]:enemy.team})}),
+  skills:Object.freeze(skills),skillPresentations:Object.freeze(skillPresentations),
+  skillIdsByActor:Object.freeze({
+   [localId]:own.memberSkills[own.activeMember.id],
+   [enemyId]:enemy.memberSkills[enemy.activeMember.id]
+  }),
+  skillIdsByRosterMember:Object.freeze({[localId]:own.memberSkills,[enemyId]:enemy.memberSkills}),
+  localInstanceIdsByMemberId:Object.freeze(Object.fromEntries(own.team.members.map(
+   (member,index)=>[member.id,players[index].instanceId]
+  )))
  });
  const scaled=applyCaptureEncounterHpMultiplierV1(output,hpMultiplier);
- // The Combat-owned max is the sole HP authority in play. A saved reserve KO
- // remains KO, and older saved HP is bounded without mutating the Core save.
- const initialHp=(saved,config)=>saved===null||saved===undefined?config.maxHp:
-  Math.min(saved,config.maxHp);
+ // A saved reserve KO stays KO. Clamp old saved HP to the native scaled max.
  const configs={...scaled.fighterConfigs};
- for(const [index,member] of changedMembers.entries()){
-  const config=configs[member.fighterConfigId];
-  configs[member.fighterConfigId]=Object.freeze({...config,
-   initialHp:initialHp(members[index].hp,config)});
+ for(const [index,member] of own.team.members.entries()){
+  const config=configs[member.fighterConfigId],saved=players[index].hp;
+  configs[member.fighterConfigId]=Object.freeze({
+   ...config,initialHp:saved==null?config.maxHp:Math.min(saved,config.maxHp)
+  });
  }
- const nativeFighters=scaled.fighters.map(f=>{
-  if(f.id!==localActorId)return f;
-  return Object.freeze({...f,initialHp:configs[changedMembers[0].fighterConfigId].initialHp});
- });
+ const nativeFighters=scaled.fighters.map(fighter=>fighter.id===localId
+  ?Object.freeze({...fighter,initialHp:configs[own.activeMember.fighterConfigId].initialHp})
+  :fighter);
  return attachCaptureEncounterDisplayLevelsV1(Object.freeze({...scaled,
   fighterConfigs:Object.freeze(configs),
-  fighters:Object.freeze(nativeFighters)}),{local,opponent,localReserve});
+  fighters:Object.freeze(nativeFighters)}),{local,opponent,localReserve,opponentReserve});
 }
 
-export function buildCaptureEncounterCombatSourceV1({ local, opponent, localReserve = [], hpMultiplier = 1, ...options } = {}) {
-  if(!Array.isArray(localReserve))throw new TypeError('Adventure localReserve must be an array');
-  if(localReserve.length)return buildCaptureWildReserveSourceV1({
-    local,opponent,localReserve,hpMultiplier,options
+export function buildCaptureEncounterCombatSourceV1({
+ local,opponent,localReserve=[],opponentReserve=[],hpMultiplier=1,...options
+}={}){
+  if(!Array.isArray(localReserve)||!Array.isArray(opponentReserve))
+    throw new TypeError('Adventure reserves must be arrays');
+  if(localReserve.length||opponentReserve.length)return buildCaptureEncounterRosterSourceV1({
+    local,opponent,localReserve,opponentReserve,hpMultiplier,options
   });
   requireParticipant(local, "Local");
   requireParticipant(opponent, "Opponent");
