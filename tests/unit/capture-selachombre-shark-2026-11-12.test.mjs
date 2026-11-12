@@ -52,7 +52,7 @@ test('Sélachombre original shark 3-view media and balanced Ice/Water stats',asy
  assert.equal(c.draft.presentation.viewOverrides.player.displayScale,1.74);
  assert.equal(c.draft.presentation.viewOverrides.player.displayScale/1.45,1.2);
  assert.equal(c.draft.presentation.viewOverrides.opponent.displayScale,1.2);
- assert.equal(c.draft.presentation.viewOverrides.opponent.displayScale/1.5,0.8,"Opponent is 20% smaller than previous candidate");
+ assert.ok(Math.abs(c.draft.presentation.viewOverrides.opponent.displayScale/1.5-0.8)<1e-9,"Opponent is 20% smaller than previous candidate");
  assert.equal(c.draft.presentation.viewOverrides.opponent.position.y,45,"Only the opponent moves lower on Y");
  assert.equal(c.draft.presentation.viewOverrides.player.position.y,0,"Player Y stays unchanged");
  assert.equal(c.draft.presentation.displayScale,1.15,"Do not enlarge bestiary/edit preview base scale");
