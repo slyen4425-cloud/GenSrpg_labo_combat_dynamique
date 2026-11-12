@@ -15,7 +15,8 @@ const load=async name=>JSON.parse(await read('data/capture/showcase/'+name+'.jso
 const skills=await Promise.all(ids.map(async id=>(await normalizeCaptureSkillTransferV1(await load(id+'.capture-skill-transfer-v1'))).draft));
 const fighter=(id,hp=200)=>({id,maxHp:hp,initialHp:hp===200?100:hp,maxEnergy:25,initialEnergy:10,energyChargeAmount:0,energyChargeIntervalMs:1000,movementEnergyPerStep:0});
 const state=()=>createCombatState({fighters:[fighter('vyrame'),fighter('enemy',300)]});
-const apply=(s,skill,at=0)=>applyImmediateTacticalEffectsV1({state:s,actorId:'vyrame',targetId:'enemy',skill,atMs:at,combatAtMs:at}).state;
+const battleFormat={actors:[{actorId:'vyrame'},{actorId:'enemy'}],teamOf:id=>id==='vyrame'?'player':'opponent'};
+const apply=(s,skill,at=0)=>applyImmediateTacticalEffectsV1({state:s,actorId:'vyrame',targetId:'enemy',skill,atMs:at,combatAtMs:at,battleFormat}).state;
 const stacks=s=>s.fighters.vyrame.statusEffects.find(v=>v.definition.id==='marker:vyrame-combo')?.stacks??0;
 test('Vyrâme: one original approved portrait trio, proper defensive reaction and exactly 100 standard points',async()=>{
  const registry=normalizeCaptureStatRegistryV1(JSON.parse(await read('data/capture/monster-capture-stat-registry.v1.json')));
