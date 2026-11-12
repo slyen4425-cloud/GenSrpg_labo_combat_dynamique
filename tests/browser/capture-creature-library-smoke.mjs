@@ -1723,7 +1723,7 @@ const server = createServer(async (req, res) => {
               if (!["Feu","Eau"].every(x=>skillGroups.includes(x)))
                 throw Error("skill groups: "+skillGroups.join(","));
               const ids=[...creature.options].map(x=>x.value).filter(Boolean);
-              if(ids.length!==107 || new Set(ids).size!==107)
+              if(ids.length!==108 || new Set(ids).size!==108)
                 throw Error("creature identity count "+ids.length);
               creature.value="crea_aquafin";
               creature.dispatchEvent(new Event("change",{bubbles:true}));
@@ -2179,7 +2179,7 @@ function assertCreatures(dom, scenario) {
   if (!select) throw new Error(scenario + ": creature library <select> missing");
   const options = [...select[1].matchAll(/<option\b[^>]*value="([^"]+)"/g)]
     .map((match) => match[1]).filter(Boolean);
-  const required = ["crea_maraileron", "crea_mossback", "crea-loup", "kitsune_lunaire", "gorice", "crea_sylvorne", "crea_selachombre"];
+  const required = ["crea_maraileron", "crea_mossback", "crea-loup", "kitsune_lunaire", "gorice", "crea_sylvorne", "crea_selachombre", "crea_vyrame"];
   for (const id of required) {
     if (!options.includes(id)) {
       const libraryStatus = dom.match(/data-creature-library-state[^>]*>([^<]*)/i)?.[1]?.trim() ?? "not mounted";
@@ -2190,8 +2190,8 @@ function assertCreatures(dom, scenario) {
         "; jsError=" + error.slice(0,600));
     }
   }
-  if (options.length !== 107 || new Set(options).size !== 107) {
-    throw new Error(scenario + ": expected 107 unique creature ids; got " + options.length);
+  if (options.length !== 108 || new Set(options).size !== 108) {
+    throw new Error(scenario + ": expected 108 unique creature ids; got " + options.length);
   }
   console.log(scenario + ": " + options.length + " active creatures, all required IDs present");
 }
