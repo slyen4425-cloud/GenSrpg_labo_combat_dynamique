@@ -1,3 +1,12 @@
+## 2026-11-12 — Sélachombre (requin Eau/Glace), branche temporaire PR #302 (CI en validation)
+- Base `main@1dbec5218fa7c766a1c1d5e27c6abf48a83656da`, checkpoint `checkpoint/lab-start-selachombre-2026-11-12` et `work/lab-selachombre-2026-11-12`.
+- Aucun moteur, aucun asset ou catalogue parallèle. Utiliser les trois médias **requin** certifiés de `global-assets` (face/dos/icône) ; conserver Maraileron, Krakenor, Sylvorne, le bestiaire historique, Survie, Dungeon, Exploration et GenSRPG.
+- Nouveaux transferts natifs : Sélachombre + cinq capacités L1/5/10/15/20 ; marqueur Traque sanglante, approche téléportée, zone de dégâts/affaiblissement, canalisation 3 tics, ultime consommant Traque.
+- CI initiale sur `887c61ae` : 5 sentinelles de cardinalité historiques 17→18 et 106→107 ; conserver les preuves 102 créatures historiques et mise à jour ciblée des sentinelles, sans suppression.
+- Ne fusionner/publicer que si tests ciblés, CI, navigateur et Pages du SHA exact sont GREEN. Rollback checkpoint. Rapport : `docs/LAB_SELACHOMBRE_SHARK_2026_11_12.md`.
+
+---
+
 ## 2026-11-12 — Créature pourpre : visuels validés, bibliothèque officielle unique
 
 - Source : creature_pourpre_monster_capture.zip sur main (commit e2eedbc ; blob e87f02d060d4da2871f803904cfe716004229ffb).

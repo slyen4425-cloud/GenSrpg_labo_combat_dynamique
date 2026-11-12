@@ -18,7 +18,7 @@ const defenseIds=["crea_crys_2","crea_mossback","crea_nat_1","crea_scar_2","gori
 const ownDodgeIds=["crea_lumilo","crea_ombre_2","crea_tox_2","kitsune_lunaire"];
 
 test("every published Showcase creature has an explicit combat-owned defensive action",()=>{
- assert.equal(transfers.length,17,"the 16 previous author species and new Sylvorne remain visible once");
+ assert.equal(transfers.length,18,"the 16 previous author species, Sylvorne and Sélachombre remain visible once");
  assert.equal(byId.size,transfers.length,"one authority per species");
  assert.deepEqual([...byId.keys()].sort(),
   [...legacyIds,...defenseIds,...ownDodgeIds,"crea_mer_3"].sort());
