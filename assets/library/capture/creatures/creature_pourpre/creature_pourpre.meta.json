@@ -1,0 +1,48 @@
+{
+  "id": "creature_pourpre",
+  "name": "Créature pourpre (modèle visuel)",
+  "status": "approved-artwork-only-no-bestiary-creature",
+  "profile": "massive",
+  "views": {
+    "opponent": "runtime/creature_pourpre_face.png",
+    "player": "runtime/creature_pourpre_dos.png",
+    "icon": "runtime/creature_pourpre_icone.png"
+  },
+  "runtimePreview": {
+    "opponent": "runtime/creature_pourpre_face.png",
+    "player": "runtime/creature_pourpre_dos.png",
+    "icon": "runtime/creature_pourpre_icone.png"
+  },
+  "defaultFacing": {
+    "opponent": "left",
+    "player": "right"
+  },
+  "canvas": {
+    "combat": [
+      512,
+      512
+    ],
+    "icon": [
+      512,
+      512
+    ]
+  },
+  "transformOrigin": {
+    "x": "50%",
+    "y": "88%"
+  },
+  "assetIds": {
+    "opponent": "pack:capture:creature-pourpre-opponent-01",
+    "player": "pack:capture:creature-pourpre-player-01",
+    "icon": "pack:capture:creature-pourpre-icon-01"
+  },
+  "source": {
+    "scope": "pack",
+    "packId": "capture",
+    "library": "global-assets",
+    "authorArchive": "creature_pourpre_monster_capture.zip",
+    "archiveGitBlob": "e87f02d060d4da2871f803904cfe716004229ffb"
+  },
+  "visualRevision": "approved-transparent-centered-tail-2026-11-12",
+  "notes": "3 vues validées: face, dos queue centrée, icône ronde. Aucune fiche gameplay ni bestiaire ajoutée. PNG RGBA 512px, marge >=42px."
+}

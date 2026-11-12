@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 407,
+    "assets": 410,
     "icons": 192,
-    "sprites": 190,
+    "sprites": 192,
     "fx": 2,
-    "portraits": 18,
+    "portraits": 19,
     "backgrounds": 5,
-    "creatures": 72
+    "creatures": 74
   },
   "assets": [
     {
@@ -13674,6 +13674,96 @@
         "packId": "capture",
         "author": "GenSRPG / composition originale déposée par auteur le 2026-11-10, triptyque 512px préparé pour revue",
         "license": "project-internal"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pourpre-opponent-01",
+      "label": "Créature pourpre (modèle visuel) — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "pourpre",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / validé 2026-11-12",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_pourpre/runtime/creature_pourpre_face.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pourpre-player-01",
+      "label": "Créature pourpre (modèle visuel) — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "pourpre",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / validé 2026-11-12",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_pourpre/runtime/creature_pourpre_dos.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pourpre-icon-01",
+      "label": "Créature pourpre (modèle visuel) — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "capture",
+        "creature",
+        "pourpre",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / validé 2026-11-12",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_pourpre/runtime/creature_pourpre_icone.png",
+        "mime": "image/png"
       },
       "compatibility": {
         "uses": [
