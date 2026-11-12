@@ -8,7 +8,7 @@
 - Seuls les transferts `capture-creature-transfer-v1` / `capture-skill-transfer-v1` et leurs registres officiels sont utilisés.
 
 ## Fiche
-Sélachombre — Eau/Glace. 185 PV, Vitesse 24, Physique 26, Défense 10, Eau 18, Glace 14. Résistance Eau +30 %, Glace +20 %, Électricité -40 %. Esquive : 2 charges, recharge 45 s, fenêtre 0,5 s. Capture 22 %, rencontre 5 %.
+Sélachombre — Eau/Glace. 170 PV, Vitesse 20, Physique 16, Défense 8, Eau 14, Glace 8. Résistance Eau +30 %, Glace +20 %, Électricité -40 %. Esquive : 2 charges, recharge 45 s, fenêtre 0,5 s. Capture 22 %, rencontre 5 %.
 
 ## Kit natif
 | Niveau | Compétence | Coût | Recharge | Mécanique |
@@ -17,10 +17,17 @@ Sélachombre — Eau/Glace. 185 PV, Vitesse 24, Physique 26, Défense 10, Eau 18
 | 5 | Aileron fantôme | 4 | 18 s | approche téléportée 14 Glace, +8 si Traque, immobilise 1 s si 2 |
 | 10 | Nage circulaire | 5 | 24 s | zone 10 Eau, -20 % dégâts sortants 7 s et +1 Traque à chaque adversaire actif |
 | 15 | Frénésie carnassière | 1+2/tic | 32 s | canalisation 3×(7 Physique +3 Glace si Traque), interruptible |
-| 20 | Abysse déchaînée | 10 | 1/combat | 26 Eau à tous, +8 Glace/Traque consommée sur la cible, contrôle/énergie selon charges |
+| 20 | Abysse déchaînée | 10 | 1/combat | 50 Eau à tous, +15 Glace par Traque consommée (95 max avant stats), immobilisation 3 s / drain 4 énergie conditionnels |
 
 ## Visuels
-3 vrais médias du requin reliés dans le contrat `presentation.visual` v9. Pas d'animation requin inventée. Icônes et effets sélectionnés dans le catalogue officiel, réutilisation sans duplication. Paramètres de taille basés sur les métadonnées approuvées du requin (joueur 1,1 / adversaire 0,9, sol 87 %).
+3 vrais médias du requin reliés dans le contrat `presentation.visual` v9. Pas d'animation requin inventée. Icônes et effets sélectionnés dans le catalogue officiel, réutilisation sans duplication. Paramètres de taille basés sur les métadonnées approuvées du requin (joueur 1,45 / adversaire 1,25, sol 87 %).
 
 ## Validation
 Test natif ciblé : `tests/unit/capture-selachombre-shark-2026-11-12.test.mjs`. Étapes de sortie : CI complète sur SHA exact, tests navigateur réel, preuve HTTPS de la publication `main` ; aucun GREEN déclaré sans ces étapes.
+
+## Correctifs suite au test auteur du 12 novembre 2026
+- Le moteur du bestiaire reste unique. Le générateur partagé d'explications réinjecte les noms de marqueurs dans les canalisations ; le texte dit « Traque sanglante », plus le slug « selachombre-traque ». Les contrats restent inchangés.
+- Ultime renforcé : 50 dégâts Eau à tous, +15 dégâts Glace par Traque consommée sur la cible principale (0/1/2/3 charges : 50/65/80/95 dégâts avant résistances/statistiques), immobilisation 3 s à 2 charges et drain 4 énergie à 3 charges, une fois par combat.
+- Gabarit requin agrandi d'environ 32 % côté joueur et 39 % côté adversaire, maintien du centre de support au sol à 87 %, images originales inchangées.
+- Équilibrage auteur standard : un seul calcul partagé `src/contracts/capture-creature-stat-budget-v1.js` lit le registre de statistiques du Labo Combat ; 100 points au niveau 1, PV/5 et chaque point des autres statistiques = 1 point. Sélachombre : 170/5 +20 Vitesse+16 Physique+8 Défense+14 Eau+8 Glace=100.
+- Le barème est pour les **nouvelles créations standards** uniquement ; le bestiaire historique ne reçoit aucune baisse rétroactive. Les barèmes épique/légendaire sont envisagés mais non activés, en attente d'une décision auteur. Les résistances et les capacités font l'objet d'un second examen qualitatif (aucune prétention qu'un total de stats suffit à tout équilibrer).

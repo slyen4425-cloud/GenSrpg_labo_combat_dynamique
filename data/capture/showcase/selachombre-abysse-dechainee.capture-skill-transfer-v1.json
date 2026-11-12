@@ -4,7 +4,7 @@
   "draft": {
     "schema": "capture-skill-editor-draft-v1",
     "id": "selachombre-abysse-dechainee",
-    "description": "Ultime : 26 dégâts Eau à tous. Sur la proie : +8 Glace par Traque consommée (max 3), immobilise 2 s avec 2 charges, draine 3 énergie avec 3 charges.",
+    "description": "Ultime : 50 dégâts Eau à tous les ennemis actifs. Sur la cible principale, +15 dégâts Glace par Traque sanglante consommée (jusqu'à 3, donc 95 dégâts maximum avant modificateurs). Immobilise 3 s avec 2 Traques, retire 4 énergie avec 3 Traques. Une fois par combat.",
     "requiredLevel": 20,
     "usageScopes": [
       "capture",
@@ -68,7 +68,7 @@
         {
           "kind": "damage",
           "targetScope": "all_enemies",
-          "amount": 26,
+          "amount": 50,
           "channel": "water"
         },
         {
@@ -84,7 +84,7 @@
             "kind": "immobilize",
             "polarity": "detrimental",
             "durationModel": "time_ms",
-            "durationMs": 2000,
+            "durationMs": 3000,
             "stacking": "refresh",
             "maxStacks": 1,
             "tags": []
@@ -93,7 +93,7 @@
         {
           "kind": "energy_drain",
           "targetScope": "target",
-          "amount": 3,
+          "amount": 4,
           "condition": {
             "type": "marker",
             "value": "selachombre-traque",
@@ -111,7 +111,7 @@
             {
               "kind": "damage",
               "targetScope": "target",
-              "amount": 8,
+              "amount": 15,
               "channel": "ice"
             }
           ]
@@ -148,7 +148,7 @@
         },
         "impact": {
           "assetId": "pack:capture:sprite-frost-bolt-impact-01",
-          "displayScale": 2.1,
+          "displayScale": 2.4,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "fixed-target",
