@@ -8,12 +8,12 @@
     "description": "Squale cristallin des abysses froids. Il marque ses proies d'une Traque sanglante, plonge sur elles et libère les morsures glacées des profondeurs.",
     "level": 1,
     "sourceStats": {
-      "force": 30,
-      "agility": 34,
+      "force": 16,
+      "agility": 20,
       "intelligence": 0,
       "spirit": 8,
-      "endurance": 23,
-      "initiative": 28
+      "endurance": 34,
+      "initiative": 20
     },
     "elements": [
       "water",
@@ -84,7 +84,7 @@
       "evolution": null
     },
     "combat": {
-      "maxHp": 185,
+      "maxHp": 170,
       "maxEnergy": 0,
       "initialEnergy": 0,
       "energyChargeAmount": 0,
@@ -113,21 +113,21 @@
       "subjectType": "creature",
       "subjectId": "crea_selachombre",
       "profileId": "massive",
-      "displayScale": 1,
+      "displayScale": 1.15,
       "position": {
         "x": 0,
         "y": 0
       },
       "viewOverrides": {
         "player": {
-          "displayScale": 1.1,
+          "displayScale": 1.45,
           "position": {
             "x": 0,
             "y": 0
           }
         },
         "opponent": {
-          "displayScale": 0.9,
+          "displayScale": 1.25,
           "position": {
             "x": 0,
             "y": 0
@@ -194,12 +194,12 @@
     "schema": "capture-creature-stat-values-v1",
     "creatureId": "crea_selachombre",
     "values": {
-      "health": 185,
-      "speed": 24,
-      "physical": 26,
-      "defense": 10,
+      "health": 170,
+      "speed": 20,
+      "physical": 16,
+      "defense": 8,
       "fire": 0,
-      "water": 18,
+      "water": 14,
       "earth": 0,
       "air": 0,
       "electric": 0,
@@ -209,7 +209,7 @@
       "acier": 0,
       "nature": 0,
       "esprit": 0,
-      "glace": 14
+      "glace": 8
     }
   },
   "loadout": {

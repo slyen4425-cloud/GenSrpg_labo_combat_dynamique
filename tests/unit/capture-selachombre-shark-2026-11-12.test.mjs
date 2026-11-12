@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {assertCaptureNewCreatureStatBudgetV1} from '../../src/contracts/capture-creature-stat-budget-v1.js';
+import {describeCaptureSkillV1} from '../../src/ui/capture-skill-explanation-v1.js';
 import {normalizeCaptureSkillTransferV1} from '../../src/contracts/capture-skill-transfer-v1.js';
 import {normalizeCaptureCreatureTransferV1} from '../../src/contracts/capture-creature-transfer-v1.js';
 import {normalizeCaptureStatRegistryV1} from '../../src/contracts/capture-stat-registry-v1.js';
@@ -28,6 +30,11 @@ test('Sélachombre: 5 native skills, original marker combos, channeling and ulti
  assert.equal(skills[3].definition.channeling.maxTicks,3);
  assert.equal(skills[3].definition.channeling.energyCostPerTick,2);
  assert.equal(skills[4].definition.maxUsesPerCombat,1);
+ assert.equal(skills[4].definition.effects[0].amount,50);
+ assert.equal(skills[4].definition.effects[3].effects[0].amount,15);
+ assert.equal(skills[4].definition.effects[1].status.durationMs,3000);
+ assert.equal(skills[4].definition.effects[2].amount,4);
+ assert.match(skills[4].description,/95 dégâts maximum/);
  assert.equal(skills[4].definition.effects[3].kind,'consume_marker');
  assert.equal(skills[4].definition.effects[3].markerId,'selachombre-traque');
 });
@@ -36,9 +43,16 @@ test('Sélachombre original shark 3-view media and balanced Ice/Water stats',asy
  const c=normalizeCaptureCreatureTransferV1(await load('crea_selachombre.capture-creature-transfer-v1'),reg);
  assert.equal(c.draft.displayName,'Sélachombre');
  assert.deepEqual(c.draft.elements,['water','ice']);
- assert.equal(c.statValues.values.health,185);
- assert.equal(c.statValues.values.speed,24);
- assert.equal(c.statValues.values.glace,14);
+ assert.equal(c.statValues.values.health,170);
+ assert.equal(c.draft.combat.maxHp,170);
+ assert.equal(c.statValues.values.speed,20);
+ assert.equal(c.statValues.values.glace,8);
+ assert.equal(c.statValues.values.physical,16);
+ assert.equal(c.statValues.values.defense,8);
+ assert.equal(c.draft.presentation.viewOverrides.player.displayScale,1.45);
+ assert.equal(c.draft.presentation.viewOverrides.opponent.displayScale,1.25);
+ assert.equal(c.draft.presentation.transformOrigin.y,'87%');
+ assert.equal(assertCaptureNewCreatureStatBudgetV1({statValues:c.statValues,statRegistry:reg}).spent,100);
  assert.deepEqual(c.draft.skillIds,ids);
  assert.deepEqual(c.loadout.slots.map(s=>s.skillId),ids);
  assert.equal(c.draft.presentation.visual.front.assetId,'pack:capture:creature-requin-opponent-01');
@@ -72,4 +86,23 @@ test('Sélachombre has exactly one catalog entry per official file',async()=>{
  const b=await read('src/catalogs/capture-showcase-skill-presets-v1.js');
  assert.equal(a.split('crea_selachombre.capture-creature-transfer-v1.json').length-1,1);
  for(const id of ids)assert.equal(b.split(id+'.capture-skill-transfer-v1.json').length-1,1);
+});
+
+test('Bestiary names Traque sanglante in channeling and ultimate, never an internal Sélachombre marker slug',async()=>{
+ const skills=[];for(const id of ids)skills.push((await load(id+'.capture-skill-transfer-v1')).draft.definition);
+ const markerNames=Object.fromEntries(skills.flatMap(skill=>skill.effects
+  .filter(effect=>effect.kind==='apply_marker')
+  .map(effect=>[effect.marker.id,effect.marker.name])));
+ assert.equal(markerNames['selachombre-traque'],'Traque sanglante');
+ for(const skill of skills){
+  const actual=describeCaptureSkillV1(skill,{markerNames}).sentences.join(' ');
+  assert.doesNotMatch(actual,/selachombre[ -]traque/i);
+  if(skill.id==='selachombre-frenesie-carnassiere')
+   assert.match(actual,/Traque sanglante/);
+  if(skill.id==='selachombre-abysse-dechainee'){
+   assert.match(actual,/50 dégâts/);
+   assert.match(actual,/15 dégâts.*par charge consommée/);
+   assert.match(actual,/Traque sanglante/);
+  }
+ }
 });

@@ -452,7 +452,7 @@ export function describeCaptureSkillV1(input,{markerNames={}}={}) {
   phrases.push(...descriptions(d.effects,{markerNames}));
   if(d.channeling){
     const ch=d.channeling;
-    const pulses=descriptions(ch.effects).map(x=>lowerSentence(x));
+    const pulses=descriptions(ch.effects,{markerNames}).map(x=>lowerSentence(x));
     phrases.push(finish("Canalise "+(pulses.length?pulses.join(" et "):"ses effets")+
       " "+frequency(ch.tickIntervalMs)+
       (ch.energyCostPerTick>0?", consommant "+num(ch.energyCostPerTick)+" énergie par pulsation":"")+

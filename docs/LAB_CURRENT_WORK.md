@@ -1,3 +1,13 @@
+## 2026-11-12 — Sélachombre : corrections bestiaire, ultime, gabarit et premier budget de stats (en validation)
+- START `main@bf2032ac3ce0dc05c33718cfe0d71d68cee172df` (GREEN) et checkpoint `checkpoint/lab-start-selachombre-balance-2026-11-12` ; branche `work/lab-selachombre-balance-2026-11-12`. Source unique Combat ; GenSRPG non synchronisé.
+- Bestiaire : correction du nom de marqueur dans les compétences canalisées au niveau du générateur de prose partagé ; aucun second catalogue.
+- Ultime 50 Eau AOE +15 Glace / Traque consommée, maximum 95 sur la cible principale avant modificateurs ; immobilisation 3 s et drain 4 énergie sous conditions.
+- Visuels du requin agrandis (1,45 joueur, 1,25 adversaire) en conservant l'ancrage au sol et les 3 assets canoniques.
+- Barème auteur **standard 100 points** : PV/5 + Vitesse + Physique + Défense + somme des stats élémentaires = 100, en se basant sur le registre existant. Cas de Sélachombre : 170/5+20+16+8+14+8=100. Anciens modèles inchangés ; raretés épiques/légendaires réservées à validation ultérieure.
+- Tests dédiés et CI + navigateur + Pages du SHA final obligatoires avant publication.
+
+---
+
 ## 2026-11-12 — Sélachombre (requin Eau/Glace), branche temporaire PR #302 (CI en validation)
 - Base `main@1dbec5218fa7c766a1c1d5e27c6abf48a83656da`, checkpoint `checkpoint/lab-start-selachombre-2026-11-12` et `work/lab-selachombre-2026-11-12`.
 - Aucun moteur, aucun asset ou catalogue parallèle. Utiliser les trois médias **requin** certifiés de `global-assets` (face/dos/icône) ; conserver Maraileron, Krakenor, Sylvorne, le bestiaire historique, Survie, Dungeon, Exploration et GenSRPG.
