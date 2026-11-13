@@ -17,9 +17,17 @@ function positiveFinite(value, field) {
 
 // One animation owns the entire camera timeline. No per-pulse timers,
 // nested animations, or concurrent camera owners are introduced.
-export function cameraShakeTimelineV1(plan,{arenaScale=1}={}) {
+export function cameraShakeTimelineV1(plan,{arenaScale=1,devicePixelRatio=0}={}) {
   positiveFinite(arenaScale,"camera-shake.arenaScale");
-  const px=value=>value*arenaScale;
+  const dpr=Number.isFinite(devicePixelRatio)&&devicePixelRatio>=1&&devicePixelRatio<=4
+    ?devicePixelRatio:0;
+  // Desktop full-screen may re-sample a huge scene at fractional physical
+  // pixels on each shake keyframe. Keep original timings and amplitudes;
+  // only align translations to screen-pixel increments when explicitly enabled.
+  const px=value=>{
+    const logical=value*arenaScale;
+    return dpr?Math.round(logical*dpr)/dpr:logical;
+  };
   if (!Array.isArray(plan?.sequence) || plan.sequence.length === 0) {
     return Object.freeze({
       durationMs: positiveFinite(plan?.durationMs, "camera-shake.durationMs"),
@@ -65,6 +73,19 @@ export function cameraShakeTimelineV1(plan,{arenaScale=1}={}) {
   return Object.freeze({durationMs, keyframes: Object.freeze(keyframes)});
 }
 
+// Scene-specific compositor safeguard, not a global motion preference.
+// Phone, embedded combat and non-full-screen PC preserve authored motion.
+export function desktopFullscreenCameraDprV1(element){
+  const document=element?.ownerDocument,view=document?.defaultView;
+  if(!document?.fullscreenElement||!view||typeof view.matchMedia!=="function")
+    return 0;
+  const eligible=view.matchMedia(
+    "(min-width: 1100px) and (min-height: 680px) and (pointer: fine)"
+  ).matches===true;
+  const ratio=Number(view.devicePixelRatio);
+  return eligible&&Number.isFinite(ratio)&&ratio>=1&&ratio<=4?ratio:0;
+}
+
 export function createDomCameraFxRenderer({
   element,
   animate = defaultAnimate
@@ -104,7 +125,10 @@ export function createDomCameraFxRenderer({
     // cameraShakeTimelineV1, not an additional scheduler.
     positiveFinite(plan.durationMs, "camera-shake.durationMs");
     positiveFinite(plan.amplitudePx, "camera-shake.amplitudePx");
-    const timeline = cameraShakeTimelineV1(plan,{arenaScale:fxArenaScaleV1(element)});
+    const timeline = cameraShakeTimelineV1(plan,{
+      arenaScale:fxArenaScaleV1(element),
+      devicePixelRatio:desktopFullscreenCameraDprV1(element)
+    });
     cancel();
     const animation = animate(element, timeline.keyframes, {
       duration: timeline.durationMs,
