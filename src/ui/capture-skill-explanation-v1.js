@@ -248,19 +248,21 @@ function effectSentence(e,{perCharge=false,markerNames={}}={}){
     case "consume_marker":{
       // Bestiary and editor use the same reader-friendly conditional wording.
       // This changes descriptions only: the marker contract and runtime remain authoritative.
-      const name=markerNames[e.markerId]??e.markerId.replace(/[_-]+/g," ");
-      const holder=e.targetScope==="self"?"la créature":subject(e.targetScope);
+      const name=markerNames[e.markerId]??(e.markerId==="*"?"marqueur":
+        e.markerId.replace(/[_-]+/g," "));
+      const plural=!["self","target"].includes(e.targetScope);
+      const holder=e.targetScope==="self"?"la créature":
+        e.targetScope==="target"?"la cible":"les créatures concernées";
       const minimum=e.minimum>1?"au moins "+num(e.minimum)+" charges":
         "au moins une charge";
-      const available=e.count==="all"?"toutes ses charges":
-        num(e.count)+" charge"+(e.count===1?"":"s");
+      const available=e.count==="all"?(plural?"toutes leurs charges":"toutes ses charges"):
+        (e.count>e.minimum?"jusqu'à ":"")+num(e.count)+" charge"+(e.count===1?"":"s");
       const outcomes=descriptions(e.effects,{perCharge:e.perCharge===true,markerNames})
         .map(infinitiveClause);
       const consequence=outcomes.length?" pour "+words(outcomes):
         " pour déclencher l'effet associé";
-      return [finish("Si "+holder+" possède "+minimum+" de "+name+
-        ", "+(holder==="la créature"?"elle":"la cible")+
-        " consomme "+available+consequence)];
+      return [finish("Si "+holder+(plural?" possèdent ":" possède ")+minimum+" de "+name+
+        ", "+(plural?"elles":"elle")+" consomme"+(plural?"nt":"")+" "+available+consequence)];
     }
     case "scheduled_effect":return [finish("Après "+duration(e.trigger.delayMs)+", "+
       descriptions(e.effects).map(x=>lowerSentence(x)).join(" et "))];
