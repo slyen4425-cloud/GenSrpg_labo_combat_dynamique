@@ -16,6 +16,19 @@ const offsetModes = [
 ];
 const roles = ["cast", "impact", "zone"];
 const opacityRoles = new Set(["cast", "impact", "zone"]);
+const recolorControls = [["HueDeg", "hue-deg", true], ["SaturationPct", "saturation-pct", true]];
+
+// These are presentation values, never image mutations or gameplay parameters.
+export function skillSpriteRecolorFromFieldsV1(hue = 0, saturation = 100) {
+  const hueRotateDeg = Number(hue);
+  const saturationPct = Number(saturation);
+  if (!Number.isFinite(hueRotateDeg) || hueRotateDeg < 0 || hueRotateDeg > 360)
+    throw new RangeError("Rotation de teinte : 0 à 360°");
+  if (!Number.isFinite(saturationPct) || saturationPct < 0 || saturationPct > 200)
+    throw new RangeError("Saturation du sprite : 0 à 200 %");
+  return hueRotateDeg === 0 && saturationPct === 100
+    ? null : {hueRotateDeg,saturationPct};
+}
 
 export function skillSpriteOpacityPercentToUnitV1(value) {
   const percent = Number(value);
@@ -26,9 +39,11 @@ export function skillSpriteOpacityPercentToUnitV1(value) {
 }
 
 function roleControls(role) {
-  return opacityRoles.has(role)
-    ? [...controls, ["OpacityPct", "opacity-pct", true]]
-    : controls;
+  return [
+    ...controls,
+    ...(opacityRoles.has(role) ? [["OpacityPct", "opacity-pct", true]] : []),
+    ...recolorControls
+  ];
 }
 
 const controls = [
@@ -100,6 +115,11 @@ export function skillSpriteControlsFromFieldsV1(fields = {}, role) {
     offsetX: fields[role + "OffsetX"] ?? 0,
     offsetY: fields[role + "OffsetY"] ?? 0,
     ...sideOffsetFields(fields, role),
+    ...(skillSpriteRecolorFromFieldsV1(fields[role + "HueDeg"] ?? 0,
+      fields[role + "SaturationPct"] ?? 100) == null ? {} : {
+      recolor: skillSpriteRecolorFromFieldsV1(fields[role + "HueDeg"] ?? 0,
+        fields[role + "SaturationPct"] ?? 100)
+    }),
     ...(opacityRoles.has(role) ? {
       opacity: skillSpriteOpacityPercentToUnitV1(fields[role + "OpacityPct"] ?? 100)
     } : {}),
@@ -115,6 +135,8 @@ export function skillSpriteControlFieldsFromVisualsV1(visual = {}) {
   for (const role of roles) {
     const slot = visual[role === "zone" ? "aura" : role];
     const fallback = skillSpriteControlsFromFieldsV1({}, role);
+    fields[role + "HueDeg"] = slot?.recolor?.hueRotateDeg ?? 0;
+    fields[role + "SaturationPct"] = slot?.recolor?.saturationPct ?? 100;
     const offsetX = slot?.offsetX ?? 0;
     const offsetY = slot?.offsetY ?? 0;
     const offsetMode =

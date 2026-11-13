@@ -1,6 +1,6 @@
 import {
   normalizeSkillPresentationBinding
-} from "../../contracts/skill-presentation-binding.js";
+} from "../../contracts/skill-presentation-binding.js?v=recolor-20261113";
 import {builtInBurrowSpriteAssetV1} from "../../assets/burrow-terrain-builtins-v1.js";
 
 function requiredFunction(value, field) {
@@ -138,6 +138,7 @@ function resolvedVisual(
     ...(slot.durationMs == null ? {} : { durationMs: slot.durationMs }),
     rotationDeg: slot.rotationDeg ?? 0,
     opacity: slot.opacity ?? 1,
+    ...(slot.recolor == null ? {} : {recolor:slot.recolor}),
     offsetX: viewOffset.x,
     offsetY: viewOffset.y,
     attachment: slot.attachment,
@@ -385,7 +386,7 @@ export function createCaptureSkillPresentationAssetsV2({
         view
       );
 
-    const burrowTerrain = binding.version === 13
+    const burrowTerrain = (binding.version === 13 || (binding.version === 15 && (binding.recolorBaseVersion === 13 || (binding.recolorBaseVersion === 14 && binding.sourceVersion === 13))))
       ? Object.freeze(Object.fromEntries(["start","travel","impact"].map(stage=>{
           const slot=visual.burrowTerrain?.[stage] ?? null;
           if(!slot)return [stage,null];

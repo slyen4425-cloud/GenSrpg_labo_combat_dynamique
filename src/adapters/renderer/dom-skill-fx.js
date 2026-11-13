@@ -133,6 +133,12 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
   node.className += " skill-fx--sprite";
   node.dataset.assetId = visual.assetId ?? "";
   node.style.backgroundRepeat = "no-repeat";
+  // Recolor the rendered pixels, not the shared asset. Alpha, frame timing and
+  // collision masks remain untouched. The neutral preset keeps old output.
+  if (visual.recolor != null) {
+    node.style.filter = "hue-rotate(" + visual.recolor.hueRotateDeg +
+      "deg) saturate(" + visual.recolor.saturationPct + "%)";
+  }
 
   if (Array.isArray(visual.frames) && visual.frames.length > 0) {
     const frames = visual.frames.filter(Boolean);
@@ -690,6 +696,7 @@ export function createDomSkillFxRenderer({
       ")";
 
     node.style.filter =
+      (node.style.filter ? node.style.filter + " " : "") +
       "drop-shadow(0 0 " +
       firstRadius.toFixed(1) +
       "px " +
