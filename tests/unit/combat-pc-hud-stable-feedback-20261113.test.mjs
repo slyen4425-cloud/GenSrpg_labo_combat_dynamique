@@ -21,7 +21,7 @@ test("desktop HUD overrides stay opt-in and do not touch mobile or combat geomet
     "no unscoped global or smartphone overrides");
 });
 
-test("taking damage highlights the visible image without alpha flicker",async()=>{
+test("taking damage preserves intentional creature hit blink",async()=>{
   const calls=[];
   const image={animate(frames,options){
     calls.push({frames,options});
@@ -35,9 +35,11 @@ test("taking damage highlights the visible image without alpha flicker",async()=
   assert.equal(calls.length,1);
   assert.equal(calls[0].options.delay,120);
   assert.equal(calls[0].options.duration,280);
-  assert.ok(calls[0].frames.every(frame=>frame.opacity===1),
-    "the fighter must stay continuously visible on damage");
-  assert.ok(calls[0].frames.some(frame=>frame.filter==="brightness(1.16)"));
+  assert.deepEqual(calls[0].frames.map(frame=>frame.opacity),
+    [1,0.32,1,0.45,1],
+    "author-intended damage flash must remain on the creature only");
+  assert.ok(calls[0].frames.every(frame=>!Object.hasOwn(frame,"filter")),
+    "damage flash must not impose compositor filter animations");
   await hit.finished;
   assert.equal(renderer.activeCount,0);
   renderer.dispose();
