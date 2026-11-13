@@ -25,7 +25,7 @@ import {
   writeSkillSpriteControlsV1,
   appendStatusSpriteControlsV1,
   readStatusSpriteControlsV1
-} from "./capture-editor-sprite-controls-v1.js";
+} from "./capture-editor-sprite-controls-v1.js?v=recolor-20261113";
 import {
   normalizeCaptureCreatureEditorDraftV2
 } from "../contracts/capture-creature-editor-draft-v2.js";
