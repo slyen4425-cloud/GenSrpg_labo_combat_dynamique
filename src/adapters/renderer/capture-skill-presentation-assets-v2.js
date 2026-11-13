@@ -1,6 +1,6 @@
 import {
   normalizeSkillPresentationBinding
-} from "../../contracts/skill-presentation-binding.js";
+} from "../../contracts/skill-presentation-binding.js?v=recolor-20261113";
 import {builtInBurrowSpriteAssetV1} from "../../assets/burrow-terrain-builtins-v1.js";
 
 function requiredFunction(value, field) {
