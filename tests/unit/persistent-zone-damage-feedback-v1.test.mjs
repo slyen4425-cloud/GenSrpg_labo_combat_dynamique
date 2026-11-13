@@ -174,12 +174,12 @@ test("damage flash animates only the image so attack/movement animation remains 
     imageAnimations[0].keyframes.map(
       (frame) => frame.opacity
     ),
-    [1, 1, 1, 1, 1],
-    "damage cues no longer blink or hide the fighter image"
+    [1, 0.32, 1, 0.45, 1],
+    "authored hit opacity flash must remain visible on the creature image"
   );
   assert.ok(
-    imageAnimations[0].keyframes.some((frame) => frame.filter === "brightness(1.16)"),
-    "hit remains visible as a gentle brightness cue"
+    imageAnimations[0].keyframes.every((frame) => !Object.hasOwn(frame, "filter")),
+    "hit cue must not animate the entire scene or impose GPU filters"
   );
 
   await handle.finished;
