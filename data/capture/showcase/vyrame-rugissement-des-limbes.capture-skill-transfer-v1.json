@@ -4,7 +4,7 @@
   "draft": {
     "schema": "capture-skill-editor-draft-v1",
     "id": "vyrame-rugissement-des-limbes",
-    "description": "16 dégâts Esprit à tous les ennemis actifs et -15 % de dégâts infligés durant 7 s. À 3 Combo : les consomme et récupère 4 énergie.",
+    "description": "16 dégâts Esprit à tous les ennemis actifs et étourdit la cible pendant 5 s. À 3 Combo spirituels : consomme les charges et inflige 20 dégâts Esprit supplémentaires à la cible.",
     "requiredLevel": 10,
     "usageScopes": [
       "capture",
@@ -73,17 +73,16 @@
         },
         {
           "kind": "apply_status",
-          "targetScope": "all_enemies",
+          "targetScope": "target",
           "status": {
-            "id": "vyrame-limbes-affaiblissement",
-            "kind": "outgoing_damage_modifier",
+            "id": "vyrame-limbes-etourdissement",
+            "kind": "stun",
             "polarity": "detrimental",
             "durationModel": "time_ms",
-            "durationMs": 7000,
+            "durationMs": 5000,
             "stacking": "refresh",
             "maxStacks": 1,
-            "tags": [],
-            "modifierPct": -15
+            "tags": []
           }
         },
         {
@@ -94,9 +93,10 @@
           "minimum": 3,
           "effects": [
             {
-              "kind": "energy_restore",
-              "targetScope": "self",
-              "amount": 4
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 20,
+              "channel": "spirit"
             }
           ]
         }

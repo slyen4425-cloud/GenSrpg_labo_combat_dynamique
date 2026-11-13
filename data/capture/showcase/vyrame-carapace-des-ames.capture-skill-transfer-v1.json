@@ -4,7 +4,7 @@
   "draft": {
     "schema": "capture-skill-editor-draft-v1",
     "id": "vyrame-carapace-des-ames",
-    "description": "Renforce la défense de Vyrâme de 75 points pendant 12 s. À 3 Combo : les consomme et rend 30 PV.",
+    "description": "Augmente la Défense de Vyrâme de 100 points pendant 12 s. À 3 Combo spirituels : les consomme et ajoute 100 Défense supplémentaires pendant 12 s (200 au total).",
     "requiredLevel": 15,
     "usageScopes": [
       "capture",
@@ -79,7 +79,7 @@
             "tags": [],
             "statId": "defense",
             "modifierMode": "points",
-            "deltaPoints": 75
+            "deltaPoints": 100
           }
         },
         {
@@ -90,9 +90,21 @@
           "minimum": 3,
           "effects": [
             {
-              "kind": "heal",
+              "kind": "apply_status",
               "targetScope": "self",
-              "amount": 30
+              "status": {
+                "id": "vyrame-carapace-combo-defense",
+                "kind": "stat_modifier",
+                "polarity": "beneficial",
+                "durationModel": "time_ms",
+                "durationMs": 12000,
+                "stacking": "refresh",
+                "maxStacks": 1,
+                "tags": [],
+                "statId": "defense",
+                "modifierMode": "points",
+                "deltaPoints": 100
+              }
             }
           ]
         }

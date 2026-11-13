@@ -1,3 +1,12 @@
+## 2026-11-13 — Vyrâme : corrections auteur, poses importées, Combo ciblé
+- START `main@be37cdb2202767cc5bf15516860bebc60a44b0fc` et checkpoint `checkpoint/lab-start-vyrame-author-tune-2026-11-13`, branche de préparation `work/lab-vyrame-author-tune-2026-11-13`.
+- Propriétaires : transferts Vyrâme officiels, ciblage natif unique et tests ; **aucune image dupliquée, aucun autre moteur**, aucune synchronisation GenSRPG.
+- Cas : L1 sans Cast et approche moitié vitesse ; L5 +10 Esprit au lieu de soin ; L10 stun 5s cible puis +20 à Combo 3 ; L15 DEF +100 et bonus DEF +100 ; vues fichier auteur player 1,75/Y0 et opponent 1,10/Y+50.
+- Tests contrat/effets/targétage/endurance puis CI complète, navigateur Chromium mobile/PC, Pages SHA exact et checkpoint GREEN avant déclaration.
+- Option coloration d'attaque = examen séparé ; coloration des statuts déjà présente, pas de mutation des PNG.
+
+---
+
 ## 2026-11-12 — Révision utilisateur, PR #304 avant fusion
 - Ajustement du lot toujours non fusionné : Sélachombre joueur 1,74 maintenu ; adversaire 1,50→1,20 (-20 %) et Y 0→+45 (descente).
 - Aucun nouveau moteur, image ou autorité ; uniquement la donnée officielle de cette créature et les tests/documents. L'ancienne CI e59969a appartient à l'ancien état du lot : seule la nouvelle CI exacte autorise la fusion.
