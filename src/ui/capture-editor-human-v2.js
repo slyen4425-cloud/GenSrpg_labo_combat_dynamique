@@ -20,6 +20,7 @@ import {
   skillSpriteControlsFromFieldsV1,
   skillSpriteControlFieldsFromVisualsV1,
   skillSpriteOpacityPercentToUnitV1,
+  skillSpriteRecolorFromFieldsV1,
   readSkillSpriteControlsV1,
   writeSkillSpriteControlsV1,
   appendStatusSpriteControlsV1,
@@ -1264,7 +1265,8 @@ function visualSlot(assetId, {
   opponentOffsetY = null,
   durationMs = null,
   playbackMode = "once",
-  opacity = 1
+  opacity = 1,
+  recolor = null
 }) {
   const id = optionalText(assetId);
   if (id === null) {
@@ -1363,6 +1365,7 @@ function visualSlot(assetId, {
     offsetY: normalizedOffsetY,
     ...sideOffset,
     rotationDeg: 0,
+    ...(recolor == null ? {} : {recolor}),
     opacity: (() => {
       const amount = finiteNumber(opacity, "Opacité FX");
       if (amount < 0 || amount > 1) {
@@ -1826,6 +1829,10 @@ function presentationForSkill(fields) {
     }
   );
   if (travel !== null) {
+    const recolor = skillSpriteRecolorFromFieldsV1(
+      presentation.travelHueDeg ?? 0, presentation.travelSaturationPct ?? 100
+    );
+    if (recolor !== null) travel.recolor = recolor;
     const speed = finiteNumber(presentation.travelFrameSpeedMultiplier ?? 1, "Vitesse de boucle du projectile");
     const depth = finiteNumber(presentation.travelPerspectiveAmount ?? 0, "Perspective du projectile");
     if (speed < 0.25 || speed > 4) throw new RangeError("Vitesse de boucle : de 0.25 à 4");
@@ -2007,6 +2014,11 @@ function presentationForSkill(fields) {
                     ? 3
                     : 2;
 
+  const underlyingVersion = travel?.groundMotion != null
+    ? 14 : burrowTerrain !== null ? 13 : baseVersion;
+  const recolored = [cast,travel,impact,persistentZone].some(
+    (sprite) => sprite?.recolor != null
+  );
   return {
     id:
       "skill:" +
@@ -2014,7 +2026,8 @@ function presentationForSkill(fields) {
         fields.id,
         "ID capacité"
       ),
-    version: travel?.groundMotion != null ? 14 : burrowTerrain !== null ? 13 : baseVersion,
+    version: recolored ? 15 : underlyingVersion,
+    ...(recolored ? {recolorBaseVersion:underlyingVersion} : {}),
     ...(burrowTerrain !== null ? {baseVersion} : {}),
     ...(travel?.groundMotion != null ? {sourceVersion:burrowTerrain!==null?13:baseVersion} : {}),
     subjectType: "skill",
@@ -2757,6 +2770,8 @@ export function humanSkillEditorFieldsFromDraftV1(
       travelDisplayScale:
         travel?.displayScale ?? 1,
       travelOpacityPct: (travel?.opacity ?? 1) * 100,
+      travelHueDeg: travel?.recolor?.hueRotateDeg ?? 0,
+      travelSaturationPct: travel?.recolor?.saturationPct ?? 100,
       travelPlaybackMode:
         travel?.playbackMode ?? "stretch",
       travelFrameSpeedMultiplier: travel?.frameSpeedMultiplier ?? 1,
@@ -3830,6 +3845,8 @@ function writeSkillDraftFields(
       fields.presentation.travelDisplayScale
     ],
     ["[data-skill-travel-opacity-pct]", fields.presentation.travelOpacityPct],
+    ["[data-skill-travel-hue-deg]", fields.presentation.travelHueDeg],
+    ["[data-skill-travel-saturation-pct]", fields.presentation.travelSaturationPct],
     [
       "[data-skill-travel-playback]",
       fields.presentation.travelPlaybackMode
@@ -4046,6 +4063,8 @@ function prepareNewSkillDraftFields(
     ["[data-skill-travel-fx]", ""],
     ["[data-skill-travel-scale]", 1],
     ["[data-skill-travel-opacity-pct]", 100],
+    ["[data-skill-travel-hue-deg]", 0],
+    ["[data-skill-travel-saturation-pct]", 100],
     ["[data-skill-travel-playback]", "stretch"],
     ["[data-skill-travel-frame-speed]", 1],
     ["[data-skill-travel-perspective]", 0],
@@ -9889,6 +9908,8 @@ function readSkillFields(root) {
         "[data-skill-travel-scale]"
       ),
       travelOpacityPct: numericValue(root, "[data-skill-travel-opacity-pct]"),
+      travelHueDeg: numericValue(root, "[data-skill-travel-hue-deg]"),
+      travelSaturationPct: numericValue(root, "[data-skill-travel-saturation-pct]"),
       travelPlaybackMode: selectedValue(
         root,
         "[data-skill-travel-playback]"
@@ -10754,6 +10775,8 @@ function writeCaptureFxStarterPresentationFieldsV1(
     ["[data-skill-travel-fx]", presentation.travelAssetId],
     ["[data-skill-travel-scale]", presentation.travelDisplayScale],
     ["[data-skill-travel-opacity-pct]", presentation.travelOpacityPct],
+    ["[data-skill-travel-hue-deg]", presentation.travelHueDeg ?? 0],
+    ["[data-skill-travel-saturation-pct]", presentation.travelSaturationPct ?? 100],
     ["[data-skill-travel-playback]", presentation.travelPlaybackMode],
     ["[data-skill-travel-frame-speed]", presentation.travelFrameSpeedMultiplier ?? 1],
     ["[data-skill-travel-perspective]", presentation.travelPerspectiveAmount ?? 0],
