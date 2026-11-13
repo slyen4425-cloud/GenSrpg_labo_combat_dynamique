@@ -96,9 +96,9 @@ test('Combo: 2 charges preserve base effects, 3 charges trigger and consume exac
    assert.ok(s.fighters.vyrame.statusEffects.some(x=>x.definition.id==='vyrame-deferlante-surcharge'));
  }
 });
-test('Combo attacks deliver precisely +10 or +20 Spirit damage to enemy, never the caster',()=>{
+test('Combo attacks deliver precisely +10 Spirit damage to enemy, never the caster',()=>{
  const markerOnly={...skills[0].definition,effects:[skills[0].definition.effects[1]]};
- for(const [index,bonus] of [[1,10],[2,20]]){
+ for(const [index,bonus] of [[1,10],[2,10]]){
   let normal=state(),charged=state();
   for(let i=1;i<=3;i++)charged=apply(charged,markerOnly,i*1000);
   normal=apply(normal,skills[index].definition,5000);
@@ -112,6 +112,8 @@ test('Combo attacks deliver precisely +10 or +20 Spirit damage to enemy, never t
 });
 test('Rugissement targets enemy with native 5-second stun and real action-interrupt event',()=>{
  const definition=skills[2].definition;
+ assert.equal(definition.effects[0].amount,8,'base damage applies to all active enemies');
+ assert.equal(definition.effects[2].effects[0].amount,10,'Combo bonus hits original selected enemy');
  assert.equal(definition.effects[1].targetScope,'target');
  assert.equal(definition.effects[1].status.kind,'stun');
  assert.equal(definition.effects[1].status.durationMs,5000);
