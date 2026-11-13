@@ -65,14 +65,13 @@ export function createDomDamageFeedbackRenderer({
 
     const animation = image.animate(
       [
-        // Keep the model opaque throughout damage feedback. The old
-        // alpha drops (0.32/0.45) produced a visible combat flicker.
-        // Brightness is presentation-only: no change to HP or hit timing.
-        { opacity: 1, filter: "brightness(1)" },
-        { opacity: 1, filter: "brightness(1.16)" },
-        { opacity: 1, filter: "brightness(1.12)" },
-        { opacity: 1, filter: "brightness(1.08)" },
-        { opacity: 1, filter: "brightness(1)" }
+        // The authored creature-only hit cue is intentional. Do not change
+        // it to disguise an unrelated full-screen/desktop compositor flicker.
+        { opacity: 1 },
+        { opacity: 0.32 },
+        { opacity: 1 },
+        { opacity: 0.45 },
+        { opacity: 1 }
       ],
       {
         duration: Math.max(
