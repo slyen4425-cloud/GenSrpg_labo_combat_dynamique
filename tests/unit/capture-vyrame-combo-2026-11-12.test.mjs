@@ -31,12 +31,19 @@ test('Vyrâme: one original approved portrait trio, proper defensive reaction an
  for(const [view,id] of [['front','opponent'],['back','player'],['icon','icon']])
   assert.equal(creature.draft.presentation.visual[view].assetId,'pack:capture:creature-pourpre-'+id+'-01');
  assert.equal(creature.draft.presentation.transformOrigin.y,'88%');
+ assert.equal(creature.draft.presentation.version,9,'keep canonical V9 media metadata');
+ assert.deepEqual(creature.draft.presentation.viewOverrides.player,{displayScale:1.75,position:{x:0,y:0}},'preserve uploaded player settings');
+ assert.deepEqual(creature.draft.presentation.viewOverrides.opponent,{displayScale:1.1,position:{x:0,y:50}},'preserve uploaded opponent settings');
+
 });
-test('Vyrâme: five new skills at levels 1/5/10/15/20 and four conditional self-combo consumers',()=>{
+test('Vyrâme: five skills and four marker consumers preserve source and target semantics',()=>{
  assert.deepEqual(skills.map(x=>x.requiredLevel),[1,5,10,15,20]);
  assert.equal(skills[0].definition.effects[1].targetScope,'self');
  assert.equal(skills[0].definition.effects[1].marker.maxStacks,3);
  assert.equal(skills[0].definition.effects[1].marker.polarity,'beneficial');
+ assert.equal(skills[0].definition.travelMs,1300,'basic attack movement at half speed');
+ assert.equal(skills[0].presentation.visual.cast,undefined,'no Lv1 cast sprite');
+ assert.ok(skills[0].presentation.visual.impact,'Lv1 impact sprite retained');
  assert.equal(skills[3].definition.targetRelations.includes('self'),true);
  assert.equal(skills[4].definition.maxUsesPerCombat,1);
  for(const draft of skills.slice(1)){
@@ -46,7 +53,10 @@ test('Vyrâme: five new skills at levels 1/5/10/15/20 and four conditional self-
   assert.equal(consume.markerId,'vyrame-combo');
   assert.equal(consume.minimum,3);assert.equal(consume.count,3);
   assert.ok(consume.effects.length>=1);
-  assert.ok(consume.effects.every(x=>x.targetScope==='self'),'nested bonuses cannot accidentally target actor instead of original enemy');
+  if(['vyrame-crocs-du-voile','vyrame-rugissement-des-limbes'].includes(draft.id))
+   assert.deepEqual(consume.effects.map(x=>x.targetScope),['target'],'extra damage on original enemy');
+  else
+   assert.ok(consume.effects.every(x=>x.targetScope==='self'),'self-only defensive bonus');
  }
 });
 test('Combo: each basic attack adds one marker ON SELF, caps at 3 and never marks target',()=>{
@@ -57,33 +67,57 @@ test('Combo: each basic attack adds one marker ON SELF, caps at 3 and never mark
   assert.equal(s.fighters.enemy.statusEffects.some(x=>x.definition.id==='marker:vyrame-combo'),false);
  }
 });
-test('Combo: other skills keep base effect with fewer than three stacks; all 4 consume exactly 3 and deliver their bonus',()=>{
+test('Combo: 2 charges preserve base effects, 3 charges trigger and consume exactly once',()=>{
+ const markerOnly={...skills[0].definition,effects:[skills[0].definition.effects[1]]};
  for(const draft of skills.slice(1)){
   let s=state();
-  s=apply(s,skills[0].definition,1000);
-  s=apply(s,skills[0].definition,2000);
+  s=apply(s,markerOnly,1000);
+  s=apply(s,markerOnly,2000);
   const before=s.fighters.enemy.hp;
-  const actorHp=s.fighters.vyrame.hp;
-  const actorEnergy=s.fighters.vyrame.energy;
+  const hpBefore=s.fighters.vyrame.hp;
   s=apply(s,draft.definition,3000);
   assert.equal(stacks(s),2,draft.id+' must NOT consume below threshold');
   if(draft.definition.effects.some(e=>e.kind==='damage'))assert.ok(s.fighters.enemy.hp<before,draft.id+' has unconditional damage');
-  if(draft.id==='vyrame-crocs-du-voile'||draft.id==='vyrame-carapace-des-ames'||draft.id==='vyrame-deferlante-spectrale')
-   assert.equal(s.fighters.vyrame.hp,actorHp,draft.id+' has no premature healing');
-  if(draft.id==='vyrame-rugissement-des-limbes')assert.equal(s.fighters.vyrame.energy,actorEnergy);
-  s=apply(s,skills[0].definition,4000);
+  assert.equal(s.fighters.vyrame.hp,hpBefore,'No prethreshold self-heal');
+  if(draft.id==='vyrame-carapace-des-ames')
+   assert.deepEqual(s.fighters.vyrame.statusEffects.filter(x=>x.definition.id.startsWith('vyrame-carapace-')).map(x=>x.definition.deltaPoints),[100]);
+  s=apply(s,markerOnly,4000);
   assert.equal(stacks(s),3);
-  const hpBefore=s.fighters.vyrame.hp,energyBefore=s.fighters.vyrame.energy;
+  const ownHp=s.fighters.vyrame.hp;
   s=apply(s,draft.definition,5000);
   assert.equal(stacks(s),0,draft.id+' consumes all three exactly once');
-  if(draft.id==='vyrame-crocs-du-voile')assert.equal(s.fighters.vyrame.hp,hpBefore+20);
-  if(draft.id==='vyrame-rugissement-des-limbes')assert.equal(s.fighters.vyrame.energy,energyBefore+4);
-  if(draft.id==='vyrame-carapace-des-ames')assert.equal(s.fighters.vyrame.hp,hpBefore+30);
-  if(draft.id==='vyrame-deferlante-spectrale'){
-   assert.equal(s.fighters.vyrame.hp,hpBefore+25);
-   assert.ok(s.fighters.vyrame.statusEffects.some(x=>x.definition.id==='vyrame-deferlante-surcharge'));
+  assert.equal(s.fighters.vyrame.hp,ownHp,draft.id+' must not accidentally heal');
+  if(draft.id==='vyrame-carapace-des-ames') {
+   const statuses=s.fighters.vyrame.statusEffects.filter(x=>x.definition.id.startsWith('vyrame-carapace-'));
+   assert.equal(statuses.length,2);
+   assert.equal(statuses.reduce((sum,x)=>sum+x.definition.deltaPoints,0),200);
   }
+  if(draft.id==='vyrame-deferlante-spectrale')
+   assert.ok(s.fighters.vyrame.statusEffects.some(x=>x.definition.id==='vyrame-deferlante-surcharge'));
  }
+});
+test('Combo attacks deliver precisely +10 or +20 Spirit damage to enemy, never the caster',()=>{
+ const markerOnly={...skills[0].definition,effects:[skills[0].definition.effects[1]]};
+ for(const [index,bonus] of [[1,10],[2,20]]){
+  let normal=state(),charged=state();
+  for(let i=1;i<=3;i++)charged=apply(charged,markerOnly,i*1000);
+  normal=apply(normal,skills[index].definition,5000);
+  charged=apply(charged,skills[index].definition,5000);
+  assert.equal(stacks(charged),0);
+  const unchargedDamage=300-normal.fighters.enemy.hp;
+  const chargedDamage=300-charged.fighters.enemy.hp;
+  assert.equal(chargedDamage-unchargedDamage,bonus,'bonus damage must use original selected enemy');
+  assert.equal(charged.fighters.vyrame.hp,normal.fighters.vyrame.hp,'no self damage');
+ }
+});
+test('Rugissement targets enemy with native 5-second stun and real action-interrupt event',()=>{
+ const definition=skills[2].definition;
+ assert.equal(definition.effects[1].targetScope,'target');
+ assert.equal(definition.effects[1].status.kind,'stun');
+ assert.equal(definition.effects[1].status.durationMs,5000);
+ const result=applyImmediateTacticalEffectsV1({state:state(),actorId:'vyrame',targetId:'enemy',skill:definition,atMs:2500,combatAtMs:2500,battleFormat});
+ assert.ok(result.state.fighters.enemy.statusEffects.some(x=>x.definition.id==='vyrame-limbes-etourdissement'&&x.expiresAtMs===7500));
+ assert.ok(result.events.some(e=>e.type==='charge-interrupt'&&e.actorId==='enemy'&&e.stunMs===5000));
 });
 test('Sélachombre only Lv1 contact approach moves at one third the previous speed; cooldown, preparation and other moves unchanged',async()=>{
  const basic=(await load('selachombre-morsure-ecume.capture-skill-transfer-v1')).draft.definition;
