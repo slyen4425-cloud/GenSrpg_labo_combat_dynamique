@@ -1,3 +1,11 @@
+## 2026-11-13 — Colorisation des sprites de capacité (lot isolé)
+- START `main@7f2f7977` / checkpoint `checkpoint/lab-start-skill-sprite-recolor-2026-11-13`, préparation sur `work/lab-skill-sprite-recolor-2026-11-13`.
+- Contrat additif V15 et UI Cast/Projectile/Impact/Zone : teinte 0..360°, saturation 0..200 % ; rendu CSS unique, pas de nouveaux PNG, anciennes versions inchangées.
+- Le rendu est visuel uniquement et conserve l'autorité des catalogues et du moteur. Aucune intégration GenSRPG forcée.
+- Gate : tests dédiés, CI 5 jobs, Chromium PC/mobile et Pages SHA exact avant GREEN. Voir `docs/LAB_SKILL_SPRITE_RECOLOR_2026_11_13.md`.
+
+---
+
 ## 2026-11-13 — Vyrâme : corrections auteur, poses importées, Combo ciblé
 - START `main@be37cdb2202767cc5bf15516860bebc60a44b0fc` et checkpoint `checkpoint/lab-start-vyrame-author-tune-2026-11-13`, branche de préparation `work/lab-vyrame-author-tune-2026-11-13`.
 - Propriétaires : transferts Vyrâme officiels, ciblage natif unique et tests ; **aucune image dupliquée, aucun autre moteur**, aucune synchronisation GenSRPG.
