@@ -23,9 +23,10 @@ import {
   skillSpriteRecolorFromFieldsV1,
   readSkillSpriteControlsV1,
   writeSkillSpriteControlsV1,
+  mountSkillSpriteRecolorSlidersV1,
   appendStatusSpriteControlsV1,
   readStatusSpriteControlsV1
-} from "./capture-editor-sprite-controls-v1.js?v=recolor-20261113";
+} from "./capture-editor-sprite-controls-v1.js?v=recolor-20261113-recolor-sliders-20261113";
 import {
   normalizeCaptureCreatureEditorDraftV2
 } from "../contracts/capture-creature-editor-draft-v2.js";
@@ -10954,6 +10955,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       target.removeEventListener(type, handler)
     );
   }
+
+  mountSkillSpriteRecolorSlidersV1(root, listen);
 
   const markerLibraryController = mountCaptureMarkerLibraryV1({
     root,listen,configuredSkills,getStatRegistry:()=>statRegistry,

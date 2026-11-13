@@ -22,3 +22,7 @@
 - Tests : bornes, anciens contrats stricts, unicité des assets, roundtrip auteur, relais resolver, rendu DOM, tous les contrôles HTML.
 - CI exacte et vérifications Chromium PC/mobile, puis PR vers main et preuve de déploiement Pages sur SHA final.
 - Les effets recolorés n'ont aucune incidence sur les marques, dégâts, durée, projectile clash, couches ou collisions.
+
+## Correction ergonomique (13 novembre 2026)
+
+La saisie numérique seule est remplacée par deux curseurs tactiles visibles par rôle (teinte et intensité) avec valeurs lisibles, cercle d'aperçu **indicatif** et bouton « Retrouver les couleurs d’origine ». L'aperçu est un exemple colorimétrique et n'usurpe pas le sprite réel ; tester la capacité dans le combat pour vérifier le rendu final. Les attributs `data-skill-*-hue-deg` / `data-skill-*-saturation-pct` sont inchangés et restent l'unique source d'édition, sauvegarde et export du V15. Uniquement l'UI et des tests changent, aucune copie d'asset ni seconde autorité.

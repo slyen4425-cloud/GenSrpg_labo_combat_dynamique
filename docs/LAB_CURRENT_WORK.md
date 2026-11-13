@@ -1,3 +1,12 @@
+## 2026-11-13 — Colorisation des capacités : curseurs tactiles et retour visuel
+- START `main@076d77ad0e6c60acd02c9f5b5ddccdbfbc9f7b9f` ; checkpoint `checkpoint/lab-start-sprite-recolor-sliders-2026-11-13`. Modification courte de l’interface auteur directement sur `main` selon la charte ; les autres chantiers restent intacts.
+- Remplacement, pour les quatre rôles Cast/Projectile/Impact/Zone, des deux saisies numériques par deux curseurs tactiles et un aperçu de teinte **explicitement indicatif** ; bouton de remise aux couleurs d’origine ; libellés compréhensibles.
+- Réutilisation des champs `data-skill-*-hue-deg` et `data-skill-*-saturation-pct` ainsi que des lecteurs/sauvegardes V15 existants : aucun état doublon, aucun nouveau catalogue, aucune manipulation de PNG, aucun changement de moteur ni de contrat, ni GenSRPG ni Exploration.
+- Synchronisation de l’interface lors du chargement d’une capacité, de l’import, du changement via les curseurs et de la remise à zéro ; écouteurs disposés avec l’éditeur. L’aperçu est un échantillon coloré : le rendu réel des PNG reste à confirmer via « Tester le combat ».
+- Tests unitaires précis des contrôles/réinitialisation/roundtrip et vérification navigateur + CI sur le SHA exact avant GREEN et preuve HTTPS Pages ; aucune publication déclarée avant preuve.
+
+---
+
 ## 2026-11-13 — Équilibrage Vyrâme : Rugissement des limbes (demande auteur)
 - L10 : dommages Esprit de zone **16 → 8** ; à 3 Combo, bonus sur cible **20 → 10** ; total cible principale 18 avant modificateurs ; **stun 5 secondes inchangé**.
 - Données canonique et tests ciblés uniquement ; aucun changement de moteur, sprite, autres compétences, ou élément d'Exploration/GenSRPG. Gate CI GREEN avant fusion et contrôle du Pages SHA exact.

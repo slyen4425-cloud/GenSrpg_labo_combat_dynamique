@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>GenSrpG Lab — Éditeur Capture</title>
   <link rel="stylesheet" href="./demo.css?v=wall-layer-scale-xy-20261101-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103">
-  <link rel="stylesheet" href="./capture-editor-v2.css?v=phone-pc-arena-parity-20261103-reflection-layout-20261104-barrier-side-layout-20261105">
+  <link rel="stylesheet" href="./capture-editor-v2.css?v=phone-pc-arena-parity-20261103-reflection-layout-20261104-barrier-side-layout-20261105-recolor-sliders-20261113">
   <style>
     [data-creature-view-settings][hidden] { display: none; }
     [data-skill-charged-effects-config][hidden] { display: none !important; }
@@ -1880,13 +1880,26 @@
           <label>Opacité du cast (%) — 100 = opaque, 0 = invisible
             <input type="number" min="0" max="100" step="5" value="100" data-skill-cast-opacity-pct>
           </label>
-          <label>Sprite cast — rotation de teinte (°)
-            <input type="number" min="0" max="360" step="5" value="0" data-skill-cast-hue-deg>
-          </label>
-          <label>Sprite cast — saturation (%)
-            <input type="number" min="0" max="200" step="5" value="100" data-skill-cast-saturation-pct>
-          </label>
-          <p class="note">0° et 100 % = couleurs originales. La recoloration n’altère ni les PNG ni les autres compétences.</p>
+          <div class="skill-recolor-panel" data-skill-recolor-panel="cast">
+            <div class="skill-recolor-heading">
+              <strong>Couleur du sprite — Cast / préparation</strong>
+              <span data-skill-recolor-state="cast">Couleurs d’origine</span>
+            </div>
+            <label class="skill-recolor-slider">
+              <span>Choisir la couleur <output data-skill-recolor-hue-output="cast">0°</output></span>
+              <input type="range" min="0" max="360" step="1" value="0" data-skill-cast-hue-deg aria-label="Cast / préparation — choisir la teinte">
+            </label>
+            <label class="skill-recolor-slider skill-recolor-slider--saturation">
+              <span>Intensité de la couleur <output data-skill-recolor-saturation-output="cast">100 %</output></span>
+              <input type="range" min="0" max="200" step="5" value="100" data-skill-cast-saturation-pct aria-label="Cast / préparation — intensité de la couleur">
+            </label>
+            <div class="skill-recolor-preview" aria-label="Aperçu indicatif de couleur">
+              <span class="skill-recolor-swatch" data-skill-recolor-swatch="cast" aria-hidden="true"></span>
+              <span>Aperçu de couleur indicatif</span>
+            </div>
+            <button type="button" class="secondary-action skill-recolor-reset" data-skill-recolor-reset="cast">Retrouver les couleurs d’origine</button>
+            <p class="note skill-recolor-help">Fais glisser les barres : l’aperçu change immédiatement. Le rendu exact dépend du sprite d’origine ; utilise « Tester le combat » pour le voir réellement. Aucun PNG ni autre capacité n’est modifié.</p>
+          </div>
           <label>Animation du cast
             <select data-skill-cast-playback>
               <option value="once">Lire une fois à la vitesse du sprite</option>
@@ -1936,13 +1949,26 @@
               <option value="once">Lire une fois à la vitesse du sprite</option>
             </select>
           </label>
-          <label>Sprite travel — rotation de teinte (°)
-            <input type="number" min="0" max="360" step="5" value="0" data-skill-travel-hue-deg>
-          </label>
-          <label>Sprite travel — saturation (%)
-            <input type="number" min="0" max="200" step="5" value="100" data-skill-travel-saturation-pct>
-          </label>
-          <p class="note">0° et 100 % = couleurs originales. La recoloration n’altère ni les PNG ni les autres compétences.</p>
+          <div class="skill-recolor-panel" data-skill-recolor-panel="travel">
+            <div class="skill-recolor-heading">
+              <strong>Couleur du sprite — Projectile / trajet</strong>
+              <span data-skill-recolor-state="travel">Couleurs d’origine</span>
+            </div>
+            <label class="skill-recolor-slider">
+              <span>Choisir la couleur <output data-skill-recolor-hue-output="travel">0°</output></span>
+              <input type="range" min="0" max="360" step="1" value="0" data-skill-travel-hue-deg aria-label="Projectile / trajet — choisir la teinte">
+            </label>
+            <label class="skill-recolor-slider skill-recolor-slider--saturation">
+              <span>Intensité de la couleur <output data-skill-recolor-saturation-output="travel">100 %</output></span>
+              <input type="range" min="0" max="200" step="5" value="100" data-skill-travel-saturation-pct aria-label="Projectile / trajet — intensité de la couleur">
+            </label>
+            <div class="skill-recolor-preview" aria-label="Aperçu indicatif de couleur">
+              <span class="skill-recolor-swatch" data-skill-recolor-swatch="travel" aria-hidden="true"></span>
+              <span>Aperçu de couleur indicatif</span>
+            </div>
+            <button type="button" class="secondary-action skill-recolor-reset" data-skill-recolor-reset="travel">Retrouver les couleurs d’origine</button>
+            <p class="note skill-recolor-help">Fais glisser les barres : l’aperçu change immédiatement. Le rendu exact dépend du sprite d’origine ; utilise « Tester le combat » pour le voir réellement. Aucun PNG ni autre capacité n’est modifié.</p>
+          </div>
           <label>Vitesse de boucle du sprite — 1× normal, 2× plus rapide, jusqu’à 4×
             <input type="number" min="0.25" max="4" step="0.25" value="1" data-skill-travel-frame-speed>
           </label>
@@ -2045,13 +2071,26 @@
           <label>Opacité de l’impact (%) — 100 = opaque, 0 = invisible
             <input type="number" min="0" max="100" step="5" value="100" data-skill-impact-opacity-pct>
           </label>
-          <label>Sprite impact — rotation de teinte (°)
-            <input type="number" min="0" max="360" step="5" value="0" data-skill-impact-hue-deg>
-          </label>
-          <label>Sprite impact — saturation (%)
-            <input type="number" min="0" max="200" step="5" value="100" data-skill-impact-saturation-pct>
-          </label>
-          <p class="note">0° et 100 % = couleurs originales. La recoloration n’altère ni les PNG ni les autres compétences.</p>
+          <div class="skill-recolor-panel" data-skill-recolor-panel="impact">
+            <div class="skill-recolor-heading">
+              <strong>Couleur du sprite — Impact</strong>
+              <span data-skill-recolor-state="impact">Couleurs d’origine</span>
+            </div>
+            <label class="skill-recolor-slider">
+              <span>Choisir la couleur <output data-skill-recolor-hue-output="impact">0°</output></span>
+              <input type="range" min="0" max="360" step="1" value="0" data-skill-impact-hue-deg aria-label="Impact — choisir la teinte">
+            </label>
+            <label class="skill-recolor-slider skill-recolor-slider--saturation">
+              <span>Intensité de la couleur <output data-skill-recolor-saturation-output="impact">100 %</output></span>
+              <input type="range" min="0" max="200" step="5" value="100" data-skill-impact-saturation-pct aria-label="Impact — intensité de la couleur">
+            </label>
+            <div class="skill-recolor-preview" aria-label="Aperçu indicatif de couleur">
+              <span class="skill-recolor-swatch" data-skill-recolor-swatch="impact" aria-hidden="true"></span>
+              <span>Aperçu de couleur indicatif</span>
+            </div>
+            <button type="button" class="secondary-action skill-recolor-reset" data-skill-recolor-reset="impact">Retrouver les couleurs d’origine</button>
+            <p class="note skill-recolor-help">Fais glisser les barres : l’aperçu change immédiatement. Le rendu exact dépend du sprite d’origine ; utilise « Tester le combat » pour le voir réellement. Aucun PNG ni autre capacité n’est modifié.</p>
+          </div>
           <label>Animation de l’impact
             <select data-skill-impact-playback>
               <option value="once">Lire une fois à la vitesse du sprite</option>
@@ -2103,13 +2142,26 @@
           <label>Opacité de la zone / aura (%) — 100 = opaque, 0 = invisible
             <input type="number" min="0" max="100" step="5" value="100" data-skill-zone-opacity-pct>
           </label>
-          <label>Sprite zone — rotation de teinte (°)
-            <input type="number" min="0" max="360" step="5" value="0" data-skill-zone-hue-deg>
-          </label>
-          <label>Sprite zone — saturation (%)
-            <input type="number" min="0" max="200" step="5" value="100" data-skill-zone-saturation-pct>
-          </label>
-          <p class="note">0° et 100 % = couleurs originales. La recoloration n’altère ni les PNG ni les autres compétences.</p>
+          <div class="skill-recolor-panel" data-skill-recolor-panel="zone">
+            <div class="skill-recolor-heading">
+              <strong>Couleur du sprite — Zone / aura</strong>
+              <span data-skill-recolor-state="zone">Couleurs d’origine</span>
+            </div>
+            <label class="skill-recolor-slider">
+              <span>Choisir la couleur <output data-skill-recolor-hue-output="zone">0°</output></span>
+              <input type="range" min="0" max="360" step="1" value="0" data-skill-zone-hue-deg aria-label="Zone / aura — choisir la teinte">
+            </label>
+            <label class="skill-recolor-slider skill-recolor-slider--saturation">
+              <span>Intensité de la couleur <output data-skill-recolor-saturation-output="zone">100 %</output></span>
+              <input type="range" min="0" max="200" step="5" value="100" data-skill-zone-saturation-pct aria-label="Zone / aura — intensité de la couleur">
+            </label>
+            <div class="skill-recolor-preview" aria-label="Aperçu indicatif de couleur">
+              <span class="skill-recolor-swatch" data-skill-recolor-swatch="zone" aria-hidden="true"></span>
+              <span>Aperçu de couleur indicatif</span>
+            </div>
+            <button type="button" class="secondary-action skill-recolor-reset" data-skill-recolor-reset="zone">Retrouver les couleurs d’origine</button>
+            <p class="note skill-recolor-help">Fais glisser les barres : l’aperçu change immédiatement. Le rendu exact dépend du sprite d’origine ; utilise « Tester le combat » pour le voir réellement. Aucun PNG ni autre capacité n’est modifié.</p>
+          </div>
           <label>Animation de la zone
             <select data-skill-zone-playback>
               <option value="loop" selected>Boucler tant que la zone existe</option>
@@ -2638,6 +2690,6 @@
     </template>
   </section>
 
-  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113"></script>
+  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113-recolor-sliders-20261113"></script>
 </body>
 </html>

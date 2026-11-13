@@ -186,6 +186,47 @@ export function readSkillSpriteControlsV1(root) {
   return fields;
 }
 
+
+const SKILL_RECOLOR_STAGE_ROLES_V1 = Object.freeze(["cast", "travel", "impact", "zone"]);
+
+// A view of the ACTUAL authoring inputs, never a second copy of color values.
+// Like the combat FX renderer, the sample applies hue-rotate followed by saturate.
+export function syncSkillSpriteRecolorSlidersV1(root) {
+  for (const role of SKILL_RECOLOR_STAGE_ROLES_V1) {
+    const hue = root.querySelector(`[data-skill-${role}-hue-deg]`);
+    const saturation = root.querySelector(`[data-skill-${role}-saturation-pct]`);
+    if (!hue || !saturation) continue;
+    const h = Number(hue.value);
+    const s = Number(saturation.value);
+    const hueOutput = root.querySelector(`[data-skill-recolor-hue-output="${role}"]`);
+    const saturationOutput = root.querySelector(`[data-skill-recolor-saturation-output="${role}"]`);
+    const state = root.querySelector(`[data-skill-recolor-state="${role}"]`);
+    const swatch = root.querySelector(`[data-skill-recolor-swatch="${role}"]`);
+    if (hueOutput) hueOutput.textContent = h + "°";
+    if (saturationOutput) saturationOutput.textContent = s + " %";
+    if (state) state.textContent = h === 0 && s === 100 ? "Couleurs d’origine" : "Couleurs personnalisées";
+    if (swatch) swatch.style.filter = "hue-rotate(" + h + "deg) saturate(" + s + "%)";
+  }
+}
+
+// Lifecycle owned by the existing creator editor (listen allows proper dispose).
+export function mountSkillSpriteRecolorSlidersV1(root, listen) {
+  for (const role of SKILL_RECOLOR_STAGE_ROLES_V1) {
+    const hue = root.querySelector(`[data-skill-${role}-hue-deg]`);
+    const saturation = root.querySelector(`[data-skill-${role}-saturation-pct]`);
+    if (!hue || !saturation) continue;
+    listen(hue, "input", () => syncSkillSpriteRecolorSlidersV1(root));
+    listen(saturation, "input", () => syncSkillSpriteRecolorSlidersV1(root));
+    const reset = root.querySelector(`[data-skill-recolor-reset="${role}"]`);
+    if (reset) listen(reset, "click", () => {
+      hue.value = "0";
+      saturation.value = "100";
+      syncSkillSpriteRecolorSlidersV1(root);
+    });
+  }
+  syncSkillSpriteRecolorSlidersV1(root);
+}
+
 export function writeSkillSpriteControlsV1(root, fields = {}) {
   const defaults = skillSpriteControlFieldsFromVisualsV1({});
   if (root?.dataset) {
@@ -211,6 +252,7 @@ export function writeSkillSpriteControlsV1(root, fields = {}) {
       }
     }
   }
+  syncSkillSpriteRecolorSlidersV1(root);
 }
 
 const statusControls = [

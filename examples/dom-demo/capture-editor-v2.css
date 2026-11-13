@@ -2150,3 +2150,82 @@ html {
     font-size: .86rem;
   }
 }
+
+/* Canonical skill recolor controls: the original editor fields are the sliders. */
+.skill-recolor-panel {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: .65rem;
+  min-width: 0;
+  padding: .85rem;
+  border: 1px solid rgba(126, 218, 234, .24);
+  border-radius: .85rem;
+  background: rgba(6, 26, 34, .75);
+}
+.skill-recolor-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .45rem;
+}
+.skill-recolor-heading strong { font-size: .85rem; color: #f1fbff; }
+.skill-recolor-heading span { font-size: .7rem; color: #94d9e7; }
+.skill-recolor-slider { gap: .35rem; min-width: 0; font-size: .8rem; }
+.skill-recolor-slider > span { display: flex; justify-content: space-between; gap: 1rem; }
+.skill-recolor-slider output { color: #f4fbfd; font-variant-numeric: tabular-nums; font-weight: 900; }
+.skill-recolor-slider input[type="range"] {
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  cursor: pointer;
+  background: linear-gradient(to right, #f35b59, #ffcc60, #69c65a, #54cae4, #676cf3, #d45ac6, #f35b59) center / 100% 12px no-repeat;
+  touch-action: pan-y;
+}
+.skill-recolor-slider--saturation input[type="range"] {
+  background: linear-gradient(to right, #949494, #f5a85b, #ff571e) center / 100% 12px no-repeat;
+}
+.skill-recolor-slider input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 28px;
+  height: 28px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #15323b;
+  box-shadow: 0 0 0 2px #07171e, 0 1px 7px #000a;
+}
+.skill-recolor-slider input[type="range"]::-moz-range-thumb {
+  width: 23px;
+  height: 23px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #15323b;
+  box-shadow: 0 0 0 2px #07171e, 0 1px 7px #000a;
+}
+.skill-recolor-slider input[type="range"]:focus-visible {
+  outline: 2px solid #9beaf5;
+  outline-offset: 2px;
+}
+.skill-recolor-preview { display: flex; align-items: center; gap: .65rem; color: #b5cdd5; font-size: .73rem; }
+.skill-recolor-swatch {
+  display: inline-block;
+  flex: 0 0 42px;
+  height: 42px;
+  border: 2px solid rgba(255, 255, 255, .55);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffb247, #ff5a53 55%, #a92f60);
+}
+.skill-recolor-reset { justify-self: start; min-height: 44px; }
+.skill-recolor-help { margin: 0; max-width: 60ch; }
+@media (max-width: 600px) {
+  .skill-recolor-panel { padding: .7rem; }
+  .skill-recolor-reset { width: 100%; }
+}
