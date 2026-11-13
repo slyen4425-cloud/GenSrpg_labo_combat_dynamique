@@ -26,3 +26,7 @@
 ## Correction ergonomique (13 novembre 2026)
 
 La saisie numérique seule est remplacée par deux curseurs tactiles visibles par rôle (teinte et intensité) avec valeurs lisibles, cercle d'aperçu **indicatif** et bouton « Retrouver les couleurs d’origine ». L'aperçu est un exemple colorimétrique et n'usurpe pas le sprite réel ; tester la capacité dans le combat pour vérifier le rendu final. Les attributs `data-skill-*-hue-deg` / `data-skill-*-saturation-pct` sont inchangés et restent l'unique source d'édition, sauvegarde et export du V15. Uniquement l'UI et des tests changent, aucune copie d'asset ni seconde autorité.
+
+## Vérification de la chaîne de cache (13 novembre, suite)
+
+Les sentinelles de publication ont constaté que la nouvelle version HTML était plus récente que certains imports ESM encore estampillés avec le token précédent. Les mêmes chemins de modules canoniques (entrée, éditeur, manifeste d'assets, loader de preview et rendu Combat) utilisent maintenant un identifiant de sortie cohérent. Les tests historiques conservent leurs assertions d'égalité de chaîne ; seuls deux suffixes de version attendus sont avancés. Le contrat V15, les assets et le moteur sont intacts. Aucune CI rouge ne vaut validation.
