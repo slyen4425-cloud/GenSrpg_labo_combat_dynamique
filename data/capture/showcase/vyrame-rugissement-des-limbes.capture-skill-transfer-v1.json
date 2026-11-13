@@ -4,7 +4,7 @@
   "draft": {
     "schema": "capture-skill-editor-draft-v1",
     "id": "vyrame-rugissement-des-limbes",
-    "description": "16 dégâts Esprit à tous les ennemis actifs et étourdit la cible pendant 5 s. À 3 Combo spirituels : consomme les charges et inflige 20 dégâts Esprit supplémentaires à la cible.",
+    "description": "8 dégâts Esprit à tous les ennemis actifs et étourdit la cible pendant 5 s. À 3 Combo spirituels : consomme les charges et inflige 10 dégâts Esprit supplémentaires à la cible.",
     "requiredLevel": 10,
     "usageScopes": [
       "capture",
@@ -68,7 +68,7 @@
         {
           "kind": "damage",
           "targetScope": "all_enemies",
-          "amount": 16,
+          "amount": 8,
           "channel": "spirit"
         },
         {
@@ -95,7 +95,7 @@
             {
               "kind": "damage",
               "targetScope": "target",
-              "amount": 20,
+              "amount": 10,
               "channel": "spirit"
             }
           ]

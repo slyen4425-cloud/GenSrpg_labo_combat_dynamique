@@ -17,9 +17,9 @@ test("RED: Grainou Explosion florale specifies 25 Nature damage PER consumed cha
   assert.equal(source.effects[0].kind,"consume_marker");
   assert.equal(source.effects[0].perCharge,true);
   const lines=sentences(source);
-  assert.ok(lines.includes("Inflige 25 dégâts de Nature par charge consommée à la cible."),
-    "damage itself explains how charges scale it");
-  assert.match(lines.join(" "),/Consomme les charges de graine-sansue/);
+  assert.ok(lines.some(line=>line.includes("pour infliger 25 dégâts de Nature par charge consommée à la cible.")),
+    "conditional wording must still state the exact per-charge formula");
+  assert.match(lines.join(" "),/Si la cible possède au moins une charge de .+, elle consomme toutes ses charges pour infliger 25 dégâts de Nature par charge consommée à la cible\./);
   assert.doesNotMatch(lines.join(" "),/les effets augmentent avec les charges consommées/,
     "do not replace the exact damage formula with a vague statement");
 });
@@ -30,7 +30,7 @@ test("RED: all authored perCharge skills get exact scaling, including Choc venin
   assert.equal(effect.perCharge,true);
   const actual=combined(choc);
   const child=effect.effects.find(item=>item.kind==="damage");
-  assert.ok(actual.includes("Inflige "+child.amount+" dégâts d'Électricité par charge consommée à la cible."),actual);
+  assert.ok(actual.includes("pour infliger "+child.amount+" dégâts d'Électricité par charge consommée à la cible."),actual);
 });
 
 test("RED: perCharge applies to child healing/energy amounts, not unrelated status",()=>{
@@ -60,7 +60,7 @@ test("RED: legacy fixed damage and ordinary attacks never claim per-charge scali
   const source=authoredSkill("explosion_florale");
   const effect={...source.effects[0],perCharge:false};
   const fixed=combined({...source,effects:[effect]});
-  assert.match(fixed,/Inflige 25 dégâts de Nature à la cible/);
+  assert.match(fixed,/elle consomme toutes ses charges pour infliger 25 dégâts de Nature à la cible\./);
   assert.doesNotMatch(fixed,/par charge consommée/);
   const normal=combined({...source,effects:[{kind:"damage",targetScope:"target",amount:25,channel:"nature"}]});
   assert.match(normal,/Inflige 25 dégâts de Nature à la cible/);

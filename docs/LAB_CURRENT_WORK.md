@@ -1,3 +1,9 @@
+## 2026-11-13 — Équilibrage Vyrâme : Rugissement des limbes (demande auteur)
+- L10 : dommages Esprit de zone **16 → 8** ; à 3 Combo, bonus sur cible **20 → 10** ; total cible principale 18 avant modificateurs ; **stun 5 secondes inchangé**.
+- Données canonique et tests ciblés uniquement ; aucun changement de moteur, sprite, autres compétences, ou élément d'Exploration/GenSRPG. Gate CI GREEN avant fusion et contrôle du Pages SHA exact.
+
+---
+
 ## 2026-11-13 — Colorisation des sprites de capacité (lot isolé)
 - START `main@7f2f7977` / checkpoint `checkpoint/lab-start-skill-sprite-recolor-2026-11-13`, préparation sur `work/lab-skill-sprite-recolor-2026-11-13`.
 - Contrat additif V15 et UI Cast/Projectile/Impact/Zone : teinte 0..360°, saturation 0..200 % ; rendu CSS unique, pas de nouveaux PNG, anciennes versions inchangées.
