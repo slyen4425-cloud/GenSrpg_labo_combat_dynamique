@@ -86,7 +86,7 @@ test('Combo: 2 charges preserve base effects, 3 charges trigger and consume exac
   const ownHp=s.fighters.vyrame.hp;
   s=apply(s,draft.definition,5000);
   assert.equal(stacks(s),0,draft.id+' consumes all three exactly once');
-  assert.equal(s.fighters.vyrame.hp,ownHp,draft.id+' must not accidentally heal');
+  assert.equal(s.fighters.vyrame.hp,ownHp+(draft.id==='vyrame-deferlante-spectrale'?25:0),draft.id+' preserves only the intended healing');
   if(draft.id==='vyrame-carapace-des-ames') {
    const statuses=s.fighters.vyrame.statusEffects.filter(x=>x.definition.id.startsWith('vyrame-carapace-'));
    assert.equal(statuses.length,2);
