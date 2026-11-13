@@ -1880,6 +1880,13 @@
           <label>Opacité du cast (%) — 100 = opaque, 0 = invisible
             <input type="number" min="0" max="100" step="5" value="100" data-skill-cast-opacity-pct>
           </label>
+          <label>Sprite cast — rotation de teinte (°)
+            <input type="number" min="0" max="360" step="5" value="0" data-skill-cast-hue-deg>
+          </label>
+          <label>Sprite cast — saturation (%)
+            <input type="number" min="0" max="200" step="5" value="100" data-skill-cast-saturation-pct>
+          </label>
+          <p class="note">0° et 100 % = couleurs originales. La recoloration n’altère ni les PNG ni les autres compétences.</p>
           <label>Animation du cast
             <select data-skill-cast-playback>
               <option value="once">Lire une fois à la vitesse du sprite</option>
@@ -1929,6 +1936,13 @@
               <option value="once">Lire une fois à la vitesse du sprite</option>
             </select>
           </label>
+          <label>Sprite travel — rotation de teinte (°)
+            <input type="number" min="0" max="360" step="5" value="0" data-skill-travel-hue-deg>
+          </label>
+          <label>Sprite travel — saturation (%)
+            <input type="number" min="0" max="200" step="5" value="100" data-skill-travel-saturation-pct>
+          </label>
+          <p class="note">0° et 100 % = couleurs originales. La recoloration n’altère ni les PNG ni les autres compétences.</p>
           <label>Vitesse de boucle du sprite — 1× normal, 2× plus rapide, jusqu’à 4×
             <input type="number" min="0.25" max="4" step="0.25" value="1" data-skill-travel-frame-speed>
           </label>
@@ -2031,6 +2045,13 @@
           <label>Opacité de l’impact (%) — 100 = opaque, 0 = invisible
             <input type="number" min="0" max="100" step="5" value="100" data-skill-impact-opacity-pct>
           </label>
+          <label>Sprite impact — rotation de teinte (°)
+            <input type="number" min="0" max="360" step="5" value="0" data-skill-impact-hue-deg>
+          </label>
+          <label>Sprite impact — saturation (%)
+            <input type="number" min="0" max="200" step="5" value="100" data-skill-impact-saturation-pct>
+          </label>
+          <p class="note">0° et 100 % = couleurs originales. La recoloration n’altère ni les PNG ni les autres compétences.</p>
           <label>Animation de l’impact
             <select data-skill-impact-playback>
               <option value="once">Lire une fois à la vitesse du sprite</option>
@@ -2082,6 +2103,13 @@
           <label>Opacité de la zone / aura (%) — 100 = opaque, 0 = invisible
             <input type="number" min="0" max="100" step="5" value="100" data-skill-zone-opacity-pct>
           </label>
+          <label>Sprite zone — rotation de teinte (°)
+            <input type="number" min="0" max="360" step="5" value="0" data-skill-zone-hue-deg>
+          </label>
+          <label>Sprite zone — saturation (%)
+            <input type="number" min="0" max="200" step="5" value="100" data-skill-zone-saturation-pct>
+          </label>
+          <p class="note">0° et 100 % = couleurs originales. La recoloration n’altère ni les PNG ni les autres compétences.</p>
           <label>Animation de la zone
             <select data-skill-zone-playback>
               <option value="loop" selected>Boucler tant que la zone existe</option>
