@@ -129,15 +129,20 @@ test('Sélachombre only Lv1 contact approach moves at one third the previous spe
  assert.equal(effectiveApproachTimingMs({baseMs:basic.travelMs,approachMode:'ground',permanentPct:-12}),792);
  assert.equal(792/264,3);
 });
-test('Bestiary uses one native prose generator and each skill shows Combo spirituel name',()=>{
+test('Bestiary uses one natural conditional sentence for charge consumption in all Vyrâme skills',()=>{
  const names=Object.fromEntries(skills[0].definition.effects.filter(x=>x.kind==='apply_marker').map(x=>[x.marker.id,x.marker.name]));
- for(const sk of skills){
-  const prose=describeCaptureSkillV1(sk.definition,{markerNames:names}).sentences.join(' ');
-  if(sk.requiredLevel!==1){
-   assert.match(prose,/Combo spirituel/);
-   assert.doesNotMatch(prose,/vyrame-combo/);
-  }
+ for(const sk of skills.slice(1)){
+  const sentences=describeCaptureSkillV1(sk.definition,{markerNames:names}).sentences;
+  const conditional=sentences.filter(s=>s.startsWith('Si la créature possède au moins 3 charges de Combo spirituel,'));
+  assert.equal(conditional.length,1,sk.id+' must explain condition, consumption and effect together');
+  assert.match(conditional[0],/elle consomme 3 charges pour /);
+  assert.ok(!sentences.some(s=>s.startsWith('Consomme ')),'no detached marker consumption bullet');
+  assert.doesNotMatch(sentences.join(' '),/vyrame-combo/,'show player-facing marker name');
  }
+ const roar=describeCaptureSkillV1(skills[2].definition,{markerNames:names}).sentences;
+ assert.ok(roar.includes("Inflige 8 dégâts d'Esprit à tous les ennemis."));
+ assert.ok(roar.some(s=>s.includes("elle consomme 3 charges pour infliger 10 dégâts d'Esprit à la cible.")));
+ assert.ok(roar.some(s=>s.includes('Étourdit la cible pendant 5 secondes.')));
 });
 test('Vyrâme registered once in the one official creature and skill Showcase catalogs',async()=>{
  const c=await read('src/catalogs/capture-showcase-creature-presets-v1.js');
