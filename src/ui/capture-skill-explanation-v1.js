@@ -174,6 +174,22 @@ function penetrates(e){
     "ignore la réduction des dégâts":"ignore "+num(e.ignoreDamageReductionPct)+" % de la réduction des dégâts");
   return clauses;
 }
+// Turn a nested effect into the infinitive required by a conditional sentence.
+// Unrecognized text remains explicitly framed as an effect, not an invented rule.
+function infinitiveClause(line){
+  const s=lowerSentence(line);
+  const verbs={inflige:"infliger",rend:"rendre",augmente:"augmenter",
+    réduit:"réduire",étourdit:"étourdir",immobilise:"immobiliser",
+    retire:"retirer",récupère:"récupérer",applique:"appliquer",
+    empêche:"empêcher",transforme:"transformer",supprime:"supprimer",
+    invoque:"invoquer",crée:"créer",force:"forcer",accorde:"accorder",
+    provoque:"provoquer",renvoie:"renvoyer",esquive:"esquiver",
+    devient:"devenir",bloque:"bloquer",met:"mettre",accumule:"accumuler"};
+  const match=s.match(/^([^ ]+) (.*)$/);
+  return match && Object.hasOwn(verbs,match[1])?
+    verbs[match[1]]+" "+match[2]:
+    "déclencher l'effet suivant : "+s;
+}
 function effectSentence(e,{perCharge=false,markerNames={}}={}){
   switch(e.kind){
     case "damage":return [finish((e.targetScope==="self"?
@@ -230,17 +246,21 @@ function effectSentence(e,{perCharge=false,markerNames={}}={}){
       return lines;
     }
     case "consume_marker":{
-      // Existing authors with no published marker name keep their historic
-      // string exactly. Only named markers get the clearer natural-language
-      // wording; gameplay and the stored marker ID never change.
-      const knownName=markerNames[e.markerId];
-      return [
-        finish("Consomme "+(knownName && e.count!=="all"
-          ?"jusqu'à "+num(e.count)+" charges"
-          :e.count==="all"?"les charges":num(e.count)+" charges")+
-          " de "+(knownName??e.markerId)+onTarget(e.targetScope)+
-          (e.minimum>1?" (au moins "+num(e.minimum)+")":"")),
-        ...descriptions(e.effects,{perCharge:e.perCharge===true,markerNames})];
+      // Bestiary and editor use the same reader-friendly conditional wording.
+      // This changes descriptions only: the marker contract and runtime remain authoritative.
+      const name=markerNames[e.markerId]??e.markerId.replace(/[_-]+/g," ");
+      const holder=e.targetScope==="self"?"la créature":subject(e.targetScope);
+      const minimum=e.minimum>1?"au moins "+num(e.minimum)+" charges":
+        "au moins une charge";
+      const available=e.count==="all"?"toutes ses charges":
+        num(e.count)+" charge"+(e.count===1?"":"s");
+      const outcomes=descriptions(e.effects,{perCharge:e.perCharge===true,markerNames})
+        .map(infinitiveClause);
+      const consequence=outcomes.length?" pour "+words(outcomes):
+        " pour déclencher l'effet associé";
+      return [finish("Si "+holder+" possède "+minimum+" de "+name+
+        ", "+(holder==="la créature"?"elle":"la cible")+
+        " consomme "+available+consequence)];
     }
     case "scheduled_effect":return [finish("Après "+duration(e.trigger.delayMs)+", "+
       descriptions(e.effects).map(x=>lowerSentence(x)).join(" et "))];
