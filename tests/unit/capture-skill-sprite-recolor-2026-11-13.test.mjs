@@ -91,7 +91,7 @@ test("colorization sliders reuse the four original authoring fields and are visu
     for (const channel of ["hue-deg","saturation-pct"]) {
       const selector="data-skill-"+role+"-"+channel;
       assert.match(html,new RegExp('<input type="range"[^>]*'+selector));
-      assert.equal((html.match(new RegExp(selector+"\\\\b","g"))??[]).length,1,"unique author input "+selector);
+      assert.equal((html.match(new RegExp(selector,"g"))??[]).length,1,"unique author input "+selector);
     }
     assert.ok(html.includes('data-skill-recolor-reset="'+role+'"'));
     assert.ok(html.includes('data-skill-recolor-swatch="'+role+'"'));
