@@ -174,7 +174,12 @@ test("damage flash animates only the image so attack/movement animation remains 
     imageAnimations[0].keyframes.map(
       (frame) => frame.opacity
     ),
-    [1, 0.32, 1, 0.45, 1]
+    [1, 1, 1, 1, 1],
+    "damage cues no longer blink or hide the fighter image"
+  );
+  assert.ok(
+    imageAnimations[0].keyframes.some((frame) => frame.filter === "brightness(1.16)"),
+    "hit remains visible as a gentle brightness cue"
   );
 
   await handle.finished;
