@@ -4,7 +4,7 @@
   "draft": {
     "schema": "capture-skill-editor-draft-v1",
     "id": "vyrame-crocs-du-voile",
-    "description": "20 dégâts Esprit au contact. Si Vyrâme possède 3 Combo spirituels : les consomme et récupère 20 PV.",
+    "description": "20 dégâts Esprit au contact. À 3 Combo spirituels : consomme les charges et inflige 10 dégâts Esprit supplémentaires à la cible.",
     "requiredLevel": 5,
     "usageScopes": [
       "capture",
@@ -79,9 +79,10 @@
           "minimum": 3,
           "effects": [
             {
-              "kind": "heal",
-              "targetScope": "self",
-              "amount": 20
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 10,
+              "channel": "spirit"
             }
           ]
         }

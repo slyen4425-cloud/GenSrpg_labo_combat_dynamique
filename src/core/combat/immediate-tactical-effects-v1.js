@@ -595,7 +595,10 @@ export function applyImmediateTacticalEffectsV1({
             : effect.effects;
           const triggered = applyImmediateTacticalEffectsV1({
             state: nextState,
-            actorId, targetId: affectedId,
+            // A self-marker consumer spends stacks on its caster, but child
+            // effects addressed to "target" must retain the original enemy.
+            // Preserve all historical target-scoped consumers unchanged.
+            actorId, targetId: effect.targetScope === "self" ? targetId : affectedId,
             skill: {...skill, effects: childEffects},
             atMs, combatAtMs, battleFormat,
             thresholdDepth: thresholdDepth + 1,

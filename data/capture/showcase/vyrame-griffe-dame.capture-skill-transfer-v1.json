@@ -20,7 +20,7 @@
       "approachMode": "ground",
       "energyCost": 2,
       "preparationMs": 700,
-      "travelMs": 650,
+      "travelMs": 1300,
       "recoveryMs": 280,
       "cooldownMs": 6500,
       "maxUsesPerCombat": null,
@@ -94,25 +94,6 @@
       "visual": {
         "icon": {
           "assetId": "pack:capture:icon-skill-charge-spirituelle-01"
-        },
-        "cast": {
-          "assetId": "pack:capture:sprite-shadow-spell-cast-01",
-          "displayScale": 1.15,
-          "displayScaleX": 1,
-          "displayScaleY": 1,
-          "attachment": "source",
-          "anchor": "mouth",
-          "offsetX": 0,
-          "offsetY": 0,
-          "trigger": "preparation-start",
-          "playbackMode": "stretch",
-          "rotationDeg": 0,
-          "opacity": 1,
-          "layerByView": {
-            "player": "front",
-            "opponent": "front"
-          },
-          "offsetMode": "same"
         },
         "impact": {
           "assetId": "pack:capture:sprite-claw-impact-01",
