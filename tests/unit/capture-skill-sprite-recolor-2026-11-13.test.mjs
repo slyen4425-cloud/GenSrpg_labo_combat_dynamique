@@ -27,9 +27,11 @@ test("V15 recolors a single skill without mutating canonical assets or previous 
   assert.equal(v15.recolorBaseVersion,9);
   assert.deepEqual(v15.visual.cast.recolor,{hueRotateDeg:245,saturationPct:165});
   assert.equal(v15.visual.impact.recolor.saturationPct,70);
-  assert.equal(old.visual.cast.recolor,undefined);
+  assert.equal(old.version,15);
+  assert.deepEqual(old.visual.cast.recolor,{hueRotateDeg:47,saturationPct:175});
   assert.deepEqual(v15.visual.cast.assetId,old.visual.cast.assetId);
-  assert.equal(draft.presentation.visual.cast.recolor,undefined);
+  assert.deepEqual(draft.presentation.visual.cast.recolor,{hueRotateDeg:47,saturationPct:175});
+  assert.equal(draft.presentation.visual.cast.opacity,0.5);
   assert.throws(()=>normalizeSkillPresentationBinding({...draft.presentation,visual:{...draft.presentation.visual,cast:colorized.visual.cast}}),/unknown field/i);
   const resolver=createCaptureSkillPresentationAssetsV2({
     skillPresentations:{[draft.id]:colorized},
