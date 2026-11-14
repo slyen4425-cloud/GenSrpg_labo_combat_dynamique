@@ -19,8 +19,19 @@ test("author exports remain byte-exact and replace stable skill/creature IDs",as
   const revised=JSON.parse(creature);
   assert.equal(original.draft.combat.reaction,undefined,"historic source export remains immutable");
   assert.equal(revised.draft.combat.reaction.type,"defense");
-  delete revised.draft.combat.reaction;
-  assert.deepEqual(revised,original,"active Moussados remains exact except its new authored Defense reaction");
+  assert.equal(revised.draft.capture.rarity,"rare");
+  assert.deepEqual(revised.draft.presentation.visual.movementScaleByView,{player:1.1,opponent:1.4});
+  assert.deepEqual(revised.draft.presentation.visual.rangedAttackScaleByView,{player:1,opponent:1.4});
+  assert.equal(revised.statValues.values.glace,0);
+  const historicEquivalent=structuredClone(revised);
+  delete historicEquivalent.draft.combat.reaction;
+  delete historicEquivalent.draft.capture.rarity;
+  historicEquivalent.draft.presentation.visual.movementScaleByView=
+    original.draft.presentation.visual.movementScaleByView;
+  delete historicEquivalent.draft.presentation.visual.rangedAttackScaleByView;
+  delete historicEquivalent.statValues.values.glace;
+  assert.deepEqual(historicEquivalent,original,
+    "active Moussados only differs by its Defense reaction and approved author deltas");
   const registry=normalizeCaptureStatRegistryV1(JSON.parse(await source("data/capture/monster-capture-stat-registry.v1.json")));
   const s=importCaptureTransferJsonV1(skill),c=importCaptureTransferJsonV1(creature,{statRegistry:registry});
   assert.equal(s.value.draft.id,"cap_earth_atk_3");

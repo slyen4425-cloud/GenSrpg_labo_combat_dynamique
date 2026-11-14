@@ -1,4 +1,6 @@
 ## 2026-11-15 — Restauration ciblée de transferts auteur Moussados / Vyrâme (C1)
+- CI `Laboratory CI` SHA `dbd416864085cb733a47428cf3cbbb024f24416d`, run `43651979123` : 2767/2770 tests PASS, 3 assertions historiques échouent uniquement sur deltas auteur connus (deux comparaisons archive Moussados et incompatibilité de teinte sur V9).
+- Correctif de cause : les sentinelles vérifient d'abord chaque valeur nouvellement autorisée, puis comparent tout le reste à l'archive V9 inchangée ; le test de refus V9 reconstruit un vrai input V9 distinct du transfert auteur actif V15. Aucune exception, aucun skip ni assouplissement du contrat. Relancer la CI au nouveau SHA avant GREEN.
 - Base Combat main `df1eb2594f125bffcbc69473a1f757434c1ac1d2`, START `checkpoint/lab-start-author-restores-2026-11-15`, travail `work/lab-author-restores-2026-11-15`.
 - Uniques propriétaires : données `data/capture/showcase` existantes ; restauration ciblée de Moussados (rareté Rare, échelles animation et stat Glace=0) et de la capacité Crocs du voile (V15 teinte, visée/effects explicites). Les manifestes sont déjà inscrits une seule fois ; aucune nouvelle bibliothèque, image ou média.
 - Vyrâme `crea_vyrame` a déjà les mêmes paramètres auteur ; la pièce jointe est en présentation V2 contre V9 canonique : conserver V9 pour éviter une régression de métadonnées.

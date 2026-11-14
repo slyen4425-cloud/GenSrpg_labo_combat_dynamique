@@ -13,7 +13,13 @@ async function original() {
 }
 test("V15 recolors a single skill without mutating canonical assets or previous V9",async()=>{
   const draft=await original();
-  const old=normalizeSkillPresentationBinding(draft.presentation);
+  // Reconstruct the historical V9 input explicitly, while the active author skill is V15.
+  const previousV9=structuredClone(draft.presentation);
+  previousV9.version=9;
+  delete previousV9.recolorBaseVersion;
+  delete previousV9.feedback;
+  delete previousV9.visual.cast.recolor;
+  const old=normalizeSkillPresentationBinding(previousV9);
   const colorized={
     ...draft.presentation,version:15,recolorBaseVersion:9,
     visual:{
@@ -27,12 +33,12 @@ test("V15 recolors a single skill without mutating canonical assets or previous 
   assert.equal(v15.recolorBaseVersion,9);
   assert.deepEqual(v15.visual.cast.recolor,{hueRotateDeg:245,saturationPct:165});
   assert.equal(v15.visual.impact.recolor.saturationPct,70);
-  assert.equal(old.version,15);
-  assert.deepEqual(old.visual.cast.recolor,{hueRotateDeg:47,saturationPct:175});
+  assert.equal(old.version,9);
+  assert.equal(old.visual.cast.recolor,undefined,"V9 remains unchanged by active V15 recolor");
   assert.deepEqual(v15.visual.cast.assetId,old.visual.cast.assetId);
   assert.deepEqual(draft.presentation.visual.cast.recolor,{hueRotateDeg:47,saturationPct:175});
   assert.equal(draft.presentation.visual.cast.opacity,0.5);
-  assert.throws(()=>normalizeSkillPresentationBinding({...draft.presentation,visual:{...draft.presentation.visual,cast:colorized.visual.cast}}),/unknown field/i);
+  assert.throws(()=>normalizeSkillPresentationBinding({...previousV9,visual:{...previousV9.visual,cast:colorized.visual.cast}}),/unknown field/i);
   const resolver=createCaptureSkillPresentationAssetsV2({
     skillPresentations:{[draft.id]:colorized},
     assetForId:(id)=>({url:"/asset/"+id+".png",frameCount:1,frameMs:80})
