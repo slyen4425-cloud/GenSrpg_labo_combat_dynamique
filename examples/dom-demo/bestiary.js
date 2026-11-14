@@ -16,6 +16,8 @@ const elements={
 };
 let cards=[];
 let selectedId=null;
+// Display only: rarity comes exclusively from the published Capture card.
+const rarityLabel=rarity=>rarity==='legendary'?'Légendaire':rarity==='mythic'?'Mythique':'Rare';
 const element=(tag,cls,text)=>{
   const node=document.createElement(tag);
   if(cls)node.className=cls;
@@ -98,8 +100,10 @@ function renderList(){
     const button=element("button","creature-choice");
     button.type="button";
     button.setAttribute("aria-pressed",String(selectedId===card.id));
+    button.dataset.rarity=card.rarity??"rare";
     button.append(picture(card.icon,card.name+" — icône"));
     button.append(element("strong",null,card.name));
+    button.append(element("span","rarity-label",rarityLabel(card.rarity)));
     button.append(element("small",null,card.elements.map(bestiaryElementLabelV1).join(" · ")));
     button.addEventListener("click",()=>pickCard(card.id));
     return button;
@@ -123,7 +127,8 @@ function renderProfile(){
   const card=cards.find(c=>c.id===selectedId);
   if(!card){elements.profile.hidden=true;return;}
   elements.profile.hidden=false;
-  elements.caption.textContent="Fiche créature · niveau "+(card.level??"—");
+  elements.caption.textContent="Fiche créature · "+rarityLabel(card.rarity)+" · niveau "+(card.level??"—");
+  elements.portrait.dataset.rarity=card.rarity??"rare";
   elements.name.textContent=card.name;
   elements.elements.replaceChildren(...card.elements.map(key=>
     element("span","element-pill",bestiaryElementLabelV1(key))));
