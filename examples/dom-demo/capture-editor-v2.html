@@ -231,6 +231,13 @@
             <input data-creature-level type="number" min="1" value="1">
           </label>
         </div>
+        <label>Rareté
+          <select data-creature-rarity aria-label="Rareté officielle de la créature">
+            <option value="rare">Rare · base</option>
+            <option value="mythic">Mythique</option>
+            <option value="legendary">Légendaire</option>
+          </select>
+        </label>
         <label class="technical-field">Identifiant
           <input data-creature-id value="crea-loup">
         </label>
@@ -744,7 +751,6 @@
         <div class="grid three">
           <label class="switch-line"><input type="checkbox" data-capturable checked><span>Capturable</span></label>
           <label>Taux de capture %<input type="number" min="0" max="100" data-capture-rate value="40"></label>
-          <label>Chance d'apparition %<input type="number" min="0" max="100" data-spawn-chance value="20"></label>
         </div>
       </article>
 
