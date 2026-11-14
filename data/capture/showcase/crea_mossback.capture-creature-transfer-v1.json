@@ -76,6 +76,7 @@
       "capturable": true,
       "captureRate": 65,
       "spawnChance": 25,
+      "rarity": "rare",
       "spawnTags": [
         "earth"
       ],
@@ -174,8 +175,12 @@
           "transitionMs": 80
         },
         "movementScaleByView": {
+          "player": 1.1,
+          "opponent": 1.4
+        },
+        "rangedAttackScaleByView": {
           "player": 1,
-          "opponent": 1
+          "opponent": 1.4
         },
         "movementPlayback": {
           "frameMs": 0,
@@ -278,7 +283,8 @@
       "poison": 0,
       "acier": 0,
       "nature": 0,
-      "esprit": 0
+      "esprit": 0,
+      "glace": 0
     }
   },
   "loadout": {

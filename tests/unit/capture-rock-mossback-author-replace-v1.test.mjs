@@ -49,10 +49,20 @@ test("Moussados author JSON is exact, unique, imports views without changing sta
   const raw = await load(creaturePath);
   const original=JSON.parse(await load("data/capture/source-exports/gensrpg-capture-creature-crea_mossback-2026-10-22.json"));
   const revised=JSON.parse(raw);
-  assert.equal(original.draft.combat.reaction,undefined,"original V9 author export must remain immutable");
+  assert.equal(original.draft.combat.reaction,undefined,"historical author source must stay immutable");
   assert.equal(revised.draft.combat.reaction.type,"defense");
-  delete revised.draft.combat.reaction;
-  assert.deepEqual(revised,original,"only the separate Defense reaction may differ from original V9");
+  assert.equal(revised.draft.capture.rarity,"rare");
+  assert.deepEqual(revised.draft.presentation.visual.movementScaleByView,{player:1.1,opponent:1.4});
+  assert.deepEqual(revised.draft.presentation.visual.rangedAttackScaleByView,{player:1,opponent:1.4});
+  assert.equal(revised.statValues.values.glace,0);
+  // Prove that only author-approved changes differ from the historical V9 record.
+  const previous=structuredClone(revised);
+  delete previous.draft.combat.reaction;
+  delete previous.draft.capture.rarity;
+  previous.draft.presentation.visual.movementScaleByView=original.draft.presentation.visual.movementScaleByView;
+  delete previous.draft.presentation.visual.rangedAttackScaleByView;
+  delete previous.statValues.values.glace;
+  assert.deepEqual(previous,original,"all other authored content must remain preserved");
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(p => p === creaturePath).length, 1);
   const registry = normalizeCaptureStatRegistryV1(JSON.parse(await load("data/capture/monster-capture-stat-registry.v1.json")));
   const imported = importCaptureTransferJsonV1(raw, {statRegistry:registry});
