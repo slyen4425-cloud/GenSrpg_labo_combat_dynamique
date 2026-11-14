@@ -2160,10 +2160,8 @@ export function buildHumanCreatureDraftV2(fields) {
         fields.capture?.captureRate,
         "Taux de capture"
       ),
-      spawnChance: finiteNumber(
-        fields.capture?.spawnChance,
-        "Chance d’apparition"
-      ),
+      spawnChance: finiteNumber(fields.capture?.spawnChance??100,"Ancien taux d'apparition"),
+      rarity: fields.capture?.rarity??"rare",
       spawnTags: stableIds(fields.capture?.spawnTags),
       evolution: fields.capture?.evolution ?? null
     },
@@ -4293,10 +4291,7 @@ function writeCreatureRecordFields(
       "[data-capture-rate]",
       draft.capture.captureRate
     ],
-    [
-      "[data-spawn-chance]",
-      draft.capture.spawnChance
-    ],
+    ["[data-creature-rarity]",draft.capture.rarity??"rare"],
     [
       "[data-creature-front-select]",
       presentation?.visual?.front?.assetId ?? ""
@@ -9596,10 +9591,8 @@ function readCreatureFields(
         root,
         "[data-capture-rate]"
       ),
-      spawnChance: numericValue(
-        root,
-        "[data-spawn-chance]"
-      ),
+      spawnChance: previousDraft?.capture?.spawnChance??100,
+      rarity: selectedValue(root,"[data-creature-rarity]")||"rare",
       spawnTags: elements,
       evolution: buildHumanEvolutionV1({
         enabled: one(
