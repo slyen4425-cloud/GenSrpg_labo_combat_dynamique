@@ -58,7 +58,7 @@ export function createSoundtrackLocalMediaV1({
         if(!/^[a-zA-Z0-9_-]{6,100}$/.test(uuid))
           throw new TypeError("identifiant de musique auto-généré invalide");
         asset=Object.freeze({assetId:"user:music:"+uuid,kind:"music",origin:"user",
-          title:String(file.name).replace(/\\.mp3$/i,"")});
+          title:String(file.name).replace(/\.mp3$/i,"")});
         if(assets.some(a=>a.assetId===asset.assetId)||
           customAssets.some(a=>a.assetId===asset.assetId)||
           newAssets.some(a=>a.assetId===asset.assetId))
