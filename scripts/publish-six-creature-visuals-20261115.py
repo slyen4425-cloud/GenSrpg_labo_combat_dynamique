@@ -116,7 +116,7 @@ def run(source_root,canonical):
         zip_path=source_root/"data/capture/showcase"/archive
         assert zip_path.is_file(),zip_path
         zip_bytes=zip_path.read_bytes()
-        git_blob=sha1(b"blob "+str(len(zip_bytes)).encode()+b"\\0"+zip_bytes).hexdigest()
+        git_blob=sha1(b"blob "+str(len(zip_bytes)).encode()+b"\0"+zip_bytes).hexdigest()
         assert git_blob==blob_sha, f"Archive changed after author deposit: {archive} {git_blob}"
         target=canonical/"assets/library/capture/creatures"/slug
         assert not target.exists(), f"Target already exists: {target}; refusing to overwrite"
