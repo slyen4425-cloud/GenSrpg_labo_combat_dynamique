@@ -23,9 +23,10 @@ import {
   skillSpriteRecolorFromFieldsV1,
   readSkillSpriteControlsV1,
   writeSkillSpriteControlsV1,
+  mountSkillSpriteRecolorSlidersV1,
   appendStatusSpriteControlsV1,
   readStatusSpriteControlsV1
-} from "./capture-editor-sprite-controls-v1.js?v=recolor-20261113";
+} from "./capture-editor-sprite-controls-v1.js?v=recolor-20261113-recolor-sliders-20261113";
 import {
   normalizeCaptureCreatureEditorDraftV2
 } from "../contracts/capture-creature-editor-draft-v2.js";
@@ -76,7 +77,7 @@ import {captureUiPublishedStatIconV1} from "../assets/capture-ui-stat-icon-bindi
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113";
+} from "../assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113-recolor-sliders-20261113";
 import { captureReactionIconAssetIdV1 } from "../assets/capture-reaction-icon-presets-v1.js";
 import {
   capturePortableNativeSkillDraftsV1
@@ -97,6 +98,7 @@ import {
 } from "./capture-editor-skill-save-mode-v1.js?v=reference-elements-skill-id-20261104-sylvorne-fx-size-20261111";
 import {
   resolveCaptureCreatureSaveModeV1,
+  renameCaptureCreatureInLibraryV1,
   nextCaptureCreatureDraftIdV1
 } from "./capture-editor-creature-save-mode-v1.js";
 import {
@@ -121,7 +123,7 @@ import {
 import {
   CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1,
   CAPTURE_SHOWCASE_RETIRED_NATIVE_SKILL_IDS_V1
-} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113";
+} from "../catalogs/capture-showcase-skill-presets-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113-recolor-sliders-20261113";
 import {
   CAPTURE_FX_STARTER_PROFILES_V1,
   captureFxStarterProfileByIdV1,
@@ -2159,10 +2161,8 @@ export function buildHumanCreatureDraftV2(fields) {
         fields.capture?.captureRate,
         "Taux de capture"
       ),
-      spawnChance: finiteNumber(
-        fields.capture?.spawnChance,
-        "Chance d’apparition"
-      ),
+      spawnChance: finiteNumber(fields.capture?.spawnChance??100,"Ancien taux d'apparition"),
+      rarity: fields.capture?.rarity??"rare",
       spawnTags: stableIds(fields.capture?.spawnTags),
       evolution: fields.capture?.evolution ?? null
     },
@@ -4292,10 +4292,7 @@ function writeCreatureRecordFields(
       "[data-capture-rate]",
       draft.capture.captureRate
     ],
-    [
-      "[data-spawn-chance]",
-      draft.capture.spawnChance
-    ],
+    ["[data-creature-rarity]",draft.capture.rarity??"rare"],
     [
       "[data-creature-front-select]",
       presentation?.visual?.front?.assetId ?? ""
@@ -9595,10 +9592,8 @@ function readCreatureFields(
         root,
         "[data-capture-rate]"
       ),
-      spawnChance: numericValue(
-        root,
-        "[data-spawn-chance]"
-      ),
+      spawnChance: previousDraft?.capture?.spawnChance??100,
+      rarity: selectedValue(root,"[data-creature-rarity]")||"rare",
       spawnTags: elements,
       evolution: buildHumanEvolutionV1({
         enabled: one(
@@ -10955,6 +10950,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     );
   }
 
+  mountSkillSpriteRecolorSlidersV1(root, listen);
+
   const markerLibraryController = mountCaptureMarkerLibraryV1({
     root,listen,configuredSkills,getStatRegistry:()=>statRegistry,
     // The skill transfer button exports the live editor draft without saving.
@@ -12306,12 +12303,14 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       root,
       "[data-creature-id]"
     );
+    // Keep the original record while the author edits its identity.
+    // Otherwise hidden visuals, stats and ability links disappear on rename.
     const previousRecord =
-      selectedCreatureId === creatureId
-        ? configuredCreatures.get(
+      selectedCreatureId === null
+        ? null
+        : configuredCreatures.get(
             selectedCreatureId
-          ) ?? null
-        : null;
+          ) ?? null;
 
     const rawFields = readCreatureFields(
       root,
@@ -12438,9 +12437,15 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
 
   function persistCurrentCreature(intent) {
     const record = currentCreatureRecord();
+    const saveIntent =
+      intent === "update" &&
+      selectedCreatureId !== null &&
+      selectedCreatureId !== record.draft.id
+        ? "rename"
+        : intent;
     const saveMode =
       resolveCaptureCreatureSaveModeV1({
-        intent,
+        intent: saveIntent,
         draftId: record.draft.id,
         selectedCreatureId,
         configuredCreatureIds: [
@@ -12448,10 +12453,22 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         ]
       });
 
-    configuredCreatures.set(
-      record.draft.id,
-      record
-    );
+    if (saveMode.mode === "rename") {
+      renameCaptureCreatureInLibraryV1({
+        configuredCreatures,
+        previousId: saveMode.previousId,
+        record
+      });
+      combatTeamControls.renameCreatureId(
+        saveMode.previousId,
+        record.draft.id
+      );
+    } else {
+      configuredCreatures.set(
+        record.draft.id,
+        record
+      );
+    }
     selectedCreatureId = record.draft.id;
     creatureDirty = false;
     one(
@@ -12471,9 +12488,12 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         ? "Créature « " +
             record.draft.displayName +
             " » créée dans la bibliothèque active."
-        : "Créature « " +
-            record.draft.displayName +
-            " » mise à jour.",
+        : saveMode.mode === "rename"
+          ? "Identifiant modifié : " + saveMode.previousId +
+            " → " + record.draft.id + ". Aucune fiche doublonnée."
+          : "Créature « " +
+              record.draft.displayName +
+              " » mise à jour.",
       "ok"
     );
 
@@ -12483,9 +12503,12 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         ? "Nouvelle créature « " +
             record.draft.displayName +
             " » enregistrée."
-        : "Créature « " +
-            record.draft.displayName +
-            " » mise à jour.",
+        : saveMode.mode === "rename"
+          ? "Identifiant de « " + record.draft.displayName +
+            " » changé sans doublon."
+          : "Créature « " +
+              record.draft.displayName +
+              " » mise à jour.",
       "ok"
     );
 
@@ -12879,6 +12902,18 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         "error"
       );
     }
+  });
+
+  listen(one(root, "[data-creature-edit-id]"), "click", () => {
+    const idInput = one(root, "[data-creature-id]");
+    idInput.readOnly = false;
+    idInput.focus?.();
+    idInput.select?.();
+    updateCreatureLibraryState(
+      "Modifie l'identifiant puis clique sur « Mettre à jour ». " +
+        "La fiche et ses liens seront déplacés sans doublon.",
+      "info"
+    );
   });
 
   listen(newCreatureButton, "click", () => {

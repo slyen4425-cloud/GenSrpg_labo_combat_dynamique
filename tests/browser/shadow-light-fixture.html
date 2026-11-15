@@ -19,6 +19,7 @@
 <script type="module">
 import { mountCombatDemo } from "../../src/ui/demo-app.js";
 import { mountCaptureCombatPreviewV1 } from "../../src/ui/capture-combat-preview-v1.js";
+import { visibleModelsOverlap } from "../../src/adapters/renderer/dom-visible-model-contact.js";
 const query = selector => document.querySelector(selector);
 const fail = message => { document.body.dataset.shadowProbe = "fail:" + message; };
 try {
@@ -178,12 +179,72 @@ try {
       flying.style.transition = "none";
       flying.style.left = getComputedStyle(player).left;
       flying.style.top = getComputedStyle(player).top;
-      // Force geometry before the existing contact watcher samples it.
+      // The two fighter roles have different visual sizes/anchors. Equal CSS
+      // top values do not place their actual accepted alpha masks together.
+      // Align ONLY this test fixture, using the real collision-model geometry;
+      // do not change the engine, create a fake sensor or waive real contact.
       void flying.offsetWidth;
+      const sourceMask = demo.getCollisionModelFor("player")?.visibleRect?.();
+      const targetMask = demo.getCollisionModelFor("opponent")?.visibleRect?.();
+      if (!sourceMask || !targetMask) throw Error("real contact masks missing");
+      const centerY = box => box.top + box.height / 2;
+      const topOffset = centerY(sourceMask) - centerY(targetMask);
+      const currentTop = Number.parseFloat(flying.style.top);
+      if (!Number.isFinite(topOffset) || !Number.isFinite(currentTop))
+        throw Error("real fighter anchor cannot be aligned");
+      flying.style.top = (currentTop + topOffset) + "px";
+      // Force actual browser geometry before the existing contact watcher.
+      void flying.offsetWidth;
+      const aligned = demo.getCollisionModelFor("opponent")?.visibleRect?.();
+      if (!aligned || Math.abs(centerY(sourceMask) - centerY(aligned)) > 3)
+        throw Error("fixture alpha masks still misaligned after real positioning");
+      // The fixture tests REAL pixel contact, not merely rectangle proximity:
+      // actual alpha silhouettes must overlap before the native approach begins.
+      // The flyer's authored idle offset and asymmetric role scale can otherwise
+      // leave a narrow transparent gap despite matching DOM bounding boxes.
+      const modelOverlap = () => visibleModelsOverlap(
+        demo.getCollisionModelFor("player").snapshot(),
+        demo.getCollisionModelFor("opponent").snapshot());
+      const baseLeft = Number.parseFloat(flying.style.left);
+      const baseTop = Number.parseFloat(flying.style.top);
+      if (!Number.isFinite(baseLeft) || !Number.isFinite(baseTop))
+        throw Error("real alpha-mask positioning lacks CSS coordinates");
+      let preflightOverlap = modelOverlap();
+      for (const [dx,dy] of [[0,-24],[0,24],[-24,0],[24,0],[-40,-40],[40,40],[0,-60],[0,60]]) {
+        if (preflightOverlap) break;
+        flying.style.left = (baseLeft + dx) + "px";
+        flying.style.top = (baseTop + dy) + "px";
+        void flying.offsetWidth;
+        preflightOverlap = modelOverlap();
+      }
+      if (!preflightOverlap) throw Error("real alpha silhouettes could not be put in contact");
+      // The floating target's existing WAAPI idle changes the *actual* alpha
+      // position between setup and the contact watcher's first rAF. We have
+      // already proved the floating track above; hold it still for this
+      // separate collision test, without replacing the mask or sensor.
+      const stationaryTargetTracks=flying.querySelector("[data-demo-motion]").getAnimations();
+      for(const track of stationaryTargetTracks)track.pause();
       const contactPromise = demo.playApproachFor("player", "ground", {
-        travelMs: 850, targetSlot: "opponent", holdOnContact: true,
+        travelMs: 1450, targetSlot: "opponent", holdOnContact: true,
         onContact() { touchCount += 1; return { outcome: "contact_held" }; }
       });
+      // Renderer.play() may assign the attack's first transform immediately,
+      // *after* the initial preflight. Use the real accepted visible model
+      // rectangles to align the target again before the first native rAF.
+      const activePlayer=demo.getCollisionModelFor("player")?.visibleRect?.();
+      const activeTarget=demo.getCollisionModelFor("opponent")?.visibleRect?.();
+      if(!activePlayer||!activeTarget)throw Error("live approach collision masks missing");
+      if(!visibleModelsOverlap(demo.getCollisionModelFor("player").snapshot(),
+                               demo.getCollisionModelFor("opponent").snapshot())){
+        const centerX = rect=>rect.left+rect.width/2;
+        const centerY = rect=>rect.top+rect.height/2;
+        flying.style.left=(Number.parseFloat(flying.style.left)+centerX(activePlayer)-centerX(activeTarget))+"px";
+        flying.style.top=(Number.parseFloat(flying.style.top)+centerY(activePlayer)-centerY(activeTarget))+"px";
+        void flying.offsetWidth;
+      }
+      if(!visibleModelsOverlap(demo.getCollisionModelFor("player").snapshot(),
+                               demo.getCollisionModelFor("opponent").snapshot()))
+        throw Error("real alpha models not overlapping at approach start");
       const startedWaitingAt = performance.now();
       let nearestDistance=Infinity;
       let sourceSnapshotCount=0;
@@ -236,6 +297,7 @@ try {
       flying.style.left = originalOpponentLeft;
       flying.style.top = originalOpponentTop;
       flying.style.transition = originalOpponentTransition;
+      for(const track of stationaryTargetTracks)if(track.playState==="paused")track.play();
       demo.dispose();
       // Capture editor: no floating lighting panel during the battle. Mount
       // the real Capture->visuals handoff with editor-supplied scene settings.

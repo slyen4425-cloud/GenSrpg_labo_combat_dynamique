@@ -5,7 +5,7 @@ const read=p=>readFileSync(new URL("../../"+p,import.meta.url),"utf8");
 test("RED: public burrow editor and all shared ESM owners carry one cache revision",()=>{
  const html=read("examples/dom-demo/capture-editor-v2.html");
  const rev=html.match(/src="\.\/capture-editor-v2\.js\?v=([^"]+)"/)?.[1];
- assert.ok(rev?.includes("burrow-visual-fields-20261107") && rev?.endsWith("sylvorne-fx-size-20261111-recolor-20261113"));
+ assert.ok(rev?.includes("burrow-visual-fields-20261107") && rev?.endsWith("sylvorne-fx-size-20261111-recolor-20261113-recolor-sliders-20261113"));
  const owners={
   "examples/dom-demo/capture-editor-v2.js":["capture-editor-human-v2.js","capture-editor-preview-runtime-loader-v1.js","global-visual-library.js"],
   "src/ui/capture-editor-human-v2.js":["capture-showcase-skill-presets-v1.js","global-visual-library.js"],

@@ -31,6 +31,7 @@ const CAPTURE_FIELDS = new Set([
   "capturable",
   "captureRate",
   "spawnChance",
+  "rarity",
   "spawnTags",
   "evolution"
 ]);
@@ -232,6 +233,14 @@ function normalizeEvolution(raw) {
   });
 }
 
+export const CAPTURE_CREATURE_RARITIES_V1 = Object.freeze(["rare","mythic","legendary"]);
+export function captureCreatureRarityV1(value) {
+ const rarity=value??"rare";
+ if(!CAPTURE_CREATURE_RARITIES_V1.includes(rarity))
+  throw new RangeError("capture.rarity must be rare, mythic or legendary");
+ return rarity;
+}
+
 function normalizeCapture(raw) {
   const value = objectValue(raw, "capture");
   assertKnownFields(value, CAPTURE_FIELDS, "capture");
@@ -249,6 +258,7 @@ function normalizeCapture(raw) {
       value.spawnChance,
       "capture.spawnChance"
     ),
+    ...(value.rarity===undefined?{}:{rarity:captureCreatureRarityV1(value.rarity)}),
     spawnTags: uniqueStrings(
       value.spawnTags ?? [],
       "capture.spawnTags"

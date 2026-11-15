@@ -216,6 +216,14 @@ export function mountCaptureEditorCombatTeamControlsV1({ root, configuredCreatur
   refresh();
   return Object.freeze({
     refresh,
+    renameCreatureId(oldId, newId) {
+      const selects = [...localSelects, ...opponentSelects];
+      const previous = selects.map((select) => select.value);
+      refresh();
+      selects.forEach((select, index) => {
+        if (previous[index] === oldId) select.value = newId;
+      });
+    },
     read() {
       return {
         localCreatureIds: [getSelectedCreatureId(), ...localSelects.map(s => s.value)].slice(0, Number(localCount.value)),

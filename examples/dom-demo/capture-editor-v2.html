@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>GenSrpG Lab — Éditeur Capture</title>
   <link rel="stylesheet" href="./demo.css?v=wall-layer-scale-xy-20261101-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103">
-  <link rel="stylesheet" href="./capture-editor-v2.css?v=phone-pc-arena-parity-20261103-reflection-layout-20261104-barrier-side-layout-20261105">
+  <link rel="stylesheet" href="./capture-editor-v2.css?v=phone-pc-arena-parity-20261103-reflection-layout-20261104-barrier-side-layout-20261105-recolor-sliders-20261113-soundtrack-four-tabs-20261115">
   <style>
     [data-creature-view-settings][hidden] { display: none; }
     [data-skill-charged-effects-config][hidden] { display: none !important; }
@@ -102,85 +102,84 @@
         <div class="card-title">
           <span class="step">♫</span>
           <div>
-            <h2>Musiques et ambiances du jeu</h2>
-            <p>Chaque jeu possède ses propres choix. La bibliothèque peut réunir les sons de l'application, les sons personnels et ceux du projet. Ce panneau produit seulement la configuration JSON, sans copier ni publier de média.</p>
+            <h2>Musiques du jeu</h2>
+            <p>Choisis un événement, importe une musique, puis règle sa lecture. Toutes les rubriques utilisent la même bibliothèque. Les musiques officielles fonctionnent sans chargement manuel.</p>
           </div>
         </div>
-        <div class="grid two">
-          <label>Identifiant du jeu
-            <input data-soundtrack-project-id value="capture-demo" autocomplete="off" spellcheck="false" aria-label="Identifiant du jeu">
+        <div class="soundtrack-context-tabs" role="tablist" aria-label="Moments du jeu">
+          <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="false"
+            data-soundtrack-quick-scene="capture:combat:victory">🏆 Victoire</button>
+          <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="false"
+            data-soundtrack-quick-scene="capture:combat:defeat">💀 Défaite</button>
+          <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="true"
+            data-soundtrack-quick-scene="capture:combat:normal">⚔️ Combat</button>
+          <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="false"
+            data-soundtrack-quick-scene="capture:exploration:map">🗺️ Aventure / Map</button>
+        </div>
+        <input type="hidden" data-soundtrack-scene-id value="capture:combat:normal">
+
+        <div class="creator-audio-import soundtrack-single-import">
+          <h3>Importer une musique</h3>
+          <label>Choisir un ou plusieurs fichiers MP3
+            <input type="file" data-soundtrack-local-files multiple accept=".mp3,audio/mpeg">
           </label>
-          <div>
-            <button type="button" class="secondary-action" data-soundtrack-new-project>Nouveau jeu avec cet identifiant</button>
-          </div>
+          <p class="note" data-soundtrack-local-status role="status">Les fichiers personnels sont disponibles pour cette session, sans écraser les sons officiels.</p>
         </div>
         <div class="grid two">
-          <label>Contexte sonore
-            <input data-soundtrack-scene-id value="capture:combat:normal" list="soundtrack-scene-suggestions" autocomplete="off" spellcheck="false">
-            <datalist id="soundtrack-scene-suggestions">
-              <option value="capture:combat:normal">Combat standard</option>
-              <option value="capture:combat:boss">Combat de boss</option>
-              <option value="capture:combat:victory">Victoire</option>
-              <option value="capture:combat:defeat">Défaite</option>
-            </datalist>
-          </label>
-          <label>Canal sonore
-            <select data-soundtrack-channel>
-              <option value="music">Musique</option>
-              <option value="ambience">Ambiance continue</option>
-            </select>
-          </label>
-        </div>
-        <div class="grid two">
-          <label>Choisir une piste de la bibliothèque
+          <label>Musique à ajouter
             <select data-soundtrack-asset-id aria-label="Piste audio"></select>
           </label>
           <div>
-            <button type="button" class="secondary-action" data-soundtrack-add>Ajouter à la liste</button>
+            <button type="button" class="secondary-action" data-soundtrack-add>Ajouter à cet onglet</button>
           </div>
         </div>
-        <p class="note">Les pistes peuvent être communes à tous les modes, mais leurs paramètres sont enregistrés séparément par jeu et par contexte. Les effets de compétences restent gérés dans leurs sections actuelles.</p>
-        <h3>Liste de lecture</h3>
+        <h3>Musiques sélectionnées</h3>
         <ol data-soundtrack-track-list></ol>
         <div class="grid two">
-          <label>Ordre des pistes
+          <label>Lecture
             <select data-soundtrack-order>
-              <option value="sequence">À la suite</option>
-              <option value="shuffle">Aléatoire (sans répétition immédiate)</option>
+              <option value="sequence">Dans l'ordre</option>
+              <option value="shuffle">Aléatoire</option>
             </select>
           </label>
-          <label>Fondu de transition (secondes)
+          <label>Fondu (secondes)
             <input data-soundtrack-fade type="number" min="0" max="10" step="0.1" value="0.7">
           </label>
-          <label>Volume du canal (0-100 %)
+          <label>Volume (0-100 %)
             <input data-soundtrack-volume type="range" min="0" max="100" step="1" value="75">
           </label>
           <label class="switch-line">
-            <input data-soundtrack-repeat type="checkbox" checked>
-            <span>Rejouer les pistes en boucle</span>
+            <input data-soundtrack-repeat type="checkbox">
+            <span>Rejouer en boucle</span>
           </label>
         </div>
         <div class="skill-save-actions">
-          <button type="button" class="primary-action" data-soundtrack-save>Enregistrer ce contexte</button>
-          <button type="button" class="secondary-action" data-soundtrack-export>Exporter la bande-son JSON</button>
+          <button type="button" class="primary-action" data-soundtrack-save>Enregistrer cet onglet</button>
         </div>
-        <div class="grid two">
-          <label>Charger un catalogue sonore (JSON)
-            <input type="file" accept=".json,application/json" data-soundtrack-catalog-file>
-          </label>
-          <label>Réimporter la bande-son d'un jeu (JSON)
-            <input type="file" accept=".json,application/json" data-soundtrack-project-file>
-          </label>
-        </div>
-        <div class="creator-audio-import">
-          <h3>Musiques Battle disponibles pour tous les joueurs</h3>
-          <p class="note">Les six pistes Battle sont intégrées au lecteur de combat pour tous, sans chargement manuel et sans bouton de téléchargement. Les originaux restent dans l'archive privée ; le jeu diffuse uniquement des copies optimisées. Comme pour tout son reçu par un navigateur, une copie technique reste possible. L'import local ci-dessous est facultatif et destiné aux essais. Exploration sera raccordée séparément.</p>
-          <label>Remplacer temporairement les MP3 pour un essai personnel (facultatif)
-            <input type="file" multiple accept=".mp3,audio/mpeg" data-soundtrack-local-files>
-          </label>
-          <p class="note" data-soundtrack-local-status role="status">Playlist partagée disponible par défaut. Aucun fichier local requis.</p>
-        </div>
-        <p class="note" data-soundtrack-status data-tone="info" role="status">Catalogue et playlist Battle activés pour tous : lance un combat pour écouter, sans importer de fichiers.</p>
+        <details class="soundtrack-advanced">
+          <summary>Options avancées — projet, ambiances et JSON</summary>
+          <div class="grid two">
+            <label>Identifiant du jeu
+              <input data-soundtrack-project-id value="capture-demo" autocomplete="off" spellcheck="false" aria-label="Identifiant du jeu">
+            </label>
+            <button type="button" class="secondary-action" data-soundtrack-new-project>Nouveau jeu avec cet identifiant</button>
+            <label>Canal audio
+              <select data-soundtrack-channel>
+                <option value="music">Musique</option>
+                <option value="ambience">Ambiance continue</option>
+              </select>
+            </label>
+            <button type="button" class="secondary-action" data-soundtrack-export>Exporter la bande-son JSON</button>
+            <label>Importer un catalogue de références (JSON)
+              <input type="file" accept=".json,application/json" data-soundtrack-catalog-file>
+            </label>
+            <label>Importer la configuration d'un jeu (JSON)
+              <input type="file" accept=".json,application/json" data-soundtrack-project-file>
+            </label>
+          </div>
+          <p class="note">Les MP3 importés sont temporaires et se libèrent à la fermeture. Le JSON contient leurs références, pas les fichiers audio. Les effets sonores propres aux créatures restent dans leur éditeur existant. Aventure / Map prépare sa scène sans modifier le moteur Exploration.</p>
+        </details>
+        <p class="note" data-soundtrack-status data-tone="info" role="status">Combat : les six pistes Battle restent sélectionnées par défaut. Victoire conserve « Triumph's Call ». Change d'onglet sans perdre les réglages.</p>
       </article>
     </section>
 
@@ -231,9 +230,20 @@
             <input data-creature-level type="number" min="1" value="1">
           </label>
         </div>
-        <label class="technical-field">Identifiant
-          <input data-creature-id value="crea-loup">
+        <label>Rareté
+          <select data-creature-rarity aria-label="Rareté officielle de la créature">
+            <option value="rare">Rare · base</option>
+            <option value="mythic">Mythique</option>
+            <option value="legendary">Légendaire</option>
+          </select>
         </label>
+        <label class="technical-field">Identifiant
+          <input data-creature-id value="crea-loup" readonly spellcheck="false" autocomplete="off">
+        </label>
+        <button type="button" class="secondary-action" data-creature-edit-id>
+          Modifier l’identifiant
+        </button>
+        <p class="note">Pour une créature déjà enregistrée : modifier l’identifiant puis utiliser « Mettre à jour ». Les fiches liées sont conservées ; un identifiant déjà pris est refusé.</p>
         <label>Description
           <textarea data-creature-description rows="2">Créature volcanique rapide.</textarea>
         </label>
@@ -744,7 +754,6 @@
         <div class="grid three">
           <label class="switch-line"><input type="checkbox" data-capturable checked><span>Capturable</span></label>
           <label>Taux de capture %<input type="number" min="0" max="100" data-capture-rate value="40"></label>
-          <label>Chance d'apparition %<input type="number" min="0" max="100" data-spawn-chance value="20"></label>
         </div>
       </article>
 
@@ -1880,13 +1889,26 @@
           <label>Opacité du cast (%) — 100 = opaque, 0 = invisible
             <input type="number" min="0" max="100" step="5" value="100" data-skill-cast-opacity-pct>
           </label>
-          <label>Sprite cast — rotation de teinte (°)
-            <input type="number" min="0" max="360" step="5" value="0" data-skill-cast-hue-deg>
-          </label>
-          <label>Sprite cast — saturation (%)
-            <input type="number" min="0" max="200" step="5" value="100" data-skill-cast-saturation-pct>
-          </label>
-          <p class="note">0° et 100 % = couleurs originales. La recoloration n’altère ni les PNG ni les autres compétences.</p>
+          <div class="skill-recolor-panel" data-skill-recolor-panel="cast">
+            <div class="skill-recolor-heading">
+              <strong>Couleur du sprite — Cast / préparation</strong>
+              <span data-skill-recolor-state="cast">Couleurs d’origine</span>
+            </div>
+            <label class="skill-recolor-slider">
+              <span>Choisir la couleur <output data-skill-recolor-hue-output="cast">0°</output></span>
+              <input type="range" min="0" max="360" step="1" value="0" data-skill-cast-hue-deg aria-label="Cast / préparation — choisir la teinte">
+            </label>
+            <label class="skill-recolor-slider skill-recolor-slider--saturation">
+              <span>Intensité de la couleur <output data-skill-recolor-saturation-output="cast">100 %</output></span>
+              <input type="range" min="0" max="200" step="5" value="100" data-skill-cast-saturation-pct aria-label="Cast / préparation — intensité de la couleur">
+            </label>
+            <div class="skill-recolor-preview" aria-label="Aperçu indicatif de couleur">
+              <span class="skill-recolor-swatch" data-skill-recolor-swatch="cast" aria-hidden="true"></span>
+              <span>Aperçu de couleur indicatif</span>
+            </div>
+            <button type="button" class="secondary-action skill-recolor-reset" data-skill-recolor-reset="cast">Retrouver les couleurs d’origine</button>
+            <p class="note skill-recolor-help">Fais glisser les barres : l’aperçu change immédiatement. Le rendu exact dépend du sprite d’origine ; utilise « Tester le combat » pour le voir réellement. Aucun PNG ni autre capacité n’est modifié.</p>
+          </div>
           <label>Animation du cast
             <select data-skill-cast-playback>
               <option value="once">Lire une fois à la vitesse du sprite</option>
@@ -1936,13 +1958,26 @@
               <option value="once">Lire une fois à la vitesse du sprite</option>
             </select>
           </label>
-          <label>Sprite travel — rotation de teinte (°)
-            <input type="number" min="0" max="360" step="5" value="0" data-skill-travel-hue-deg>
-          </label>
-          <label>Sprite travel — saturation (%)
-            <input type="number" min="0" max="200" step="5" value="100" data-skill-travel-saturation-pct>
-          </label>
-          <p class="note">0° et 100 % = couleurs originales. La recoloration n’altère ni les PNG ni les autres compétences.</p>
+          <div class="skill-recolor-panel" data-skill-recolor-panel="travel">
+            <div class="skill-recolor-heading">
+              <strong>Couleur du sprite — Projectile / trajet</strong>
+              <span data-skill-recolor-state="travel">Couleurs d’origine</span>
+            </div>
+            <label class="skill-recolor-slider">
+              <span>Choisir la couleur <output data-skill-recolor-hue-output="travel">0°</output></span>
+              <input type="range" min="0" max="360" step="1" value="0" data-skill-travel-hue-deg aria-label="Projectile / trajet — choisir la teinte">
+            </label>
+            <label class="skill-recolor-slider skill-recolor-slider--saturation">
+              <span>Intensité de la couleur <output data-skill-recolor-saturation-output="travel">100 %</output></span>
+              <input type="range" min="0" max="200" step="5" value="100" data-skill-travel-saturation-pct aria-label="Projectile / trajet — intensité de la couleur">
+            </label>
+            <div class="skill-recolor-preview" aria-label="Aperçu indicatif de couleur">
+              <span class="skill-recolor-swatch" data-skill-recolor-swatch="travel" aria-hidden="true"></span>
+              <span>Aperçu de couleur indicatif</span>
+            </div>
+            <button type="button" class="secondary-action skill-recolor-reset" data-skill-recolor-reset="travel">Retrouver les couleurs d’origine</button>
+            <p class="note skill-recolor-help">Fais glisser les barres : l’aperçu change immédiatement. Le rendu exact dépend du sprite d’origine ; utilise « Tester le combat » pour le voir réellement. Aucun PNG ni autre capacité n’est modifié.</p>
+          </div>
           <label>Vitesse de boucle du sprite — 1× normal, 2× plus rapide, jusqu’à 4×
             <input type="number" min="0.25" max="4" step="0.25" value="1" data-skill-travel-frame-speed>
           </label>
@@ -2045,13 +2080,26 @@
           <label>Opacité de l’impact (%) — 100 = opaque, 0 = invisible
             <input type="number" min="0" max="100" step="5" value="100" data-skill-impact-opacity-pct>
           </label>
-          <label>Sprite impact — rotation de teinte (°)
-            <input type="number" min="0" max="360" step="5" value="0" data-skill-impact-hue-deg>
-          </label>
-          <label>Sprite impact — saturation (%)
-            <input type="number" min="0" max="200" step="5" value="100" data-skill-impact-saturation-pct>
-          </label>
-          <p class="note">0° et 100 % = couleurs originales. La recoloration n’altère ni les PNG ni les autres compétences.</p>
+          <div class="skill-recolor-panel" data-skill-recolor-panel="impact">
+            <div class="skill-recolor-heading">
+              <strong>Couleur du sprite — Impact</strong>
+              <span data-skill-recolor-state="impact">Couleurs d’origine</span>
+            </div>
+            <label class="skill-recolor-slider">
+              <span>Choisir la couleur <output data-skill-recolor-hue-output="impact">0°</output></span>
+              <input type="range" min="0" max="360" step="1" value="0" data-skill-impact-hue-deg aria-label="Impact — choisir la teinte">
+            </label>
+            <label class="skill-recolor-slider skill-recolor-slider--saturation">
+              <span>Intensité de la couleur <output data-skill-recolor-saturation-output="impact">100 %</output></span>
+              <input type="range" min="0" max="200" step="5" value="100" data-skill-impact-saturation-pct aria-label="Impact — intensité de la couleur">
+            </label>
+            <div class="skill-recolor-preview" aria-label="Aperçu indicatif de couleur">
+              <span class="skill-recolor-swatch" data-skill-recolor-swatch="impact" aria-hidden="true"></span>
+              <span>Aperçu de couleur indicatif</span>
+            </div>
+            <button type="button" class="secondary-action skill-recolor-reset" data-skill-recolor-reset="impact">Retrouver les couleurs d’origine</button>
+            <p class="note skill-recolor-help">Fais glisser les barres : l’aperçu change immédiatement. Le rendu exact dépend du sprite d’origine ; utilise « Tester le combat » pour le voir réellement. Aucun PNG ni autre capacité n’est modifié.</p>
+          </div>
           <label>Animation de l’impact
             <select data-skill-impact-playback>
               <option value="once">Lire une fois à la vitesse du sprite</option>
@@ -2103,13 +2151,26 @@
           <label>Opacité de la zone / aura (%) — 100 = opaque, 0 = invisible
             <input type="number" min="0" max="100" step="5" value="100" data-skill-zone-opacity-pct>
           </label>
-          <label>Sprite zone — rotation de teinte (°)
-            <input type="number" min="0" max="360" step="5" value="0" data-skill-zone-hue-deg>
-          </label>
-          <label>Sprite zone — saturation (%)
-            <input type="number" min="0" max="200" step="5" value="100" data-skill-zone-saturation-pct>
-          </label>
-          <p class="note">0° et 100 % = couleurs originales. La recoloration n’altère ni les PNG ni les autres compétences.</p>
+          <div class="skill-recolor-panel" data-skill-recolor-panel="zone">
+            <div class="skill-recolor-heading">
+              <strong>Couleur du sprite — Zone / aura</strong>
+              <span data-skill-recolor-state="zone">Couleurs d’origine</span>
+            </div>
+            <label class="skill-recolor-slider">
+              <span>Choisir la couleur <output data-skill-recolor-hue-output="zone">0°</output></span>
+              <input type="range" min="0" max="360" step="1" value="0" data-skill-zone-hue-deg aria-label="Zone / aura — choisir la teinte">
+            </label>
+            <label class="skill-recolor-slider skill-recolor-slider--saturation">
+              <span>Intensité de la couleur <output data-skill-recolor-saturation-output="zone">100 %</output></span>
+              <input type="range" min="0" max="200" step="5" value="100" data-skill-zone-saturation-pct aria-label="Zone / aura — intensité de la couleur">
+            </label>
+            <div class="skill-recolor-preview" aria-label="Aperçu indicatif de couleur">
+              <span class="skill-recolor-swatch" data-skill-recolor-swatch="zone" aria-hidden="true"></span>
+              <span>Aperçu de couleur indicatif</span>
+            </div>
+            <button type="button" class="secondary-action skill-recolor-reset" data-skill-recolor-reset="zone">Retrouver les couleurs d’origine</button>
+            <p class="note skill-recolor-help">Fais glisser les barres : l’aperçu change immédiatement. Le rendu exact dépend du sprite d’origine ; utilise « Tester le combat » pour le voir réellement. Aucun PNG ni autre capacité n’est modifié.</p>
+          </div>
           <label>Animation de la zone
             <select data-skill-zone-playback>
               <option value="loop" selected>Boucler tant que la zone existe</option>
@@ -2638,6 +2699,6 @@
     </template>
   </section>
 
-  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113"></script>
+  <script type="module" src="./capture-editor-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113-recolor-sliders-20261113"></script>
 </body>
 </html>

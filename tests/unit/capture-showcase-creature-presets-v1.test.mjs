@@ -57,7 +57,8 @@ test("showcase preset catalog discovers authored transfer files without duplicat
       "data/capture/showcase/crea_mer_3.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea_sylvorne.capture-creature-transfer-v1.json",
       "data/capture/showcase/crea_selachombre.capture-creature-transfer-v1.json",
-      "data/capture/showcase/crea_vyrame.capture-creature-transfer-v1.json"
+      "data/capture/showcase/crea_vyrame.capture-creature-transfer-v1.json",
+      "data/capture/showcase/veuve-jaune.capture-creature-transfer-v1.json"
     ]
   );
 });
@@ -163,4 +164,43 @@ test("Human Editor hydrates showcase presets through the existing Transfer plann
     source,
     /applyCaptureTransferPlanToEditorStateV1/
   );
+});
+
+test("Veuve jaune author transfer has stable identity and unchanged authored bindings", async () => {
+  const imported = await importedPreset(
+    "data/capture/showcase/veuve-jaune.capture-creature-transfer-v1.json"
+  );
+  const record = imported.value;
+  assert.equal(imported.kind, "creature");
+  assert.equal(record.draft.id, "veuve-jaune");
+  assert.equal(record.draft.displayName, "Veuve jaune");
+  assert.equal(record.draft.capture.rarity, "mythic");
+  assert.deepEqual(record.draft.elements, ["electric", "nature"]);
+  assert.equal(record.draft.combat.maxHp, 110);
+  assert.equal(record.draft.combat.reaction.type, "dodge");
+  assert.equal(record.draft.combat.reaction.maxCharges, 5);
+  assert.equal(record.statValues.creatureId, "veuve-jaune");
+  assert.equal(record.statValues.values.electric, 15);
+  assert.equal(record.loadout.creatureId, "veuve-jaune");
+  assert.deepEqual(record.loadout.slots.map(slot => slot.skillId), [
+    "claw", "fireball", "cap_fire_special_1",
+    "lib_flame_bite", "cap_fire_atk_6"
+  ]);
+  assert.equal(record.draft.presentation.id, "creature:veuve-jaune");
+  assert.equal(record.draft.presentation.subjectId, "veuve-jaune");
+  assert.equal(record.draft.presentation.profileId, "serpentine");
+  assert.deepEqual(record.draft.presentation.viewOverrides.player,
+    { displayScale: 1.5, position: { x: 0, y: 0 } });
+  assert.deepEqual(record.draft.presentation.viewOverrides.opponent,
+    { displayScale: 0.9, position: { x: 0, y: 50 } });
+  assert.equal(record.draft.presentation.visual.front.assetId,
+    "pack:capture:creature-veuve-jaune-opponent-01");
+  assert.equal(record.draft.presentation.visual.back.assetId,
+    "pack:capture:creature-veuve-jaune-player-01");
+  assert.equal(record.draft.presentation.visual.icon.assetId,
+    "pack:capture:creature-veuve-jaune-icon-01");
+  assert.deepEqual(record.draft.presentation.sockets[0].front,
+    { x: 0.41310657310523774, y: 0.6176207782480855 });
+  assert.deepEqual(record.draft.presentation.sockets[0].back,
+    { x: 0.6520260391179431, y: 0.5321092882416535 });
 });

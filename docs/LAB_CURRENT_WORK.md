@@ -1,3 +1,66 @@
+## 2026-11-15 — Veuve jaune : transfert auteur et correction d'identifiant (EN VALIDATION)
+- Base main `a6a3bce95ef08271f849cd1c871771a64291c625` ; checkpoint `checkpoint/lab-start-veuve-jaune-id-20261115` ; travail `work/lab-veuve-jaune-id-20261115`.
+- Import du transfert JSON fourni par l'auteur en source canonique `data/capture/showcase/veuve-jaune.capture-creature-transfer-v1.json`, avec seulement l'identifiant provisoire `nouvelle-creature` remplacé par `veuve-jaune` dans draft, présentation, statistiques et loadout. Aucun rééquilibrage, modification de socket, éléments, capacités ou image.
+- Les trois `assetId` officiels de Veuve jaune ont été vérifiés dans le catalogue unique `global-assets` (face opposant, dos joueur, icône). Pas de recopie des ZIP ou PNG, pas de catalogue parallèle.
+- Cause du bug d'ID : champ en lecture seule sur les fiches chargées, lecture des données précédentes désactivée si l'ID change, et rejet strict de tout update d'identifiant. Un bouton explicite déverrouille l'ID ; la sauvegarde Mettre à jour renomme la clé unique avec détection de collision, restauration des champs masqués, migration des références d'évolution et des sélections de combat. Tester le combat refuse toujours une identité modifiée non enregistrée.
+- Protégés : compétences, combat, audio, assets canoniques, GenSRPG, Exploration, Survie et Dungeon. Aucun média ni création historique supprimé.
+- CI initiale du commit `11b0e43052f9185eb387ae67d3872b297701fa06` : sentinelles de comptage historiques obsolètes (19 → 20 showcase, 108 → 109 créatures) ; correction ciblée des cinq tests, sans saut ni relâchement, avec assertions spécifiques Veuve jaune.
+- Gates : tests unitaires de collision, renommage, liens évolution, sélection d'équipe, round-trip transfert, CI complète puis navigateur et publication main/HTTPS à prouver ; aucune déclaration GREEN avant tests réels.
+
+## 2026-11-15 — Éditeur Musiques / Aventure Map : retrouver les quatre pistes officielles
+- START `main@d74faffec7f2758a543c6ebdc01ecdb0b082f832`, checkpoint `checkpoint/combat-map-music-editor-4-tracks-20261115`, branche `work/combat-map-music-editor-4-tracks-20261115`.
+- Cause : les assets `gensrpg:music:exploration:01..04` existent dans le catalogue, mais l'onglet `capture:exploration:map` n'a pas de playlist initiale. Correctif : le projet audio canonique `SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1` propose les quatre pistes de l'Exploration, ordre aléatoire et volume 45%, sans transférer de MP3 privés.
+- Le bouton Enregistrer sérialise le **même SoundtrackProjectV1 validé** sous une clé par jeu sur l'origine GH Pages ; le lecteur Exploration accepte la projection de cette scène via Capture. Une seule configuration, pas de deuxième lecteur, pas de fichier binary ni de base supplémentaire. Les références à des MP3 personnels temporaires ne sont pas persistées car elles ne sont pas résolubles après fermeture.
+- Ne pas fusionner avant tests catalogue, sauvegarde/relecture et scénarios Combat/Victoire/Défaite invariants, vrai navigateur, main CI+Pages+HTTPS. Aucune modification des sons Combat, des capacités ou des modèles auteur.
+
+## 2026-11-15 — Ergonomie Musiques : quatre onglets, une importation MP3
+- START `main@50a225489c462e4a996e6873d79695f8ef681efa`, checkpoint `checkpoint/lab-start-soundtrack-four-tabs-20261115`, branche `work/lab-soundtrack-four-tabs-20261115`.
+- Retour utilisateur : l'éditeur Musiques entremêle les imports JSON, les MP3 temporaires, les identifiants de scènes, les raccourcis Combat/Victoire/Défaite et la bibliothèque. Un seul parcours d'import visible a été demandé, avec quatre onglets : **Victoire / Défaite / Combat / Aventure-Map**.
+- Propriétaires conservés : `SoundtrackCatalogV1` + `SoundtrackProjectV1` uniques, `mountSoundtrackAuthoringV1` et `createSoundtrackLocalMediaV1` existants. Aucun second moteur de lecture, aucune copie de la bibliothèque audio privée. Les MP3 personnels reçoivent automatiquement un assetId stable pendant la session; un deuxième import du même nom remplace temporairement les octets au lieu de dupliquer l'entrée. Un import dans un contexte l'ajoute au projet, les choix sont gardés pendant les changements d'onglets. JSON, canal d'ambiance et id du projet restent sous un seul panneau avancé.
+- Portée réelle : **éditeur Combat**, sans promesse de musique Exploration jouée en jeu tant que le contrat autoritaire de transition de zone n'est pas raccordé dans un futur lot. Les fichiers MP3 locaux sont des URLs de session : l'export JSON préserve les IDs/configurations mais pas les octets privés, aucun stockage persistant créé ou supprimé.
+- Invariants : jingle officiel Triumph's Call inchangé, victoire et défaite distinctes, six Battle inchangées, Combat Runtime, effets de capacités et assets des créatures protégés, pas de modification de GenSRPG/Exploration/Survie/Dungeon/PvP. Tests Node + navigateur responsive, CI, publication Pages main + HTTPS et validation téléphone/PC avant GREEN.
+
+## 2026-11-15 — Actualisation ciblée du catalogue visuel unique après six ZIP (NON GREEN tant que CI/HTTPS non vérifiés)
+- Base `main@4fcba6dad6427c832a7c3181b5bafe4a8a1c0998` ; checkpoint `checkpoint/lab-start-six-creature-catalog-refresh-20261115` ; branche `work/lab-six-creature-catalog-refresh-20261115`.
+- Objectif : invalider l'ancien cache de l'UNIQUE catalogue `global-assets` après son import post-merge (commit `207b750908a32a9cd2e1ffa330b70df396876504`), sans recopier de médias.
+- Seuls changements : `src/assets/global-visual-library.js`, test sentinelle dédié et cette déclaration. Protégés : moteur, fiches, audio, Exploration, GenSRPG, 6 ZIP auteurs et leur provenance.
+- Test : version de cache unique v65 sur tous les catalogues et images, aucun fork/snapshot/asset ID manuel, CI complète, Pages même SHA et navigateur lecteur réel. Pas de GREEN anticipé.
+
+## 2026-11-15 — Stabiliser la sentinelle Chromium du contact réel ombre/vol (en validation)
+- Source `main@4fcba6dad6427c832a7c3181b5bafe4a8a1c0998` ; checkpoint `checkpoint/lab-start-real-shadow-contact-fixture-20261115` ; branche `work/lab-real-shadow-contact-fixture-20261115`.
+- Objet uniquement : `tests/browser/shadow-light-fixture.html` et cette déclaration. Modifier le placement de la **fixture** après le premier changement de transform du moteur et figer son idle déjà vérifié ; aucun test simulé, aucun capteur/CollisionModel remplacé, pas de retry ni timeout gonflé.
+- Cause observée sur la même SHA : contact 1/2 exécutions, alpha bounding box distance ~8.47px malgré préflight correct ; flotter/transform peuvent changer avant premier RAF. Le résultat exige encore une vraie remontée `onContact`, pause du corps/ombre, puis restauration de la WAAPI. Pas de suppression/édition de code moteur ou assets.
+- Interdits : contournement du test, modification Combat Runtime, musique, catalogue global, GenSRPG, Exploration et sauvegardes. Gates : CI 5/5 sur SHA final (deux exécutions comparées), Pages, checkpoint GREEN.
+
+## 2026-11-15 — Six ZIP de modèles validés : raccordement visuel canonique (EN VALIDATION)
+- Auteur : six ZIP réels déjà uploadés dans `main` au commit `6dbb6eb6a2829c50265084cdf53afa4d66c3959b` sous `data/capture/showcase/` : Vipfer, Veuve jaune **corrigée**, Carglasse **validée**, Éphémus **validé**, Raiiven **validé**, Veldra **validé**. ZIP originaux préservés sans altération. Aucun gameplay inventé.
+- START : `checkpoint/lab-start-six-creature-visuals-20261115` ; branche de travail `work/lab-six-creature-visuals-20261115` ; PR draft #318. Propriétaires: code/éditeur = Combat `main`, **seuls** médias et catalogue = `global-assets` ; ni GenSRPG, ni Exploration, ni Survie/Dungeon, ni autre moteur modifié.
+- Audit binaire *sur GitHub Actions* run `43678795923` SUCCESS : les six archives CRC correct, chacune contient `sprites_512/face.png`, `dos.png`, `icone.png` avec vrai RGBA transparent 512×512. Sélection exclusive de ces 18 maîtres validés ; aucun recours aux sources_hd, candidats, planches ou placeholders.
+- Marges charte 42 px: quinze PNG déjà conformes seront copiés octet pour octet ; seuls les trois PNG **Veuve jaune** ont des marges 26–32 px et exigent une **dérivée runtime** proportionnelle sans couper ni retoucher les originaux. Préviews face/dos/icône conservées séparément pour revue Android.
+- Importeur strict sous `scripts/publish-six-creature-visuals-20261115.py` + gate GitHub Actions PR en lecture/test sans publication ; après CI / revue GREEN et fusion de la PR sur `main`, unique import append-only sur `global-assets`. Cible attendue : 18 PNG de runtime, 6 planches de revue, 6 manifestes meta, **1 catalogue existant actualisé**. Toute collision d'ID, source ambiguë, hash Git de ZIP changé ou défaut d'alpha bloque le lot.
+- Statut actuel **NON PUBLIÉ / NON GREEN** : gate importer PR et CI complète du SHA final en attente, branche canonique inchangée, cache global-visual-library à réviser après import et vrai test éditeur/page HTTPS + validation smartphone avant achèvement.
+
+---
+
+## 2026-11-15 — Restauration ciblée de transferts auteur Moussados / Vyrâme (C1)
+- CI `Laboratory CI` SHA `dbd416864085cb733a47428cf3cbbb024f24416d`, run `43651979123` : 2767/2770 tests PASS, 3 assertions historiques échouent uniquement sur deltas auteur connus (deux comparaisons archive Moussados et incompatibilité de teinte sur V9).
+- Correctif de cause : les sentinelles vérifient d'abord chaque valeur nouvellement autorisée, puis comparent tout le reste à l'archive V9 inchangée ; le test de refus V9 reconstruit un vrai input V9 distinct du transfert auteur actif V15. Aucune exception, aucun skip ni assouplissement du contrat. Relancer la CI au nouveau SHA avant GREEN.
+- Base Combat main `df1eb2594f125bffcbc69473a1f757434c1ac1d2`, START `checkpoint/lab-start-author-restores-2026-11-15`, travail `work/lab-author-restores-2026-11-15`.
+- Uniques propriétaires : données `data/capture/showcase` existantes ; restauration ciblée de Moussados (rareté Rare, échelles animation et stat Glace=0) et de la capacité Crocs du voile (V15 teinte, visée/effects explicites). Les manifestes sont déjà inscrits une seule fois ; aucune nouvelle bibliothèque, image ou média.
+- Vyrâme `crea_vyrame` a déjà les mêmes paramètres auteur ; la pièce jointe est en présentation V2 contre V9 canonique : conserver V9 pour éviter une régression de métadonnées.
+- Tests : les anciennes sentinelles auteur doivent vérifier les nouveaux paramètres sans masquer les invariants historiques, puis exécuter tests ciblés, CI exacte, Pages et lecture HTTPS avant GREEN. Aucun changement Explorer, GenSRPG, moteur, PWA ou nettoyage de CI.
+
+---
+
+## 2026-11-13 — Colorisation des capacités : curseurs tactiles et retour visuel
+- START `main@076d77ad0e6c60acd02c9f5b5ddccdbfbc9f7b9f` ; checkpoint `checkpoint/lab-start-sprite-recolor-sliders-2026-11-13`. Modification courte de l’interface auteur directement sur `main` selon la charte ; les autres chantiers restent intacts.
+- Remplacement, pour les quatre rôles Cast/Projectile/Impact/Zone, des deux saisies numériques par deux curseurs tactiles et un aperçu de teinte **explicitement indicatif** ; bouton de remise aux couleurs d’origine ; libellés compréhensibles.
+- Réutilisation des champs `data-skill-*-hue-deg` et `data-skill-*-saturation-pct` ainsi que des lecteurs/sauvegardes V15 existants : aucun état doublon, aucun nouveau catalogue, aucune manipulation de PNG, aucun changement de moteur ni de contrat, ni GenSRPG ni Exploration.
+- Synchronisation de l’interface lors du chargement d’une capacité, de l’import, du changement via les curseurs et de la remise à zéro ; écouteurs disposés avec l’éditeur. L’aperçu est un échantillon coloré : le rendu réel des PNG reste à confirmer via « Tester le combat ».
+- Tests unitaires précis des contrôles/réinitialisation/roundtrip et vérification navigateur + CI sur le SHA exact avant GREEN et preuve HTTPS Pages ; aucune publication déclarée avant preuve.
+
+---
+
 ## 2026-11-13 — Équilibrage Vyrâme : Rugissement des limbes (demande auteur)
 - L10 : dommages Esprit de zone **16 → 8** ; à 3 Combo, bonus sur cible **20 → 10** ; total cible principale 18 avant modificateurs ; **stun 5 secondes inchangé**.
 - Données canonique et tests ciblés uniquement ; aucun changement de moteur, sprite, autres compétences, ou élément d'Exploration/GenSRPG. Gate CI GREEN avant fusion et contrôle du Pages SHA exact.
@@ -4596,3 +4659,12 @@ La CI du correctif ciblé relève deux assertions anciennes à `2.5` désormais 
 - Pendant les tests des régressions, `gh-pages` a évolué de `86be8a555dc05fbef2b65c932253d88a9994a23f` à `cf2a42b600fc4b56755fd4e7c858f2a98f9e8ba4` par un chantier **bouclier lumineux / asset catalogue** indépendant. Ne pas forcer ou écraser ce nouveau HEAD.
 - Nouveau départ gelé `checkpoint/lab-start-firestorm-roster-integration-v1-2026-10-18` sur `cf2a42...`, branche `work/lab-firestorm-roster-integration-v1-2026-10-18`. Copie exacte des sept blobs métier et tests du lot original validé, via un nouveau commit enfant direct `6587ee9811188b58518662270c2a69e052dcb254`; les autres fichiers bouclier/Catalogue global et son journal restent intacts. Le journal combiné garde l'historique des deux chantiers, sans cherry-pick hasardeux.
 - CI intégration exigée : 5/5 Foundation + Chromium sur SHA documentaire final ; diffusion `gh-pages` uniquement par fast-forward attendu exactement depuis `cf2a42...`, et Pages SUCCESS avant annonce. Garder le gel initial et le GREEN original comme rollback ; GREEN technique d'intégration distinct à créer sur SHA final. Android auteur requis.
+
+
+## 2026-11-15 — Jingle de victoire et choix Victoire / Défaite (NON GREEN tant que CI/Pages non vérifiées)
+- Base `main@4fcba6dad6427c832a7c3181b5bafe4a8a1c0998`, checkpoint `checkpoint/lab-start-victory-jingle-after-six-models-20261115`, branche `work/lab-victory-jingle-20261115`; aucun travail fonctionnel sur gh-pages.
+- Propriétaires : RosterSession (KO + réserves), BattleFormat (équipes), seule SoundtrackSession existante (musique), SoundtrackProjectV1 (choix auteur), catalogue musique existant (ID).
+- Fichiers autorisés : `src/ui/capture-combat-battle-outcome-v1.js`, `src/ui/combat-2v2-test-ui.js`, `src/ui/capture-combat-preview-v1.js`, `examples/dom-demo/capture-editor-v2.{js,html}`, `src/ui/soundtrack-editor-v1.js`, `src/assets/soundtrack-{starter-catalog,runtime-library}-v1.js`, un vrai MP3 sous `assets/runtime/audio/music-v1/`, tests ciblés musique/résultat, cette déclaration et rapport `docs/LAB_VICTORY_JINGLE_2026_11_15.md`.
+- Protégés : autres créatures/sorts et bibliothèques, les six ZIP auteur, global-assets, gameplay Combat Runtime, Exploration, GenSRPG, Survie, Dungeon ; ne rien supprimer.
+- Preuve media : MP3 auteur 190638 octets, SHA256 327d2734bca243c90c3b9f0b6bbf2f93fb78a667fbe380dc1be5486e68e250fe ; aucun placeholder ni audio défaite inventé.
+- Gates : CI ciblée, CI 5/5 + browser, publication HTTPS sur `main` SHA exact et checkpoint GREEN. L'issue vient de la fin de toute l'équipe, jamais d'un KO individuel.

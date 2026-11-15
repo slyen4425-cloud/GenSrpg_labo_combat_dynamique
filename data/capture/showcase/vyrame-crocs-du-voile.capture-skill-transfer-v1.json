@@ -15,6 +15,7 @@
       "name": "Crocs du voile",
       "category": "offensive",
       "form": "contact",
+      "projectileTargeting": "direct",
       "loadoutSlot": "standard",
       "element": "spirit",
       "approachMode": "ground",
@@ -31,13 +32,15 @@
         "long"
       ],
       "targetRelations": [
-        "enemy"
+        "enemy",
+        "self"
       ],
       "targetLocations": [
         "active"
       ],
       "hitPresenceStates": null,
       "dodgeable": true,
+      "hitsIntangible": false,
       "activationRequirements": {
         "mode": "all",
         "conditions": []
@@ -69,7 +72,9 @@
           "kind": "damage",
           "targetScope": "target",
           "amount": 20,
-          "channel": "spirit"
+          "channel": "spirit",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
         },
         {
           "kind": "consume_marker",
@@ -90,7 +95,7 @@
     },
     "presentation": {
       "id": "skill:vyrame-crocs-du-voile",
-      "version": 9,
+      "version": 15,
       "subjectType": "skill",
       "subjectId": "vyrame-crocs-du-voile",
       "visual": {
@@ -109,12 +114,16 @@
           "trigger": "preparation-start",
           "playbackMode": "stretch",
           "rotationDeg": 0,
-          "opacity": 1,
+          "opacity": 0.5,
           "layerByView": {
             "player": "front",
             "opponent": "front"
           },
-          "offsetMode": "same"
+          "offsetMode": "same",
+          "recolor": {
+            "hueRotateDeg": 47,
+            "saturationPct": 175
+          }
         },
         "impact": {
           "assetId": "pack:capture:sprite-shadow-spell-impact-01",
@@ -138,7 +147,17 @@
         }
       },
       "audio": {},
-      "statusVisuals": {}
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      },
+      "recolorBaseVersion": 9
     }
   }
 }

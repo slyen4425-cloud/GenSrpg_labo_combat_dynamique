@@ -173,6 +173,7 @@ export function captureBestiaryCardsV1({
       evolution: evolution?.condition === "level" &&
         Number.isFinite(evolution.level) ?
           Object.freeze({level:evolution.level,targetId:evolution.targetId || null}) : null,
+      rarity:draft?.capture?.rarity??"rare",
       captureRate:statNumber(draft?.capture?.captureRate),
       capturable:draft?.capture?.capturable === true
     }));

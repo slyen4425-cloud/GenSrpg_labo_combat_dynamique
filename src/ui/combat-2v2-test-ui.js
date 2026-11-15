@@ -1,3 +1,4 @@
+import {resolveCaptureCombatBattleOutcomeV1} from "./capture-combat-battle-outcome-v1.js";
 import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-bestiary-hp-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-barrier-dual-view-20261105-barrier-side-layout-20261105";
 import { captureReactionRechargeClockV1 } from "./capture-reaction-recharge-clock-v1.js";
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
@@ -21,7 +22,7 @@ import {
   targetRelation
 } from "../core/combat/targeting.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-wall-channel-loop-audio-20261103-solar-beneficial-contact-20261103";
-import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113";
+import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113-recolor-sliders-20261113";
 import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
@@ -581,8 +582,10 @@ export async function mountCoop2v2Test({
   fetchImpl = fetch,
   formatUrl = DATA_URLS.format,
   nativeCombatSource = null,
-  embeddedBattle = null
+  embeddedBattle = null,
+  onBattleOutcome = () => {}
 }) {
+  if (typeof onBattleOutcome !== "function") throw new TypeError("onBattleOutcome callback required");
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root must provide querySelector()");
   }
@@ -829,6 +832,22 @@ export async function mountCoop2v2Test({
   let rosterController = null;
   let rosterPanel = null;
   const koTransitions = new Set();
+  let announcedBattleOutcome = null;
+  function announceBattleOutcome(outcome) {
+    if (disposed || announcedBattleOutcome !== null ||
+        !["victory","defeat","draw"].includes(outcome)) return;
+    announcedBattleOutcome=outcome;
+    try { onBattleOutcome(outcome); }
+    catch (error) { console.warn("Présentation audio du résultat indisponible",error); }
+  }
+  // The existing embedded Combat lifecycle settles before KO animations finish.
+  // Subscribe before the host gets its completion Promise; do not infer results.
+  if (embeddedLifecycle) {
+    void embeddedLifecycle.completion.then(({outcome}) => {
+      if (outcome === "victory" || outcome === "defeat")
+        announceBattleOutcome(outcome);
+    });
+  }
   let aiDecisionQueued = false;
 
   for (const actor of format.actors) {
@@ -2047,7 +2066,17 @@ export async function mountCoop2v2Test({
       runtime.cancelActionsForActor(actorId, { includeTargeted: true, reason: "ko" });
       const result = rosterController.replaceKnockedOut(actorId);
       koTransitions.delete(actorId);
-      if (result.outcome === "team_defeated") setStatus("Plus de réserve pour cette créature.", "info");
+      if (result.outcome === "team_defeated") {
+        setStatus("Plus de réserve pour cette créature.", "info");
+        if (announcedBattleOutcome === null && !embeddedLifecycle) {
+          // Standalone editor preview reads real RosterSession only after
+          // replacement; embedded sessions use their native completion.
+          const outcome=resolveCaptureCombatBattleOutcomeV1({
+            format,rosterSnapshot:rosterController.snapshot(),defeatedActorId:actorId
+          });
+          if (outcome !== null) announceBattleOutcome(outcome);
+        }
+      }
       renderState();
       queueAiDecisions();
     });

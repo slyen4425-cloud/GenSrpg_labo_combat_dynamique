@@ -3,6 +3,8 @@
 export const SOUNDTRACK_STARTER_BATTLE_IDS_V1 = Object.freeze(
   Array.from({length:6},(_,i)=>`gensrpg:music:combat:battle-${String(i+1).padStart(2,"0")}`)
 );
+// Creator-supplied "Triumph's Call"; public-use rights attested by creator on 2026-11-15.
+export const SOUNDTRACK_STARTER_VICTORY_ID_V1 = "gensrpg:music:combat:victory-triumphs-call";
 export const SOUNDTRACK_STARTER_EXPLORATION_IDS_V1 = Object.freeze(
   Array.from({length:4},(_,i)=>`gensrpg:music:exploration:${String(i+1).padStart(2,"0")}`)
 );
@@ -16,7 +18,12 @@ export const SOUNDTRACK_STARTER_CATALOG_V1 = Object.freeze({
     })),
     ...SOUNDTRACK_STARTER_EXPLORATION_IDS_V1.map((assetId,i)=>Object.freeze({
       assetId,kind:"music",origin:"app",title:`Exploration_${i+1}`
-    }))
+    })),
+    Object.freeze({
+      assetId:SOUNDTRACK_STARTER_VICTORY_ID_V1,kind:"music",origin:"app",
+      title:"Triumph's Call · Victoire",
+      licenseRef:"creator-attested-paid-suno-public-use-2026-11-15"
+    })
   ])
 });
 export const SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1 = Object.freeze({
@@ -28,6 +35,24 @@ export const SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1 = Object.freeze({
       music:Object.freeze({
         tracks:SOUNDTRACK_STARTER_BATTLE_IDS_V1,
         order:"shuffle",volume:0.65,fadeMs:700,repeat:true
+      }),
+      ambience:null
+    }),
+    "capture:combat:victory":Object.freeze({
+      music:Object.freeze({
+        tracks:Object.freeze([SOUNDTRACK_STARTER_VICTORY_ID_V1]),
+        order:"sequence",volume:0.8,fadeMs:250,repeat:false
+      }),
+      ambience:null
+    }),
+    // A separate defeat slot is author-editable; no invented defeat recording.
+    "capture:combat:defeat":Object.freeze({music:null,ambience:null}),
+    // The four author-approved tracks remain in Exploration's native player.
+    // Only their canonical scene configuration is authored here.
+    "capture:exploration:map":Object.freeze({
+      music:Object.freeze({
+        tracks:SOUNDTRACK_STARTER_EXPLORATION_IDS_V1,
+        order:"shuffle",volume:0.45,fadeMs:0,repeat:true
       }),
       ambience:null
     })

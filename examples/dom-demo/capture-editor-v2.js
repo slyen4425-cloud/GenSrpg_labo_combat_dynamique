@@ -4,6 +4,8 @@ import {
   SOUNDTRACK_STARTER_BATTLE_IDS_V1
 } from "../../src/assets/soundtrack-starter-catalog-v1.js";
 import {createSoundtrackLocalMediaV1} from "../../src/assets/soundtrack-local-media-v1.js";
+import {createSoundtrackBrowserStorageV1}
+ from "../../src/ui/soundtrack-browser-storage-v1.js";
 import {soundtrackRuntimeAssetV1} from "../../src/assets/soundtrack-runtime-library-v1.js";
 import {
   mountSoundtrackAuthoringV1
@@ -13,7 +15,7 @@ import {
 } from "../../src/adapters/audio/combat-soundtrack-preview-bridge-v1.js";
 import {
   mountCaptureEditorHumanV2
-} from "../../src/ui/capture-editor-human-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113";
+} from "../../src/ui/capture-editor-human-v2.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113-recolor-sliders-20261113";
 import {
   createCreatorVisualAssetSessionV1
 } from "../../src/assets/creator-visual-asset-session-v1.js";
@@ -25,17 +27,17 @@ import {
 } from "../../src/ui/capture-editor-preview-session-v2.js";
 import {
   loadCaptureEditorPreviewRuntimeV1
-} from "../../src/ui/capture-editor-preview-runtime-loader-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113";
+} from "../../src/ui/capture-editor-preview-runtime-loader-v1.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113-recolor-sliders-20261113";
 import {
   GLOBAL_VISUAL_LIBRARY,
   globalVisualAssetUrl
-} from "../../src/assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113";
+} from "../../src/assets/global-visual-library.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113-recolor-sliders-20261113";
 import {
   demoPresentationAssets
 } from "./demo-assets.js";
 import {
   createCaptureSkillPresentationAssetsV2
-} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-dual-status-20261104-sylvorne-fx-size-20261111-recolor-20261113";
+} from "../../src/adapters/renderer/capture-skill-presentation-assets-v2.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-dual-status-20261104-sylvorne-fx-size-20261111-recolor-20261113-recolor-sliders-20261113";
 import {
   createGlobalPresentationAssetResolverV1
 } from "../../src/assets/global-presentation-asset-resolver-v1.js";
@@ -137,30 +139,43 @@ arenaSelect.value = "city";
 
 // Independent per-game soundtrack authoring. No coupling to creature drafts,
 // skill FX, test-runtime timing or user-upload storage.
+const officialSoundtrackStorage=createSoundtrackBrowserStorageV1(window);
+let savedSoundtrackProject=null;
+try{
+  savedSoundtrackProject=officialSoundtrackStorage.read(
+    SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1.projectId,SOUNDTRACK_STARTER_CATALOG_V1);
+}catch(error){
+  console.warn("Ancienne configuration audio illisible : projet d'origine conservé",error);
+}
 const soundtrackEditor = mountSoundtrackAuthoringV1({
   root: root.querySelector("[data-soundtrack-editor]"),
   initialCatalog:SOUNDTRACK_STARTER_CATALOG_V1,
-  initialProject:SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1
+  initialProject:savedSoundtrackProject??SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1,
+  saveProject:project=>officialSoundtrackStorage.save(
+    project,SOUNDTRACK_STARTER_CATALOG_V1)
 });
 const soundtrackLocalMedia=createSoundtrackLocalMediaV1({
-  catalog:SOUNDTRACK_STARTER_CATALOG_V1
+  catalog:SOUNDTRACK_STARTER_CATALOG_V1,allowCustom:true
 });
 const soundtrackLocalInput=root.querySelector("[data-soundtrack-local-files]");
 const soundtrackLocalStatus=root.querySelector("[data-soundtrack-local-status]");
 if(!soundtrackLocalInput||!soundtrackLocalStatus)
   throw new Error("Champs d'import de musiques manquants");
 function showSoundtrackLocalStatus(message=null,error=false) {
-  const ready=SOUNDTRACK_STARTER_BATTLE_IDS_V1
+  const ready=soundtrackLocalMedia.status().ready;
+  const battleLocal=SOUNDTRACK_STARTER_BATTLE_IDS_V1
     .filter(id=>soundtrackLocalMedia.runtimeAsset(id)).length;
-  soundtrackLocalStatus.textContent=message ??
-    ready+" / 6 musiques Battle chargées : "+
-    (ready===6?"prêtes pour la prévisualisation Combat.":"charge les MP3 manquants pour la playlist complète.");
+  soundtrackLocalStatus.textContent=
+    (battleLocal===6?"6 / 6 musiques Battle disponibles pour essai local. ":"")+
+    (message ?? ready+" fichier(s) MP3 chargé(s) pour cette session. Les musiques officielles restent disponibles.");
   soundtrackLocalStatus.dataset.tone=error?"error":"info";
 }
 soundtrackLocalInput.addEventListener("change",()=>{
   try {
-    soundtrackLocalMedia.importFiles(soundtrackLocalInput.files);
-    showSoundtrackLocalStatus();
+    const imported=soundtrackLocalMedia.importFiles(soundtrackLocalInput.files);
+    soundtrackEditor.addImportedAssets(imported);
+    showSoundtrackLocalStatus(imported.imported.length+
+      " musique(s) ajoutée(s) à l'onglet actif (session temporaire).");
   } catch(error) {
     showSoundtrackLocalStatus("Import musique refusé : "+(error?.message??String(error)),true);
   } finally {
@@ -499,6 +514,10 @@ const session = createCaptureEditorPreviewSessionV2({
       );
     }
 
+    // Same SoundtrackSession is retained through normal battle and result.
+    // Combat only reports the final, roster-aware result; the music editor
+    // remains the sole owner of the chosen scene/asset IDs.
+    let soundtrack = null;
     const mounted =
       await previewRuntime
         .mountCaptureCombatPreviewV1({
@@ -506,6 +525,9 @@ const session = createCaptureEditorPreviewSessionV2({
       nativeCombatSource,
       nativeVisualSource,
       arenaLight: readCombatLightEditor(),
+      onBattleOutcome(outcome) {
+        soundtrack?.transitionTo("capture:combat:"+outcome);
+      },
       presentationAssets:
         buildPreviewPresentationAssets(
           nativeCombatSource
@@ -514,7 +536,6 @@ const session = createCaptureEditorPreviewSessionV2({
 
     // Opt-in authored soundtrack. No entry means silence and never blocks
     // existing battle audio. The combat session exclusively owns skill SFX.
-    let soundtrack = null;
     try {
       soundtrack = createCombatSoundtrackPreviewBridgeV1({
         project:soundtrackEditor.snapshot(),
