@@ -6,7 +6,7 @@
 
 Original `Triumph's Call.mp3` récupéré depuis le dépôt de fichiers de l'auteur, MP3 valide (ID3), 190 638 octets, 7.152 s, SHA-256 `327d2734bca243c90c3b9f0b6bbf2f93fb78a667fbe380dc1be5486e68e250fe`, Git blob `0b52ce2bebb8643bf34618489b487a02e59e03df`. Une seule livraison runtime dans `assets/runtime/audio/music-v1/victory-01-0b52ce2b.mp3` ; aucune duplication des masters ni nouveau dépôt d'assets. ID stable **déjà attribué dans le dépôt audio privé** `gensrpg:music:combat:victory-triumphs-call` dans le **catalogue musique déjà existant**.
 
-**Droits :** le manifeste du master privé porte explicitement `license.status=verify-before-public-delivery`. Le raccord technique peut être validé sans présumer de la licence de diffusion Suno. **Ne pas fusionner en public sans vérification des droits par le créateur.** Source privée : `slyen4425-cloud/GenSrpG_audio_prive/audio/musiques/combat/victoire/manifest.json`. Le SHA du master privé et la copie runtime concordent exactement.
+**Droits (déclaration de l'auteur le 15 novembre 2026) :** le créateur confirme avoir personnellement généré « Triumph's Call » avec un abonnement Suno payant et disposer des droits nécessaires à sa publication dans GenSRPG. La source privée enregistre cette attestation sous `license.status=creator-attested-public-delivery` dans `slyen4425-cloud/GenSrpG_audio_prive/audio/musiques/combat/victoire/manifest.json`. Ce statut repose sur sa déclaration et n'est pas un audit indépendant des conditions d'abonnement. Le SHA du master privé et de la copie runtime concordent exactement. Le blocage documentaire lié à l'absence d'attestation de l'auteur est donc levé ; les gates techniques de publication restent obligatoires.
 
 ## Fonctionnement
 
