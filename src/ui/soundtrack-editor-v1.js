@@ -53,6 +53,8 @@ export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,in
   );
   el.project.value=project.projectId;
   let tracks=[];
+  let activeScene=el.scene.value.trim();
+  let activeChannel=el.channel.value;
   let destroyed=false;
 
   function state(message,success=true){
@@ -89,7 +91,7 @@ export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,in
         btn.type="button";btn.className="secondary-action";
         btn.textContent=symbol;btn.setAttribute("aria-label",label);
         btn.disabled=disabled;
-        btn.addEventListener("click",()=>guard(()=>{callback();renderTracks();}));
+        btn.addEventListener("click",()=>guard(()=>{callback();renderTracks();commitScene();}));
         row.append(btn);
       };
       action("↑","Monter la piste "+(index+1),()=>{[tracks[index-1],tracks[index]]=[tracks[index],tracks[index-1]];},index===0);
@@ -108,22 +110,42 @@ export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,in
       repeat:el.repeat.checked
     };
   }
+  function commitScene(){
+    if(el.project.value.trim()!==project.projectId)
+      throw new Error("Utilise « Nouveau jeu » avant de changer l’identifiant du jeu.");
+    project=saveSoundtrackAuthoringSceneV1(project,catalog,activeScene,activeChannel,readControls());
+  }
   function loadScene(){
     const id=el.scene.value.trim(),channel=el.channel.value;
     const config=project.scenes[id]?.[channel];
+    activeScene=id;activeChannel=channel;
     tracks=[...(config?.tracks??[])];
     el.order.value=config?.order??"sequence";
     el.volume.value=String(Math.round((config?.volume??.75)*100));
     el.fade.value=String((config?.fadeMs??700)/1000);
     el.repeat.checked=config?.repeat??true;
     renderAssets();renderTracks();
+    for(const tab of root.querySelectorAll("[data-soundtrack-quick-scene]"))
+      tab.setAttribute("aria-selected",String(tab.dataset.soundtrackQuickScene===activeScene));
   }
   function save(){
-    const scene=el.scene.value.trim(),projectId=el.project.value.trim();
-    if(projectId!==project.projectId) throw new Error("Utilise « Nouveau jeu » avant de changer l’identifiant du jeu.");
-    const channel=el.channel.value;
-    project=saveSoundtrackAuthoringSceneV1(project,catalog,scene,channel,readControls());
-    state("Configuration enregistrée dans l'éditeur. Exporte le JSON pour la conserver.");
+    commitScene();
+    state("Réglages enregistrés pour cet onglet. Export JSON disponible dans Avancé.");
+  }
+  // One canonical catalog + SoundtrackProject, regardless of selected tab.
+  function addImportedAssets({newAssets=[],imported=[]}={}){
+    commitScene();
+    const nextCatalog=normalizeSoundtrackCatalogV1({...catalog,
+      assets:[...catalog.assets,...newAssets]});
+    normalizeSoundtrackProjectV1(project,nextCatalog);
+    for(const assetId of imported){
+      if(!nextCatalog.assets.some(a=>a.assetId===assetId&&a.kind===activeChannel))continue;
+      if(!tracks.includes(assetId))tracks.push(assetId);
+    }
+    if(tracks.length>100)throw new Error("Limite de 100 musiques par contexte");
+    catalog=nextCatalog;
+    renderAssets();renderTracks();commitScene();
+    state(imported.length+" piste(s) importée(s) et ajoutée(s) à "+activeScene+".");
   }
   async function loadJsonFromInput(input,accept){
     const file=input.files?.[0];
@@ -135,21 +157,25 @@ export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,in
     }catch(error){if(!destroyed)state("Import refusé : "+(error?.message??String(error)),false);}
     finally{ input.value=""; }
   }
-  on(el.channel,"change",()=>guard(loadScene));
-  on(el.scene,"change",()=>guard(loadScene));
-  // Shortcuts change only the EXISTING scene field. One authoring owner,
-  // no parallel victory/defeat playlist or manually typed reference IDs.
+  // Tabs save the previous view before reading the next scene. A change
+  // of context must never silently discard imported music or volume.
+  on(el.channel,"change",()=>guard(()=>{commitScene();loadScene();}));
+  on(el.scene,"change",()=>guard(()=>{commitScene();loadScene();}));
   for (const quick of root.querySelectorAll("[data-soundtrack-quick-scene]")) {
     on(quick,"click",()=>guard(()=>{
+      commitScene();
       el.scene.value=quick.dataset.soundtrackQuickScene;
       loadScene();
-      state("Contexte sélectionné : "+quick.textContent.trim()+".");
+      state("Onglet "+quick.textContent.trim()+" sélectionné.");
     }));
   }
+  for(const setting of [el.order,el.volume,el.fade,el.repeat])
+    on(setting,"change",()=>guard(commitScene));
   on(el.add,"click",()=>guard(()=>{
     if(!el.asset.value) throw new Error("Aucune piste sélectionnée");
     if(tracks.length>=100) throw new Error("Limite de 100 pistes par canal");
-    tracks.push(el.asset.value);renderTracks();
+    if(!tracks.includes(el.asset.value))tracks.push(el.asset.value);
+    renderTracks();commitScene();
   }));
   on(el.save,"click",()=>guard(save));
   on(el.reset,"click",()=>guard(()=>{
@@ -158,7 +184,7 @@ export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,in
     loadScene();state("Nouveau jeu : "+id+" (configuration indépendante).");
   }));
   on(el.export,"click",()=>guard(()=>{
-    save();
+    commitScene();
     const serialized=JSON.stringify(project,null,2);
     const a=root.ownerDocument.createElement("a");
     a.href="data:application/json;charset=utf-8,"+encodeURIComponent(serialized);
@@ -167,6 +193,7 @@ export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,in
     state("Projet exporté : "+project.projectId);
   }));
   on(el.catalogInput,"change",()=>loadJsonFromInput(el.catalogInput,json=>{
+    commitScene();
     const nextCatalog=normalizeSoundtrackCatalogV1(json);
     // Atomic validation: never orphan already configured tracks.
     normalizeSoundtrackProjectV1(project,nextCatalog);
@@ -175,6 +202,7 @@ export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,in
     state(catalog.assets.length+" médias référencés dans la bibliothèque audio (sans copie de fichier).");
   }));
   on(el.projectInput,"change",()=>loadJsonFromInput(el.projectInput,json=>{
+    commitScene();
     const next=normalizeSoundtrackProjectV1(json,catalog);
     project=next;el.project.value=project.projectId;
     const first=Object.keys(project.scenes)[0];
@@ -186,6 +214,7 @@ export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,in
   return Object.freeze({
     snapshot:()=>project,
     catalog:()=>catalog,
+    addImportedAssets,
     dispose(){if(destroyed)return;destroyed=true;
       for(const [node,event,fn] of listeners)node.removeEventListener(event,fn);
       listeners.length=0;
