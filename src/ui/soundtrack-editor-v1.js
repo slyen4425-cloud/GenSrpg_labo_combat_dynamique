@@ -132,7 +132,7 @@ export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,in
     commitScene();
     if(saveProject)saveProject(project,catalog);
     state(saveProject
-      ?"Musiques enregistrées pour ce jeu. Les quatre onglets utilisent le même projet."
+      ?"Configuration enregistrée pour ce jeu. Les quatre onglets utilisent le même projet."
       :"Configuration enregistrée pour cet onglet. Export JSON disponible dans Avancé.");
   }
   // One canonical catalog + SoundtrackProject, regardless of selected tab.
