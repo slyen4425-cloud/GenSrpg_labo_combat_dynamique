@@ -1,3 +1,9 @@
+## 2026-11-15 — Actualisation ciblée du catalogue visuel unique après six ZIP (NON GREEN tant que CI/HTTPS non vérifiés)
+- Base `main@4fcba6dad6427c832a7c3181b5bafe4a8a1c0998` ; checkpoint `checkpoint/lab-start-six-creature-catalog-refresh-20261115` ; branche `work/lab-six-creature-catalog-refresh-20261115`.
+- Objectif : invalider l'ancien cache de l'UNIQUE catalogue `global-assets` après son import post-merge (commit `207b750908a32a9cd2e1ffa330b70df396876504`), sans recopier de médias.
+- Seuls changements : `src/assets/global-visual-library.js`, test sentinelle dédié et cette déclaration. Protégés : moteur, fiches, audio, Exploration, GenSRPG, 6 ZIP auteurs et leur provenance.
+- Test : version de cache unique v65 sur tous les catalogues et images, aucun fork/snapshot/asset ID manuel, CI complète, Pages même SHA et navigateur lecteur réel. Pas de GREEN anticipé.
+
 ## 2026-11-15 — Six ZIP de modèles validés : raccordement visuel canonique (EN VALIDATION)
 - Auteur : six ZIP réels déjà uploadés dans `main` au commit `6dbb6eb6a2829c50265084cdf53afa4d66c3959b` sous `data/capture/showcase/` : Vipfer, Veuve jaune **corrigée**, Carglasse **validée**, Éphémus **validé**, Raiiven **validé**, Veldra **validé**. ZIP originaux préservés sans altération. Aucun gameplay inventé.
 - START : `checkpoint/lab-start-six-creature-visuals-20261115` ; branche de travail `work/lab-six-creature-visuals-20261115` ; PR draft #318. Propriétaires: code/éditeur = Combat `main`, **seuls** médias et catalogue = `global-assets` ; ni GenSRPG, ni Exploration, ni Survie/Dungeon, ni autre moteur modifié.
