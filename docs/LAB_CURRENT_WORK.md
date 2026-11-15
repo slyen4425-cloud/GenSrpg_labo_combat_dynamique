@@ -4,6 +4,7 @@
 - Les trois `assetId` officiels de Veuve jaune ont été vérifiés dans le catalogue unique `global-assets` (face opposant, dos joueur, icône). Pas de recopie des ZIP ou PNG, pas de catalogue parallèle.
 - Cause du bug d'ID : champ en lecture seule sur les fiches chargées, lecture des données précédentes désactivée si l'ID change, et rejet strict de tout update d'identifiant. Un bouton explicite déverrouille l'ID ; la sauvegarde Mettre à jour renomme la clé unique avec détection de collision, restauration des champs masqués, migration des références d'évolution et des sélections de combat. Tester le combat refuse toujours une identité modifiée non enregistrée.
 - Protégés : compétences, combat, audio, assets canoniques, GenSRPG, Exploration, Survie et Dungeon. Aucun média ni création historique supprimé.
+- CI initiale du commit `11b0e43052f9185eb387ae67d3872b297701fa06` : sentinelles de comptage historiques obsolètes (19 → 20 showcase, 108 → 109 créatures) ; correction ciblée des cinq tests, sans saut ni relâchement, avec assertions spécifiques Veuve jaune.
 - Gates : tests unitaires de collision, renommage, liens évolution, sélection d'équipe, round-trip transfert, CI complète puis navigateur et publication main/HTTPS à prouver ; aucune déclaration GREEN avant tests réels.
 
 ## 2026-11-15 — Éditeur Musiques / Aventure Map : retrouver les quatre pistes officielles
