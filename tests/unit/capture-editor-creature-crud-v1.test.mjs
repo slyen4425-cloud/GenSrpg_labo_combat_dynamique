@@ -92,3 +92,65 @@ test("Human Editor owns one creature record library with draft plus loadout", as
   assert.match(source, /record\.loadout/);
   assert.doesNotMatch(source, /localStorage|sessionStorage/);
 });
+
+
+test("rename creature ID rejects collisions and preserves a single active record", async () => {
+  const { resolveCaptureCreatureSaveModeV1, renameCaptureCreatureInLibraryV1 } =
+    await import("../../src/ui/capture-editor-creature-save-mode-v1.js");
+  const first = {
+    draft: {
+      id: "nouvelle-creature",
+      displayName: "Veuve jaune",
+      capture: { evolution: { condition: "level", level: 10, targetId: "nouvelle-creature" } },
+      presentation: { id: "creature:nouvelle-creature", subjectId: "nouvelle-creature", visual: { front: { assetId: "pack:face" } } }
+    },
+    statValues: { creatureId: "nouvelle-creature", values: { health: 110 } },
+    loadout: { creatureId: "nouvelle-creature", slots: [{ id: "slot-1", skillId: "claw" }] }
+  };
+  const other = {
+    draft: { id: "other", capture: { evolution: { condition: "level", level: 10, targetId: "nouvelle-creature" } } }
+  };
+  const lib = new Map([["nouvelle-creature", first], ["other", other]]);
+  assert.equal(resolveCaptureCreatureSaveModeV1({
+    intent: "rename", draftId: "veuve-jaune",
+    selectedCreatureId: "nouvelle-creature",
+    configuredCreatureIds: [...lib.keys()]
+  }).mode, "rename");
+  assert.throws(() => resolveCaptureCreatureSaveModeV1({
+    intent: "rename", draftId: "other",
+    selectedCreatureId: "nouvelle-creature",
+    configuredCreatureIds: [...lib.keys()]
+  }), /déjà utilisé/i);
+
+  const renamed = renameCaptureCreatureInLibraryV1({
+    configuredCreatures: lib,
+    previousId: "nouvelle-creature",
+    record: { ...first, draft: { ...first.draft, id: "veuve-jaune" } }
+  });
+  assert.equal(lib.size, 2);
+  assert.equal(lib.has("nouvelle-creature"), false);
+  assert.equal(lib.get("veuve-jaune"), renamed);
+  assert.equal(renamed.draft.presentation.id, "creature:veuve-jaune");
+  assert.equal(renamed.draft.presentation.subjectId, "veuve-jaune");
+  assert.equal(renamed.draft.presentation.visual.front.assetId, "pack:face");
+  assert.equal(renamed.statValues.creatureId, "veuve-jaune");
+  assert.equal(renamed.loadout.creatureId, "veuve-jaune");
+  assert.equal(renamed.draft.capture.evolution.targetId, "veuve-jaune");
+  assert.equal(lib.get("other").draft.capture.evolution.targetId, "veuve-jaune");
+});
+
+test("creature identity edit action and existing record restoration are wired", async () => {
+  const html = await readFile(
+    new URL("../../examples/dom-demo/capture-editor-v2.html", import.meta.url), "utf8"
+  );
+  const ui = await readFile(
+    new URL("../../src/ui/capture-editor-human-v2.js", import.meta.url), "utf8"
+  );
+  const team = await readFile(
+    new URL("../../src/ui/capture-editor-combat-test-v1.js", import.meta.url), "utf8"
+  );
+  assert.match(html, /data-creature-edit-id/);
+  assert.match(ui, /renameCaptureCreatureInLibraryV1/);
+  assert.match(ui, /selectedCreatureId === null\s*\? null\s*:\s*configuredCreatures.get/);
+  assert.match(team, /renameCreatureId\(oldId, newId\)/);
+});
