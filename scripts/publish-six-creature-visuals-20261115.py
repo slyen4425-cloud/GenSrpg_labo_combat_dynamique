@@ -21,71 +21,65 @@ SOURCES = {
     "raiiven": ("Raiiven", "raiiven_monster_capture_valide.zip", "4a98384e14b6b02741c07ed0972dc1c155cb8be4"),
     "veldra": ("Veldra", "veldra_monster_capture_valide.zip", "278f609e2fa11d261475411adc8493dda2d6a940"),
 }
-ROLE_ALIASES = {
-    "face": {"face", "opponent", "adversaire"},
-    "dos": {"dos", "back", "player", "joueur"},
-    "icone": {"icone", "icon", "portrait"},
-}
 ROLE_NAME = {"face": "opponent", "dos": "player", "icone": "icon"}
 SUFFIX = {"face": "face", "dos": "dos", "icone": "icone"}
 
 
-def normalized(value):
-    return "".join(c for c in unicodedata.normalize("NFKD", value.casefold()) if not unicodedata.combining(c))
-
-
 def pick_source(zip_file, role):
-    choices = []
-    for path in zip_file.namelist():
-        if not path.lower().endswith(".png") or path.endswith("/"):
-            continue
-        segments = [normalized(s) for s in Path(path).parts]
-        base = Path(segments[-1]).stem
-        words = set(re.split(r"[^a-z0-9]+", base))
-        if not words.intersection(ROLE_ALIASES[role]):
-            continue
-        if any(word in words for word in ("preview","apercu","sheet","planche","atlas","sprite","candidat")):
-            continue
-        rank = 0 if "sources_hd" in segments else 1 if any("source" in s for s in segments) else 2
-        # A source named simply face/dos/icone is stronger than a derived variant.
-        rank += 0 if base in ROLE_ALIASES[role] else 1
-        choices.append((rank,path))
-    if not choices:
-        raise AssertionError(f"Archive missing approved PNG for {role}; no visual invented")
-    choices.sort()
-    finalists = [name for rank,name in choices if rank == choices[0][0]]
-    if len(finalists) != 1:
-        raise AssertionError(f"Ambiguous {role} sources (blocked): {finalists}")
-    return finalists[0]
+    # The read-only audit proved EXACTLY these six author's approved 512px masters.
+    # Never pick an HD raw crop, review sheet, alternate candidate or composite.
+    source = f"sprites_512/{role}.png"
+    assert source in zip_file.namelist(), f"Approved authored 512 master absent: {source}"
+    return source
 
 
 def prepare_png(data, archive_name, source_name):
     original = Image.open(io.BytesIO(data))
     original.load()
-    assert original.format == "PNG", (archive_name,source_name,"not PNG")
-    rgba = original.convert("RGBA")
+    assert original.format == "PNG", (archive_name, source_name, "not PNG")
+    assert original.mode == "RGBA", (archive_name,source_name,"approved master must be RGBA")
+    assert original.size == (512, 512), (archive_name,source_name,original.size)
+    rgba = original
     alpha = rgba.getchannel("A")
     assert alpha.getextrema() == (0, 255), (archive_name,source_name,"not transparent RGBA artwork")
     bounds = alpha.getbbox()
     assert bounds, (archive_name,source_name,"blank image")
-    # The approved archive is never rewritten. This is only a 512px runtime derivative.
-    cropped = rgba.crop(bounds)
-    cropped.thumbnail((416,416), Image.Resampling.LANCZOS)
-    canvas = Image.new("RGBA", (512,512), (0,0,0,0))
-    x = (512-cropped.width)//2
-    y = (512-cropped.height)//2
-    canvas.alpha_composite(cropped,(x,y))
-    result = canvas.getchannel("A").getbbox()
-    assert result and min(result[0],result[1],512-result[2],512-result[3])>=42,(archive_name,source_name,result)
-    buffer = io.BytesIO()
-    canvas.save(buffer,"PNG",optimize=True)
-    return buffer.getvalue(), {
+    margins = [bounds[0],bounds[1],512-bounds[2],512-bounds[3]]
+    if min(margins) >= 42:
+        # Pixel-exact original validated by the author: do not process or resample.
+        output = data
+        out_box = bounds
+        derived = False
+    else:
+        # Only Veuve jaune's three approved masters fail the documented 42px
+        # canvas-safe margin. Make a *runtime derivative* without modifying the ZIP.
+        assert archive_name=="veuve_jaune_monster_capture_corrige.zip", (
+            archive_name,source_name,"Unexpected nonconforming approved master")
+        cropped = rgba.crop(bounds)
+        cropped.thumbnail((428,428),Image.Resampling.LANCZOS)
+        canvas = Image.new("RGBA",(512,512),(0,0,0,0))
+        x=(512-cropped.width)//2
+        y=(512-cropped.height)//2 if source_name.endswith("icone.png") else 464-cropped.height
+        y=max(42,min(y,512-42-cropped.height))
+        canvas.alpha_composite(cropped,(x,y))
+        out_box=canvas.getchannel("A").getbbox()
+        assert out_box and min(out_box[0],out_box[1],512-out_box[2],512-out_box[3])>=42, (
+            archive_name,source_name,out_box)
+        buffer=io.BytesIO()
+        canvas.save(buffer,"PNG",optimize=True)
+        output=buffer.getvalue()
+        derived = True
+    result = {
         "originalSize":[original.width,original.height],
-        "originalRgbaSha256": sha256(rgba.tobytes()).hexdigest(),
+        "originalRgbaSha256":sha256(rgba.tobytes()).hexdigest(),
+        "originalFileSha256":sha256(data).hexdigest(),
         "originalAlphaBox":list(bounds),
-        "runtimeAlphaBox":list(result),
-        "runtimeSha256":sha256(buffer.getvalue()).hexdigest()
+        "originalMargins":margins,
+        "runtimeAlphaBox":list(out_box),
+        "runtimeSha256":sha256(output).hexdigest(),
+        "runtimeDerivativeForMargin42":derived
     }
+    return output,result
 
 
 def generate_preview(images, title):
