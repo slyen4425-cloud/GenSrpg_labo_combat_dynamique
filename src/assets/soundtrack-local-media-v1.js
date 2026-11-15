@@ -5,6 +5,8 @@ import {normalizeSoundtrackCatalogV1} from "../contracts/soundtrack-project-v1.j
 // Distinct from the creator's one-shot SFX importer.
 export function createSoundtrackLocalMediaV1({
   catalog,
+  allowCustom = false,
+  createId = () => globalThis.crypto.randomUUID(),
   createObjectURL = file => URL.createObjectURL(file),
   revokeObjectURL = url => URL.revokeObjectURL(url)
 }) {
@@ -19,6 +21,7 @@ export function createSoundtrackLocalMediaV1({
     byFilename.set(filename,asset);
   }
   const local=new Map();
+  const customAssets=[];
   let disposed=false;
 
   function assertOpen(){if(disposed)throw new Error("local soundtrack media disposed");}
@@ -26,7 +29,7 @@ export function createSoundtrackLocalMediaV1({
     const ids=[...local.keys()];
     return Object.freeze({
       ready:ids.length,
-      total:assets.length,
+      total:assets.length+customAssets.length,
       ids:Object.freeze(ids),
       missing:Object.freeze(assets.filter(a=>!local.has(a.assetId)).map(a=>a.title+".mp3"))
     });
@@ -36,15 +39,33 @@ export function createSoundtrackLocalMediaV1({
     const selected=Array.from(files??[]);
     if(!selected.length)return status();
     const incoming=new Map();
+    const newAssets=[];
+    const newNames=new Set();
     // Validate every file BEFORE allocating object URLs or modifying current media.
     for(const file of selected){
       const filename=String(file?.name??"").toLowerCase();
-      const asset=byFilename.get(filename);
-      if(!asset)throw new TypeError("piste inconnue : "+String(file?.name??""));
+      let asset=byFilename.get(filename)||
+        customAssets.find(a=>(a.title+".mp3").toLowerCase()===filename);
       if(!Number.isFinite(file?.size)||file.size<=0)throw new TypeError("fichier audio vide : "+filename);
       const mime=String(file?.type??"").toLowerCase();
       if(mime && !["audio/mpeg","audio/mp3","audio/x-mpeg"].includes(mime))
         throw new TypeError("MP3 attendu : "+filename);
+      if(!asset){
+        if(!allowCustom)throw new TypeError("piste inconnue : "+String(file?.name??""));
+        if(!filename.endsWith(".mp3"))throw new TypeError("MP3 attendu : "+filename);
+        if(newNames.has(filename))throw new TypeError("piste fournie en double : "+filename);
+        newNames.add(filename);
+        const uuid=String(createId());
+        if(!/^[a-zA-Z0-9_-]{6,100}$/.test(uuid))
+          throw new TypeError("identifiant de musique auto-généré invalide");
+        asset=Object.freeze({assetId:"user:music:"+uuid,kind:"music",origin:"user",
+          title:String(file.name).replace(/\.mp3$/i,"")});
+        if(assets.some(a=>a.assetId===asset.assetId)||
+          customAssets.some(a=>a.assetId===asset.assetId)||
+          newAssets.some(a=>a.assetId===asset.assetId))
+          throw new TypeError("identifiant de musique déjà utilisé");
+        newAssets.push(asset);
+      }
       if(incoming.has(asset.assetId))throw new TypeError("piste fournie en double : "+filename);
       incoming.set(asset.assetId,file);
     }
@@ -64,7 +85,9 @@ export function createSoundtrackLocalMediaV1({
       local.set(id,url);
       if(previous)revokeObjectURL(previous);
     }
-    return status();
+    customAssets.push(...newAssets);
+    return Object.freeze({...status(),imported:Object.freeze([...incoming.keys()]),
+      newAssets:Object.freeze([...newAssets])});
   }
   function runtimeAsset(assetId){
     assertOpen();
@@ -77,5 +100,6 @@ export function createSoundtrackLocalMediaV1({
     for(const url of local.values())revokeObjectURL(url);
     local.clear();
   }
-  return Object.freeze({importFiles,runtimeAsset,status,dispose});
+  return Object.freeze({importFiles,runtimeAsset,status,dispose,
+    customAssets:()=>Object.freeze([...customAssets])});
 }

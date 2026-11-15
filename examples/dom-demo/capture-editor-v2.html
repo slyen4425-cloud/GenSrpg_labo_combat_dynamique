@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>GenSrpG Lab — Éditeur Capture</title>
   <link rel="stylesheet" href="./demo.css?v=wall-layer-scale-xy-20261101-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103">
-  <link rel="stylesheet" href="./capture-editor-v2.css?v=phone-pc-arena-parity-20261103-reflection-layout-20261104-barrier-side-layout-20261105-recolor-sliders-20261113">
+  <link rel="stylesheet" href="./capture-editor-v2.css?v=phone-pc-arena-parity-20261103-reflection-layout-20261104-barrier-side-layout-20261105-recolor-sliders-20261113-soundtrack-four-tabs-20261115">
   <style>
     [data-creature-view-settings][hidden] { display: none; }
     [data-skill-charged-effects-config][hidden] { display: none !important; }
@@ -102,91 +102,84 @@
         <div class="card-title">
           <span class="step">♫</span>
           <div>
-            <h2>Musiques et ambiances du jeu</h2>
-            <p>Chaque jeu possède ses propres choix. La bibliothèque peut réunir les sons de l'application, les sons personnels et ceux du projet. Ce panneau produit seulement la configuration JSON, sans copier ni publier de média.</p>
+            <h2>Musiques du jeu</h2>
+            <p>Choisis un événement, importe une musique, puis règle sa lecture. Toutes les rubriques utilisent la même bibliothèque. Les musiques officielles fonctionnent sans chargement manuel.</p>
           </div>
         </div>
-        <div class="grid two">
-          <label>Identifiant du jeu
-            <input data-soundtrack-project-id value="capture-demo" autocomplete="off" spellcheck="false" aria-label="Identifiant du jeu">
+        <div class="soundtrack-context-tabs" role="tablist" aria-label="Moments du jeu">
+          <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="false"
+            data-soundtrack-quick-scene="capture:combat:victory">🏆 Victoire</button>
+          <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="false"
+            data-soundtrack-quick-scene="capture:combat:defeat">💀 Défaite</button>
+          <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="true"
+            data-soundtrack-quick-scene="capture:combat:normal">⚔️ Combat</button>
+          <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="false"
+            data-soundtrack-quick-scene="capture:exploration:map">🗺️ Aventure / Map</button>
+        </div>
+        <input type="hidden" data-soundtrack-scene-id value="capture:combat:normal">
+
+        <div class="creator-audio-import soundtrack-single-import">
+          <h3>Importer une musique</h3>
+          <label>Choisir un ou plusieurs fichiers MP3
+            <input type="file" data-soundtrack-local-files multiple accept=".mp3,audio/mpeg">
           </label>
-          <div>
-            <button type="button" class="secondary-action" data-soundtrack-new-project>Nouveau jeu avec cet identifiant</button>
-          </div>
+          <p class="note" data-soundtrack-local-status role="status">Les fichiers personnels sont disponibles pour cette session, sans écraser les sons officiels.</p>
         </div>
         <div class="grid two">
-          <label>Contexte sonore
-            <input data-soundtrack-scene-id value="capture:combat:normal" list="soundtrack-scene-suggestions" autocomplete="off" spellcheck="false">
-            <datalist id="soundtrack-scene-suggestions">
-              <option value="capture:combat:normal">Combat standard</option>
-              <option value="capture:combat:boss">Combat de boss</option>
-              <option value="capture:combat:victory">Victoire</option>
-              <option value="capture:combat:defeat">Défaite</option>
-            </datalist>
-          </label>
-          <label>Canal sonore
-            <select data-soundtrack-channel>
-              <option value="music">Musique</option>
-              <option value="ambience">Ambiance continue</option>
-            </select>
-          </label>
-        </div>
-        <div class="skill-save-actions" aria-label="Événements de combat">
-          <button type="button" class="secondary-action" data-soundtrack-quick-scene="capture:combat:normal">Combat</button>
-          <button type="button" class="secondary-action" data-soundtrack-quick-scene="capture:combat:victory">Victoire</button>
-          <button type="button" class="secondary-action" data-soundtrack-quick-scene="capture:combat:defeat">Défaite</button>
-        </div>
-        <p class="note">Victoire : « Triumph's Call » est sélectionné par défaut et joué une seule fois après la victoire réelle. Défaite : sélectionne une piste pour ce contexte. Les autres événements disposent chacun de leur propre configuration.</p>
-        <div class="grid two">
-          <label>Choisir une piste de la bibliothèque
+          <label>Musique à ajouter
             <select data-soundtrack-asset-id aria-label="Piste audio"></select>
           </label>
           <div>
-            <button type="button" class="secondary-action" data-soundtrack-add>Ajouter à la liste</button>
+            <button type="button" class="secondary-action" data-soundtrack-add>Ajouter à cet onglet</button>
           </div>
         </div>
-        <p class="note">Les pistes peuvent être communes à tous les modes, mais leurs paramètres sont enregistrés séparément par jeu et par contexte. Les effets de compétences restent gérés dans leurs sections actuelles.</p>
-        <h3>Liste de lecture</h3>
+        <h3>Musiques sélectionnées</h3>
         <ol data-soundtrack-track-list></ol>
         <div class="grid two">
-          <label>Ordre des pistes
+          <label>Lecture
             <select data-soundtrack-order>
-              <option value="sequence">À la suite</option>
-              <option value="shuffle">Aléatoire (sans répétition immédiate)</option>
+              <option value="sequence">Dans l'ordre</option>
+              <option value="shuffle">Aléatoire</option>
             </select>
           </label>
-          <label>Fondu de transition (secondes)
+          <label>Fondu (secondes)
             <input data-soundtrack-fade type="number" min="0" max="10" step="0.1" value="0.7">
           </label>
-          <label>Volume du canal (0-100 %)
+          <label>Volume (0-100 %)
             <input data-soundtrack-volume type="range" min="0" max="100" step="1" value="75">
           </label>
           <label class="switch-line">
-            <input data-soundtrack-repeat type="checkbox" checked>
-            <span>Rejouer les pistes en boucle</span>
+            <input data-soundtrack-repeat type="checkbox">
+            <span>Rejouer en boucle</span>
           </label>
         </div>
         <div class="skill-save-actions">
-          <button type="button" class="primary-action" data-soundtrack-save>Enregistrer ce contexte</button>
-          <button type="button" class="secondary-action" data-soundtrack-export>Exporter la bande-son JSON</button>
+          <button type="button" class="primary-action" data-soundtrack-save>Enregistrer cet onglet</button>
         </div>
-        <div class="grid two">
-          <label>Charger un catalogue sonore (JSON)
-            <input type="file" accept=".json,application/json" data-soundtrack-catalog-file>
-          </label>
-          <label>Réimporter la bande-son d'un jeu (JSON)
-            <input type="file" accept=".json,application/json" data-soundtrack-project-file>
-          </label>
-        </div>
-        <div class="creator-audio-import">
-          <h3>Musiques Battle disponibles pour tous les joueurs</h3>
-          <p class="note">Les six pistes Battle sont intégrées au lecteur de combat pour tous, sans chargement manuel et sans bouton de téléchargement. Les originaux restent dans l'archive privée ; le jeu diffuse uniquement des copies optimisées. Comme pour tout son reçu par un navigateur, une copie technique reste possible. L'import local ci-dessous est facultatif et destiné aux essais. Exploration sera raccordée séparément.</p>
-          <label>Remplacer temporairement les MP3 pour un essai personnel (facultatif)
-            <input type="file" multiple accept=".mp3,audio/mpeg" data-soundtrack-local-files>
-          </label>
-          <p class="note" data-soundtrack-local-status role="status">Playlist partagée disponible par défaut. Aucun fichier local requis.</p>
-        </div>
-        <p class="note" data-soundtrack-status data-tone="info" role="status">Catalogue et playlist Battle activés pour tous : lance un combat pour écouter, sans importer de fichiers.</p>
+        <details class="soundtrack-advanced">
+          <summary>Options avancées — projet, ambiances et JSON</summary>
+          <div class="grid two">
+            <label>Identifiant du jeu
+              <input data-soundtrack-project-id value="capture-demo" autocomplete="off" spellcheck="false" aria-label="Identifiant du jeu">
+            </label>
+            <button type="button" class="secondary-action" data-soundtrack-new-project>Nouveau jeu avec cet identifiant</button>
+            <label>Canal audio
+              <select data-soundtrack-channel>
+                <option value="music">Musique</option>
+                <option value="ambience">Ambiance continue</option>
+              </select>
+            </label>
+            <button type="button" class="secondary-action" data-soundtrack-export>Exporter la bande-son JSON</button>
+            <label>Importer un catalogue de références (JSON)
+              <input type="file" accept=".json,application/json" data-soundtrack-catalog-file>
+            </label>
+            <label>Importer la configuration d'un jeu (JSON)
+              <input type="file" accept=".json,application/json" data-soundtrack-project-file>
+            </label>
+          </div>
+          <p class="note">Les MP3 importés sont temporaires et se libèrent à la fermeture. Le JSON contient leurs références, pas les fichiers audio. Les effets sonores propres aux créatures restent dans leur éditeur existant. Aventure / Map prépare sa scène sans modifier le moteur Exploration.</p>
+        </details>
+        <p class="note" data-soundtrack-status data-tone="info" role="status">Combat : les six pistes Battle restent sélectionnées par défaut. Victoire conserve « Triumph's Call ». Change d'onglet sans perdre les réglages.</p>
       </article>
     </section>
 

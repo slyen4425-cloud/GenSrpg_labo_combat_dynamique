@@ -143,24 +143,27 @@ const soundtrackEditor = mountSoundtrackAuthoringV1({
   initialProject:SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1
 });
 const soundtrackLocalMedia=createSoundtrackLocalMediaV1({
-  catalog:SOUNDTRACK_STARTER_CATALOG_V1
+  catalog:SOUNDTRACK_STARTER_CATALOG_V1,allowCustom:true
 });
 const soundtrackLocalInput=root.querySelector("[data-soundtrack-local-files]");
 const soundtrackLocalStatus=root.querySelector("[data-soundtrack-local-status]");
 if(!soundtrackLocalInput||!soundtrackLocalStatus)
   throw new Error("Champs d'import de musiques manquants");
 function showSoundtrackLocalStatus(message=null,error=false) {
-  const ready=SOUNDTRACK_STARTER_BATTLE_IDS_V1
+  const ready=soundtrackLocalMedia.status().ready;
+  const battleLocal=SOUNDTRACK_STARTER_BATTLE_IDS_V1
     .filter(id=>soundtrackLocalMedia.runtimeAsset(id)).length;
-  soundtrackLocalStatus.textContent=message ??
-    ready+" / 6 musiques Battle chargées : "+
-    (ready===6?"prêtes pour la prévisualisation Combat.":"charge les MP3 manquants pour la playlist complète.");
+  soundtrackLocalStatus.textContent=
+    (battleLocal===6?"6 / 6 musiques Battle disponibles pour essai local. ":"")+
+    (message ?? ready+" fichier(s) MP3 chargé(s) pour cette session. Les musiques officielles restent disponibles.");
   soundtrackLocalStatus.dataset.tone=error?"error":"info";
 }
 soundtrackLocalInput.addEventListener("change",()=>{
   try {
-    soundtrackLocalMedia.importFiles(soundtrackLocalInput.files);
-    showSoundtrackLocalStatus();
+    const imported=soundtrackLocalMedia.importFiles(soundtrackLocalInput.files);
+    soundtrackEditor.addImportedAssets(imported);
+    showSoundtrackLocalStatus(imported.imported.length+
+      " musique(s) ajoutée(s) à l'onglet actif (session temporaire).");
   } catch(error) {
     showSoundtrackLocalStatus("Import musique refusé : "+(error?.message??String(error)),true);
   } finally {
