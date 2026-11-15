@@ -1,3 +1,13 @@
+## 2026-11-15 — Six ZIP de modèles validés : raccordement visuel canonique (EN VALIDATION)
+- Auteur : six ZIP réels déjà uploadés dans `main` au commit `6dbb6eb6a2829c50265084cdf53afa4d66c3959b` sous `data/capture/showcase/` : Vipfer, Veuve jaune **corrigée**, Carglasse **validée**, Éphémus **validé**, Raiiven **validé**, Veldra **validé**. ZIP originaux préservés sans altération. Aucun gameplay inventé.
+- START : `checkpoint/lab-start-six-creature-visuals-20261115` ; branche de travail `work/lab-six-creature-visuals-20261115` ; PR draft #318. Propriétaires: code/éditeur = Combat `main`, **seuls** médias et catalogue = `global-assets` ; ni GenSRPG, ni Exploration, ni Survie/Dungeon, ni autre moteur modifié.
+- Audit binaire *sur GitHub Actions* run `43678795923` SUCCESS : les six archives CRC correct, chacune contient `sprites_512/face.png`, `dos.png`, `icone.png` avec vrai RGBA transparent 512×512. Sélection exclusive de ces 18 maîtres validés ; aucun recours aux sources_hd, candidats, planches ou placeholders.
+- Marges charte 42 px: quinze PNG déjà conformes seront copiés octet pour octet ; seuls les trois PNG **Veuve jaune** ont des marges 26–32 px et exigent une **dérivée runtime** proportionnelle sans couper ni retoucher les originaux. Préviews face/dos/icône conservées séparément pour revue Android.
+- Importeur strict sous `scripts/publish-six-creature-visuals-20261115.py` + gate GitHub Actions PR en lecture/test sans publication ; après CI / revue GREEN et fusion de la PR sur `main`, unique import append-only sur `global-assets`. Cible attendue : 18 PNG de runtime, 6 planches de revue, 6 manifestes meta, **1 catalogue existant actualisé**. Toute collision d'ID, source ambiguë, hash Git de ZIP changé ou défaut d'alpha bloque le lot.
+- Statut actuel **NON PUBLIÉ / NON GREEN** : gate importer PR et CI complète du SHA final en attente, branche canonique inchangée, cache global-visual-library à réviser après import et vrai test éditeur/page HTTPS + validation smartphone avant achèvement.
+
+---
+
 ## 2026-11-15 — Restauration ciblée de transferts auteur Moussados / Vyrâme (C1)
 - CI `Laboratory CI` SHA `dbd416864085cb733a47428cf3cbbb024f24416d`, run `43651979123` : 2767/2770 tests PASS, 3 assertions historiques échouent uniquement sur deltas auteur connus (deux comparaisons archive Moussados et incompatibilité de teinte sur V9).
 - Correctif de cause : les sentinelles vérifient d'abord chaque valeur nouvellement autorisée, puis comparent tout le reste à l'archive V9 inchangée ; le test de refus V9 reconstruit un vrai input V9 distinct du transfert auteur actif V15. Aucune exception, aucun skip ni assouplissement du contrat. Relancer la CI au nouveau SHA avant GREEN.
