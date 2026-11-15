@@ -238,8 +238,12 @@
           </select>
         </label>
         <label class="technical-field">Identifiant
-          <input data-creature-id value="crea-loup">
+          <input data-creature-id value="crea-loup" readonly spellcheck="false" autocomplete="off">
         </label>
+        <button type="button" class="secondary-action" data-creature-edit-id>
+          Modifier l’identifiant
+        </button>
+        <p class="note">Pour une créature déjà enregistrée : modifier l’identifiant puis utiliser « Mettre à jour ». Les fiches liées sont conservées ; un identifiant déjà pris est refusé.</p>
         <label>Description
           <textarea data-creature-description rows="2">Créature volcanique rapide.</textarea>
         </label>

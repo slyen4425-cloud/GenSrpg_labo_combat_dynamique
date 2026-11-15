@@ -19,4 +19,5 @@ export const CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1 =
     "data/capture/showcase/crea_sylvorne.capture-creature-transfer-v1.json",
     "data/capture/showcase/crea_selachombre.capture-creature-transfer-v1.json",
     "data/capture/showcase/crea_vyrame.capture-creature-transfer-v1.json",
+    "data/capture/showcase/veuve-jaune.capture-creature-transfer-v1.json",
   ]);

@@ -98,6 +98,7 @@ import {
 } from "./capture-editor-skill-save-mode-v1.js?v=reference-elements-skill-id-20261104-sylvorne-fx-size-20261111";
 import {
   resolveCaptureCreatureSaveModeV1,
+  renameCaptureCreatureInLibraryV1,
   nextCaptureCreatureDraftIdV1
 } from "./capture-editor-creature-save-mode-v1.js";
 import {
@@ -12302,12 +12303,14 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       root,
       "[data-creature-id]"
     );
+    // Keep the original record while the author edits its identity.
+    // Otherwise hidden visuals, stats and ability links disappear on rename.
     const previousRecord =
-      selectedCreatureId === creatureId
-        ? configuredCreatures.get(
+      selectedCreatureId === null
+        ? null
+        : configuredCreatures.get(
             selectedCreatureId
-          ) ?? null
-        : null;
+          ) ?? null;
 
     const rawFields = readCreatureFields(
       root,
@@ -12434,9 +12437,15 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
 
   function persistCurrentCreature(intent) {
     const record = currentCreatureRecord();
+    const saveIntent =
+      intent === "update" &&
+      selectedCreatureId !== null &&
+      selectedCreatureId !== record.draft.id
+        ? "rename"
+        : intent;
     const saveMode =
       resolveCaptureCreatureSaveModeV1({
-        intent,
+        intent: saveIntent,
         draftId: record.draft.id,
         selectedCreatureId,
         configuredCreatureIds: [
@@ -12444,10 +12453,22 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         ]
       });
 
-    configuredCreatures.set(
-      record.draft.id,
-      record
-    );
+    if (saveMode.mode === "rename") {
+      renameCaptureCreatureInLibraryV1({
+        configuredCreatures,
+        previousId: saveMode.previousId,
+        record
+      });
+      combatTeamControls.renameCreatureId(
+        saveMode.previousId,
+        record.draft.id
+      );
+    } else {
+      configuredCreatures.set(
+        record.draft.id,
+        record
+      );
+    }
     selectedCreatureId = record.draft.id;
     creatureDirty = false;
     one(
@@ -12467,9 +12488,12 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         ? "Créature « " +
             record.draft.displayName +
             " » créée dans la bibliothèque active."
-        : "Créature « " +
-            record.draft.displayName +
-            " » mise à jour.",
+        : saveMode.mode === "rename"
+          ? "Identifiant modifié : " + saveMode.previousId +
+            " → " + record.draft.id + ". Aucune fiche doublonnée."
+          : "Créature « " +
+              record.draft.displayName +
+              " » mise à jour.",
       "ok"
     );
 
@@ -12479,9 +12503,12 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         ? "Nouvelle créature « " +
             record.draft.displayName +
             " » enregistrée."
-        : "Créature « " +
-            record.draft.displayName +
-            " » mise à jour.",
+        : saveMode.mode === "rename"
+          ? "Identifiant de « " + record.draft.displayName +
+            " » changé sans doublon."
+          : "Créature « " +
+              record.draft.displayName +
+              " » mise à jour.",
       "ok"
     );
 
@@ -12875,6 +12902,18 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         "error"
       );
     }
+  });
+
+  listen(one(root, "[data-creature-edit-id]"), "click", () => {
+    const idInput = one(root, "[data-creature-id]");
+    idInput.readOnly = false;
+    idInput.focus?.();
+    idInput.select?.();
+    updateCreatureLibraryState(
+      "Modifie l'identifiant puis clique sur « Mettre à jour ». " +
+        "La fiche et ses liens seront déplacés sans doublon.",
+      "info"
+    );
   });
 
   listen(newCreatureButton, "click", () => {

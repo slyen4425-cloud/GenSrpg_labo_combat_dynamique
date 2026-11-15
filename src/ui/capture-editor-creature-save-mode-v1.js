@@ -13,9 +13,9 @@ export function resolveCaptureCreatureSaveModeV1({
   selectedCreatureId = null,
   configuredCreatureIds = []
 }) {
-  if (!["create", "update"].includes(intent)) {
+  if (!["create", "update", "rename"].includes(intent)) {
     throw new RangeError(
-      "intent must be create or update"
+      "intent must be create, update or rename"
     );
   }
 
@@ -60,10 +60,105 @@ export function resolveCaptureCreatureSaveModeV1({
     }
   }
 
+
+  if (intent === "rename") {
+    const selected = nonEmptyId(
+      selectedCreatureId,
+      "selectedCreatureId"
+    );
+    if (!ids.has(selected)) {
+      throw new RangeError(
+        "La créature d'origine « " + selected + " » n'existe plus."
+      );
+    }
+    if (id === selected) {
+      throw new RangeError("Le nouvel identifiant est identique à l'ancien.");
+    }
+    if (exists) {
+      throw new RangeError(
+        "Identifiant déjà utilisé : « " + id + " ». Aucune créature n'a été écrasée."
+      );
+    }
+    return Object.freeze({
+      mode: "rename",
+      id,
+      previousId: selected
+    });
+  }
+
   return Object.freeze({
     mode: intent,
     id
   });
+}
+
+// Move the actual owned record; never create a second active authority.
+// Also repair existing evolution links before changing the library Map.
+export function renameCaptureCreatureInLibraryV1({
+  configuredCreatures,
+  previousId,
+  record
+}) {
+  if (!(configuredCreatures instanceof Map)) {
+    throw new TypeError("configuredCreatures must be a Map");
+  }
+  const oldId = nonEmptyId(previousId, "previousId");
+  const newId = nonEmptyId(record?.draft?.id, "record.draft.id");
+  resolveCaptureCreatureSaveModeV1({
+    intent: "rename",
+    draftId: newId,
+    selectedCreatureId: oldId,
+    configuredCreatureIds: [...configuredCreatures.keys()]
+  });
+
+  const updateEvolution = (draft) => {
+    const evolution = draft.capture?.evolution;
+    if (evolution?.targetId !== oldId) return draft;
+    return {
+      ...draft,
+      capture: {
+        ...draft.capture,
+        evolution: { ...evolution, targetId: newId }
+      }
+    };
+  };
+  const replacement = {
+    ...record,
+    draft: updateEvolution({
+      ...record.draft,
+      presentation: record.draft.presentation == null
+        ? null
+        : {
+            ...record.draft.presentation,
+            id: "creature:" + newId,
+            subjectId: newId
+          }
+    }),
+    statValues: record.statValues == null
+      ? null
+      : { ...record.statValues, creatureId: newId },
+    loadout: record.loadout == null
+      ? null
+      : { ...record.loadout, creatureId: newId }
+  };
+  const migrated = new Map();
+  for (const [key, value] of configuredCreatures) {
+    migrated.set(
+      key === oldId ? newId : key,
+      key === oldId
+        ? replacement
+        : {
+            ...value,
+            draft: updateEvolution(value.draft)
+          }
+    );
+  }
+  // Commit only after every identity and collision check has passed.
+  configuredCreatures.clear();
+  for (const [key, value] of migrated) {
+    configuredCreatures.set(key, value);
+  }
+  return replacement;
 }
 
 export function nextCaptureCreatureDraftIdV1({

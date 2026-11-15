@@ -1,3 +1,12 @@
+## 2026-11-15 — Veuve jaune : transfert auteur et correction d'identifiant (EN VALIDATION)
+- Base main `a6a3bce95ef08271f849cd1c871771a64291c625` ; checkpoint `checkpoint/lab-start-veuve-jaune-id-20261115` ; travail `work/lab-veuve-jaune-id-20261115`.
+- Import du transfert JSON fourni par l'auteur en source canonique `data/capture/showcase/veuve-jaune.capture-creature-transfer-v1.json`, avec seulement l'identifiant provisoire `nouvelle-creature` remplacé par `veuve-jaune` dans draft, présentation, statistiques et loadout. Aucun rééquilibrage, modification de socket, éléments, capacités ou image.
+- Les trois `assetId` officiels de Veuve jaune ont été vérifiés dans le catalogue unique `global-assets` (face opposant, dos joueur, icône). Pas de recopie des ZIP ou PNG, pas de catalogue parallèle.
+- Cause du bug d'ID : champ en lecture seule sur les fiches chargées, lecture des données précédentes désactivée si l'ID change, et rejet strict de tout update d'identifiant. Un bouton explicite déverrouille l'ID ; la sauvegarde Mettre à jour renomme la clé unique avec détection de collision, restauration des champs masqués, migration des références d'évolution et des sélections de combat. Tester le combat refuse toujours une identité modifiée non enregistrée.
+- Protégés : compétences, combat, audio, assets canoniques, GenSRPG, Exploration, Survie et Dungeon. Aucun média ni création historique supprimé.
+- CI initiale du commit `11b0e43052f9185eb387ae67d3872b297701fa06` : sentinelles de comptage historiques obsolètes (19 → 20 showcase, 108 → 109 créatures) ; correction ciblée des cinq tests, sans saut ni relâchement, avec assertions spécifiques Veuve jaune.
+- Gates : tests unitaires de collision, renommage, liens évolution, sélection d'équipe, round-trip transfert, CI complète puis navigateur et publication main/HTTPS à prouver ; aucune déclaration GREEN avant tests réels.
+
 ## 2026-11-15 — Éditeur Musiques / Aventure Map : retrouver les quatre pistes officielles
 - START `main@d74faffec7f2758a543c6ebdc01ecdb0b082f832`, checkpoint `checkpoint/combat-map-music-editor-4-tracks-20261115`, branche `work/combat-map-music-editor-4-tracks-20261115`.
 - Cause : les assets `gensrpg:music:exploration:01..04` existent dans le catalogue, mais l'onglet `capture:exploration:map` n'a pas de playlist initiale. Correctif : le projet audio canonique `SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1` propose les quatre pistes de l'Exploration, ordre aléatoire et volume 45%, sans transférer de MP3 privés.
