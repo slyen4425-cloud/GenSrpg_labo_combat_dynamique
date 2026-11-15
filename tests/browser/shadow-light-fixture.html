@@ -19,6 +19,7 @@
 <script type="module">
 import { mountCombatDemo } from "../../src/ui/demo-app.js";
 import { mountCaptureCombatPreviewV1 } from "../../src/ui/capture-combat-preview-v1.js";
+import { visibleModelsOverlap } from "../../src/adapters/renderer/dom-visible-model-contact.js";
 const query = selector => document.querySelector(selector);
 const fail = message => { document.body.dataset.shadowProbe = "fail:" + message; };
 try {
@@ -197,8 +198,28 @@ try {
       const aligned = demo.getCollisionModelFor("opponent")?.visibleRect?.();
       if (!aligned || Math.abs(centerY(sourceMask) - centerY(aligned)) > 3)
         throw Error("fixture alpha masks still misaligned after real positioning");
+      // The fixture tests REAL pixel contact, not merely rectangle proximity:
+      // actual alpha silhouettes must overlap before the native approach begins.
+      // The flyer's authored idle offset and asymmetric role scale can otherwise
+      // leave a narrow transparent gap despite matching DOM bounding boxes.
+      const modelOverlap = () => visibleModelsOverlap(
+        demo.getCollisionModelFor("player").snapshot(),
+        demo.getCollisionModelFor("opponent").snapshot());
+      const baseLeft = Number.parseFloat(flying.style.left);
+      const baseTop = Number.parseFloat(flying.style.top);
+      if (!Number.isFinite(baseLeft) || !Number.isFinite(baseTop))
+        throw Error("real alpha-mask positioning lacks CSS coordinates");
+      let preflightOverlap = modelOverlap();
+      for (const [dx,dy] of [[0,-24],[0,24],[-24,0],[24,0],[-40,-40],[40,40],[0,-60],[0,60]]) {
+        if (preflightOverlap) break;
+        flying.style.left = (baseLeft + dx) + "px";
+        flying.style.top = (baseTop + dy) + "px";
+        void flying.offsetWidth;
+        preflightOverlap = modelOverlap();
+      }
+      if (!preflightOverlap) throw Error("real alpha silhouettes could not be put in contact");
       const contactPromise = demo.playApproachFor("player", "ground", {
-        travelMs: 850, targetSlot: "opponent", holdOnContact: true,
+        travelMs: 1450, targetSlot: "opponent", holdOnContact: true,
         onContact() { touchCount += 1; return { outcome: "contact_held" }; }
       });
       const startedWaitingAt = performance.now();
