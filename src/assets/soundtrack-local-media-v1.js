@@ -44,7 +44,8 @@ export function createSoundtrackLocalMediaV1({
     // Validate every file BEFORE allocating object URLs or modifying current media.
     for(const file of selected){
       const filename=String(file?.name??"").toLowerCase();
-      let asset=byFilename.get(filename);
+      let asset=byFilename.get(filename)||
+        customAssets.find(a=>(a.title+".mp3").toLowerCase()===filename);
       if(!Number.isFinite(file?.size)||file.size<=0)throw new TypeError("fichier audio vide : "+filename);
       const mime=String(file?.type??"").toLowerCase();
       if(mime && !["audio/mpeg","audio/mp3","audio/x-mpeg"].includes(mime))
