@@ -1,0 +1,109 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "veuve-jaune-toile-paralysante",
+    "description": "Obstacle destructible pendant 20 s : 3 PV par point Électricité, intercepte projectiles/rayons/contact. Au contact adverse, 6 dégâts électriques par seconde et immobilisation 1,5 s (retour possible après 6 s).",
+    "requiredLevel": 5,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "veuve-jaune-toile-paralysante",
+      "name": "Toile paralysante",
+      "category": "defensive",
+      "form": "self",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "electric",
+      "approachMode": "none",
+      "energyCost": 6,
+      "preparationMs": 1000,
+      "travelMs": 0,
+      "recoveryMs": 200,
+      "cooldownMs": 70000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": false,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "summon_entity",
+          "targetScope": "self",
+          "entityKind": "barrier",
+          "statId": "electric",
+          "hpPerStatPoint": 3,
+          "interceptKinds": [
+            "projectile",
+            "beam",
+            "contact"
+          ],
+          "placementMode": "arena",
+          "arenaXPct": 47,
+          "arenaYPct": 55,
+          "opponentPlacementMode": "arena",
+          "opponentArenaXPct": 70,
+          "opponentArenaYPct": 50,
+          "durationMs": 20000,
+          "contactDamage": 6,
+          "contactDamageIntervalMs": 1000,
+          "contactImmobilizeMs": 1500,
+          "contactImmobilizeCooldownMs": 6000
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:veuve-jaune-toile-paralysante",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "veuve-jaune-toile-paralysante",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-barrier-dome-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

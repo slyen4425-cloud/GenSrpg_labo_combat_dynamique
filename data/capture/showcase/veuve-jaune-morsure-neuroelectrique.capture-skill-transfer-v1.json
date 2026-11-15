@@ -1,0 +1,169 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "veuve-jaune-morsure-neuroelectrique",
+    "description": "Morsure : 16 dégâts électriques, puis trois décharges de 4 dégâts à 1, 2 et 3 s.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "veuve-jaune-morsure-neuroelectrique",
+      "name": "Morsure neuroélectrique",
+      "category": "offensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": "electric",
+      "approachMode": "ground",
+      "energyCost": 5,
+      "preparationMs": 800,
+      "travelMs": 600,
+      "recoveryMs": 200,
+      "cooldownMs": 18000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 16,
+          "channel": "electric"
+        },
+        {
+          "kind": "scheduled_effect",
+          "targetScope": "target",
+          "trigger": {
+            "type": "after_ms",
+            "delayMs": 1000
+          },
+          "effects": [
+            {
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 4,
+              "channel": "electric"
+            }
+          ]
+        },
+        {
+          "kind": "scheduled_effect",
+          "targetScope": "target",
+          "trigger": {
+            "type": "after_ms",
+            "delayMs": 2000
+          },
+          "effects": [
+            {
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 4,
+              "channel": "electric"
+            }
+          ]
+        },
+        {
+          "kind": "scheduled_effect",
+          "targetScope": "target",
+          "trigger": {
+            "type": "after_ms",
+            "delayMs": 3000
+          },
+          "effects": [
+            {
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 4,
+              "channel": "electric"
+            }
+          ]
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:veuve-jaune-morsure-neuroelectrique",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "veuve-jaune-morsure-neuroelectrique",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-croc-electrique-01"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-electric-01",
+          "displayScale": 2.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "stretch",
+          "durationMs": 650,
+          "rotationDeg": 0,
+          "opacity": 0.8,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
+    }
+  }
+}
