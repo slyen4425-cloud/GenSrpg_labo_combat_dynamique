@@ -1,0 +1,197 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "veuve-jaune-domaine-de-la-veuve",
+    "description": "Ultime utilisable après 30 s, une seule fois par combat : 40 dégâts électriques, 3 vagues de 7 dégâts et +40 si la cible est déjà ralentie ou immobilisée.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "veuve-jaune-domaine-de-la-veuve",
+      "name": "Domaine de la Veuve",
+      "category": "offensive",
+      "form": "area",
+      "loadoutSlot": "ultimate",
+      "element": "electric",
+      "approachMode": "none",
+      "energyCost": 10,
+      "preparationMs": 2000,
+      "travelMs": 0,
+      "recoveryMs": 200,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "combat_elapsed_ms",
+            "threshold": 30000
+          }
+        ]
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 40,
+          "channel": "electric"
+        },
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 40,
+          "channel": "electric",
+          "condition": {
+            "type": "status_kind_any",
+            "values": [
+              "approach_time_modifier",
+              "immobilize"
+            ],
+            "minimum": 1
+          }
+        },
+        {
+          "kind": "scheduled_effect",
+          "targetScope": "target",
+          "trigger": {
+            "type": "after_ms",
+            "delayMs": 1000
+          },
+          "effects": [
+            {
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 7,
+              "channel": "electric"
+            }
+          ]
+        },
+        {
+          "kind": "scheduled_effect",
+          "targetScope": "target",
+          "trigger": {
+            "type": "after_ms",
+            "delayMs": 2000
+          },
+          "effects": [
+            {
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 7,
+              "channel": "electric"
+            }
+          ]
+        },
+        {
+          "kind": "scheduled_effect",
+          "targetScope": "target",
+          "trigger": {
+            "type": "after_ms",
+            "delayMs": 3000
+          },
+          "effects": [
+            {
+              "kind": "damage",
+              "targetScope": "target",
+              "amount": 7,
+              "channel": "electric"
+            }
+          ]
+        }
+      ],
+      "projectileTargeting": "direct"
+    },
+    "presentation": {
+      "id": "skill:veuve-jaune-domaine-de-la-veuve",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "veuve-jaune-domaine-de-la-veuve",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-beam-electrique-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-cast-electric-01",
+          "displayScale": 1.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 0.8,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-electric-01",
+          "displayScale": 2.1,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.95,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "durationMs": 600
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

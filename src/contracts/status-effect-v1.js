@@ -18,6 +18,7 @@ export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "triggered_buff",
   "immunity",
   "immobilize",
+  "roster_lock",
   "silence",
   "stun",
   "taunt"
@@ -162,6 +163,7 @@ const FIELDS_BY_KIND = Object.freeze({
     "intangible"
   ]),
   immobilize: COMMON_FIELDS,
+  roster_lock: COMMON_FIELDS,
   silence: COMMON_FIELDS,
   stun: COMMON_FIELDS,
   taunt: COMMON_FIELDS

@@ -483,6 +483,11 @@ function effectLinesFor(
         "Déplacement et approches impossibles ; approche en cours arrêtée. Attaques stationnaires possibles."
       ]);
 
+    case "roster_lock":
+      return Object.freeze([
+        "Rappel et échange interdits jusqu’à la fin du statut. La créature peut toujours attaquer ; le verrouillage ne peut pas être détruit ni dissipé."
+      ]);
+
     case "silence":
       return Object.freeze([
         "Projectiles, rayons et zones à distance bloqués ; contact et capacités sur soi autorisés."

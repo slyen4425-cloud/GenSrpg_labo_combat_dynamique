@@ -40,6 +40,12 @@ export function createCombatBarrierV1({state,sourceActorId,protectedActorId,sour
       "opponentPlacementMode","opponentArenaXPct","opponentArenaYPct",
       "opponentOffsetForwardPx","opponentOffsetUpPx"
     ].filter(key=>effect[key]!=null).map(key=>[key,effect[key]])),
+    ...(effect.label?{label:effect.label}:{}),
+    ...(effect.durationMs?{expiresAtMs:atMs+effect.durationMs}:{}),
+    ...(effect.contactDamage!=null?{contactDamage:effect.contactDamage,contactDamageIntervalMs:effect.contactDamageIntervalMs}:{}),
+    ...(effect.contactImmobilizeMs?{contactImmobilizeMs:effect.contactImmobilizeMs,
+      contactImmobilizeCooldownMs:effect.contactImmobilizeCooldownMs}:{}),
+    ...((effect.contactDamage!=null||effect.contactImmobilizeMs)?{contactTimesByActor:frozen({})}:{}),
     createdAtMs:atMs});
   return frozen({outcome:previous?"refreshed":"created",record,
     state:frozen({...state,combatEntities:frozen([...current.filter(entry=>!same(entry)),record])})});

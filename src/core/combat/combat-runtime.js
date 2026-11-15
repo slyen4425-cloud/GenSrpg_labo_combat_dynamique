@@ -984,6 +984,12 @@ export function createCombatRuntime({
       ? (visibleContact?combatEntityId??spatialBarrierId:spatialBarrierId)
       : physicalKind==="contact" && visibleContact && combatEntityId
         ? combatEntityId : spatialBarrierId;
+    // Melee approach physically touches the same visible barrier that
+    // intercepts the strike. Projectiles and beams are never body contacts.
+    if(physicalKind==="contact"&&barrierContactId&&effectiveAction.actorId!==effectiveAction.targetId){
+      session.touchCombatBarrierV1?.({contactedEntityId:barrierContactId,
+        hostileActorId:effectiveAction.actorId,atMs:resolutionCombatMs});
+    }
     const resolvedAction=["projectile","beam","contact"].includes(physicalKind)
       ? Object.freeze({...effectiveAction,barrierContactId})
       : effectiveAction;

@@ -102,11 +102,11 @@
       }
     },
     "skillIds": [
-      "claw",
-      "fireball",
-      "cap_fire_special_1",
-      "lib_flame_bite",
-      "cap_fire_atk_6"
+      "veuve-jaune-fil-foudroyant",
+      "veuve-jaune-toile-paralysante",
+      "veuve-jaune-morsure-neuroelectrique",
+      "veuve-jaune-emprise-de-soie",
+      "veuve-jaune-domaine-de-la-veuve"
     ],
     "presentation": {
       "id": "creature:veuve-jaune",
@@ -199,23 +199,23 @@
     "slots": [
       {
         "id": "slot-1",
-        "skillId": "claw"
+        "skillId": "veuve-jaune-fil-foudroyant"
       },
       {
         "id": "slot-2",
-        "skillId": "fireball"
+        "skillId": "veuve-jaune-toile-paralysante"
       },
       {
         "id": "slot-3",
-        "skillId": "cap_fire_special_1"
+        "skillId": "veuve-jaune-morsure-neuroelectrique"
       },
       {
         "id": "slot-4",
-        "skillId": "lib_flame_bite"
+        "skillId": "veuve-jaune-emprise-de-soie"
       },
       {
         "id": "slot-ultimate",
-        "skillId": "cap_fire_atk_6"
+        "skillId": "veuve-jaune-domaine-de-la-veuve"
       }
     ]
   }

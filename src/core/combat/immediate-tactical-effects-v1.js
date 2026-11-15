@@ -225,6 +225,7 @@ function targetMeetsEffectConditionV1({state,targetActorId,condition,atMs}){
     const matches=condition.type==="sleep"
       ? definition.kind==="stun" && definition.durationModel==="until_damage"
       : condition.type==="status_kind" ? definition.kind===condition.value
+      : condition.type==="status_kind_any" ? condition.values.includes(definition.kind)
       : definition.kind==="stack_counter" &&
         definition.id==="marker:"+condition.value &&
         definition.tags.includes("gensrpg:marker:v1");

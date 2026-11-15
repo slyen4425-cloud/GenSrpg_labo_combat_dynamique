@@ -487,7 +487,7 @@ export function removeStatusEffectsV1({
     targetActorId,
     target.statusEffects.filter(
       (instance) =>
-        !(
+        instance.definition.kind === "roster_lock" || !(
           instance.definition.polarity ===
             polarity &&
           tagsMatch(

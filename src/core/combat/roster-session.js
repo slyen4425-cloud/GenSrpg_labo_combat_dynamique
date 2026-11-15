@@ -1,4 +1,4 @@
-import { resumeStatusEffectsV1 } from "./status-effect-runtime-v1.js";
+import { resumeStatusEffectsV1, hasActiveStatusKindV1 } from "./status-effect-runtime-v1.js";
 import { normalizeRosterVoluntarySwitchCooldownMsV1 } from "../../contracts/roster-switch-policy-v1.js";
 import {
   createCombatState
@@ -364,10 +364,16 @@ export function createRosterSession({
     team.nextVoluntarySwitchAtMs = combatSession.snapshot().elapsedMs + voluntaryCooldownMs;
   }
 
+  function rosterLocked(team) {
+    return Boolean(team.activeMemberId && hasActiveStatusKindV1(
+      combatSession.snapshot(),team.slotId,"roster_lock"));
+  }
+
   function previewRecall(teamId) {
     const team = teamOf(teamId);
     if (!team.activeMemberId) return Object.freeze({ ok: false, outcome: "no_active_member" });
     if (combatSession.snapshot().fighters[team.slotId]?.hp <= 0) return Object.freeze({ ok: false, outcome: "active_member_ko" });
+    if (rosterLocked(team)) return Object.freeze({ok:false,outcome:"roster_locked"});
     return voluntaryCooldownPreview(team) ?? Object.freeze({ ok: true, outcome: "ready" });
   }
 
@@ -454,6 +460,7 @@ export function createRosterSession({
     const team = teamOf(teamId);
     if (!team.activeMemberId) return Object.freeze({ ok: false, outcome: "no_active_member" });
     if (combatSession.snapshot().fighters[team.slotId]?.hp <= 0) return Object.freeze({ ok: false, outcome: "active_member_ko" });
+    if (rosterLocked(team)) return Object.freeze({ok:false,outcome:"roster_locked"});
     const cooldown = voluntaryCooldownPreview(team);
     if (cooldown) return cooldown;
     const targetId = memberId ?? team.selectedReserveMemberId;
@@ -730,6 +737,8 @@ export function createRosterSession({
         Number(combatSession.snapshot().fighters[team.slotId]?.hp) <= 0)) {
       return Object.freeze({ok:false,outcome:"force_switch_active_required",targetRef});
     }
+
+    if (forced && rosterLocked(team)) return Object.freeze({ok:false,outcome:"roster_locked",targetRef});
 
     const reserveEffects =
       reserveEffectsForSkill(skill);

@@ -115,7 +115,9 @@ const FIELDS_BY_KIND = Object.freeze({
     "visualScale", "visualScaleX", "visualScaleY", "offsetForwardPx", "offsetUpPx", "placementMode", "arenaXPct", "arenaYPct", "opponentSpriteAssetId",
     "opponentVisualScale", "opponentVisualScaleX", "opponentVisualScaleY",
     "opponentPlacementMode", "opponentArenaXPct", "opponentArenaYPct",
-    "opponentOffsetForwardPx", "opponentOffsetUpPx"
+    "opponentOffsetForwardPx", "opponentOffsetUpPx",
+    "durationMs","contactDamage","contactDamageIntervalMs",
+    "contactImmobilizeMs","contactImmobilizeCooldownMs","label"
   ])
 });
 
@@ -287,20 +289,31 @@ export function normalizeSkillEffectV1(input) {
 
   if(value.condition != null){
     const c=objectValue(value.condition,"SkillEffectV1.condition");
-    assertKnownFields(c,new Set(["type","value","minimum","invert"]),"SkillEffectV1.condition");
+    assertKnownFields(c,new Set(["type","value","values","minimum","invert"]),"SkillEffectV1.condition");
     const type=requiredString(c.type,"condition.type");
-    if(!["sleep","status_kind","marker"].includes(type))throw new RangeError("Unknown condition type");
-    const ref=type==="sleep"?null:requiredString(c.value,"condition.value");
-    if(type==="sleep" && c.value!=null)throw new RangeError("Sleep has no ID");
-    if(type==="status_kind" && !STATUS_EFFECT_V1_KINDS.includes(ref))throw new RangeError("Unknown status condition");
-    if(type==="marker" && !/^[a-z0-9][a-z0-9_-]{0,63}$/.test(ref))throw new RangeError("Invalid marker condition");
+    if(!["sleep","status_kind","status_kind_any","marker"].includes(type))throw new RangeError("Unknown condition type");
+    let ref=null,values=null;
+    if(type==="status_kind_any"){
+      if(c.value!=null)throw new TypeError("status_kind_any uses values");
+      if(!Array.isArray(c.values)||c.values.length<2||c.values.length>6||
+        new Set(c.values).size!==c.values.length||
+        c.values.some(kind=>!STATUS_EFFECT_V1_KINDS.includes(kind)))
+        throw new RangeError("status_kind_any requires distinct native statuses");
+      values=Object.freeze([...c.values]);
+    } else {
+      if(c.values!=null)throw new TypeError("values require status_kind_any");
+      ref=type==="sleep"?null:requiredString(c.value,"condition.value");
+      if(type==="sleep"&&c.value!=null)throw new RangeError("Sleep has no ID");
+      if(type==="status_kind"&&!STATUS_EFFECT_V1_KINDS.includes(ref))throw new RangeError("Unknown status condition");
+      if(type==="marker"&&!/^[a-z0-9][a-z0-9_-]{0,63}$/.test(ref))throw new RangeError("Invalid marker condition");
+    }
     const minimum=positiveInteger(c.minimum??1,"condition.minimum");
     if(minimum>99)throw new RangeError("Condition max is 99");
-    if(c.invert!=null && typeof c.invert!=="boolean")throw new TypeError("Invalid condition.invert");
-    if(["persistent_zone","scheduled_effect","life_steal"].includes(kind) || isReserveEffectTargetScopeV2(targetScope))
+    if(c.invert!=null&&typeof c.invert!=="boolean")throw new TypeError("Invalid condition.invert");
+    if(["persistent_zone","scheduled_effect","life_steal"].includes(kind)||isReserveEffectTargetScopeV2(targetScope))
       throw new RangeError("Conditions apply to immediate active-target effects only");
-    output.condition=Object.freeze({type,...(ref===null?{}:{value:ref}),minimum,
-      ...(c.invert===true?{invert:true}:{})});
+    output.condition=Object.freeze({type,...(ref===null?{}:{value:ref}),
+      ...(values===null?{}:{values}),minimum,...(c.invert===true?{invert:true}:{})});
   }
 
   if (kind === "summon_entity") {
@@ -309,6 +322,16 @@ export function normalizeSkillEffectV1(input) {
     output.entityKind = "barrier";
     output.statId = requiredString(value.statId, "summon_entity.statId");
     output.hpPerStatPoint = positiveNumber(value.hpPerStatPoint, "summon_entity.hpPerStatPoint");
+    if(value.durationMs!=null)output.durationMs=positiveNumber(value.durationMs,"summon_entity.durationMs");
+    if(value.label!=null)output.label=requiredString(value.label,"summon_entity.label");
+    if(value.contactDamage!=null){
+      output.contactDamage=nonNegativeNumber(value.contactDamage,"summon_entity.contactDamage");
+      output.contactDamageIntervalMs=positiveNumber(value.contactDamageIntervalMs??1000,"summon_entity.contactDamageIntervalMs");
+    } else if(value.contactDamageIntervalMs!=null)throw new TypeError("contactDamageIntervalMs requires contactDamage");
+    if(value.contactImmobilizeMs!=null){
+      output.contactImmobilizeMs=positiveNumber(value.contactImmobilizeMs,"summon_entity.contactImmobilizeMs");
+      output.contactImmobilizeCooldownMs=positiveNumber(value.contactImmobilizeCooldownMs??6000,"summon_entity.contactImmobilizeCooldownMs");
+    } else if(value.contactImmobilizeCooldownMs!=null)throw new TypeError("contactImmobilizeCooldownMs requires contactImmobilizeMs");
     const kinds=value.interceptKinds??["projectile","beam","contact"];
     if (!Array.isArray(kinds) || kinds.length===0 ||
         kinds.some(kind=>!["projectile","beam","contact"].includes(kind)) ||

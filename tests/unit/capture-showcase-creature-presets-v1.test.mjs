@@ -166,7 +166,7 @@ test("Human Editor hydrates showcase presets through the existing Transfer plann
   );
 });
 
-test("Veuve jaune author transfer has stable identity and unchanged authored bindings", async () => {
+test("Veuve jaune retains author identity, stats and visuals with its validated five-skill loadout", async () => {
   const imported = await importedPreset(
     "data/capture/showcase/veuve-jaune.capture-creature-transfer-v1.json"
   );
@@ -183,8 +183,9 @@ test("Veuve jaune author transfer has stable identity and unchanged authored bin
   assert.equal(record.statValues.values.electric, 15);
   assert.equal(record.loadout.creatureId, "veuve-jaune");
   assert.deepEqual(record.loadout.slots.map(slot => slot.skillId), [
-    "claw", "fireball", "cap_fire_special_1",
-    "lib_flame_bite", "cap_fire_atk_6"
+    "veuve-jaune-fil-foudroyant", "veuve-jaune-toile-paralysante",
+    "veuve-jaune-morsure-neuroelectrique", "veuve-jaune-emprise-de-soie",
+    "veuve-jaune-domaine-de-la-veuve"
   ]);
   assert.equal(record.draft.presentation.id, "creature:veuve-jaune");
   assert.equal(record.draft.presentation.subjectId, "veuve-jaune");

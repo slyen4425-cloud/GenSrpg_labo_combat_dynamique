@@ -422,6 +422,17 @@ const server = createServer(async (req, res) => {
                 element.dispatchEvent(new Event("change",{bubbles:true}));
               };
               change(select,"veuve-jaune");
+              const authorSkills=[
+                "veuve-jaune-fil-foudroyant","veuve-jaune-toile-paralysante",
+                "veuve-jaune-morsure-neuroelectrique","veuve-jaune-emprise-de-soie",
+                "veuve-jaune-domaine-de-la-veuve"
+              ];
+              const equipped=()=>[...document.querySelectorAll("[data-loadout-slot]")].map(node=>node.value);
+              if(JSON.stringify(equipped())!==JSON.stringify(authorSkills))
+                throw Error("new Veuve jaune skills were not equipped in live editor: "+equipped());
+              const skillLibrary=q("[data-skill-library-select]");
+              for(const skill of authorSkills)if(!skillLibrary?.querySelector('option[value="'+skill+'"]'))
+                throw Error("new skill absent from canonical editor library: "+skill);
               const id=q("[data-creature-id]");
               if(id.value!=="veuve-jaune" || !id.readOnly)
                 throw Error("old identity did not load and lock");
@@ -444,6 +455,8 @@ const server = createServer(async (req, res) => {
               if(id.value!=="veuve-jaune-auteur" || !id.readOnly)
                 throw Error("new ID not locked after update");
               change(select,"veuve-jaune-auteur");
+              if(JSON.stringify(equipped())!==JSON.stringify(authorSkills))
+                throw Error("Veuve jaune 5 abilities lost during canonical identity rename");
               if(q("[data-creature-name]").value!==name ||
                  q("[data-creature-player-scale]").value!==scales[0] ||
                  q("[data-creature-opponent-scale]").value!==scales[1])
