@@ -4,7 +4,8 @@ import {readFileSync} from "node:fs";
 import {importCaptureTransferJsonV1} from "../../src/adapters/input/capture/capture-entity-transfer-v1.js";
 import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-skill-presets-v1.js";
 import {createCombatSession} from "../../src/core/combat/combat-session.js";
-import {hasActiveStatusKindV1} from "../../src/core/combat/status-effect-runtime-v1.js";
+import {hasActiveStatusKindV1, applyStatusEffectV1, removeStatusEffectsV1} from "../../src/core/combat/status-effect-runtime-v1.js";
+import {createRosterSession} from "../../src/core/combat/roster-session.js";
 import {applyImmediateTacticalEffectsV1} from "../../src/core/combat/immediate-tactical-effects-v1.js";
 import {createCombatState} from "../../src/core/combat/combat-state.js";
 
@@ -100,4 +101,51 @@ test("Ultimate waits thirty seconds, once per combat, with exactly +40 for slow 
   const state=createCombatState({fighters:[fighter("veuve",15),fighter("enemy")]});
   const single=applyImmediateTacticalEffectsV1({state,actorId:"veuve",targetId:"enemy",skill:ultimate,atMs:0});
   assert.equal(single.state.fighters.enemy.hp,160,"normal target takes only the base 40 instantly");
+});
+
+test("Emprise's native lock rejects actual recall/switch, resists cleanse, then expires at 20 s",()=>{
+  const rosterDefinition=read("data/combat/rosters/demo-2v2.roster.json");
+  const maraileron=read("data/combat/fighters/maraileron.combat.json");
+  const braisombre=read("data/combat/fighters/braisombre.combat.json");
+  const session=createCombatSession({fighters:[
+    {...maraileron,id:"player",initialHp:100,initialEnergy:9},
+    {...braisombre,id:"opponent",initialHp:100,initialEnergy:9}
+  ]});
+  const roster=createRosterSession({combatSession:session,roster:rosterDefinition,
+    fighterConfigs:{maraileron,braisombre},recallCooldownMs:0});
+  assert.equal(roster.previewRecall("opponent").ok,true);
+  assert.equal(roster.previewSwitch("opponent").ok,true);
+  const hit=applyImmediateTacticalEffectsV1({state:session.snapshot(),
+    actorId:"player",targetId:"opponent",skill:skills[3],atMs:0});
+  assert.equal(hit.state.fighters.opponent.hp,82);
+  session.replaceFighter("opponent",hit.state.fighters.opponent);
+  assert.equal(roster.previewRecall("opponent").outcome,"roster_locked");
+  assert.equal(roster.previewSwitch("opponent").outcome,"roster_locked");
+  assert.equal(roster.recall("opponent").outcome,"roster_locked");
+  assert.equal(roster.switchMember("opponent").outcome,"roster_locked");
+  const cleansed=removeStatusEffectsV1({state:session.snapshot(),
+    targetActorId:"opponent",polarity:"detrimental"});
+  assert.equal(hasActiveStatusKindV1(cleansed,"opponent","roster_lock"),true);
+  session.advanceMs(19999);
+  assert.equal(roster.previewRecall("opponent").outcome,"roster_locked");
+  session.advanceMs(1);
+  assert.equal(roster.previewRecall("opponent").ok,true);
+  assert.equal(roster.previewSwitch("opponent").ok,true);
+});
+
+test("Ultimate bonus is exactly 40 with either slowing, immobilization, or both",()=>{
+  const ultimate=skills[4],target="enemy",source="veuve";
+  const slow=skills[0].effects[1].status;
+  const root={id:"veuve-jaune-immobilise-test",kind:"immobilize",polarity:"detrimental",
+    durationModel:"time_ms",durationMs:3000,stacking:"refresh",maxStacks:1,tags:[]};
+  const simulated=(statuses)=>{
+    let state=createCombatState({fighters:[fighter(source,15),fighter(target)]});
+    for(const status of statuses)state=applyStatusEffectV1({state,targetActorId:target,
+      sourceActorId:source,sourceSkillId:"setup",status,atMs:0});
+    return applyImmediateTacticalEffectsV1({state,actorId:source,targetId:target,skill:ultimate,atMs:0}).state.fighters[target].hp;
+  };
+  assert.equal(simulated([]),160);
+  assert.equal(simulated([slow]),120);
+  assert.equal(simulated([root]),120);
+  assert.equal(simulated([slow,root]),120);
 });
