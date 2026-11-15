@@ -107,16 +107,16 @@
           </div>
         </div>
         <div class="soundtrack-context-tabs" role="tablist" aria-label="Moments du jeu">
-          <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="true"
+          <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="false"
             data-soundtrack-quick-scene="capture:combat:victory">🏆 Victoire</button>
           <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="false"
             data-soundtrack-quick-scene="capture:combat:defeat">💀 Défaite</button>
-          <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="false"
+          <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="true"
             data-soundtrack-quick-scene="capture:combat:normal">⚔️ Combat</button>
           <button type="button" class="soundtrack-context-tab" role="tab" aria-selected="false"
             data-soundtrack-quick-scene="capture:exploration:map">🗺️ Aventure / Map</button>
         </div>
-        <input type="hidden" data-soundtrack-scene-id value="capture:combat:victory">
+        <input type="hidden" data-soundtrack-scene-id value="capture:combat:normal">
 
         <div class="creator-audio-import soundtrack-single-import">
           <h3>Importer une musique</h3>
@@ -179,7 +179,7 @@
           </div>
           <p class="note">Les MP3 importés sont temporaires et se libèrent à la fermeture. Le JSON contient leurs références, pas les fichiers audio. Les effets sonores propres aux créatures restent dans leur éditeur existant. Aventure / Map prépare sa scène sans modifier le moteur Exploration.</p>
         </details>
-        <p class="note" data-soundtrack-status data-tone="info" role="status">Victoire : « Triumph's Call » est déjà sélectionné. Change d'onglet sans perdre les réglages.</p>
+        <p class="note" data-soundtrack-status data-tone="info" role="status">Combat : les six pistes Battle restent sélectionnées par défaut. Victoire conserve « Triumph's Call ». Change d'onglet sans perdre les réglages.</p>
       </article>
     </section>
 
