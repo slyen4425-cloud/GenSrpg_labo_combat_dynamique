@@ -514,6 +514,50 @@ export function createCombatSession({
     return advanceMs(Number(seconds) * 1000);
   }
 
+  // Physical touch comes from the SAME wall sensor as interception. Combat
+  // State owns wall HP, lifetimes, contact throttling and all negative statuses.
+  function touchCombatBarrierV1({contactedEntityId,hostileActorId,atMs=state.elapsedMs}){
+    const wall=(state.combatEntities??[]).find(entity=>entity.id===contactedEntityId &&
+      entity.kind==="barrier"&&entity.hp>0);
+    if(!wall || wall.ownerActorId===hostileActorId ||
+       !state.fighters[hostileActorId] || state.fighters[hostileActorId].hp<=0 ||
+       (wall.expiresAtMs!=null && wall.expiresAtMs<=atMs))
+      return Object.freeze({ok:false,outcome:"no_hostile_contact",state});
+    const now=Number(atMs),previous=wall.contactTimesByActor?.[hostileActorId]??{};
+    if(!Number.isFinite(now)||now<0)throw new RangeError("atMs must be non-negative");
+    const damageReady=wall.contactDamage>0 &&
+      (previous.damageAtMs==null || now-previous.damageAtMs>=wall.contactDamageIntervalMs);
+    const lockReady=wall.contactImmobilizeMs>0 &&
+      (previous.immobilizeAtMs==null || now-previous.immobilizeAtMs>=wall.contactImmobilizeCooldownMs);
+    if(!damageReady&&!lockReady)return Object.freeze({ok:true,outcome:"contact_cooldown",state});
+    const effects=[
+      ...(damageReady?[{kind:"damage",targetScope:"target",amount:wall.contactDamage,channel:"electric"}]:[]),
+      ...(lockReady?[{kind:"apply_status",targetScope:"target",status:{
+        id:wall.sourceSkillId+":contact-immobilize",kind:"immobilize",
+        polarity:"detrimental",durationModel:"time_ms",durationMs:wall.contactImmobilizeMs,
+        stacking:"refresh",maxStacks:1,tags:["barrier-contact"]
+      }}]:[])
+    ];
+    const resolved=applyImmediateTacticalEffectsV1({
+      state,actorId:wall.ownerActorId,targetId:hostileActorId,
+      skill:{id:wall.sourceSkillId,element:"electric",effects},
+      atMs:now,combatAtMs:now,battleFormat
+    });
+    state=resolved.state;
+    const latest=state.combatEntities.find(entity=>entity.id===contactedEntityId);
+    if(latest){
+      const times=Object.freeze({...latest.contactTimesByActor,
+        [hostileActorId]:Object.freeze({...previous,
+          ...(damageReady?{damageAtMs:now}:{}),
+          ...(lockReady?{immobilizeAtMs:now}:{})})});
+      state=Object.freeze({...state,combatEntities:Object.freeze(state.combatEntities.map(
+        entity=>entity.id===contactedEntityId?Object.freeze({...entity,contactTimesByActor:times}):entity
+      ))});
+    }
+    return Object.freeze({ok:true,outcome:"contact_pulse",damageReady,immobilized:lockReady,
+      events:resolved.events,state});
+  }
+
   // Pulse effects are resolved through the SINGLE native tactical HP/status
   // application path. ContactHold does not own a private damage calculator.
   function applyContactHoldTickV1({ actorId, targetId, skill, atMs, contactedEntityId = null }) {
@@ -637,6 +681,7 @@ export function createCombatSession({
     advance,
     applyContactHoldTickV1,
     applyChannelingTickV1,
+    touchCombatBarrierV1,
     addChargeEffect,
     replaceFighter,
     departFighter,
