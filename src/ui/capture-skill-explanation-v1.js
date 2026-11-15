@@ -96,6 +96,7 @@ function statusStory(s){
     case "immunity":line=s.intangible?"Devient immatérielle et résiste aux dégâts et aux états négatifs":
       "Devient immunisée contre "+words((s.domains??[]).map(x=>x==="damage"?"les dégâts":"les états négatifs"));break;
     case "immobilize":line="Immobilise la cible";break;
+    case "roster_lock":line="Interdit le rappel et l’échange de la cible sans empêcher ses attaques ; verrou non destructible";break;
     case "silence":line="Empêche la cible d'utiliser certaines capacités";break;
     case "stun":line="Étourdit la cible";break;
     case "taunt":line="Provoque la cible";break;
