@@ -395,6 +395,81 @@ const server = createServer(async (req, res) => {
       </script>`;
       contents=Buffer.from(html.replace("</head>",plugin+"</head>"));
     }
+    // Real Chrome: a saved author creature can change its identity without
+    // creating a second record, dropping presentation, or overwriting others.
+    if (pathname.endsWith("/capture-editor-v2.html") &&
+        new URL(req.url, "http://localhost").searchParams.has("verify-creature-id-rename")) {
+      const html = contents.toString("utf8");
+      const probe = `<script>
+        document.addEventListener("DOMContentLoaded",()=>{
+          let attempts=0;
+          const timer=setInterval(()=>{
+            const q=s=>document.querySelector(s);
+            const select=q("[data-creature-library-select]");
+            if(!select?.querySelector('option[value="veuve-jaune"]') ||
+               !select?.querySelector('option[value="crea_lumilo"]') ||
+               !q("[data-creature-library-state]")?.textContent?.includes("modèles vitrine chargés")){
+              if(++attempts>100){clearInterval(timer);document.body.dataset.creatureIdRenameProbe="timeout";}
+              return;
+            }
+            clearInterval(timer);
+            try{
+              const original=[...select.options].map(x=>x.value).filter(Boolean);
+              if(original.length!==109)throw Error("expected 109 before rename, got "+original.length);
+              const change=(element,value)=>{
+                element.value=value;
+                element.dispatchEvent(new Event("input",{bubbles:true}));
+                element.dispatchEvent(new Event("change",{bubbles:true}));
+              };
+              change(select,"veuve-jaune");
+              const id=q("[data-creature-id]");
+              if(id.value!=="veuve-jaune" || !id.readOnly)
+                throw Error("old identity did not load and lock");
+              const name=q("[data-creature-name]").value;
+              const health=q('[data-creature-stat-value="health"]')?.value;
+              const scales=[
+                q("[data-creature-player-scale]").value,
+                q("[data-creature-opponent-scale]").value
+              ];
+              q("[data-creature-edit-id]").click();
+              if(id.readOnly)throw Error("edit ID button failed to unlock");
+              change(id,"veuve-jaune-auteur");
+              q("[data-creature-update]").click();
+              if(q("[data-editor-status]")?.dataset.tone==="error")
+                throw Error("save rejected: "+q("[data-editor-status]").textContent);
+              const saved=[...select.options].map(x=>x.value).filter(Boolean);
+              if(saved.length!==109 || new Set(saved).size!==109 ||
+                 saved.includes("veuve-jaune") || !saved.includes("veuve-jaune-auteur"))
+                throw Error("rename duplicated or lost species");
+              if(id.value!=="veuve-jaune-auteur" || !id.readOnly)
+                throw Error("new ID not locked after update");
+              change(select,"veuve-jaune-auteur");
+              if(q("[data-creature-name]").value!==name ||
+                 q("[data-creature-player-scale]").value!==scales[0] ||
+                 q("[data-creature-opponent-scale]").value!==scales[1])
+                throw Error("authored name or combat visual scale lost");
+              if(health!==undefined &&
+                q('[data-creature-stat-value="health"]')?.value!==health)
+                throw Error("health stat lost on reload");
+              q("[data-creature-edit-id]").click();
+              change(id,"crea_lumilo");
+              q("[data-creature-update]").click();
+              const after=[...select.options].map(x=>x.value).filter(Boolean);
+              if(after.length!==109 || !after.includes("veuve-jaune-auteur") ||
+                 after.filter(x=>x==="crea_lumilo").length!==1)
+                throw Error("collision unexpectedly overwrote a creature");
+              if(!/déjà utilisé/i.test(q("[data-editor-status]").textContent))
+                throw Error("collision was not explained");
+              document.body.dataset.creatureIdRenameProbe="ok:rename:reload:collision:109";
+            }catch(error){
+              document.body.dataset.creatureIdRenameProbe="fail:"+error.message;
+            }
+          },100);
+        });
+      </script>`;
+      contents=Buffer.from(html.replace("</head>",probe+"</head>"));
+    }
+
     // Real healing-capability test despite an unrelated unsaved evolution target.
     if (pathname.endsWith("/capture-editor-v2.html") &&
         new URL(req.url, "http://localhost").searchParams.has("verify-heal-evolution-isolation")) {
@@ -2227,6 +2302,12 @@ try {
   // Validates the complete browser module graph and real Human Editor DOM projection.
   const normalDom = await dumpDom(url);
   assertCreatures(normalDom, "normal browser bootstrap");
+  const renameDom=await dumpDom(url+"?verify-creature-id-rename=1");
+  const renameProbe=renameDom.match(/data-creature-id-rename-probe="([^"]+)"/)?.[1]??"missing";
+  if(renameProbe!=="ok:rename:reload:collision:109")
+    throw Error("Real Chrome creature ID change/collision regression: "+renameProbe+
+      " JS="+(renameDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
+  console.log("Veuve jaune ID: actual editor rename, reload and conflicting ID rejection verified in Chromium");
   const sylvorneEditorDom=await dumpDom(url+"?verify-sylvorne-editor-media=1");
   assertCreatures(sylvorneEditorDom,"Sylvorne editor media browser bootstrap");
   const sylvorneEditorProbe=sylvorneEditorDom.match(/data-sylvorne-editor-media-probe="([^"]+)"/)?.[1]??"missing";
