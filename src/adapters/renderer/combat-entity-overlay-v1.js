@@ -209,7 +209,7 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
         viewport.style.aspectRatio="auto";
         viewport.style.height=size.artHeight+"px";
       }
-      item.label.textContent="🧊 Mur "+formatHp(entity);
+      item.label.textContent=(entity.label??"🧊 Mur")+" "+formatHp(entity);
       // Display the single HP badge just BELOW the wall's base. When a huge
       // authored sprite exceeds the visible arena, pin that badge to the
       // lower visible edge instead of losing it below the screen.
@@ -226,7 +226,7 @@ export function createCombatEntityOverlayV1({fighterContainers,arenaHost=null,te
         Math.min(preferredTop,visibleRect.bottom-labelHeight-6));
       item.label.style.top=Math.round(top-spriteRect.top)+"px";
       item.node.setAttribute("role","status");
-      item.node.setAttribute("aria-label","Mur destructible, "+entity.hp+" PV sur "+entity.maxHp);
+      item.node.setAttribute("aria-label",(entity.label??"Mur destructible")+", "+entity.hp+" PV sur "+entity.maxHp);
       if(existing&&entity.hp<existing.hp&&typeof item.sprite.animate==="function"){
         item.sprite.animate([{opacity:1,filter:"brightness(1)"},{opacity:.55,filter:"brightness(2.5)"},{opacity:1,filter:"brightness(1)"}],{duration:240,iterations:1});
       }
