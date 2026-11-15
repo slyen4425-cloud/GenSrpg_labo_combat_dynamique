@@ -151,8 +151,11 @@ if(!soundtrackLocalInput||!soundtrackLocalStatus)
   throw new Error("Champs d'import de musiques manquants");
 function showSoundtrackLocalStatus(message=null,error=false) {
   const ready=soundtrackLocalMedia.status().ready;
-  soundtrackLocalStatus.textContent=message ??
-    ready+" fichier(s) MP3 chargé(s) pour cette session. Les musiques officielles restent disponibles.";
+  const battleLocal=SOUNDTRACK_STARTER_BATTLE_IDS_V1
+    .filter(id=>soundtrackLocalMedia.runtimeAsset(id)).length;
+  soundtrackLocalStatus.textContent=
+    (battleLocal===6?"6 / 6 musiques Battle disponibles pour essai local. ":"")+
+    (message ?? ready+" fichier(s) MP3 chargé(s) pour cette session. Les musiques officielles restent disponibles.");
   soundtrackLocalStatus.dataset.tone=error?"error":"info";
 }
 soundtrackLocalInput.addEventListener("change",()=>{
