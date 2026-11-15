@@ -40,16 +40,24 @@ test("victory defaults to one non-looping track, defeat remains independently co
  assert.deepEqual(p.scenes["capture:combat:victory"].music.tracks,[victoryId]);
  assert.equal(p.scenes["capture:combat:victory"].music.repeat,false);
  assert.equal(p.scenes["capture:combat:defeat"].music,null);
- const out={events:[],play(id){const v={id,stop(){out.events.push(["stop",id]);},
- setVolume(){},onEnded(fn){this.end=fn;}};out.events.push(["play",id]);return v;}};
- const timers={setTimeout(fn){fn();return 1;},clearTimeout(){}};
+ const voices=[];
+ const out={play(id){const v={id,stopped:false,stop(){v.stopped=true;},
+ setVolume(){},onEnded(fn){v.end=fn;}};voices.push(v);return v;}};
+ const scheduled=new Map();let nextTimer=0;
+ const clock={setTimeout(fn){const id=++nextTimer;scheduled.set(id,fn);return id;},
+ clearTimeout(id){scheduled.delete(id);}};
+ // A real browser resolves the same assetId to HTTPS; Node import.meta.url
+ // deliberately resolves to file:, which the browser adapter rejects.
  const bridge=createCombatSoundtrackPreviewBridgeV1({
-  catalog:c,project:p,output:out,clock:timers,resolveAudioAsset:soundtrackRuntimeAssetV1
+  catalog:c,project:p,output:out,clock,
+  resolveAudioAsset:id=>id===victoryId?{assetId:id,url:"https://example.test/victory.mp3"}:null
  });
  assert.equal(bridge.transitionTo("capture:combat:victory").music,victoryId);
- const voice=out.events.filter(([name])=>name==="play");
- assert.equal(voice.length,1);
+ assert.equal(voices.length,1);
+ voices[0].end();
+ assert.equal(voices.length,1,"single-play victory must never loop");
  bridge.dispose();
+ assert.equal(scheduled.size,0);
 });
 test("the real combat pipeline forwards the ending result into the existing soundtrack session",()=>{
  const ui=readFileSync(new URL("../../src/ui/combat-2v2-test-ui.js",import.meta.url),"utf8");
