@@ -88,7 +88,8 @@
           "contactDamage": 6,
           "contactDamageIntervalMs": 1000,
           "contactImmobilizeMs": 1500,
-          "contactImmobilizeCooldownMs": 6000
+          "contactImmobilizeCooldownMs": 6000,
+          "label": "🕸️ Toile"
         }
       ]
     },
