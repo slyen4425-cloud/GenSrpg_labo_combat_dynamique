@@ -130,7 +130,7 @@ export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,in
   }
   function save(){
     commitScene();
-    state("Réglages enregistrés pour cet onglet. Export JSON disponible dans Avancé.");
+    state("Configuration enregistrée pour cet onglet. Export JSON disponible dans Avancé.");
   }
   // One canonical catalog + SoundtrackProject, regardless of selected tab.
   function addImportedAssets({newAssets=[],imported=[]}={}){
