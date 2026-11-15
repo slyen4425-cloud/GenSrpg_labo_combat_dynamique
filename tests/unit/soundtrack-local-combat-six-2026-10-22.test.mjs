@@ -38,6 +38,10 @@ test("ten private source tracks are public METADATA only; exactly six Battle in 
   assert.equal(p.scenes["capture:combat:normal"].music.repeat,true);
   assert.equal(p.scenes["capture:combat:normal"].ambience,null);
   assert.ok(exploration.every(id=>!battle.includes(id)));
+  assert.deepEqual(p.scenes["capture:exploration:map"].music.tracks,exploration,
+    "the four existing Exploration music assets appear in the Map editor");
+  assert.equal(p.scenes["capture:exploration:map"].music.order,"shuffle");
+  assert.equal(p.scenes["capture:exploration:map"].music.volume,.45);
   const serialized=JSON.stringify({catalog:c,project:p});
   assert.doesNotMatch(serialized,/\.mp3|github\.com|https?:|blob:|\/audio\/musiques/);
 });
