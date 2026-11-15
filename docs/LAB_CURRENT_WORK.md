@@ -1,3 +1,9 @@
+## 2026-11-15 — Éditeur Musiques / Aventure Map : retrouver les quatre pistes officielles
+- START `main@d74faffec7f2758a543c6ebdc01ecdb0b082f832`, checkpoint `checkpoint/combat-map-music-editor-4-tracks-20261115`, branche `work/combat-map-music-editor-4-tracks-20261115`.
+- Cause : les assets `gensrpg:music:exploration:01..04` existent dans le catalogue, mais l'onglet `capture:exploration:map` n'a pas de playlist initiale. Correctif : le projet audio canonique `SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1` propose les quatre pistes de l'Exploration, ordre aléatoire et volume 45%, sans transférer de MP3 privés.
+- Le bouton Enregistrer sérialise le **même SoundtrackProjectV1 validé** sous une clé par jeu sur l'origine GH Pages ; le lecteur Exploration accepte la projection de cette scène via Capture. Une seule configuration, pas de deuxième lecteur, pas de fichier binary ni de base supplémentaire. Les références à des MP3 personnels temporaires ne sont pas persistées car elles ne sont pas résolubles après fermeture.
+- Ne pas fusionner avant tests catalogue, sauvegarde/relecture et scénarios Combat/Victoire/Défaite invariants, vrai navigateur, main CI+Pages+HTTPS. Aucune modification des sons Combat, des capacités ou des modèles auteur.
+
 ## 2026-11-15 — Ergonomie Musiques : quatre onglets, une importation MP3
 - START `main@50a225489c462e4a996e6873d79695f8ef681efa`, checkpoint `checkpoint/lab-start-soundtrack-four-tabs-20261115`, branche `work/lab-soundtrack-four-tabs-20261115`.
 - Retour utilisateur : l'éditeur Musiques entremêle les imports JSON, les MP3 temporaires, les identifiants de scènes, les raccourcis Combat/Victoire/Défaite et la bibliothèque. Un seul parcours d'import visible a été demandé, avec quatre onglets : **Victoire / Défaite / Combat / Aventure-Map**.

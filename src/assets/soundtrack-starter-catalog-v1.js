@@ -46,6 +46,15 @@ export const SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1 = Object.freeze({
       ambience:null
     }),
     // A separate defeat slot is author-editable; no invented defeat recording.
-    "capture:combat:defeat":Object.freeze({music:null,ambience:null})
+    "capture:combat:defeat":Object.freeze({music:null,ambience:null}),
+    // The four author-approved tracks remain in Exploration's native player.
+    // Only their canonical scene configuration is authored here.
+    "capture:exploration:map":Object.freeze({
+      music:Object.freeze({
+        tracks:SOUNDTRACK_STARTER_EXPLORATION_IDS_V1,
+        order:"shuffle",volume:0.45,fadeMs:0,repeat:true
+      }),
+      ambience:null
+    })
   })
 });

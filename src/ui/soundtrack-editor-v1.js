@@ -30,7 +30,7 @@ export function soundtrackAuthoringCatalogGroupsV1(rawCatalog,channel) {
       label:x.title+" · "+ORIGIN[x.origin]})));
 }
 
-export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,initialProject=null}) {
+export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,initialProject=null,saveProject=null}) {
   if (!root?.querySelector) throw new TypeError("audio editor root required");
   const one=key=>{
     const element=root.querySelector("[data-soundtrack-"+key+"]");
@@ -130,7 +130,10 @@ export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,in
   }
   function save(){
     commitScene();
-    state("Configuration enregistrée pour cet onglet. Export JSON disponible dans Avancé.");
+    if(saveProject)saveProject(project,catalog);
+    state(saveProject
+      ?"Configuration enregistrée pour ce jeu. Les quatre onglets utilisent le même projet."
+      :"Configuration enregistrée pour cet onglet. Export JSON disponible dans Avancé.");
   }
   // One canonical catalog + SoundtrackProject, regardless of selected tab.
   function addImportedAssets({newAssets=[],imported=[]}={}){

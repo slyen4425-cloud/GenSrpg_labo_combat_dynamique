@@ -4,6 +4,8 @@ import {
   SOUNDTRACK_STARTER_BATTLE_IDS_V1
 } from "../../src/assets/soundtrack-starter-catalog-v1.js";
 import {createSoundtrackLocalMediaV1} from "../../src/assets/soundtrack-local-media-v1.js";
+import {createSoundtrackBrowserStorageV1}
+ from "../../src/ui/soundtrack-browser-storage-v1.js";
 import {soundtrackRuntimeAssetV1} from "../../src/assets/soundtrack-runtime-library-v1.js";
 import {
   mountSoundtrackAuthoringV1
@@ -137,10 +139,20 @@ arenaSelect.value = "city";
 
 // Independent per-game soundtrack authoring. No coupling to creature drafts,
 // skill FX, test-runtime timing or user-upload storage.
+const officialSoundtrackStorage=createSoundtrackBrowserStorageV1(window);
+let savedSoundtrackProject=null;
+try{
+  savedSoundtrackProject=officialSoundtrackStorage.read(
+    SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1.projectId,SOUNDTRACK_STARTER_CATALOG_V1);
+}catch(error){
+  console.warn("Ancienne configuration audio illisible : projet d'origine conservé",error);
+}
 const soundtrackEditor = mountSoundtrackAuthoringV1({
   root: root.querySelector("[data-soundtrack-editor]"),
   initialCatalog:SOUNDTRACK_STARTER_CATALOG_V1,
-  initialProject:SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1
+  initialProject:savedSoundtrackProject??SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1,
+  saveProject:project=>officialSoundtrackStorage.save(
+    project,SOUNDTRACK_STARTER_CATALOG_V1)
 });
 const soundtrackLocalMedia=createSoundtrackLocalMediaV1({
   catalog:SOUNDTRACK_STARTER_CATALOG_V1,allowCustom:true

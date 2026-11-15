@@ -38,6 +38,10 @@ test("ten private source tracks are public METADATA only; exactly six Battle in 
   assert.equal(p.scenes["capture:combat:normal"].music.repeat,true);
   assert.equal(p.scenes["capture:combat:normal"].ambience,null);
   assert.ok(exploration.every(id=>!battle.includes(id)));
+  assert.deepEqual(p.scenes["capture:exploration:map"].music.tracks,exploration,
+    "the four existing Exploration music assets appear in the Map editor");
+  assert.equal(p.scenes["capture:exploration:map"].music.order,"shuffle");
+  assert.equal(p.scenes["capture:exploration:map"].music.volume,.45);
   const serialized=JSON.stringify({catalog:c,project:p});
   assert.doesNotMatch(serialized,/\.mp3|github\.com|https?:|blob:|\/audio\/musiques/);
 });
@@ -128,7 +132,10 @@ test("real editor has a local file control and resolver before other one-shot SF
   assert.match(html,/data-soundtrack-local-status/);
   assert.match(html,/multiple accept="\.mp3,audio\/mpeg"/);
   assert.match(boot,/initialCatalog:SOUNDTRACK_STARTER_CATALOG_V1/);
-  assert.match(boot,/initialProject:SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1/);
+  assert.match(boot,/initialProject:savedSoundtrackProject\?\?SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1/);
+  assert.match(boot,/createSoundtrackBrowserStorageV1/);
+  assert.match(boot,/officialSoundtrackStorage\.save\(/);
+  assert.match(boot,/officialSoundtrackStorage\.read\(/);
   assert.match(boot,/soundtrackLocalMedia\.importFiles\(soundtrackLocalInput\.files\)/);
   assert.match(boot,/soundtrackLocalMedia\.runtimeAsset\(assetId\)/);
   assert.match(boot,/resolveAudioAsset:resolveEditorAudioAsset/);
