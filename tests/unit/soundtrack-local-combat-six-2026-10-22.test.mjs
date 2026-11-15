@@ -133,8 +133,9 @@ test("real editor has a local file control and resolver before other one-shot SF
   assert.match(html,/multiple accept="\.mp3,audio\/mpeg"/);
   assert.match(boot,/initialCatalog:SOUNDTRACK_STARTER_CATALOG_V1/);
   assert.match(boot,/initialProject:savedSoundtrackProject\?\?SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1/);
-  assert.match(boot,/saveOfficialSoundtrackProjectV1\(window\.localStorage/);
-  assert.match(boot,/readOfficialSoundtrackProjectV1\(window\.localStorage/);
+  assert.match(boot,/createSoundtrackBrowserStorageV1/);
+  assert.match(boot,/officialSoundtrackStorage\.save\(/);
+  assert.match(boot,/officialSoundtrackStorage\.read\(/);
   assert.match(boot,/soundtrackLocalMedia\.importFiles\(soundtrackLocalInput\.files\)/);
   assert.match(boot,/soundtrackLocalMedia\.runtimeAsset\(assetId\)/);
   assert.match(boot,/resolveAudioAsset:resolveEditorAudioAsset/);
