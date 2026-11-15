@@ -4,7 +4,7 @@ Source archives remain untouched on Combat main; media live only on global-asset
 No gameplay presets, renderer or independent asset database are created.
 """
 import argparse
-from hashlib import sha256
+from hashlib import sha256, sha1
 import io
 import json
 from pathlib import Path
@@ -115,14 +115,20 @@ def run(source_root,canonical):
     for slug,(name,archive,blob_sha) in SOURCES.items():
         zip_path=source_root/"data/capture/showcase"/archive
         assert zip_path.is_file(),zip_path
+        zip_bytes=zip_path.read_bytes()
+        git_blob=sha1(b"blob "+str(len(zip_bytes)).encode()+b"\\0"+zip_bytes).hexdigest()
+        assert git_blob==blob_sha, f"Archive changed after author deposit: {archive} {git_blob}"
         target=canonical/"assets/library/capture/creatures"/slug
         assert not target.exists(), f"Target already exists: {target}; refusing to overwrite"
         generated={}
         trace={}
+        selected_paths={}
         with ZipFile(zip_path) as z:
             assert z.testzip() is None, f"Bad ZIP CRC: {archive}"
             for source_role,role in ROLE_NAME.items():
                 path=pick_source(z,source_role)
+                assert path not in selected_paths.values(), f"Source wrongly shared between views: {archive} {path}"
+                selected_paths[source_role]=path
                 generated[source_role],trace[source_role]=prepare_png(z.read(path),archive,path)
                 trace[source_role]["archiveMember"]=path
         ids={}
