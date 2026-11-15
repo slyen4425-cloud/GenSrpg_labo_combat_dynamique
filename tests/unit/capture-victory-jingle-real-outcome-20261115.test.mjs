@@ -36,7 +36,9 @@ test("actual author MP3 bytes are delivered once, with verifiable immutable prov
 });
 test("victory defaults to one non-looping track, defeat remains independently configurable",()=>{
  const c=normalizeSoundtrackCatalogV1(catalog),p=normalizeSoundtrackProjectV1(project,c);
+ assert.equal(victoryId,"gensrpg:music:combat:victory-triumphs-call","reuse authoritative private manifest ID");
  assert.equal(c.assets.filter(x=>x.assetId===victoryId).length,1);
+ assert.match(c.assets.find(x=>x.assetId===victoryId).licenseRef,/verify-before-public-delivery/);
  assert.deepEqual(p.scenes["capture:combat:victory"].music.tracks,[victoryId]);
  assert.equal(p.scenes["capture:combat:victory"].music.repeat,false);
  assert.equal(p.scenes["capture:combat:defeat"].music,null);

@@ -3,8 +3,8 @@
 export const SOUNDTRACK_STARTER_BATTLE_IDS_V1 = Object.freeze(
   Array.from({length:6},(_,i)=>`gensrpg:music:combat:battle-${String(i+1).padStart(2,"0")}`)
 );
-// Author-supplied "Triumph's Call". One licensed runtime delivery copy only.
-export const SOUNDTRACK_STARTER_VICTORY_ID_V1 = "gensrpg:music:combat:victory-01";
+// Creator-supplied "Triumph's Call". Public-delivery rights pending verification.
+export const SOUNDTRACK_STARTER_VICTORY_ID_V1 = "gensrpg:music:combat:victory-triumphs-call";
 export const SOUNDTRACK_STARTER_EXPLORATION_IDS_V1 = Object.freeze(
   Array.from({length:4},(_,i)=>`gensrpg:music:exploration:${String(i+1).padStart(2,"0")}`)
 );
@@ -22,7 +22,7 @@ export const SOUNDTRACK_STARTER_CATALOG_V1 = Object.freeze({
     Object.freeze({
       assetId:SOUNDTRACK_STARTER_VICTORY_ID_V1,kind:"music",origin:"app",
       title:"Triumph's Call · Victoire",
-      licenseRef:"author-supplied-triumphs-call-2026-11-15"
+      licenseRef:"creator-suno-rights-verify-before-public-delivery-2026-11-15"
     })
   ])
 });
