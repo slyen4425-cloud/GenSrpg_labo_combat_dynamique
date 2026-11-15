@@ -792,6 +792,8 @@ export function advanceCombatTime(state, deltaMs, { energyStatusAtStart = {}, co
   return Object.freeze({
     ...state,
     elapsedMs,
-    fighters: Object.freeze(fighters)
+    fighters: Object.freeze(fighters),
+    combatEntities: Object.freeze((state.combatEntities ?? []).filter(entity =>
+      entity.expiresAtMs == null || entity.expiresAtMs > elapsedMs))
   });
 }
