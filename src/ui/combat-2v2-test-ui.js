@@ -833,6 +833,21 @@ export async function mountCoop2v2Test({
   let rosterPanel = null;
   const koTransitions = new Set();
   let announcedBattleOutcome = null;
+  function announceBattleOutcome(outcome) {
+    if (disposed || announcedBattleOutcome !== null ||
+        !["victory","defeat","draw"].includes(outcome)) return;
+    announcedBattleOutcome=outcome;
+    try { onBattleOutcome(outcome); }
+    catch (error) { console.warn("Présentation audio du résultat indisponible",error); }
+  }
+  // The existing embedded Combat lifecycle settles before KO animations finish.
+  // Subscribe before the host gets its completion Promise; do not infer results.
+  if (embeddedLifecycle) {
+    void embeddedLifecycle.completion.then(({outcome}) => {
+      if (outcome === "victory" || outcome === "defeat")
+        announceBattleOutcome(outcome);
+    });
+  }
   let aiDecisionQueued = false;
 
   for (const actor of format.actors) {
@@ -2053,15 +2068,13 @@ export async function mountCoop2v2Test({
       koTransitions.delete(actorId);
       if (result.outcome === "team_defeated") {
         setStatus("Plus de réserve pour cette créature.", "info");
-        if (announcedBattleOutcome === null) {
+        if (announcedBattleOutcome === null && !embeddedLifecycle) {
+          // Standalone editor preview reads real RosterSession only after
+          // replacement; embedded sessions use their native completion.
           const outcome=resolveCaptureCombatBattleOutcomeV1({
             format,rosterSnapshot:rosterController.snapshot(),defeatedActorId:actorId
           });
-          if (outcome !== null) {
-            announcedBattleOutcome=outcome; // exactly once per actual finished battle
-            try { onBattleOutcome(outcome); }
-            catch (error) { console.warn("Présentation audio du résultat indisponible",error); }
-          }
+          if (outcome !== null) announceBattleOutcome(outcome);
         }
       }
       renderState();
