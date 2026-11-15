@@ -1,3 +1,9 @@
+## 2026-11-15 — Stabiliser la sentinelle Chromium du contact réel ombre/vol (en validation)
+- Source `main@4fcba6dad6427c832a7c3181b5bafe4a8a1c0998` ; checkpoint `checkpoint/lab-start-real-shadow-contact-fixture-20261115` ; branche `work/lab-real-shadow-contact-fixture-20261115`.
+- Objet uniquement : `tests/browser/shadow-light-fixture.html` et cette déclaration. Modifier le placement de la **fixture** après le premier changement de transform du moteur et figer son idle déjà vérifié ; aucun test simulé, aucun capteur/CollisionModel remplacé, pas de retry ni timeout gonflé.
+- Cause observée sur la même SHA : contact 1/2 exécutions, alpha bounding box distance ~8.47px malgré préflight correct ; flotter/transform peuvent changer avant premier RAF. Le résultat exige encore une vraie remontée `onContact`, pause du corps/ombre, puis restauration de la WAAPI. Pas de suppression/édition de code moteur ou assets.
+- Interdits : contournement du test, modification Combat Runtime, musique, catalogue global, GenSRPG, Exploration et sauvegardes. Gates : CI 5/5 sur SHA final (deux exécutions comparées), Pages, checkpoint GREEN.
+
 ## 2026-11-15 — Six ZIP de modèles validés : raccordement visuel canonique (EN VALIDATION)
 - Auteur : six ZIP réels déjà uploadés dans `main` au commit `6dbb6eb6a2829c50265084cdf53afa4d66c3959b` sous `data/capture/showcase/` : Vipfer, Veuve jaune **corrigée**, Carglasse **validée**, Éphémus **validé**, Raiiven **validé**, Veldra **validé**. ZIP originaux préservés sans altération. Aucun gameplay inventé.
 - START : `checkpoint/lab-start-six-creature-visuals-20261115` ; branche de travail `work/lab-six-creature-visuals-20261115` ; PR draft #318. Propriétaires: code/éditeur = Combat `main`, **seuls** médias et catalogue = `global-assets` ; ni GenSRPG, ni Exploration, ni Survie/Dungeon, ni autre moteur modifié.
