@@ -178,8 +178,25 @@ try {
       flying.style.transition = "none";
       flying.style.left = getComputedStyle(player).left;
       flying.style.top = getComputedStyle(player).top;
-      // Force geometry before the existing contact watcher samples it.
+      // The two fighter roles have different visual sizes/anchors. Equal CSS
+      // top values do not place their actual accepted alpha masks together.
+      // Align ONLY this test fixture, using the real collision-model geometry;
+      // do not change the engine, create a fake sensor or waive real contact.
       void flying.offsetWidth;
+      const sourceMask = demo.getCollisionModelFor("player")?.visibleRect?.();
+      const targetMask = demo.getCollisionModelFor("opponent")?.visibleRect?.();
+      if (!sourceMask || !targetMask) throw Error("real contact masks missing");
+      const centerY = box => box.top + box.height / 2;
+      const topOffset = centerY(sourceMask) - centerY(targetMask);
+      const currentTop = Number.parseFloat(flying.style.top);
+      if (!Number.isFinite(topOffset) || !Number.isFinite(currentTop))
+        throw Error("real fighter anchor cannot be aligned");
+      flying.style.top = (currentTop + topOffset) + "px";
+      // Force actual browser geometry before the existing contact watcher.
+      void flying.offsetWidth;
+      const aligned = demo.getCollisionModelFor("opponent")?.visibleRect?.();
+      if (!aligned || Math.abs(centerY(sourceMask) - centerY(aligned)) > 3)
+        throw Error("fixture alpha masks still misaligned after real positioning");
       const contactPromise = demo.playApproachFor("player", "ground", {
         travelMs: 850, targetSlot: "opponent", holdOnContact: true,
         onContact() { touchCount += 1; return { outcome: "contact_held" }; }
