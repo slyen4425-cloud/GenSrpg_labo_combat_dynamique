@@ -1,3 +1,9 @@
+## 2026-11-15 — Actualisation ciblée du catalogue visuel unique après six ZIP (NON GREEN tant que CI/HTTPS non vérifiés)
+- Base `main@4fcba6dad6427c832a7c3181b5bafe4a8a1c0998` ; checkpoint `checkpoint/lab-start-six-creature-catalog-refresh-20261115` ; branche `work/lab-six-creature-catalog-refresh-20261115`.
+- Objectif : invalider l'ancien cache de l'UNIQUE catalogue `global-assets` après son import post-merge (commit `207b750908a32a9cd2e1ffa330b70df396876504`), sans recopier de médias.
+- Seuls changements : `src/assets/global-visual-library.js`, test sentinelle dédié et cette déclaration. Protégés : moteur, fiches, audio, Exploration, GenSRPG, 6 ZIP auteurs et leur provenance.
+- Test : version de cache unique v65 sur tous les catalogues et images, aucun fork/snapshot/asset ID manuel, CI complète, Pages même SHA et navigateur lecteur réel. Pas de GREEN anticipé.
+
 ## 2026-11-15 — Stabiliser la sentinelle Chromium du contact réel ombre/vol (en validation)
 - Source `main@4fcba6dad6427c832a7c3181b5bafe4a8a1c0998` ; checkpoint `checkpoint/lab-start-real-shadow-contact-fixture-20261115` ; branche `work/lab-real-shadow-contact-fixture-20261115`.
 - Objet uniquement : `tests/browser/shadow-light-fixture.html` et cette déclaration. Modifier le placement de la **fixture** après le premier changement de transform du moteur et figer son idle déjà vérifié ; aucun test simulé, aucun capteur/CollisionModel remplacé, pas de retry ni timeout gonflé.
