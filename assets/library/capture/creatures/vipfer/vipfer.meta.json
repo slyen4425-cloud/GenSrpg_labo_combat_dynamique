@@ -1,0 +1,120 @@
+{
+  "id": "vipfer",
+  "name": "Vipfer",
+  "status": "approved-artwork-only-no-bestiary-creature",
+  "views": {
+    "opponent": "runtime/vipfer_face.png",
+    "player": "runtime/vipfer_dos.png",
+    "icon": "runtime/vipfer_icone.png"
+  },
+  "assetIds": {
+    "opponent": "pack:capture:creature-vipfer-opponent-01",
+    "player": "pack:capture:creature-vipfer-player-01",
+    "icon": "pack:capture:creature-vipfer-icon-01"
+  },
+  "canvas": {
+    "combat": [
+      512,
+      512
+    ],
+    "icon": [
+      512,
+      512
+    ]
+  },
+  "source": {
+    "archive": "data/capture/showcase/vipfer_monster_capture.zip",
+    "gitBlob": "bf538f8b406ef23eaac6bb66a6dfeb6218d92c89",
+    "zipSha256": "fb3ec4d42efca18845583477ef523ac81ee72a1729bb914783c2dbc056bf34c9"
+  },
+  "verification": {
+    "face": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "80e816602ed78a1ab18d732cf271fab23467ec63901dde26a03115bc7ad12765",
+      "originalFileSha256": "355e2bcaf26f08e20648362d7211dca4d4d16221c2ae58b89e03b60b95f5eb4d",
+      "originalAlphaBox": [
+        46,
+        81,
+        466,
+        430
+      ],
+      "originalMargins": [
+        46,
+        81,
+        46,
+        82
+      ],
+      "runtimeAlphaBox": [
+        46,
+        81,
+        466,
+        430
+      ],
+      "runtimeSha256": "355e2bcaf26f08e20648362d7211dca4d4d16221c2ae58b89e03b60b95f5eb4d",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/face.png"
+    },
+    "dos": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "20029da571751647f720e732d86438e664759e9742537ab0712725832c6973cc",
+      "originalFileSha256": "6e2a1488205a21d1a3e9bdb55d9a6ffe5cf9a1950cabf0355699819497f2e05a",
+      "originalAlphaBox": [
+        46,
+        68,
+        466,
+        444
+      ],
+      "originalMargins": [
+        46,
+        68,
+        46,
+        68
+      ],
+      "runtimeAlphaBox": [
+        46,
+        68,
+        466,
+        444
+      ],
+      "runtimeSha256": "6e2a1488205a21d1a3e9bdb55d9a6ffe5cf9a1950cabf0355699819497f2e05a",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/dos.png"
+    },
+    "icone": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "f7079085f51108c4604dc14e278e394cd8a14c94d1901fd15e7a2e00951361bf",
+      "originalFileSha256": "171055c23dfcbd418e9933317ad0d3889692dd94f236f00b81cb767e9336b29f",
+      "originalAlphaBox": [
+        46,
+        46,
+        466,
+        465
+      ],
+      "originalMargins": [
+        46,
+        46,
+        46,
+        47
+      ],
+      "runtimeAlphaBox": [
+        46,
+        46,
+        466,
+        465
+      ],
+      "runtimeSha256": "171055c23dfcbd418e9933317ad0d3889692dd94f236f00b81cb767e9336b29f",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/icone.png"
+    }
+  },
+  "notes": "Source auteur conservée; visuels réels seulement, aucune fiche gameplay ni capacité inventée. Preview revue séparée."
+}

@@ -1,0 +1,120 @@
+{
+  "id": "ephemus",
+  "name": "Éphémus",
+  "status": "approved-artwork-only-no-bestiary-creature",
+  "views": {
+    "opponent": "runtime/ephemus_face.png",
+    "player": "runtime/ephemus_dos.png",
+    "icon": "runtime/ephemus_icone.png"
+  },
+  "assetIds": {
+    "opponent": "pack:capture:creature-ephemus-opponent-01",
+    "player": "pack:capture:creature-ephemus-player-01",
+    "icon": "pack:capture:creature-ephemus-icon-01"
+  },
+  "canvas": {
+    "combat": [
+      512,
+      512
+    ],
+    "icon": [
+      512,
+      512
+    ]
+  },
+  "source": {
+    "archive": "data/capture/showcase/ephemus_monster_capture_VALIDE.zip",
+    "gitBlob": "b1c9f6ed6f63967da9ffa5978e1c323d7250855a",
+    "zipSha256": "b7f56b49cc5d35688cd98c0d3b5f73dc0ad266109de822885d655f1c8a96d992"
+  },
+  "verification": {
+    "face": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "456cf38d2a15300387718c2eeb6d02ee8dbcecb72a9604ffea9061d5e43313de",
+      "originalFileSha256": "0e8120cd923d904a73f3348bd437d79ace2fd35aef65deaa50d64e8a42997743",
+      "originalAlphaBox": [
+        48,
+        81,
+        464,
+        464
+      ],
+      "originalMargins": [
+        48,
+        81,
+        48,
+        48
+      ],
+      "runtimeAlphaBox": [
+        48,
+        81,
+        464,
+        464
+      ],
+      "runtimeSha256": "0e8120cd923d904a73f3348bd437d79ace2fd35aef65deaa50d64e8a42997743",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/face.png"
+    },
+    "dos": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "53087858e493ca348246bddedc22462ef6bf5db4c1b2a14f603937f4821f127e",
+      "originalFileSha256": "cbc85ff6c50fdb0f69fef161e49dc9a246a0ba5089f7c6f9ea04746202fe6730",
+      "originalAlphaBox": [
+        48,
+        99,
+        464,
+        464
+      ],
+      "originalMargins": [
+        48,
+        99,
+        48,
+        48
+      ],
+      "runtimeAlphaBox": [
+        48,
+        99,
+        464,
+        464
+      ],
+      "runtimeSha256": "cbc85ff6c50fdb0f69fef161e49dc9a246a0ba5089f7c6f9ea04746202fe6730",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/dos.png"
+    },
+    "icone": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "f2b80d2da26c2488d1fd729d4aafbcc8c9d57b5647c9bdd27f424d290e9ea521",
+      "originalFileSha256": "5a4b9034b9ca1c1444641ea785a4a13428e8d07984685be293675fca0d4dd48f",
+      "originalAlphaBox": [
+        57,
+        48,
+        455,
+        464
+      ],
+      "originalMargins": [
+        57,
+        48,
+        57,
+        48
+      ],
+      "runtimeAlphaBox": [
+        57,
+        48,
+        455,
+        464
+      ],
+      "runtimeSha256": "5a4b9034b9ca1c1444641ea785a4a13428e8d07984685be293675fca0d4dd48f",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/icone.png"
+    }
+  },
+  "notes": "Source auteur conservée; visuels réels seulement, aucune fiche gameplay ni capacité inventée. Preview revue séparée."
+}

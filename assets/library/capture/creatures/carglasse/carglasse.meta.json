@@ -1,0 +1,120 @@
+{
+  "id": "carglasse",
+  "name": "Carglasse",
+  "status": "approved-artwork-only-no-bestiary-creature",
+  "views": {
+    "opponent": "runtime/carglasse_face.png",
+    "player": "runtime/carglasse_dos.png",
+    "icon": "runtime/carglasse_icone.png"
+  },
+  "assetIds": {
+    "opponent": "pack:capture:creature-carglasse-opponent-01",
+    "player": "pack:capture:creature-carglasse-player-01",
+    "icon": "pack:capture:creature-carglasse-icon-01"
+  },
+  "canvas": {
+    "combat": [
+      512,
+      512
+    ],
+    "icon": [
+      512,
+      512
+    ]
+  },
+  "source": {
+    "archive": "data/capture/showcase/carglasse_monster_capture_valide.zip",
+    "gitBlob": "179ec9f73b9cc593a181a09f15b2f8845279baee",
+    "zipSha256": "7bffffffd5f98330c5f1d1ec0a48618fac1989dfe0f46d518f34a5af56767d66"
+  },
+  "verification": {
+    "face": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "69ed1209c901aa58b71ede0dc2886eea78cbb7612f4f7e99af48f96eb481f211",
+      "originalFileSha256": "bab7037e48e4ffc7e6709c1b2f1363b5212981061ff8cec14fbc428cbf10b0b5",
+      "originalAlphaBox": [
+        48,
+        57,
+        464,
+        464
+      ],
+      "originalMargins": [
+        48,
+        57,
+        48,
+        48
+      ],
+      "runtimeAlphaBox": [
+        48,
+        57,
+        464,
+        464
+      ],
+      "runtimeSha256": "bab7037e48e4ffc7e6709c1b2f1363b5212981061ff8cec14fbc428cbf10b0b5",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/face.png"
+    },
+    "dos": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "a5ff8bc821e6206e3570f79ececc35c3e8fb685fc977f38afa1acff0600a1d60",
+      "originalFileSha256": "bb58e79881cd281c7d81db290ea23b92d544c879470e7f03c9df317db0ac69c4",
+      "originalAlphaBox": [
+        48,
+        77,
+        464,
+        464
+      ],
+      "originalMargins": [
+        48,
+        77,
+        48,
+        48
+      ],
+      "runtimeAlphaBox": [
+        48,
+        77,
+        464,
+        464
+      ],
+      "runtimeSha256": "bb58e79881cd281c7d81db290ea23b92d544c879470e7f03c9df317db0ac69c4",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/dos.png"
+    },
+    "icone": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "dd029cd151fc6b57a3b473798a975208c63f81d832b26d6a9f380a4ac0515945",
+      "originalFileSha256": "c0699c843b953ddcd32296494a8b3e9c874229258a542183557ffdc90242e061",
+      "originalAlphaBox": [
+        48,
+        63,
+        464,
+        431
+      ],
+      "originalMargins": [
+        48,
+        63,
+        48,
+        81
+      ],
+      "runtimeAlphaBox": [
+        48,
+        63,
+        464,
+        431
+      ],
+      "runtimeSha256": "c0699c843b953ddcd32296494a8b3e9c874229258a542183557ffdc90242e061",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/icone.png"
+    }
+  },
+  "notes": "Source auteur conservée; visuels réels seulement, aucune fiche gameplay ni capacité inventée. Preview revue séparée."
+}

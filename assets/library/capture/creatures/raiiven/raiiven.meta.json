@@ -1,0 +1,120 @@
+{
+  "id": "raiiven",
+  "name": "Raiiven",
+  "status": "approved-artwork-only-no-bestiary-creature",
+  "views": {
+    "opponent": "runtime/raiiven_face.png",
+    "player": "runtime/raiiven_dos.png",
+    "icon": "runtime/raiiven_icone.png"
+  },
+  "assetIds": {
+    "opponent": "pack:capture:creature-raiiven-opponent-01",
+    "player": "pack:capture:creature-raiiven-player-01",
+    "icon": "pack:capture:creature-raiiven-icon-01"
+  },
+  "canvas": {
+    "combat": [
+      512,
+      512
+    ],
+    "icon": [
+      512,
+      512
+    ]
+  },
+  "source": {
+    "archive": "data/capture/showcase/raiiven_monster_capture_valide.zip",
+    "gitBlob": "4a98384e14b6b02741c07ed0972dc1c155cb8be4",
+    "zipSha256": "de7289f6eccc8869259166aafba42151616ac5a349daec2c849d27c283ae79c0"
+  },
+  "verification": {
+    "face": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "8740fb7e1ebb8814571eb567ddb114410093e8158690f736e739e34573354bd6",
+      "originalFileSha256": "09e93bfa3723f750aa2c176931898f115cd3f833d48bf03afafb5392cf6741ae",
+      "originalAlphaBox": [
+        46,
+        70,
+        466,
+        464
+      ],
+      "originalMargins": [
+        46,
+        70,
+        46,
+        48
+      ],
+      "runtimeAlphaBox": [
+        46,
+        70,
+        466,
+        464
+      ],
+      "runtimeSha256": "09e93bfa3723f750aa2c176931898f115cd3f833d48bf03afafb5392cf6741ae",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/face.png"
+    },
+    "dos": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "1727b11a47768f94eae35fac6e204805d827b1a6232bf5f482effd6fd725fb3f",
+      "originalFileSha256": "98b5373723d24258738129e55fee31b35c25b0cc5c94f901d380e6b3c37c79f7",
+      "originalAlphaBox": [
+        68,
+        71,
+        444,
+        464
+      ],
+      "originalMargins": [
+        68,
+        71,
+        68,
+        48
+      ],
+      "runtimeAlphaBox": [
+        68,
+        71,
+        444,
+        464
+      ],
+      "runtimeSha256": "98b5373723d24258738129e55fee31b35c25b0cc5c94f901d380e6b3c37c79f7",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/dos.png"
+    },
+    "icone": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "2829a77fc4726ecef54e3c1e15a3af506c91ca6d1a8b725ad78ad58573aecae4",
+      "originalFileSha256": "b8f9162f6b66d865477742cd63a2c14ca5e074168e1bf1f57e9ae2ecddb4aa57",
+      "originalAlphaBox": [
+        49,
+        47,
+        463,
+        465
+      ],
+      "originalMargins": [
+        49,
+        47,
+        49,
+        47
+      ],
+      "runtimeAlphaBox": [
+        49,
+        47,
+        463,
+        465
+      ],
+      "runtimeSha256": "b8f9162f6b66d865477742cd63a2c14ca5e074168e1bf1f57e9ae2ecddb4aa57",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/icone.png"
+    }
+  },
+  "notes": "Source auteur conservée; visuels réels seulement, aucune fiche gameplay ni capacité inventée. Preview revue séparée."
+}

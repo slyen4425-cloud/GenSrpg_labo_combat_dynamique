@@ -1,0 +1,120 @@
+{
+  "id": "veldra",
+  "name": "Veldra",
+  "status": "approved-artwork-only-no-bestiary-creature",
+  "views": {
+    "opponent": "runtime/veldra_face.png",
+    "player": "runtime/veldra_dos.png",
+    "icon": "runtime/veldra_icone.png"
+  },
+  "assetIds": {
+    "opponent": "pack:capture:creature-veldra-opponent-01",
+    "player": "pack:capture:creature-veldra-player-01",
+    "icon": "pack:capture:creature-veldra-icon-01"
+  },
+  "canvas": {
+    "combat": [
+      512,
+      512
+    ],
+    "icon": [
+      512,
+      512
+    ]
+  },
+  "source": {
+    "archive": "data/capture/showcase/veldra_monster_capture_valide.zip",
+    "gitBlob": "278f609e2fa11d261475411adc8493dda2d6a940",
+    "zipSha256": "ad54ec69fe8c32b6022af9487743af0c7635c0ca43e3202fae70f183a48953df"
+  },
+  "verification": {
+    "face": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "7cfc69296015b81207fef3a0280c23f22323c78ea533cb6804d1ee4cee661e55",
+      "originalFileSha256": "ce62a76bf71e4cd109901c085c7984d4ab3afd75032d7e25587106372bb73418",
+      "originalAlphaBox": [
+        47,
+        65,
+        465,
+        464
+      ],
+      "originalMargins": [
+        47,
+        65,
+        47,
+        48
+      ],
+      "runtimeAlphaBox": [
+        47,
+        65,
+        465,
+        464
+      ],
+      "runtimeSha256": "ce62a76bf71e4cd109901c085c7984d4ab3afd75032d7e25587106372bb73418",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/face.png"
+    },
+    "dos": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "48c24026b2945e1b88b1803c80a578b7b34ad399389e2ad5d75eb992fe584384",
+      "originalFileSha256": "1a251cd0eb6acaa659301f44f105ed933ff14b896daaa8a3a6fb2f1ca80d88f7",
+      "originalAlphaBox": [
+        47,
+        162,
+        465,
+        464
+      ],
+      "originalMargins": [
+        47,
+        162,
+        47,
+        48
+      ],
+      "runtimeAlphaBox": [
+        47,
+        162,
+        465,
+        464
+      ],
+      "runtimeSha256": "1a251cd0eb6acaa659301f44f105ed933ff14b896daaa8a3a6fb2f1ca80d88f7",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/dos.png"
+    },
+    "icone": {
+      "originalSize": [
+        512,
+        512
+      ],
+      "originalRgbaSha256": "35c07399b0bcb7e396b4b79ffb2bd794a77be194a1735ec4110f04c155ee3f2b",
+      "originalFileSha256": "021b31213d18f146fb00fdc3d079eb6919faf2a012c2e1216ae0daa9233d8d34",
+      "originalAlphaBox": [
+        56,
+        47,
+        455,
+        465
+      ],
+      "originalMargins": [
+        56,
+        47,
+        57,
+        47
+      ],
+      "runtimeAlphaBox": [
+        56,
+        47,
+        455,
+        465
+      ],
+      "runtimeSha256": "021b31213d18f146fb00fdc3d079eb6919faf2a012c2e1216ae0daa9233d8d34",
+      "runtimeDerivativeForMargin42": false,
+      "archiveMember": "sprites_512/icone.png"
+    }
+  },
+  "notes": "Source auteur conservée; visuels réels seulement, aucune fiche gameplay ni capacité inventée. Preview revue séparée."
+}

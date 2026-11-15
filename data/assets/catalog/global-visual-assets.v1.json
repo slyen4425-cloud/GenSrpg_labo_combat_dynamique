@@ -14,13 +14,13 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 410,
+    "assets": 428,
     "icons": 192,
-    "sprites": 192,
+    "sprites": 204,
     "fx": 2,
-    "portraits": 19,
+    "portraits": 25,
     "backgrounds": 5,
-    "creatures": 74
+    "creatures": 86
   },
   "assets": [
     {
@@ -13763,6 +13763,546 @@
       },
       "resource": {
         "file": "capture/creatures/creature_pourpre/runtime/creature_pourpre_icone.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-vipfer-opponent-01",
+      "label": "Vipfer — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "vipfer",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/vipfer/runtime/vipfer_face.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-vipfer-player-01",
+      "label": "Vipfer — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "vipfer",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/vipfer/runtime/vipfer_dos.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-vipfer-icon-01",
+      "label": "Vipfer — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "capture",
+        "creature",
+        "vipfer",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/vipfer/runtime/vipfer_icone.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veuve-jaune-opponent-01",
+      "label": "Veuve jaune — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "veuve_jaune",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veuve_jaune/runtime/veuve_jaune_face.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veuve-jaune-player-01",
+      "label": "Veuve jaune — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "veuve_jaune",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veuve_jaune/runtime/veuve_jaune_dos.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veuve-jaune-icon-01",
+      "label": "Veuve jaune — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "capture",
+        "creature",
+        "veuve_jaune",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veuve_jaune/runtime/veuve_jaune_icone.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-carglasse-opponent-01",
+      "label": "Carglasse — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "carglasse",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/carglasse/runtime/carglasse_face.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-carglasse-player-01",
+      "label": "Carglasse — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "carglasse",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/carglasse/runtime/carglasse_dos.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-carglasse-icon-01",
+      "label": "Carglasse — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "capture",
+        "creature",
+        "carglasse",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/carglasse/runtime/carglasse_icone.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-ephemus-opponent-01",
+      "label": "Éphémus — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "ephemus",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/ephemus/runtime/ephemus_face.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-ephemus-player-01",
+      "label": "Éphémus — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "ephemus",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/ephemus/runtime/ephemus_dos.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-ephemus-icon-01",
+      "label": "Éphémus — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "capture",
+        "creature",
+        "ephemus",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/ephemus/runtime/ephemus_icone.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-raiiven-opponent-01",
+      "label": "Raiiven — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "raiiven",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/raiiven/runtime/raiiven_face.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-raiiven-player-01",
+      "label": "Raiiven — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "raiiven",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/raiiven/runtime/raiiven_dos.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-raiiven-icon-01",
+      "label": "Raiiven — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "capture",
+        "creature",
+        "raiiven",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/raiiven/runtime/raiiven_icone.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veldra-opponent-01",
+      "label": "Veldra — opponent",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "veldra",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veldra/runtime/veldra_face.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veldra-player-01",
+      "label": "Veldra — player",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "veldra",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veldra/runtime/veldra_dos.png",
+        "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veldra-icon-01",
+      "label": "Veldra — icon",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "capture",
+        "creature",
+        "veldra",
+        "icon"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / archives visuelles auteur validées",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veldra/runtime/veldra_icone.png",
         "mime": "image/png"
       },
       "compatibility": {
