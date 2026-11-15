@@ -137,6 +137,15 @@ export function mountSoundtrackAuthoringV1({root,initialCatalog=EMPTY_CATALOG,in
   }
   on(el.channel,"change",()=>guard(loadScene));
   on(el.scene,"change",()=>guard(loadScene));
+  // Shortcuts change only the EXISTING scene field. One authoring owner,
+  // no parallel victory/defeat playlist or manually typed reference IDs.
+  for (const quick of root.querySelectorAll("[data-soundtrack-quick-scene]")) {
+    on(quick,"click",()=>guard(()=>{
+      el.scene.value=quick.dataset.soundtrackQuickScene;
+      loadScene();
+      state("Contexte sélectionné : "+quick.textContent.trim()+".");
+    }));
+  }
   on(el.add,"click",()=>guard(()=>{
     if(!el.asset.value) throw new Error("Aucune piste sélectionnée");
     if(tracks.length>=100) throw new Error("Limite de 100 pistes par canal");

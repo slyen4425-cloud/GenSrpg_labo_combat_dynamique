@@ -1,3 +1,4 @@
+import {resolveCaptureCombatBattleOutcomeV1} from "./capture-combat-battle-outcome-v1.js";
 import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-bestiary-hp-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-barrier-dual-view-20261105-barrier-side-layout-20261105";
 import { captureReactionRechargeClockV1 } from "./capture-reaction-recharge-clock-v1.js";
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
@@ -581,8 +582,10 @@ export async function mountCoop2v2Test({
   fetchImpl = fetch,
   formatUrl = DATA_URLS.format,
   nativeCombatSource = null,
-  embeddedBattle = null
+  embeddedBattle = null,
+  onBattleOutcome = () => {}
 }) {
+  if (typeof onBattleOutcome !== "function") throw new TypeError("onBattleOutcome callback required");
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root must provide querySelector()");
   }
@@ -829,6 +832,7 @@ export async function mountCoop2v2Test({
   let rosterController = null;
   let rosterPanel = null;
   const koTransitions = new Set();
+  let announcedBattleOutcome = null;
   let aiDecisionQueued = false;
 
   for (const actor of format.actors) {
@@ -2047,7 +2051,19 @@ export async function mountCoop2v2Test({
       runtime.cancelActionsForActor(actorId, { includeTargeted: true, reason: "ko" });
       const result = rosterController.replaceKnockedOut(actorId);
       koTransitions.delete(actorId);
-      if (result.outcome === "team_defeated") setStatus("Plus de réserve pour cette créature.", "info");
+      if (result.outcome === "team_defeated") {
+        setStatus("Plus de réserve pour cette créature.", "info");
+        if (announcedBattleOutcome === null) {
+          const outcome=resolveCaptureCombatBattleOutcomeV1({
+            format,rosterSnapshot:rosterController.snapshot(),defeatedActorId:actorId
+          });
+          if (outcome !== null) {
+            announcedBattleOutcome=outcome; // exactly once per actual finished battle
+            try { onBattleOutcome(outcome); }
+            catch (error) { console.warn("Présentation audio du résultat indisponible",error); }
+          }
+        }
+      }
       renderState();
       queueAiDecisions();
     });

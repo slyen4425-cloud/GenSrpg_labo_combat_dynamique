@@ -26,12 +26,13 @@ const mp3=(name)=>({name,size:4096,type:"audio/mpeg"});
 test("ten private source tracks are public METADATA only; exactly six Battle in Capture normal scene",()=>{
   const c=normalizeSoundtrackCatalogV1(catalog);
   const p=normalizeSoundtrackProjectV1(project,c);
-  assert.equal(c.assets.length,10);
+  assert.equal(c.assets.length,11);
   assert.equal(battle.length,6);
   assert.equal(exploration.length,4);
   assert.deepEqual(c.assets.map(x=>x.title),[
     "Battle_1","Battle_2","Battle_3","Battle_4","Battle_5","Battle_6",
-    "Exploration_1","Exploration_2","Exploration_3","Exploration_4"
+    "Exploration_1","Exploration_2","Exploration_3","Exploration_4",
+    "Triumph's Call · Victoire"
   ]);
   assert.deepEqual(p.scenes["capture:combat:normal"].music.tracks,battle);
   assert.equal(p.scenes["capture:combat:normal"].music.repeat,true);

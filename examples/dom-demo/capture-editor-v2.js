@@ -499,6 +499,10 @@ const session = createCaptureEditorPreviewSessionV2({
       );
     }
 
+    // Same SoundtrackSession is retained through normal battle and result.
+    // Combat only reports the final, roster-aware result; the music editor
+    // remains the sole owner of the chosen scene/asset IDs.
+    let soundtrack = null;
     const mounted =
       await previewRuntime
         .mountCaptureCombatPreviewV1({
@@ -506,6 +510,9 @@ const session = createCaptureEditorPreviewSessionV2({
       nativeCombatSource,
       nativeVisualSource,
       arenaLight: readCombatLightEditor(),
+      onBattleOutcome(outcome) {
+        soundtrack?.transitionTo("capture:combat:"+outcome);
+      },
       presentationAssets:
         buildPreviewPresentationAssets(
           nativeCombatSource
@@ -514,7 +521,6 @@ const session = createCaptureEditorPreviewSessionV2({
 
     // Opt-in authored soundtrack. No entry means silence and never blocks
     // existing battle audio. The combat session exclusively owns skill SFX.
-    let soundtrack = null;
     try {
       soundtrack = createCombatSoundtrackPreviewBridgeV1({
         project:soundtrackEditor.snapshot(),
