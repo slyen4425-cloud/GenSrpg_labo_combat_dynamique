@@ -1,4 +1,4 @@
-import {SOUNDTRACK_STARTER_BATTLE_IDS_V1} from "./soundtrack-starter-catalog-v1.js";
+import {SOUNDTRACK_STARTER_BATTLE_IDS_V1,SOUNDTRACK_STARTER_VICTORY_ID_V1} from "./soundtrack-starter-catalog-v1.js";
 
 // Runtime delivery copies for the shared game soundtrack, exactly like the
 // published SFX. Masters and any private GitHub URL stay in the private archive.
@@ -12,7 +12,11 @@ const BATTLE_RUNTIME_FILES = Object.freeze([
   "battle-05-63c05b82.mp3",
   "battle-06-58ce63ad.mp3"
 ]);
-const BY_ID=new Map(SOUNDTRACK_STARTER_BATTLE_IDS_V1.map((id,i)=>[id,BATTLE_RUNTIME_FILES[i]]));
+export const SOUNDTRACK_RUNTIME_VICTORY_FILE_V1 = "victory-01-0b52ce2b.mp3";
+const BY_ID=new Map([
+  ...SOUNDTRACK_STARTER_BATTLE_IDS_V1.map((id,i)=>[id,BATTLE_RUNTIME_FILES[i]]),
+  [SOUNDTRACK_STARTER_VICTORY_ID_V1,SOUNDTRACK_RUNTIME_VICTORY_FILE_V1]
+]);
 
 // No downloader UI is exposed. Browser-delivered audio cannot be made
 // technically non-copyable; this resolver makes no DRM/security claims.

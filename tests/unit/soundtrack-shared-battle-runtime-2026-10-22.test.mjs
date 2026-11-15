@@ -29,7 +29,8 @@ const EXPECTED_RUNTIME_SIZES=[2074952,2433510,2612070,1499530,1829284,1728774];
 test("the six real Battle runtime copies resolve by the existing stable assetIds",()=>{
   assert.equal(filenames.length,6);
   assert.equal(battle.length,6);
-  assert.equal(catalog.assets.filter(x=>x.assetId.startsWith("gensrpg:music:combat:")).length,6);
+  assert.equal(catalog.assets.filter(x=>battle.includes(x.assetId)).length,6,
+    "the six original Battle tracks are unchanged; victory is a separate soundtrack scene");
   for(const [index,id] of battle.entries()){
     const asset=soundtrackRuntimeAssetV1(id);
     assert.equal(asset.assetId,id);
