@@ -1,0 +1,81 @@
+name: Import six approved Creature visuals (one canonical catalog)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/publish-six-creature-visuals-20261115.py
+      - .github/workflows/import-six-creature-visuals-20261115.yml
+      - data/capture/showcase/*.zip
+  push:
+    branches: [main]
+    paths:
+      - scripts/publish-six-creature-visuals-20261115.py
+      - .github/workflows/import-six-creature-visuals-20261115.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-author-and-canonical-media:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact proposed/main Combat source
+        uses: actions/checkout@v4
+        with:
+          path: source
+          persist-credentials: true
+      - name: Checkout the one official global-assets media owner
+        uses: actions/checkout@v4
+        with:
+          ref: global-assets
+          path: canonical
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'Pillow>=11,<13'
+      - name: Inspect REAL six author ZIPs and publish only 512 RGBA derivatives to checkout
+        run: python source/scripts/publish-six-creature-visuals-20261115.py source canonical
+      - name: Prove isolated 18-media, 6-meta, 6-preview, 1-catalog change
+        working-directory: canonical
+        run: |
+          git diff --check
+          git status --short
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('assets/library/capture/creatures')
+          names=['vipfer','veuve_jaune','carglasse','ephemus','raiiven','veldra']
+          catalog=json.loads(Path('data/assets/catalog/global-visual-assets.v1.json').read_text())
+          assert catalog['counts']['assets']==len(catalog['assets'])
+          for slug in names:
+              target=root/slug
+              files=sorted(p for p in target.rglob('*') if p.is_file())
+              assert len(files)==5,(slug,[str(p) for p in files])
+              assert len(list((target/'runtime').glob('*.png')))==3
+              assert len(list((target/'previews').glob('*.png')))==1
+              meta=json.loads((target/(slug+'.meta.json')).read_text())
+              assert set(meta['assetIds'])=={'opponent','player','icon'}
+              ids=set(meta['assetIds'].values())
+              assert sum(a['id'] in ids for a in catalog['assets'])==3
+          print('PASS exact 30 physical images/metadata + one canonical catalog update')
+          PY
+      - name: Commit append-only canonical media only after certified main merge
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: canonical
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/library/capture/creatures/vipfer \
+            assets/library/capture/creatures/veuve_jaune \
+            assets/library/capture/creatures/carglasse \
+            assets/library/capture/creatures/ephemus \
+            assets/library/capture/creatures/raiiven \
+            assets/library/capture/creatures/veldra \
+            data/assets/catalog/global-visual-assets.v1.json
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git commit -m "assets(capture): register six validated author creature models in global-assets"
+          git push origin HEAD:global-assets
