@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 428,
+    "assets": 430,
     "icons": 192,
-    "sprites": 204,
+    "sprites": 206,
     "fx": 2,
     "portraits": 25,
     "backgrounds": 5,
@@ -14304,6 +14304,82 @@
       "resource": {
         "file": "capture/creatures/veldra/runtime/veldra_icone.png",
         "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pourpre-movement-player-8-v1",
+      "label": "Créature pourpre — Course dos (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "pourpre",
+        "animated",
+        "player",
+        "movement"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / validated November 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_pourpre/animations/movement/player/atlases/creature_pourpre_movement_player_8_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameWidth": 512,
+        "frameHeight": 512,
+        "frameMs": 83,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pourpre-attack-player-8-v1",
+      "label": "Créature pourpre — Attaque dos (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "pourpre",
+        "animated",
+        "player",
+        "attack"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / validated November 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_pourpre/animations/attack/player/atlases/creature_pourpre_attack_player_8_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 8,
+        "frameWidth": 512,
+        "frameHeight": 512,
+        "frameMs": 120,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [

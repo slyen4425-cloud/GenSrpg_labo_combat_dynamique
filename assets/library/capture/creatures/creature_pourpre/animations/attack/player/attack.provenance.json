@@ -1,0 +1,8 @@
+{
+  "originalSourceZip": "_incoming/pourpre_attaque_dos_8f.zip",
+  "zipSha256": "ed64a6e27a3642fe96023e8081f7e742bdaf609f59fa66a5f9f5f1e8ca99ac66",
+  "zipGitBlobSha": "f1e2fa943e05537d604e17d31166f0afecc083a7",
+  "approvedByUser": true,
+  "noRepaint": true,
+  "notes": "Exact user-corrected running frames; attack source padded without image resampling."
+}

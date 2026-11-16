@@ -1,0 +1,8 @@
+{
+  "originalSourceZip": "_incoming/pourpre_course_dos_8f_corrigee.zip",
+  "zipSha256": "1f393e086aa4de24f5f1762df482d4cb466805bfa2c2e01da5c3860e2bef9155",
+  "zipGitBlobSha": "804f472ea91c8487409d96df8ac141ba6f7b7edc",
+  "approvedByUser": true,
+  "noRepaint": true,
+  "notes": "Exact user-corrected running frames; attack source padded without image resampling."
+}

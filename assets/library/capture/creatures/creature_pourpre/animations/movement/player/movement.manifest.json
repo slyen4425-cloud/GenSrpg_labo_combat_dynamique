@@ -1,0 +1,34 @@
+{
+  "creature": "creature_pourpre",
+  "view": "player",
+  "orientation": "rear-three-quarter-facing-upper-right",
+  "action": "movement",
+  "frameCount": 8,
+  "frameWidth": 512,
+  "frameHeight": 512,
+  "frameMs": 83,
+  "playbackMode": "loop",
+  "sourceZip": "_incoming/pourpre_course_dos_8f_corrigee.zip",
+  "sourceSha256": "1f393e086aa4de24f5f1762df482d4cb466805bfa2c2e01da5c3860e2bef9155",
+  "sourceGitBlobSha": "804f472ea91c8487409d96df8ac141ba6f7b7edc",
+  "sourceSize": [
+    512,
+    512
+  ],
+  "paddingTo512": [
+    0,
+    0
+  ],
+  "frameSha256Png": [
+    "06b0ffa137e2712fe7ea1f4540015c6dd4db2ca1f16fbc66a529e93f76596132",
+    "6411991860d729beb1536fcb14bbfa0f9a24616809c393b5e3ba701786c7df16",
+    "2fa67e6ec4e1b21cbd1a714f1c0c6566f429c383f34204a55ba6821a4944753e",
+    "d6a15c9b4c8b24385b2b6850d460e7f85c74bb51d78dd072a323289d3dff419e",
+    "1920903d9e75d3ba73d48e613c54db37d6a13b9e675d43ff041ec44864b26c90",
+    "9f5abb21e8b1e44212b6561ddc2b7873f7dc53ebae812dcf11690d2fc3067774",
+    "2e1770802a2d4d3e39470713ba7add2e478d6b5abdc9dda6d1f477f2d152db4c",
+    "31acad17b2efc6ba40679dfbe5e82d7c4eb573ccccd55ec3ce0ae34aa82fa73b"
+  ],
+  "atlasFile": "atlases/creature_pourpre_movement_player_8_atlas.webp",
+  "previewFile": "previews/creature_pourpre_movement_player_8_preview.webp"
+}

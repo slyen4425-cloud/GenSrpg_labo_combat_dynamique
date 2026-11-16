@@ -1,0 +1,34 @@
+{
+  "creature": "creature_pourpre",
+  "view": "player",
+  "orientation": "rear-three-quarter-facing-upper-right",
+  "action": "attack",
+  "frameCount": 8,
+  "frameWidth": 512,
+  "frameHeight": 512,
+  "frameMs": 120,
+  "playbackMode": "once",
+  "sourceZip": "_incoming/pourpre_attaque_dos_8f.zip",
+  "sourceSha256": "ed64a6e27a3642fe96023e8081f7e742bdaf609f59fa66a5f9f5f1e8ca99ac66",
+  "sourceGitBlobSha": "f1e2fa943e05537d604e17d31166f0afecc083a7",
+  "sourceSize": [
+    443,
+    443
+  ],
+  "paddingTo512": [
+    34,
+    34
+  ],
+  "frameSha256Png": [
+    "3fdd9f81d1e5327a02c0ac2fb6b7b194a62a3213b234c623b160ee94c2f5a080",
+    "275e0e8f51210f590d13a5e8f12df31b430f3949da77bd029eac3f3103900e50",
+    "0ef03964b7994559c59d0dcd15140e0613e5be5a28d89b9564b76a5419b20de3",
+    "d1239d572b7bc0f5575f284d27be1f0fabe6f0ca764f80960002a8a9d660f7d7",
+    "f24f71740855ca006c00d5f963722c5a3595f867f9435a52b0d3c870c011ed2a",
+    "4997821cf99accb7f14c34d223bc0bdd3a91ded740f82ac6cc46603d664979d2",
+    "82ac291d8ec4b8247651d13bb23862c98b26941c74282fae80c9d6c680f9d170",
+    "7b4df0d8ebcbd335d98ee67e62519e1c897e30b9236c7dd5a9c15a38cd642824"
+  ],
+  "atlasFile": "atlases/creature_pourpre_attack_player_8_atlas.webp",
+  "previewFile": "previews/creature_pourpre_attack_player_8_preview.webp"
+}
