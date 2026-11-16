@@ -14,4 +14,13 @@
 - **Fichiers autorisés** : dossier pourpre ci-dessus, les deux entrées additives du catalogue canonique, nouveau script, workflow et test ciblé, cette documentation, entrée journal. Les ZIP source restent dans `_incoming`.
 - **Interdictions** : aucun changement au dossier `creature_violette`, aux trois médias statiques pourpre existants, aux fiches configurées, au moteur combat, à `main`, à `gh-pages` ou aux autres dépôts.
 - **Validation requise** : SHA ZIP/Git, CRC, huit frames distinctes avec 42 px de marge, WEBP atlas pixel-identique, preview animée, références catalogues sans doublon, `npm run ci`, checkpoint GREEN sur commit final, promotion non forcée sous lease vers `global-assets`.
-- **Statut de la présente note** : chantier en cours; la publication doit être confirmée par CI sur le SHA exact et vérification du catalogue après promotion. L’intégration à la bibliothèque ne modifie pas automatiquement les associations visuelles d’une créature configurée.
+- **Statut de la présente note** : les médias sont importés et la CI de l'import est verte ; promotion officielle contrôlée séparément.
+
+## Vérifications techniques effectuées
+
+- GitHub Actions import `43957222939` : **SUCCESS** ; extraction et contrôle des deux ZIP originaux (SHA256 et blob Git), des CRC, des 16 véritables frames PNG RGBA, des marges et des previews/atlases.
+- SHA de commit médias : `fece6cc76ef1e723e3a436bb8ad9bce7d798ae9f`.
+- `npm run ci` exécuté pendant l'import : **SUCCESS**, avec le nouveau test de catalogage.
+- Catalogue : 428 → 430 entrées, 204 → 206 sprites. Aucun ID violet ou pourpre existant supprimé/modifié. Les fichiers de la créature violette restent hors du diff.
+- Les deux clips restent sélectionnables dans la bibliothèque ; aucune auto-affectation à la fiche de créature configurée n'est prétendue.
+- Promotion finale : conditionnée à la CI du SHA documentaire final, checkpoint GREEN et avance sans force de `global-assets`.
