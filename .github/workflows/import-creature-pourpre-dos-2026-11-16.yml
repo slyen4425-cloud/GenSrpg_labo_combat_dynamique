@@ -1,0 +1,49 @@
+name: Import approved purple beast (pourpre) rear-view animations
+on:
+  push:
+    branches:
+      - work/lab-pourpre-dos-animations-2026-11-16
+    paths:
+      - '.github/workflows/import-creature-pourpre-dos-2026-11-16.yml'
+      - 'scripts/import_creature_pourpre_dos_2026_11_16.py'
+      - 'tests/unit/creature-pourpre-dos-8f-assets-2026-11-16.test.mjs'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import-media:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/lab-pourpre-dos-animations-2026-11-16
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install image processing dependency
+        run: python -m pip install --disable-pip-version-check Pillow
+      - name: Validate original ZIPs and import 2 approved sequences
+        run: python scripts/import_creature_pourpre_dos_2026_11_16.py
+      - name: Full laboratory CI including dedicated media tests
+        run: npm run ci
+      - name: Verify limited delta and commit exact media+catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add assets/library/capture/creatures/creature_pourpre/animations/ data/assets/catalog/global-visual-assets.v1.json
+          git diff --cached --name-only | while IFS= read -r path; do
+            case "$path" in
+              assets/library/capture/creatures/creature_pourpre/animations/*|data/assets/catalog/global-visual-assets.v1.json) ;;
+              *) echo "Forbidden changed file: $path"; exit 1 ;;
+            esac
+          done
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "assets(pourpre): register approved back-view run and attack 8f"
+            git push origin HEAD:refs/heads/work/lab-pourpre-dos-animations-2026-11-16
+          fi
