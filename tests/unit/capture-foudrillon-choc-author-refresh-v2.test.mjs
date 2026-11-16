@@ -58,7 +58,7 @@ test("Freclairions: native transfer retains author level, 24 skills, equipment, 
   assert.deepEqual(c.loadout.slots.map(s=>s.skillId),
     ["lib_paralyze","choc_venin","lib_tailwind","vol_eclaire","Nid_frelon"]);
   assert.deepEqual(c.statValues.values,{health:120,speed:15,physical:0,defense:0,fire:0,water:0,
-    earth:0,air:10,electric:10,light:0,shadow:0,poison:0,acier:0,nature:0,esprit:0});
+    earth:0,air:10,electric:10,light:0,shadow:0,poison:0,acier:0,nature:0,esprit:0,glace:0});
   assert.equal(c.draft.combat.approachTimeModifierPct,-40);
   assert.equal(c.draft.presentation.profileId,"flying");
   assert.equal(c.draft.capture.rarity,"rare");

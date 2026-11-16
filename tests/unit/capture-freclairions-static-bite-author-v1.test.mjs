@@ -1,4 +1,4 @@
-import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
+import {withoutNewDefaultDodgeV1,originalFreclairionsBytesBeforeVisualRefreshV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -28,7 +28,7 @@ const creature = () => importCaptureTransferJsonV1(read(creaturePath).toString("
 const skill = () => importCaptureTransferJsonV1(read(skillPath).toString("utf8"));
 
 test("Freclairions + Crocs statiques retain the exact uploaded author files and unique stable IDs",()=>{
-  const authorBytes=originalCreatureBytesBeforeDodgeV1(read(creaturePath));
+  const authorBytes=originalFreclairionsBytesBeforeVisualRefreshV1(read(creaturePath));
   assert.equal(authorBytes.length,5992);
   assert.equal(sha256(authorBytes),"b6dc6a595d1ed1ab965eee8a0dbdd86b3d172258601fb1320e016b492c6e8fc3");
   assert.equal(read(skillPath).length,4163);

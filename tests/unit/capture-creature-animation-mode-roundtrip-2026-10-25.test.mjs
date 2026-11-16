@@ -6,12 +6,13 @@ import {captureCreatureEditorVisualSlotForSettingsV1,buildHumanCreatureDraftV3} 
 const author=JSON.parse(readFileSync(new URL("../../data/capture/showcase/crea_foudrillon.capture-creature-transfer-v1.json",import.meta.url),"utf8"));
 const visual=author.draft.presentation.visual;
 
-test("Freclairions V10 back-only movement/attack sprites drive the common animation-mode controls",()=>{
-  assert.equal(visual.movement,undefined);
+test("Freclairions V10 front/back movement and back-only attack sprites drive common animation controls",()=>{
+  assert.equal(visual.movement.mode,"sprite");
+  assert.equal(visual.movement.assetId,"pack:capture:creature-guepe-cybernetique-movement-opponent-12-v1");
   assert.equal(visual.rangedAttack,undefined);
   assert.equal(visual.movementBack.mode,"sprite");
   assert.equal(visual.rangedAttackBack.mode,"sprite");
-  assert.equal(captureCreatureEditorVisualSlotForSettingsV1(visual,"movement"),visual.movementBack);
+  assert.equal(captureCreatureEditorVisualSlotForSettingsV1(visual,"movement"),visual.movement);
   assert.equal(captureCreatureEditorVisualSlotForSettingsV1(visual,"attack"),visual.rangedAttackBack);
   assert.equal(captureCreatureEditorVisualSlotForSettingsV1(visual,"movement").rotationTurns,3);
   assert.equal(captureCreatureEditorVisualSlotForSettingsV1(visual,"attack").transitionMs,80);
@@ -36,7 +37,7 @@ test("generic projection honors front when configured, back when only back, and 
   assert.throws(()=>captureCreatureEditorVisualSlotForSettingsV1({},"unknown"),RangeError);
 });
 
-test("rebuilding the real back-only visual from displayed settings does not introduce the ball-roll default",()=>{
+test("rebuilding the real two-view movement from displayed settings preserves both sprites without ball-roll",()=>{
   const slot=captureCreatureEditorVisualSlotForSettingsV1(visual,"movement");
   const ranged=captureCreatureEditorVisualSlotForSettingsV1(visual,"attack");
   const d=author.draft;
@@ -54,7 +55,7 @@ test("rebuilding the real back-only visual from displayed settings does not intr
       dodgeAssetId:visual.dodge.assetId,
       dodgeDisplayScale:visual.dodge.displayScale,dodgeDurationMs:visual.dodge.durationMs,
       dodgeOffsetX:visual.dodge.offsetX,dodgeOffsetY:visual.dodge.offsetY,
-      movementAssetId:"",movementBackAssetId:visual.movementBack.assetId,
+      movementAssetId:visual.movement.assetId,movementBackAssetId:visual.movementBack.assetId,
       movementMode:slot.mode,movementDisplayScale:slot.displayScale,
       movementRotationTurns:slot.rotationTurns,movementFrameCount:slot.frameCount,
       movementTransitionMs:slot.transitionMs,movementFrameMs:visual.movementPlayback.frameMs,
@@ -72,7 +73,8 @@ test("rebuilding the real back-only visual from displayed settings does not intr
   const rebuilt=buildHumanCreatureDraftV3(fields);
   assert.equal(rebuilt.presentation.visual.movementBack.mode,"sprite");
   assert.equal(rebuilt.presentation.visual.rangedAttackBack.mode,"sprite");
-  assert.equal(rebuilt.presentation.visual.movement,undefined);
+  assert.equal(rebuilt.presentation.visual.movement.assetId,visual.movement.assetId);
+  assert.equal(rebuilt.presentation.visual.movement.mode,"sprite");
   assert.equal(rebuilt.presentation.visual.rangedAttack,undefined);
   assert.equal(rebuilt.presentation.visual.movementBack.assetId,visual.movementBack.assetId);
   assert.equal(rebuilt.presentation.visual.rangedAttackBack.assetId,visual.rangedAttackBack.assetId);
