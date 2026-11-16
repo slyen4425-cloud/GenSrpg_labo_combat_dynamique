@@ -74,7 +74,7 @@ def export(pack):
                 assert img.size == (443,443), ("unexpected attack source size", num, img.size)
                 # Pad the approved 443x443 drawing; no scaling, repainting or interpolation.
                 canvas = Image.new("RGBA", (512,512), (0,0,0,0))
-                canvas.paste(img, (34,34))
+                canvas.alpha_composite(img, (34,34))
                 img = canvas
             inspect_safe_frame(img, num, action)
             frames.append(img)
