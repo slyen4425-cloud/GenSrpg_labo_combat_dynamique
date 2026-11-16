@@ -1,3 +1,8 @@
+## 2026-11-16 — Bestiaire officiel en présentation intégrée à Collection (CANDIDAT)
+- START Combat `main@3279ac65950ecc92ea74821f7179bd5b3386b867`, checkpoint `checkpoint/lab-start-bestiary-embedded-20261116`, branche `work/lab-bestiary-embedded-20261116`. Dernier GREEN = base main, nouvelle PR à certifier.
+- Même `examples/dom-demo/bestiary.html#speciesId`, moteur et renderer du Bestiaire natif inchangés ; `?embedded=1` masque uniquement chrome/gallerie/retour autonome, pour la fiche de la créature ciblée déjà autorisée par Collection Capture. Aucune nouvelle base, calcul, capacité, asset ou route.
+- Tests : standalone Bestiaire identique, iframe ciblée uniquement, espèces non possédées interdites dans Capture, écran paysage 1089×485, liens/imports et compatibilité des démos ; CI/Pages SHA exact avant adoption par Capture. Pas de modification audio, XP, gameplay ou moteur.
+
 ## 2026-11-15 — Veuve jaune : transfert auteur et correction d'identifiant (EN VALIDATION)
 - Base main `a6a3bce95ef08271f849cd1c871771a64291c625` ; checkpoint `checkpoint/lab-start-veuve-jaune-id-20261115` ; travail `work/lab-veuve-jaune-id-20261115`.
 - Import du transfert JSON fourni par l'auteur en source canonique `data/capture/showcase/veuve-jaune.capture-creature-transfer-v1.json`, avec seulement l'identifiant provisoire `nouvelle-creature` remplacé par `veuve-jaune` dans draft, présentation, statistiques et loadout. Aucun rééquilibrage, modification de socket, éléments, capacités ou image.
