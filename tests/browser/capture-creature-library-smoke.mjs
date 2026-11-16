@@ -598,10 +598,10 @@ const server = createServer(async (req, res) => {
       contents=Buffer.from(html.replace("</head>",probe+"</head>"));
     }
 
-    // Regression on the actual author creature: only DOS has a sprite.
+    // Regression on author Freclairions: now both FACE and DOS have movement sprites.
     // Test the real editor selector, save, reload and export, not a mock form.
     if (pathname.endsWith("/capture-editor-v2.html") &&
-        new URL(req.url,"http://localhost").searchParams.has("verify-sprite-mode-back-only")) {
+        new URL(req.url,"http://localhost").searchParams.has("verify-sprite-mode-face-back-freclairions")) {
       const html=contents.toString("utf8");
       const probe=`<script>
         document.addEventListener("DOMContentLoaded",()=>{
@@ -626,11 +626,12 @@ const server = createServer(async (req, res) => {
               const back=get("[data-creature-movement-back-visual]");
               change(lib,"crea_foudrillon");
               if(get("[data-creature-name]").value!=="Freclairions")throw Error("wrong creature");
-              if(front.value!=="" || !back.value.includes("guepe-cybernetique-movement-player"))
-                throw Error("back-only author bindings not loaded");
+              if(!front.value.includes("guepe-cybernetique-movement-opponent") ||
+                 !back.value.includes("guepe-cybernetique-movement-player"))
+                throw Error("author FACE and DOS movement bindings not loaded");
               if(mode.value!=="sprite")throw Error("saved sprite read as "+mode.value);
               if(attack.value!=="sprite")throw Error("saved DOS attack read as "+attack.value);
-              // Confirm editing also persists when only the DOS slot exists.
+              // Confirm editing persists with both authored movement slots.
               change(mode,"static");
               get("[data-creature-update]").click();
               if(get("[data-editor-status]").dataset.tone==="error")throw Error("static save failed");
@@ -640,8 +641,10 @@ const server = createServer(async (req, res) => {
               get("[data-creature-update]").click();
               if(get("[data-editor-status]").dataset.tone==="error")throw Error("sprite save failed");
               change(lib,"crea_mossback");change(lib,"crea_foudrillon");
-              if(mode.value!=="sprite"||attack.value!=="sprite"||front.value!=="")
-                throw Error("sprite mode reverted after save/reload");
+              if(mode.value!=="sprite"||attack.value!=="sprite"||
+                 !front.value.includes("guepe-cybernetique-movement-opponent")||
+                 !back.value.includes("guepe-cybernetique-movement-player"))
+                throw Error("FACE/DOS sprite reverted after save/reload");
               let blob=null;const native=URL.createObjectURL;
               try{
                 URL.createObjectURL=value=>{blob=value;return native.call(URL,value);};
@@ -649,11 +652,15 @@ const server = createServer(async (req, res) => {
               }finally{URL.createObjectURL=native;}
               const exported=blob?JSON.parse(await blob.text()):null;
               const v=exported?.draft?.presentation?.visual;
-              if(v?.movement!==undefined || v.movementBack?.mode!=="sprite" ||
+              if(v?.movement?.assetId!=="pack:capture:creature-guepe-cybernetique-movement-opponent-12-v1" ||
+                 v.movement?.mode!=="sprite" || v.movementBack?.mode!=="sprite" ||
                  v.rangedAttack!==undefined || v.rangedAttackBack?.mode!=="sprite" ||
-                 v.movementBack.assetId!=="pack:capture:creature-guepe-cybernetique-movement-player-12-v1")
-                throw Error("export overwrote DOS sprite");
-              document.body.dataset.creatureSpriteModeProbe="ok:back-only:sprite:save:reload:export";
+                 v.movementBack.assetId!=="pack:capture:creature-guepe-cybernetique-movement-player-12-v1" ||
+                 v.movementScaleByView?.opponent!==1.5 ||
+                 exported?.draft?.presentation?.viewOverrides?.opponent?.displayScale!==0.5 ||
+                 exported?.draft?.presentation?.viewOverrides?.opponent?.position?.y!==50)
+                throw Error("export overwrote Freclairions FACE/DOS or opponent settings");
+              document.body.dataset.creatureSpriteModeProbe="ok:face-back:sprite:save:reload:export";
             }catch(error){document.body.dataset.creatureSpriteModeProbe="fail:"+String(error.message??error).slice(0,180);}
           },100);
         });
@@ -2351,12 +2358,12 @@ try {
       " JS="+(movementDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
   console.log("Loup movement FACE/DOS: native catalog menus, save, reload and author export verified in Chromium");
   const backOnlyDom=await dumpDom(url+"?verify-sprite-mode-back-only=1");
-  assertCreatures(backOnlyDom,"Freclairions back-only sprite real Chrome");
+  assertCreatures(backOnlyDom,"Freclairions FACE/DOS sprite real Chrome");
   const backOnlyProbe=backOnlyDom.match(/data-creature-sprite-mode-probe="([^"]+)"/)?.[1]??"missing";
-  if(backOnlyProbe!=="ok:back-only:sprite:save:reload:export")
+  if(backOnlyProbe!=="ok:face-back:sprite:save:reload:export")
     throw Error("Real Freclairions movement/attack sprite mode lost: "+backOnlyProbe+
       " JS="+(backOnlyDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
-  console.log("Freclairions DOS-only: sprite settings loaded, switch static -> sprite, saved, reselected and exported without rotation");
+  console.log("Freclairions FACE/DOS: sprite settings, adversary position/scale, static -> sprite, saved and exported");
   const liveSolarDom=await dumpDom(url+"?verify-solar-live-cast=1", ["--virtual-time-budget=30000"]);
   const liveSolar=liveSolarDom.match(/data-solar-live-cast-probe="([^"]*)"/)?.[1]??"missing";
   if(liveSolar!=="ok:solar:next-skill:unfrozen")

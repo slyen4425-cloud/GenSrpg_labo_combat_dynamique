@@ -5,6 +5,7 @@
 - Autorisés : ce transfert, sentinelles Freclairions V10/Choc et helper de reconstitution de l'archive, ce journal. Protégés : archives d'exports originaux, autres créatures, compétences, catalogues, assets, audio, moteur, Exploration, Dungeon, GenSRPG et Survie.
 - Test RED ciblé : anciennes attentes "ennemi non animé", position 0 et échelle 1 invalidées ; nouveaux tests sur Face via adaptateur natif, archive auteur immuable, identité/stats/loadout et round-trip JSON. Première CI `4c18024d` : Foundation 4 FAIL de sentinelles obsolètes (mode FACE, présence du zéro glace, deux protections d’archives) ; sentinelles corrigées sans relâcher les assertions. Exiger Foundation, CI/Pages sur SHA exact et test navigateur HTTPS ; aucun GREEN ou déploiement PWA revendiqué sans preuves.
 - Réversibilité : checkpoint de départ, `git revert` sans effacement de média/sauvegarde.
+- Sentinelle Chrome adaptée à l’export auteur : le test vérifie les sprites FACE/DOS, leur sauvegarde, rechargement et export, ainsi que les paramètres adversaire 0.5 / Y=50 / mouvement 1.5 ; pas de moteur modifié. Le timeout navigateur vague 2v2 de la CI précédente reste un échec distinct à vérifier sans masquer le problème.
 
 ## 2026-11-16 — Bestiaire officiel en présentation intégrée à Collection (CANDIDAT)
 - START Combat `main@3279ac65950ecc92ea74821f7179bd5b3386b867`, checkpoint `checkpoint/lab-start-bestiary-embedded-20261116`, branche `work/lab-bestiary-embedded-20261116`. Dernier GREEN = base main, nouvelle PR à certifier.
