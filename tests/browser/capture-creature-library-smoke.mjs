@@ -2357,7 +2357,7 @@ try {
     throw Error("Real creature movement FACE/DOS editor roundtrip failed: "+movementProbe+
       " JS="+(movementDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
   console.log("Loup movement FACE/DOS: native catalog menus, save, reload and author export verified in Chromium");
-  const backOnlyDom=await dumpDom(url+"?verify-sprite-mode-back-only=1");
+  const backOnlyDom=await dumpDom(url+"?verify-sprite-mode-face-back-freclairions=1");
   assertCreatures(backOnlyDom,"Freclairions FACE/DOS sprite real Chrome");
   const backOnlyProbe=backOnlyDom.match(/data-creature-sprite-mode-probe="([^"]+)"/)?.[1]??"missing";
   if(backOnlyProbe!=="ok:face-back:sprite:save:reload:export")
