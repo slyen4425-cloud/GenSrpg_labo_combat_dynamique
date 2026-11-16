@@ -1,4 +1,4 @@
-import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
+import {withoutNewDefaultDodgeV1,originalFreclairionsBytesBeforeVisualRefreshV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
@@ -37,7 +37,7 @@ test("RED: both fresh author transfers replace only the same two stable canonica
   assert.equal(new Set(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1).size,CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.length);
   assert.equal(new Set(CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1).size,CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1.length);
   for(const {path,bytes,sha256} of originals){
-    const source=path===CREATURE ? originalCreatureBytesBeforeDodgeV1(await read(path)) : await read(path);
+    const source=path===CREATURE ? originalFreclairionsBytesBeforeVisualRefreshV1(await read(path)) : await read(path);
     assert.equal(source.length,bytes,path+" must retain uploaded exact bytes");
     assert.equal(createHash("sha256").update(source).digest("hex"),sha256,path+" exact author SHA-256");
   }
@@ -61,6 +61,11 @@ test("Freclairions: native transfer retains author level, 24 skills, equipment, 
     earth:0,air:10,electric:10,light:0,shadow:0,poison:0,acier:0,nature:0,esprit:0});
   assert.equal(c.draft.combat.approachTimeModifierPct,-40);
   assert.equal(c.draft.presentation.profileId,"flying");
+  assert.equal(c.draft.capture.rarity,"rare");
+  assert.equal(c.statValues.values.glace,0);
+  assert.deepEqual(c.draft.presentation.viewOverrides.opponent,{displayScale:0.5,position:{x:0,y:50}});
+  assert.equal(c.draft.presentation.visual.movementScaleByView.opponent,1.5);
+  assert.equal(c.draft.presentation.visual.movement.assetId,"pack:capture:creature-guepe-cybernetique-movement-opponent-12-v1");
   assert.equal(c.draft.presentation.visual.front.assetId,"pack:capture:creature-guepe-cybernetique-opponent-01");
   assert.equal(c.draft.presentation.visual.back.assetId,"pack:capture:creature-guepe-cybernetique-player-01");
   assert.deepEqual(importCaptureTransferJsonV1(

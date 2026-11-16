@@ -77,6 +77,7 @@
       "capturable": true,
       "captureRate": 17,
       "spawnChance": 2,
+      "rarity": "rare",
       "spawnTags": [
         "air",
         "electric"
@@ -148,10 +149,10 @@
           }
         },
         "opponent": {
-          "displayScale": 1,
+          "displayScale": 0.5,
           "position": {
             "x": 0,
-            "y": 0
+            "y": 50
           }
         }
       },
@@ -176,6 +177,14 @@
           "offsetX": 0,
           "offsetY": 0
         },
+        "movement": {
+          "assetId": "pack:capture:creature-guepe-cybernetique-movement-opponent-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 3,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
         "rangedAttackBack": {
           "assetId": "pack:capture:creature-guepe-cybernetique-attack-player-12-v1",
           "mode": "sprite",
@@ -186,7 +195,7 @@
         },
         "movementScaleByView": {
           "player": 1.5,
-          "opponent": 1
+          "opponent": 1.5
         },
         "rangedAttackScaleByView": {
           "player": 1,
@@ -250,7 +259,8 @@
       "poison": 0,
       "acier": 0,
       "nature": 0,
-      "esprit": 0
+      "esprit": 0,
+      "glace": 0
     }
   },
   "loadout": {

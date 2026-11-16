@@ -1,4 +1,4 @@
-import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
+import {withoutNewDefaultDodgeV1,originalFreclairionsBytesBeforeVisualRefreshV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
@@ -23,7 +23,7 @@ test("one stable Freclairions authority retains author's exact uploaded V10 tran
   assert.equal(source.draft.id,"crea_foudrillon");
   assert.equal(source.draft.displayName,"Freclairions");
   assert.equal(source.draft.presentation.version,10);
-  const authorBytes=originalCreatureBytesBeforeDodgeV1(bytes(active));
+  const authorBytes=originalFreclairionsBytesBeforeVisualRefreshV1(bytes(active));
   assert.ok(authorBytes.equals(bytes(author)),"archive author bytes must survive the approved live Dodge addition");
   assert.equal(authorBytes.length,5992);
   assert.equal(createHash("sha256").update(authorBytes).digest("hex"),
@@ -43,18 +43,24 @@ test("V10 import keeps 26 learned skills, five slots, stats, player height and s
   assert.equal(draft.presentation.profileId,"flying");
   assert.deepEqual(draft.presentation.shadowOffset,{x:0,y:30});
   assert.deepEqual(draft.presentation.viewOverrides.player.position,{x:0,y:-20});
-  assert.deepEqual(draft.presentation.viewOverrides.opponent.position,{x:0,y:0});
+  assert.deepEqual(draft.presentation.viewOverrides.opponent.position,{x:0,y:50});
+  assert.equal(draft.presentation.viewOverrides.opponent.displayScale,0.5);
+  assert.equal(draft.capture.rarity,"rare");
+  assert.equal(statValues.values.glace,0);
   assert.equal(draft.combat.approachTimeModifierPct,-40);
   assert.deepEqual([statValues.values.acier,statValues.values.nature,statValues.values.esprit],[0,0,0]);
-  assert.deepEqual(draft.presentation.visual.movementScaleByView,{player:1.5,opponent:1});
+  assert.deepEqual(draft.presentation.visual.movementScaleByView,{player:1.5,opponent:1.5});
   assert.equal(draft.presentation.visual.movementBack.frameCount,1);
   assert.equal(draft.presentation.visual.rangedAttackBack.frameCount,1);
   // No creator-side FACE bindings: no invented atlas, player back is complete.
-  assert.equal(draft.presentation.visual.movement,undefined);
+  assert.deepEqual(draft.presentation.visual.movement,{
+    assetId:"pack:capture:creature-guepe-cybernetique-movement-opponent-12-v1",
+    mode:"sprite",displayScale:1,rotationTurns:3,frameCount:1,transitionMs:80
+  });
   assert.equal(draft.presentation.visual.rangedAttack,undefined);
 });
 
-test("native visual adapter resolves real catalog frame metadata for flying player; enemy remains unanimated without FACE",()=>{
+test("native visual adapter resolves real movement metadata for both flying viewpoints",()=>{
   const d=transfer.value.draft;
   const presentationId=d.presentation.id;
   const creature={id:d.id,displayName:d.displayName,combat:{
@@ -68,6 +74,7 @@ test("native visual adapter resolves real catalog frame metadata for flying play
     ["pack:capture:creature-guepe-cybernetique-icon-01",{file:"icon.webp"}],
     ["pack:capture:sprite-electric-yellow-beam-impact-01",{file:"dodge.webp",frameCount:8}],
     [visual.movementBack.assetId,{file:"fly-back-12.webp",frameCount:12,frameMs:100}],
+    [visual.movement.assetId,{file:"fly-front-12.webp",frameCount:12,frameMs:100}],
     [visual.rangedAttackBack.assetId,{file:"attack-back-12.webp",frameCount:12,frameMs:100}]
   ]);
   const exported={schema:"capture-combat-export-v1",battle:{id:"freclairions-test",localActorId:"player"},
@@ -86,7 +93,8 @@ test("native visual adapter resolves real catalog frame metadata for flying play
   assert.equal(meta.rangedAttackBackFx.frameCount,12);
   assert.equal(creatureMovementAppearanceForApproachV1(meta,"player","aerial").assetId,visual.movementBack.assetId);
   assert.equal(creatureAerialAppearanceForPhaseV1(meta,"player","aerial-arc-impact").assetId,visual.rangedAttackBack.assetId);
-  assert.equal(meta.movementFxByView.opponent,null);
+  assert.equal(meta.movementFxByView.opponent.frameCount,12);
+  assert.equal(creatureMovementAppearanceForApproachV1(meta,"opponent","aerial").assetId,visual.movement.assetId);
   assert.equal(meta.rangedAttackFx,null);
   assert.equal(creatureAerialAppearanceForPhaseV1(meta,"opponent","aerial-arc-impact"),null);
 });

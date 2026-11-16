@@ -1,3 +1,11 @@
+## 2026-11-16 — Freclairions : corrections visuelles officielles (à certifier sur SHA exact)
+- Dépôt Combat unique, propriétaire du transfert : `main@62509f44136dddc5646aee75533723eb3f17b21b` ; checkpoint `checkpoint/lab-start-freclairions-visual-20261116`.
+- Source : export auteur du 16 novembre `gensrpg-capture-creature-crea_foudrillon(4).json` ; remplacement exact de l'unique `data/capture/showcase/crea_foudrillon.capture-creature-transfer-v1.json` (même ID et mêmes cinq capacités équipées, sans création d'entité).
+- Changements : adversaire échelle 0.5 et position Y 50 ; animation de mouvement FACE via asset officiel `pack:capture:creature-guepe-cybernetique-movement-opponent-12-v1`, rotation 3 tours et frameCount auteur 1 ; échelle mouvement adversaire 1.5 ; l'export précise également rareté `rare` et glace `0`, sans altérer les stats/capacités déjà configurées.
+- Autorisés : ce transfert, sentinelles Freclairions V10/Choc et helper de reconstitution de l'archive, ce journal. Protégés : archives d'exports originaux, autres créatures, compétences, catalogues, assets, audio, moteur, Exploration, Dungeon, GenSRPG et Survie.
+- Test RED ciblé : anciennes attentes "ennemi non animé", position 0 et échelle 1 invalidées ; nouveaux tests sur Face via adaptateur natif, archive auteur immuable, identité/stats/loadout et round-trip JSON. Exiger Foundation, CI/Pages sur SHA exact et test navigateur HTTPS ; aucun GREEN ou déploiement PWA revendiqué sans preuves.
+- Réversibilité : checkpoint de départ, `git revert` sans effacement de média/sauvegarde.
+
 ## 2026-11-16 — Bestiaire officiel en présentation intégrée à Collection (CANDIDAT)
 - START Combat `main@3279ac65950ecc92ea74821f7179bd5b3386b867`, checkpoint `checkpoint/lab-start-bestiary-embedded-20261116`, branche `work/lab-bestiary-embedded-20261116`. Dernier GREEN = base main, nouvelle PR à certifier.
 - Même `examples/dom-demo/bestiary.html#speciesId`, moteur et renderer du Bestiaire natif inchangés ; `?embedded=1` masque uniquement chrome/gallerie/retour autonome, pour la fiche de la créature ciblée déjà autorisée par Collection Capture. Aucune nouvelle base, calcul, capacité, asset ou route.
