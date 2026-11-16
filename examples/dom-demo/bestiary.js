@@ -5,6 +5,10 @@ import {captureBestiaryCardsV1,bestiaryElementLabelV1} from "../../src/ui/captur
 
 const root=document.querySelector("[data-bestiary]");
 if(!root)throw new Error("Bestiaire : conteneur manquant");
+// The same official Bestiary can appear as a focused profile inside Capture Collection.
+// Embedded mode changes presentation only; the hash remains the species route.
+if(new URLSearchParams(window.location.search).get('embedded')==='1')
+  root.dataset.embedded='true';
 const el=(name)=>root.querySelector("[data-bestiary-"+name+"]");
 const elements={
   count:el("count"),list:el("list"),search:el("search"),element:el("element"),
