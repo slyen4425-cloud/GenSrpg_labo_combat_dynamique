@@ -35,6 +35,15 @@ def inspect_safe_frame(img: Image.Image, n: int, action: str) -> None:
     assert min(margins) >= 42, (action, n, margins)
     assert alpha.getextrema()[0] == 0 and alpha.getextrema()[1] > 0, (action, n, "alpha invalid")
 
+
+def visibly_identical(a: Image.Image, b: Image.Image) -> bool:
+    # Some lossless WebP decoders normalize RGB underneath alpha=0.
+    # Exact alpha and exact visible composited pixels are the relevant invariants.
+    if a.size != b.size or a.getchannel("A").tobytes() != b.getchannel("A").tobytes():
+        return False
+    black = Image.new("RGBA", a.size, (0,0,0,255))
+    return Image.alpha_composite(black, a).tobytes() == Image.alpha_composite(black, b).tobytes()
+
 def export(pack):
     raw = Path(pack["zip"]).read_bytes()
     assert digest(raw) == pack["sha"], ("wrong source zip", pack["zip"])
@@ -91,7 +100,7 @@ def export(pack):
     with Image.open(atlas_path) as decoded:
         got = decoded.convert("RGBA")
         assert got.size == (4096,512)
-        assert got.tobytes() == atlas.tobytes(), ("atlas not pixel-identical", action)
+        assert visibly_identical(got, atlas), ("atlas visible pixels or alpha differ", action)
     preview_name = f"creature_pourpre_{action}_player_8_preview.webp"
     frames[0].save(preview_dir / preview_name, format="WEBP", save_all=True,
                    append_images=frames[1:], duration=pack["duration"],
@@ -100,7 +109,7 @@ def export(pack):
         assert p.n_frames == 8, (action, p.n_frames)
         for idx, img in enumerate(frames):
             p.seek(idx)
-            assert p.convert("RGBA").tobytes() == img.tobytes(), ("preview pixels differ", action, idx)
+            assert visibly_identical(p.convert("RGBA"), img), ("preview visible pixels or alpha differ", action, idx)
     manifest = {
         "creature": "creature_pourpre",
         "view": "player",
