@@ -1,3 +1,13 @@
+## 2026-11-16 — Raccord bibliothèque : créature POURPRE (dos course + attaque, 8 frames)
+- Objectif : importer uniquement les deux archives approuvées dans `assets/library/capture/creatures/creature_pourpre/animations/`. La créature violette est **différente** et son dossier/assetIds ne doivent jamais être modifiés.
+- Source : `_incoming/pourpre_course_dos_8f_corrigee.zip` et `_incoming/pourpre_attaque_dos_8f.zip`, SHA vérifiés.
+- Base `global-assets@94a273be34b8b7e77c420dd53dc324e1d60f676b`, checkpoint `checkpoint/lab-start-pourpre-dos-animations-2026-11-16`, branche `work/lab-pourpre-dos-animations-2026-11-16`.
+- Propriétaire : bibliothèque Capture `global-assets`, catalogue visuel canonique. Périmètre : médias POURPRE dos 8 frames, deux nouvelles entrées au catalogue, tests et scripts dédiés, docs. Protégés : violette, autres créatures, `main`, `gh-pages`, éditeur, moteur, GenSrpg, Exploration.
+- Tests : source ZIP SHA/CRC, PNG RGBA 512² (attaque rembordée sans interpolation), marge >= 42 px, atlas WebP pixel-identique, preview 8 vraies frames, ID uniques, test du vrai résolveur catalogue, `npm run ci`, CI SHA exact, checkpoint GREEN, publication FF sans force sous lease.
+- État : travail en cours ; voir `docs/LAB_POURPRE_DOS_ANIMATIONS_8F_2026_11_16.md`. Ne pas revendiquer la publication avant le verdict CI et la lecture post-commit de `global-assets`.
+
+---
+
 ## 2026-11-09 — Publication des 18 icônes de stats/éléments validées (global-assets)
 - START global-assets@bfe94ebccfe53ed1a01f759b343bb8751565302e ; checkpoint `checkpoint/lab-start-ui-icons-18-2026-11-09` ; WORK `work/lab-ui-icons-18-2026-11-09`.
 - ZIP auteur déposé `GenSRPG_UI_Icons_V1_2026-11-09_READY.zip`, SHA256 `0f19d0e96898ee954f0d8b774ee5b018a0d976090f6e53baaafeb49126f3c724`.
