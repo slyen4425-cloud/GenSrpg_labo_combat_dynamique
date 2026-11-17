@@ -1,5 +1,6 @@
 import {CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1 as CREATURE_FILES} from "../../src/catalogs/capture-showcase-creature-presets-v1.js?v=sylvorne-showcase-media-20261111";
 import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 as SKILL_FILES} from "../../src/catalogs/capture-showcase-skill-presets-v1.js?v=sylvorne-showcase-media-20261111";
+import {createCaptureUniverseDatabaseStoreV1} from "../../src/contracts/capture-universe-database-store-v1.js";
 import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js?v=sylvorne-showcase-media-20261111";
 import {captureBestiaryCardsV1,bestiaryElementLabelV1} from "../../src/ui/capture-bestiary-cards-v1.js?v=-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-self-periodic-prose-20261102";
 
@@ -249,27 +250,50 @@ function renderProfile(){
 }
 async function start(){
   try{
-    const [assetCatalog,statRegistry,creatures,skills,nativeCatalog]=await Promise.all([
-      fetchJson(new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl)),
-      fetchJson(publishedPath("data/capture/monster-capture-stat-registry.v1.json")),
-      loadCollection(CREATURE_FILES),
-      loadCollection(SKILL_FILES),
-      fetchJson(publishedPath("data/combat/skills/catalog.v1.json"))
-    ]);
-    cards=captureBestiaryCardsV1({
-      creatureTransfers:creatures.entries,skillTransfers:skills.entries,
-      assetCatalog,statRegistry,
-      nativeSkills:nativeCatalog.entries ?? []
-    });
+    const universeId=new URLSearchParams(window.location.search).get("universe");
+    let failures=0;
+    if(universeId!==null){
+      const snapshot=createCaptureUniverseDatabaseStoreV1({storage:window.localStorage}).load(universeId);
+      if(snapshot===null)
+        throw new Error("Univers sans bibliothèque Combat : aucune créature historique affichée");
+      const assetCatalog=await fetchJson(new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl));
+      const database=snapshot.database;
+      // Same one native Bestiary card projector, data from the selected
+      // Combat project ONLY. No global Showcase catalog fallback.
+      cards=captureBestiaryCardsV1({
+        creatureTransfers:database.creatures,
+        skillTransfers:database.skills.map(draft=>({draft})),
+        assetCatalog,statRegistry:database.statRegistry,nativeSkills:[]
+      });
+      const back=root.querySelector("a.back-link");
+      if(back){
+        const target=new URL(back.href,window.location.href);
+        target.searchParams.set("universe",universeId);
+        back.href=target.href;
+      }
+    }else{
+      const [assetCatalog,statRegistry,creatures,skills,nativeCatalog]=await Promise.all([
+        fetchJson(new URL(GLOBAL_VISUAL_LIBRARY.catalogUrl)),
+        fetchJson(publishedPath("data/capture/monster-capture-stat-registry.v1.json")),
+        loadCollection(CREATURE_FILES),
+        loadCollection(SKILL_FILES),
+        fetchJson(publishedPath("data/combat/skills/catalog.v1.json"))
+      ]);
+      failures=creatures.failures+skills.failures;
+      cards=captureBestiaryCardsV1({
+        creatureTransfers:creatures.entries,skillTransfers:skills.entries,
+        assetCatalog,statRegistry,
+        nativeSkills:nativeCatalog.entries ?? []
+      });
+    }
     populateElementChoices();
     renderRoute();
     if(!cards.length){
       setStatus("Aucune créature finalisée publiée avec ses médias.",false);
     }else{
-      const errors=creatures.failures+skills.failures;
-      setStatus(errors? "Catalogue partiellement chargé : "+errors+
+      setStatus(failures? "Catalogue partiellement chargé : "+failures+
         " fichier(s) indisponible(s), données non inventées.":
-        cards.length+" créatures finalisées · données publiées",errors>0);
+        cards.length+" créatures finalisées · données de ce projet",failures>0);
     }
   }catch(error){
     elements.profile.hidden=true;
