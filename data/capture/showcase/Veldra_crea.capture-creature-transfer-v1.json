@@ -102,7 +102,7 @@
     "skillIds": [],
     "presentation": {
       "id": "creature:Veldra_crea",
-      "version": 2,
+      "version": 10,
       "subjectType": "creature",
       "subjectId": "Veldra_crea",
       "profileId": "flying",
@@ -113,17 +113,17 @@
       },
       "viewOverrides": {
         "player": {
-          "displayScale": 1,
+          "displayScale": 2,
           "position": {
             "x": 0,
-            "y": 0
+            "y": -80
           }
         },
         "opponent": {
           "displayScale": 1,
           "position": {
             "x": 0,
-            "y": 0
+            "y": 20
           }
         }
       },
@@ -156,7 +156,11 @@
           }
         }
       ],
-      "audio": {}
+      "audio": {},
+      "shadowOffset": {
+        "x": 0,
+        "y": 40
+      }
     }
   },
   "statValues": {
