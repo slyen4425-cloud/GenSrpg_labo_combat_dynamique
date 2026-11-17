@@ -190,5 +190,5 @@ test("Rayon cardinal has five deterministic native ticks and a conditional +10 f
   assert.equal(marked.ticks,5);
   assert.equal(normal.hp,120,"unmarked target gets exactly 5*6");
   assert.equal(marked.hp,100,"marked target receives plume 10 + 5*6 + final 10");
-  assert.equal(marked.events[4].events.some(x=>x.type==="damage"),true);
+  assert.equal(marked.events[4].events.some(x=>x.type==="hit" && x.baseDamage===10),true);
 });
