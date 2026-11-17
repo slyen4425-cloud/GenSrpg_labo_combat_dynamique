@@ -261,3 +261,44 @@ test("Ephemus and Veldra stay author-exact, selectable in Combat, and ready for 
       [null, null, null, null, null]);
   }
 });
+
+test("Ephemus and Veldra use the exact author V10 visual positioning in the real Showcase import", async () => {
+  const specs = [
+    {
+      file: "data/capture/showcase/Ephemus.capture-creature-transfer-v1.json",
+      id: "Ephemus",
+      player: { displayScale: 1.15, position: { x: 0, y: -45 } },
+      opponent: { displayScale: 0.7, position: { x: 0, y: 40 } },
+      shadowY: 30,
+      rarity: "mythic"
+    },
+    {
+      file: "data/capture/showcase/Veldra_crea.capture-creature-transfer-v1.json",
+      id: "Veldra_crea",
+      player: { displayScale: 2, position: { x: 0, y: -80 } },
+      opponent: { displayScale: 1, position: { x: 0, y: 20 } },
+      shadowY: 40,
+      rarity: "legendary"
+    }
+  ];
+  for (const spec of specs) {
+    assert.ok(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.includes(spec.file));
+    const imported = await importedPreset(spec.file);
+    assert.equal(imported.kind, "creature");
+    const { draft, statValues, loadout } = imported.value;
+    assert.equal(draft.id, spec.id);
+    assert.equal(draft.presentation.id, "creature:" + spec.id);
+    assert.equal(draft.presentation.subjectId, spec.id);
+    assert.equal(draft.presentation.version, 10);
+    assert.deepEqual(draft.presentation.viewOverrides.player, spec.player);
+    assert.deepEqual(draft.presentation.viewOverrides.opponent, spec.opponent);
+    assert.equal(draft.presentation.profileId, "flying");
+    assert.deepEqual(draft.presentation.shadowOffset, { x: 0, y: spec.shadowY });
+    assert.equal(draft.capture.rarity, spec.rarity);
+    assert.equal(statValues.creatureId, spec.id);
+    assert.equal(loadout.creatureId, spec.id);
+    assert.deepEqual(draft.skillIds, [], "skills are deliberately deferred");
+    assert.deepEqual(loadout.slots.map(slot => slot.skillId),
+      [null, null, null, null, null], "do not create placeholder skills");
+  }
+});
