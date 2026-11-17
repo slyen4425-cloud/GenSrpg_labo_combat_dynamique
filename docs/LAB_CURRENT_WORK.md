@@ -1,3 +1,11 @@
+## 2026-11-17 — Veldra : bestiaire ultime, Rayon cardinal 8/tick et inventaire sprites (LOT ISOLE)
+- START : Labo Combat `main@e748a761016617aec186ac8410d9f4d45ab354ee` ; checkpoint `checkpoint/lab-start-veldra-bestiary-rayon-sprites-20261117` ; branche temporaire `work/lab-veldra-bestiary-rayon-sprites-20261117` ; dernier GREEN Veldra `checkpoint/lab-veldra-five-skills-revival-green-20261117`.
+- Auteur : description de Relève céleste absente du Bestiaire, Rayon cardinal doit infliger 8 dégâts par tic (5 ticks = 40 sans marque ; +10 conditionnel au dernier tic), audit des sprites des cinq capacités.
+- Propriétaires : `capture-skill-explanation-v1` (projection unique Bestiaire/éditeur), `SkillDefinition.channeling` canonique Showcase, tests intégration, catalogue global `global-assets` en lecture seule.
+- Périmètre autorisé : JSON Rayon cardinal, texte Bestiaire normalisé, cache de l'import Bestiaire, sentinelles et documentation. Les autres créatures, capacités, gameplay 2v2 hors Rayon, assets, PWA, Explo, Dungeon, Survie et branches concurrentes restent intacts.
+- Observé avant patch : 4 capacités possèdent des `sprite` catalogués ; Percée d'aurore possède uniquement une icône officielle et une approche aérienne. Ne pas inventer de sprite ni de nouvel assetId ; audit et attente de validation auteur pour le nouveau visuel.
+- Gates : TDD niveau unité + projection Bestiaire vraie fiche et vrai transfert, tests de canalisations 5 ticks 8 points et finisher, 5 jobs CI sur SHA exact, compatibilité navigateur / Pages HTTPS depuis `main`, checkpoint GREEN seulement avec preuves. Rollback par `git revert`.
+
 ### 2026-11-17 — Veldra #330 : GREEN du lot puis intégration concurrente à recontrôler
 - Run CI `44133852638` : **5/5 success** sur `work/lab-veldra-five-skills-revival-20261117@600c183a9a7e4190c7ef3065962594c0b3a43d3f`, y compris contact réel Chromium après stabilisation de la vitesse des tracks WAAPI corps/ombre (alpha-mask inchangé).
 - **Attention** : pendant cette validation, `main` a avancé par fusion indépendante de la PR #328 (stockage canonique d'univers, commit `72cc1b8271b4e83d3014d8f85c7addcd0aa8436e`). Les deux lots touchent `src/ui/capture-editor-human-v2.js` ; interdiction de fusionner sans revalidation de la combinaison sur le nouveau `main`. La PWA principale reste hors périmètre.
