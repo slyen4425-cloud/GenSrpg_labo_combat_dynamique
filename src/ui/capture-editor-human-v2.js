@@ -176,6 +176,7 @@ import {
 import {
   exportCaptureDatabaseJsonV1
 } from "../adapters/input/capture/capture-database-transfer-v1.js";
+import {normalizeCaptureDatabaseV1} from '../contracts/capture-database-v1.js';
 import {
   buildCaptureEditorDatabaseV1,
   applyCaptureTransferPlanToEditorStateV1,
@@ -10914,7 +10915,7 @@ export function mountEditorCardDisclosuresV1({
   return count;
 }
 
-export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null, initialTab = "creature" }) {
+export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null, initialTab = "creature", initialDatabase = null }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root doit être un élément DOM");
   }
@@ -10923,6 +10924,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     throw new RangeError("Onglet auteur Capture non pris en charge : "+String(initialTab));
   }
 
+  const universeDatabase = initialDatabase === null ? null : normalizeCaptureDatabaseV1(initialDatabase);
   const listeners = [];
   const sockets = initialSocketStore();
   const configuredSkills = new Map();
@@ -14495,9 +14497,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           : "warning"
       );
 
-      statRegistry = captureData.registry;
-      progressionRules =
-        loadedProgressionRules;
+      statRegistry = universeDatabase?.statRegistry ?? captureData.registry;
+      progressionRules = universeDatabase?.progressionRules ?? loadedProgressionRules;
 
       renderHumanStatRegistryV1(
         root,
@@ -14509,10 +14510,11 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         progressionRules
       );
 
-      const monsterCaptureRecords =
-        captureData.records;
+      // A new project has no implicit historical species or presets. Only
+      // the native project owner supplies authored content on this route.
+      const monsterCaptureRecords = universeDatabase ? [] : captureData.records;
 
-      if (!currentSkillHasUnsavedChanges()) {
+      if (!universeDatabase && !currentSkillHasUnsavedChanges()) {
         const initialFields =
           readSkillFields(root);
         const nativeInitialDraft =
@@ -14703,6 +14705,18 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         );
       }
 
+      // Native Combat database is the complete authoritative catalog for
+      // an authored universe. Defaults are presentation-only visual palettes;
+      // no showcase creature or skill may leak into a new game's catalog.
+      if (universeDatabase) {
+        configuredSkills.clear();
+        configuredCreatures.clear();
+        for (const skill of universeDatabase.skills)
+          configuredSkills.set(skill.id, skill);
+        for (const creature of universeDatabase.creatures)
+          configuredCreatures.set(creature.draft.id, creature);
+      }
+
       refreshSkillLibraryOptions(
         librarySelect.value
       );
@@ -14761,6 +14775,17 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         );
       }
 
+      if (universeDatabase) {
+        updateCreatureLibraryState(
+          configuredCreatures.size + " personnages/créatures propres à cet univers chargés.",
+          "ok"
+        );
+        setStatus(root,
+          "Univers indépendant chargé. Enregistre les fiches dans leur éditeur puis sauvegarde la base de cet univers.",
+          "ok"
+        );
+        return;
+      }
       try {
         const showcaseSkillPresets =
           await hydrateCaptureShowcaseSkillPresetsV1();
@@ -14886,6 +14911,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   return Object.freeze({
     validate,
     ready,
+    readDatabase(){
+      if(disposed)throw new Error("Éditeur fermé");
+      return currentEditorDatabaseV1();
+    },
     getLastExport() {
       return lastExport;
     },
