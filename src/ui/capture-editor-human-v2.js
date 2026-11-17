@@ -500,7 +500,7 @@ export function buildHumanTacticalSkillEffectsV1(
       "Cible d’effet tactique"
     );
 
-    if (kind === "apply_marker" || kind === "consume_marker" || kind === "knockout" || kind === "force_reserve_switch" || kind === "summon_entity") {
+    if (kind === "apply_marker" || kind === "consume_marker" || kind === "knockout" || kind === "force_reserve_switch" || kind === "ally_reserve_relay" || kind === "summon_entity") {
       return normalizeSkillEffectV1(effect);
     }
 
@@ -741,6 +741,8 @@ function targetRelationsForTargetScopedEffectV1(effect) {
 
     case "force_reserve_switch":
       return ["enemy"];
+    case "ally_reserve_relay":
+      return ["ally"];
 
     case "apply_status": {
       const polarity =
@@ -4919,6 +4921,7 @@ function tacticalEffectKindLabelV1(kind) {
     apply_status: "Buff / Debuff / Statut",
     apply_marker: "Poser des marqueurs",
     force_reserve_switch: "Faire entrer la réserve ennemie choisie",
+    ally_reserve_relay: "Relève céleste — soigner/réanimer, renforcer et échanger une réserve alliée",
     consume_marker: "Consommer des marqueurs → effets",
     cleanse: "Nettoyage",
     dispel: "Dissipation",
@@ -5477,7 +5480,7 @@ function syncHumanSkillEffectRowV1(
     const allActive=Array.from(scope.options).find(option=>option.value==="all_active");
     if(allActive)allActive.hidden=!["apply_marker","consume_marker"].includes(kind);
     if(scope.value==="all_active"&&allActive?.hidden)scope.value="target";
-    if (kind === "scheduled_effect" || kind === "life_steal" || kind === "force_reserve_switch") {
+    if (kind === "scheduled_effect" || kind === "life_steal" || kind === "force_reserve_switch" || kind === "ally_reserve_relay") {
       scope.value = kind === "life_steal" ? "self" : "target";
       scope.disabled = true;
     } else {
@@ -5637,7 +5640,7 @@ function appendHumanSkillEffectV1(
       const allowed=hostSelector === "[data-skill-channeling-effects-host]"
         ? ["damage","heal","apply_status","apply_marker"]
         : SKILL_EFFECT_V1_KINDS.filter(k=>!["persistent_zone","scheduled_effect",
-            "force_reserve_switch","summon_entity"].includes(k));
+            "force_reserve_switch","ally_reserve_relay","summon_entity"].includes(k));
       option.disabled=!allowed.includes(option.value);
     }
   }
@@ -5678,6 +5681,17 @@ function appendHumanSkillEffectV1(
   forcedNote.dataset.skillEffectConfigKind = "force_reserve_switch";
   forcedNote.textContent = "Choisis une créature dans Réserves adverses. Elle remplace l’ennemi actif, puis reçoit les autres effets de cette capacité (ajoute un effet « Poser des marqueurs »). Le rappel volontaire de l’ennemi reste indépendant.";
   config.append(forcedNote);
+  const relayBox=document.createElement("div");
+  relayBox.className="skill-status-config__grid";
+  relayBox.dataset.skillEffectConfigKind="ally_reserve_relay";
+  const relayInfo=document.createElement("p");relayInfo.className="note";
+  relayInfo.textContent="Choisir sa propre réserve, même KO : +PV (plafond max), +% dégâts universels, puis échange atomique. Respecte le verrou de rappel et le cooldown normal.";
+  relayBox.append(
+    tacticalFieldV1("PV restaurés / réanimation",tacticalNumberInputV1("skillEffectRelayHeal",effect?.healAmount??100,{min:1,step:1})),
+    tacticalFieldV1("Tous dégâts infligés (%)",tacticalNumberInputV1("skillEffectRelayDamagePct",effect?.outgoingDamagePct??20,{min:0,max:100,step:1})),
+    tacticalFieldV1("Durée du bonus (secondes)",tacticalNumberInputV1("skillEffectRelayDurationSeconds",Math.round((effect?.durationMs??30000)/1000),{min:0.1,max:120,step:0.1})),
+    relayInfo
+  );
   const markerFields = captureMarkerEffectFieldsV1(root,effect);
 
   const amount = tacticalNumberInputV1(
@@ -7046,6 +7060,7 @@ function appendHumanSkillEffectV1(
   zoneBox.append(zoneGrid,zoneDamageBox,zoneStatusConfig,zoneMarkerBox,zoneNote);
 
   config.append(
+    relayBox,
     amountField,
     lifePercentField,
     lifeMaximumField,
@@ -7169,6 +7184,10 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
       return readCaptureMarkerEffectFieldsV1(root,row,kind,targetScope);
     }
     if (kind === "knockout" || kind === "force_reserve_switch") return {kind,targetScope};
+    if (kind === "ally_reserve_relay") return {kind,targetScope,
+      healAmount:Number(row.querySelector("[data-skill-effect-relay-heal]").value),
+      outgoingDamagePct:Number(row.querySelector("[data-skill-effect-relay-damage-pct]").value),
+      durationMs:Math.round(Number(row.querySelector("[data-skill-effect-relay-duration-seconds]").value)*1000)};
     if (kind === "summon_entity") return {
       kind,targetScope,entityKind:"barrier",
       statId:row.querySelector("[data-skill-barrier-stat-id]").value,
@@ -13437,6 +13456,12 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       if (event.target.matches("[data-skill-effect-kind]") && event.target.value === "summon_entity") {
         row.querySelector("[data-skill-effect-scope]").value="self";
         if(effectsHost===skillEffectsHost)autoConfigureStandaloneWallV1();
+      }
+      if (event.target.matches("[data-skill-effect-kind]") && event.target.value === "ally_reserve_relay") {
+        one(root,"[data-skill-form]").value="self";
+        one(root,"[data-skill-approach]").value="none";
+        for(const input of root.querySelectorAll("[data-skill-location-scope]"))
+          input.checked=input.value==="reserve";
       }
       if (event.target.matches("[data-skill-effect-kind]") && event.target.value === "force_reserve_switch") {
         // Author-only convenience: an enemy bench target must never be an
