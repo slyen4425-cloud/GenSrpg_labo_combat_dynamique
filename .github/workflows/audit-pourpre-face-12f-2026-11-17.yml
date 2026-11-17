@@ -1,0 +1,18 @@
+name: Audit approved pourpre face 12 frames
+on:
+  push:
+    branches: [work/lab-pourpre-face-12f-2026-11-17]
+    paths:
+      - '.github/workflows/audit-pourpre-face-12f-2026-11-17.yml'
+      - 'scripts/audit_pourpre_face_12f_2026_11_17.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/lab-pourpre-face-12f-2026-11-17
+      - run: python scripts/audit_pourpre_face_12f_2026_11_17.py
