@@ -208,21 +208,21 @@ test("Veuve jaune retains author identity, stats and visuals with its validated 
     { x: 0.6520260391179431, y: 0.5321092882416535 });
 });
 
-test("Ephemus and Veldra stay author-exact, selectable in Combat, and ready for visual round-trips without provisional skills", async () => {
+test("Ephemus keeps empty skills and Veldra equips five approved native skills without losing visuals", async () => {
   for (const expected of [
     {
       file: "data/capture/showcase/Ephemus.capture-creature-transfer-v1.json",
       id: "Ephemus", name: "Ephemus", type: "spirit", rarity: "mythic",
       hp: 120, speed: 10, defense: 0, physical: 0, special: "esprit", specialValue: 20,
       charges: 4, rechargeMs: 30000, windowMs: 600,
-      assetBase: "ephemus"
+      assetBase: "ephemus", skills: []
     },
     {
       file: "data/capture/showcase/Veldra_crea.capture-creature-transfer-v1.json",
       id: "Veldra_crea", name: "Veldra", type: "light", rarity: "legendary",
       hp: 200, speed: 20, defense: 10, physical: 10, special: "light", specialValue: 20,
       charges: 2, rechargeMs: 35000, windowMs: 1500,
-      assetBase: "veldra"
+      assetBase: "veldra", skills: ["veldra-plume-solaire","veldra-percee-aurore","veldra-egide-zenith","veldra-rayon-cardinal","veldra-releve-celeste"]
     }
   ]) {
     assert.ok(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.includes(expected.file));
@@ -255,10 +255,10 @@ test("Ephemus and Veldra stay author-exact, selectable in Combat, and ready for 
       "pack:capture:creature-" + expected.assetBase + "-player-01");
     assert.equal(draft.presentation.visual.icon.assetId,
       "pack:capture:creature-" + expected.assetBase + "-icon-01");
-    assert.deepEqual(draft.skillIds, []);
+    assert.deepEqual(draft.skillIds, expected.skills);
     assert.equal(loadout.creatureId, expected.id);
     assert.deepEqual(loadout.slots.map(({ skillId }) => skillId),
-      [null, null, null, null, null]);
+      expected.skills.length ? expected.skills : [null, null, null, null, null]);
   }
 });
 
@@ -270,7 +270,7 @@ test("Ephemus and Veldra use the exact author V10 visual positioning in the real
       player: { displayScale: 1.15, position: { x: 0, y: -45 } },
       opponent: { displayScale: 0.7, position: { x: 0, y: 40 } },
       shadowY: 30,
-      rarity: "mythic"
+      rarity: "mythic", skills: []
     },
     {
       file: "data/capture/showcase/Veldra_crea.capture-creature-transfer-v1.json",
@@ -278,7 +278,7 @@ test("Ephemus and Veldra use the exact author V10 visual positioning in the real
       player: { displayScale: 2, position: { x: 0, y: -80 } },
       opponent: { displayScale: 1, position: { x: 0, y: 20 } },
       shadowY: 40,
-      rarity: "legendary"
+      rarity: "legendary", skills: ["veldra-plume-solaire","veldra-percee-aurore","veldra-egide-zenith","veldra-rayon-cardinal","veldra-releve-celeste"]
     }
   ];
   for (const spec of specs) {
@@ -297,8 +297,8 @@ test("Ephemus and Veldra use the exact author V10 visual positioning in the real
     assert.equal(draft.capture.rarity, spec.rarity);
     assert.equal(statValues.creatureId, spec.id);
     assert.equal(loadout.creatureId, spec.id);
-    assert.deepEqual(draft.skillIds, [], "skills are deliberately deferred");
+    assert.deepEqual(draft.skillIds, spec.skills, "preserve explicit author-approved loadout");
     assert.deepEqual(loadout.slots.map(slot => slot.skillId),
-      [null, null, null, null, null], "do not create placeholder skills");
+      spec.skills.length ? spec.skills : [null, null, null, null, null]);
   }
 });
