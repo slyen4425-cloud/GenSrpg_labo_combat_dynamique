@@ -31,7 +31,7 @@ test("Rayon cardinal is 5×8 in 2 seconds, with +10 only on actual fifth tick wh
   assert.equal(def.channeling.effects[0].amount,8);
   assert.equal(def.channeling.finalTickEffects[0].amount,10);
   const text=prose(def);
-  assert.match(text,/8 dégâts de Lumière toutes les 0,4 secondes/);
+  assert.match(text,/8 dégâts de Lumière à la cible toutes les 0,4 secondes/);
   assert.match(text,/5 pulsations maximum/);
   assert.match(text,/5e pulsation réellement atteinte/);
   assert.match(text,/10 dégâts de Lumière/);
