@@ -1,3 +1,8 @@
+### 2026-11-17 — Bestiaire : retour au périmètre éditorial après diagnostic CI
+- Deux passages successifs ont confirmé `foundation` 2817/2817 et les tests mobiles/2v2 GREEN, mais `creature-library-browser` échoue de manière indépendante sur `shadow-light-real-render-smoke.mjs` : initialement vrai contact non déclenché (8,47298px), ensuite sonde Chromium `missing` avant que l'étape contact soit atteinte. Défaut intermittent du smoke préexistant, déclaré aussi dans les chantiers 15/11.
+- Les essais de stabilisation de la fixture et d'instrumentation ont été **retirés du lot** : restauration exacte des deux fichiers navigateur à leur blob de `main`, aucun changement moteur ou assertion dans la PR. Ne pas fusionner en présence de CI RED. Le chantier technique mérite une PR autonome distincte.
+- Reste prêt côté utilisateur : 19 portraits dans l'unique source éditoriale Bestiaire, 22 fiches contrôlées, originaux auteurs inchangés. PR #332 reste DRAFT / NON PUBLIÉE jusqu'à résolution du gate.
+
 ### 2026-11-17 — Diagnostic déterministe du gate ombre 2.5D (sans relaxation)
 - Les deux CI du commit `68a0945385f427c235cd8bc7026b008300678629` maintiennent 4/5 succès, le job 2.5D échoue encore mais la sonde Chrome affiche `missing` : le JS asynchrone n'a pas émis son résultat avant la capture DOM. Pour distinguer délai d'initialisation, attente de contact, et attente de retour, la fixture expose le dernier jalon diagnostique dans `data-shadow-stage`, et le test le rapporte uniquement en cas d'échec.
 - Aucune suppression d'assertion, modification de masque, règle de combat, horloge, timeout, retry ou substitution du `onContact`. La PR reste draft tant que le navigateur n'est pas strictement GREEN.

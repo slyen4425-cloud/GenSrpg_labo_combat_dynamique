@@ -74,9 +74,8 @@ try {
   }
   const dom = Buffer.concat(chunks).toString("utf8");
   const probe = dom.match(/data-shadow-probe="([^"]+)"/)?.[1] ?? "missing";
-  const stage = dom.match(/data-shadow-stage="([^"]+)"/)?.[1] ?? "not-reached";
   if (probe !== "ok:silhouette:flight:direction:contact:restore:editor") {
-    throw new Error("Real DOM mask/light/flying controls failed: " + probe + " stage="+stage +
+    throw new Error("Real DOM mask/light/flying controls failed: " + probe +
       "; html tail=" + dom.slice(-1600));
   }
   console.log("Real Chrome shadow lighting: alpha projected and flying contact, standalone direction/restore, Capture editor injection without preview console.");
