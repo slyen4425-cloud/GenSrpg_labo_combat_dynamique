@@ -13,6 +13,7 @@ import {
 import {
   normalizeCombatTargetRefV1
 } from "../../contracts/combat-target-ref-v1.js";
+import { normalizeSkillEffectV1 } from "../../contracts/skill-effect-v1.js";
 
 function requiredString(value, field) {
   if (typeof value !== "string" || value.trim() === "") {
@@ -220,7 +221,17 @@ export function createRosterSession({
   }
 
   function reserveEffectsForSkill(skill) {
-    const effects = [
+    const relay = skill.effects?.find(effect => effect.kind === "ally_reserve_relay");
+    const effects = relay ? [
+      normalizeSkillEffectV1({kind: "heal", targetScope: "target", amount: relay.healAmount}),
+      normalizeSkillEffectV1({kind: "apply_status", targetScope: "target", status: {
+        id: skill.id + ":relay-power",
+        kind: "outgoing_damage_modifier", polarity: "beneficial",
+        durationModel: "time_ms", durationMs: relay.durationMs,
+        stacking: "refresh", maxStacks: 1, tags: ["ally-relay"],
+        modifierPct: relay.outgoingDamagePct
+      }})
+    ] : [
       ...(skill.effects ?? []).filter(effect => effect.kind !== "force_reserve_switch")
     ];
 
@@ -730,6 +741,21 @@ export function createRosterSession({
     }
 
     const forced = skill.effects?.some(effect => effect.kind === "force_reserve_switch") === true;
+    const relay = skill.effects?.some(effect => effect.kind === "ally_reserve_relay") === true;
+    // A relay is strictly an exchange of the caster with its OWN selected
+    // reserve. Even in 2v2, allied teammates' benches are never interchangeable.
+    if (relay && (relation !== "ally" || rosterTeamForActor(actorId)?.id !== team.id ||
+        team.slotId !== actorId || !team.activeMemberId))
+      return Object.freeze({ok:false,outcome:"relay_own_reserve_required",targetRef});
+    if (relay && (!combatSession.snapshot().fighters[actorId] ||
+        combatSession.snapshot().fighters[actorId].hp <= 0))
+      return Object.freeze({ok:false,outcome:"relay_caster_ko",targetRef});
+    if (relay && rosterLocked(team))
+      return Object.freeze({ok:false,outcome:"roster_locked",targetRef});
+    if (relay) {
+      const voluntary = voluntaryCooldownPreview(team);
+      if (voluntary) return voluntary;
+    }
     if (forced && relation !== "enemy") {
       return Object.freeze({ok:false,outcome:"force_switch_enemy_only",targetRef});
     }
@@ -754,7 +780,7 @@ export function createRosterSession({
         member,
         now
       );
-    if (reserveFighter.hp <= 0) {
+    if (reserveFighter.hp <= 0 && !relay) {
       return Object.freeze({
         ok: false,
         outcome: "reserve_ko",
@@ -868,6 +894,11 @@ export function createRosterSession({
         battleFormat: null
       });
 
+    // A knocked-out reserve only becomes eligible for the atomic exchange
+    // after the native healer actually restored positive HP. If healing was
+    // inverted, this cast fails closed without deploying a zero-HP fighter.
+    if (relay && tactical.state.fighters[detachedId].hp <= 0)
+      return Object.freeze({ok:false,outcome:"relay_heal_failed",targetRef});
     combatSession.replaceFighter(
       actorId,
       tactical.state.fighters[
@@ -881,12 +912,13 @@ export function createRosterSession({
         ]
       );
 
-    const forcedResult = forced ? forceSwitchMemberBySkill(team, member) : null;
+    const forcedResult = (forced || relay) ? forceSwitchMemberBySkill(team, member) : null;
+    if (relay && forcedResult) commitVoluntaryCooldown(team);
     if (completedResolution !== null) consumedTimedReserveResolutions.add(completedResolution);
     return Object.freeze({
       ok: true,
-      outcome: forcedResult ? "forced_switched" : "resolved",
       ...(forcedResult ?? {}),
+      outcome: relay && forcedResult ? "allied_relay" : forcedResult ? "forced_switched" : "resolved",
       actorId,
       targetRef,
       relation,
@@ -896,7 +928,7 @@ export function createRosterSession({
         ...started.events,
         ...tactical.events,
         ...(forcedResult ? [Object.freeze({
-          type:"roster-forced-switch",atMs:now,actorId:team.slotId,
+          type:relay ? "roster-allied-relay" : "roster-forced-switch",atMs:now,actorId:team.slotId,
           sourceActorId:actorId,teamId:team.id,
           recalledMemberId:forcedResult.recalledMemberId,memberId:member.id
         })] : [])
