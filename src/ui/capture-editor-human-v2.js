@@ -3608,6 +3608,39 @@ export function readHumanProjectilePowerV1(
   };
 }
 
+// Adds an optional author panel to the existing channeling editor, without a
+// second effects registry or changing legacy skill forms.
+function ensureHumanChannelFinisherHostV1(root) {
+  let host=root.querySelector?.("[data-skill-channeling-final-effects-host]");
+  if(host)return host;
+  const pulses=root.querySelector?.("[data-skill-channeling-effects-host]");
+  const doc=pulses?.ownerDocument;
+  if(!doc||!pulses.parentElement)return null;
+  const wrapper=doc.createElement("details");
+  wrapper.dataset.skillChannelFinisherSection="true";
+  const summary=doc.createElement("summary");
+  summary.textContent="Effets du dernier tic (nécessite nombre max de tics)";
+  host=doc.createElement("div");
+  host.dataset.skillChannelingFinalEffectsHost="true";
+  const add=doc.createElement("button");add.type="button";
+  add.className="small-action";add.textContent="Ajouter un effet du dernier tic";
+  add.addEventListener("click",()=>appendHumanSkillEffectV1(root,null,null,null,
+    "[data-skill-channeling-final-effects-host]"));
+  host.addEventListener("change",event=>{
+    if(event.target?.matches?.("[data-skill-effect-kind], [data-skill-status-kind]")){
+      const row=event.target.closest?.("[data-skill-effect-row]");
+      if(row)syncHumanSkillEffectRowV1(row);
+    }
+  });
+  host.addEventListener("click",event=>{
+    const remove=event.target?.closest?.("[data-skill-effect-remove]");
+    if(remove)remove.closest("[data-skill-effect-row]")?.remove();
+  });
+  wrapper.append(summary,host,add);
+  pulses.parentElement.append(wrapper);
+  return host;
+}
+
 function writeHumanChannelingFieldsV1(root, channel, statRegistry = null, statusVisuals = {}) {
   const active=channel != null;
   one(root,"[data-skill-channeling-enabled]").checked=active;
@@ -3625,6 +3658,9 @@ function writeHumanChannelingFieldsV1(root, channel, statRegistry = null, status
   ]) one(root,"[data-skill-channeling-stop-"+key+"]").checked=checked;
   renderHumanSkillEffectsV1(root,channel?.effects??[],statRegistry,statusVisuals,
     "[data-skill-channeling-effects-host]");
+  if(ensureHumanChannelFinisherHostV1(root))
+    renderHumanSkillEffectsV1(root,channel?.finalTickEffects??[],statRegistry,statusVisuals,
+      "[data-skill-channeling-final-effects-host]");
 }
 function readHumanChannelingFieldsV1(root) {
   if(!one(root,"[data-skill-channeling-enabled]").checked)return null;
@@ -3636,7 +3672,10 @@ function readHumanChannelingFieldsV1(root) {
     stopOnDamage:one(root,"[data-skill-channeling-stop-damage]").checked,
     stopOnStun:one(root,"[data-skill-channeling-stop-stun]").checked,
     stopOnSilence:one(root,"[data-skill-channeling-stop-silence]").checked,
-    effects:readHumanSkillEffectsV1(root,"[data-skill-channeling-effects-host]")
+    effects:readHumanSkillEffectsV1(root,"[data-skill-channeling-effects-host]"),
+    ...(root.querySelector?.("[data-skill-channeling-final-effects-host]")
+      ? {finalTickEffects:readHumanSkillEffectsV1(root,"[data-skill-channeling-final-effects-host]")}
+      : {})
   };
 }
 function writeHumanContactHoldFieldsV1(root, hold, statRegistry = null, statusVisuals = {}) {
@@ -5635,9 +5674,11 @@ function appendHumanSkillEffectV1(
     );
   }
   if (hostSelector === "[data-skill-contact-hold-effects-host]" ||
-      hostSelector === "[data-skill-channeling-effects-host]") {
+      hostSelector === "[data-skill-channeling-effects-host]" ||
+      hostSelector === "[data-skill-channeling-final-effects-host]") {
     for (const option of kind.options) {
-      const allowed=hostSelector === "[data-skill-channeling-effects-host]"
+      const allowed=hostSelector === "[data-skill-channeling-effects-host]" ||
+         hostSelector === "[data-skill-channeling-final-effects-host]"
         ? ["damage","heal","apply_status","apply_marker"]
         : SKILL_EFFECT_V1_KINDS.filter(k=>!["persistent_zone","scheduled_effect",
             "force_reserve_switch","ally_reserve_relay","summon_entity"].includes(k));
@@ -5658,7 +5699,8 @@ function appendHumanSkillEffectV1(
     );
   }
 
-  if(hostSelector==="[data-skill-channeling-effects-host]"){
+  if(hostSelector==="[data-skill-channeling-effects-host]" ||
+      hostSelector==="[data-skill-channeling-final-effects-host]"){
     for(const opt of scope.options)opt.disabled=!["target","self"].includes(opt.value);
   }
 
