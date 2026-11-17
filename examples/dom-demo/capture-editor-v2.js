@@ -4,6 +4,7 @@ import {
   SOUNDTRACK_STARTER_BATTLE_IDS_V1
 } from "../../src/assets/soundtrack-starter-catalog-v1.js";
 import {createSoundtrackLocalMediaV1} from "../../src/assets/soundtrack-local-media-v1.js";
+import {createCaptureUniverseDatabaseStoreV1} from "../../src/contracts/capture-universe-database-store-v1.js";
 import {createSoundtrackBrowserStorageV1}
  from "../../src/ui/soundtrack-browser-storage-v1.js";
 import {soundtrackRuntimeAssetV1} from "../../src/assets/soundtrack-runtime-library-v1.js";
@@ -199,6 +200,17 @@ function resolveEditorAudioAsset(assetId) {
   );
 }
 
+// The native Combat owner alone reads project creature/skill data.
+// Unrecognised or incomplete universes fail CLOSED: never show the global
+// Monster InvoC editor as though it were an independent project.
+const universeId=new URLSearchParams(globalThis.location?.search ?? "").get("universe");
+const universeStore=universeId===null?null:
+ createCaptureUniverseDatabaseStoreV1({storage:window.localStorage});
+const universeSnapshot=universeStore?.load(universeId)??null;
+if(universeId!==null&&universeSnapshot===null)
+ throw new Error("Bibliothèque de l’univers absente : aucun catalogue historique ouvert");
+let universeRevision=universeSnapshot?.revision??null;
+
 let editor;
 try {
   editor = mountCaptureEditorHumanV2({
@@ -206,7 +218,8 @@ try {
     creatorVisualAssets,
     creatorAudioAssets,
     // The author UI itself selects the tab; no post-ready synthetic click.
-    initialTab: new URLSearchParams(globalThis.location?.search ?? "").get("tab") ?? "creature"
+    initialTab: new URLSearchParams(globalThis.location?.search ?? "").get("tab") ?? "creature",
+    initialDatabase: universeSnapshot?.database ?? null
   });
 } catch (error) {
   editorStatus.textContent =
@@ -214,6 +227,41 @@ try {
     (error?.message ?? String(error));
   editorStatus.dataset.tone = "error";
   throw error;
+}
+
+if(universeSnapshot){
+ const panel=document.createElement("section");
+ panel.dataset.captureUniverseProjectEditor="true";
+ panel.className="card";
+ const label=document.createElement("p");
+ label.textContent="Univers indépendant — catalogue personnages et capacités";
+ const save=document.createElement("button");
+ save.type="button";save.textContent="Enregistrer le catalogue de cet univers";
+ const notice=document.createElement("p");
+ notice.setAttribute("role","status");
+ notice.textContent="Modifie les fiches et capacités, puis enregistre ce projet. Aucun autre univers n’est modifié.";
+ save.addEventListener("click",async()=>{
+  try{
+   await editor.ready;
+   const result=universeStore.save(universeId,editor.readDatabase(),
+    {expectedRevision:universeRevision});
+   universeRevision=result.revision;
+   notice.textContent="Catalogue sauvegardé dans cet univers (révision "+universeRevision+").";
+   notice.dataset.tone="ok";
+  }catch(error){
+   notice.textContent="Sauvegarde refusée sans modifier les autres univers : "+String(error?.message??error);
+   notice.dataset.tone="error";
+  }
+ });
+ panel.append(label,save,notice);
+ const nav=root.querySelector(".editor-tabs");
+ nav?.insertAdjacentElement("afterend",panel);
+ const bestiary=root.querySelector('a.bestiary-link');
+ if(bestiary){
+  const target=new URL(bestiary.href,location.href);
+  target.searchParams.set("universe",universeId);
+  bestiary.href=target.href;
+ }
 }
 
 const creatureLibraryState = root.querySelector(
