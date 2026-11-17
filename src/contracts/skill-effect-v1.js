@@ -13,6 +13,7 @@ export const SKILL_EFFECT_V1_KINDS = Object.freeze([
   "apply_status",
   "apply_marker",
   "force_reserve_switch",
+  "ally_reserve_relay",
   "consume_marker",
   "cleanse",
   "dispel",
@@ -81,6 +82,7 @@ const FIELDS_BY_KIND = Object.freeze({
   ]),
   apply_marker: new Set([...COMMON_FIELDS, "marker", "charges"]),
   force_reserve_switch: COMMON_FIELDS,
+  ally_reserve_relay: new Set([...COMMON_FIELDS, "healAmount", "outgoingDamagePct", "durationMs"]),
   consume_marker: new Set([...COMMON_FIELDS, "markerId", "count", "minimum", "perCharge", "effects"]),
   cleanse: new Set([
     ...COMMON_FIELDS,
@@ -271,8 +273,8 @@ export function normalizeSkillEffectV1(input) {
     throw new RangeError("Reserve effect scopes support damage/heal/apply_marker/apply_status only: " + kind);
   }
 
-  if (kind === "force_reserve_switch" && targetScope !== "target") {
-    throw new RangeError("force_reserve_switch requires target scope");
+  if (["force_reserve_switch", "ally_reserve_relay"].includes(kind) && targetScope !== "target") {
+    throw new RangeError(kind + " requires target scope");
   }
 
   if (kind === "summon_entity" && !["self","target"].includes(targetScope)) {
@@ -403,6 +405,19 @@ export function normalizeSkillEffectV1(input) {
         throw new RangeError("summon_entity."+name+" must be between -150 and 150");
       output[name]=displacement;
     }
+  }
+
+  // The relay is resolved exclusively by RosterSession: no duplicate HP,
+  // status clock or fighter replacement authority in ordinary Combat effects.
+  if (kind === "ally_reserve_relay") {
+    output.healAmount = nonNegativeNumber(value.healAmount, "ally_reserve_relay.healAmount");
+    output.outgoingDamagePct = nonNegativeNumber(value.outgoingDamagePct, "ally_reserve_relay.outgoingDamagePct");
+    if (output.outgoingDamagePct > 100) throw new RangeError("ally_reserve_relay.outgoingDamagePct must be <= 100");
+    const durationMs = Number(value.durationMs);
+    if (!Number.isInteger(durationMs) || durationMs <= 0 || durationMs > 120000)
+      throw new RangeError("ally_reserve_relay.durationMs must be 1..120000 ms");
+    output.durationMs = durationMs;
+    if (output.healAmount <= 0) throw new RangeError("ally_reserve_relay.healAmount must be positive to revive KO reserves");
   }
 
   if (kind === "apply_marker") {
