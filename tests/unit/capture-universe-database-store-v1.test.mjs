@@ -59,3 +59,25 @@ test('explicit copy uses normalized official Combat database, never shares save 
  assert.equal(lib.load(a).revision,1);
  assert.equal(lib.load(b).revision,2);
 });
+
+test('browser adapter never falls back to global Combat library for another universe',async()=>{
+ const {createCaptureUniverseEditorBrowserV1}=await import('../../src/ui/capture-universe-editor-browser-v1.js');
+ const storageRef=storage();
+ const legacy=createCaptureUniverseEditorBrowserV1({search:'?tab=creature',storage:storageRef});
+ assert.equal(legacy.universeId,null);
+ assert.equal(legacy.universeStore,null);
+ assert.throws(()=>createCaptureUniverseEditorBrowserV1({search:'?universe=unv_00000001',storage:storageRef}),/absente/);
+ const owner=createCaptureUniverseDatabaseStoreV1({storage:storageRef});
+ owner.create('unv_00000001',database());
+ const selected=createCaptureUniverseEditorBrowserV1({search:'?universe=unv_00000001',storage:storageRef});
+ assert.equal(selected.universeId,'unv_00000001');
+ assert.equal(selected.universeSnapshot.revision,1);
+ assert.equal(selected.universeSnapshot.database.creatures.length,0);
+ assert.throws(()=>createCaptureUniverseEditorBrowserV1({search:'?universe=invalid',storage:storageRef}),/généré/);
+});
+test('authoring preview page never accesses browser storage directly',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const source=readFileSync(new URL('../../examples/dom-demo/capture-editor-v2.js',import.meta.url),'utf8');
+ assert.doesNotMatch(source,/localStorage|sessionStorage/);
+ assert.match(source,/createCaptureUniverseEditorBrowserV1/);
+});
