@@ -216,7 +216,9 @@ export function mountCaptureCombatRosterPanelV1({
       if (!ref) continue;
       ref.label.textContent = member.displayName + " · " + Math.round(member.hp) + "/" + Math.round(member.maxHp) + " PV · "
         + (member.hp <= 0 ? "KO" : member.active ? "Actif" : "Réserve");
-      const availableForSkill = !member.active && member.hp > 0 &&
+      // The Roster preview is authoritative: the allied relay may target KO,
+      // whereas ordinary reserve skills never expose KO as a candidate.
+      const availableForSkill = !member.active &&
         targetableReserveKeys.has(ref.actorId + ":" + member.id);
       ref.node.dataset.skillReserveCandidate = availableForSkill ? "true" : "false";
       const busy = isTransitionPending() || Boolean(getRuntime()?.hasActiveActionFor(getControlledActorId()));
