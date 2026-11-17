@@ -15,7 +15,7 @@ export function createCaptureCombatRosterControllerV1({
     beforeActorChanged(actorId, result);
     if (result.outcome === "recalled" || result.outcome === "team_defeated") {
       visuals.setSlotVisible(actorId, false);
-    } else if (["summoned", "ko_replaced", "switched", "forced_switched"].includes(result.outcome)) {
+    } else if (["summoned", "ko_replaced", "switched", "forced_switched", "allied_relay"].includes(result.outcome)) {
       visuals.setCreatureFor(actorId, result.creatureId, { displayName: result.displayName });
       visuals.setSlotVisible(actorId, true);
     } else return result;
@@ -29,12 +29,12 @@ export function createCaptureCombatRosterControllerV1({
     useSkillOnTarget(options) {
       if (disposed) return {ok:false,outcome:"disposed"};
       const result = roster.useSkillOnTarget(options);
-      return result.outcome === "forced_switched" ? project(result.teamId,result) : result;
+      return ["forced_switched", "allied_relay"].includes(result.outcome) ? project(result.teamId,result) : result;
     },
     completeTimedSkillOnTarget(options) {
       if (disposed) return {ok:false,outcome:"disposed"};
       const result=roster.useSkillOnTarget(options);
-      return result.outcome === "forced_switched" ? project(result.teamId,result) : result;
+      return ["forced_switched", "allied_relay"].includes(result.outcome) ? project(result.teamId,result) : result;
     },
     activeMember,
     isPresent: actorId => activeMember(actorId) !== null,
@@ -216,7 +216,9 @@ export function mountCaptureCombatRosterPanelV1({
       if (!ref) continue;
       ref.label.textContent = member.displayName + " · " + Math.round(member.hp) + "/" + Math.round(member.maxHp) + " PV · "
         + (member.hp <= 0 ? "KO" : member.active ? "Actif" : "Réserve");
-      const availableForSkill = !member.active && member.hp > 0 &&
+      // The Roster preview is authoritative: the allied relay may target KO,
+      // whereas ordinary reserve skills never expose KO as a candidate.
+      const availableForSkill = !member.active &&
         targetableReserveKeys.has(ref.actorId + ":" + member.id);
       ref.node.dataset.skillReserveCandidate = availableForSkill ? "true" : "false";
       const busy = isTransitionPending() || Boolean(getRuntime()?.hasActiveActionFor(getControlledActorId()));

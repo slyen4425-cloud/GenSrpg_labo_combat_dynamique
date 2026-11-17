@@ -94,6 +94,11 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/vyrame-rugissement-des-limbes.capture-skill-transfer-v1.json",
     "data/capture/showcase/vyrame-carapace-des-ames.capture-skill-transfer-v1.json",
     "data/capture/showcase/vyrame-deferlante-spectrale.capture-skill-transfer-v1.json",
+    "data/capture/showcase/veldra-plume-solaire.capture-skill-transfer-v1.json",
+    "data/capture/showcase/veldra-percee-aurore.capture-skill-transfer-v1.json",
+    "data/capture/showcase/veldra-egide-zenith.capture-skill-transfer-v1.json",
+    "data/capture/showcase/veldra-rayon-cardinal.capture-skill-transfer-v1.json",
+    "data/capture/showcase/veldra-releve-celeste.capture-skill-transfer-v1.json",
   ]);
 
 // Author-approved retirement from the ACTIVE Capture skill library.

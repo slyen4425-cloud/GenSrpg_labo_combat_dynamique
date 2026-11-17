@@ -22,7 +22,8 @@ export function resolveTacticalEffectTargetIdsV1({
   state,
   actorId,
   targetId,
-  targetScope
+  targetScope,
+  allowKnockedOutTarget = false
 }) {
   if (targetScope === "self") {
     return Object.freeze(
@@ -34,7 +35,7 @@ export function resolveTacticalEffectTargetIdsV1({
 
   if (targetScope === "target") {
     return Object.freeze(
-      isAlive(state, targetId)
+      (isAlive(state, targetId) || (allowKnockedOutTarget === true && Boolean(state?.fighters?.[targetId])))
         ? [targetId]
         : []
     );
