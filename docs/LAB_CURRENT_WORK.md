@@ -1,3 +1,11 @@
+## 2026-11-17 — Remplacer Ephemus + Veldra par les deux exports auteur corrigés V10 (EN VALIDATION)
+- **START** : Combat `main@671ab3047b810cdb0c82151d953b2e4560a04333` ; checkpoint `checkpoint/lab-start-ephemus-veldra-author-v10-20261117` ; travail isolé `work/lab-ephemus-veldra-author-v10-20261117`. Dernière CI complète `main@671ab304` **ROUGE** sur la sentinelle navigateur `creature-library-browser` (shadow/2.5D), à diagnostiquer sans l'ignorer.
+- **Auteur** : deux JSON exacts joints le 17/11, `gensrpg-capture-creature-Ephemus(1).json` (`Ephemus`) et `gensrpg-capture-creature-Veldra_crea(1).json` (`Veldra_crea`), présentation V10. Remplacement strict dans les deux fichiers `data/capture/showcase/*.capture-creature-transfer-v1.json` existants ; aucun ID, aucune capacité, aucun média nouveau.
+- **Propriétaire** : unique catalogue Showcase et import normalisé Capture du Labo Combat. `global-assets` reste propriétaire des images ; aucune nouvelle bibliothèque ni adaptation de la PWA.
+- **Protections** : autres créatures, identifiants, stats, rareté, réaction, sockets, assetId FACE/DOS/icône, 5 slots `null`, moteur et UI, sauvegardes, son, Exploration, GenSRPG, branches concurrentes.
+- **Tests** : comparer les deux JSON auteur aux fichiers canoniques ; sentinelle Node sur vues joueur/adversaire et round-trip éditeur ; CI sur SHA exact, navigateur réel PC/mobile, publication Pages de `main` et contrôle HTTPS avant GREEN.
+- **Retour arrière** : checkpoint de départ ; aucun réécriture d'historique. **Non publié tant que CI ROUGE.**
+
 ## 2026-11-17 — Ephemus + Veldra : fiches auteur disponibles pour réglages visuels en adversaire (LOT ISOLÉ / NON GREEN)
 - START Combat main@`49a1d1b6eb149c09ba602ee38982720aa67a3ec8`, checkpoint `checkpoint/lab-start-ephemus-veldra-20261117`, branche `work/lab-ephemus-veldra-visuals-20261117` ; ne pas modifier les branches des autres agents.
 - Source exacte : transferts JSON fournis par l'auteur Ephemus (`Ephemus`) et Veldra (`Veldra_crea`), intégrés dans les deux fichiers Showcase + catalogue officiel unique, sans altérer les données auteur. Vues FACE/DOS/icône de la branche canonique `global-assets` existantes ; aucun asset copié.
