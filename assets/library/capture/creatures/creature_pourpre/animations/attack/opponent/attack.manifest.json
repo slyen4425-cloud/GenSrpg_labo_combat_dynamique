@@ -1,0 +1,136 @@
+{
+  "creature": "creature_pourpre",
+  "view": "opponent",
+  "orientation": "face-three-quarter-toward-left",
+  "action": "attack",
+  "frameCount": 12,
+  "frameWidth": 512,
+  "frameHeight": 512,
+  "frameMs": 100,
+  "frameDurationsMs": [
+    110,
+    100,
+    90,
+    90,
+    85,
+    75,
+    110,
+    95,
+    95,
+    110,
+    130,
+    430
+  ],
+  "playbackMode": "once",
+  "sourceZip": "_incoming/creature_pourpre_face_mouvement_attaque_12f_valide.zip",
+  "sourceSha256": "9817f86f4c76d5e09f785cafa99b6cace5e910dd9d4ba7e76267a9b38279619c",
+  "sourceGitBlobSha": "f5a16e641ebc0ed79663825b1b72349fc7847582",
+  "sourceFrameSha256": [
+    "78d6f01cc3841ba4dd479c92ff1e5feb606012b35fc2994483a6ecb215b6c4d1",
+    "928cb25f393da0659ce1c42e86a85fe9a158da9ff75862f5bcfb0acd74f3e988",
+    "ad950f880a23ab2808e69a9a00db20d26e6ac29837dcd3096245018804e2cfdd",
+    "8744c24bb6c6d5f6dc37cd15bd9ae5f18fd2532b8bd569d46cf083270f2e6d85",
+    "5e0936b5456f69b5dd62f9f2fd25c2a8b8db614a9ef78c3d100479ff876d40a7",
+    "9f056ca81e6e8a1c42bd91babc64bdcdc18ed159aa345efbfe7431f08c3a86fa",
+    "b5f2cb88ae84b7cea255ccd0fb1042d64c807acb374374ec663c22783f24f6b6",
+    "00ad62a7a086813cab2b0d95e696e216696737c9a3120c482f22d3b1d3516516",
+    "c8d2f11d28ccf66eee107422ae5456563a89af69f6590b2da0d41004c752c4ea",
+    "62096868bc9adff3d24ebba4911dbc89c10fb332d145c65c3eb9ac0c798f198f",
+    "d95f00b7b505913265185d14b600dc731a61205f023eb8bb03172aed7a59d480",
+    "f71d9b767c3ed6b77b50af915b3943ab94b6190b29a2a5e63aba159c7d46d3a2"
+  ],
+  "frameSha256Png": [
+    "12dead9e8567f7d6c20d82c70ee6363664d2afc9d8cfbe474413688b00e2b4fe",
+    "250eb19abdd3fd5f5f0a55b02af70ff6265d448d701d8eef83ba4bc6edc1def4",
+    "d0c0618df690ea62833755b56682e89acd5c5709f5af465cf80d5586ea21c8b6",
+    "5e78367092416ee2815783e33cdeb6d1c5d1492a7f797d9b9a4d0e92cf11055e",
+    "05a6d8bef64d74d4995b5af1664b674a9a79718eb659104753d8438ee0e031a4",
+    "8ce83e9145e84ca9db60fd891ee6b03d11e7d587526d76c007daf274e0a49ebc",
+    "c6a193824309ebf63a5461131c0fdc9ae674090a199af55937cc8c5f2a60a15c",
+    "3927cb1d2c5c34764ecf35918094e1f5042152dd3d9194eea1f54ef17192a5e2",
+    "0a8ea54bc0e588351f063443fad6543cc7730f088b11fe872b5a4ba3459c552f",
+    "87987686bc8eb3915314233702adadba1974fa5d4c8f50d2f5e2a5c12deee7f9",
+    "78644f1853bd59afed8b97d75c4a69d45bbdacdc2b40b6444de1a992fa649aab",
+    "ca2b981287291f668c17092fab64efddfc45eb3e5b9a2d68c36a6e27226c64c6"
+  ],
+  "margins": [
+    [
+      48,
+      80,
+      48,
+      52
+    ],
+    [
+      63,
+      91,
+      42,
+      43
+    ],
+    [
+      43,
+      74,
+      42,
+      57
+    ],
+    [
+      43,
+      63,
+      69,
+      42
+    ],
+    [
+      79,
+      43,
+      44,
+      43
+    ],
+    [
+      44,
+      43,
+      68,
+      43
+    ],
+    [
+      44,
+      52,
+      42,
+      43
+    ],
+    [
+      43,
+      43,
+      65,
+      43
+    ],
+    [
+      43,
+      43,
+      42,
+      61
+    ],
+    [
+      49,
+      45,
+      44,
+      80
+    ],
+    [
+      49,
+      43,
+      42,
+      63
+    ],
+    [
+      43,
+      43,
+      68,
+      42
+    ]
+  ],
+  "masterSource": "runtime/creature_pourpre_face.png",
+  "firstFrameReplacedWithCanonicalMaster": true,
+  "otherSourceFramesRepositionedUpPx": 20,
+  "allOtherFramesRetainedFromApprovedZip": true,
+  "atlasFile": "atlases/creature_pourpre_attack_opponent_12_atlas.webp",
+  "previewFile": "previews/creature_pourpre_attack_opponent_12_preview.webp"
+}

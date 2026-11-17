@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 430,
+    "assets": 432,
     "icons": 192,
-    "sprites": 206,
+    "sprites": 208,
     "fx": 2,
     "portraits": 25,
     "backgrounds": 5,
@@ -14380,6 +14380,110 @@
         "frameHeight": 512,
         "frameMs": 120,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pourpre-movement-opponent-12-v1",
+      "label": "Créature pourpre — Course face (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "pourpre",
+        "animated",
+        "opponent",
+        "movement"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / artist approved",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_pourpre/animations/movement/opponent/atlases/creature_pourpre_movement_opponent_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameWidth": 512,
+        "frameHeight": 512,
+        "frameMs": 83,
+        "playbackMode": "loop",
+        "frameDurationsMs": [
+          83,
+          83,
+          83,
+          83,
+          83,
+          83,
+          83,
+          83,
+          83,
+          83,
+          83,
+          83
+        ]
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pourpre-attack-opponent-12-v1",
+      "label": "Créature pourpre — Attaque face (12 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "pourpre",
+        "animated",
+        "opponent",
+        "attack"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / artist approved",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_pourpre/animations/attack/opponent/atlases/creature_pourpre_attack_opponent_12_atlas.webp",
+        "format": "sprite-strip",
+        "mime": "image/webp",
+        "frameCount": 12,
+        "frameWidth": 512,
+        "frameHeight": 512,
+        "frameMs": 100,
+        "playbackMode": "once",
+        "frameDurationsMs": [
+          110,
+          100,
+          90,
+          90,
+          85,
+          75,
+          110,
+          95,
+          95,
+          110,
+          130,
+          430
+        ]
       },
       "compatibility": {
         "uses": [
