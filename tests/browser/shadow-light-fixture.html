@@ -167,6 +167,7 @@ try {
       mode.dispatchEvent(new Event("change", { bubbles: true }));
       if (a.dataset.shadowMode !== "silhouette") throw Error("silhouette restoration failed");
       clearInterval(timer);
+      document.body.dataset.shadowStage="setup";
       // One real collision in Chromium: pause the existing body+shadow WAAPI
       // tracks at contact, then return them together without a second owner.
       let touchCount = 0;
@@ -218,12 +219,14 @@ try {
         preflightOverlap = modelOverlap();
       }
       if (!preflightOverlap) throw Error("real alpha silhouettes could not be put in contact");
+      document.body.dataset.shadowStage="preflight-ok";
       // The floating target's existing WAAPI idle changes the *actual* alpha
       // position between setup and the contact watcher's first rAF. We have
       // already proved the floating track above; hold it still for this
       // separate collision test, without replacing the mask or sensor.
       const stationaryTargetTracks=flying.querySelector("[data-demo-motion]").getAnimations();
       for(const track of stationaryTargetTracks)track.pause();
+      document.body.dataset.shadowStage="approach-start";
       const contactPromise = demo.playApproachFor("player", "ground", {
         travelMs: 1450, targetSlot: "opponent", holdOnContact: true,
         onContact() { touchCount += 1; return { outcome: "contact_held" }; }
@@ -253,6 +256,7 @@ try {
       if(!visibleModelsOverlap(demo.getCollisionModelFor("player").snapshot(),
                                demo.getCollisionModelFor("opponent").snapshot()))
         throw Error("real alpha models not overlapping at approach start");
+      document.body.dataset.shadowStage="deep-alpha-overlap";
       // The CI headless virtual clock can advance this native outbound WAAPI
       // pose beyond a *real but narrow* alpha contact before its first RAF.
       // Slow the original body+shadow tracks together for this contact test;
@@ -264,6 +268,7 @@ try {
         throw Error("real outbound body/shadow animations missing");
       for(const track of [...outboundBodyTracks,...outboundShadowTracks])
         track.playbackRate=0.1;
+      document.body.dataset.shadowStage="waiting-native-contact";
       const startedWaitingAt = performance.now();
       let nearestDistance=Infinity;
       let sourceSnapshotCount=0;
@@ -280,6 +285,7 @@ try {
         ));
         await new Promise(resolve => setTimeout(resolve, 35));
       }
+      if (touchCount === 1) document.body.dataset.shadowStage="native-contact-hit";
       if (touchCount !== 1) throw Error("real contact count="+touchCount+" closest="+nearestDistance+" sourceSnapshots="+sourceSnapshotCount+" targetSnapshots="+targetSnapshotCount+" actor="+JSON.stringify(player.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON())+" target="+JSON.stringify(flying.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON()));
       const bodyTracks = player.querySelector("[data-demo-motion]").getAnimations();
       const shadowTracks = a.getAnimations();
@@ -287,6 +293,7 @@ try {
           !shadowTracks.some(x => x.playState === "paused")) {
         throw Error("both WAAPI tracks must be paused while attached");
       }
+      document.body.dataset.shadowStage="native-return";
       if (!demo.releaseHeldApproachFor("player")) throw Error("native return was not started");
       // Headless virtual JS time keeps moving while freshly resumed WAAPI
       // effects can remain pending after a pause. Validate their real Chrome
@@ -311,6 +318,7 @@ try {
         new Promise((_, reject) =>
           setTimeout(() => reject(Error("held return did not settle after real WAAPI finish")), 350))
       ]);
+      document.body.dataset.shadowStage="native-return-finished";
       if (result?.status !== "finished") throw Error("attached approach did not return naturally");
       if (demo.releaseHeldApproachFor("player")) throw Error("double release must be ignored");
       flying.style.left = originalOpponentLeft;
@@ -344,6 +352,7 @@ try {
         throw Error("Capture editor azimuth or flying projection ignored");
       }
       reloaded.dispose();
+      document.body.dataset.shadowStage="editor-complete";
       document.body.dataset.shadowProbe = "ok:silhouette:flight:direction:contact:restore:editor";
     } catch (error) {
       clearInterval(timer);
