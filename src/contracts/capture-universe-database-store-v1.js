@@ -10,6 +10,18 @@ const idOf=value=>{
   throw new TypeError('Identifiant de projet Capture non généré par le Core');
  return value;
 };
+// Blank means zero authored creatures/skills, not a cloned Monster InvoC.
+// Rules/statistics are supplied by the existing native editor presets and
+// remain editable by the game's author; this owner validates their schemas.
+export function createBlankCaptureUniverseDatabaseV1({
+ statRegistry,progressionRules,metadata={}
+}={}){
+ return normalizeCaptureDatabaseV1({
+  schema:'capture-database-v1',version:1,statRegistry,progressionRules,
+  creatures:[],skills:[],metadata
+ });
+}
+
 export function createCaptureUniverseDatabaseStoreV1({storage}={}){
  if(!storage||typeof storage.getItem!=='function'||typeof storage.setItem!=='function')
   throw new TypeError('Stockage du projet Combat requis');
