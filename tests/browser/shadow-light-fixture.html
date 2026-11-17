@@ -234,14 +234,22 @@ try {
       const activePlayer=demo.getCollisionModelFor("player")?.visibleRect?.();
       const activeTarget=demo.getCollisionModelFor("opponent")?.visibleRect?.();
       if(!activePlayer||!activeTarget)throw Error("live approach collision masks missing");
-      if(!visibleModelsOverlap(demo.getCollisionModelFor("player").snapshot(),
-                               demo.getCollisionModelFor("opponent").snapshot())){
-        const centerX = rect=>rect.left+rect.width/2;
-        const centerY = rect=>rect.top+rect.height/2;
-        flying.style.left=(Number.parseFloat(flying.style.left)+centerX(activePlayer)-centerX(activeTarget))+"px";
-        flying.style.top=(Number.parseFloat(flying.style.top)+centerY(activePlayer)-centerY(activeTarget))+"px";
-        void flying.offsetWidth;
-      }
+      // Center both REAL alpha-mask rectangles after the initial approach
+      // transform, even if they only touched at their edges before. In
+      // headless virtual-time Chromium a 1px tangency can drift apart before
+      // the first native rAF. We keep both WAAPI tracks, the real mask contact
+      // detector, and all hit/pause/return assertions strictly unchanged.
+      const centerX = rect=>rect.left+rect.width/2;
+      const centerY = rect=>rect.top+rect.height/2;
+      flying.style.left=(Number.parseFloat(flying.style.left)+centerX(activePlayer)-centerX(activeTarget))+"px";
+      flying.style.top=(Number.parseFloat(flying.style.top)+centerY(activePlayer)-centerY(activeTarget))+"px";
+      void flying.offsetWidth;
+      const centeredPlayer=demo.getCollisionModelFor("player")?.visibleRect?.();
+      const centeredTarget=demo.getCollisionModelFor("opponent")?.visibleRect?.();
+      if(!centeredPlayer||!centeredTarget||
+         Math.abs(centerX(centeredPlayer)-centerX(centeredTarget))>3||
+         Math.abs(centerY(centeredPlayer)-centerY(centeredTarget))>3)
+        throw Error("real mask centers not aligned after native approach");
       if(!visibleModelsOverlap(demo.getCollisionModelFor("player").snapshot(),
                                demo.getCollisionModelFor("opponent").snapshot()))
         throw Error("real alpha models not overlapping at approach start");

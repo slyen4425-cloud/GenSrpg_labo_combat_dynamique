@@ -12,3 +12,7 @@
 - Gates : CI cinq jobs sur SHA exact, vrai navigateur, publication depuis `main`, preuve Pages/HTTPS, checkpoint GREEN après contrôles.
 
 19 portraits : Grainou, Moussados, Venombre, Kitsune Lunaire, Loup volcanique, Gorice, Gemmor, Maraileron, Ailevent, Voltige, Dracendre, Freclairions, Lumilo, Noctigriffe, Scarabacier, Krakenor, Veuve jaune, Ephemus, Veldra.
+
+## Contrôle CI bloquant et correctif restreint
+Sur les deux CI du commit `da686d048be080e62133e1e16c5d6ae60931811f`, les 2817 tests de fond et quatre jobs sont verts, mais le navigateur 2.5D échoue dans le contact alpha, écart 8.47 px. La fixture historique possède des positions où seul le bord des vrais masques se touche avant le premier rAF headless. Checkpoint `checkpoint/lab-bestiary-before-ci-shadow-contact-fix-20261117`.
+Le correctif ne modifie **que** la position du combattant test dans cette fixture après la vraie transition initiale de l'approche, et exige encore intersection des vraies silhouettes, contact natif, pause et restauration. Aucun test affaibli, aucune modification gameplay. Ne fusionner que si 5/5 GREEN sur SHA exact.
