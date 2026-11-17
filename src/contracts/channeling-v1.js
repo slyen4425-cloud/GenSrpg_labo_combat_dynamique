@@ -26,10 +26,11 @@ export function normalizeChannelingV1(value){
   if(!Array.isArray(value.effects)||value.effects.length<1||value.effects.length>12)
     throw new RangeError("channeling.effects requires 1..12 native effects");
   const effects=value.effects.map(normalizeSkillEffectV1);
-  const finalTickEffects=(value.finalTickEffects??[]).map(normalizeSkillEffectV1);
-  if(value.finalTickEffects!=null && (!Array.isArray(value.finalTickEffects) ||
-      finalTickEffects.length>12 || maxTicks===null))
-    throw new RangeError("finalTickEffects require maxTicks and at most 12 effects");
+  const rawFinalTickEffects=value.finalTickEffects??[];
+  if(!Array.isArray(rawFinalTickEffects)||rawFinalTickEffects.length>12||
+      (rawFinalTickEffects.length>0&&maxTicks===null))
+    throw new RangeError("finalTickEffects require maxTicks when nonempty and at most 12 effects");
+  const finalTickEffects=rawFinalTickEffects.map(normalizeSkillEffectV1);
   for(const effect of [...effects,...finalTickEffects]){
     if(!["damage","heal","apply_status","apply_marker"].includes(effect.kind))
       throw new RangeError("channeling.effects unsupported kind: "+effect.kind);
