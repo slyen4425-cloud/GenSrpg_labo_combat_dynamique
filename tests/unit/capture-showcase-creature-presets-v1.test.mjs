@@ -212,7 +212,7 @@ test("Ephemus and Veldra stay author-exact, selectable in Combat, and ready for 
   for (const expected of [
     {
       file: "data/capture/showcase/Ephemus.capture-creature-transfer-v1.json",
-      id: "Ephemus", name: "Ephemus", type: "psy", rarity: "mythic",
+      id: "Ephemus", name: "Ephemus", type: "spirit", rarity: "mythic",
       hp: 120, speed: 10, defense: 0, physical: 0, special: "esprit", specialValue: 20,
       charges: 4, rechargeMs: 30000, windowMs: 600,
       assetBase: "ephemus"
