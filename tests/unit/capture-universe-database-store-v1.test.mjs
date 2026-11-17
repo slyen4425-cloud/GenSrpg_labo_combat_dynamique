@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createCaptureUniverseDatabaseStoreV1,CAPTURE_UNIVERSE_DATABASE_PREFIX_V1}
+import {createCaptureUniverseDatabaseStoreV1,createBlankCaptureUniverseDatabaseV1,CAPTURE_UNIVERSE_DATABASE_PREFIX_V1}
  from '../../src/contracts/capture-universe-database-store-v1.js';
 function storage(){
  const rows=new Map([['gensrpg.combat.capture.legacy','preserved']]);
@@ -80,4 +80,17 @@ test('authoring preview page never accesses browser storage directly',async()=>{
  const source=readFileSync(new URL('../../examples/dom-demo/capture-editor-v2.js',import.meta.url),'utf8');
  assert.doesNotMatch(source,/localStorage|sessionStorage/);
  assert.match(source,/createCaptureUniverseEditorBrowserV1/);
+});
+
+test('empty universe data is normalized by one Combat owner with editable rules and NO Monster InvoC creatures',()=>{
+ const original=database();
+ const blank=createBlankCaptureUniverseDatabaseV1({
+  statRegistry:original.statRegistry,progressionRules:original.progressionRules,
+  metadata:{template:'blank'}
+ });
+ assert.deepEqual(blank.creatures,[]);
+ assert.deepEqual(blank.skills,[]);
+ assert.equal(blank.statRegistry.stats.length,2);
+ assert.deepEqual(blank.progressionRules.slotUnlockSchedule,original.progressionRules.slotUnlockSchedule);
+ assert.equal(createCaptureUniverseDatabaseStoreV1({storage:storage()}).create(a,blank).database.creatures.length,0);
 });
