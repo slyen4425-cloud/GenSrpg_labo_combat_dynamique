@@ -6,7 +6,7 @@ export function normalizeChannelingV1(value){
   if(!value||typeof value!=="object"||Array.isArray(value))
     throw new TypeError("channeling must be an object");
   const allowed=new Set(["tickIntervalMs","maxDurationMs","maxTicks","energyCostPerTick",
-    "stopOnDamage","stopOnStun","stopOnSilence","effects"]);
+    "stopOnDamage","stopOnStun","stopOnSilence","effects","finalTickEffects"]);
   for(const k of Object.keys(value))
     if(!allowed.has(k))throw new TypeError("channeling unknown field: "+k);
   const tickIntervalMs=Number(value.tickIntervalMs);
@@ -26,7 +26,11 @@ export function normalizeChannelingV1(value){
   if(!Array.isArray(value.effects)||value.effects.length<1||value.effects.length>12)
     throw new RangeError("channeling.effects requires 1..12 native effects");
   const effects=value.effects.map(normalizeSkillEffectV1);
-  for(const effect of effects){
+  const finalTickEffects=(value.finalTickEffects??[]).map(normalizeSkillEffectV1);
+  if(value.finalTickEffects!=null && (!Array.isArray(value.finalTickEffects) ||
+      finalTickEffects.length>12 || maxTicks===null))
+    throw new RangeError("finalTickEffects require maxTicks and at most 12 effects");
+  for(const effect of [...effects,...finalTickEffects]){
     if(!["damage","heal","apply_status","apply_marker"].includes(effect.kind))
       throw new RangeError("channeling.effects unsupported kind: "+effect.kind);
     if(!["target","self"].includes(effect.targetScope))
@@ -38,5 +42,5 @@ export function normalizeChannelingV1(value){
   return Object.freeze({tickIntervalMs,maxDurationMs,maxTicks,energyCostPerTick,
     stopOnDamage:value.stopOnDamage!==false,
     stopOnStun:value.stopOnStun!==false,stopOnSilence:value.stopOnSilence!==false,
-    effects:Object.freeze(effects)});
+    effects:Object.freeze(effects),finalTickEffects:Object.freeze(finalTickEffects)});
 }
