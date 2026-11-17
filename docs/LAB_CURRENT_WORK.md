@@ -7,7 +7,7 @@
 - **Protégés** : les animations DOS Pourpre déjà validées, les modèles statiques face/dos/icône Pourpre, toute la créature Violette, les autres espèces, compétences, gameplay, UI, GenSrpG, Exploration, `main`.
 - **Vérifications** : SHA/CRC des sources, 24 PNG RGBA originaux, modèle maître sur frame 01, sécurité marges, 2 atlas 6144×512 WEBP, 2 previews animées, lecture catalogue via le vrai chemin, test RED→GREEN, CI complète sur SHA, checkpoint GREEN, publication fast-forward sous lease, CI sur la branche canonique.
 - **Risque identifié par le manifeste d'origine** : les premières frames fournies diffèrent pixel à pixel du modèle maître. Vérifier et corriger exclusivement les frames nécessaires à l'identité avant publication, sans redessiner le reste ni masquer l'écart.
-- **État** : audit technique de l'archive en cours. Détails `docs/LAB_POURPRE_FACE_ANIMATIONS_12F_2026_11_17.md`.
+- **État** : import technique réussi sur work branch, 24 PNG + 2 atlas + previews et 2 IDs ; 349 tests verts, `SOURCE_MASTER_EQUALS_CANONICAL` vérifié, marges 42 px après correction ciblée. Publication finale/CI du SHA exact en gate ; voir `docs/LAB_POURPRE_FACE_ANIMATIONS_12F_2026_11_17.md`.
 
 ---
 
