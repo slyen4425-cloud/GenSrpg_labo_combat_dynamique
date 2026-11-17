@@ -86,7 +86,7 @@ const FIELDS_BY_KIND = Object.freeze({
   consume_marker: new Set([...COMMON_FIELDS, "markerId", "count", "minimum", "perCharge", "effects"]),
   cleanse: new Set([
     ...COMMON_FIELDS,
-    "statusTags"
+    "statusTags", "slowOnly"
   ]),
   dispel: new Set([
     ...COMMON_FIELDS,
@@ -505,6 +505,10 @@ export function normalizeSkillEffectV1(input) {
     kind === "cleanse" ||
     kind === "dispel"
   ) {
+    if (kind === "cleanse" && value.slowOnly != null) {
+      if (typeof value.slowOnly !== "boolean") throw new TypeError("cleanse.slowOnly must be boolean");
+      output.slowOnly = value.slowOnly;
+    }
     output.statusTags = stringArray(
       value.statusTags,
       "SkillEffectV1.statusTags"
