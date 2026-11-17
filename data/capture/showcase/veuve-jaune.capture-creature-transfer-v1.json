@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "veuve-jaune",
     "displayName": "Veuve jaune",
-    "description": "Na",
+    "description": "Veuve jaune tisse ses pièges entre les branches humides, à l'abri des regards. Chaque fil de sa toile peut se charger d'électricité : une proie qui s'y aventure risque de rester prisonnière bien avant d'avoir aperçu l'araignée.",
     "level": 1,
     "sourceStats": {
       "force": 0,

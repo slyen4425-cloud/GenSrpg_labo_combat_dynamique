@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_tox_2",
     "displayName": "Venombre",
-    "description": "Venombre, créature de type poison.",
+    "description": "Venombre se faufile dans les taillis humides sans laisser d'autre trace qu'un frisson dans les feuilles. Discret et patient, ce prédateur préfère laisser son poison affaiblir ses adversaires avant de sortir de l'ombre.",
     "level": 1,
     "sourceStats": {
       "force": 23,

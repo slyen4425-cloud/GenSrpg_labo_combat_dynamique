@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_dracendre",
     "displayName": "Dracendre",
-    "description": "Jeune dragon rare qui niche près des volcans.",
+    "description": "Jeune dragon des terres volcaniques, Dracendre déploie ses ailes au-dessus des cratères encore fumants. Il apprend à maîtriser les bourrasques et les braises qui l'entourent, mais sa fougue dépasse souvent sa prudence.",
     "level": 1,
     "sourceStats": {
       "force": 19,

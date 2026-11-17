@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_ailevent",
     "displayName": "Ailevent",
-    "description": "Oisillon des courants, extrêmement mobile.",
+    "description": "Ailevent apprend à voler en jouant avec les rafales qui courent au-dessus des falaises. Malgré sa petite taille, cet oisillon hardi change de direction avec une aisance déconcertante et ne reste jamais longtemps au même endroit.",
     "level": 1,
     "sourceStats": {
       "force": 9,

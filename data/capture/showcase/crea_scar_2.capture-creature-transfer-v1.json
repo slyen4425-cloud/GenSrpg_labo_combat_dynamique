@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_scar_2",
     "displayName": "Scarabacier",
-    "description": "Scarabacier, créature de type steel.",
+    "description": "La carapace d'acier de Scarabacier porte les marques de combats dont il est sorti indemne. Lorsqu'il replie ses pattes et se met à rouler, ce scarabée tenace transforme sa lourde armure en une véritable force de percussion.",
     "level": 1,
     "sourceStats": {
       "force": 31,

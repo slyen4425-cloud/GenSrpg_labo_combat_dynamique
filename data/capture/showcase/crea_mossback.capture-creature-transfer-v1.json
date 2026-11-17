@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_mossback",
     "displayName": "Moussados",
-    "description": "Créature robuste couverte de mousse et de plaques minérales.",
+    "description": "Les épaisses mousses qui recouvrent Moussados dissimulent une armure de roche façonnée par les saisons. Ce gardien placide des vallées avance sans hâte, mais sa tranquillité se change en détermination dès que son refuge est menacé.",
     "level": 1,
     "sourceStats": {
       "force": 14,

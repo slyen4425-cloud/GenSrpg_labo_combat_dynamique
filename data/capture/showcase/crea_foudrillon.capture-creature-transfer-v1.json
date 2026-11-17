@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_foudrillon",
     "displayName": "Freclairions",
-    "description": "Frelon électrique.",
+    "description": "Freclairions fend l'air avec le bourdonnement aigu d'un frelon aux reflets métalliques. Toujours en mouvement, il repère la moindre agitation dans son territoire et surgit dans un crépitement électrique avant même qu'on ait pu le suivre des yeux.",
     "level": 1,
     "sourceStats": {
       "force": 25,

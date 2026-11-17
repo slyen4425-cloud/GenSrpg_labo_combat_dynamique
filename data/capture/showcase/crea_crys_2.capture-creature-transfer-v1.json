@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_crys_2",
     "displayName": "Gemmor",
-    "description": "Gemmor, créature de type earth/light.",
+    "description": "Gemmor pousse entre les pierres couvertes de lichen, prenant l'apparence d'une plante étrange et presque immobile. Mais ses pétales cachent des mâchoires redoutables : la curiosité des promeneurs est souvent la meilleure alliée de ce chasseur végétal.",
     "level": 1,
     "sourceStats": {
       "force": 23,
