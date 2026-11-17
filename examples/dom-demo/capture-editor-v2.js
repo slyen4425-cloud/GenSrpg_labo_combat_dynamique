@@ -4,7 +4,7 @@ import {
   SOUNDTRACK_STARTER_BATTLE_IDS_V1
 } from "../../src/assets/soundtrack-starter-catalog-v1.js";
 import {createSoundtrackLocalMediaV1} from "../../src/assets/soundtrack-local-media-v1.js";
-import {createCaptureUniverseDatabaseStoreV1} from "../../src/contracts/capture-universe-database-store-v1.js";
+import {createCaptureUniverseEditorBrowserV1} from "../../src/ui/capture-universe-editor-browser-v1.js";
 import {createSoundtrackBrowserStorageV1}
  from "../../src/ui/soundtrack-browser-storage-v1.js";
 import {soundtrackRuntimeAssetV1} from "../../src/assets/soundtrack-runtime-library-v1.js";
@@ -203,12 +203,8 @@ function resolveEditorAudioAsset(assetId) {
 // The native Combat owner alone reads project creature/skill data.
 // Unrecognised or incomplete universes fail CLOSED: never show the global
 // Monster InvoC editor as though it were an independent project.
-const universeId=new URLSearchParams(globalThis.location?.search ?? "").get("universe");
-const universeStore=universeId===null?null:
- createCaptureUniverseDatabaseStoreV1({storage:window.localStorage});
-const universeSnapshot=universeStore?.load(universeId)??null;
-if(universeId!==null&&universeSnapshot===null)
- throw new Error("Bibliothèque de l’univers absente : aucun catalogue historique ouvert");
+const {universeId,universeStore,universeSnapshot} =
+ createCaptureUniverseEditorBrowserV1({search:globalThis.location?.search ?? ''});
 let universeRevision=universeSnapshot?.revision??null;
 
 let editor;
