@@ -1,3 +1,16 @@
+## 2026-11-17 — Raccord manquant des animations POURPRE (face adversaire 12f)
+
+- **Constat** : les animations DOS Pourpre (course/attaque 8f) existent et fonctionnent dans la bibliothèque; aucune animation FACE Pourpre dans le catalogue. L'archive auteur approuvée `_incoming/creature_pourpre_face_mouvement_attaque_12f_valide.zip` contient 12 images par animation et ses previews/atlas. **Pourpre n'est pas Violette.**
+- **Base unique** : `global-assets@97e793e8e767570a617269d9209137fa3351c046` ; checkpoint START `checkpoint/lab-start-pourpre-face-12f-2026-11-17` ; WORK `work/lab-pourpre-face-12f-2026-11-17`.
+- **Propriétaire** : Asset Library `global-assets`, seul catalogue `data/assets/catalog/global-visual-assets.v1.json`.
+- **Périmètre** : uniquement `assets/library/capture/creatures/creature_pourpre/animations/{movement,attack}/opponent/**`, deux entrées au catalogue canonique, importeur, tests, documentation et workflow dédiés. Source ZIP conservé.
+- **Protégés** : les animations DOS Pourpre déjà validées, les modèles statiques face/dos/icône Pourpre, toute la créature Violette, les autres espèces, compétences, gameplay, UI, GenSrpG, Exploration, `main`.
+- **Vérifications** : SHA/CRC des sources, 24 PNG RGBA originaux, modèle maître sur frame 01, sécurité marges, 2 atlas 6144×512 WEBP, 2 previews animées, lecture catalogue via le vrai chemin, test RED→GREEN, CI complète sur SHA, checkpoint GREEN, publication fast-forward sous lease, CI sur la branche canonique.
+- **Risque identifié par le manifeste d'origine** : les premières frames fournies diffèrent pixel à pixel du modèle maître. Vérifier et corriger exclusivement les frames nécessaires à l'identité avant publication, sans redessiner le reste ni masquer l'écart.
+- **État** : audit technique de l'archive en cours. Détails `docs/LAB_POURPRE_FACE_ANIMATIONS_12F_2026_11_17.md`.
+
+---
+
 ## 2026-11-16 — Raccord bibliothèque : créature POURPRE (dos course + attaque, 8 frames)
 - Objectif : importer uniquement les deux archives approuvées dans `assets/library/capture/creatures/creature_pourpre/animations/`. La créature violette est **différente** et son dossier/assetIds ne doivent jamais être modifiés.
 - Source : `_incoming/pourpre_course_dos_8f_corrigee.zip` et `_incoming/pourpre_attaque_dos_8f.zip`, SHA vérifiés.
