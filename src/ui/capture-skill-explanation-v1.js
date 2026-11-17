@@ -211,11 +211,16 @@ function effectSentence(e,{perCharge=false,markerNames={}}={}){
       " du lanceur au moment de l'invocation. Intercepte : "+
       words(e.interceptKinds.map(k=>k==="contact"?"contact":k==="beam"?"rayons":"projectiles"))+
       " ; la frappe s'arrête au mur même si celui-ci est détruit.")];
+    case "ally_reserve_relay":return [finish("Choisit un allié de sa propre réserve, même K.O., lui rend jusqu’à "+
+      num(e.healAmount)+" PV sans dépasser ses PV maximum, augmente tous ses dégâts infligés de "+
+      num(e.outgoingDamagePct)+" % pendant "+duration(e.durationMs)+
+      " et le fait entrer en combat à la place du lanceur, dans le respect des verrous et délais de rappel")];
     case "force_reserve_switch":return [
       "Force la créature ennemie choisie dans sa réserve à entrer en combat à la place de la créature adverse active, si l'attaque touche."
     ];
     case "apply_status":return statusSentence(e);
-    case "cleanse":return [finish(e.statusTags.length===0?
+    case "cleanse":return [finish(e.slowOnly===true?
+      "Supprime uniquement les ralentissements"+onTarget(e.targetScope):e.statusTags.length===0?
       (e.targetScope==="target"?"Supprime tous les effets et marqueurs négatifs de la cible":
         e.targetScope==="self"?"Supprime tous les effets et marqueurs négatifs de la créature":
         "Supprime tous les effets et marqueurs négatifs"+onTarget(e.targetScope)):
@@ -318,6 +323,7 @@ function descriptions(effects,{perCharge=false,markerNames={}}={}){
     const e=list[i];
     if(e.kind==="heal" && list[i+1]?.kind==="cleanse" &&
        list[i+1].targetScope===e.targetScope && list[i+1].statusTags?.length===0 &&
+       list[i+1].slowOnly!==true &&
        !used.has(i+1)){
       // One gameplay sentence, but never misrepresent a tag-filtered cleanse
       // or an effect that targets a different recipient.
@@ -484,6 +490,12 @@ export function describeCaptureSkillV1(input,{markerNames={}}={}) {
       (ch.stopOnDamage?", interrompue par les dégâts reçus":"")+
       (ch.stopOnStun?", l'étourdissement":"")+
       (ch.stopOnSilence?", le silence":"")));
+    if(ch.finalTickEffects?.length){
+      const last=descriptions(ch.finalTickEffects,{markerNames});
+      const moment=ch.maxTicks!=null?"À la "+num(ch.maxTicks)+"e pulsation réellement atteinte, ":
+        "À la dernière pulsation réellement atteinte, ";
+      phrases.push(...last.map(line=>finish(moment+lowerSentence(line))));
+    }
   }
   if(d.contactHold){
     const hold=d.contactHold,damage=hold.effects.filter(x=>x.kind==="damage");
