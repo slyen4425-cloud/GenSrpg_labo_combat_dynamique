@@ -472,7 +472,8 @@ export function removeStatusEffectsV1({
   state,
   targetActorId,
   polarity,
-  statusTags = []
+  statusTags = [],
+  slowOnly = false
 }) {
   const target = fighterOf(
     state,
@@ -490,6 +491,14 @@ export function removeStatusEffectsV1({
         instance.definition.kind === "roster_lock" || !(
           instance.definition.polarity ===
             polarity &&
+          (!slowOnly || (
+            (instance.definition.kind === "approach_time_modifier" &&
+              instance.definition.modifierPct > 0) ||
+            (instance.definition.kind === "stat_modifier" &&
+              instance.definition.statId === "speed" &&
+              (instance.definition.modifierMode === "percent" ?
+                instance.definition.percent < 0 : instance.definition.deltaPoints < 0))
+          )) &&
           tagsMatch(
             instance.definition,
             tags
