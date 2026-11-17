@@ -4,7 +4,7 @@
   "draft": {
     "schema": "capture-skill-editor-draft-v1",
     "id": "veldra-rayon-cardinal",
-    "description": "Rayon Lumière pendant 2 s : cinq ticks à 400 ms de 6 dégâts chacun et +10 au cinquième si cible marquée.",
+    "description": "Rayon Lumière pendant 2 s : cinq ticks à 400 ms de 8 dégâts chacun et +10 au cinquième si cible marquée.",
     "requiredLevel": 15,
     "usageScopes": [
       "capture",
@@ -77,7 +77,7 @@
           {
             "kind": "damage",
             "targetScope": "target",
-            "amount": 6,
+            "amount": 8,
             "channel": "light"
           }
         ],

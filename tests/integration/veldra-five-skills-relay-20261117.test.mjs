@@ -78,7 +78,7 @@ test("Five exact Veldra skills are registered, authorable, normalized, and equip
   const beam=await skill(ids[3]);
   assert.equal(beam.channeling.tickIntervalMs,400);
   assert.equal(beam.channeling.maxTicks,5);
-  assert.equal(beam.channeling.effects[0].amount,6);
+  assert.equal(beam.channeling.effects[0].amount,8);
   assert.equal(beam.channeling.finalTickEffects[0].amount,10);
   const relay=await skill(ids[4]);
   assert.equal(relay.cooldownMs,110000);
@@ -188,7 +188,7 @@ test("Rayon cardinal has five deterministic native ticks and a conditional +10 f
   const marked=await execute(true),normal=await execute(false);
   assert.equal(normal.ticks,5);
   assert.equal(marked.ticks,5);
-  assert.equal(normal.hp,120,"unmarked target gets exactly 5*6");
-  assert.equal(marked.hp,100,"marked target receives plume 10 + 5*6 + final 10");
+  assert.equal(normal.hp,110,"unmarked target gets exactly 5*8");
+  assert.equal(marked.hp,90,"marked target receives plume 10 + 5*8 + final 10");
   assert.equal(marked.events[4].events.some(x=>x.type==="hit" && x.baseDamage===10),true);
 });

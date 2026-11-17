@@ -2,7 +2,7 @@ import {CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1 as CREATURE_FILES} from "../..
 import {CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 as SKILL_FILES} from "../../src/catalogs/capture-showcase-skill-presets-v1.js?v=sylvorne-showcase-media-20261111";
 import {createCaptureUniverseDatabaseStoreV1} from "../../src/contracts/capture-universe-database-store-v1.js";
 import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js?v=sylvorne-showcase-media-20261111";
-import {captureBestiaryCardsV1,bestiaryElementLabelV1} from "../../src/ui/capture-bestiary-cards-v1.js?v=-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-self-periodic-prose-20261102";
+import {captureBestiaryCardsV1,bestiaryElementLabelV1} from "../../src/ui/capture-bestiary-cards-v1.js?v=-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-self-periodic-prose-20261102-veldra-relay-20261117";
 
 const root=document.querySelector("[data-bestiary]");
 if(!root)throw new Error("Bestiaire : conteneur manquant");
