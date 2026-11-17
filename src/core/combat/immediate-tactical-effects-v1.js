@@ -700,7 +700,8 @@ export function applyImmediateTacticalEffectsV1({
             effect.kind === "cleanse"
               ? "detrimental"
               : "beneficial",
-          statusTags: effect.statusTags
+          statusTags: effect.statusTags,
+          slowOnly: effect.kind === "cleanse" && effect.slowOnly === true
         });
         const afterIds = new Set(
           fighterOf(
