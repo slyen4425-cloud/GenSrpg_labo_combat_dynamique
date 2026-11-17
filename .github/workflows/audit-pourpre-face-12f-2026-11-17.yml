@@ -15,4 +15,5 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: work/lab-pourpre-face-12f-2026-11-17
+      - run: python -m pip install Pillow
       - run: python scripts/audit_pourpre_face_12f_2026_11_17.py
