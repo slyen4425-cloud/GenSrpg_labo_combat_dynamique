@@ -1,0 +1,126 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "veldra-egide-zenith",
+    "description": "Soigne 25 PV, donne +200 Défense pendant 6 secondes et retire uniquement les ralentissements.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "veldra-egide-zenith",
+      "name": "Égide du zénith",
+      "category": "defensive",
+      "form": "self",
+      "loadoutSlot": "standard",
+      "element": "light",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 650,
+      "travelMs": 0,
+      "recoveryMs": 100,
+      "cooldownMs": 45000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "heal",
+          "targetScope": "self",
+          "amount": 25
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "id": "veldra-egide-zenith:defense",
+            "kind": "stat_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 6000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [
+              "veldra"
+            ],
+            "statId": "defense",
+            "modifierMode": "points",
+            "deltaPoints": 200
+          }
+        },
+        {
+          "kind": "cleanse",
+          "targetScope": "self",
+          "statusTags": [],
+          "slowOnly": true
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:veldra-egide-zenith",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "veldra-egide-zenith",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-magic-shield-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-light-shield-cast-01",
+          "displayScale": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

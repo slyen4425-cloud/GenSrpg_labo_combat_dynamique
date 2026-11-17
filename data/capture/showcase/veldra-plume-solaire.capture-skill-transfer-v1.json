@@ -1,0 +1,115 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "veldra-plume-solaire",
+    "description": "Plume lumineuse : 10 dégâts Lumière et Marque solaire pendant 5 secondes.",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "veldra-plume-solaire",
+      "name": "Plume solaire",
+      "category": "offensive",
+      "form": "projectile",
+      "loadoutSlot": "standard",
+      "element": "light",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 550,
+      "travelMs": 500,
+      "recoveryMs": 150,
+      "cooldownMs": 8000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 1
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 10,
+          "channel": "light"
+        },
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "veldra-solar-mark",
+            "name": "Marque solaire",
+            "polarity": "detrimental",
+            "durationMs": 5000,
+            "maxStacks": 1,
+            "iconAssetId": "pack:capture:icon-skill-prisme-d-aurore-01"
+          },
+          "charges": 1
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:veldra-plume-solaire",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "veldra-plume-solaire",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-prisme-d-aurore-01"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-projectile-light-01",
+          "displayScale": 1,
+          "attachment": "trajectory",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

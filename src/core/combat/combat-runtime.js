@@ -146,7 +146,8 @@ export function createCombatRuntime({
           (atNowMs-hold.nextTickClockMs));
         const result=hold.kind==="channeling"
           ?session.applyChannelingTickV1({
-              actorId:hold.actorId,targetId:hold.targetId,skill:hold.skill,atMs:tickAtMs
+              actorId:hold.actorId,targetId:hold.targetId,skill:hold.skill,atMs:tickAtMs,
+              tickIndex:hold.ticks+1
             })
           :session.applyContactHoldTickV1({
               actorId:hold.actorId,targetId:hold.targetId,skill:hold.skill,

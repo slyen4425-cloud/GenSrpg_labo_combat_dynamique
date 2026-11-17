@@ -1,0 +1,109 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "veldra-releve-celeste",
+    "description": "Échange Veldra contre son allié choisi en réserve même KO : 100 PV soignés ou rendus et +20 % dégâts universels pendant 30 secondes ; verrou de rappel respecté.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "veldra-releve-celeste",
+      "name": "Relève céleste",
+      "category": "heal",
+      "form": "self",
+      "loadoutSlot": "ultimate",
+      "element": "light",
+      "approachMode": "none",
+      "energyCost": 8,
+      "preparationMs": 1200,
+      "travelMs": 0,
+      "recoveryMs": 300,
+      "cooldownMs": 110000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "ally"
+      ],
+      "targetLocations": [
+        "reserve"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "ally_reserve_relay",
+          "targetScope": "target",
+          "healAmount": 100,
+          "outgoingDamagePct": 20,
+          "durationMs": 30000
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:veldra-releve-celeste",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "veldra-releve-celeste",
+      "visual": {
+        "icon": {
+          "assetId": "core:icon-skill-healing-heart-01"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-light-shield-cast-01",
+          "displayScale": 1,
+          "attachment": "source",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1
+        }
+      },
+      "audio": {},
+      "statusVisuals": {
+        "veldra-releve-celeste:relay-power": {
+          "mode": "tint",
+          "tintColor": "#ffe080",
+          "tintOpacity": 0.3
+        }
+      }
+    }
+  }
+}

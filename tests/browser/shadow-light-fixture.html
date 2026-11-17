@@ -245,6 +245,17 @@ try {
       if(!visibleModelsOverlap(demo.getCollisionModelFor("player").snapshot(),
                                demo.getCollisionModelFor("opponent").snapshot()))
         throw Error("real alpha models not overlapping at approach start");
+      // The CI headless virtual clock can advance this native outbound WAAPI
+      // pose beyond a *real but narrow* alpha contact before its first RAF.
+      // Slow the original body+shadow tracks together for this contact test;
+      // do NOT freeze either, fabricate a contact or relax the alpha check.
+      // The same renderer-owned tracks are still observed and paused on hit.
+      const outboundBodyTracks=player.querySelector("[data-demo-motion]").getAnimations();
+      const outboundShadowTracks=a.getAnimations();
+      if(outboundBodyTracks.length!==1||outboundShadowTracks.length!==1)
+        throw Error("real outbound body/shadow animations missing");
+      for(const track of [...outboundBodyTracks,...outboundShadowTracks])
+        track.playbackRate=0.1;
       const startedWaitingAt = performance.now();
       let nearestDistance=Infinity;
       let sourceSnapshotCount=0;

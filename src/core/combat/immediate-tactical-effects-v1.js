@@ -65,14 +65,16 @@ function targetIdsForEffect({
   actorId,
   targetId,
   effect,
-  battleFormat
+  battleFormat,
+  allowKnockedOutTarget = false
 }) {
   return resolveTacticalEffectTargetIdsV1({
     format: battleFormat,
     state,
     actorId,
     targetId,
-    targetScope: effect.targetScope
+    targetScope: effect.targetScope,
+    allowKnockedOutTarget
   });
 }
 
@@ -247,7 +249,8 @@ export function applyImmediateTacticalEffectsV1({
   directDamageApplied = 0,
   contactedEntityId = undefined,
   blockedByBarrierTargetId = null,
-  allowLifeSteal = true
+  allowLifeSteal = true,
+  allowRevivalHeal = false
 }) {
   const unsupported =
     unsupportedImmediateTacticalEffectV1(
@@ -355,7 +358,8 @@ export function applyImmediateTacticalEffectsV1({
         actorId,
         targetId,
         effect,
-        battleFormat
+        battleFormat,
+        allowKnockedOutTarget: allowRevivalHeal === true && effect.kind === "heal" && effect.targetScope === "target"
       });
 
     for (const affectedId of affectedIds) {
@@ -700,7 +704,8 @@ export function applyImmediateTacticalEffectsV1({
             effect.kind === "cleanse"
               ? "detrimental"
               : "beneficial",
-          statusTags: effect.statusTags
+          statusTags: effect.statusTags,
+          slowOnly: effect.kind === "cleanse" && effect.slowOnly === true
         });
         const afterIds = new Set(
           fighterOf(

@@ -99,7 +99,13 @@
         "damageReductionPct": 50
       }
     },
-    "skillIds": [],
+    "skillIds": [
+      "veldra-plume-solaire",
+      "veldra-percee-aurore",
+      "veldra-egide-zenith",
+      "veldra-rayon-cardinal",
+      "veldra-releve-celeste"
+    ],
     "presentation": {
       "id": "creature:Veldra_crea",
       "version": 10,
@@ -191,23 +197,23 @@
     "slots": [
       {
         "id": "slot-1",
-        "skillId": null
+        "skillId": "veldra-plume-solaire"
       },
       {
         "id": "slot-2",
-        "skillId": null
+        "skillId": "veldra-percee-aurore"
       },
       {
         "id": "slot-3",
-        "skillId": null
+        "skillId": "veldra-egide-zenith"
       },
       {
         "id": "slot-4",
-        "skillId": null
+        "skillId": "veldra-rayon-cardinal"
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "veldra-releve-celeste"
       }
     ]
   }

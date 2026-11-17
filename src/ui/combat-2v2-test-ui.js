@@ -541,7 +541,8 @@ export function combatSkillReserveTargetOptionsV2({
     const team = rosterSnapshot[actor.actorId];
     if (!team) continue;
     for (const member of team.members) {
-      if (member.active || !(Number(member.hp) > 0)) continue;
+      if (member.active || (!(Number(member.hp) > 0) &&
+          !skill.effects?.some(effect => effect.kind === "ally_reserve_relay"))) continue;
       const targetRef = Object.freeze({scope:"reserve",teamId:actor.actorId,memberId:member.id});
       const preview = previewTarget({actorId,targetRef,skill});
       if (preview?.ok) available.push(Object.freeze({targetRef,preview,displayName:member.displayName}));
@@ -1578,7 +1579,8 @@ export async function mountCoop2v2Test({
     }
     pendingSkillId=null;
     const member=rosterController.snapshot()[targetRef.teamId]?.members.find(x=>x.id===targetRef.memberId);
-    setStatus(skill.name + " se prépare : liane vers " +
+    setStatus(skill.name + (skill.effects?.some(effect => effect.kind === "ally_reserve_relay")
+      ? " se prépare : relève céleste pour " : " se prépare : liane vers ") +
       (member?.displayName ?? targetRef.memberId) + ". L'adversaire peut esquiver ou contrer.", "accent");
     renderAvailability();
     return true;
@@ -1964,7 +1966,8 @@ export async function mountCoop2v2Test({
               x=>x.id===reserveIntent.targetRef.memberId);
             setStatus(reserveIntent.skill.name + " : " +
               (member?.displayName ?? reserveIntent.targetRef.memberId) +
-              (result.outcome==="forced_switched" ? " capturée par la liane et forcée d'entrer en combat." : " touchée en réserve."), "ok");
+              (result.outcome==="allied_relay" ? " réanimée/soignée, renforcée et envoyée au combat." :
+                 result.outcome==="forced_switched" ? " capturée par la liane et forcée d'entrer en combat." : " touchée en réserve."), "ok");
           } else {
             setStatus(reserveIntent.skill.name + " : " + result.outcome + ".", "warn");
           }

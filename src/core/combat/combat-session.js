@@ -591,7 +591,7 @@ export function createCombatSession({
 
   // Channeling uses the existing tactical effects and fighter energy owner.
   // Invalid ticks must leave both energy and targets untouched atomically.
-  function applyChannelingTickV1({actorId,targetId,skill,atMs}){
+  function applyChannelingTickV1({actorId,targetId,skill,atMs,tickIndex=0}){
     const config=skill?.channeling;
     const source=state.fighters[actorId],target=state.fighters[targetId];
     if(!config)return Object.freeze({ok:false,outcome:"not_channeling",state});
@@ -609,7 +609,7 @@ export function createCombatSession({
       state:paid,actorId,targetId,
       skill:{id:skill.id,category:skill.category,form:skill.form,
         element:skill.element,hitsIntangible:skill.hitsIntangible,
-        effects:config.effects},
+        effects:[...config.effects,...(tickIndex===config.maxTicks ? config.finalTickEffects??[] : [])]},
       atMs,combatAtMs:atMs,battleFormat
     });
     state=effects.state;

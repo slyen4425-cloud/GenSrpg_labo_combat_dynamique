@@ -213,7 +213,8 @@ test("real Human Editor startup data keeps historical creature library when auth
   assert.equal(configuredCreatures.get("Ephemus")?.draft?.displayName, "Ephemus");
   assert.equal(configuredCreatures.get("Veldra_crea")?.draft?.displayName, "Veldra");
   assert.equal(configuredCreatures.get("Ephemus")?.loadout?.slots?.filter(s => s.skillId !== null).length, 0);
-  assert.equal(configuredCreatures.get("Veldra_crea")?.loadout?.slots?.filter(s => s.skillId !== null).length, 0);
+  assert.deepEqual(configuredCreatures.get("Veldra_crea")?.loadout?.slots?.map(s => s.skillId),
+    ["veldra-plume-solaire","veldra-percee-aurore","veldra-egide-zenith","veldra-rayon-cardinal","veldra-releve-celeste"]);
   assert.equal(configuredCreatures.has("nouvelle-creature"), false);
 
   const historicalIds =

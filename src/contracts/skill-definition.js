@@ -559,6 +559,15 @@ export function normalizeSkillDefinition(input) {
     throw new RangeError("force_reserve_switch requires exactly one enemy reserve target and target-scoped effects");
   }
 
+  const alliedRelay = effects.filter(entry => entry.kind === "ally_reserve_relay");
+  if (alliedRelay.length > 0 && (
+    alliedRelay.length !== 1 || effects.length !== 1 ||
+    targetLocations.length !== 1 || targetLocations[0] !== "reserve" ||
+    targetRelations.length !== 1 || targetRelations[0] !== "ally" ||
+    form !== "self" || approachMode !== "none" ||
+    normalizedLegacyEffect.damage > 0 || normalizedLegacyEffect.heal > 0
+  )) throw new RangeError("ally_reserve_relay requires one own allied reserve, self form and no duplicate HP/status authority");
+
   if (effects.some(entry => isReserveEffectTargetScopeV2(entry.targetScope)) &&
       !targetLocations.includes("active")) {
     throw new RangeError("Reserve splash effects require an active target location");
