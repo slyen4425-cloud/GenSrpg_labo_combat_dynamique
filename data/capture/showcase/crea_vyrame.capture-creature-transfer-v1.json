@@ -125,7 +125,7 @@
           }
         },
         "opponent": {
-          "displayScale": 1.1,
+          "displayScale": 0.9,
           "position": {
             "x": 0,
             "y": 50
@@ -145,6 +145,50 @@
         },
         "icon": {
           "assetId": "pack:capture:creature-pourpre-icon-01"
+        },
+        "movement": {
+          "assetId": "pack:capture:creature-pourpre-movement-opponent-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 3,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttack": {
+          "assetId": "pack:capture:creature-pourpre-attack-opponent-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttackBack": {
+          "assetId": "pack:capture:creature-pourpre-attack-player-8-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "movementScaleByView": {
+          "player": 1,
+          "opponent": 1.2
+        },
+        "rangedAttackScaleByView": {
+          "player": 1,
+          "opponent": 1.2
+        },
+        "movementPlayback": {
+          "frameMs": 0,
+          "mode": "loop"
+        },
+        "movementBack": {
+          "assetId": "pack:capture:creature-pourpre-movement-player-8-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 3,
+          "frameCount": 1,
+          "transitionMs": 80
         }
       },
       "sockets": [

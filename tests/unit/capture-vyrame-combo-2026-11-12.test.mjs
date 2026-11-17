@@ -33,7 +33,19 @@ test('Vyrâme: one original approved portrait trio, proper defensive reaction an
  assert.equal(creature.draft.presentation.transformOrigin.y,'88%');
  assert.equal(creature.draft.presentation.version,9,'keep canonical V9 media metadata');
  assert.deepEqual(creature.draft.presentation.viewOverrides.player,{displayScale:1.75,position:{x:0,y:0}},'preserve uploaded player settings');
- assert.deepEqual(creature.draft.presentation.viewOverrides.opponent,{displayScale:1.1,position:{x:0,y:50}},'preserve uploaded opponent settings');
+ assert.deepEqual(creature.draft.presentation.viewOverrides.opponent,{displayScale:0.9,position:{x:0,y:50}},'preserve latest uploaded opponent settings');
+ assert.equal(creature.draft.presentation.visual.movement.assetId,'pack:capture:creature-pourpre-movement-opponent-12-v1');
+ assert.equal(creature.draft.presentation.visual.movementBack.assetId,'pack:capture:creature-pourpre-movement-player-8-v1');
+ assert.equal(creature.draft.presentation.visual.rangedAttack.assetId,'pack:capture:creature-pourpre-attack-opponent-12-v1');
+ assert.equal(creature.draft.presentation.visual.rangedAttackBack.assetId,'pack:capture:creature-pourpre-attack-player-8-v1');
+ assert.deepEqual(creature.draft.presentation.visual.movementScaleByView,{player:1,opponent:1.2});
+ assert.deepEqual(creature.draft.presentation.visual.rangedAttackScaleByView,{player:1,opponent:1.2});
+ assert.deepEqual(creature.draft.presentation.visual.movementPlayback,{frameMs:0,mode:'loop'});
+ for(const role of ['movement','movementBack','rangedAttack','rangedAttackBack']){
+  assert.equal(creature.draft.presentation.visual[role].mode,'sprite',role);
+  assert.equal(creature.draft.presentation.visual[role].frameCount,1,role);
+  assert.equal(creature.draft.presentation.visual[role].transitionMs,80,role);
+ }
 
 });
 test('Vyrâme: five skills and four marker consumers preserve source and target semantics',()=>{
