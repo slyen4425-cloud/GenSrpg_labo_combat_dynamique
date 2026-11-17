@@ -891,7 +891,8 @@ export function createRosterSession({
         skill: evaluationSkill,
         atMs: 0,
         combatAtMs: now,
-        battleFormat: null
+        battleFormat: null,
+        allowRevivalHeal: relay
       });
 
     // A knocked-out reserve only becomes eligible for the atomic exchange
