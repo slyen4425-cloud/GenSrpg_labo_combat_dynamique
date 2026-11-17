@@ -16,7 +16,7 @@
       "initiative": 0
     },
     "elements": [
-      "psy"
+      "spirit"
     ],
     "resistances": [
       {
@@ -78,7 +78,7 @@
       "spawnChance": 100,
       "rarity": "mythic",
       "spawnTags": [
-        "psy"
+        "spirit"
       ],
       "evolution": null
     },
@@ -102,7 +102,7 @@
     "skillIds": [],
     "presentation": {
       "id": "creature:Ephemus",
-      "version": 2,
+      "version": 10,
       "subjectType": "creature",
       "subjectId": "Ephemus",
       "profileId": "flying",
@@ -113,17 +113,17 @@
       },
       "viewOverrides": {
         "player": {
-          "displayScale": 1,
+          "displayScale": 1.15,
           "position": {
             "x": 0,
-            "y": 0
+            "y": -45
           }
         },
         "opponent": {
-          "displayScale": 1,
+          "displayScale": 0.7,
           "position": {
             "x": 0,
-            "y": 0
+            "y": 40
           }
         }
       },
@@ -156,7 +156,11 @@
           }
         }
       ],
-      "audio": {}
+      "audio": {},
+      "shadowOffset": {
+        "x": 0,
+        "y": 30
+      }
     }
   },
   "statValues": {
