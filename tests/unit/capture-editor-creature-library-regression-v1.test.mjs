@@ -180,8 +180,8 @@ test("real Human Editor startup data keeps historical creature library when auth
 
   assert.equal(
     configuredCreatures.size,
-    109,
-    "Preserve 102 historical creatures; add Loup, Kitsune, Gorice, Sylvorne, Sélachombre, Vyrâme and Veuve jaune once each"
+    111,
+    "Preserve 102 historical creatures; add Loup, Kitsune, Gorice, Sylvorne, Sélachombre, Vyrâme, Veuve jaune, Ephemus and Veldra once each"
   );
   assert.equal(
     configuredCreatures.get("crea_maraileron")?.draft?.displayName,
@@ -210,6 +210,10 @@ test("real Human Editor startup data keeps historical creature library when auth
   assert.deepEqual(veuve?.draft?.elements, ["electric", "nature"]);
   assert.equal(veuve?.draft?.presentation?.subjectId, "veuve-jaune");
   assert.equal(veuve?.loadout?.creatureId, "veuve-jaune");
+  assert.equal(configuredCreatures.get("Ephemus")?.draft?.displayName, "Ephemus");
+  assert.equal(configuredCreatures.get("Veldra_crea")?.draft?.displayName, "Veldra");
+  assert.equal(configuredCreatures.get("Ephemus")?.loadout?.slots?.filter(s => s.skillId !== null).length, 0);
+  assert.equal(configuredCreatures.get("Veldra_crea")?.loadout?.slots?.filter(s => s.skillId !== null).length, 0);
   assert.equal(configuredCreatures.has("nouvelle-creature"), false);
 
   const historicalIds =
