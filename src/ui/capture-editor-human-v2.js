@@ -627,9 +627,8 @@ export function buildHumanTacticalSkillEffectsV1(
       return normalizeSkillEffectV1({
         kind,
         targetScope,
-        statusTags: stableIds(
-          effect.statusTags
-        )
+        statusTags: stableIds(effect.statusTags),
+        ...(kind === "cleanse" ? {slowOnly:effect.slowOnly===true}: {})
       });
     }
 
@@ -5861,6 +5860,11 @@ function appendHumanSkillEffectV1(
   );
   filterTagsField.dataset.skillEffectConfigKind =
     "cleanse,dispel";
+  const slowOnly=document.createElement("input");slowOnly.type="checkbox";
+  slowOnly.dataset.skillEffectCleanseSlowOnly="true";
+  slowOnly.checked=effect?.slowOnly===true;
+  const slowOnlyField=tacticalFieldV1("Retirer uniquement les ralentissements",slowOnly);
+  slowOnlyField.dataset.skillEffectConfigKind="cleanse";
 
   const statusBox =
     document.createElement("div");
@@ -7112,6 +7116,7 @@ function appendHumanSkillEffectV1(
     advancedPenetration,
     penetrationNote,
     filterTagsField,
+    slowOnlyField,
     statusBox,
     scheduledBox,
     barrierBox,
@@ -7557,7 +7562,8 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
           row.querySelector(
             "[data-skill-effect-status-tags]"
           ).value
-        )
+        ),
+        ...(kind === "cleanse" ? {slowOnly:row.querySelector("[data-skill-effect-cleanse-slow-only]")?.checked===true}: {})
       };
     }
 
