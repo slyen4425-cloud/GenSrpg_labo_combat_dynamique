@@ -1,0 +1,210 @@
+{
+  "schema": "capture-creature-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-creature-editor-draft-v3",
+    "id": "Ephemus",
+    "displayName": "Ephemus",
+    "description": "Na",
+    "level": 1,
+    "sourceStats": {
+      "force": 0,
+      "agility": 0,
+      "intelligence": 0,
+      "spirit": 0,
+      "endurance": 0,
+      "initiative": 0
+    },
+    "elements": [
+      "psy"
+    ],
+    "resistances": [
+      {
+        "kind": "element:fire",
+        "value": 0
+      },
+      {
+        "kind": "element:water",
+        "value": 0
+      },
+      {
+        "kind": "element:earth",
+        "value": 0
+      },
+      {
+        "kind": "element:air",
+        "value": 0
+      },
+      {
+        "kind": "element:electric",
+        "value": -50
+      },
+      {
+        "kind": "element:light",
+        "value": 0
+      },
+      {
+        "kind": "element:shadow",
+        "value": 0
+      },
+      {
+        "kind": "element:nature",
+        "value": 0
+      },
+      {
+        "kind": "element:ice",
+        "value": 0
+      },
+      {
+        "kind": "element:poison",
+        "value": 30
+      },
+      {
+        "kind": "element:steel",
+        "value": 0
+      },
+      {
+        "kind": "element:psy",
+        "value": 0
+      },
+      {
+        "kind": "element:spirit",
+        "value": 30
+      }
+    ],
+    "capture": {
+      "capturable": true,
+      "captureRate": 30,
+      "spawnChance": 100,
+      "rarity": "mythic",
+      "spawnTags": [
+        "psy"
+      ],
+      "evolution": null
+    },
+    "combat": {
+      "maxHp": 120,
+      "maxEnergy": 0,
+      "initialEnergy": 0,
+      "energyChargeAmount": 0,
+      "energyChargeIntervalMs": 0,
+      "movementEnergyPerStep": 0,
+      "chargeTimeModifierPct": 0,
+      "approachTimeModifierPct": -20,
+      "reaction": {
+        "type": "dodge",
+        "maxCharges": 4,
+        "rechargeMs": 30000,
+        "activeWindowMs": 600,
+        "damageReductionPct": 50
+      }
+    },
+    "skillIds": [],
+    "presentation": {
+      "id": "creature:Ephemus",
+      "version": 2,
+      "subjectType": "creature",
+      "subjectId": "Ephemus",
+      "profileId": "flying",
+      "displayScale": 1,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "viewOverrides": {
+        "player": {
+          "displayScale": 1,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "opponent": {
+          "displayScale": 1,
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      },
+      "transformOrigin": {
+        "x": "50%",
+        "y": "50%"
+      },
+      "visual": {
+        "front": {
+          "assetId": "pack:capture:creature-ephemus-opponent-01"
+        },
+        "back": {
+          "assetId": "pack:capture:creature-ephemus-player-01"
+        },
+        "icon": {
+          "assetId": "pack:capture:creature-ephemus-icon-01"
+        }
+      },
+      "sockets": [
+        {
+          "id": "mouth",
+          "label": "Bouche",
+          "front": {
+            "x": 0.3955549006212665,
+            "y": 0.3875709385614657
+          },
+          "back": {
+            "x": 0.6189530038421561,
+            "y": 0.36054301582756365
+          }
+        }
+      ],
+      "audio": {}
+    }
+  },
+  "statValues": {
+    "schema": "capture-creature-stat-values-v1",
+    "creatureId": "Ephemus",
+    "values": {
+      "health": 120,
+      "speed": 10,
+      "physical": 0,
+      "defense": 0,
+      "fire": 0,
+      "water": 0,
+      "earth": 0,
+      "air": 0,
+      "electric": 0,
+      "light": 0,
+      "shadow": 0,
+      "poison": 0,
+      "acier": 0,
+      "nature": 0,
+      "esprit": 20,
+      "glace": 0
+    }
+  },
+  "loadout": {
+    "schema": "capture-active-skill-loadout-v1",
+    "creatureId": "Ephemus",
+    "slots": [
+      {
+        "id": "slot-1",
+        "skillId": null
+      },
+      {
+        "id": "slot-2",
+        "skillId": null
+      },
+      {
+        "id": "slot-3",
+        "skillId": null
+      },
+      {
+        "id": "slot-4",
+        "skillId": null
+      },
+      {
+        "id": "slot-ultimate",
+        "skillId": null
+      }
+    ]
+  }
+}

@@ -1,3 +1,10 @@
+## 2026-11-17 — Ephemus + Veldra : fiches auteur disponibles pour réglages visuels en adversaire (LOT ISOLÉ / NON GREEN)
+- START Combat main@`49a1d1b6eb149c09ba602ee38982720aa67a3ec8`, checkpoint `checkpoint/lab-start-ephemus-veldra-20261117`, branche `work/lab-ephemus-veldra-visuals-20261117` ; ne pas modifier les branches des autres agents.
+- Source exacte : transferts JSON fournis par l'auteur Ephemus (`Ephemus`) et Veldra (`Veldra_crea`), intégrés dans les deux fichiers Showcase + catalogue officiel unique, sans altérer les données auteur. Vues FACE/DOS/icône de la branche canonique `global-assets` existantes ; aucun asset copié.
+- But : voir les deux créatures dans l'éditeur et l'équipe adverse du test Combat, régler les visuels puis réexporter, avant développement ultérieur des cinq capacités (toutes nulles aujourd'hui).
+- Protégés : moteur, autres créatures, catalogue historique, audio, GenSRPG/PWA, Exploration/Donjon, sources auteur et branches concurrentes.
+- Gates : import avec registre de stats, identités/stats/rareté/réaction/sockets/assetId/slots intacts, sélection adversaire via configurées, CI sur SHA exact, test navigateur HTTPS ; aucune revendication GREEN sans preuve.
+
 ## 2026-11-16 — Freclairions : corrections visuelles officielles (à certifier sur SHA exact)
 - Dépôt Combat unique, propriétaire du transfert : `main@62509f44136dddc5646aee75533723eb3f17b21b` ; checkpoint `checkpoint/lab-start-freclairions-visual-20261116`.
 - Source : export auteur du 16 novembre `gensrpg-capture-creature-crea_foudrillon(4).json` ; remplacement exact de l'unique `data/capture/showcase/crea_foudrillon.capture-creature-transfer-v1.json` (même ID et mêmes cinq capacités équipées, sans création d'entité).
