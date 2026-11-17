@@ -12,7 +12,7 @@ CREATURE_ROOT=Path("assets/library/capture/creatures/creature_pourpre")
 MASTER=CREATURE_ROOT/"runtime/creature_pourpre_face.png"
 SPECS={
     "movement":dict(src="mouvement_face",stem="mouvement",frame_ms=83,loop=True,label="Créature pourpre — Course face (12 frames)"),
-    "attack":dict(src="attaque_face",stem="attaque",frame_ms=83,loop=False,label="Créature pourpre — Attaque face (12 frames)"),
+    "attack":dict(src="attaque_face",stem="attaque",frame_ms=100,loop=False,label="Créature pourpre — Attaque face (12 frames)"),
 }
 
 def sha256(data):return hashlib.sha256(data).hexdigest()
@@ -60,6 +60,9 @@ def main():
             frames_folder=folder/"frames";atlas_folder=folder/"atlases";preview_folder=folder/"previews"
             for d in (frames_folder,atlas_folder,preview_folder):d.mkdir(parents=True,exist_ok=True)
             frames=[];frame_sha=[];source_sha=[];frame_margins=[]
+            source_info=meta["animations"][spec["src"]]
+            duration_ms=source_info["preview_durations_ms"]
+            assert len(duration_ms)==12 and all(isinstance(v,int) and v>=20 for v in duration_ms)
             for i in range(1,13):
                 entry=f"{spec['src']}/frames/creature_pourpre_{spec['stem']}_face_{i:02d}.png"
                 original=z.read(entry)
@@ -72,6 +75,13 @@ def main():
                 if i==1:
                     print("REPLACE_NONIDENTICAL_FRAME_01",action,"was_same_master",frame.tobytes()==master.tobytes())
                     frame=master.copy()
+                else:
+                    # Correction uniquement de cadrage : chaque source comporte assez de
+                    # marge transparente en haut pour placer les dessins 20px plus haut,
+                    # sans toucher un seul pixel visible, ni modifier l'anatomie.
+                    aligned=Image.new("RGBA",(512,512),(0,0,0,0))
+                    aligned.paste(frame,(0,-20))
+                    frame=aligned
                 frame_margins.append(check_frame(frame,action,i))
                 frames.append(frame)
                 dest=frames_folder/f"creature_pourpre_{action}_opponent_{i:02d}.png"
@@ -90,7 +100,7 @@ def main():
             preview_name=f"creature_pourpre_{action}_opponent_12_preview.webp"
             preview_path=preview_folder/preview_name
             frames[0].save(preview_path,format="WEBP",save_all=True,append_images=frames[1:],
-                           duration=spec["frame_ms"],loop=0,lossless=True,method=6)
+                           duration=duration_ms,loop=0,lossless=True,method=6)
             with Image.open(preview_path) as check:
                 assert check.n_frames==12,(action,"bad preview",check.n_frames)
                 for index,frame in enumerate(frames):
@@ -105,18 +115,21 @@ def main():
                 "source":{"scope":"pack","packId":"capture","author":"GenSRPG / artist approved","license":"project-internal"},
                 "resource":{"file":relative,"format":"sprite-strip","mime":"image/webp",
                     "frameCount":12,"frameWidth":512,"frameHeight":512,"frameMs":spec["frame_ms"],
-                    "playbackMode":"loop" if spec["loop"] else "once"},
+                    "playbackMode":"loop" if spec["loop"] else "once",
+                    "frameDurationsMs":duration_ms},
                 "compatibility":{"uses":["combat","capture","editor"]},
             }
             new_entries.append(asset)
             summary={
                 "creature":"creature_pourpre","view":"opponent","orientation":"face-three-quarter-toward-left",
                 "action":action,"frameCount":12,"frameWidth":512,"frameHeight":512,
-                "frameMs":spec["frame_ms"],"playbackMode":asset["resource"]["playbackMode"],
+                "frameMs":spec["frame_ms"],"frameDurationsMs":duration_ms,
+                "playbackMode":asset["resource"]["playbackMode"],
                 "sourceZip":str(SOURCE),"sourceSha256":SOURCE_SHA256,"sourceGitBlobSha":SOURCE_BLOB_SHA,
                 "sourceFrameSha256":source_sha,"frameSha256Png":frame_sha,"margins":frame_margins,
                 "masterSource":"runtime/creature_pourpre_face.png",
                 "firstFrameReplacedWithCanonicalMaster":True,
+                "otherSourceFramesRepositionedUpPx":20,
                 "allOtherFramesRetainedFromApprovedZip":True,
                 "atlasFile":f"atlases/{atlas_name}","previewFile":f"previews/{preview_name}",
             }
