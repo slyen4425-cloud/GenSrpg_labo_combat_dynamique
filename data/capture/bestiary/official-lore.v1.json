@@ -1,0 +1,82 @@
+{
+  "schema": "capture-bestiary-published-lore-v1",
+  "version": 1,
+  "entries": [
+    {
+      "creatureId": "crea_ailevent",
+      "text": "Ailevent apprend à voler en jouant avec les rafales qui courent au-dessus des falaises. Malgré sa petite taille, cet oisillon hardi change de direction avec une aisance déconcertante et ne reste jamais longtemps au même endroit."
+    },
+    {
+      "creatureId": "crea_crys_2",
+      "text": "Gemmor pousse entre les pierres couvertes de lichen, prenant l'apparence d'une plante étrange et presque immobile. Mais ses pétales cachent des mâchoires redoutables : la curiosité des promeneurs est souvent la meilleure alliée de ce chasseur végétal."
+    },
+    {
+      "creatureId": "crea_dracendre",
+      "text": "Jeune dragon des terres volcaniques, Dracendre déploie ses ailes au-dessus des cratères encore fumants. Il apprend à maîtriser les bourrasques et les braises qui l'entourent, mais sa fougue dépasse souvent sa prudence."
+    },
+    {
+      "creatureId": "crea_foudrillon",
+      "text": "Freclairions fend l'air avec le bourdonnement aigu d'un frelon aux reflets métalliques. Toujours en mouvement, il repère la moindre agitation dans son territoire et surgit dans un crépitement électrique avant même qu'on ait pu le suivre des yeux."
+    },
+    {
+      "creatureId": "crea_lumilo",
+      "text": "Quand le jour décline, la lueur dorée de Lumilo éclaire discrètement les sentiers oubliés. Ce petit renard de lumière recherche la compagnie des êtres paisibles, mais son éclat devient plus intense lorsqu'il cherche à protéger ceux qui lui font confiance."
+    },
+    {
+      "creatureId": "crea_maraileron",
+      "text": "Maraileron sillonne les eaux profondes en profitant des courants que d'autres créatures peinent à traverser. Ses nageoires cuirassées le protègent des heurts et lui permettent de poursuivre sa proie jusque dans les passages rocheux les plus étroits."
+    },
+    {
+      "creatureId": "crea_mer_3",
+      "text": "Krakenor hante les fosses marines où la lumière du soleil n'atteint jamais le fond. Ses huit tentacules se déploient dans l'obscurité ; l'encre qu'il répand et l'écrasante pression des profondeurs rendent toute fuite périlleuse."
+    },
+    {
+      "creatureId": "crea_mossback",
+      "text": "Les épaisses mousses qui recouvrent Moussados dissimulent une armure de roche façonnée par les saisons. Ce gardien placide des vallées avance sans hâte, mais sa tranquillité se change en détermination dès que son refuge est menacé."
+    },
+    {
+      "creatureId": "crea_nat_1",
+      "text": "Au creux des sous-bois, Grainou prend racine dans les sols fertiles et se confond avec les jeunes pousses. Sous son allure inoffensive, cette petite créature défend jalousement son territoire et sait réveiller la végétation pour tenir les intrus à distance."
+    },
+    {
+      "creatureId": "crea_ombre_2",
+      "text": "Noctigriffe apparaît là où les lanternes peinent à chasser l'obscurité. Ce félin insaisissable avance sans bruit, observe longtemps avant d'agir et semble capable de disparaître dans la moindre ombre au moment où l'on croit enfin l'avoir aperçu."
+    },
+    {
+      "creatureId": "crea_scar_2",
+      "text": "La carapace d'acier de Scarabacier porte les marques de combats dont il est sorti indemne. Lorsqu'il replie ses pattes et se met à rouler, ce scarabée tenace transforme sa lourde armure en une véritable force de percussion."
+    },
+    {
+      "creatureId": "crea_tox_2",
+      "text": "Venombre se faufile dans les taillis humides sans laisser d'autre trace qu'un frisson dans les feuilles. Discret et patient, ce prédateur préfère laisser son poison affaiblir ses adversaires avant de sortir de l'ombre."
+    },
+    {
+      "creatureId": "crea_voltik",
+      "text": "Voltige traverse l'air en zigzags si rapides qu'on ne distingue parfois qu'une traînée d'étincelles. Son énergie débordante se manifeste jusque dans ses jeux, au grand désarroi des créatures qui tentent de suivre ses brusques changements de direction."
+    },
+    {
+      "creatureId": "crea-loup",
+      "text": "Le Loup volcanique parcourt les pentes noircies des volcans, là où la cendre étouffe les pas. Une chaleur de braise accompagne sa course, et son hurlement résonne longtemps entre les roches avant qu'on aperçoive sa silhouette."
+    },
+    {
+      "creatureId": "Ephemus",
+      "text": "Ephemus est un papillon spirituel dont les ailes semblent faites de brume et de souvenirs. Il apparaît un instant dans les lieux silencieux, puis s'efface sans bruit, laissant derrière lui une présence douce et étrangement mélancolique."
+    },
+    {
+      "creatureId": "gorice",
+      "text": "Dans les montagnes aux neiges éternelles, Gorice traverse les blizzards sans ralentir. Ce gorille colossal maîtrise la glace aussi naturellement que sa propre force ; les voyageurs prudents évitent de troubler le silence des cols qu'il habite."
+    },
+    {
+      "creatureId": "kitsune_lunaire",
+      "text": "À la tombée de la nuit, Kitsune Lunaire apparaît dans les clairières baignées de lune. Ce renard spirituel semble connaître des sentiers invisibles aux voyageurs ; certains racontent que le suivre conduit aux secrets les mieux gardés de la forêt."
+    },
+    {
+      "creatureId": "Veldra_crea",
+      "text": "Veldra traverse le ciel comme une promesse d'aube, ses plumes baignées d'une lumière presque irréelle. Cet oiseau légendaire veille sur ses compagnons et, lorsque l'espoir vacille, son éclat semble assez puissant pour leur rendre le courage de se relever."
+    },
+    {
+      "creatureId": "veuve-jaune",
+      "text": "Veuve jaune tisse ses pièges entre les branches humides, à l'abri des regards. Chaque fil de sa toile peut se charger d'électricité : une proie qui s'y aventure risque de rester prisonnière bien avant d'avoir aperçu l'araignée."
+    }
+  ]
+}

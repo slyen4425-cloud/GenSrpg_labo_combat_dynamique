@@ -1,3 +1,8 @@
+### 2026-11-17 — Bestiaire : corriger l'architecture après preuve CI des archives auteur strictes
+- La première tentative (19 changements de `draft.description` dans les JSON créatures) a échoué 28 sentinelles de provenance exigées par la charte, dont comparaisons d'octets/hachages sur des archives d'auteur. Revenir aux 19 blobs canoniques inchangés : aucune relaxation des tests historiques, aucun contournement.
+- Source éditoriale unique `data/capture/bestiary/official-lore.v1.json` : 19 portraits narratifs ciblés uniquement par `captureBestiaryCardsV1({publishedLore})` depuis le Bestiaire officiel. Les univers et l'éditeur consomment les descriptions auteur et non l'overlay. Pas de deuxième autorité sur gameplay, assets, stats ou profil créature.
+- Tester les sources auteurs strictes inchangées, les 22 descriptions affichées et l'absence d'override pour les univers. CI GREEN intégrale et publication sur SHA exact avant checkpoint GREEN.
+
 ## 2026-11-17 — Bestiaire : enrichissement éditorial de 19 créatures publiées (LOT ISOLÉ)
 - START : unique Labo Combat `main@d4a1fa607db7c6c4088f7361fdb8ef80d2878a92`, checkpoint `checkpoint/lab-start-bestiary-19-portraits-20261117`, branche temporaire `work/lab-bestiary-19-portraits-20261117`. Dernier lot vérifié Veldra PR #331 sur ce SHA (CI 5/5 et Pages same SHA).
 - Auteur : parcourir le Bestiaire effectivement publié et enrichir toutes les fiches avec description absente, générique ou trop courte, libre cours à une narration française cohérente avec nom, nature, élément, visuel et capacités existantes ; attaque aérienne Percée d'aurore ne requiert aucun sprite et reste inchangée.

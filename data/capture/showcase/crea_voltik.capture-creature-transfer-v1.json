@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_voltik",
     "displayName": "Voltige",
-    "description": "Voltige traverse l'air en zigzags si rapides qu'on ne distingue parfois qu'une traînée d'étincelles. Son énergie débordante se manifeste jusque dans ses jeux, au grand désarroi des créatures qui tentent de suivre ses brusques changements de direction.",
+    "description": "Très rapide et chargée d’électricité.",
     "level": 1,
     "sourceStats": {
       "force": 9,

@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_ombre_2",
     "displayName": "Noctigriffe",
-    "description": "Noctigriffe apparaît là où les lanternes peinent à chasser l'obscurité. Ce félin insaisissable avance sans bruit, observe longtemps avant d'agir et semble capable de disparaître dans la moindre ombre au moment où l'on croit enfin l'avoir aperçu.",
+    "description": "Noctigriffe, créature de type shadow.",
     "level": 1,
     "sourceStats": {
       "force": 23,

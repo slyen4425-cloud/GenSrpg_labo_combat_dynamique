@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "kitsune_lunaire",
     "displayName": "Kitsune Lunaire",
-    "description": "À la tombée de la nuit, Kitsune Lunaire apparaît dans les clairières baignées de lune. Ce renard spirituel semble connaître des sentiers invisibles aux voyageurs ; certains racontent que le suivre conduit aux secrets les mieux gardés de la forêt.",
+    "description": "Esprit renard",
     "level": 1,
     "sourceStats": {
       "force": 0,

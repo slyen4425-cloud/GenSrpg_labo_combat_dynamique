@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea-loup",
     "displayName": "Loup volcanique",
-    "description": "Le Loup volcanique parcourt les pentes noircies des volcans, là où la cendre étouffe les pas. Une chaleur de braise accompagne sa course, et son hurlement résonne longtemps entre les roches avant qu'on aperçoive sa silhouette.",
+    "description": "Créature volcanique rapide.",
     "level": 1,
     "sourceStats": {
       "force": 0,

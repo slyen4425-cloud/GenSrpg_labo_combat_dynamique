@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_maraileron",
     "displayName": "Maraileron",
-    "description": "Maraileron sillonne les eaux profondes en profitant des courants que d'autres créatures peinent à traverser. Ses nageoires cuirassées le protègent des heurts et lui permettent de poursuivre sa proie jusque dans les passages rocheux les plus étroits.",
+    "description": "Chasseur marin protégé par des nageoires cuirassées.",
     "level": 1,
     "sourceStats": {
       "force": 21,

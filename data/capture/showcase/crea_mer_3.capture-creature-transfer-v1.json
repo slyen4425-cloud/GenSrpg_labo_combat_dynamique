@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_mer_3",
     "displayName": "Krakenor",
-    "description": "Krakenor hante les fosses marines où la lumière du soleil n'atteint jamais le fond. Ses huit tentacules se déploient dans l'obscurité ; l'encre qu'il répand et l'écrasante pression des profondeurs rendent toute fuite périlleuse.",
+    "description": "Créature abyssale Eau à huit tentacules. Pose des Pressions abyssales et affaiblit par l'encre.",
     "level": 1,
     "sourceStats": {
       "force": 42,

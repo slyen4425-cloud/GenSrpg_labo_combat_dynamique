@@ -47,11 +47,20 @@ export function captureBestiaryCardsV1({
   skillTransfers = [],
   assetCatalog = {assets:[]},
   statRegistry = {stats:[]},
-  nativeSkills = []
+  nativeSkills = [],
+  publishedLore = []
 } = {}) {
   const assets = new Map((Array.isArray(assetCatalog?.assets) ? assetCatalog.assets : [])
     .filter(asset => asset && typeof asset.id === "string")
     .map(asset => [asset.id, asset]));
+  // A single published Bestiary prose layer, distinct from immutable author exports.
+  // Custom universes do not pass this layer and retain their own descriptions.
+  const publishedLoreById = new Map();
+  for(const entry of Array.isArray(publishedLore)?publishedLore:[]){
+    if(typeof entry?.creatureId!=="string" || !entry.creatureId.trim() ||
+       typeof entry?.text!=="string" || !entry.text.trim()) continue;
+    publishedLoreById.set(entry.creatureId,entry.text.trim());
+  }
   const skillsById = new Map();
   // Derive marker names from authored skills; no secondary authoritative catalog.
   const markerNames=Object.create(null);
@@ -162,7 +171,8 @@ export function captureBestiaryCardsV1({
     const evolution = draft?.capture?.evolution;
     cards.push(Object.freeze({
       id, name:draft.displayName.trim(),
-      description:typeof draft.description === "string" ? draft.description.trim() : "",
+      description:publishedLoreById.get(id) ??
+        (typeof draft.description === "string" ? draft.description.trim() : ""),
       level:statNumber(draft.level),
       elements:Object.freeze((Array.isArray(draft.elements) ? draft.elements : [])
         .filter(v => typeof v === "string" && v.trim())),

@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "gorice",
     "displayName": "Gorice",
-    "description": "Dans les montagnes aux neiges éternelles, Gorice traverse les blizzards sans ralentir. Ce gorille colossal maîtrise la glace aussi naturellement que sa propre force ; les voyageurs prudents évitent de troubler le silence des cols qu'il habite.",
+    "description": "Gorille vivant dans les montagnes de neige éternel , maîtrise la glace , une force de la nature",
     "level": 1,
     "sourceStats": {
       "force": 0,

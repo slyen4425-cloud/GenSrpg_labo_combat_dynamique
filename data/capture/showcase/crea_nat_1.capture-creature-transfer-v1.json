@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_nat_1",
     "displayName": "Grainou",
-    "description": "Au creux des sous-bois, Grainou prend racine dans les sols fertiles et se confond avec les jeunes pousses. Sous son allure inoffensive, cette petite créature défend jalousement son territoire et sait réveiller la végétation pour tenir les intrus à distance.",
+    "description": "Grainou, créature de type nature/earth.",
     "level": 1,
     "sourceStats": {
       "force": 10,

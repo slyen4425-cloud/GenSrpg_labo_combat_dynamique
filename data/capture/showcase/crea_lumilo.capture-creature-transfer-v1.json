@@ -5,7 +5,7 @@
     "schema": "capture-creature-editor-draft-v3",
     "id": "crea_lumilo",
     "displayName": "Lumilo",
-    "description": "Quand le jour décline, la lueur dorée de Lumilo éclaire discrètement les sentiers oubliés. Ce petit renard de lumière recherche la compagnie des êtres paisibles, mais son éclat devient plus intense lorsqu'il cherche à protéger ceux qui lui font confiance.",
+    "description": "Petit compagnon lumineux au tempérament protecteur.",
     "level": 1,
     "sourceStats": {
       "force": 8,
