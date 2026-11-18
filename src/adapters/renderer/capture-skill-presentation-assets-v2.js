@@ -306,6 +306,7 @@ function resolvedStatusPresentation(
 
   return Object.freeze({
     mode: presentation.mode,
+    modelOpacity: presentation.modelOpacity,
     tintColor: presentation.tintColor,
     tintOpacity: presentation.tintOpacity,
     tintBlinkEnabled: presentation.tintBlinkEnabled === true,

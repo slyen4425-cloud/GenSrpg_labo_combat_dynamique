@@ -6435,6 +6435,12 @@ function appendHumanSkillEffectV1(
 
   appendStatusSpriteControlsV1(spriteFields, statusPresentation?.sprite ?? {});
 
+  const statusModelOpacity = tacticalNumberInputV1(
+    "skillStatusModelOpacity",
+    (statusPresentation?.modelOpacity ?? 1) * 100,
+    { min: 0, max: 100, step: 1 }
+  );
+
   const statusVisualNote =
     document.createElement("small");
   statusVisualNote.className = "note";
@@ -6448,6 +6454,7 @@ function appendHumanSkillEffectV1(
     ),
     tintFields,
     spriteFields,
+    tacticalFieldV1("Opacité du modèle (%) — 100 = normal, 15 = quasi transparent, 0 = invisible", statusModelOpacity),
     statusVisualNote
   );
 
@@ -7639,7 +7646,12 @@ function readHumanStatusVisualsV1(root) {
         "[data-skill-status-visual-mode]"
       )?.value ?? "none";
 
-    if (!statusId || mode === "none") {
+    const modelOpacityPct = Number(
+      row.querySelector("[data-skill-status-model-opacity]")?.value ?? 100
+    );
+    if (!Number.isFinite(modelOpacityPct) || modelOpacityPct < 0 || modelOpacityPct > 100)
+      throw new RangeError("Opacité du modèle : valeur entre 0 et 100 % requise");
+    if (!statusId || (mode === "none" && modelOpacityPct === 100)) {
       continue;
     }
 
@@ -7664,6 +7676,8 @@ function readHumanStatusVisualsV1(root) {
         )?.value ?? 600
       )
     };
+
+    if (modelOpacityPct !== 100) presentation.modelOpacity = modelOpacityPct / 100;
 
     if (
       mode === "sprite" ||

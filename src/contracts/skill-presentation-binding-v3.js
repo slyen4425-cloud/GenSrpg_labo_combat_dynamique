@@ -183,6 +183,7 @@ function normalizeStatusVisual(
         "tintOpacity",
         "tintBlinkEnabled",
         "tintBlinkPeriodMs",
+        "modelOpacity",
         "sprite"
       ].includes(key)
     ) {
@@ -226,6 +227,9 @@ function normalizeStatusVisual(
 
   return Object.freeze({
     mode,
+    ...(value.modelOpacity == null ? {} : {
+      modelOpacity: unitNumber(value.modelOpacity, field + ".modelOpacity", 1)
+    }),
     ...(value.tintBlinkEnabled == null ? {} : { tintBlinkEnabled: value.tintBlinkEnabled }),
     ...(value.tintBlinkPeriodMs == null ? {} : { tintBlinkPeriodMs: blinkPeriod }),
     tintColor: colorValue(

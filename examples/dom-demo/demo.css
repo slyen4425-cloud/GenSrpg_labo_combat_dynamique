@@ -268,6 +268,9 @@ summary {
 }
 
 .fighter__image {
+  /* The native Status Runtime owns this presentation-only opacity.
+     The collision alpha mask, shadow and status HUD must remain intact. */
+  opacity: var(--creature-status-model-opacity, 1);
   display: block;
   width: 100%;
   height: 100%;
@@ -275,6 +278,12 @@ summary {
   filter: drop-shadow(0 0.9rem 1rem rgba(0, 0, 0, 0.38));
   user-select: none;
   pointer-events: none;
+}
+
+/* The same body opacity follows the animated attack/movement sprite when
+   the standing image is temporarily hidden (no alternate gameplay clock). */
+.fighter__motion > [data-creature-movement-visual] > .skill-fx {
+  opacity: var(--creature-status-model-opacity, 1);
 }
 
 .status-fx {
