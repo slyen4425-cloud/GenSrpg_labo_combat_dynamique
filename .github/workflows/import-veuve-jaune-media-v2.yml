@@ -42,7 +42,7 @@ jobs:
           from pathlib import Path
           import json
           cat=json.loads(Path("data/assets/catalog/global-visual-assets.v1.json").read_text())
-          assets=[a for a in cat["assets"] if a["id"].startswith("pack:capture:") and "veuve-jaune-" in a["id"]]
+          assets=[a for a in cat["assets"] if a["id"].startswith(("pack:capture:icon-skill-veuve-jaune-", "pack:capture:sprite-skill-veuve-jaune-"))]
           assert len(assets)==13,assets
           assert sum(a["assetType"]=="icon" for a in assets)==5
           assert sum(a["assetType"]=="sprite" for a in assets)==8
