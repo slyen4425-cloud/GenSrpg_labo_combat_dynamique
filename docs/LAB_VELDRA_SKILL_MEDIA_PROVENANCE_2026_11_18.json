@@ -1,0 +1,124 @@
+{
+  "schema": "veldra-skill-media-provenance-v1",
+  "authorZips": [
+    {
+      "path": "_incoming/Veldra_ICÔNES_5_competences.zip",
+      "sha256": "0400c87c2a7aca845726456d3765b673562a6373c368261a8d2f97d40ee4fe5f",
+      "gitBlobSha": "ba1348e3253859beca2626f4385b95713f05d6bb"
+    },
+    {
+      "path": "_incoming/Veldra_SPRITES_EFFETS_5_competences.zip",
+      "sha256": "44664b2e076ad2e6e5df8719a5e4c07c0fe83ecf83b42378a8eddd6d07ec5982",
+      "gitBlobSha": "05c41a704cb4bdd8919328dd27d57a97671bf216"
+    }
+  ],
+  "assets": [
+    {
+      "path": "assets/library/capture/icons/skills/veldra/veldra-plume-solaire.webp",
+      "size": 9062,
+      "sha256": "6fbf6e457a92de2083ee620fb015ad58f322667cbfab3c13d0a8caa93f354e1a",
+      "gitBlobSha": "1c4b195bd8a233a87e0b48d163898e16e1fff62e"
+    },
+    {
+      "path": "assets/library/capture/sprites/skills/veldra/veldra-plume-solaire.webp",
+      "size": 128320,
+      "sha256": "ddfee536b889d1c17ed2f8c96fe29a1cde7a4cd411fb5f66a2f52eff9e901587",
+      "gitBlobSha": "aad00a42d8287e28736d141873be3ae26f471583"
+    },
+    {
+      "path": "assets/library/capture/icons/skills/veldra/veldra-percee-aurore.webp",
+      "size": 10014,
+      "sha256": "bfe544d52510951aa237ec764f8672fa241a56ad6ee3f923e02ea3a9dd796b5e",
+      "gitBlobSha": "e3b01c4651e1ebb4b353a7f91ed96d6fc7af9899"
+    },
+    {
+      "path": "assets/library/capture/sprites/skills/veldra/veldra-percee-aurore.webp",
+      "size": 239432,
+      "sha256": "6f5c6c21ced4ae01aaa385e8ea17b5e79f381915fefc01c73943819537126a4b",
+      "gitBlobSha": "38fa1aa1fbc5cef235ea5bef3a3a795ca3c65ab5"
+    },
+    {
+      "path": "assets/library/capture/icons/skills/veldra/veldra-egide-zenith.webp",
+      "size": 10180,
+      "sha256": "d114e3f03fae80347ad46c78a78fcf1f8d7e29855660ac3f04a70be16bbaee56",
+      "gitBlobSha": "61beae5ca8038b17c990ca501317a942354d81a0"
+    },
+    {
+      "path": "assets/library/capture/sprites/skills/veldra/veldra-egide-zenith.webp",
+      "size": 194152,
+      "sha256": "fbfdd680b3664cf3b0c4c7c2d765308bde600deb8dc7d70475046f6e9abf2e26",
+      "gitBlobSha": "94deefa4fe13cc01f2ac533f692556618923a01b"
+    },
+    {
+      "path": "assets/library/capture/icons/skills/veldra/veldra-rayon-cardinal.webp",
+      "size": 8578,
+      "sha256": "07b926e3cbc5472c157f4bbeb69ad6f9ff8562b5502f03350a05bc36d80f8308",
+      "gitBlobSha": "00d73b6be8b6588f257a1106764268b1e6abb0ef"
+    },
+    {
+      "path": "assets/library/capture/sprites/skills/veldra/veldra-rayon-cardinal.webp",
+      "size": 187158,
+      "sha256": "633315fd1791bc8de3a63b1b67989d2d2405fb83a45a9db0cf143a0f03febcf2",
+      "gitBlobSha": "705ff38e229f98daebaa890bd0f6c47a3b890705"
+    },
+    {
+      "path": "assets/library/capture/icons/skills/veldra/veldra-releve-celeste.webp",
+      "size": 10078,
+      "sha256": "82625b99a0ec8c61b0a452457630384d574339fa772c5deb4055218f1489a303",
+      "gitBlobSha": "74286e731d4dc67b7164e621fd9d54339f0a903e"
+    },
+    {
+      "path": "assets/library/capture/sprites/skills/veldra/veldra-releve-celeste.webp",
+      "size": 196522,
+      "sha256": "97369d5c297863a7573407498d50bd3290c9e2c45d4d75c3c9670a0a9c17511a",
+      "gitBlobSha": "9c3f681293b1d5dbcf042eed62fd7522c742d1b0"
+    }
+  ],
+  "skillMatches": [
+    {
+      "skill": "plume-solaire",
+      "iconAssetId": "pack:capture:icon-skill-veldra-plume-solaire-v1",
+      "spriteAssetId": "pack:capture:sprite-skill-veldra-plume-solaire-v1",
+      "distinctFrames": 16,
+      "maxWebpFrameError": 1.348,
+      "iconOriginalSha256": "90e315f9da26be53b9f17a6a0e6c203e5dcaba4c1ab351a2e1c383cbe09959ce",
+      "sheetOriginalSha256": "ea4cbfa80874daefa62b84f27204b8c9f658ac66f9b264d83f642b7d96dc4113"
+    },
+    {
+      "skill": "percee-aurore",
+      "iconAssetId": "pack:capture:icon-skill-veldra-percee-aurore-v1",
+      "spriteAssetId": "pack:capture:sprite-skill-veldra-percee-aurore-v1",
+      "distinctFrames": 16,
+      "maxWebpFrameError": 3.303,
+      "iconOriginalSha256": "2fcd8bc5a35cb029bd2a680b0308caee17eb809e9c69542d570d5a515a8ce2aa",
+      "sheetOriginalSha256": "04c31ba9786c971f9e293a64d2071b5029a49985fb0f98ef55e5ca7440a48e2e"
+    },
+    {
+      "skill": "egide-zenith",
+      "iconAssetId": "pack:capture:icon-skill-veldra-egide-zenith-v1",
+      "spriteAssetId": "pack:capture:sprite-skill-veldra-egide-zenith-v1",
+      "distinctFrames": 16,
+      "maxWebpFrameError": 1.797,
+      "iconOriginalSha256": "7710807612734dc3bd071cd46b7c41fb3c2eee17977c322c2bbec895b02827ed",
+      "sheetOriginalSha256": "c7e8a8e24a2bc08fd03fa628e9eb6b455e2ee68a65ebd5ec30832b7f3271442c"
+    },
+    {
+      "skill": "rayon-cardinal",
+      "iconAssetId": "pack:capture:icon-skill-veldra-rayon-cardinal-v1",
+      "spriteAssetId": "pack:capture:sprite-skill-veldra-rayon-cardinal-v1",
+      "distinctFrames": 16,
+      "maxWebpFrameError": 2.256,
+      "iconOriginalSha256": "99e3ce4f37f807010916b75ef90194da6ae9e233ba393e5b9be424774244c87e",
+      "sheetOriginalSha256": "2277a93b01bb3b3c05926e0af1719b79b9c3f7701d8391cb54ecc66712d26fa1"
+    },
+    {
+      "skill": "releve-celeste",
+      "iconAssetId": "pack:capture:icon-skill-veldra-releve-celeste-v1",
+      "spriteAssetId": "pack:capture:sprite-skill-veldra-releve-celeste-v1",
+      "distinctFrames": 16,
+      "maxWebpFrameError": 1.95,
+      "iconOriginalSha256": "9af3ce61cb95fe606baebeee3b93015a083db73c04764cba00dab9e0685a4207",
+      "sheetOriginalSha256": "0c3bdb44aab6ba2d482bddaa5fce193af209f7f620bb3fd4210fb1f57ff94280"
+    }
+  ]
+}

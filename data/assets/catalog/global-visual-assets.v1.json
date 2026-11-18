@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 442,
-    "icons": 197,
-    "sprites": 213,
+    "assets": 452,
+    "icons": 202,
+    "sprites": 218,
     "fx": 2,
     "portraits": 25,
     "backgrounds": 5,
@@ -14805,6 +14805,331 @@
       },
       "resource": {
         "file": "capture/sprites/skills/ephemus/ephemus-danse-mille-ames.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 16,
+        "frameMs": 100
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-veldra-plume-solaire-v1",
+      "label": "Plume solaire",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "veldra",
+        "skill",
+        "light",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur Veldra (2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/veldra/veldra-plume-solaire.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-veldra-plume-solaire-v1",
+      "label": "Plume solaire — 16 frames",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "capture",
+        "veldra",
+        "skill",
+        "light",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur Veldra (2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/veldra/veldra-plume-solaire.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 16,
+        "frameMs": 80
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-veldra-percee-aurore-v1",
+      "label": "Percée d'aurore",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "veldra",
+        "skill",
+        "light",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur Veldra (2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/veldra/veldra-percee-aurore.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-veldra-percee-aurore-v1",
+      "label": "Percée d'aurore — 16 frames",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "capture",
+        "veldra",
+        "skill",
+        "light",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur Veldra (2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/veldra/veldra-percee-aurore.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 16,
+        "frameMs": 80
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-veldra-egide-zenith-v1",
+      "label": "Égide du zénith",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "veldra",
+        "skill",
+        "light",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur Veldra (2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/veldra/veldra-egide-zenith.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-veldra-egide-zenith-v1",
+      "label": "Égide du zénith — 16 frames",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "capture",
+        "veldra",
+        "skill",
+        "light",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur Veldra (2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/veldra/veldra-egide-zenith.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 16,
+        "frameMs": 90
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-veldra-rayon-cardinal-v1",
+      "label": "Rayon cardinal",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "veldra",
+        "skill",
+        "light",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur Veldra (2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/veldra/veldra-rayon-cardinal.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-veldra-rayon-cardinal-v1",
+      "label": "Rayon cardinal — 16 frames",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "capture",
+        "veldra",
+        "skill",
+        "light",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur Veldra (2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/veldra/veldra-rayon-cardinal.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 16,
+        "frameMs": 100
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-veldra-releve-celeste-v1",
+      "label": "Relève céleste",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "veldra",
+        "skill",
+        "light",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur Veldra (2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/veldra/veldra-releve-celeste.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-veldra-releve-celeste-v1",
+      "label": "Relève céleste — 16 frames",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "capture",
+        "veldra",
+        "skill",
+        "light",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur Veldra (2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/veldra/veldra-releve-celeste.webp",
         "mime": "image/webp",
         "format": "sprite-strip",
         "frameCount": 16,
