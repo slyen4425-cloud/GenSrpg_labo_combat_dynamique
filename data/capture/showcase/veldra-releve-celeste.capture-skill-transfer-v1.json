@@ -81,10 +81,10 @@
       "subjectId": "veldra-releve-celeste",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-healing-heart-01"
+          "assetId": "pack:capture:icon-skill-veldra-releve-celeste-v1"
         },
         "cast": {
-          "assetId": "pack:capture:sprite-light-shield-cast-01",
+          "assetId": "pack:capture:sprite-skill-veldra-releve-celeste-v1",
           "displayScale": 1,
           "attachment": "source",
           "anchor": "mouth",
@@ -93,7 +93,8 @@
           "trigger": "preparation-start",
           "playbackMode": "once",
           "rotationDeg": 0,
-          "opacity": 1
+          "opacity": 1,
+          "durationMs": 1200
         }
       },
       "audio": {},

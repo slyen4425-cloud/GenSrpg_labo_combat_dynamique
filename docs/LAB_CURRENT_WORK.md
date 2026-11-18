@@ -1,3 +1,8 @@
+## 2026-11-18 — Éphémus : intégration des compétences après Veldra (fusion des historiques, sans doublon)
+- Base officielle unique : main@a04861d93432b080d09b08949fa900f6543b758c ; checkpoint START `checkpoint/lab-start-ephemus-main-integration-20261118` ; PR #334 conserve son historique.
+- Réconciliation additive avec la PR #336 Veldra : les changements Veldra restent inchangés, y compris cache canonique v67 et son jeu de tests ; les cinq compétences, effets natifs, visuels et tests Éphémus sont ajoutés via la PR #334.
+- Tests : CI complète sur SHA exact après fusion des bases et sur `main` ; ne jamais déclarer GREEN en cas de navigateur rouge. Source des visuels unique `global-assets` ; aucune PWA, aucune autre créature, aucune sauvegarde modifiée.
+
 ## 2026-11-18 — Éphémus : raccord visuels officiels dans cinq compétences (lot isolé)
 
 - **START** : branche Combat PR #334 \`work/lab-ephemus-five-skills-20261118@7c57272e04c9521dd1d11f845afcad89e5808604\`; checkpoint \`checkpoint/lab-start-ephemus-skill-media-20261118\`; travail distinct \`work/lab-ephemus-skill-media-20261118\`, sans modifier la branche de l'autre agent.
@@ -24,6 +29,11 @@
 - Danse : canalisation native 6 tics de 10 Esprit/500ms, bonus +40 au dernier tic si `ephemus-voile` encore actif, ralentissement 30%; interruption standard du canal conservée.
 - Icônes originales PNG et spritesheets artistiques générées en fichiers utilisateur ZIP ; le référentiel `global-assets` est un propriétaire d'assets distinct. Pour maintenir les liens runtime valides sans injecter de média hors registry, la première intégration pointe vers cinq icônes existantes de la bibliothèque ; les nouvelles icônes auteur restent livrées séparément et non publiées sur le catalogue tant qu'une ingestion binaire canonique n'est pas faite.
 - Tests à exiger : cinq captures normalisées, marqueur Voile conditionnel, 10s immatériel et explosion native, 10 tics de zone, vulnérabilité Esprit seulement, 60/100 ultime, régressions CI + navigateur sur SHA exact avant publication. Aucun chantier PWA.
+
+## 2026-11-18 — Veldra : cinq icônes et FX officiels, raccordement exclusivement visuel (WORK / NON GREEN)
+- START `main@1f73062fca27cb5eb10cfebf3784d7443127ec1f`, checkpoint `checkpoint/lab-start-veldra-five-visuals-20261118`, branche de travail `work/lab-veldra-five-visuals-20261118`.
+- Périmètre, domaines protégés, propriétaire et tests : `docs/LAB_VELDRA_FIVE_VISUAL_BINDINGS_2026_11_18.md`. Dépendance aux dix médias `global-assets` publiés; pas de modification moteur/gameplay/PWA.
+- GREEN seulement après vraie résolution des assets, 5/5 CI SHA exact, navigateur, checkpoint et Pages main.
 
 ## 2026-11-17 — Vyrâme : raccordement visuel depuis le nouvel export auteur (lot isolé)
 - Base unique Labo Combat `main@1669c744135762bf41ac6a4a7b3efc4c6ccd2af9`, checkpoint `checkpoint/lab-start-vyrame-v9-animation-author-20261117` ; branche courte `work/lab-vyrame-v9-visual-author-20261117`. Charte, roadmap et politique de checkpoint consultées ; publication PR Bestiaire #332 fusionnée séparément.
