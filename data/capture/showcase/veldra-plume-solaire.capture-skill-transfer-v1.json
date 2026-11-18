@@ -20,8 +20,8 @@
       "approachMode": "none",
       "energyCost": 3,
       "preparationMs": 550,
-      "travelMs": 500,
-      "recoveryMs": 150,
+      "travelMs": 700,
+      "recoveryMs": 0,
       "cooldownMs": 8000,
       "maxUsesPerCombat": null,
       "interruptibleDuringPreparation": true,
@@ -69,7 +69,9 @@
           "kind": "damage",
           "targetScope": "target",
           "amount": 10,
-          "channel": "light"
+          "channel": "light",
+          "ignoreResistancePct": 0,
+          "ignoreDamageReductionPct": 0
         },
         {
           "kind": "apply_marker",
@@ -84,7 +86,9 @@
           },
           "charges": 1
         }
-      ]
+      ],
+      "projectileTargeting": "direct",
+      "hitsIntangible": false
     },
     "presentation": {
       "id": "skill:veldra-plume-solaire",
@@ -97,19 +101,30 @@
         },
         "travel": {
           "assetId": "pack:capture:sprite-skill-veldra-plume-solaire-v1",
-          "displayScale": 1,
+          "displayScale": 1.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
           "attachment": "trajectory",
-          "anchor": null,
+          "anchor": "mouth",
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "travel-start",
           "playbackMode": "once",
           "rotationDeg": 0,
           "opacity": 1,
-          "durationMs": 500
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          }
         }
       },
-      "audio": {},
+      "audio": {
+        "travel": {
+          "assetId": "gensrpg:sound:genrpg-pack2-9291c6e4",
+          "volume": 1,
+          "loop": true
+        }
+      },
       "statusVisuals": {}
     }
   }
