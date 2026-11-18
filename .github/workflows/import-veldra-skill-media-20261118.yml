@@ -5,6 +5,7 @@ on:
       - work/lab-veldra-skill-media-20261118
     paths:
       - scripts/import_veldra_skill_media_2026_11_18.py
+      - tests/unit/veldra-skill-media-assets-20261118.test.mjs
       - .github/workflows/import-veldra-skill-media-20261118.yml
   workflow_dispatch:
 permissions:
