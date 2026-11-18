@@ -118,6 +118,9 @@ import {
   buildCaptureCreatureHistoricalLoadoutV1
 } from "../catalogs/capture-creature-historical-loadout-v1.js";
 import {
+  applyCaptureShowcaseCreatureMovementAudioV1
+} from "../catalogs/capture-showcase-creature-movement-audio-v1.js";
+import {
   CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1
 } from "../catalogs/capture-showcase-creature-presets-v1.js?v=sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111";
 import {
@@ -8947,7 +8950,12 @@ async function hydrateCaptureShowcaseCreaturePresetsV1(
           );
         }
 
-        return transfer;
+        // Resolve author-approved style sound into the SAME official creature
+        // presentation, preserving exact archived transfer files.
+        return applyCaptureShowcaseCreatureMovementAudioV1(
+          transfer,
+          statRegistry
+        );
       }
     )
   );

@@ -1,3 +1,13 @@
+## 2026-11-18 — Audio Showcase : publication des styles sans modifier les exports auteur
+- **START** `main@49bc9a4282d9b7978fe0d1dd09056fa94af9a3ed`, checkpoint `checkpoint/lab-start-creature-audio-styles-publish-20261118`, branche temporaire `work/lab-creature-audio-styles-publish-20261118` ; PR #342 initiale NON GREEN (17 tests d'immutabilité auteur).
+- **Cause** : les 17 tests rouges protègent les transferts JSON d'origine ; éditer directement sept fichiers `data/capture/showcase/*.json` modifiait illégitimement leurs champs.
+- **Propriétaire unique** : pendant le chargement Showcase dans `hydrateCaptureShowcaseCreaturePresetsV1`, composition des presets audio validés dans la présentation créature **déjà canonique** ; les vrais combats continuent de lire exclusivement `presentation.audio.movement`. Un seul registre de valeurs de départ `src/catalogs/capture-showcase-creature-movement-audio-v1.js`, sans fallback parallèle dans le renderer ou le moteur.
+- **Groupes** : insectes volants Éphémus/Foudrillon utilisent le battement d'ailes officiel, Foudrillon préservé exactement ; autres volants Veldra/Ailevent/Dracendre utilisent le mouvement aérien existant ; quadrupèdes Loup/Nat 1/Kitsune utilisent le bruissement de vêtement choisi par l'auteur. Aucun son inventé pour serpents, requins ou autres morphologies.
+- **Fichiers protégés** : TOUS les JSON auteur originaux, autres créatures, musiques, skills, moteur, assets, saves, PWA et branches des autres agents. Test de régression sur fichiers inchangés, identité canonique des créatures, 22 profils, sons actifs à l'import, test navigateur vrai chemin, CI 5/5 sur SHA exact, checkpoint GREEN, fusion PR distincte et Pages SHA exact. Ne jamais masquer les anciens tests.
+- **Référence** : PR #342 reste l'historique du test RED et des échecs ; ce lot de réconciliation constitue sa correction, sans forcer la fusion rouge.
+
+---
+
 ## 2026-11-18 — Visuel buff/debuff : opacité du modèle et Chrysalide Éphémus (lot isolé)
 - START `main@5fa4c25b25a5a1dfd215c5dfc4af510874e4945d`, checkpoint `checkpoint/lab-start-ephemus-model-opacity-20261118`, WORK `work/lab-status-model-opacity-20261118`.
 - Autorité unique : `SkillPresentationBindingV3.statusVisuals[].modelOpacity` optionnel, 0..1 ; statut natif propriétaire de l'existence/durée, Status FX renderer propriétaire de la seule variable visuelle du modèle. Aucun nouveau timer ou nouvelle immunité.
