@@ -92,10 +92,12 @@
         {
           "kind": "cleanse",
           "targetScope": "self",
-          "statusTags": [],
-          "slowOnly": true
+          "slowOnly": true,
+          "statusTags": []
         }
-      ]
+      ],
+      "projectileTargeting": "direct",
+      "hitsIntangible": false
     },
     "presentation": {
       "id": "skill:veldra-egide-zenith",
@@ -108,20 +110,41 @@
         },
         "cast": {
           "assetId": "pack:capture:sprite-skill-veldra-egide-zenith-v1",
-          "displayScale": 1,
+          "displayScale": 2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
           "attachment": "source",
-          "anchor": "mouth",
+          "anchor": null,
           "offsetX": 0,
-          "offsetY": 0,
+          "offsetY": 30,
           "trigger": "preparation-start",
           "playbackMode": "once",
           "rotationDeg": 0,
-          "opacity": 1,
-          "durationMs": 650
+          "opacity": 0.5,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
         }
       },
-      "audio": {},
-      "statusVisuals": {}
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:genrpg-pack2-34855cd9",
+          "volume": 1,
+          "loop": false
+        }
+      },
+      "statusVisuals": {},
+      "feedback": {
+        "glow": null,
+        "impactFlash": null,
+        "cameraShake": null,
+        "projectileTrail": null,
+        "impactBurst": null,
+        "aftermathSmoke": null,
+        "castBurst": null
+      }
     }
   }
 }
