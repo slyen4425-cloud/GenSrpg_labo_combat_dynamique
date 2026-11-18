@@ -38,8 +38,8 @@ test("Éphémus: canonical single catalog, five real 128px icons, five 16-frame 
   assert.ok(prov.publishedAssets.some(x=>x.id==="pack:capture:icon-skill-"+id+"-v1"));
   assert.ok(prov.publishedAssets.some(x=>x.id==="pack:capture:sprite-skill-"+id+"-v1"));
  }
- assert.equal(catalog.counts.assets,442);
- assert.equal(catalog.counts.icons,197);
- assert.equal(catalog.counts.sprites,213);
+ assert.equal(catalog.counts.assets,452);
+ assert.equal(catalog.counts.icons,202);
+ assert.equal(catalog.counts.sprites,218);
  for(const x of prov.sourceChecks) assert.equal(x.distinctFrames,16);
 });
