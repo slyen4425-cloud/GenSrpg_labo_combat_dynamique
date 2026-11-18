@@ -87,3 +87,66 @@ test("Generic immunities never masquerade as Chrysalide and ordinary dodges rema
   assert.equal(planSkillOutcomeFx({resolution:evaded})[0]?.type,"miss");
   assert.equal(planSkillOutcomeFx({resolution:evaded})[0]?.label,undefined);
 });
+
+
+function node(bounds){
+  return {
+    dataset:{},style:{},children:[],ownerDocument:null,className:"",
+    append(child){this.children.push(child)},
+    remove(){},
+    getBoundingClientRect(){return bounds}
+  };
+}
+
+test("Visible zone uses selected fighter's actual position, not the distant caster's coordinates",()=>{
+  const arena=node({left:0,top:0,width:500,height:300});
+  const caster=node({left:40,top:50,width:40,height:40});
+  const enemy=node({left:300,top:150,width:40,height:40});
+  arena.ownerDocument={createElement(){
+    const child=node({left:0,top:0,width:40,height:40});
+    child.ownerDocument=arena.ownerDocument;
+    return child;
+  }};
+  const renderer=createDomSkillFxRenderer({
+    arena,anchors:{ephemus:caster,enemy},
+    presentationForSkill:(id,context)=>present.presentationForSkill(id,context),
+    animate(){return {finished:new Promise(()=>{}),cancel(){}}},
+    requestFrame(){return null},cancelFrame(){}
+  });
+  const zones=lane.definition.effects.map(effect=>({
+    id:"ephemus:"+lane.id+":"+effect.zoneId,
+    skillId:lane.id,sourceActorId:"ephemus",targetId:"enemy",targetScope:"target",
+    zoneId:effect.zoneId,radius:"medium",appliedAtMs:0,expiresAtMs:5000,durationMs:5000
+  }));
+  const result=renderer.syncPersistentZones(zones);
+  assert.equal(result.activeCount,2);
+  const visible=arena.children.filter(x=>x.dataset.skillFx==="persistent-zone");
+  assert.equal(visible.length,2);
+  for(const zone of visible){
+    assert.equal(zone.style.left,"320px");
+    assert.equal(zone.style.top,"170px");
+    assert.match(zone.className,/persistent-zone/);
+  }
+  renderer.dispose();
+});
+
+test("Existing floating-text FX displays a proven IMMATÉRIEL reason without replacing ordinary RATÉ",()=>{
+  const arena=node({left:0,top:0,width:500,height:300});
+  const caster=node({left:40,top:50,width:40,height:40});
+  const enemy=node({left:300,top:150,width:40,height:40});
+  arena.ownerDocument={createElement(){
+    const child=node({left:0,top:0,width:20,height:20});
+    child.ownerDocument=arena.ownerDocument;
+    return child;
+  }};
+  const renderer=createDomSkillFxRenderer({
+    arena,anchors:{ephemus:caster,enemy},
+    animate(){return {finished:new Promise(()=>{}),cancel(){}}},
+    requestFrame(){return null},cancelFrame(){}
+  });
+  renderer.play({type:"miss",targetSlot:"ephemus",label:"IMMATÉRIEL",durationMs:850});
+  renderer.play({type:"miss",targetSlot:"enemy",durationMs:650});
+  const misses=arena.children.filter(x=>x.dataset.skillFx==="miss");
+  assert.deepEqual(misses.map(x=>x.textContent),["IMMATÉRIEL","RATÉ"]);
+  renderer.dispose();
+});
