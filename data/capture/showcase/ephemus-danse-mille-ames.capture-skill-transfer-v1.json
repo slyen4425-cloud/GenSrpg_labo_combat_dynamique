@@ -4,7 +4,7 @@
   "draft": {
     "schema": "capture-skill-editor-draft-v1",
     "id": "ephemus-danse-mille-ames",
-    "description": "Canalise 60 dégâts Esprit sur 3 s (6 tics de 10). Ralentit la cible pendant 3 s. Au dernier tic : +40 dégâts si la cible porte Voile.",
+    "description": "Canalise pendant 3 s : jusqu'à 6 pulsations, une toutes les 0,5 s, infligeant chacune 10 dégâts d'Esprit (60 dégâts de base si toutes touchent). Chaque pulsation augmente de 30 % le temps d'approche de la cible pendant 3 s. À la 6e pulsation, ajoute 40 dégâts d'Esprit si la cible porte encore Voile. Interrompue si le lanceur subit des dégâts, est étourdi ou réduit au silence. Utilisable une fois par combat.",
     "requiredLevel": 20,
     "usageScopes": [
       "capture",
