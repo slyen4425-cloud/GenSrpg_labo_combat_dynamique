@@ -1,0 +1,63 @@
+name: Import Veuve jaune V2 to canonical global-assets
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/import-veuve-jaune-media-v2.py
+      - .github/workflows/import-veuve-jaune-media-v2.yml
+  push:
+    branches: [main]
+    paths:
+      - scripts/import-veuve-jaune-media-v2.py
+      - .github/workflows/import-veuve-jaune-media-v2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: source
+          persist-credentials: true
+      - uses: actions/checkout@v4
+        with:
+          ref: global-assets
+          path: canonical
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'Pillow>=11,<13'
+      - name: Verify exact uploaded ZIP and extract only the approved 13 media
+        run: python source/scripts/import-veuve-jaune-media-v2.py source canonical
+      - name: Validate the ONLY canonical catalog and 13 generated media
+        working-directory: canonical
+        run: |
+          git diff --check
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          cat=json.loads(Path("data/assets/catalog/global-visual-assets.v1.json").read_text())
+          assets=[a for a in cat["assets"] if a["id"].startswith("pack:capture:") and "veuve-jaune-" in a["id"]]
+          assert len(assets)==13,assets
+          assert sum(a["assetType"]=="icon" for a in assets)==5
+          assert sum(a["assetType"]=="sprite" for a in assets)==8
+          assert all((Path("assets/library")/a["resource"]["file"]).is_file() for a in assets)
+          assert len(cat["assets"])==cat["counts"]["assets"]
+          print("PASS one canonical global-assets source; 5 icons + 8 atlases; all IDs/paths valid")
+          PY
+      - name: Publish exact media only after main is merged
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: canonical
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/library/capture/icons/skills/veuve_jaune             assets/library/capture/sprites/skills/veuve_jaune             data/assets/catalog/global-visual-assets.v1.json
+          git diff --cached --check
+          test "$(git diff --cached --name-only | grep -E '\.(webp)$' | wc -l)" -eq 13
+          git commit -m 'assets(capture): publish 5 Veuve jaune icons and 8 animated sprites on global-assets'
+          git push origin HEAD:global-assets
