@@ -1079,6 +1079,8 @@ export function resolveSkillCompletion({
           applied.absorbedByShield,
         appliedDamage:
           applied.appliedDamage,
+        // The UI may distinguish a true immaterial block from a normal miss.
+        intangibleProtection: applied.intangibleProtection === true,
         hpBefore: applied.hpBefore,
         hpAfter: applied.hpAfter
       }));
