@@ -1,3 +1,8 @@
+## 2026-11-18 — Veldra : cinq icônes et effets 16f (WORK / NON GREEN)
+- Source ZIP auteur dans `global-assets/_incoming`, base `2fa8f2ea`, checkpoint `checkpoint/lab-start-veldra-skill-media-20261118`, travail isolé `work/lab-veldra-skill-media-20261118`.
+- Périmètre, propriétaires, fichiers autorisés, protections, tests et risques : `docs/LAB_VELDRA_SKILL_MEDIA_2026_11_18.md`. Pas de second moteur/catalogue, pas de modification des données gameplay.
+- Gates : import réel 10 médias, contrôle des octets et frames, catalogue unique, CI sur SHA exact et réelle inspection; checkpoint GREEN puis promotion non forcée `global-assets`. Raccord des capacités sur `main` dans un lot séparé.
+
 ## 2026-11-17 — Raccord manquant des animations POURPRE (face adversaire 12f)
 
 - **Constat** : les animations DOS Pourpre (course/attaque 8f) existent et fonctionnent dans la bibliothèque; aucune animation FACE Pourpre dans le catalogue. L'archive auteur approuvée `_incoming/creature_pourpre_face_mouvement_attaque_12f_valide.zip` contient 12 images par animation et ses previews/atlas. **Pourpre n'est pas Violette.**
