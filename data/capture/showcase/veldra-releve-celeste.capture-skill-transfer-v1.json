@@ -85,7 +85,7 @@
         },
         "cast": {
           "assetId": "pack:capture:sprite-skill-veldra-releve-celeste-v1",
-          "displayScale": 1,
+          "displayScale": 1.3,
           "attachment": "source",
           "anchor": "mouth",
           "offsetX": 0,
@@ -97,7 +97,18 @@
           "durationMs": 1200
         }
       },
-      "audio": {},
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:genrpg-pack2-b8525ce4",
+          "volume": 0.75,
+          "loop": false
+        },
+        "release": {
+          "assetId": "gensrpg:sound:academie-ca7e09ad",
+          "volume": 0.65,
+          "loop": false
+        }
+      },
       "statusVisuals": {
         "veldra-releve-celeste:relay-power": {
           "mode": "tint",
