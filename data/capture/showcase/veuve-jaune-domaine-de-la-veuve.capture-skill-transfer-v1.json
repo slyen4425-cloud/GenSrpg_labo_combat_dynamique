@@ -148,7 +148,7 @@
       "subjectId": "veuve-jaune-domaine-de-la-veuve",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-beam-electrique-01"
+          "assetId": "pack:capture:icon-skill-veuve-jaune-domaine-de-la-veuve-v1"
         },
         "cast": {
           "assetId": "pack:capture:sprite-cast-electric-01",
@@ -170,8 +170,8 @@
           "offsetMode": "same"
         },
         "impact": {
-          "assetId": "pack:capture:sprite-impact-electric-01",
-          "displayScale": 2.1,
+          "assetId": "pack:capture:sprite-skill-veuve-jaune-domaine-de-la-veuve-impact-zone-v1",
+          "displayScale": 2,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "fixed-target",
@@ -187,7 +187,7 @@
             "opponent": "front"
           },
           "offsetMode": "same",
-          "durationMs": 600
+          "durationMs": 920
         }
       },
       "audio": {},

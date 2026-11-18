@@ -98,7 +98,7 @@
       "subjectId": "veuve-jaune-fil-foudroyant",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-beam-electrique-01"
+          "assetId": "pack:capture:icon-skill-veuve-jaune-fil-foudroyant-v1"
         },
         "cast": {
           "assetId": "pack:capture:sprite-cast-electric-01",
@@ -120,8 +120,8 @@
           "offsetMode": "mirror_x"
         },
         "travel": {
-          "assetId": "pack:capture:sprite-electric-yellow-beam-body-01",
-          "displayScale": 1.7,
+          "assetId": "pack:capture:sprite-skill-veuve-jaune-fil-foudroyant-projectile-v1",
+          "displayScale": 1.35,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "trajectory",
@@ -139,7 +139,7 @@
           "offsetMode": "same"
         },
         "impact": {
-          "assetId": "pack:capture:sprite-impact-electric-01",
+          "assetId": "pack:capture:sprite-skill-veuve-jaune-fil-foudroyant-impact-v1",
           "displayScale": 1.5,
           "displayScaleX": 1,
           "displayScaleY": 1,
@@ -148,8 +148,8 @@
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "impact",
-          "playbackMode": "stretch",
-          "durationMs": 650,
+          "playbackMode": "once",
+          "durationMs": 640,
           "rotationDeg": 0,
           "opacity": 1,
           "layerByView": {

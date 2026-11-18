@@ -130,11 +130,11 @@
       "subjectId": "veuve-jaune-morsure-neuroelectrique",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-croc-electrique-01"
+          "assetId": "pack:capture:icon-skill-veuve-jaune-morsure-neuroelectrique-v1"
         },
         "impact": {
-          "assetId": "pack:capture:sprite-impact-electric-01",
-          "displayScale": 2.5,
+          "assetId": "pack:capture:sprite-skill-veuve-jaune-morsure-neuroelectrique-impact-v1",
+          "displayScale": 1.6,
           "displayScaleX": 1,
           "displayScaleY": 1,
           "attachment": "fixed-target",
@@ -142,8 +142,8 @@
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "impact",
-          "playbackMode": "stretch",
-          "durationMs": 650,
+          "playbackMode": "once",
+          "durationMs": 640,
           "rotationDeg": 0,
           "opacity": 0.8,
           "layerByView": {
