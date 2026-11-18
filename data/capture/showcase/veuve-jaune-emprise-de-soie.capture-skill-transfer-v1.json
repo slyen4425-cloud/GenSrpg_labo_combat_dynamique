@@ -97,7 +97,7 @@
       "subjectId": "veuve-jaune-emprise-de-soie",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-ronce-01"
+          "assetId": "pack:capture:icon-skill-veuve-jaune-emprise-de-soie-v1"
         },
         "cast": {
           "assetId": "pack:capture:sprite-cast-nature-01",
@@ -118,18 +118,17 @@
           },
           "offsetMode": "mirror_x"
         },
-        "impact": {
-          "assetId": "pack:capture:sprite-impact-nature-01",
-          "displayScale": 1.5,
+        "travel": {
+          "assetId": "pack:capture:sprite-skill-veuve-jaune-emprise-de-soie-projectile-v1",
+          "displayScale": 1.2,
           "displayScaleX": 1,
           "displayScaleY": 1,
-          "attachment": "fixed-target",
-          "anchor": null,
+          "attachment": "trajectory",
+          "anchor": "mouth",
           "offsetX": 0,
           "offsetY": 0,
-          "trigger": "impact",
-          "playbackMode": "stretch",
-          "durationMs": 650,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
           "rotationDeg": 0,
           "opacity": 1,
           "layerByView": {
@@ -140,7 +139,23 @@
         }
       },
       "audio": {},
-      "statusVisuals": {},
+      "statusVisuals": {
+        "veuve-jaune-emprise-verrouillage": {
+          "mode": "sprite",
+          "sprite": {
+            "assetId": "pack:capture:sprite-skill-veuve-jaune-emprise-de-soie-entrave-sur-cible-v1",
+            "displayScale": 1.15,
+            "opacity": 0.85,
+            "playbackMode": "hold-last",
+            "offsetX": 0,
+            "offsetY": 0,
+            "layerByView": {
+              "player": "front",
+              "opponent": "front"
+            }
+          }
+        }
+      },
       "feedback": {
         "glow": null,
         "impactFlash": null,

@@ -89,7 +89,15 @@
           "contactDamageIntervalMs": 1000,
           "contactImmobilizeMs": 1500,
           "contactImmobilizeCooldownMs": 6000,
-          "label": "🕸️ Toile"
+          "label": "🕸️ Toile",
+          "spriteAssetId": "pack:capture:sprite-skill-veuve-jaune-toile-paralysante-mur-apparition-v1",
+          "opponentSpriteAssetId": "pack:capture:sprite-skill-veuve-jaune-toile-paralysante-mur-apparition-v1",
+          "visualScale": 2.1,
+          "visualScaleX": 1.45,
+          "visualScaleY": 1.15,
+          "opponentVisualScale": 1.5,
+          "opponentVisualScaleX": 1.45,
+          "opponentVisualScaleY": 1.15
         }
       ]
     },
@@ -100,7 +108,7 @@
       "subjectId": "veuve-jaune-toile-paralysante",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-barrier-dome-01"
+          "assetId": "pack:capture:icon-skill-veuve-jaune-toile-paralysante-v1"
         }
       },
       "audio": {},
