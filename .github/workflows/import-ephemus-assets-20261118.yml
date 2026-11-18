@@ -1,0 +1,45 @@
+name: Import Éphémus approved skill media 2026-11-18
+on:
+  push:
+    branches:
+      - work/lab-ephemus-assets-20261118
+    paths:
+      - .github/workflows/import-ephemus-assets-20261118.yml
+      - scripts/import_ephemus_assets_2026_11_18.py
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ephemus-asset-import-20261118
+  cancel-in-progress: false
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/lab-ephemus-assets-20261118
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'Pillow>=10,<13'
+      - name: Import original ZIP media, verify 80 frames and canonical catalog
+        run: python scripts/import_ephemus_assets_2026_11_18.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Entire asset laboratory CI
+        run: npm run ci
+      - name: Commit media strictly to temporary asset WORK branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- assets/library/capture/icons/skills/ephemus/ assets/library/capture/sprites/skills/ephemus/ data/assets/catalog/global-visual-assets.v1.json docs/LAB_EPHEMUS_ASSET_PROVENANCE_2026_11_18.json
+          test "$(git diff --cached --name-only | wc -l)" -eq 12
+          if git diff --cached --quiet; then echo "Import produced no media"; exit 1; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "assets(ephemus): import 5 approved icons and 5 16-frame FX"
+          git push origin HEAD:refs/heads/work/lab-ephemus-assets-20261118
