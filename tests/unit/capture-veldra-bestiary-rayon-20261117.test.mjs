@@ -66,9 +66,12 @@ test("Veldra real Bestiary card displays authored ultimate and beam explanations
   assert.match(beam.explanation.sentences.join(" "),/8 dégâts.*5e pulsation/);
 });
 
-test("Veldra has four official FX sprite bindings; Percée icon only remains an explicit author gap",()=>{
+test("Veldra preserves native FX phases and now binds five official 16-frame skills including Percée impact",()=>{
   const roles=["cast","beamStart","travel","impact","zone","aura","status"];
   const visuals=ids.map(id=>skill(id).presentation.visual);
-  assert.deepEqual(visuals.map(v=>roles.filter(r=>v[r]?.assetId).length),[1,0,1,3,1]);
+  assert.deepEqual(visuals.map(v=>roles.filter(r=>v[r]?.assetId).length),[1,1,1,3,1]);
+  assert.equal(visuals[1].impact.assetId,"pack:capture:sprite-skill-veldra-percee-aurore-v1");
+  assert.equal(visuals[3].beamStart.assetId,"pack:capture:sprite-electric-yellow-beam-cast-01");
+  assert.equal(visuals[3].travel.assetId,"pack:capture:sprite-electric-yellow-beam-body-01");
   assert.ok(visuals.every(v=>v.icon?.assetId));
 });
