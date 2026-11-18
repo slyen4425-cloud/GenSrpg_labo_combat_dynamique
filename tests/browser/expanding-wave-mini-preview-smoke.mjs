@@ -61,6 +61,7 @@ try{
  ]);
  const dom=Buffer.concat(stdout).toString("utf8");
  const result=dom.match(/data-preview-smoke="([^"]*)"/)?.[1]??"no-result";
- if(code!==0||!result.startsWith("pass:"))throw Error("Real mobile preview Chromium: "+result+"\n"+Buffer.concat(stderr).toString("utf8").slice(-350));
+ const cleanup=dom.match(/data-preview-cleanup="([^"]*)"/)?.[1]??"missing";
+ if(code!==0||!result.startsWith("pass:")||cleanup!=="pass")throw Error("Real mobile preview Chromium: "+result+"; native cleanup="+cleanup+"\n"+Buffer.concat(stderr).toString("utf8").slice(-350));
  console.log("Real mini-preview bootstrap passed:",result);
 }finally{server.close();}
