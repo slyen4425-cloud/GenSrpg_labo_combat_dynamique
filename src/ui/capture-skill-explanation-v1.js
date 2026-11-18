@@ -51,6 +51,7 @@ function simpleChange(s){
   }
   if(s.kind==="outgoing_damage_modifier")return modifier("les dégâts infligés",s.modifierPct,"%");
   if(s.kind==="incoming_effect_modifier")return modifier(s.affectedPolarity==="beneficial"?"les soins reçus":s.affectedPolarity==="both"?"les dégâts et soins reçus":"les dégâts reçus",s.modifierPct,"%");
+  if(s.kind==="incoming_damage_channel_modifier")return modifier("les dégâts "+elementOf(s.channel)+" reçus",s.modifierPct,"%");
   if(s.kind==="energy_regen_modifier")return modifier("la régénération d'énergie",s.modifierPct,"%");
   if(s.kind==="skill_cooldown_rate_modifier")return modifier("la vitesse de recharge des compétences",s.modifierPct,"%");
   if(s.kind==="approach_time_modifier")return modifier("le temps d'approche",s.modifierPct,"%");
@@ -308,7 +309,16 @@ function groupZones(zones){
     first.targetScope==="all_allies"?"pour tous les alliés":
     first.targetScope==="all_enemies"?"contre tous les ennemis":
     "sur "+subject(first.targetScope);
-  let text="Crée "+(many?"des zones qui ":"une zone qui ")+words(clauses)+
+  // The individual clauses use plural verbs for grouped zones. A single
+  // authored zone requires singular agreement without changing any effect.
+  const singular=Object.freeze({
+    augmentent:"augmente",réduisent:"réduit",infligent:"inflige",rendent:"rend",
+    convertissent:"convertit",accordent:"accorde",permettent:"permet"
+  });
+  const displayClauses=many?clauses:clauses.map(clause=>
+    clause.replace(/^(augmentent|réduisent|infligent|rendent|convertissent|accordent|permettent)\b/,
+      verb=>singular[verb]));
+  let text="Crée "+(many?"des zones qui ":"une zone qui ")+words(displayClauses)+
     " "+target+" pendant "+duration(first.durationMs);
   if(first.statusBehavior==="while_inside")text+=", tant que les créatures s'y trouvent";
   if(first.statusBehavior==="on_enter")text+=", dès leur entrée dans la zone";
@@ -481,15 +491,31 @@ export function describeCaptureSkillV1(input,{markerNames={}}={}) {
   phrases.push(...descriptions(d.effects,{markerNames}));
   if(d.channeling){
     const ch=d.channeling;
-    const pulses=descriptions(ch.effects,{markerNames}).map(x=>lowerSentence(x));
-    phrases.push(finish("Canalise "+(pulses.length?pulses.join(" et "):"ses effets")+
-      " "+frequency(ch.tickIntervalMs)+
-      (ch.energyCostPerTick>0?", consommant "+num(ch.energyCostPerTick)+" énergie par pulsation":"")+
-      (ch.maxTicks!=null?", pendant "+num(ch.maxTicks)+" pulsations maximum":"")+
-      (ch.maxDurationMs>0?", durant "+duration(ch.maxDurationMs)+" maximum":"")+
-      (ch.stopOnDamage?", interrompue par les dégâts reçus":"")+
-      (ch.stopOnStun?", l'étourdissement":"")+
-      (ch.stopOnSilence?", le silence":"")));
+    // Separate repeated damage from duration-based statuses. This avoids
+    // 'Canalise inflige...' and keeps the effective durations visible.
+    const damage=ch.effects.filter(x=>x.kind==="damage");
+    const perPulse=descriptions(damage.length?damage:ch.effects,{markerNames})
+      .map(x=>lowerSentence(x));
+    const additional=damage.length?
+      descriptions(ch.effects.filter(x=>x.kind!=="damage"),{markerNames}):[];
+    const total=ch.maxTicks!=null&&damage.length===1&&damage[0].targetScope==="target"?
+      ", soit "+num(ch.maxTicks*damage[0].amount)+
+      " dégâts de base si toutes touchent":"";
+    phrases.push(finish("Canalise une attaque"+
+      (ch.maxDurationMs>0?" pendant "+duration(ch.maxDurationMs):"")+" : "+
+      (perPulse.length?perPulse.join(" et "):"applique ses effets")+" "+
+      frequency(ch.tickIntervalMs)+
+      (ch.maxTicks!=null?" ("+num(ch.maxTicks)+" pulsations maximum"+total+")":"")+
+      (ch.energyCostPerTick>0?", pour "+num(ch.energyCostPerTick)+" énergie par pulsation":"")));
+    for(const line of additional){
+      phrases.push(finish(line.replace(/\.$/,"")+" (effet renouvelé à chaque pulsation)"));
+    }
+    const interruptions=[
+      ...(ch.stopOnDamage?["des dégâts reçus"]:[]),
+      ...(ch.stopOnStun?["d'un étourdissement"]:[]),
+      ...(ch.stopOnSilence?["d'un silence"]:[])
+    ];
+    if(interruptions.length)phrases.push(finish("La canalisation s'interrompt en cas de "+words(interruptions)));
     if(ch.finalTickEffects?.length){
       const last=descriptions(ch.finalTickEffects,{markerNames});
       const moment=ch.maxTicks!=null?"À la "+num(ch.maxTicks)+"e pulsation réellement atteinte, ":
