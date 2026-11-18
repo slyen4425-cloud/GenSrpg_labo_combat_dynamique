@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 432,
-    "icons": 192,
-    "sprites": 208,
+    "assets": 442,
+    "icons": 197,
+    "sprites": 213,
     "fx": 2,
     "portraits": 25,
     "backgrounds": 5,
@@ -14484,6 +14484,331 @@
           130,
           430
         ]
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-ephemus-poussiere-oubli-v1",
+      "label": "Poussière d'oubli",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "ephemus",
+        "spirit",
+        "skill",
+        "icon",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur (Éphémus, 2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/ephemus/ephemus-poussiere-oubli.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-ephemus-poussiere-oubli-v1",
+      "label": "Poussière d'oubli — 16 images",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "ephemus",
+        "spirit",
+        "skill",
+        "travel",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur (Éphémus, 2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/ephemus/ephemus-poussiere-oubli.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 16,
+        "frameMs": 80
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-ephemus-battement-limbes-v1",
+      "label": "Battement des limbes",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "ephemus",
+        "spirit",
+        "skill",
+        "icon",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur (Éphémus, 2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/ephemus/ephemus-battement-limbes.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-ephemus-battement-limbes-v1",
+      "label": "Battement des limbes — 16 images",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "ephemus",
+        "spirit",
+        "skill",
+        "travel",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur (Éphémus, 2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/ephemus/ephemus-battement-limbes.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 16,
+        "frameMs": 100
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-ephemus-chrysalide-fantome-v1",
+      "label": "Chrysalide fantôme",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "ephemus",
+        "spirit",
+        "skill",
+        "icon",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur (Éphémus, 2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/ephemus/ephemus-chrysalide-fantome.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-ephemus-chrysalide-fantome-v1",
+      "label": "Chrysalide fantôme — 16 images",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "ephemus",
+        "spirit",
+        "skill",
+        "release",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur (Éphémus, 2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/ephemus/ephemus-chrysalide-fantome.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 16,
+        "frameMs": 100
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-ephemus-lanterne-ames-v1",
+      "label": "Lanterne des âmes",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "ephemus",
+        "spirit",
+        "skill",
+        "icon",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur (Éphémus, 2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/ephemus/ephemus-lanterne-ames.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-ephemus-lanterne-ames-v1",
+      "label": "Lanterne des âmes — 16 images",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "ephemus",
+        "spirit",
+        "skill",
+        "skill",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur (Éphémus, 2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/ephemus/ephemus-lanterne-ames.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 16,
+        "frameMs": 100
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-ephemus-danse-mille-ames-v1",
+      "label": "Danse des mille âmes",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "ephemus",
+        "spirit",
+        "skill",
+        "icon",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur (Éphémus, 2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/ephemus/ephemus-danse-mille-ames.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-ephemus-danse-mille-ames-v1",
+      "label": "Danse des mille âmes — 16 images",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "ephemus",
+        "spirit",
+        "skill",
+        "travel",
+        "capture"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSrpG / auteur (Éphémus, 2026-11-18)",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/ephemus/ephemus-danse-mille-ames.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 16,
+        "frameMs": 100
       },
       "compatibility": {
         "uses": [

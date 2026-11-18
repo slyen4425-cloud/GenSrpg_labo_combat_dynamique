@@ -1,0 +1,97 @@
+{
+  "schema": "ephemus-media-provenance-v1",
+  "sourceArchives": [
+    {
+      "path": "_incoming/Ephemus_ICÔNES_5_competences.zip",
+      "sha256": "619d7cd322f0e5e3a8745902ae426eac73a81b05e20e171daa6fb7d29f27872d"
+    },
+    {
+      "path": "_incoming/Ephemus_SPRITES_EFFETS_5_competences.zip",
+      "sha256": "a32b989be423e1f5db8a9b0812d925f3b8a1b87bd5b26f7294fc9bf7f244dbc2"
+    }
+  ],
+  "sourceChecks": [
+    {
+      "skill": "ephemus-poussiere-oubli",
+      "sourceIconSha256": "53c30a749f9f951c42b01be5b00b8a502f9d767b0fcfa750d437fbb62b76a3f8",
+      "sourceSheetSha256": "d12d41e0de20d84b975904ff4e7edffb05e8b2f31114ec8e7478548db4014795",
+      "distinctFrames": 16
+    },
+    {
+      "skill": "ephemus-battement-limbes",
+      "sourceIconSha256": "44b210a331a4b03d801e4da088fb5d9e109d2cce6928b9a6c8767cd282d9dafa",
+      "sourceSheetSha256": "f7aaee7240513def5f77a7fd052858875c91c56fb2200ad07b79f6ef5c528a17",
+      "distinctFrames": 16
+    },
+    {
+      "skill": "ephemus-chrysalide-fantome",
+      "sourceIconSha256": "d4d2323c248c6878062266fef223795f4071d0c482614de267a73787b566a39d",
+      "sourceSheetSha256": "754cf23e4eedb4da3eaa027fece2dd334576a53bebdf5dcf40c997c320392664",
+      "distinctFrames": 16
+    },
+    {
+      "skill": "ephemus-lanterne-ames",
+      "sourceIconSha256": "0f17f7f3968e4079a9a68987edf2788c306ec50f0995e27d19e464f9f05a05e4",
+      "sourceSheetSha256": "760b5b8819c148a290740552b22fdbb61f8164f45ef99b26726cf33b8e8020e0",
+      "distinctFrames": 16
+    },
+    {
+      "skill": "ephemus-danse-mille-ames",
+      "sourceIconSha256": "4f56dc1cb6d8c1cc802352347128532dd5ba64f8b4940c60e1497468f935ab1f",
+      "sourceSheetSha256": "ff1de7d4faf431ebdac3358843f4dcc903886246f1d912ffaaf3f400269f66db",
+      "distinctFrames": 16
+    }
+  ],
+  "publishedAssets": [
+    {
+      "id": "pack:capture:icon-skill-ephemus-poussiere-oubli-v1",
+      "path": "assets/library/capture/icons/skills/ephemus/ephemus-poussiere-oubli.webp",
+      "sha256": "e64334fcad8fd32b3a1ae3c450c2272378f298eee2cfc2887c29cf2a3a0d8e16"
+    },
+    {
+      "id": "pack:capture:sprite-skill-ephemus-poussiere-oubli-v1",
+      "path": "assets/library/capture/sprites/skills/ephemus/ephemus-poussiere-oubli.webp",
+      "sha256": "661fc8b649169efb4192099e41205fe1aed199603b6c82ade52d56b50cebd25d"
+    },
+    {
+      "id": "pack:capture:icon-skill-ephemus-battement-limbes-v1",
+      "path": "assets/library/capture/icons/skills/ephemus/ephemus-battement-limbes.webp",
+      "sha256": "37f66412c2062bbc7f100c00028b0347988c9fafa75d18753c63da53af1952e4"
+    },
+    {
+      "id": "pack:capture:sprite-skill-ephemus-battement-limbes-v1",
+      "path": "assets/library/capture/sprites/skills/ephemus/ephemus-battement-limbes.webp",
+      "sha256": "1690898324190075349d390d495eb7d393f4c6bf2cd7db952213b941260b494c"
+    },
+    {
+      "id": "pack:capture:icon-skill-ephemus-chrysalide-fantome-v1",
+      "path": "assets/library/capture/icons/skills/ephemus/ephemus-chrysalide-fantome.webp",
+      "sha256": "4114ccd1cb4052498ad695cd2cddec3774e844cce3255fd99f95d051a26aa736"
+    },
+    {
+      "id": "pack:capture:sprite-skill-ephemus-chrysalide-fantome-v1",
+      "path": "assets/library/capture/sprites/skills/ephemus/ephemus-chrysalide-fantome.webp",
+      "sha256": "fd4e0f4aa5ab9d7b5d124422200371a003431b0894dbc639b0102e9aa53bae6e"
+    },
+    {
+      "id": "pack:capture:icon-skill-ephemus-lanterne-ames-v1",
+      "path": "assets/library/capture/icons/skills/ephemus/ephemus-lanterne-ames.webp",
+      "sha256": "52f6655a940c2cb13748edeb73a56c5e54f12605554432f5ab9a6a268cf7d5e2"
+    },
+    {
+      "id": "pack:capture:sprite-skill-ephemus-lanterne-ames-v1",
+      "path": "assets/library/capture/sprites/skills/ephemus/ephemus-lanterne-ames.webp",
+      "sha256": "821bffdf4d1964b60c67050a4ac3a1cd820db6841350d550bc4626e6070e1d4f"
+    },
+    {
+      "id": "pack:capture:icon-skill-ephemus-danse-mille-ames-v1",
+      "path": "assets/library/capture/icons/skills/ephemus/ephemus-danse-mille-ames.webp",
+      "sha256": "776977ac65509b8e8fa6e4eac936c15388af30cb894aaa3c820a955990cd7354"
+    },
+    {
+      "id": "pack:capture:sprite-skill-ephemus-danse-mille-ames-v1",
+      "path": "assets/library/capture/sprites/skills/ephemus/ephemus-danse-mille-ames.webp",
+      "sha256": "017b2461502111453974c3b17f767ef59a43ca6317268ccc91a756631bfc5a0e"
+    }
+  ]
+}
