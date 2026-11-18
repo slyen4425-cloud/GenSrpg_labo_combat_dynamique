@@ -1,0 +1,116 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "ephemus-battement-limbes",
+    "description": "10 dégâts Esprit et ralentissement de 30 % pendant 3 s. Si la cible porte Voile, elle subit aussi 1,5 s de Silence.",
+    "requiredLevel": 5,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "ephemus-battement-limbes",
+      "name": "Battement des limbes",
+      "category": "offensive",
+      "form": "beam",
+      "loadoutSlot": "standard",
+      "element": "spirit",
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 600,
+      "travelMs": 250,
+      "recoveryMs": 250,
+      "cooldownMs": 12000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "dodgeable": true,
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "stunMs": 0,
+        "interruptsPreparation": false,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 10,
+          "channel": "spirit"
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "ephemus-limbes-ralentissement",
+            "kind": "approach_time_modifier",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 3000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "modifierPct": 30
+          }
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "ephemus-limbes-silence",
+            "kind": "silence",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 1500,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": []
+          },
+          "condition": {
+            "type": "marker",
+            "value": "ephemus-voile",
+            "minimum": 1
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:ephemus-battement-limbes",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "ephemus-battement-limbes",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-ephemus-battement-limbes-v1"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-skill-ephemus-battement-limbes-v1",
+          "displayScale": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

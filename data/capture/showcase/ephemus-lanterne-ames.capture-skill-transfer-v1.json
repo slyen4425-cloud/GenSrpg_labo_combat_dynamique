@@ -1,0 +1,122 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "ephemus-lanterne-ames",
+    "description": "Zone spectrale pendant 5 s : 4 dégâts Esprit toutes les 0,5 s. Les adversaires dans la zone subissent 20 % de dégâts Esprit supplémentaires. Coût 6, recharge 30 s.",
+    "requiredLevel": 15,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "ephemus-lanterne-ames",
+      "name": "Lanterne des âmes",
+      "category": "offensive",
+      "form": "area",
+      "loadoutSlot": "standard",
+      "element": "spirit",
+      "approachMode": "none",
+      "energyCost": 6,
+      "preparationMs": 750,
+      "travelMs": 0,
+      "recoveryMs": 250,
+      "cooldownMs": 30000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "dodgeable": true,
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "stunMs": 0,
+        "interruptsPreparation": false,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "persistent_zone",
+          "targetScope": "target",
+          "zoneId": "ephemus-lanterne-vulnerabilite",
+          "radius": "medium",
+          "durationMs": 5000,
+          "tickIntervalMs": 500,
+          "reactivation": "refresh",
+          "maxActivations": 1,
+          "radiusGrowthSteps": 0,
+          "tickEffect": {
+            "kind": "apply_status",
+            "targetScope": "all_enemies",
+            "status": {
+              "id": "ephemus-lanterne-fragilite-esprit",
+              "kind": "incoming_damage_channel_modifier",
+              "polarity": "detrimental",
+              "durationModel": "time_ms",
+              "durationMs": 5001,
+              "stacking": "refresh",
+              "maxStacks": 1,
+              "tags": [],
+              "channel": "spirit",
+              "modifierPct": 20
+            }
+          },
+          "statusBehavior": "while_inside"
+        },
+        {
+          "kind": "persistent_zone",
+          "targetScope": "target",
+          "zoneId": "ephemus-lanterne-degats",
+          "radius": "medium",
+          "durationMs": 5000,
+          "tickIntervalMs": 500,
+          "reactivation": "refresh",
+          "maxActivations": 1,
+          "radiusGrowthSteps": 0,
+          "tickEffect": {
+            "kind": "damage",
+            "targetScope": "all_enemies",
+            "amount": 4,
+            "channel": "spirit"
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:ephemus-lanterne-ames",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "ephemus-lanterne-ames",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-ephemus-lanterne-ames-v1"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-skill-ephemus-lanterne-ames-v1",
+          "displayScale": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "durationMs": 5000
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

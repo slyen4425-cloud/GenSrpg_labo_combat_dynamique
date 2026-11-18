@@ -1,0 +1,111 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "ephemus-chrysalide-fantome",
+    "description": "Devient immatériel pendant 10 s. À l'expiration, une décharge spectrale inflige 12 dégâts Esprit aux ennemis. Coût 5 énergie, recharge 30 s.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "ephemus-chrysalide-fantome",
+      "name": "Chrysalide fantôme",
+      "category": "defensive",
+      "form": "self",
+      "loadoutSlot": "standard",
+      "element": "spirit",
+      "approachMode": "none",
+      "energyCost": 5,
+      "preparationMs": 600,
+      "travelMs": 0,
+      "recoveryMs": 250,
+      "cooldownMs": 30000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "dodgeable": false,
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "stunMs": 0,
+        "interruptsPreparation": false,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "id": "ephemus-chrysalide-intangible",
+            "kind": "immunity",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 10000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "domains": [
+              "damage",
+              "negative_status"
+            ],
+            "intangible": true
+          }
+        },
+        {
+          "kind": "scheduled_effect",
+          "targetScope": "target",
+          "trigger": {
+            "type": "after_ms",
+            "delayMs": 10000
+          },
+          "effects": [
+            {
+              "kind": "damage",
+              "targetScope": "all_enemies",
+              "amount": 12,
+              "channel": "spirit"
+            }
+          ]
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:ephemus-chrysalide-fantome",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "ephemus-chrysalide-fantome",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-ephemus-chrysalide-fantome-v1"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-skill-ephemus-chrysalide-fantome-v1",
+          "displayScale": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

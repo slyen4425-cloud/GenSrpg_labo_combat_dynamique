@@ -108,6 +108,8 @@ export function computeCombatDamageV1({
   const resistancePct =
     channelPercentV1(target.resistancePctByChannel, canonicalChannel) +
     channelPercentV1(targetStatus.resistancePctByChannel, canonicalChannel);
+  const incomingDamagePct =
+    channelPercentV1(targetStatus.incomingDamagePctByChannel, canonicalChannel);
 
   // A guard is an active, charged, per-creature reaction. Read the same
   // combat-clock history as Dodge, with no UI or alternate damage owner.
@@ -160,6 +162,7 @@ export function computeCombatDamageV1({
   const rawDamage =
     boosted *
     Math.max(0, 1 - effectiveResistancePct / 100) *
+    Math.max(0, 1 + incomingDamagePct / 100) *
     Math.max(
       0,
       1 - effectiveDamageReductionPct / 100
@@ -173,6 +176,7 @@ export function computeCombatDamageV1({
     damageBonusPct,
     outgoingDamagePct,
     resistancePct,
+    incomingDamagePct,
     damageReductionPct,
     damage
   });

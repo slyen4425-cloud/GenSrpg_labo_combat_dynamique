@@ -1,3 +1,35 @@
+## 2026-11-18 — Éphémus : intégration des compétences après Veldra (fusion des historiques, sans doublon)
+- Base officielle unique : main@a04861d93432b080d09b08949fa900f6543b758c ; checkpoint START `checkpoint/lab-start-ephemus-main-integration-20261118` ; PR #334 conserve son historique.
+- Réconciliation additive avec la PR #336 Veldra : les changements Veldra restent inchangés, y compris cache canonique v67 et son jeu de tests ; les cinq compétences, effets natifs, visuels et tests Éphémus sont ajoutés via la PR #334.
+- Tests : CI complète sur SHA exact après fusion des bases et sur `main` ; ne jamais déclarer GREEN en cas de navigateur rouge. Source des visuels unique `global-assets` ; aucune PWA, aucune autre créature, aucune sauvegarde modifiée.
+
+## 2026-11-18 — Éphémus : raccord visuels officiels dans cinq compétences (lot isolé)
+
+- **START** : branche Combat PR #334 \`work/lab-ephemus-five-skills-20261118@7c57272e04c9521dd1d11f845afcad89e5808604\`; checkpoint \`checkpoint/lab-start-ephemus-skill-media-20261118\`; travail distinct \`work/lab-ephemus-skill-media-20261118\`, sans modifier la branche de l'autre agent.
+- **Source visuelle** : deux ZIP auteur du 18/11 déposés dans \`global-assets/_incoming/\`, importés par un lot propriétaire distinct. Dix assetIds futurs vérifiés, cinq icônes + cinq animations 16 frames, sans duplication dans Combat.
+- **Périmètre** : modifier uniquement les champs \`draft.presentation.visual\` des cinq compétences Éphémus, cache de catalogue global en cas de publication réelle, tests sentinelles, documentation. Les cinq \`definition\`, données auteur, autres créatures, moteurs, sauvegardes, audio, Exploration, PWA, Dungeon sont intacts.
+- **Gates** : attendre publication \`global-assets\` de dix vrais WebP; test natif de tous les visuels et capacités; CI cinq jobs sur SHA exact, navigateur éditeur/combat PC+mobile, checkpoint GREEN, puis faire entrer ce lot dans PR #334 et publier sur \`main\` uniquement après validation. Aucun GREEN présumé.
+
+### 2026-11-18 — Éphémus / précision chronologique complémentaire
+- Premier passage CI de la correction : le scénario initial obtient les 48 dégâts exacts à la précision flottante près (48.000000000000114) ; le test utilise désormais une tolérance `<1e-9` sans relâcher le nombre de tics ni le total.
+- Le passage en avance groupée montrait également que le cast réel commence à son instant d'impact, et qu'une aura d'abord projetée à l'extrémité d'un grand pas ne peut pas agir sur les tics antérieurs. Une projection native datée dans le futur est désormais réinitialisée puis appliquée au timestamp du tic exact via Status Runtime, sans modifier les autres canaux ni la durée de zone.
+- Les cinq tests comparent le cumul jusqu'à l'expiration **effective**, déterminée depuis les zones (pas depuis le clic), pour vérifier les 10 pulses à 0,5s même sur un saut d'horloge complet.
+
+## 2026-11-18 — Éphémus Lanterne : correctif temps de zone / 10 tics
+- Diagnostic CI PR #334: les 10 pulses faisaient 40 au lieu de 48 lorsque l'avance horloge atteignait l'expiration, car l'aura +20% Esprit était retirée avant la résolution rétroactive des pulses (préparation des départs et horloge de statuts).
+- Correctif au propriétaire unique `persistent-zone-runtime-v1`: pour les seules vulnérabilités de canal liées à une zone `while_inside`, réconcilier le **même statut natif** à l'instant exact de chaque tick d'une zone de dégâts, jusqu'au dernier tick inclus. Conserver les résistances natives, la portée et l'autorité dégâts; retirer aussitôt toute vulnérabilité hors zone, et à l'expiration par l'ancienne routine de nettoyage.
+- Régression déterministe en pas 5000ms, 6000ms, 2500+2500ms, 500+4500ms et 500+1000+4500ms; attendre 48 dégâts Esprit et aucun statut résiduel. Aucune modification de sprites ou d'icônes. Checkpoint avant correction : `checkpoint/lab-ephemus-lanterne-tick-before-fix-20261118`. Gate CI 5/5 sur SHA exact avant changement de `main`.
+
+## 2026-11-18 — Éphémus : cinq compétences, Voile et mécaniques natives (PR isolée)
+- Base `main@1f73062fca27cb5eb10cfebf3784d7443127ec1f`, checkpoint `checkpoint/lab-start-ephemus-five-skills-20261118`. Source unique officielle `Ephemus`, aucun changement à sa morphologie/statistiques/rareté/images.
+- 5 compétences originales aux niveaux 1/5/10/15/20 et loadout actif, nouvelles définitions uniquement dans `data/capture/showcase/` + index officiel.
+- Poussière : 8 Esprit + marqueur natif exact `ephemus-voile` et -20% dégâts sortants 4s. Battement : 10 Esprit + ralentissement d'approche 30% 3s, Silence 1,5s conditionné par CE marqueur, pas par un autre debuff.
+- Chrysalide : immunité native immatérielle 10s + effet différé natif 12 Esprit `all_enemies` précisément à 10s, 5 énergie, CD 30s.
+- Lanterne : deux composantes de **la même** zone ciblée (IDs indépendants, même centre et rayon), 5s, 500ms, 4 dégâts Esprit par tic + vulnérabilité de canal Esprit +20% uniquement pour occupants, CD30s/6 énergie. Nouveau statut générique `incoming_damage_channel_modifier` pour éviter de booster les dégâts d'autres éléments.
+- Danse : canalisation native 6 tics de 10 Esprit/500ms, bonus +40 au dernier tic si `ephemus-voile` encore actif, ralentissement 30%; interruption standard du canal conservée.
+- Icônes originales PNG et spritesheets artistiques générées en fichiers utilisateur ZIP ; le référentiel `global-assets` est un propriétaire d'assets distinct. Pour maintenir les liens runtime valides sans injecter de média hors registry, la première intégration pointe vers cinq icônes existantes de la bibliothèque ; les nouvelles icônes auteur restent livrées séparément et non publiées sur le catalogue tant qu'une ingestion binaire canonique n'est pas faite.
+- Tests à exiger : cinq captures normalisées, marqueur Voile conditionnel, 10s immatériel et explosion native, 10 tics de zone, vulnérabilité Esprit seulement, 60/100 ultime, régressions CI + navigateur sur SHA exact avant publication. Aucun chantier PWA.
+
 ## 2026-11-18 — Veldra : cinq icônes et FX officiels, raccordement exclusivement visuel (WORK / NON GREEN)
 - START `main@1f73062fca27cb5eb10cfebf3784d7443127ec1f`, checkpoint `checkpoint/lab-start-veldra-five-visuals-20261118`, branche de travail `work/lab-veldra-five-visuals-20261118`.
 - Périmètre, domaines protégés, propriétaire et tests : `docs/LAB_VELDRA_FIVE_VISUAL_BINDINGS_2026_11_18.md`. Dépendance aux dix médias `global-assets` publiés; pas de modification moteur/gameplay/PWA.

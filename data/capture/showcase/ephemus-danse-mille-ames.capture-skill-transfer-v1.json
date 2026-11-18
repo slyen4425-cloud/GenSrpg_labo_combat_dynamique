@@ -1,0 +1,120 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "ephemus-danse-mille-ames",
+    "description": "Canalise 60 dégâts Esprit sur 3 s (6 tics de 10). Ralentit la cible pendant 3 s. Au dernier tic : +40 dégâts si la cible porte Voile.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "ephemus-danse-mille-ames",
+      "name": "Danse des mille âmes",
+      "category": "offensive",
+      "form": "beam",
+      "loadoutSlot": "ultimate",
+      "element": "spirit",
+      "approachMode": "none",
+      "energyCost": 10,
+      "preparationMs": 1500,
+      "travelMs": 0,
+      "recoveryMs": 250,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "dodgeable": true,
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "stunMs": 0,
+        "interruptsPreparation": false,
+        "tags": []
+      },
+      "channeling": {
+        "tickIntervalMs": 500,
+        "maxDurationMs": 3000,
+        "maxTicks": 6,
+        "energyCostPerTick": 0,
+        "stopOnDamage": true,
+        "stopOnStun": true,
+        "stopOnSilence": true,
+        "effects": [
+          {
+            "kind": "damage",
+            "targetScope": "target",
+            "amount": 10,
+            "channel": "spirit"
+          },
+          {
+            "kind": "apply_status",
+            "targetScope": "target",
+            "status": {
+              "id": "ephemus-danse-ralentissement",
+              "kind": "approach_time_modifier",
+              "polarity": "detrimental",
+              "durationModel": "time_ms",
+              "durationMs": 3000,
+              "stacking": "refresh",
+              "maxStacks": 1,
+              "tags": [],
+              "modifierPct": 30
+            }
+          }
+        ],
+        "finalTickEffects": [
+          {
+            "kind": "damage",
+            "targetScope": "target",
+            "amount": 40,
+            "channel": "spirit",
+            "condition": {
+              "type": "marker",
+              "value": "ephemus-voile",
+              "minimum": 1
+            }
+          }
+        ]
+      }
+    },
+    "presentation": {
+      "id": "skill:ephemus-danse-mille-ames",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "ephemus-danse-mille-ames",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-ephemus-danse-mille-ames-v1"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-skill-ephemus-danse-mille-ames-v1",
+          "displayScale": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "durationMs": 3000
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

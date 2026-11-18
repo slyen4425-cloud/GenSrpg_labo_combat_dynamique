@@ -99,6 +99,11 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/veldra-egide-zenith.capture-skill-transfer-v1.json",
     "data/capture/showcase/veldra-rayon-cardinal.capture-skill-transfer-v1.json",
     "data/capture/showcase/veldra-releve-celeste.capture-skill-transfer-v1.json",
+    "data/capture/showcase/ephemus-poussiere-oubli.capture-skill-transfer-v1.json",
+    "data/capture/showcase/ephemus-battement-limbes.capture-skill-transfer-v1.json",
+    "data/capture/showcase/ephemus-chrysalide-fantome.capture-skill-transfer-v1.json",
+    "data/capture/showcase/ephemus-lanterne-ames.capture-skill-transfer-v1.json",
+    "data/capture/showcase/ephemus-danse-mille-ames.capture-skill-transfer-v1.json",
   ]);
 
 // Author-approved retirement from the ACTIVE Capture skill library.
