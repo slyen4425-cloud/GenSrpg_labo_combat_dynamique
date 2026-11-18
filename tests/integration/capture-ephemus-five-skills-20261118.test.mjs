@@ -86,18 +86,29 @@ test("Lanterne has two colocated native zones, 10 half-second ticks, and +20% sp
  assert.equal(a.snapshot().persistentZones.length,0);
  const hpAfter=a.snapshot().fighters.enemy.hp;
  // 5 s / 0.5 s = precisely ten pulses, each 4 Spirit with the 20% zone-only weakness.
- assert.equal(200-hpAfter,48,"Lanterne must deal exactly ten native ticks, not 9 or 11");
+ assert.ok(Math.abs((200-hpAfter)-48)<1e-9,"Lanterne must deal exactly ten native ticks: "+(200-hpAfter));
  a.advanceMs(1000);
  assert.equal(a.snapshot().fighters.enemy.hp,hpAfter);
  assert.equal(a.snapshot().fighters.enemy.statusEffects.some(x=>x.definition.kind==="incoming_damage_channel_modifier"),false);
 });
 test("Lanterne: expiry, batched frames and partial steps always give ten boosted native ticks, never a lingering vulnerability",()=>{
- for (const advances of [[5000],[6000],[2500,2500],[500,4500],[500,1000,4500]]) {
+ for (const mode of ["expiry","after-expiry","split","small-first","three-parts"]) {
   const a=session();
   assert.equal(a.useSkill({actorId:"ephemus",targetId:"enemy",skill:skills[3]}).ok,true);
+  const expiry=Math.max(...a.snapshot().persistentZones.map(x=>x.expiresAtMs));
+  const half=Math.floor(expiry/2);
+  // The zone begins at the native skill impact (which may be later than
+  // the click). Always advance to its actual expiration, not a guessed 5s.
+  const advances={
+   "expiry":[expiry],
+   "after-expiry":[expiry+1000],
+   "split":[half,expiry-half],
+   "small-first":[500,expiry-500],
+   "three-parts":[500,1000,expiry-1500]
+  }[mode];
   for (const delta of advances) a.advanceMs(delta);
-  assert.equal(a.snapshot().fighters.enemy.hp,152,
-   "10 x (4 Spirit +20%) across "+advances.join("+")+" ms");
+  assert.ok(Math.abs(a.snapshot().fighters.enemy.hp-152)<1e-9,
+   "10 x (4 Spirit +20%) across "+mode+"="+advances.join("+")+" ms: HP="+a.snapshot().fighters.enemy.hp);
   assert.equal(a.snapshot().persistentZones.length,0);
   assert.equal(a.snapshot().fighters.enemy.statusEffects.some(
     x=>x.definition.kind==="incoming_damage_channel_modifier"),false,

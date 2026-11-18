@@ -600,7 +600,16 @@ function reconcileBoundChannelStatusesAtZoneTickV1({
         })
       : [];
     const outside = Object.keys(nextState.fighters).filter(id => !inside.includes(id));
-    nextState = stripZoneBoundStatusV1(nextState, boundZone, outside);
+    // A coarse frame may have first projected the aura at the frame END.
+    // That projection cannot modify an older tick: its appliedAtMs is in
+    // the future. Replace it using the real tick's time, then retain the
+    // ordinary Status Runtime as the sole source of the damage modifier.
+    const projectedInFuture = inside.filter(targetId =>
+      nextState.fighters[targetId]?.statusEffects?.some(instance =>
+        instance.definition.id === zoneStatusIdV1(boundZone) &&
+        instance.appliedAtMs > atMs));
+    nextState = stripZoneBoundStatusV1(nextState, boundZone,
+      [...outside, ...projectedInFuture]);
     for (const targetActorId of inside) {
       nextState = applyZoneStatusV1({
         state: nextState, zone: boundZone,

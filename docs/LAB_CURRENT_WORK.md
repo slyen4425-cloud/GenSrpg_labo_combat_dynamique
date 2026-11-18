@@ -1,3 +1,8 @@
+### 2026-11-18 — Éphémus / précision chronologique complémentaire
+- Premier passage CI de la correction : le scénario initial obtient les 48 dégâts exacts à la précision flottante près (48.000000000000114) ; le test utilise désormais une tolérance `<1e-9` sans relâcher le nombre de tics ni le total.
+- Le passage en avance groupée montrait également que le cast réel commence à son instant d'impact, et qu'une aura d'abord projetée à l'extrémité d'un grand pas ne peut pas agir sur les tics antérieurs. Une projection native datée dans le futur est désormais réinitialisée puis appliquée au timestamp du tic exact via Status Runtime, sans modifier les autres canaux ni la durée de zone.
+- Les cinq tests comparent le cumul jusqu'à l'expiration **effective**, déterminée depuis les zones (pas depuis le clic), pour vérifier les 10 pulses à 0,5s même sur un saut d'horloge complet.
+
 ## 2026-11-18 — Éphémus Lanterne : correctif temps de zone / 10 tics
 - Diagnostic CI PR #334: les 10 pulses faisaient 40 au lieu de 48 lorsque l'avance horloge atteignait l'expiration, car l'aura +20% Esprit était retirée avant la résolution rétroactive des pulses (préparation des départs et horloge de statuts).
 - Correctif au propriétaire unique `persistent-zone-runtime-v1`: pour les seules vulnérabilités de canal liées à une zone `while_inside`, réconcilier le **même statut natif** à l'instant exact de chaque tick d'une zone de dégâts, jusqu'au dernier tick inclus. Conserver les résistances natives, la portée et l'autorité dégâts; retirer aussitôt toute vulnérabilité hors zone, et à l'expiration par l'ancienne routine de nettoyage.
