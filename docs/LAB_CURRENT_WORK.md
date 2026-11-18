@@ -1,3 +1,8 @@
+## 2026-11-18 — Veldra : cinq icônes et FX officiels, raccordement exclusivement visuel (WORK / NON GREEN)
+- START `main@1f73062fca27cb5eb10cfebf3784d7443127ec1f`, checkpoint `checkpoint/lab-start-veldra-five-visuals-20261118`, branche de travail `work/lab-veldra-five-visuals-20261118`.
+- Périmètre, domaines protégés, propriétaire et tests : `docs/LAB_VELDRA_FIVE_VISUAL_BINDINGS_2026_11_18.md`. Dépendance aux dix médias `global-assets` publiés; pas de modification moteur/gameplay/PWA.
+- GREEN seulement après vraie résolution des assets, 5/5 CI SHA exact, navigateur, checkpoint et Pages main.
+
 ## 2026-11-17 — Vyrâme : raccordement visuel depuis le nouvel export auteur (lot isolé)
 - Base unique Labo Combat `main@1669c744135762bf41ac6a4a7b3efc4c6ccd2af9`, checkpoint `checkpoint/lab-start-vyrame-v9-animation-author-20261117` ; branche courte `work/lab-vyrame-v9-visual-author-20261117`. Charte, roadmap et politique de checkpoint consultées ; publication PR Bestiaire #332 fusionnée séparément.
 - Fichier fourni par l'auteur : `gensrpg-capture-creature-crea_vyrame(2).json` avec `schema=capture-creature-transfer-v1`, `draft.id=crea_vyrame`, `presentation.version=9`. Seule la configuration de l'apparence diffère du Showcase officiel : `viewOverrides.opponent.displayScale 1.1→0.9` et animation face/dos pour course et attaque, avec réglages de lecture et d'échelle par vue.

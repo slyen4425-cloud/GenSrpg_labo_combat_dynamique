@@ -93,19 +93,20 @@
       "subjectId": "veldra-plume-solaire",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-prisme-d-aurore-01"
+          "assetId": "pack:capture:icon-skill-veldra-plume-solaire-v1"
         },
         "travel": {
-          "assetId": "pack:capture:sprite-projectile-light-01",
+          "assetId": "pack:capture:sprite-skill-veldra-plume-solaire-v1",
           "displayScale": 1,
           "attachment": "trajectory",
           "anchor": null,
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "travel-start",
-          "playbackMode": "loop",
+          "playbackMode": "once",
           "rotationDeg": 0,
-          "opacity": 1
+          "opacity": 1,
+          "durationMs": 500
         }
       },
       "audio": {},
