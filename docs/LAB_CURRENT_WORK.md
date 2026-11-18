@@ -1,3 +1,12 @@
+## 2026-11-18 — Éphémus : finalisation des zones visibles, canalisation et signal IMMATERIEL
+- **Point de reprise unique** : `main@907b8f0ba750f60f2aa324b69738a46f1ad194c6` checkpoint `checkpoint/lab-start-ephemus-fx-reconcile-20261118`.
+- **Origine auteur protégée** : `work/lab-ephemus-fx-intangible-20261118@3faf3d4836b86afc53fa4cd94e09cdf45a2111c9` (historique 17 commits préservé comme deuxième parent du commit de réconciliation). Ne pas modifier cette branche et conserver ses tests RED, corrections, données/IDs et doc exactes.
+- **Cible temporaire unique** : `work/lab-ephemus-fx-reconcile-20261118`. Raccorder le seul lot Éphémus sur le `main` devenu GREEN après PR #339, sans écraser les cinq compétences de Veldra, ni le test Chromium réparé.
+- **Périmètre strict** : 12 fichiers du lot FX/IMMATERIEL Éphémus listés dans `docs/LAB_EPHEMUS_VISIBLE_FX_IMMATERIAL_2026_11_18.md`, plus le présent journal. Tous les autres domaines, assets, PWA, sauvegardes et travaux d'autres agents protégés.
+- **Gates** : CI 5/5 sur SHA exact ; vrai chemin visuel Lanterne (aura 5s, 10 tics), Danse (canal 3s/6 tics) et étiquette IMMATERIEL sans fausse esquive ; navigateur Chromium PC/mobile, checkpoint GREEN ; fusion non forcée ; CI `main` et GitHub Pages SHA exact, preuves publiées. Pas de GREEN anticipé.
+
+---
+
 ## 2026-11-18 — Chromium mini-preview : cycle de vie / arrêt de session (lot CI isolé)
 - START : `main@57d2bfc5e6e3428fefe148b80ce963175239abb9`, checkpoint `checkpoint/lab-start-mini-preview-lifecycle-20261118` ; WORK temporaire `work/lab-mini-preview-lifecycle-20261118`.
 - Constat : `expanding-wave-mini-preview-smoke.mjs` a atteint le timeout 40 s dans la CI main `44366207061` ; même test vert sur la PR Veldra `44366128422`. Ne pas déclarer GREEN.

@@ -101,10 +101,10 @@
         "icon": {
           "assetId": "pack:capture:icon-skill-ephemus-lanterne-ames-v1"
         },
-        "impact": {
+        "aura": {
           "assetId": "pack:capture:sprite-skill-ephemus-lanterne-ames-v1",
           "displayScale": 1,
-          "attachment": "fixed-target",
+          "attachment": "fixed-source",
           "anchor": null,
           "offsetX": 0,
           "offsetY": 0,
@@ -112,7 +112,10 @@
           "playbackMode": "loop",
           "rotationDeg": 0,
           "opacity": 1,
-          "durationMs": 5000
+          "layerByView": {
+            "player": "behind",
+            "opponent": "behind"
+          }
         }
       },
       "audio": {},

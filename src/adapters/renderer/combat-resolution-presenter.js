@@ -708,11 +708,8 @@ export function createCombatResolutionPresenter({
     }
 
     let impactAudioPlayed = false;
-    for (const fxPlan of planSkillOutcomeFx({
-      resolution,
-      actorSlot,
-      targetSlot
-    })) {
+    const outcomeFx = planSkillOutcomeFx({ resolution, actorSlot, targetSlot });
+    for (const fxPlan of outcomeFx) {
       fx?.play(fxPlan);
 
       if (
@@ -746,6 +743,12 @@ export function createCombatResolutionPresenter({
             item.type === "hit" &&
             item.reflected !== true
         );
+
+        // Do not play a hit/recoil animation when native protection proved
+        // the strike never touched an intangible creature.
+        if (outcomeFx.some(plan => plan.type === "miss" && plan.label === "IMMATÉRIEL")) {
+          break;
+        }
 
         if (
           resolution.persistentZoneOnly === true

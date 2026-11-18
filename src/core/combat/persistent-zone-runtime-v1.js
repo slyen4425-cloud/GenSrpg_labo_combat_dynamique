@@ -435,6 +435,8 @@ function relationInRadius({
   battleFormat,
   zoneId,
   sourceActorId,
+  zoneTargetId = null,
+  zoneTargetScope = null,
   candidateId,
   radius,
   atMs,
@@ -450,7 +452,10 @@ function relationInRadius({
 
   const measured = visiblePersistentZoneRelationV1({ sample: zoneSpatialContext?.visibleZones, zoneId, sourceActorId, radius, candidateId });
   if (measured !== null) return measured;
-  if (candidateId === sourceActorId) {
+  if (candidateId === sourceActorId ||
+      (zoneTargetScope === "target" && candidateId === zoneTargetId)) {
+    // When no rendered bounds are available, a single-target field must
+    // still cover the fighter it was explicitly cast on at any legal range.
     return true;
   }
 
@@ -536,6 +541,8 @@ function affectedIdsForZone({
         battleFormat,
         sourceActorId:
           zone.sourceActorId,
+        zoneTargetId: zone.targetId,
+        zoneTargetScope: zone.targetScope,
         candidateId,
         radius: zone.radius,
         atMs,
@@ -760,6 +767,7 @@ function approachEntryEventsForZone({
     if (contact.approachMode !== "ground" || contact.targetId !== zone.sourceActorId ||
         !candidates.includes(contact.actorId) || zone.expiresAtMs <= endMs) continue;
     if (relationInRadius({ state, battleFormat, sourceActorId: zone.sourceActorId,
+      zoneTargetId: zone.targetId, zoneTargetScope: zone.targetScope,
       candidateId: contact.actorId, radius: zone.radius, atMs: endMs, zoneSpatialContext })) continue;
     if (!events.some(event => event.targetActorId === contact.actorId)) {
       events.push(Object.freeze({ type: "entry", atMs: endMs, targetActorId: contact.actorId }));
