@@ -93,8 +93,10 @@ test("single canonical preset hydration uses policy once; 1v1 and 2v2 audio stil
   assert.match(adapter, /audio: binding\.audio/);
   assert.match(demo, /getCreatureAudioFor\(slotKey\)/);
   assert.match(audio, /presentationForCreature\(actorSlot/);
-  assert.match(entry, /capture-editor-human-v2\.js\?v=[^"\n]*sound-style-publish-20261118/);
-  assert.match(html, /capture-editor-v2\.js\?v=[^"\n]*sound-style-publish-20261118/);
+  const editorRevision = entry.match(/capture-editor-human-v2\.js\?v=([^"\n]+)/)?.[1];
+  const htmlRevision = html.match(/capture-editor-v2\.js\?v=([^"\n]+)/)?.[1];
+  assert.ok(editorRevision && htmlRevision, "one existing module revision chain");
+  assert.equal(htmlRevision, editorRevision, "HTML and editor entry carry exactly the same version");
   for (const filename of CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1) {
     assert.doesNotMatch(filename, /audio.*\.json$/, "no separate authored audio data file");
   }

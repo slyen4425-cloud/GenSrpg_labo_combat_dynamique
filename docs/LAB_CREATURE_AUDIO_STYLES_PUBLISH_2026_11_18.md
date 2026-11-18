@@ -16,3 +16,6 @@ PR #342 directly changed seven author-exported Showcase JSON creature transfers.
 - Existing author-immutability tests must pass unmodified.
 - New test verifies all 22 canonical IDs, eight approved assignments, exact preservation of Foudrillon, same seven reassigned without modifying other fields, three packaged sound IDs tagged for movement, real editor hydration linkage and same 1v1/2v2 runtime owner.
 - Current start: `main@49bc9a4282d9b7978fe0d1dd09056fa94af9a3ed` (PR #341 merged). `checkpoint/lab-start-creature-audio-styles-publish-20261118`, temporary `work/lab-creature-audio-styles-publish-20261118`. PR #342 original remains as failed RED history; publication through new PR only after 5/5 CI and browser green on exact SHA, checkpoint, protected merge, then main CI/Pages exact SHA.
+
+## Cache compatibility
+HTML, entry and editor retain their preexisting one ESM revision, as required by five historical chain sentinels. The new audio preset module is served at its new unique URL. Check the live Pages served SHA rather than replacing legacy revision tokens piecemeal.
