@@ -103,7 +103,7 @@
       "subjectId": "veldra-rayon-cardinal",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-holy-beam-01"
+          "assetId": "pack:capture:icon-skill-veldra-rayon-cardinal-v1"
         },
         "beamStart": {
           "assetId": "pack:capture:sprite-electric-yellow-beam-cast-01",
@@ -130,17 +130,17 @@
           "opacity": 1
         },
         "impact": {
-          "assetId": "pack:capture:sprite-electric-yellow-beam-impact-01",
+          "assetId": "pack:capture:sprite-skill-veldra-rayon-cardinal-v1",
           "displayScale": 1,
           "attachment": "fixed-target",
           "anchor": null,
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "impact",
-          "playbackMode": "once",
+          "playbackMode": "loop",
           "rotationDeg": 0,
           "opacity": 1,
-          "durationMs": 500
+          "durationMs": 2000
         }
       },
       "audio": {},
