@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 452,
-    "icons": 202,
-    "sprites": 218,
+    "assets": 465,
+    "icons": 207,
+    "sprites": 226,
     "fx": 2,
     "portraits": 25,
     "backgrounds": 5,
@@ -15134,6 +15134,471 @@
         "format": "sprite-strip",
         "frameCount": 16,
         "frameMs": 100
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-veuve-jaune-fil-foudroyant-v1",
+      "label": "Veuve jaune — fil foudroyant",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "veuve-jaune",
+        "electric",
+        "web",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Veuve jaune V2 validée le 2026-11-18",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/veuve_jaune/fil-foudroyant.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-veuve-jaune-toile-paralysante-v1",
+      "label": "Veuve jaune — toile paralysante",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "veuve-jaune",
+        "electric",
+        "web",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Veuve jaune V2 validée le 2026-11-18",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/veuve_jaune/toile-paralysante.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-veuve-jaune-morsure-neuroelectrique-v1",
+      "label": "Veuve jaune — morsure neuroelectrique",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "veuve-jaune",
+        "electric",
+        "web",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Veuve jaune V2 validée le 2026-11-18",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/veuve_jaune/morsure-neuroelectrique.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-veuve-jaune-emprise-de-soie-v1",
+      "label": "Veuve jaune — emprise de soie",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "veuve-jaune",
+        "electric",
+        "web",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Veuve jaune V2 validée le 2026-11-18",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/veuve_jaune/emprise-de-soie.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-veuve-jaune-domaine-de-la-veuve-v1",
+      "label": "Veuve jaune — domaine de la veuve",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "veuve-jaune",
+        "electric",
+        "web",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Veuve jaune V2 validée le 2026-11-18",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/veuve_jaune/domaine-de-la-veuve.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-veuve-jaune-fil-foudroyant-projectile-v1",
+      "label": "Veuve jaune — fil foudroyant projectile (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "veuve-jaune",
+        "electric",
+        "web",
+        "sprite",
+        "animated",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Veuve jaune V2 validée le 2026-11-18",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/veuve_jaune/fil-foudroyant-projectile.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 8,
+        "frameMs": 80,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-veuve-jaune-fil-foudroyant-impact-v1",
+      "label": "Veuve jaune — fil foudroyant impact (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "veuve-jaune",
+        "electric",
+        "web",
+        "sprite",
+        "animated",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Veuve jaune V2 validée le 2026-11-18",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/veuve_jaune/fil-foudroyant-impact.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 8,
+        "frameMs": 80,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-veuve-jaune-toile-paralysante-mur-apparition-v1",
+      "label": "Veuve jaune — toile paralysante mur apparition (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "veuve-jaune",
+        "electric",
+        "web",
+        "sprite",
+        "animated",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Veuve jaune V2 validée le 2026-11-18",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/veuve_jaune/toile-paralysante-mur-apparition.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 8,
+        "frameMs": 115,
+        "playbackMode": "once",
+        "holdLastFrame": true
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-veuve-jaune-toile-paralysante-mur-boucle-v1",
+      "label": "Veuve jaune — toile paralysante mur boucle (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "veuve-jaune",
+        "electric",
+        "web",
+        "sprite",
+        "animated",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Veuve jaune V2 validée le 2026-11-18",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/veuve_jaune/toile-paralysante-mur-boucle.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 8,
+        "frameMs": 150,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-veuve-jaune-morsure-neuroelectrique-impact-v1",
+      "label": "Veuve jaune — morsure neuroelectrique impact (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "veuve-jaune",
+        "electric",
+        "web",
+        "sprite",
+        "animated",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Veuve jaune V2 validée le 2026-11-18",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/veuve_jaune/morsure-neuroelectrique-impact.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 8,
+        "frameMs": 80,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-veuve-jaune-emprise-de-soie-projectile-v1",
+      "label": "Veuve jaune — emprise de soie projectile (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "veuve-jaune",
+        "electric",
+        "web",
+        "sprite",
+        "animated",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Veuve jaune V2 validée le 2026-11-18",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/veuve_jaune/emprise-de-soie-projectile.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 8,
+        "frameMs": 95,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-veuve-jaune-emprise-de-soie-entrave-sur-cible-v1",
+      "label": "Veuve jaune — emprise de soie entrave sur cible (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "veuve-jaune",
+        "electric",
+        "web",
+        "sprite",
+        "animated",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Veuve jaune V2 validée le 2026-11-18",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/veuve_jaune/emprise-de-soie-entrave-sur-cible.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 8,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-veuve-jaune-domaine-de-la-veuve-impact-zone-v1",
+      "label": "Veuve jaune — domaine de la veuve impact zone (8 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "skill",
+        "veuve-jaune",
+        "electric",
+        "web",
+        "sprite",
+        "animated",
+        "author-approved"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Veuve jaune V2 validée le 2026-11-18",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/veuve_jaune/domaine-de-la-veuve-impact-zone.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 8,
+        "frameMs": 115,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [
