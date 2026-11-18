@@ -8,8 +8,16 @@ import { once } from "node:events";
 const root=process.cwd();
 const mime={".js":"text/javascript",".mjs":"text/javascript",".html":"text/html",".css":"text/css",".json":"application/json"};
 const probe=`<script>
-window.addEventListener("error",e=>document.body.dataset.previewSmoke="error:"+e.message);
-window.addEventListener("unhandledrejection",e=>document.body.dataset.previewSmoke="rejection:"+String(e.reason?.message??e.reason));
+// The preview already owns runtime/renderer disposal on pagehide.
+// Reuse it after checking the real native skill FX; no second game clock.
+const finishMiniPreviewSmoke=result=>{
+ document.body.dataset.previewSmoke=result;
+ window.dispatchEvent(new Event("pagehide"));
+ document.body.dataset.previewCleanup=
+   document.querySelector(".skill-fx--expanding-wave") ? "error:fx-still-active" : "pass";
+};
+window.addEventListener("error",e=>finishMiniPreviewSmoke("error:"+e.message));
+window.addEventListener("unhandledrejection",e=>finishMiniPreviewSmoke("rejection:"+String(e.reason?.message??e.reason)));
 window.addEventListener("DOMContentLoaded",()=>{
  setTimeout(()=>{
   try{
@@ -27,10 +35,10 @@ window.addEventListener("DOMContentLoaded",()=>{
      if(!status.textContent.includes("Dragon"))throw Error("no native action:"+status.textContent);
      const color=getComputedStyle(shell).getPropertyValue("--tactical-edge");
      if(!color.includes("0.52"))throw Error("author-approved growing wave ring changed:"+color);
-     document.body.dataset.previewSmoke="pass:four-models:player-cast:real-native-wave";
-    }catch(error){document.body.dataset.previewSmoke="error:"+error.message;}
+     finishMiniPreviewSmoke("pass:four-models:player-cast:real-native-wave");
+    }catch(error){finishMiniPreviewSmoke("error:"+error.message);}
    },150);
-  }catch(error){document.body.dataset.previewSmoke="error:"+error.message;}
+  }catch(error){finishMiniPreviewSmoke("error:"+error.message);}
  },80);
 });
 </script>`;
@@ -57,10 +65,11 @@ try{
  child.stdout.on("data",chunk=>stdout.push(chunk));child.stderr.on("data",chunk=>stderr.push(chunk));
  const code=await Promise.race([
   once(child,"close").then(([code])=>code),
-  new Promise((_,reject)=>{const timeout=setTimeout(()=>{child.kill("SIGKILL");reject(Error("mini preview timed out"));},40000);timeout.unref();child.once("close",()=>clearTimeout(timeout));})
+  new Promise((_,reject)=>{const timeout=setTimeout(()=>{const partial=Buffer.concat(stdout).toString("utf8").match(/data-preview-smoke="([^"]*)"/)?.[1]??"no DOM marker";const chrome=Buffer.concat(stderr).toString("utf8").slice(-800);child.kill("SIGKILL");reject(Error("mini preview timed out; DOM="+partial+"; Chrome="+chrome));},40000);timeout.unref();child.once("close",()=>clearTimeout(timeout));})
  ]);
  const dom=Buffer.concat(stdout).toString("utf8");
  const result=dom.match(/data-preview-smoke="([^"]*)"/)?.[1]??"no-result";
- if(code!==0||!result.startsWith("pass:"))throw Error("Real mobile preview Chromium: "+result+"\n"+Buffer.concat(stderr).toString("utf8").slice(-350));
+ const cleanup=dom.match(/data-preview-cleanup="([^"]*)"/)?.[1]??"missing";
+ if(code!==0||!result.startsWith("pass:")||cleanup!=="pass")throw Error("Real mobile preview Chromium: "+result+"; native cleanup="+cleanup+"\n"+Buffer.concat(stderr).toString("utf8").slice(-350));
  console.log("Real mini-preview bootstrap passed:",result);
 }finally{server.close();}

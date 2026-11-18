@@ -1,3 +1,12 @@
+## 2026-11-18 — Chromium mini-preview : cycle de vie / arrêt de session (lot CI isolé)
+- START : `main@57d2bfc5e6e3428fefe148b80ce963175239abb9`, checkpoint `checkpoint/lab-start-mini-preview-lifecycle-20261118` ; WORK temporaire `work/lab-mini-preview-lifecycle-20261118`.
+- Constat : `expanding-wave-mini-preview-smoke.mjs` a atteint le timeout 40 s dans la CI main `44366207061` ; même test vert sur la PR Veldra `44366128422`. Ne pas déclarer GREEN.
+- Seul propriétaire : le smoke navigateur, plus cette note et `docs/LAB_MINI_PREVIEW_LIFECYCLE_2026_11_18.md`. Moteur, UI site, assets, compétences Veldra/Éphémus, autres agents, PWA et sauvegardes protégés.
+- Test RED d'abord : exiger `data-preview-cleanup=pass` en plus de toutes les assertions réelles déjà présentes, sans modifier le timeout. Correctif : déclencher le `pagehide` déjà propriétaire du `disposeBattle` après vérification, diagnostiquer les attentes si elles persistent.
+- CI complète 5/5, navigateur, checkpoint GREEN, fusion unique main et preuve HTTPS sur SHA exact uniquement ensuite. L'échec distinct du smoke ombres 2.5D reste à traiter séparément.
+
+---
+
 ## 2026-11-18 — Veldra : deux JSON auteur, sons et dimensions des cinq compétences
 - START `main@f51010c525bc6ebba5d95795739e66d937291961` et checkpoint `checkpoint/lab-start-veldra-author-json-audio-scale-20261118`; WORK unique `work/lab-veldra-author-json-audio-scale-20261118`.
 - Égide et Plume : importer les paramètres fournis (Égide taille 2, +30 Y, 50 % opacité / Plume taille 1,5, trajet 700 ms, récupération 0 ms), conserver la compatibilité présentation V9 et l'identité de compétence. Sons auteur officiels validés.
