@@ -4,7 +4,7 @@
   "draft": {
     "schema": "capture-skill-editor-draft-v1",
     "id": "ephemus-battement-limbes",
-    "description": "10 dégâts Esprit et ralentissement de 30 % pendant 3 s. Si la cible porte Voile, elle subit aussi 1,5 s de Silence.",
+    "description": "Inflige 10 dégâts d'Esprit. Ralentit la cible pendant 20 s en augmentant de 30 % son temps d'approche. Si elle porte Voile, elle subit aussi 1,5 s de Silence.",
     "requiredLevel": 5,
     "usageScopes": [
       "capture",
@@ -59,7 +59,7 @@
             "kind": "approach_time_modifier",
             "polarity": "detrimental",
             "durationModel": "time_ms",
-            "durationMs": 3000,
+            "durationMs": 20000,
             "stacking": "refresh",
             "maxStacks": 1,
             "tags": [],
