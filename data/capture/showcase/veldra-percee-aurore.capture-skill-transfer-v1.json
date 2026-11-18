@@ -105,7 +105,7 @@
         },
         "impact": {
           "assetId": "pack:capture:sprite-skill-veldra-percee-aurore-v1",
-          "displayScale": 1,
+          "displayScale": 1.2,
           "attachment": "fixed-target",
           "anchor": null,
           "offsetX": 0,
@@ -117,7 +117,18 @@
           "durationMs": 850
         }
       },
-      "audio": {},
+      "audio": {
+        "cast": {
+          "assetId": "gensrpg:sound:genrpg-pack2-99a48e77",
+          "volume": 0.75,
+          "loop": false
+        },
+        "impact": {
+          "assetId": "gensrpg:sound:tower-6472dc3b",
+          "volume": 0.7,
+          "loop": false
+        }
+      },
       "statusVisuals": {}
     }
   }
