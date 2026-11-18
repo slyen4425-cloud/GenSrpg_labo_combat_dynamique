@@ -112,7 +112,10 @@
           "playbackMode": "loop",
           "rotationDeg": 0,
           "opacity": 1,
-          "layer": "behind"
+          "layerByView": {
+            "player": "behind",
+            "opponent": "behind"
+          }
         }
       },
       "audio": {},
