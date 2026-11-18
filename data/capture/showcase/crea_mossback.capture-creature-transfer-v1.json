@@ -259,8 +259,9 @@
       ],
       "audio": {
         "movement": {
-          "assetId": "gensrpg:sound:genrpg-pack2-f75d0d8f",
-          "volume": 1
+          "assetId": "gensrpg:sound:effect-01d545e2",
+          "volume": 1,
+          "mode": "once"
         }
       }
     }

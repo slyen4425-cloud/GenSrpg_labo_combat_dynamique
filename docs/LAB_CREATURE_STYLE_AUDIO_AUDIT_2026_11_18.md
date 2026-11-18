@@ -1,0 +1,17 @@
+# Audit des sons de créatures — cinq styles, 18 novembre 2026
+
+## Origine unique et périmètre
+- START `main@5fa4c25b25a5a1dfd215c5dfc4af510874e4945d`, checkpoint `checkpoint/lab-start-creature-style-audio-20261118`, WORK `work/lab-creature-style-audio-20261118`.
+- Audit exhaustif des 22 fiches Showcase publiées : 5 volants, 7 bipèdes, 3 quadrupèdes, 3 serpentins et 4 massifs. Avant travaux : seuls 5/22 avaient un champ `audio.movement` ; 17/22 sans son. Chacun des cinq autres canaux `attack/hit/ko/dodge/defense` était absent de ces 22 exports.
+- Le catalogue privé est la source des assets, `src/core/profiles/creature-style-audio-v1.js` est l'unique choix de repli par style, `src/ui/demo-app.js` est uniquement le raccord dans le propriétaire visuel existant, et `createDomCombatAudio` reste l'unique lecteur. Le moteur de combat, les collisions, les règles et les timings ne changent pas.
+- **Volant** : `gensrpg:sound:effect-79dd62d8`, « Wings, Insects, Moth, Wings Flap, Fly Close » — son déjà correctement attribué à Foudrillon. Ailevent avait un son du catalogue marqué `release` (« spelair t6conf ») et Dracendre utilisait un bruit de vêtement; l'auteur demande un son commun aux volants : les deux mouvements sont ajustés au son des ailes déjà établi.
+- **Bipède** : `gensrpg:sound:academie-61dd7cbf`, « extra leg academi step », mouvement réellement classé comme tel; Scar avait un son d'impact d'épée mal affecté au déplacement, corrigé.
+- **Quadrupède** : même pas officiel existant `gensrpg:sound:academie-61dd7cbf` par défaut, en attendant tout bruit de pattes spécifiquement validé ; cadence déjà gérée par le moteur.
+- **Serpentin** : `gensrpg:sound:xel-727b290b`, « Short, Dry 01 » (catégorie mouvement) choisi pour un glissement discret. Sélection provisoire à valider à l'oreille en jeu; aucune nouvelle ressource téléchargée.
+- **Massif** : `gensrpg:sound:effect-01d545e2`, « Fight, Bodyfall, Sand, Rolling Fall 02 » déjà classé mouvement et impact; Mossback utilisait à tort `genrpg-pack2-f75d0d8f` (« Impact earth1 »), reclassé dans sa catégorie d'impact sans changement des autres paramètres.
+- Les quatre corrections de champs auteur sont limitées à `draft.presentation.audio.movement` dans les fichiers Showcases Ailevent, Dracendre, Scar et Mossback ; les autres 18 fiches restent octet pour octet identiques et reçoivent uniquement la valeur dérivée par leur profil en combat. L'identité des créatures, leurs sprites, sauvegardes, stats et capacités restent inchangées.
+- Si une créature possède une référence mouvement explicite, elle a priorité sur le profil; cette règle empêche d'effacer les personnalisations futures. Une liste vide dans l'éditeur est désormais libellée « Son automatique du style » et non plus « Aucun ». Aucun mode automatique de nouvelle musique, aucun deuxième player, aucune duplication de MP3.
+- Audit des autres canaux : les sons `attack/hit/ko` ne doivent pas être confondus avec `SkillPresentationBinding` (`cast/release/impact`) et ne sont pas auto-ajoutés sans preuve de raccordement ; `dodge/defense` restent explicitement configurables via le lecteur existant. Le présent lot certifie uniquement le mouvement par style, pas des cris/KO inventés.
+
+## Gate et sécurité
+CI 5/5 et scénario réel Chromium, pas de succès simulé; checkpoint GREEN SHA exact, fusion sur main et Pages sur le même SHA uniquement ensuite. Pas de PWA, Exploration, Dungeon, global-assets, autres branches, fichiers binaires ni sonorités auteur non concernées.

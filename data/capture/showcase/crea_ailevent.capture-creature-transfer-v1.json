@@ -221,8 +221,9 @@
       ],
       "audio": {
         "movement": {
-          "assetId": "gensrpg:sound:conflux-da9a4465",
-          "volume": 1
+          "assetId": "gensrpg:sound:effect-79dd62d8",
+          "volume": 1,
+          "mode": "loop"
         }
       }
     }

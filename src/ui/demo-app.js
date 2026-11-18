@@ -2,6 +2,7 @@ import { normalizeCombatVisualEvent } from "../contracts/combat-visual-event.js"
 import { normalizeVisualActor } from "../contracts/visual-actor.js";
 import { planAnimation } from "../core/animation/plan-animation.js?v=ground-approach-steps-20261105";
 import { createProfileRegistry } from "../core/profiles/profile-registry.js";
+import { creatureAudioForStyleV1 } from "../core/profiles/creature-style-audio-v1.js";
 import { createDomActorRenderer } from "../adapters/renderer/dom-actor-renderer.js";
 import { createDomCreatureMovementVisualV1 } from "../adapters/renderer/dom-creature-movement-visual-v1.js";
 import {
@@ -1255,7 +1256,9 @@ export async function mountCombatDemo({
       return slotOf(slotKey).meta.id;
     },
     getCreatureAudioFor(slotKey) {
-      return slotOf(slotKey).meta.audio ?? null;
+      const meta = slotOf(slotKey).meta;
+      // One profile default, explicit creature audio stays the higher authority.
+      return creatureAudioForStyleV1(meta.profile, meta.audio);
     },
     get slotKeys() {
       return Object.freeze(Object.keys(slots));

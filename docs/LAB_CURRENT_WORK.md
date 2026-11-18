@@ -1,3 +1,12 @@
+## 2026-11-18 — Audit audio des 22 créatures, cinq styles (lot autonome)
+- START `main@5fa4c25b25a5a1dfd215c5dfc4af510874e4945d`, checkpoint `checkpoint/lab-start-creature-style-audio-20261118`, WORK `work/lab-creature-style-audio-20261118`.
+- Source unique de sons par style : `src/core/profiles/creature-style-audio-v1.js`. Aucun MP3 dupliqué, résolution uniquement dans le Combat Audio existant via `demo-app.getCreatureAudioFor`.
+- Exports rectifiés : Ailevent, Dracendre, Scar, Mossback (sons release/impact déplacés par erreur vers déplacement, ailes harmonisées) ; 17 autres absences de sons comblées par repli profil, sans réécrire les exports. SFX de capacité et bruitages réaction/KO non modifiés.
+- Audio catalog, runtime, UX, tests et rôles détaillés dans `docs/LAB_CREATURE_STYLE_AUDIO_AUDIT_2026_11_18.md` ; les cinq styles biped/quadruped/flying/serpentine/massive sont tous couverts. Respecter les règles de fusion séparée du lot opacité actuellement sur une autre branche.
+- Gates : CI 5/5 SHA exact, checkpoint GREEN, PR non forcée, CI main et Pages SHA identique, aucune PWA ou assets tiers.
+
+---
+
 ## 2026-11-18 — Éphémus : finalisation des zones visibles, canalisation et signal IMMATERIEL
 - **Point de reprise unique** : `main@907b8f0ba750f60f2aa324b69738a46f1ad194c6` checkpoint `checkpoint/lab-start-ephemus-fx-reconcile-20261118`.
 - **Origine auteur protégée** : `work/lab-ephemus-fx-intangible-20261118@3faf3d4836b86afc53fa4cd94e09cdf45a2111c9` (historique 17 commits préservé comme deuxième parent du commit de réconciliation). Ne pas modifier cette branche et conserver ses tests RED, corrections, données/IDs et doc exactes.
