@@ -7,7 +7,7 @@ const skills = [
   ["ephemus-poussiere-oubli", "travel"],
   ["ephemus-battement-limbes", "travel"],
   ["ephemus-chrysalide-fantome", "cast"],
-  ["ephemus-lanterne-ames", "impact"],
+  ["ephemus-lanterne-ames", "aura"],
   ["ephemus-danse-mille-ames", "travel"]
 ];
 
@@ -23,9 +23,20 @@ test("Éphémus official media: five distinct catalog icon+sprite bindings survi
     assert.equal(visual.icon?.assetId, iconId, slug + " icon");
     assert.equal(visual[slot]?.assetId, spriteId, slug + " animation");
     assert.equal(canonical.draft.definition.id, slug);
-    assert.equal(Object.keys(visual).length, 2, "Only one dedicated animation and icon");
-    assert.equal(visual[slot].attachment, slot === "cast" ? "source" : slot === "impact" ? "fixed-target" : "trajectory");
-    assert.equal(visual[slot].trigger, slot === "cast" ? "preparation-start" : slot === "impact" ? "impact" : "travel-start");
+    // Native zone and channel lifecycle own their own stages; no extra
+    // assets or fake gameplay effects are introduced by these bindings.
+    assert.equal(Object.keys(visual).length, slug === "ephemus-danse-mille-ames" ? 4 : 2,
+      "Only the ultimate uses existing art for its held cast + native-tick impact");
+    assert.equal(visual[slot].attachment, slot === "cast" ? "source" :
+      slot === "aura" ? "fixed-source" : "trajectory");
+    assert.equal(visual[slot].trigger, slot === "cast" ? "preparation-start" :
+      slot === "aura" ? "impact" : "travel-start");
+    if(slug === "ephemus-danse-mille-ames"){
+      assert.equal(visual.cast.assetId, spriteId, "same official art for native held channel");
+      assert.equal(visual.cast.trigger, "preparation-start");
+      assert.equal(visual.impact.assetId, spriteId, "each actual channel pulse has its impact sprite");
+      assert.equal(visual.impact.trigger, "impact");
+    }
     all.add(iconId);
     all.add(spriteId);
   }

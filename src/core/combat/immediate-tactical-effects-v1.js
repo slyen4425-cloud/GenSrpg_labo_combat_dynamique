@@ -213,6 +213,7 @@ function applyDamageEffect({
         applied.absorbedByShield,
       appliedDamage:
         applied.appliedDamage,
+      intangibleProtection: applied.intangibleProtection === true,
       hpBefore: applied.hpBefore,
       hpAfter: applied.hpAfter
     })
@@ -436,7 +437,8 @@ export function applyImmediateTacticalEffectsV1({
           damage:applied.requestedDamage,appliedDamage:applied.appliedDamage,
           absorbedByShield:applied.absorbedByShield,
           hpBefore:applied.hpBefore,hpAfter:applied.hpAfter,
-          protectingStatusIds:applied.protectingStatusIds??[]
+          protectingStatusIds:applied.protectingStatusIds??[],
+           intangibleProtection:applied.intangibleProtection===true
         }));
         continue;
       }

@@ -109,6 +109,17 @@ export function planSkillOutcomeFx({
       })
     ]);
   }
+  // The Combat Damage owner marked this actual 0-HP-loss impact as blocked
+  // by an active intangible status. Only then show the player's reason.
+  const hitEvents = resolution.events?.filter(event =>
+    event.type === "hit" && event.actorId === resolution.targetId) ?? [];
+  if (resolution.outcome === "hit" &&
+      hitEvents.some(event => event.intangibleProtection === true) &&
+      !hitEvents.some(event => Number(event.appliedDamage) > 0)) {
+    return Object.freeze([Object.freeze({
+      type: "miss", targetSlot, label: "IMMATÉRIEL", durationMs: 850
+    })]);
+  }
 
   if (resolution.channelingStart === true ||
     (resolution.events?.some(e=>e.type==="scheduled-effect-created"&&e.visualCue==="ground_mine") &&

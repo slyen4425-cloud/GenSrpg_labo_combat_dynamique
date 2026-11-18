@@ -127,7 +127,12 @@ export function applyCombatDamageV1({
       destroyedEntityId:intercepted.destroyedEntityId,entityHpBefore:intercepted.entityHpBefore,
       entityHpAfter:intercepted.entityHpAfter,
       immuneDamage:remaining,appliedDamage:0,reflection:null,hpBefore:target.hp,hpAfter:target.hp,
-      protectingStatusIds:protection.protectingStatusIds});
+      protectingStatusIds:protection.protectingStatusIds,
+      // Presentation provenance only: this is the SAME native protection
+      // result, not a new immunity rule or a separate damage calculation.
+      intangibleProtection: remaining > 0 && target.statusEffects.some(instance =>
+        instance.definition.intangible === true &&
+        protection.protectingStatusIds.includes(instance.definition.id))});
   }
   const statuses = [
     ...(target.statusEffects ?? [])
