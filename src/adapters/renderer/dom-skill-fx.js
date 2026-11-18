@@ -2011,11 +2011,17 @@ export function createDomSkillFxRenderer({
         continue;
       }
 
+      // A deliberately targeted persistent zone is centered at its chosen
+      // target. Other zones preserve their historical caster anchor.
+      // Native CombatState still owns zone IDs, targets and lifetime.
+      const centerActorId = zone.targetScope === "target" &&
+        zone.targetId && anchors[zone.targetId]
+          ? String(zone.targetId) : sourceActorId;
       const liveSource = centerRelativeTo(
         anchor(
           anchors,
-          sourceActorId,
-          "persistent zone source"
+          centerActorId,
+          "persistent zone center"
         ).getBoundingClientRect(),
         arenaRect
       );
