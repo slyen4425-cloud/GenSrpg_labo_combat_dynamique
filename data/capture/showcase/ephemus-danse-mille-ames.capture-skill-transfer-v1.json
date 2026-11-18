@@ -97,7 +97,20 @@
       "subjectId": "ephemus-danse-mille-ames",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-peste-spectrale-01"
+          "assetId": "pack:capture:icon-skill-ephemus-danse-mille-ames-v1"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-skill-ephemus-danse-mille-ames-v1",
+          "displayScale": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "durationMs": 3000
         }
       },
       "audio": {},
