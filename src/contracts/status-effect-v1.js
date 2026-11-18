@@ -3,6 +3,7 @@ import { normalizeSkillEffectV1 } from "./skill-effect-v1.js";
 export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "stat_modifier",
   "outgoing_damage_modifier",
+  "incoming_damage_channel_modifier",
   "incoming_effect_modifier",
   "heal_inversion",
   "stack_counter",
@@ -122,6 +123,7 @@ const FIELDS_BY_KIND = Object.freeze({
     "modifierPct"
   ]),
   outgoing_damage_modifier: new Set([...COMMON_FIELDS,"modifierPct"]),
+  incoming_damage_channel_modifier: new Set([...COMMON_FIELDS,"modifierPct","channel"]),
   incoming_effect_modifier: new Set([...COMMON_FIELDS,"modifierPct","affectedPolarity"]),
   heal_inversion: new Set([...COMMON_FIELDS,"percent"]),
   stat_modifier: new Set([
@@ -561,8 +563,13 @@ export function normalizeStatusEffectV1(input) {
     }
   }
 
-  if (kind === "approach_time_modifier" || kind === "energy_regen_modifier" || kind === "skill_cooldown_rate_modifier" || kind === "outgoing_damage_modifier" || kind === "incoming_effect_modifier") {
+  if (kind === "approach_time_modifier" || kind === "energy_regen_modifier" || kind === "skill_cooldown_rate_modifier" || kind === "outgoing_damage_modifier" || kind === "incoming_damage_channel_modifier" || kind === "incoming_effect_modifier") {
     output.modifierPct = finiteNumber(value.modifierPct, "StatusEffectV1.modifierPct");
+  }
+
+  if (kind === "incoming_damage_channel_modifier") {
+    output.channel = requiredString(value.channel, "StatusEffectV1.channel");
+    if (polarity !== "detrimental") throw new RangeError("incoming damage vulnerability must be detrimental");
   }
 
   if (kind === "incoming_effect_modifier") {

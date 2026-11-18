@@ -62,6 +62,7 @@ export function projectStatusStatEffectsV1({
 
   const damagePctByChannel = {};
   const resistancePctByChannel = {};
+  const incomingDamagePctByChannel = {};
   let chargeTimeReductionPct = 0;
   let damageReductionPct = 0;
   let outgoingDamagePct = 0;
@@ -74,6 +75,11 @@ export function projectStatusStatEffectsV1({
     if (instance.definition.kind === "stat_modifier" &&
         instance.definition.activationCondition === "moving" &&
         fighter.movementActive !== true) continue;
+    if(instance.definition.kind==="incoming_damage_channel_modifier"){
+      addChannel(incomingDamagePctByChannel,instance.definition.channel,
+        instance.definition.modifierPct * instance.stacks);
+      continue;
+    }
     if(instance.definition.kind==="outgoing_damage_modifier"){
       outgoingDamagePct += instance.definition.modifierPct * instance.stacks;
       continue;
@@ -128,6 +134,7 @@ export function projectStatusStatEffectsV1({
       Object.freeze(damagePctByChannel),
     resistancePctByChannel:
       Object.freeze(resistancePctByChannel),
+    incomingDamagePctByChannel: Object.freeze(incomingDamagePctByChannel),
     chargeTimeReductionPct,
     damageReductionPct,
     outgoingDamagePct

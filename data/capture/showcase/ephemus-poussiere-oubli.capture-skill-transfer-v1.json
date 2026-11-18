@@ -1,0 +1,98 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "ephemus-poussiere-oubli",
+    "description": "8 dégâts Esprit. Pose Voile pendant 4 s : la cible inflige 20 % de dégâts en moins. Voile prépare les synergies d'Éphémus.",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "ephemus-poussiere-oubli",
+      "name": "Poussière d’oubli",
+      "category": "offensive",
+      "form": "projectile",
+      "loadoutSlot": "standard",
+      "element": "spirit",
+      "approachMode": "none",
+      "energyCost": 2,
+      "preparationMs": 450,
+      "travelMs": 350,
+      "recoveryMs": 250,
+      "cooldownMs": 8000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "dodgeable": true,
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "stunMs": 0,
+        "interruptsPreparation": false,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 8,
+          "channel": "spirit"
+        },
+        {
+          "kind": "apply_marker",
+          "targetScope": "target",
+          "marker": {
+            "id": "ephemus-voile",
+            "name": "Voile",
+            "polarity": "detrimental",
+            "durationMs": 4000,
+            "maxStacks": 1,
+            "iconAssetId": "pack:capture:icon-skill-voile-ombre-01"
+          },
+          "charges": 1
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "ephemus-voile-affaiblissement",
+            "kind": "outgoing_damage_modifier",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 4000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": [],
+            "modifierPct": -20
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:ephemus-poussiere-oubli",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "ephemus-poussiere-oubli",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-voile-ombre-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

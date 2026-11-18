@@ -99,7 +99,13 @@
         "damageReductionPct": 50
       }
     },
-    "skillIds": [],
+    "skillIds": [
+      "ephemus-poussiere-oubli",
+      "ephemus-battement-limbes",
+      "ephemus-chrysalide-fantome",
+      "ephemus-lanterne-ames",
+      "ephemus-danse-mille-ames"
+    ],
     "presentation": {
       "id": "creature:Ephemus",
       "version": 10,
@@ -191,23 +197,23 @@
     "slots": [
       {
         "id": "slot-1",
-        "skillId": null
+        "skillId": "ephemus-poussiere-oubli"
       },
       {
         "id": "slot-2",
-        "skillId": null
+        "skillId": "ephemus-battement-limbes"
       },
       {
         "id": "slot-3",
-        "skillId": null
+        "skillId": "ephemus-chrysalide-fantome"
       },
       {
         "id": "slot-4",
-        "skillId": null
+        "skillId": "ephemus-lanterne-ames"
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "ephemus-danse-mille-ames"
       }
     ]
   }
