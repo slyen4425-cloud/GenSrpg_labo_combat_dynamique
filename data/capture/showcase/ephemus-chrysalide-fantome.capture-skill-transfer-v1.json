@@ -105,7 +105,12 @@
         }
       },
       "audio": {},
-      "statusVisuals": {}
+      "statusVisuals": {
+        "ephemus-chrysalide-intangible": {
+          "mode": "none",
+          "modelOpacity": 0.15
+        }
+      }
     }
   }
 }

@@ -94,6 +94,8 @@ export function createDomStatusFxRenderer({
       : () => null;
 
   const records = new Map();
+  // Derived solely from live native statuses; never a second timer or gameplay owner.
+  const modelOpacityHosts = new Map();
   let disposed = false;
   // Only one HUD detail may remain expanded across all combat actors.
   // Expiry follows the existing CombatState clock, never a second timer.
@@ -592,6 +594,7 @@ export function createDomStatusFxRenderer({
 
     followStatusClock(state);
     const expected = new Set();
+    const opacityByActor = new Map();
 
     for (
       const [actorId, fighter] of
@@ -628,6 +631,16 @@ export function createDomStatusFxRenderer({
           );
         const target =
           resolveTarget(actorId);
+
+        // Each status owns its own appearance. The most transparent live
+        // status wins; no effect may modify hitboxes, shadow or status FX.
+        if (presentation?.modelOpacity != null && target?.motion) {
+          const current = opacityByActor.get(actorId);
+          opacityByActor.set(actorId, {
+            motion: target.motion,
+            opacity: Math.min(current?.opacity ?? 1, presentation.modelOpacity)
+          });
+        }
 
         ensureHudIcon({
           actorId,
@@ -694,6 +707,21 @@ export function createDomStatusFxRenderer({
       }
     }
 
+    // The model image and movement-pose sprite consume the same CSS variable.
+    // Only those two sprites fade: existing HUD, overlays, shadows and
+    // alpha-mask collision data retain their own authoritative owners.
+    for (const [actorId, oldMotion] of modelOpacityHosts) {
+      const next = opacityByActor.get(actorId);
+      if (!next || next.motion !== oldMotion) {
+        oldMotion.style.removeProperty("--creature-status-model-opacity");
+        modelOpacityHosts.delete(actorId);
+      }
+    }
+    for (const [actorId, value] of opacityByActor) {
+      value.motion.style.setProperty("--creature-status-model-opacity", String(value.opacity));
+      modelOpacityHosts.set(actorId, value.motion);
+    }
+
     return Object.freeze({
       status: "synced",
       activeCount: records.size
@@ -707,6 +735,10 @@ export function createDomStatusFxRenderer({
     for (const key of [...records.keys()]) {
       removeRecord(key);
     }
+    for (const motion of modelOpacityHosts.values()) {
+      motion.style.removeProperty("--creature-status-model-opacity");
+    }
+    modelOpacityHosts.clear();
     disposed = true;
   }
 

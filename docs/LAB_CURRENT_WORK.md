@@ -1,3 +1,12 @@
+## 2026-11-18 — Visuel buff/debuff : opacité du modèle et Chrysalide Éphémus (lot isolé)
+- START `main@5fa4c25b25a5a1dfd215c5dfc4af510874e4945d`, checkpoint `checkpoint/lab-start-ephemus-model-opacity-20261118`, WORK `work/lab-status-model-opacity-20261118`.
+- Autorité unique : `SkillPresentationBindingV3.statusVisuals[].modelOpacity` optionnel, 0..1 ; statut natif propriétaire de l'existence/durée, Status FX renderer propriétaire de la seule variable visuelle du modèle. Aucun nouveau timer ou nouvelle immunité.
+- UI : curseur numérique en pourcentage 0..100 dans le bloc de statut pour mode `none/tint/sprite/both`; export/import sans changer les anciens statuts quand réglage absent. La créature de base et la pose animée partagent la même valeur, tandis que l'ombre, les collisions, icônes HUD et sprites de statuts ne disparaissent pas.
+- Chrysalide Éphémus : `statusVisuals.ephemus-chrysalide-intangible.modelOpacity=0.15` pendant l'immunité native 10 secondes ; rétablissement automatique à l'expiration, à la suppression ou au dispose.
+- Ne pas toucher aux autres créatures, aux statistiques, compétences, audio, PWA, assets, branches des autres agents. Tests RED puis 5/5 CI, checkpoint GREEN, publication main SHA exact et Pages obligatoires.
+
+---
+
 ## 2026-11-18 — Éphémus : finalisation des zones visibles, canalisation et signal IMMATERIEL
 - **Point de reprise unique** : `main@907b8f0ba750f60f2aa324b69738a46f1ad194c6` checkpoint `checkpoint/lab-start-ephemus-fx-reconcile-20261118`.
 - **Origine auteur protégée** : `work/lab-ephemus-fx-intangible-20261118@3faf3d4836b86afc53fa4cd94e09cdf45a2111c9` (historique 17 commits préservé comme deuxième parent du commit de réconciliation). Ne pas modifier cette branche et conserver ses tests RED, corrections, données/IDs et doc exactes.
