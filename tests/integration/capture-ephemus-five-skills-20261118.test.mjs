@@ -85,7 +85,8 @@ test("Lanterne has two colocated native zones, 10 half-second ticks, and +20% sp
  a.advanceMs(remaining);
  assert.equal(a.snapshot().persistentZones.length,0);
  const hpAfter=a.snapshot().fighters.enemy.hp;
- assert.ok(hpAfter < 200);
+ // 5 s / 0.5 s = precisely ten pulses, each 4 Spirit with the 20% zone-only weakness.
+ assert.equal(200-hpAfter,48,"Lanterne must deal exactly ten native ticks, not 9 or 11");
  a.advanceMs(1000);
  assert.equal(a.snapshot().fighters.enemy.hp,hpAfter);
  assert.equal(a.snapshot().fighters.enemy.statusEffects.some(x=>x.definition.kind==="incoming_damage_channel_modifier"),false);
