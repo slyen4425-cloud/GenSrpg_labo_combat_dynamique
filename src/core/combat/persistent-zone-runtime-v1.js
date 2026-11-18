@@ -578,6 +578,39 @@ function applyZoneDamageToTarget({
   }).state;
 }
 
+// A while-inside Spirit-channel vulnerability is owned by its status zone, not
+// by the damage zone. The general status clock and the occupancy-preparation
+// step can clear its projection before a large frame catches up older zone
+// ticks. Reconcile that SAME canonical status at each real tick timestamp,
+// including the final tick at the zone's expiry, then let zone teardown remove
+// it normally. Never increase unrelated channels or give zone damage a second
+// modifier owner.
+function reconcileBoundChannelStatusesAtZoneTickV1({
+  state, atMs, battleFormat, zoneSpatialContext
+}) {
+  let nextState = state;
+  for (const boundZone of state.persistentZones ?? []) {
+    if (!isBoundStatusZoneV1(boundZone) ||
+        boundZone.tickEffect.status.kind !== "incoming_damage_channel_modifier")
+      continue;
+    const inside = atMs >= boundZone.appliedAtMs && atMs <= boundZone.expiresAtMs
+      ? affectedIdsForZone({
+          state: nextState, zone: boundZone, battleFormat,
+          atMs, zoneSpatialContext
+        })
+      : [];
+    const outside = Object.keys(nextState.fighters).filter(id => !inside.includes(id));
+    nextState = stripZoneBoundStatusV1(nextState, boundZone, outside);
+    for (const targetActorId of inside) {
+      nextState = applyZoneStatusV1({
+        state: nextState, zone: boundZone,
+        targetActorId, atMs, whileInside: true
+      });
+    }
+  }
+  return nextState;
+}
+
 function applyZoneDamageTick({
   state,
   zone,
@@ -934,6 +967,9 @@ export function advancePersistentZonesV1({
     );
 
     for (const event of events) {
+      nextState = reconcileBoundChannelStatusesAtZoneTickV1({
+        state: nextState, atMs: event.atMs, battleFormat, zoneSpatialContext
+      });
       if (event.type === "entry") {
         nextState =
           applyZoneDamageToTarget({

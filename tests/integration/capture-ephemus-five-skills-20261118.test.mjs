@@ -91,6 +91,19 @@ test("Lanterne has two colocated native zones, 10 half-second ticks, and +20% sp
  assert.equal(a.snapshot().fighters.enemy.hp,hpAfter);
  assert.equal(a.snapshot().fighters.enemy.statusEffects.some(x=>x.definition.kind==="incoming_damage_channel_modifier"),false);
 });
+test("Lanterne: expiry, batched frames and partial steps always give ten boosted native ticks, never a lingering vulnerability",()=>{
+ for (const advances of [[5000],[6000],[2500,2500],[500,4500],[500,1000,4500]]) {
+  const a=session();
+  assert.equal(a.useSkill({actorId:"ephemus",targetId:"enemy",skill:skills[3]}).ok,true);
+  for (const delta of advances) a.advanceMs(delta);
+  assert.equal(a.snapshot().fighters.enemy.hp,152,
+   "10 x (4 Spirit +20%) across "+advances.join("+")+" ms");
+  assert.equal(a.snapshot().persistentZones.length,0);
+  assert.equal(a.snapshot().fighters.enemy.statusEffects.some(
+    x=>x.definition.kind==="incoming_damage_channel_modifier"),false,
+    "The channel vulnerability must be removed by the owning zone");
+ }
+});
 test("Ultimate native six pulses deliver 60 Spirit + 40 on final tick only with active Voile",()=>{
  for(const withVeil of [false,true]){
   const a=session(),powder=skills[0],ultimate=skills[4];

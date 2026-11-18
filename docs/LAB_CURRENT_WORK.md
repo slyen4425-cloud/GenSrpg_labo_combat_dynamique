@@ -1,3 +1,8 @@
+## 2026-11-18 — Éphémus Lanterne : correctif temps de zone / 10 tics
+- Diagnostic CI PR #334: les 10 pulses faisaient 40 au lieu de 48 lorsque l'avance horloge atteignait l'expiration, car l'aura +20% Esprit était retirée avant la résolution rétroactive des pulses (préparation des départs et horloge de statuts).
+- Correctif au propriétaire unique `persistent-zone-runtime-v1`: pour les seules vulnérabilités de canal liées à une zone `while_inside`, réconcilier le **même statut natif** à l'instant exact de chaque tick d'une zone de dégâts, jusqu'au dernier tick inclus. Conserver les résistances natives, la portée et l'autorité dégâts; retirer aussitôt toute vulnérabilité hors zone, et à l'expiration par l'ancienne routine de nettoyage.
+- Régression déterministe en pas 5000ms, 6000ms, 2500+2500ms, 500+4500ms et 500+1000+4500ms; attendre 48 dégâts Esprit et aucun statut résiduel. Aucune modification de sprites ou d'icônes. Checkpoint avant correction : `checkpoint/lab-ephemus-lanterne-tick-before-fix-20261118`. Gate CI 5/5 sur SHA exact avant changement de `main`.
+
 ## 2026-11-18 — Éphémus : cinq compétences, Voile et mécaniques natives (PR isolée)
 - Base `main@1f73062fca27cb5eb10cfebf3784d7443127ec1f`, checkpoint `checkpoint/lab-start-ephemus-five-skills-20261118`. Source unique officielle `Ephemus`, aucun changement à sa morphologie/statistiques/rareté/images.
 - 5 compétences originales aux niveaux 1/5/10/15/20 et loadout actif, nouvelles définitions uniquement dans `data/capture/showcase/` + index officiel.
