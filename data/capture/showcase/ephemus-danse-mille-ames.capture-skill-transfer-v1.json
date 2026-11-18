@@ -111,6 +111,31 @@
           "rotationDeg": 0,
           "opacity": 1,
           "durationMs": 3000
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-skill-ephemus-danse-mille-ames-v1",
+          "displayScale": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-skill-ephemus-danse-mille-ames-v1",
+          "displayScale": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "durationMs": 420,
+          "rotationDeg": 0,
+          "opacity": 1
         }
       },
       "audio": {},
