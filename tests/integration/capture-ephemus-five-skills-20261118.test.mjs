@@ -78,10 +78,16 @@ test("Lanterne has two colocated native zones, 10 half-second ticks, and +20% sp
  const water=computeCombatDamageV1({state,attackerId:"ephemus",targetId:"enemy",baseDamage:10,channel:"water"});
  assert.equal(spirit.incomingDamagePct,20);assert.equal(spirit.damage,12);
  assert.equal(water.incomingDamagePct,0);assert.equal(water.damage,10);
- a.advanceMs(4500);
+ // The zone clock starts at the real authored impact timestamp, not the
+ // click timestamp; honor the exact native expiresAtMs rather than assuming 0.
+ const expiry=Math.max(...a.snapshot().persistentZones.map(z=>z.expiresAtMs));
+ const remaining=Math.max(0,expiry-a.snapshot().elapsedMs);
+ a.advanceMs(remaining);
  assert.equal(a.snapshot().persistentZones.length,0);
- assert.ok(a.snapshot().fighters.enemy.hp < 200);
+ const hpAfter=a.snapshot().fighters.enemy.hp;
+ assert.ok(hpAfter < 200);
  a.advanceMs(1000);
+ assert.equal(a.snapshot().fighters.enemy.hp,hpAfter);
  assert.equal(a.snapshot().fighters.enemy.statusEffects.some(x=>x.definition.kind==="incoming_damage_channel_modifier"),false);
 });
 test("Ultimate native six pulses deliver 60 Spirit + 40 on final tick only with active Voile",()=>{
