@@ -1,0 +1,52 @@
+name: Import author-approved Veldra five skill icons and effects
+on:
+  push:
+    branches:
+      - work/lab-veldra-skill-media-20261118
+    paths:
+      - scripts/import_veldra_skill_media_2026_11_18.py
+      - .github/workflows/import-veldra-skill-media-20261118.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: veldra-skill-media-import-20261118
+  cancel-in-progress: false
+jobs:
+  import-media:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/lab-veldra-skill-media-20261118
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Pillow for real pixel and 16-frame source checks
+        run: python -m pip install --disable-pip-version-check 'Pillow>=10,<13'
+      - name: Validate original GitHub ZIPs and import 10 original approved WebPs
+        run: python scripts/import_veldra_skill_media_2026_11_18.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run all canonical asset library and runtime tests
+        run: npm run ci
+      - name: Inspect limited delta; commit media only to isolated WORK branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- assets/library/capture/icons/skills/veldra/ assets/library/capture/sprites/skills/veldra/ data/assets/catalog/global-visual-assets.v1.json docs/LAB_VELDRA_SKILL_MEDIA_PROVENANCE_2026_11_18.json
+          count="$(git diff --cached --name-only | wc -l)"
+          test "$count" -eq 12 || { echo "Expected exactly 12 tracked file changes, got $count"; exit 1; }
+          git diff --cached --name-only | while IFS= read -r path; do
+            case "$path" in
+              assets/library/capture/icons/skills/veldra/*|assets/library/capture/sprites/skills/veldra/*|data/assets/catalog/global-visual-assets.v1.json|docs/LAB_VELDRA_SKILL_MEDIA_PROVENANCE_2026_11_18.json) ;;
+              *) echo "Forbidden path: $path"; exit 1 ;;
+            esac
+          done
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "assets(veldra): publish 5 approved icons and 5 original 16-frame effects"
+          git push origin HEAD:refs/heads/work/lab-veldra-skill-media-20261118
