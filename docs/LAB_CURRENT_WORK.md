@@ -1,3 +1,10 @@
+## 2026-11-18 — Éphémus : zone visible, ultime canalisé et message « IMMATÉRIEL »
+- START : `main@f51010c525bc6ebba5d95795739e66d937291961`, checkpoint `checkpoint/lab-start-ephemus-fx-intangible-20261118`, WORK temporaire `work/lab-ephemus-fx-intangible-20261118`.
+- Diagnostic : Lanterne zone native invisible car sprite au slot `impact` au lieu de `aura` ; Danse beam canalisé 3s mais trajet 0ms et sprite uniquement `travel` ; immunité intangible native silencieuse car évènement `hit` à zéro perte PV.
+- Domaine : corriger uniquement le raccordement des deux médias Éphémus, le centre ciblé des zones natives, la provenance d'une immunité dans l'événement officiel et sa projection via le FX textuel natif. Pas de doublon de renderer/clock/catalogue. Protéger toutes les autres créatures, autres compétences, PWA, Donjon, Explo, assets/sauvegardes.
+- Test RED : `tests/integration/capture-ephemus-visible-zone-channel-immunity-20261118.test.mjs`. CI 5/5 sur SHA final, contrôle navigateur, checkpoint GREEN, puis fusion sans force, validation Pages SHA.
+- Référence complète : `docs/LAB_EPHEMUS_VISIBLE_FX_IMMATERIAL_2026_11_18.md`.
+
 ## 2026-11-18 — Éphémus : ralentissement 20 s et libellés Bestiaire (lot isolé)
 - Source unique : `main@2b957411cd7d8a7cea60ddf683045fe2e8af40b6`, START `checkpoint/lab-start-ephemus-prose-slow20-20261118`, WORK `work/lab-ephemus-prose-slow20-20261118`.
 - Auteur : Battement passe de 3 s à 20 s sans changer ses 30 % de ralentissement d'approche ; Lanterne n'affiche plus l'identifiant interne du statut ; l'ultime canalisé est décrit clairement à partir de ses vrais 6 tics de 10 et de son bonus Voile +40.
