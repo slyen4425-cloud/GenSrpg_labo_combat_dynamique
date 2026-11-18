@@ -511,11 +511,11 @@ export function describeCaptureSkillV1(input,{markerNames={}}={}) {
       phrases.push(finish(line.replace(/\.$/,"")+" (effet renouvelé à chaque pulsation)"));
     }
     const interruptions=[
-      ...(ch.stopOnDamage?["des dégâts reçus"]:[]),
-      ...(ch.stopOnStun?["d'un étourdissement"]:[]),
-      ...(ch.stopOnSilence?["d'un silence"]:[])
+      ...(ch.stopOnDamage?["subit des dégâts"]:[]),
+      ...(ch.stopOnStun?["est étourdi"]:[]),
+      ...(ch.stopOnSilence?["est réduit au silence"]:[])
     ];
-    if(interruptions.length)phrases.push(finish("La canalisation s'interrompt en cas de "+words(interruptions)));
+    if(interruptions.length)phrases.push(finish("La canalisation s'interrompt si le lanceur "+interruptions.join(" ou ")));
     if(ch.finalTickEffects?.length){
       const last=descriptions(ch.finalTickEffects,{markerNames});
       const moment=ch.maxTicks!=null?"À la "+num(ch.maxTicks)+"e pulsation réellement atteinte, ":
