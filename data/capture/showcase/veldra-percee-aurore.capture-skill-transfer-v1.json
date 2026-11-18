@@ -101,7 +101,20 @@
       "subjectId": "veldra-percee-aurore",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-lance-d-aurore-01"
+          "assetId": "pack:capture:icon-skill-veldra-percee-aurore-v1"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-skill-veldra-percee-aurore-v1",
+          "displayScale": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "durationMs": 850
         }
       },
       "audio": {},
