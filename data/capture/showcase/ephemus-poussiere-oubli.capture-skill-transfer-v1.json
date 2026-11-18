@@ -88,7 +88,19 @@
       "subjectId": "ephemus-poussiere-oubli",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-voile-ombre-01"
+          "assetId": "pack:capture:icon-skill-ephemus-poussiere-oubli-v1"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-skill-ephemus-poussiere-oubli-v1",
+          "displayScale": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1
         }
       },
       "audio": {},
