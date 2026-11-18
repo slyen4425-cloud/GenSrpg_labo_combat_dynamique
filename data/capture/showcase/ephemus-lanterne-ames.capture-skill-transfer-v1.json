@@ -99,7 +99,20 @@
       "subjectId": "ephemus-lanterne-ames",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-totem-spectral-01"
+          "assetId": "pack:capture:icon-skill-ephemus-lanterne-ames-v1"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-skill-ephemus-lanterne-ames-v1",
+          "displayScale": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "durationMs": 5000
         }
       },
       "audio": {},
