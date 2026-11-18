@@ -2201,6 +2201,7 @@ export function createDomSkillFxRenderer({
     phase = null,
     progress = null,
     amount = null,
+    label = null,
     expandingWave = null,
     projectilePower = 0,
     sizeMultiplier = 1,
@@ -2612,7 +2613,8 @@ export function createDomSkillFxRenderer({
       const node = arena.ownerDocument.createElement("span");
       node.className = "skill-fx skill-fx--miss";
       node.dataset.skillFx = "miss";
-      node.textContent = missLabel;
+      node.textContent = typeof label === "string" && label.trim()
+        ? label.trim().slice(0, 24) : missLabel;
       node.style.left = `${to.x}px`;
       node.style.top = `${to.y}px`;
       arena.append(node);
