@@ -215,10 +215,8 @@
       "sockets": [],
       "audio": {
         "movement": {
-          "assetId": "gensrpg:sound:sanctuary-367a77dd",
-          "volume": 1,
-          "mode": "repeat",
-          "repeatIntervalMs": 400
+          "assetId": "gensrpg:sound:genrpg-pack2-9320854b",
+          "volume": 1
         }
       }
     }

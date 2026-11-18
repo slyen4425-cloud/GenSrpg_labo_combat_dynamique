@@ -162,7 +162,12 @@
           }
         }
       ],
-      "audio": {},
+      "audio": {
+        "movement": {
+          "assetId": "gensrpg:sound:genrpg-pack2-9320854b",
+          "volume": 1
+        }
+      },
       "shadowOffset": {
         "x": 0,
         "y": 40

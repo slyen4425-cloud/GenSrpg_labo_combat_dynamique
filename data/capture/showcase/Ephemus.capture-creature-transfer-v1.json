@@ -162,7 +162,13 @@
           }
         }
       ],
-      "audio": {},
+      "audio": {
+        "movement": {
+          "assetId": "gensrpg:sound:effect-79dd62d8",
+          "volume": 1,
+          "mode": "loop"
+        }
+      },
       "shadowOffset": {
         "x": 0,
         "y": 30
