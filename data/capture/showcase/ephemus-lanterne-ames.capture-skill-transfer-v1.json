@@ -108,7 +108,7 @@
           "anchor": null,
           "offsetX": 0,
           "offsetY": 0,
-          "trigger": "persistent-zone",
+          "trigger": "impact",
           "playbackMode": "loop",
           "rotationDeg": 0,
           "opacity": 1,
