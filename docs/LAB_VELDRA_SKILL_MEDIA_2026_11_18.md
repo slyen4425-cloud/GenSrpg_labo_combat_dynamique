@@ -18,3 +18,9 @@
 | 10 | Égide du zénith | `pack:capture:icon-skill-veldra-egide-zenith-v1` | `pack:capture:sprite-skill-veldra-egide-zenith-v1` | `cast` protecteur |
 | 15 | Rayon cardinal | `pack:capture:icon-skill-veldra-rayon-cardinal-v1` | `pack:capture:sprite-skill-veldra-rayon-cardinal-v1` | `impact` uniquement, beam préexistant conservé |
 | 20 | Relève céleste | `pack:capture:icon-skill-veldra-releve-celeste-v1` | `pack:capture:sprite-skill-veldra-releve-celeste-v1` | `cast` / invocation alliée, sans duplication roster |
+
+## Import effectif (contrôlé)
+- Commit d'import des dix WebP: `6ed09f2cbcba9bdb4612ab43096382ec59aa55f1`.
+- Résultat du workflow d'import: SUCCESS, incluant contrôles exacts des ZIP, 80 frames, 5 bandes WebP, catalogue et tests Node.
+- Catalogue sur branche WORK: 452 assets (202 icônes / 218 sprites); dix nouveaux IDs Veldra sans remplacement.
+- **Publication** : toujours NON GREEN jusqu'à CI sur le SHA final du présent lot, checkpoint GREEN, puis avance sûre de `global-assets` et contrôle de lecture.
