@@ -89,7 +89,19 @@
       "subjectId": "ephemus-chrysalide-fantome",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-charge-spirituelle-01"
+          "assetId": "pack:capture:icon-skill-ephemus-chrysalide-fantome-v1"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-skill-ephemus-chrysalide-fantome-v1",
+          "displayScale": 1,
+          "attachment": "source",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "preparation-start",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1
         }
       },
       "audio": {},
