@@ -1,3 +1,11 @@
+## 2026-11-18 — Éphémus : ralentissement 20 s et libellés Bestiaire (lot isolé)
+- Source unique : `main@2b957411cd7d8a7cea60ddf683045fe2e8af40b6`, START `checkpoint/lab-start-ephemus-prose-slow20-20261118`, WORK `work/lab-ephemus-prose-slow20-20261118`.
+- Auteur : Battement passe de 3 s à 20 s sans changer ses 30 % de ralentissement d'approche ; Lanterne n'affiche plus l'identifiant interne du statut ; l'ultime canalisé est décrit clairement à partir de ses vrais 6 tics de 10 et de son bonus Voile +40.
+- Propriétaires : deux transferts Showcase Éphémus + le seul projecteur de texte commun `capture-skill-explanation-v1` ; imports de cache Bestiaire ciblés ; sentinelles et documentation. Veldra, autres créatures, moteur, PWA, bibliothèque, sauvegardes et autres agents protégés. Tests RED d'abord, CI/browser 5/5 SHA exact et Pages `main` avant GREEN.
+- Détail : `docs/LAB_EPHEMUS_BESTIARY_PROSE_SLOW20_2026_11_18.md`.
+
+---
+
 ## 2026-11-18 — Éphémus : intégration des compétences après Veldra (fusion des historiques, sans doublon)
 - Base officielle unique : main@a04861d93432b080d09b08949fa900f6543b758c ; checkpoint START `checkpoint/lab-start-ephemus-main-integration-20261118` ; PR #334 conserve son historique.
 - Réconciliation additive avec la PR #336 Veldra : les changements Veldra restent inchangés, y compris cache canonique v67 et son jeu de tests ; les cinq compétences, effets natifs, visuels et tests Éphémus sont ajoutés via la PR #334.
