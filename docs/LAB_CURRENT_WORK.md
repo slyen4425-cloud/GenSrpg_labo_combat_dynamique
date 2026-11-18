@@ -1,3 +1,10 @@
+## 2026-11-18 — Éphémus : raccord visuels officiels dans cinq compétences (lot isolé)
+
+- **START** : branche Combat PR #334 \`work/lab-ephemus-five-skills-20261118@7c57272e04c9521dd1d11f845afcad89e5808604\`; checkpoint \`checkpoint/lab-start-ephemus-skill-media-20261118\`; travail distinct \`work/lab-ephemus-skill-media-20261118\`, sans modifier la branche de l'autre agent.
+- **Source visuelle** : deux ZIP auteur du 18/11 déposés dans \`global-assets/_incoming/\`, importés par un lot propriétaire distinct. Dix assetIds futurs vérifiés, cinq icônes + cinq animations 16 frames, sans duplication dans Combat.
+- **Périmètre** : modifier uniquement les champs \`draft.presentation.visual\` des cinq compétences Éphémus, cache de catalogue global en cas de publication réelle, tests sentinelles, documentation. Les cinq \`definition\`, données auteur, autres créatures, moteurs, sauvegardes, audio, Exploration, PWA, Dungeon sont intacts.
+- **Gates** : attendre publication \`global-assets\` de dix vrais WebP; test natif de tous les visuels et capacités; CI cinq jobs sur SHA exact, navigateur éditeur/combat PC+mobile, checkpoint GREEN, puis faire entrer ce lot dans PR #334 et publier sur \`main\` uniquement après validation. Aucun GREEN présumé.
+
 ### 2026-11-18 — Éphémus / précision chronologique complémentaire
 - Premier passage CI de la correction : le scénario initial obtient les 48 dégâts exacts à la précision flottante près (48.000000000000114) ; le test utilise désormais une tolérance `<1e-9` sans relâcher le nombre de tics ni le total.
 - Le passage en avance groupée montrait également que le cast réel commence à son instant d'impact, et qu'une aura d'abord projetée à l'extrémité d'un grand pas ne peut pas agir sur les tics antérieurs. Une projection native datée dans le futur est désormais réinitialisée puis appliquée au timestamp du tic exact via Status Runtime, sans modifier les autres canaux ni la durée de zone.
