@@ -1,3 +1,12 @@
+## 2026-11-18 — Veuve jaune : ZIP auteur, médias canoniques et raccord des cinq capacités
+- START main@bfc49830edfd367d9e03b1a853f558681cf10202, checkpoint checkpoint/lab-start-veuve-jaune-media-20261118, WORK work/lab-veuve-jaune-media-20261118. Le ZIP V2 compact auteur est déposé dans main `assets/library/capture/sprites/skills/`; Git blob attendu `ec0197e01226db1c035d41c8370a78748eb38971`. Source non modifiée.
+- Phase A : script + workflow contrôlé décompressent les 5 icônes et 8 planches animées du ZIP vers l’unique `global-assets` (13 WebP), avec catalogue officiel `data/assets/catalog/global-visual-assets.v1.json`. Aucun arbre d’assets dupliqué sur main, aucune autre branche éditée directement par Combat sauf action de publication canonique déjà utilisée par les imports homologues.
+- Phase B : brancher uniquement les cinq Skills Showcase Veuve jaune sur les 13 assetIds validés et le système natif `combat-entity-overlay-v1` (mur comme Gorice), en respectant les champs de contrat. Génération des FX d'entrave sans humanoïde ; règles, PV de barrière, énergie, cooldowns, types, audio, créature, sauvegardes, Exploration, PWA et toutes les autres compétences protégés.
+- Les deux orientations du mur doivent rester celles du ZIP `diagonal-3/4` avec miroir X déjà appliqué ; ne pas refléter de nouveau l'atlas. Le gameplay et les collisions suivent la barrière canonique, pas un deuxième mur.
+- Gates : checks import ZIP+catalogue et 5/5 CI sur chaque SHA avant merge, branche checkpoint GREEN, validation du push global-assets, tests réels éditeur/combat puis CI 5/5 de main et Pages sur SHA exact, lien de test. Ne pas déclarer raccord terminé tant que l'asset canonique n'est pas physiquement publié.
+
+---
+
 ## 2026-11-18 — Audio Showcase : publication des styles sans modifier les exports auteur
 - **START** `main@49bc9a4282d9b7978fe0d1dd09056fa94af9a3ed`, checkpoint `checkpoint/lab-start-creature-audio-styles-publish-20261118`, branche temporaire `work/lab-creature-audio-styles-publish-20261118` ; PR #342 initiale NON GREEN (17 tests d'immutabilité auteur).
 - **Cause** : les 17 tests rouges protègent les transferts JSON d'origine ; éditer directement sept fichiers `data/capture/showcase/*.json` modifiait illégitimement leurs champs.
