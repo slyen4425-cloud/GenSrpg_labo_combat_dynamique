@@ -48,7 +48,7 @@ jobs:
           assert catalog["counts"]["assets"]==len(catalog["assets"])
           for action,view,n in entries:
               path=root/action/view
-              assert (path/f"raiiven_{action}_{view}_{n}f.webp").is_file()
+              assert (path/f"raiiven_{action}_{view}_{n}f.png").is_file()
               info=json.loads((path/"animation.manifest.json").read_text())
               assert info["frameCount"]==n and len(info["frames"])==n
               asset_id=f"pack:capture:creature-raiiven-{action}-{view}-{n}-v1"
