@@ -1,0 +1,70 @@
+name: Import Raiiven approved animations to canonical global-assets
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/publish-raiiven-animations-20261119.py
+      - .github/workflows/import-raiiven-animations-20261119.yml
+  push:
+    branches: [main]
+    paths:
+      - scripts/publish-raiiven-animations-20261119.py
+      - .github/workflows/import-raiiven-animations-20261119.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-raiiven-author-media:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: source
+          persist-credentials: true
+      - uses: actions/checkout@v4
+        with:
+          ref: global-assets
+          path: canonical
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'Pillow>=11,<13'
+      - name: Inspect original ZIPs and prepare exact approved canonicals
+        run: python source/scripts/publish-raiiven-animations-20261119.py source canonical
+      - name: Verify only Raiiven append-only catalog and atlases changed
+        working-directory: canonical
+        run: |
+          git diff --check
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("assets/library/capture/creatures/raiiven/animations")
+          entries=[("movement","player",7),("attack","player",5),("movement","opponent",6)]
+          catalog=json.loads(Path("data/assets/catalog/global-visual-assets.v1.json").read_text())
+          assert catalog["counts"]["assets"]==len(catalog["assets"])
+          for action,view,n in entries:
+              path=root/action/view
+              assert (path/f"raiiven_{action}_{view}_{n}f.webp").is_file()
+              info=json.loads((path/"animation.manifest.json").read_text())
+              assert info["frameCount"]==n and len(info["frames"])==n
+              asset_id=f"pack:capture:creature-raiiven-{action}-{view}-{n}-v1"
+              assets=[a for a in catalog["assets"] if a["id"]==asset_id]
+              assert len(assets)==1 and assets[0]["resource"]["frameCount"]==n
+          assert not (root/"attack"/"opponent").exists(), "Never publish unapproved attack face PROTO"
+          print("PASS: 3 approved animations, intact masters, unique catalog")
+          PY
+      - name: Publish only when PR merged into authoritative main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: canonical
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/library/capture/creatures/raiiven/animations data/assets/catalog/global-visual-assets.v1.json
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git commit -m "assets(capture): import approved Raiiven player and opponent animations"
+          git push origin HEAD:global-assets
