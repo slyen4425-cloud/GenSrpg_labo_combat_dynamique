@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "creature": "raiiven",
-  "state": "awaiting_full_pose_generation",
+  "state": "angle_reference_rework_after_rejected_walk_sheet",
   "prototypeOnly": true,
   "source": {
     "repository": "slyen4425-cloud/GenSrpg_labo_combat_dynamique",
@@ -18,7 +18,7 @@
     "poseGuideOnly": true,
     "cutoutAnimationAllowed": false,
     "assembledLimbsInFinalAllowed": false,
-    "canonicalAngle": "player-back-three-quarter-up-right",
+    "canonicalAngle": "player-rear-three-quarter-toward-opponent-not-side-profile",
     "lockedView": true,
     "anatomy": {
       "legCount": 4,
@@ -30,7 +30,51 @@
       ],
       "consistentAnatomyAcrossFrames": true
     },
-    "visualReviewRequired": true
+    "visualReviewRequired": true,
+    "headDirection": "forward-toward-opponent-away-from-viewer-not-screen-side",
+    "motion": "grounded-equine-four-beat-walk",
+    "gaitPlan": [
+      {
+        "frame": 1,
+        "phase": "contact",
+        "note": "left hind begins swing, other three support"
+      },
+      {
+        "frame": 2,
+        "phase": "swing",
+        "note": "left hind moves forward, weight transfers"
+      },
+      {
+        "frame": 3,
+        "phase": "contact",
+        "note": "left hind lands, left front begins swing"
+      },
+      {
+        "frame": 4,
+        "phase": "swing",
+        "note": "left front advances, no planted foot slides"
+      },
+      {
+        "frame": 5,
+        "phase": "contact",
+        "note": "left front lands, right hind begins swing"
+      },
+      {
+        "frame": 6,
+        "phase": "swing",
+        "note": "right hind advances, visible depth and foreshortening consistent"
+      },
+      {
+        "frame": 7,
+        "phase": "contact",
+        "note": "right hind lands, right front advances"
+      },
+      {
+        "frame": 8,
+        "phase": "loop",
+        "note": "right front lands, returns to initial stance without teleport"
+      }
+    ]
   },
   "export": {
     "frameCount": 8,
@@ -45,7 +89,9 @@
   "preview": {
     "delivery": "chat-visual-first",
     "includeContactSheet": true,
-    "includeAnimatedPreview": true
+    "includeAnimatedPreview": true,
+    "firstGate": "approve_canonical_stance_and_view_before_generating_new_eight_pose_sheet",
+    "rejectedVersion": "2026-11-19 first generated side-on eight-pose sheet; rejected: wrong head facing, too side-on, illogical walk"
   },
   "gates": {
     "artApprovalRequired": true,
