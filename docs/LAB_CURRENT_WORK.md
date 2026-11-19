@@ -4,7 +4,7 @@
 - Propriétaire unique : travail source sur main, dérivés `assets/library/capture/creatures/raiiven/animations/` et 3 entrées au seul `global-assets:data/assets/catalog/global-visual-assets.v1.json`. L'action PR vérifie, l'action post-merge sur main publie. Aucun nouveau catalogue, aucun nouveau renderer, aucun changement d'autre créature.
 - Contrat : frame 01 de chaque atlas égale pixel-à-pixel au PNG maître FACE/DOS déjà approuvé ; autres frames conservent l'ordre ZIP et sont corrigées uniquement par suppression de poussière alpha faible (<45). Manifestes et SHA des ZIP enregistrés ; altération de la vue statique, icône et sauvegardes interdite.
 - Fichiers autorisés : script d'import, workflow, tests et cette note. Aucun raccord gameplay non démontré : Raiiven reste `approved-artwork-only-no-bestiary-creature` ; ses animations sont éditables par le système natif après publication, mais ne deviennent pas automatiquement une créature jouable.
-- Gates : script réel contre `global-assets`, contrôle 3 atlas en WebP lossless, FIRST=master, frameCount 7/5/6, tests CI et vrai navigateur sur SHA exact, checkpoint GREEN puis merge. **État NON GREEN** tant que tests, vérification visuelle et publication effective ne sont pas acquis.
+- Gates : script réel contre `global-assets`, contrôle 3 atlas PNG RGBA exacts, FIRST=master, frameCount 7/5/6, tests CI et vrai navigateur sur SHA exact, checkpoint GREEN puis merge. **État NON GREEN** tant que tests, vérification visuelle et publication effective ne sont pas acquis.
 
 ---
 
