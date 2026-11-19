@@ -43,7 +43,7 @@ jobs:
           import json
           from pathlib import Path
           root=Path("assets/library/capture/creatures/raiiven/animations")
-          entries=[("movement","player",7),("attack","player",5),("movement","opponent",6)]
+          entries=[("movement","player",7),("attack","player",5),("movement","opponent",6),("attack","opponent",5)]
           catalog=json.loads(Path("data/assets/catalog/global-visual-assets.v1.json").read_text())
           assert catalog["counts"]["assets"]==len(catalog["assets"])
           for action,view,n in entries:
@@ -54,8 +54,10 @@ jobs:
               asset_id=f"pack:capture:creature-raiiven-{action}-{view}-{n}-v1"
               assets=[a for a in catalog["assets"] if a["id"]==asset_id]
               assert len(assets)==1 and assets[0]["resource"]["frameCount"]==n
-          assert not (root/"attack"/"opponent").exists(), "Never publish unapproved attack face PROTO"
-          print("PASS: 3 approved animations, intact masters, unique catalog")
+          attack=json.loads((root/"attack"/"opponent"/"animation.manifest.json").read_text())
+          assert attack["frames"][0]["rgbaSha256"]==attack["frames"][-1]["rgbaSha256"], "Approved attack face must return to same original pose"
+          assert attack["opponentAttackApproved"] is True
+          print("PASS: 4 approved animations, intact masters, unique catalog")
           PY
       - name: Publish only when PR merged into authoritative main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
