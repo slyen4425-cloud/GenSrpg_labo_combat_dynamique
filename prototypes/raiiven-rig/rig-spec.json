@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "creature": "raiiven",
+  "state": "awaiting_layer_separation",
+  "prototypeOnly": true,
+  "source": {
+    "repository": "slyen4425-cloud/GenSrpg_labo_combat_dynamique",
+    "assetsBranch": "global-assets",
+    "metadata": "assets/library/capture/creatures/raiiven/raiiven.meta.json",
+    "originalArchive": "data/capture/showcase/raiiven_monster_capture_valide.zip",
+    "views": {
+      "player": "assets/library/capture/creatures/raiiven/runtime/raiiven_dos.png",
+      "opponent": "assets/library/capture/creatures/raiiven/runtime/raiiven_face.png"
+    }
+  },
+  "authoring": {
+    "canonicalAngle": "player-back-three-quarter-up-right",
+    "lockedView": true,
+    "rigParts": [
+      "torso",
+      "neck-head",
+      "tail",
+      "front-left-leg",
+      "front-right-leg",
+      "rear-left-leg",
+      "rear-right-leg"
+    ],
+    "legs": [
+      "front-left-leg",
+      "front-right-leg",
+      "rear-left-leg",
+      "rear-right-leg"
+    ],
+    "legCount": 4,
+    "poseReviewRequired": true
+  },
+  "export": {
+    "frameCount": 8,
+    "columns": 8,
+    "rows": 1,
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "format": "PNG",
+    "transparent": true,
+    "minSafeMarginPx": 42
+  },
+  "gates": {
+    "artApprovalRequired": true,
+    "animationPreviewApprovalRequired": true,
+    "finalApprovalRequired": true,
+    "productionPublishAllowed": false
+  }
+}
