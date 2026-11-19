@@ -3,7 +3,7 @@
 
 Usage: python scripts/publish-raiiven-animations-20261119.py SOURCE_CHECKOUT CANONICAL_CHECKOUT
 Source author ZIP files are never overwritten; catalog, models and other creatures
-are protected. The unapproved opponent attack PROTO is deliberately excluded.
+are protected. The approved face attack author archive retains its original PROTO filename for traceability.
 """
 from __future__ import annotations
 
@@ -34,6 +34,15 @@ ARCHIVES = (
         "members": "raiiven_attaque_frame_{index:02}.png",
         "master": "raiiven_dos.png",
         "label": "Raiiven — attaque dos (5 frames)",
+    },
+    {
+        "zip": "raiiven_attaque_face_5_frames_PROTO.zip",
+        "sha": "dc6e992ff18756a588e33e0c47138e3fad80ec0243eec3163bdfb9b9793d2e42",
+        "action": "attack", "view": "opponent", "frame_count": 5,
+        "frame_ms": 180, "playback": "once",
+        "members": "raiiven_attaque_face_pose_{index:02}.png",
+        "master": "raiiven_face.png",
+        "label": "Raiiven — attaque face (5 frames)",
     },
     {
         "zip": "raiiven_mouvement_adversaire_6_frames.zip",
@@ -86,7 +95,14 @@ def one_media(spec: dict, source: Path, canonical: Path, catalog: dict) -> dict:
         ]
 
     # The approved PNG makes the FIRST rendered frame exactly canonical.
-    frames = [approved_master(root, spec["master"])] + originals[1:]
+    # Keep the two endpoints byte-identical to the official approved model.
+    # The original face-attack poses 01/05 are identical in the author's ZIP.
+    if spec["action"] == "attack" and spec["view"] == "opponent":
+        assert originals[0].tobytes() == originals[-1].tobytes(), "Author attack loop endpoints differ"
+        frames = [approved_master(root, spec["master"]), *originals[1:-1],
+                  approved_master(root, spec["master"])]
+    else:
+        frames = [approved_master(root, spec["master"])] + originals[1:]
     atlas = Image.new("RGBA", (512 * count, 512), (0, 0, 0, 0))
     for i, frame in enumerate(frames):
         atlas.paste(frame, (i * 512, 0))
@@ -110,7 +126,7 @@ def one_media(spec: dict, source: Path, canonical: Path, catalog: dict) -> dict:
         "sourceArchiveSha256": spec["sha"],
         "firstFrame": "approved-static-master",
         "firstFrameRgbaSha256": digest(frames[0].tobytes()),
-        "unapprovedOpponentAttackExcluded": True,
+        "opponentAttackApproved": spec["action"] == "attack" and spec["view"] == "opponent",
         "frames": [
             {"index": i, "rgbaSha256": digest(frame.tobytes())}
             for i, frame in enumerate(frames)
@@ -161,8 +177,8 @@ def run(source: Path, canonical: Path) -> None:
     catalog["counts"]["sprites"] += len(items)
     assert catalog["counts"]["assets"] == len(catalog["assets"])
     catalog_path.write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
-    print("PASS Raiiven approved animated clips: 7f player movement, 5f player attack, 6f opponent movement")
-    print("PASS canonical first frame and one global-assets catalog; opponent attack PROTO excluded")
+    print("PASS Raiiven approved animated clips: 7f player movement, 5f player attack, 6f opponent movement, 5f opponent attack")
+    print("PASS canonical first frame, attack face matching endpoints and one global-assets catalog")
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
