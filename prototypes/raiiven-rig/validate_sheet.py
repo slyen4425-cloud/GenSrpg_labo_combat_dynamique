@@ -24,6 +24,13 @@ def validate_spec(spec):
     assert anatomy["legCount"] == 4, "Quadruped must have exactly four legs"
     assert len(anatomy["limbIdentity"]) == 4 and set(anatomy["limbIdentity"]) == EXPECTED_LEGS
     assert anatomy["consistentAnatomyAcrossFrames"] is True
+    assert author["motion"] == "horse-transverse-gallop-four-beat-right-lead", "Raiiven must gallop, not walk/trot"
+    gait = author["gaitPlan"]
+    assert len(gait) == 8 and [p["frame"] for p in gait] == list(range(1, 9))
+    assert [p["contact"] for p in gait[1:5]] == [
+        "left-hind", "right-hind", "left-fore", "right-fore"
+    ], "Four beat right-lead gallop contacts incorrect"
+    assert sum(p["contact"] == "none" for p in gait) >= 2, "No flight/suspension poses"
     export = spec["export"]
     assert export["frameCount"] == 8
     assert export["columns"] * export["rows"] == export["frameCount"]
