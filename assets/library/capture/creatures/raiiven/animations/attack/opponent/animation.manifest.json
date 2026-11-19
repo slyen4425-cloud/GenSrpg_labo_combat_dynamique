@@ -1,0 +1,47 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "raiiven",
+  "action": "attack",
+  "view": "opponent",
+  "frameCount": 5,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 180,
+  "playbackMode": "once",
+  "sourceArchive": "raiiven_attaque_face_5_frames_PROTO.zip",
+  "sourceArchiveSha256": "dc6e992ff18756a588e33e0c47138e3fad80ec0243eec3163bdfb9b9793d2e42",
+  "firstFrame": "approved-static-master",
+  "firstFrameRgbaSha256": "8740fb7e1ebb8814571eb567ddb114410093e8158690f736e739e34573354bd6",
+  "opponentAttackApproved": true,
+  "frames": [
+    {
+      "index": 0,
+      "rgbaSha256": "8740fb7e1ebb8814571eb567ddb114410093e8158690f736e739e34573354bd6"
+    },
+    {
+      "index": 1,
+      "rgbaSha256": "2984b78ccc2e420825619848e75fef5be4982753235fbed46f31549470e3996d"
+    },
+    {
+      "index": 2,
+      "rgbaSha256": "ce55aa1f2ac5ac004804daeffc38a694cf8ee5e5d55846be1d346a302fab11a7"
+    },
+    {
+      "index": 3,
+      "rgbaSha256": "0c7adf21f59eea36ae2b81752d5fba840ee25e33c85a49b05efef6720cde9965"
+    },
+    {
+      "index": 4,
+      "rgbaSha256": "8740fb7e1ebb8814571eb567ddb114410093e8158690f736e739e34573354bd6"
+    }
+  ],
+  "atlas": {
+    "file": "capture/creatures/raiiven/animations/attack/opponent/raiiven_attack_opponent_5f.png",
+    "format": "sprite-strip",
+    "frameCount": 5,
+    "frameWidth": 512,
+    "frameHeight": 512
+  }
+}

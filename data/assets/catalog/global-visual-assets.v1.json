@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 465,
+    "assets": 469,
     "icons": 207,
-    "sprites": 226,
+    "sprites": 230,
     "fx": 2,
     "portraits": 25,
     "backgrounds": 5,
@@ -15599,6 +15599,158 @@
         "frameCount": 8,
         "frameMs": 115,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-raiiven-movement-player-7-v1",
+      "label": "Raiiven — galop dos (7 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "raiiven",
+        "animated",
+        "player",
+        "movement",
+        "spirit",
+        "approved-20261119"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / visuels auteur approuvés",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/raiiven/animations/movement/player/raiiven_movement_player_7f.png",
+        "format": "sprite-strip",
+        "mime": "image/png",
+        "frameCount": 7,
+        "frameMs": 120,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-raiiven-attack-player-5-v1",
+      "label": "Raiiven — attaque dos (5 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "raiiven",
+        "animated",
+        "player",
+        "attack",
+        "spirit",
+        "approved-20261119"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / visuels auteur approuvés",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/raiiven/animations/attack/player/raiiven_attack_player_5f.png",
+        "format": "sprite-strip",
+        "mime": "image/png",
+        "frameCount": 5,
+        "frameMs": 180,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-raiiven-attack-opponent-5-v1",
+      "label": "Raiiven — attaque face (5 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "raiiven",
+        "animated",
+        "opponent",
+        "attack",
+        "spirit",
+        "approved-20261119"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / visuels auteur approuvés",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/raiiven/animations/attack/opponent/raiiven_attack_opponent_5f.png",
+        "format": "sprite-strip",
+        "mime": "image/png",
+        "frameCount": 5,
+        "frameMs": 180,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-raiiven-movement-opponent-6-v1",
+      "label": "Raiiven — mouvement adversaire face (6 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "raiiven",
+        "animated",
+        "opponent",
+        "movement",
+        "spirit",
+        "approved-20261119"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / visuels auteur approuvés",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/raiiven/animations/movement/opponent/raiiven_movement_opponent_6f.png",
+        "format": "sprite-strip",
+        "mime": "image/png",
+        "frameCount": 6,
+        "frameMs": 130,
+        "playbackMode": "loop"
       },
       "compatibility": {
         "uses": [
