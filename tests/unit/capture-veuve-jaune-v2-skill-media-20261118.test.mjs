@@ -19,7 +19,7 @@ const sprite=id=>"pack:capture:sprite-skill-veuve-jaune-"+id+"-v1";
 
 test("five Veuve jaune skills keep canonical IDs and author gameplay, while changing only skill visuals",()=>{
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
- assert.match(GLOBAL_VISUAL_LIBRARY.revision,/v68-veuve-jaune-five-skill-media/);
+ assert.ok(Number(GLOBAL_VISUAL_LIBRARY.revision.match(/-v(\d+)-/)?.[1] ?? 0) >= 68, "preserve Veuve jaune media cache refresh across later authorized revisions");
  for(let i=0;i<skillNames.length;i++){
    let s=transfers[i];
    assert.equal(s.id,"veuve-jaune-"+skillNames[i]);
