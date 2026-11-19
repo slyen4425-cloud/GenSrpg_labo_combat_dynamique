@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "creature": "raiiven",
-  "state": "angle_reference_rework_after_rejected_walk_sheet",
+  "state": "gallop_motion_reference_and_pose_guides_needed",
   "prototypeOnly": true,
   "source": {
     "repository": "slyen4425-cloud/GenSrpg_labo_combat_dynamique",
@@ -32,49 +32,75 @@
     },
     "visualReviewRequired": true,
     "headDirection": "forward-toward-opponent-away-from-viewer-not-screen-side",
-    "motion": "grounded-equine-four-beat-walk",
+    "motion": "horse-transverse-gallop-four-beat-right-lead",
     "gaitPlan": [
       {
         "frame": 1,
-        "phase": "contact",
-        "note": "left hind begins swing, other three support"
+        "phase": "collected_suspension",
+        "contact": "none",
+        "description": "Four hooves off ground; gather before landing"
       },
       {
         "frame": 2,
-        "phase": "swing",
-        "note": "left hind moves forward, weight transfers"
+        "phase": "first_hind_contact",
+        "contact": "left-hind",
+        "description": "Left hind begins landing; front limbs still extending"
       },
       {
         "frame": 3,
-        "phase": "contact",
-        "note": "left hind lands, left front begins swing"
+        "phase": "second_hind_contact",
+        "contact": "right-hind",
+        "description": "Right hind follows, hindquarters carry load"
       },
       {
         "frame": 4,
-        "phase": "swing",
-        "note": "left front advances, no planted foot slides"
+        "phase": "first_fore_contact",
+        "contact": "left-fore",
+        "description": "Left fore contacts next; body travels forward"
       },
       {
         "frame": 5,
-        "phase": "contact",
-        "note": "left front lands, right hind begins swing"
+        "phase": "leading_fore_contact",
+        "contact": "right-fore",
+        "description": "Right fore is the final landing contact"
       },
       {
         "frame": 6,
-        "phase": "swing",
-        "note": "right hind advances, visible depth and foreshortening consistent"
+        "phase": "propulsion_takeoff",
+        "contact": "exiting",
+        "description": "Forelimbs push off; shoulders rise and body begins flight"
       },
       {
         "frame": 7,
-        "phase": "contact",
-        "note": "right hind lands, right front advances"
+        "phase": "airborne_extension",
+        "contact": "none",
+        "description": "Airborne interval; all hooves visibly above ground"
       },
       {
         "frame": 8,
-        "phase": "loop",
-        "note": "right front lands, returns to initial stance without teleport"
+        "phase": "airborne_recovery",
+        "contact": "none",
+        "description": "Legs gather and return continuously to frame one"
       }
-    ]
+    ],
+    "gaitPrinciple": "Use real photographic/video equine gallop sequence as timing and anatomy reference; four separate hoof strikes in right-lead transverse gallop (LH,RH,LF,RF), then aerial phase. Avoid in-place trot or random leg swaps. Exact eight keyposes reviewed against reference before generation.",
+    "poseReference": {
+      "historicalSequence": "https://www.nga.gov/artworks/167046-plate-number-628-daisy-galloping",
+      "historicalSequence2": "https://www.nga.gov/artworks/167044-plate-number-626-annie-g-galloping",
+      "note": "Public-domain equine motion study guides footfall rhythm, not a source to copy as game art. Perspective must be adapted to official Raiiven player camera without flipping its head.",
+      "controlOptions": [
+        {
+          "name": "Blender quadruped reference rig",
+          "role": "optional invisible 3D pose guides, NOT final cutout art",
+          "status": "not implemented"
+        },
+        {
+          "name": "AnimalPose ControlNet",
+          "role": "experimental pose-conditioned full-frame generation",
+          "status": "not integrated, compatibility and quality unverified"
+        }
+      ]
+    }
   },
   "export": {
     "frameCount": 8,
@@ -90,8 +116,8 @@
     "delivery": "chat-visual-first",
     "includeContactSheet": true,
     "includeAnimatedPreview": true,
-    "firstGate": "approve_canonical_stance_and_view_before_generating_new_eight_pose_sheet",
-    "rejectedVersion": "2026-11-19 first generated side-on eight-pose sheet; rejected: wrong head facing, too side-on, illogical walk"
+    "firstGate": "validate camera angle and gallop reference keyposes, then generate complete full-character illustration per frame",
+    "rejectedVersion": "2026-11-19 eight-pose sheet rejected: side profile, enemy-facing head wrong, gait mechanically incorrect (trot/walk instead of gallop)"
   },
   "gates": {
     "artApprovalRequired": true,
