@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "creature": "raiiven",
-  "state": "awaiting_layer_separation",
+  "state": "awaiting_full_pose_generation",
   "prototypeOnly": true,
   "source": {
     "repository": "slyen4425-cloud/GenSrpg_labo_combat_dynamique",
@@ -14,25 +14,23 @@
     }
   },
   "authoring": {
+    "mode": "full-illustration-per-frame",
+    "poseGuideOnly": true,
+    "cutoutAnimationAllowed": false,
+    "assembledLimbsInFinalAllowed": false,
     "canonicalAngle": "player-back-three-quarter-up-right",
     "lockedView": true,
-    "rigParts": [
-      "torso",
-      "neck-head",
-      "tail",
-      "front-left-leg",
-      "front-right-leg",
-      "rear-left-leg",
-      "rear-right-leg"
-    ],
-    "legs": [
-      "front-left-leg",
-      "front-right-leg",
-      "rear-left-leg",
-      "rear-right-leg"
-    ],
-    "legCount": 4,
-    "poseReviewRequired": true
+    "anatomy": {
+      "legCount": 4,
+      "limbIdentity": [
+        "front-left-leg",
+        "front-right-leg",
+        "rear-left-leg",
+        "rear-right-leg"
+      ],
+      "consistentAnatomyAcrossFrames": true
+    },
+    "visualReviewRequired": true
   },
   "export": {
     "frameCount": 8,
@@ -43,6 +41,11 @@
     "format": "PNG",
     "transparent": true,
     "minSafeMarginPx": 42
+  },
+  "preview": {
+    "delivery": "chat-visual-first",
+    "includeContactSheet": true,
+    "includeAnimatedPreview": true
   },
   "gates": {
     "artApprovalRequired": true,
