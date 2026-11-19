@@ -1,31 +1,34 @@
-# Raiiven — prototype d'animation quadrupède (isolé)
+# Raiiven — prototype d'animation par poses complètes (isolé)
 
-**État : préparation technique, PAS d'animation validée, PAS de squelette Godot réalisé.**
+**État : préparation technique ; aucune nouvelle pose ni animation générée pour le moment.**
 
-Ce chantier expérimental ne remplace aucun visuel ni sprite publié. Pas de modification de `main` ou de `global-assets` tant que la prévisualisation n'est pas validée artistiquement.
+Ce chantier expérimental ne remplace aucun visuel ni sprite publié. Pas de modification de `main`, `global-assets` ou de la PWA sans validation de l'utilisateur.
 
 ## Sources officielles
 
-- Visuels face, dos, icône : branche `global-assets`, dossier `assets/library/capture/creatures/raiiven/runtime/`.
-- Métadonnées : `assets/library/capture/creatures/raiiven/raiiven.meta.json`, également sur `global-assets`.
-- Archive auteur validée : `data/capture/showcase/raiiven_monster_capture_valide.zip` sur `main`.
+- Visuels validés : branche `global-assets`, dossier `assets/library/capture/creatures/raiiven/runtime/` (face, dos, icône).
+- Métadonnées : `assets/library/capture/creatures/raiiven/raiiven.meta.json` sur `global-assets`.
+- Archive auteur : `data/capture/showcase/raiiven_monster_capture_valide.zip` sur `main`.
 
-Ne jamais redessiner ces images silencieusement ni les substituer aux références validées.
+## Règle artistique impérative
 
-## Protocole de réalisation
+**Chaque frame doit être une illustration COMPLÈTE, entièrement générée, de la créature dans une pose différente.** Ne jamais afficher des morceaux découpés ou un assemblage articulé comme résultat final. Aucun découpage ni rigging de membres n'est requis dans ce prototype. Un éventuel squelette de référence ne pourrait servir que de guide de pose invisible, jamais de rendu.
 
-1. **Anatomie** : établir quatre membres persistants, nommés avant-gauche, avant-droit, arrière-gauche et arrière-droit ; ajouter tête, torse, queue, sans inventer de nouveaux membres. Soumettre les contours et les points de pivot au contrôle visuel.
-2. **Séparation** : les trois PNG approuvés sont des visuels aplatis, pas des découpes de rig. Obtenir des pièces avec les zones occultées reconstituées et conserver les proportions, le style et les couleurs. Éviter de faire croire qu'une transformation du PNG entier anime les pattes.
-3. **Animation** : tester la marche à quatre appuis sur huit images, à angle fixe (vue joueur dos trois-quarts haut-droite). Ne pas inverser pattes avant et arrière entre images. Revoir le pas, les chevauchements et l'ombre de contact.
-4. **Export** : atlas PNG ou WebP transparent de 8 cases 512 × 512, sans recouvrement, et une prévisualisation animée autonome. Le contrôle automatique est défini dans `validate_sheet.py` ; la cohérence anatomique et artistique reste une validation visuelle.
-5. **Validation** : aperçu d'abord, validation de l'utilisateur ensuite, intégration et mise à jour du catalogue officiel seulement sur demande explicite.
+Conserver la silhouette, la tête, les couleurs, le style, les quatre membres et la perspective des références approuvées ; éviter les jambes additionnelles, la confusion avant/arrière et les changements de morphologie.
 
-## Limitations connues
+## Protocole
 
-Une source aplatie ne contient pas les parties cachées des pattes : le rigging semi-automatique demande une reconstruction artistique. Godot est une option d'animation, **non encore installé ni utilisé dans ce prototype**. Aucun résultat de rendu squelettique ne doit être annoncé avant sa production.
+1. **Référence artistique** : choisir la vue joueur, arrière trois-quarts haut-droite, en partant du PNG officiel de dos.
+2. **Planche de poses** : produire huit illustrations complètes de Raiiven à angle fixe, chaque image correspondant à un temps du cycle de marche. Soumettre au contrôle visuel.
+3. **Contrôle anatomique** : exactement quatre pattes visuellement cohérentes dans chaque illustration ; membres avant et arrière identifiables sans inversion. Les règles automatiques de fichier ne prouvent pas cette cohérence : examen visuel indispensable.
+4. **Export** : huit cases 512 × 512 RGBA transparentes, sans recouvrement et avec marges sûres. Générer une planche d'images et une prévisualisation animée.
+5. **Validation** : montrer planche + aperçu dans le fil de conversation, éventuellement fournir lien de prototype séparé pour test téléphone ; n'intégrer au jeu qu'après validation expresse.
 
-## Contrôle
+## État de l'outillage
 
-`python prototypes/raiiven-rig/validate_sheet.py --spec prototypes/raiiven-rig/rig-spec.json` valide les métadonnées.
+`validate_sheet.py` contrôle le contrat, puis la taille, les marges et la transparence des images produites. Ce script ne fabrique pas les poses. Godot n'est pas nécessaire pour cette méthode de génération d'images complètes, et aucune animation Godot n'a été réalisée.
 
-`python prototypes/raiiven-rig/validate_sheet.py --spec prototypes/raiiven-rig/rig-spec.json --sheet chemin/atlas.png` vérifie en plus les cases de l'atlas (nécessite Pillow). Il ne certifie pas l'absence de pattes fantômes : celle-ci demande une revue image par image.
+## Contrôles
+
+`python prototypes/raiiven-rig/validate_sheet.py --spec prototypes/raiiven-rig/rig-spec.json` vérifie la configuration.
+`python prototypes/raiiven-rig/validate_sheet.py --spec prototypes/raiiven-rig/rig-spec.json --sheet chemin/atlas.png` vérifie en plus l'export.
