@@ -76,7 +76,7 @@ def one_media(spec: dict, source: Path, canonical: Path, catalog: dict) -> dict:
     count = spec["frame_count"]
     output = root / "animations" / spec["action"] / spec["view"]
     output.mkdir(parents=True, exist_ok=True)
-    atlas_path = output / f"raiiven_{spec['action']}_{spec['view']}_{count}f.webp"
+    atlas_path = output / f"raiiven_{spec['action']}_{spec['view']}_{count}f.png"
     manifest_path = output / "animation.manifest.json"
 
     with zipfile.ZipFile(io.BytesIO(blob)) as z:
@@ -90,7 +90,7 @@ def one_media(spec: dict, source: Path, canonical: Path, catalog: dict) -> dict:
     atlas = Image.new("RGBA", (512 * count, 512), (0, 0, 0, 0))
     for i, frame in enumerate(frames):
         atlas.paste(frame, (i * 512, 0))
-    atlas.save(atlas_path, format="WEBP", lossless=True, method=6)
+    atlas.save(atlas_path, format="PNG", optimize=True)
     reread = Image.open(atlas_path).convert("RGBA")
     assert reread.size == (512 * count, 512)
     assert reread.crop((0, 0, 512, 512)).tobytes() == frames[0].tobytes(), "Master frame changed"
@@ -136,7 +136,7 @@ def one_media(spec: dict, source: Path, canonical: Path, catalog: dict) -> dict:
                    "author": "GenSRPG / visuels auteur approuvés", "license": "project-internal"},
         "resource": {
             "file": info["atlas"]["file"],
-            "format": "sprite-strip", "mime": "image/webp",
+            "format": "sprite-strip", "mime": "image/png",
             "frameCount": count, "frameMs": spec["frame_ms"],
             "playbackMode": spec["playback"],
         },
