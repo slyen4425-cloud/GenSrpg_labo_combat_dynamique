@@ -19,8 +19,16 @@ function frame() {
   return {mask:{width:10,height:10,opaque:new Uint8Array(100).fill(1)},
     origin:{x:700,y:100},axisX:{x:800,y:100},axisY:{x:700,y:200}};
 }
-function harness(targetSlots=["opponent","opponent-b"]){
-  const {arena,nodes}=dom(),calls=[],sprites=[],frames=[],sourceMotion={style:{opacity:"0.87"}};
+function harness(targetSlots=["opponent","opponent-b"],{displayedWidth=null,authoredScale=1}={}){
+  const sourceFighter={style:{getPropertyValue(name){
+    return name==="--creature-display-scale"?String(authoredScale):"";
+  }},querySelector(){return null;}};
+  const sourceMotion={style:{opacity:"0.87"},
+    closest(selector){return selector===".fighter"?sourceFighter:null;},
+    querySelector(selector){return displayedWidth!=null && selector==="[data-demo-image]"
+      ? {getBoundingClientRect(){return {width:displayedWidth,height:displayedWidth}}}:null;}
+  };
+  const {arena,nodes}=dom(),calls=[],sprites=[],frames=[];
   const animation={currentTime:0,finished:new Promise(()=>{}),cancel(){}};
   const handle=playDomStampedeFxV1({arena,fromSlot:"player",targetSlot:"opponent",
     stampede:config,sourceMotion,sourceVisual:{movement:{url:"https://assets.example/raiiven-movement-player-7-frames.png",frameCount:7,assetId:"pack:capture:creature-raiiven-movement-player-7-v1"}},
@@ -75,5 +83,19 @@ test("solo stampede reuses the same one-sensor path with only one enemy",()=>{
   }
   assert.equal(g.calls.length,3);
   assert.deepEqual(g.calls.map(x=>x.passIndex),[0,1,2]);
+  g.handle.stop();
+});
+
+test("Cavalcade matches the displayed model size, not the unscaled fighter container",()=>{
+  const g=harness(["opponent"],{displayedWidth:92,authoredScale:1.6});
+  assert.equal(g.arena.node.children.length,5);
+  assert.ok(g.arena.node.children.every(x=>x.style.width==="92px"),
+    "every herd image must match the actual 92-pixel displayed character, not its 40-pixel slot");
+  g.handle.stop();
+});
+test("When the standing image is hidden, Cavalcade uses the canonical authored model scale",()=>{
+  const g=harness(["opponent"],{authoredScale:1.5});
+  assert.ok(g.arena.node.children.every(x=>x.style.width==="60px"),
+    "source slot 40 pixels x authored creature scale 1.5 = 60 pixels");
   g.handle.stop();
 });
