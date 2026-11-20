@@ -97,6 +97,18 @@ jobs:
       - name: Real Chromium expanding wave on two independent 2v2 targets
         run: node tests/browser/expanding-wave-2v2-smoke.mjs
 
+
+  raiiven-stampede-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Real Chromium Raiiven stampede, six atlas clones, 3x40 per visible enemy in 2v2
+        run: node tests/browser/raiiven-stampede-2v2-smoke.mjs
+
   expanding-wave-mobile-preview-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 35

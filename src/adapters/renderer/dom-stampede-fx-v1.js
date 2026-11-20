@@ -61,7 +61,9 @@ export function playDomStampedeFxV1({
     group.append(ghost);
   }
   arena.append(group);
-  const animation=animate(group,[{opacity:1},{opacity:1}],{
+  // Use a non-transform, non-opacity WAAPI property as the sole frame clock.
+  // The temporary presentation explicitly hides itself between passes.
+  const animation=animate(group,[{visibility:"visible"},{visibility:"visible"}],{
     duration:total,easing:"linear",fill:"forwards"
   });
   const resolved=new Set(),previousFrames=new Map();
