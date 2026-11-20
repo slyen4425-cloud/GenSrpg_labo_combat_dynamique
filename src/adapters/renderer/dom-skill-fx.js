@@ -389,6 +389,7 @@ export function createDomSkillFxRenderer({
   barrierCollisionRectsFor = null,
   waveTargetsFor = null,
   sourceSpriteFor = null,
+  sourceMotionFor = null,
   playCameraFx = null
 }) {
   if (!arena || typeof arena.append !== "function" || !arena.ownerDocument) {
@@ -452,6 +453,8 @@ export function createDomSkillFxRenderer({
 
   if (sourceSpriteFor !== null && typeof sourceSpriteFor !== "function")
     throw new TypeError("sourceSpriteFor must be function");
+  if (sourceMotionFor !== null && typeof sourceMotionFor !== "function")
+    throw new TypeError("sourceMotionFor must be function");
   let disposed = false;
   const active = new Set();
   const persistentZones = new Map();
@@ -2786,7 +2789,8 @@ export function createDomSkillFxRenderer({
       // real masked collisions to Combat Runtime, never HP or dodge results.
       const sprites=sourceSpriteFor?.(fromSlot)??null;
       const pass=playDomStampedeFxV1({arena,fromSlot,targetSlot,stampede,
-        sourceVisual:sprites,sourceRect:slot=>sourceRect(slot),
+        sourceVisual:sprites,sourceMotion:sourceMotionFor?.(fromSlot)??null,
+        sourceRect:slot=>sourceRect(slot),
         targetRect:slot=>anchor(targetAnchors,slot,"target").getBoundingClientRect(),
         targetSlots:waveTargetsFor?.(fromSlot,targetSlot)??[],
         targetCollisionModelFor,onContact:contact=>onProjectileContact?.(contact),
