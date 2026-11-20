@@ -800,23 +800,37 @@ Cette section prime sur toute ancienne procédure qui considérerait l'existence
 Toute UI d'édition encore équipée d'une référence texte historique doit être migrée par lots contrôlés, en respectant l'unique owner des registres concernés, **sans** multiplier les autorités ni modifier la mécanique du combat.
 
 
-## 36. Charte artistique Capture — modèles, animations et icônes (19 octobre 2026)
+## 36. Charte artistique Capture — priorité de l'Atelier des animations (mise à jour du 20 novembre 2026)
 
-Pour toute création nouvelle de modèle, d'icône ou d'animation de créature pour Monster Capture, consulter et appliquer obligatoirement :
+**Point d'entrée obligatoire pour fabriquer toute animation de créature :** [🚩 Atelier de fabrication des animations](../00_ATELIER_ANIMATIONS_LIRE_EN_PREMIER.md), puis [index des standards](../atelier-animations/README.md) et **fiche exacte du standard et de la séquence choisie** (morphologie + action + vue). Lire également la [charte visuelle détaillée](LAB_CAPTURE_CHARTE_MODELES_ANIMATIONS_ICONES_V1.md).
 
-**[docs/LAB_CAPTURE_CHARTE_MODELES_ANIMATIONS_ICONES_V1.md](LAB_CAPTURE_CHARTE_MODELES_ANIMATIONS_ICONES_V1.md)**
+### 36.1. Priorité contractuelle — aucune longueur universelle en frames
 
-Règles bloquantes :
+Lorsqu'une nouvelle animation est demandée **« avec le modèle / standard / preset X »**, les caractéristiques de la **séquence validée effectivement choisie dans l'Atelier** prévalent sur les chiffres, gabarits, exemples et anciennes recettes génériques (5, 6, 7, 8, 12, 16, 20 frames, etc.) écrits dans la charte ou ailleurs. Il n'existe **aucun nombre fixe par défaut** applicable à toutes les créatures ou à toutes les actions.
 
-1. Modèles FACE et DOS **distincts, approuvés** ; première frame d'animation exactement identique (pixels RGBA décodés) à son maître de la vue correspondante ;
-2. la perspective du modèle maître est **verrouillée pendant toutes les frames**, notamment pour le dos légèrement de trois-quarts : aucune rotation, inversion, mutation anatomique ou réinterprétation ;
-3. PNG transparents RGBA 512 × 512, séquence de 16 à 20 frames par vue, ancrage stable ;
-4. **visualisation réellement animée et planche de poses séparées pour face ET dos avant tout raccord** et validation explicite de l'auteur requise pour chaque vue ;
-5. toute génération non conforme ou refusée reste un brouillon, jamais une ressource publiée/green par effet de bord ;
-6. format des icônes confirmé auprès de l'autorité réelle des médias (sources de production vs exports HUD), sans nouveau propriétaire d'asset.
+**Reproduire exactement, pour la séquence correspondante :**
+- le **nombre de frames** (si le modèle choisi en comporte 6, produire **6 frames, pas 8, 12, 16 ou 20**) ;
+- leur **ordre**, la succession réelle des appuis, poses-clés, impacts et transitions, sans allonger, compléter artificiellement, répéter ou supprimer des frames ;
+- la **vue et l'orientation** (FACE adversaire et DOS joueur sont deux références indépendantes), la direction des mouvements et leur amplitude relative ;
+- la **cadence, la boucle, la pause sur une frame ou le maintien final** quand la référence les définit ; ces propriétés ne doivent pas être copiées aveuglément vers le runtime si la compétence a un contrat temporel distinct.
 
-Cette règle complète les sections 6, 14, 33 et 34 et ne change aucune mécanique de combat.
+Ne pas confondre deux séquences d'un même standard : le **déplacement** ne fixe pas le nombre d'images de l'**attaque**, et le **FACE** ne fixe pas celui du **DOS**. Par exemple, avec le standard **Cheval/Raiiven**, les quatre références sont : galop DOS **7**, attaque DOS **5**, galop FACE **6**, attaque FACE **5**. Le standard **Gorille/Gorice** contient quant à lui quatre références de **12** frames (déplacement FACE/DOS et charge FACE/DOS) ; la disponibilité officielle de ce second standard dépend de sa fusion dans l'index canonique.
 
+Une variante comportant davantage ou moins de poses est possible **uniquement comme choix explicite de l'auteur**, identifié et validé comme nouvelle référence/variante de production. Elle ne peut jamais résulter d'une mise aux normes automatique vers « 12 frames » ou « 16–20 frames ». Si la référence n'est pas disponible, qu'aucune séquence ne correspond ou qu'un manifeste est contradictoire : **ne pas inventer de nombre**, retrouver la source et signaler le blocage. Sans standard sélectionné, définir le découpage avec l'auteur avant production.
+
+### 36.2. Ce que les standards ne remplacent PAS
+
+Le standard fixe la **chorégraphie**, jamais l'identité visuelle d'une créature. Les fichiers maîtres approuvés de la nouvelle créature (FACE et DOS) restent l'unique référence de son apparence, de sa silhouette, de sa palette et de son anatomie ; ne pas recolorer Raiiven/Gorice et l'appeler une nouvelle créature. Respecter les contraintes de qualité : transparence réelle, canevas approprié, marges de sécurité, ancrage, continuité anatomique, interdiction des rotations de vue non voulues, comparaison frame par frame, planches de revue et **vraie preview animée** avant approbation explicite.
+
+Les copies historiques peuvent présenter des écarts techniques connus (frame 01 d'une ancienne animation non certifiée pixel-identique au maître, marges anciennes insuffisantes). Leur conservation **comme références de mouvement** ne dispense pas une **nouvelle production** de satisfaire les exigences de qualité actuelles ; ne jamais altérer ni présenter les originaux comme corrigés.
+
+L'Atelier est un **catalogue documentaire de standards**, pas un nouveau moteur, une nouvelle bibliothèque d'assets ou un deuxième catalogue runtime. Les médias et identifiants canoniques restent chez leur propriétaire existant. Aucune intégration PWA/combat automatique. Préserver les originaux et archives.
+
+### 36.3. Contrôles de sortie obligatoires
+
+Avant de déclarer une animation terminée, vérifier le standard et la séquence exacts (chemin, action, vue, manifeste et statut), le compte réel de frames et leur **ordre pose par pose**, les rythmes de lecture et de fin, l'absence de coupure et la fidélité aux maîtres. Produire des previews FACE/DOS correspondant aux vues demandées, demander l'approbation artistique et appliquer la section 34 (contrôle du **vrai média**, pas seulement du frameCount).
+
+La présente section remplace **uniquement** les anciennes valeurs *génériques* sur le nombre de frames et la recette de mouvement. Elle ne modifie ni l'autorité de l'Animation Core, ni les règles de combat, ni les protections d'assets, ni les gates CI/GREEN.
 
 ## 37. Livraison coordonnée multi-branches et reprise inter-fils (26 octobre 2026)
 

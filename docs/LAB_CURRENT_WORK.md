@@ -1,3 +1,10 @@
+## 2026-11-20 — Charte artistique : priorité contractuelle des standards de l'Atelier d'animations (C1 documentation)
+- START `main@ae1287b47858e6c92f4d8e042d9ac7e411f4c579` ; checkpoint `checkpoint/lab-start-animation-charte-priorite-presets-20261120` ; branche temporaire `work/lab-animation-charte-priorite-presets-20261120`.
+- Périmètre documentaire uniquement : `docs/LAB_CHARTE.md` §36, `docs/LAB_CAPTURE_CHARTE_MODELES_ANIMATIONS_ICONES_V1.md`, fiche du standard Cheval, et sentinelle dédiée. Aucun changement des planches, médias, moteur, compétences, catalogues, `global-assets`, PWA ni Exploration.
+- Règle utilisateur : quand un modèle a 6 frames, en produire **6 exactement** ; aucun quota 12 ou 16–20 universel. L'action et la vue choisies fixent compte, poses et lecture. Cheval/Raiiven 7/5/6/5 ; Gorille/Gorice 12×4 proposé en PR #352 et non publié sur main au START.
+- Tests : sentinelle de cohérence des deux chartes et des quatre séquences réelles du manifeste Raiiven ; `npm run ci` sur SHA du lot ; checkpoints GREEN uniquement après CI et contrôle de publication conformément à la charte.
+- État : **NON GREEN** avant CI de la PR et vérification du SHA `main` après fusion.
+
 ## 2026-11-20 — Raiiven : quatre compétences inédites (lot temporaire)
 - START `main@2c3aa91c25002e48af6516b478a190535aba5931` ; checkpoint `checkpoint/lab-start-raiiven-four-skills-20261120` ; branche `work/lab-raiiven-four-skills-20261120`.
 - Propriétaires : contrats de statut, événement Combat Rules, packs de compétences Capture ; protections : ultime et visuels de Raiiven, autres compétences, global-assets, PWA, Exploration.
