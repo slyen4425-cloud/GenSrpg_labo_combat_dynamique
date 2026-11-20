@@ -21,8 +21,8 @@ function frame() {
     origin:{x:700,y:100},axisX:{x:800,y:100},axisY:{x:700,y:200}};
 }
 function harness(targetSlots=["opponent","opponent-b"],{displayedWidth=null,authoredScale=1,
-  authoredMovement=null,arenaScale=1}={}){
-  const sourceShadow={style:{opacity:"0.42"},cloneNode(){return {
+  authoredMovement=null,authoredAttack=null,arenaScale=1}={}){
+  const sourceShadow={style:{opacity:"0.42",translate:"",visibility:""},cloneNode(){return {
     style:{opacity:""},dataset:{},removeAttribute(){}
   };}};
   const sourceFighter={style:{getPropertyValue(name){
@@ -38,9 +38,11 @@ function harness(targetSlots=["opponent","opponent-b"],{displayedWidth=null,auth
   const {arena,nodes}=dom(),calls=[],sprites=[],frames=[];
   const movement=authoredMovement??{url:"https://assets.example/raiiven-movement-player-7-frames.png",
     frameCount:7,assetId:"pack:capture:creature-raiiven-movement-player-7-v1"};
+  const attack=authoredAttack??{url:"https://assets.example/raiiven-attack-player-5-frames.png",
+    frameCount:5,assetId:"pack:capture:creature-raiiven-attack-player-5-v1"};
   const animation={currentTime:0,finished:new Promise(()=>{}),cancel(){}};
   const handle=playDomStampedeFxV1({arena,fromSlot:"player",targetSlot:"opponent",
-    stampede:config,sourceMotion,sourceVisual:{movement},
+    stampede:config,sourceMotion,sourceVisual:{movement,attack},
     sourceRect:()=>({left:100,top:0,width:40,height:40}),
     targetRect:()=>({left:700,top:100,width:50,height:50}),targetSlots,
     targetCollisionModelFor:()=>({snapshot:frame}),
@@ -49,7 +51,7 @@ function harness(targetSlots=["opponent","opponent-b"],{displayedWidth=null,auth
     cancelFrame(){},applySpriteVisual(node,visual){sprites.push(visual.url);return {frameAnimation:null};},
     authorPixels(_arena,value){return (Number(value)||0)*arenaScale;}});
   function step(ms){animation.currentTime=ms;const callback=frames.shift();assert.ok(callback);callback();}
-  return {handle,calls,sprites,arena,nodes,sourceMotion,sourceShadow,movement,step};
+  return {handle,calls,sprites,arena,nodes,sourceMotion,sourceShadow,movement,attack,step};
 }
 
 test("3 stampede passes follow the one canonical animation timeline, never repeat in gaps",()=>{
@@ -61,9 +63,9 @@ test("3 stampede passes follow the one canonical animation timeline, never repea
   assert.equal(stampedePassWindowV1(config,7000),null);
 });
 
-test("five equal movement horses include the true caster, with real source restored after the three waves",()=>{
+test("five standard-attack horses include real Raiiven and original following shadow restores after three waves",()=>{
   const g=harness();
-  assert.equal(g.arena.node.dataset.stampedePose,"movement");
+  assert.equal(g.arena.node.dataset.stampedePose,"standard-attack");
   assert.equal(g.sourceMotion.style.opacity,"1","the actual horse stays visible in the charge");
   assert.equal(g.arena.node.dataset.stampedeNativeCaster,"true");
   assert.equal(g.arena.node.children.length,4,"only four visual copies, fifth is the REAL actor");
@@ -71,7 +73,8 @@ test("five equal movement horses include the true caster, with real source resto
     "no projected fake caster");
   assert.equal(g.sourceMotion.dataset.stampedeCasterActive,"true","native actor is the moving caster");
   assert.equal(g.sourceMotion.children.length,1,"one official movement layer on native actor");
-  assert.equal(g.sourceShadow.style.opacity,"0","existing standing shadow is hidden only during charge");
+  assert.equal(g.sourceShadow.style.opacity,"0.42","do not replace the canonical shadow opacity");
+  assert.equal(g.sourceShadow.style.visibility,"hidden","no stationary native shadow before the charge begins");
   assert.ok(g.arena.node.children.every(x=>!x.children.some(n=>n.dataset.stampedeHorseShadow)),
     "no unwanted giant cloned ground shadows under Cavalcade");
   assert.equal(new Set(g.arena.node.children.map(x=>x.style.width)).size,1);
@@ -85,7 +88,11 @@ test("five equal movement horses include the true caster, with real source resto
   }
   assert.equal(g.sprites.length,15,"four clones plus real native movement per pass, always five sprites");
   assert.notEqual(g.sourceMotion.style.translate,"","the real actor physically crosses the battlefield");
-  assert.equal(new Set(g.sprites).size,1,"no source atlas duplication");
+  assert.equal(g.sourceShadow.style.translate,g.sourceMotion.style.translate,
+    "the ONLY existing shadow travels with the native Raiiven model");
+  assert.equal(g.sourceShadow.style.visibility,"visible","the real caster shadow is visible on a charge pass");
+  assert.deepEqual([...new Set(g.sprites)],[g.attack.url],
+    "all five horses play the STANDARD ATTACK atlas, never the movement atlas");
   assert.equal(g.calls.length,6);
   assert.deepEqual(g.calls.map(x=>x.passIndex),[0,0,1,1,2,2]);
   assert.deepEqual(new Set(g.calls.map(x=>x.targetId)),new Set(["opponent","opponent-b"]));
@@ -96,6 +103,8 @@ test("five equal movement horses include the true caster, with real source resto
   assert.equal(g.sourceMotion.style.translate,"","native actor returns to its exact starting position");
   assert.equal(g.sourceMotion.dataset.stampedeCasterActive,undefined,"temporary source motion flag cleaned up");
   assert.equal(g.sourceShadow.style.opacity,"0.42","the original ground shadow must also be restored");
+  assert.equal(g.sourceShadow.style.translate,"","original shadow returns to its original offset");
+  assert.equal(g.sourceShadow.style.visibility,"","original shadow visibility is restored");
 });
 
 test("solo stampede reuses the same one-sensor path with only one enemy",()=>{
@@ -142,7 +151,8 @@ test("Cavalcade shares the native attack/movement pose: original and four copies
     url:"https://assets.example/authored-horse-back-movement.webp",
     frameCount:7,displayScale:1.35,offsetX:14,offsetY:-22
   };
-  const g=harness(["opponent"],{authoredMovement:movement,arenaScale:1.5});
+  const g=harness(["opponent"],{authoredMovement:{url:"https://assets.example/different-running.webp",frameCount:7},
+    authoredAttack:movement,arenaScale:1.5});
   const expected=composeCreatureMovementPoseV1({
     arena:g.arena,visual:movement,authorPixels:(_arena,value)=>Number(value)*1.5
   });
@@ -162,8 +172,8 @@ test("Cavalcade shares the native attack/movement pose: original and four copies
   g.handle.stop();
 });
 test("Opponent/front movement can have its own native 0.8 scale and positive Y offset",()=>{
-  const g=harness(["opponent"],{authoredMovement:{
-    url:"https://assets.example/horse-front.webp",frameCount:6,
+  const g=harness(["opponent"],{authoredAttack:{
+    url:"https://assets.example/horse-front-attack.webp",frameCount:5,
     displayScale:0.8,offsetX:-5,offsetY:32
   }});
   g.step(900);
@@ -171,5 +181,29 @@ test("Opponent/front movement can have its own native 0.8 scale and positive Y o
   assert.equal(native.style.transform,"translate(-5px, 32px) scale(0.8)");
   assert.ok(g.arena.node.children.every(ghost=>
     ghost.children[0].style.transform===native.style.transform));
+  g.handle.stop();
+});
+
+test("Cavalcade native shadow never stays at the departure point or duplicates on ghosts",()=>{
+  const g=harness(["opponent"]);
+  g.step(900);
+  const moved=g.sourceMotion.style.translate;
+  assert.notEqual(moved,"");
+  assert.equal(g.sourceShadow.style.translate,moved);
+  assert.equal(g.sourceShadow.style.visibility,"visible");
+  assert.equal(g.arena.node.children.filter(ghost=>ghost.children.some(c=>
+    c.dataset?.stampedeHorseShadow)).length,0,"never create ghost ground shadows");
+  g.step(2100);
+  assert.equal(g.sourceShadow.style.visibility,"hidden","shadow vanishes during the gap");
+  g.step(3300);
+  assert.equal(g.sourceShadow.style.visibility,"visible","shadow follows the return pass");
+  assert.equal(g.sourceShadow.style.translate,g.sourceMotion.style.translate);
+  g.handle.stop();
+  assert.equal(g.sourceShadow.style.translate,"");
+  assert.equal(g.sourceShadow.style.visibility,"");
+});
+test("Cavalcade never mirrors the official front/back attack atlas based on target travel direction",()=>{
+  const g=harness(["opponent"]);
+  assert.ok(g.arena.node.children.every(ghost=>ghost.style.transform==="none"));
   g.handle.stop();
 });

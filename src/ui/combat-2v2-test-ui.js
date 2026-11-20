@@ -2119,6 +2119,19 @@ export async function mountCoop2v2Test({
             : "Soin appliqué : PV déjà au maximum.",
           "ok"
         );
+      } else if (resolution.outcome === "hit" && resolution.echoCopied === true) {
+        // Display the actual native resolution instead of saying "touche"
+        // when a copied support/status spell deals no immediate damage.
+        // Floating numbers still belong exclusively to onHealthDelta().
+        const actualDamage=(resolution.events??[])
+          .filter(event=>event.type==="hit" && event.actorId===resolution.targetId &&
+            event.sourceActorId===resolution.actorId)
+          .reduce((sum,event)=>sum+Math.max(0,Number(event.appliedDamage)||0),0);
+        setStatus(actualDamage>0
+          ? "Rémanence interdite : "+actualDamage+" dégâts Ombre infligés à "+
+            (target?.displayName??resolution.targetId)+"."
+          : "Rémanence interdite : effet copié appliqué, sans dégâts immédiats.",
+          actualDamage>0?"ok":"accent");
       } else if (resolution.outcome === "hit") {
         setStatus(
           `${actor?.displayName ?? resolution.actorId} touche ${target?.displayName ?? resolution.targetId}.`,

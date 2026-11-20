@@ -73,18 +73,18 @@ export function playDomStampedeFxV1({
     transform:"translate(-50%, -50%)"
   });
 
-  // View selection happens in the same creature visual controller as ordinary
-  // attacks; there is no copied atlas, redrawn ghost or substitute fireball.
+  // Normal basic ATTACK is authoritative for Cavalcade, not the creature's
+  // running/movement atlas. Normal combat already selects the correct
+  // front/back attack and authored X/Y placement for this source slot.
+  const officialAttack=sourceVisual?.attack?.url?sourceVisual.attack:null;
   const officialMovement=sourceVisual?.movement?.url?sourceVisual.movement:
     sourceVisual?.url?sourceVisual:null;
-  const officialAttack=sourceVisual?.attack?.url?sourceVisual.attack:null;
-  const spriteSource=officialMovement??officialAttack;
-  group.dataset.stampedePose=officialMovement?"movement":officialAttack?"attack-fallback":"missing";
-  // Exact same authored appearance transform as the standard movement
-  // renderer: separate FACE/DOS displayScale and offsetX/Y, expressed in
-  // the same responsive combat-arena pixels. Herd lane deltas remain the
-  // only stampede-specific offsets; we never hand-tune Raiiven's model.
-  const movementPose=composeCreatureMovementPoseV1({
+  const spriteSource=officialAttack??officialMovement;
+  group.dataset.stampedePose=officialAttack?"standard-attack":
+    officialMovement?"movement-fallback":"missing";
+  // Share the standard creature-attack pose composer, including its
+  // FACE/DOS-specific authored placement and scale.
+  const attackPose=composeCreatureMovementPoseV1({
     arena,visual:spriteSource,authorPixels
   });
   const sourceShadow=sourceFighter?.querySelector?.(".fighter__shadow")??null;
@@ -92,6 +92,8 @@ export function playDomStampedeFxV1({
     translate:sourceMotion?.style?.translate??"",
     opacity:sourceMotion?.style?.opacity??"",
     shadowOpacity:sourceShadow?.style?.opacity??"",
+    shadowTranslate:sourceShadow?.style?.translate??"",
+    shadowVisibility:sourceShadow?.style?.visibility??"",
     casterActive:sourceMotion?.dataset?.stampedeCasterActive??null
   };
   const baseMotionBounds=nativeCaster?.getBoundingClientRect?.()??null;
@@ -131,8 +133,10 @@ export function playDomStampedeFxV1({
       left:horizontal+"px",
       top:vertical+"px",
       opacity:"1",pointerEvents:"none",
-      transform:geometry.direction>0?"none":"scaleX(-1)",
-      transformOrigin:"center center"
+      // Use precisely the native attack orientation. The ordinary attack
+      // does not mirror the player/opponent atlas based on travel direction.
+      transform:"none",
+      transformOrigin:sourceMotion?.style?.transformOrigin||"center center"
     });
     // Intentionally NO shadow clones for Cavalcade: their silhouettes were
     // covering the arena floor with large distracting dark patches.
@@ -141,11 +145,12 @@ export function playDomStampedeFxV1({
   }
   arena.append(group);
   group.dataset.stampedeNativeCaster=nativeCaster?"true":"unavailable";
-  // Conceal only the source ground shadow while its actor leaves the floor's
-  // home position. Existing shadow is restored afterwards, never replicated.
+  // One existing native ground shadow follows the REAL moving Raiiven.
+  // There are no projected clone shadows. Hide it only between visible
+  // charge passes, never leave a stationary shadow at the origin.
   if(nativeCaster){
     nativeCaster.style.opacity="1";
-    if(sourceShadow?.style)sourceShadow.style.opacity="0";
+    if(sourceShadow?.style)sourceShadow.style.visibility="hidden";
   }
   // The existing WAAPI owner is the ONLY presentation clock. The native
   // action's release and deadline still govern real hits and cost.
@@ -171,7 +176,7 @@ export function playDomStampedeFxV1({
       Object.assign(sprite.style,{
         position:"absolute",inset:"0",width:"100%",height:"100%",pointerEvents:"none"
       });
-      sprite.style.transform=movementPose;
+      sprite.style.transform=attackPose;
       sprite.style.transformOrigin="center center";
       casterLayer.append(sprite);
       const playback=applySpriteVisual(sprite,{
@@ -190,7 +195,7 @@ export function playDomStampedeFxV1({
         position:"absolute",inset:"0",display:"block",
         width:"100%",height:"100%",pointerEvents:"none"
       });
-      sprite.style.transform=movementPose;
+      sprite.style.transform=attackPose;
       sprite.style.transformOrigin="center center";
       ghost.append(sprite);
       const result=applySpriteVisual(sprite,{
@@ -219,9 +224,15 @@ export function playDomStampedeFxV1({
         const central=lane(nativeCasterIndex);
         const destX=x-groupWidth/2+central.x+horseSize/2;
         const destY=y-groupHeight/2+central.y+horseSize/2;
-        nativeCaster.style.translate=(destX-baseMotionCenter.x)+"px "+
+        const move=(destX-baseMotionCenter.x)+"px "+
           (destY-baseMotionCenter.y)+"px";
+        nativeCaster.style.translate=move;
         casterLayer.style.opacity=window.visible&&spriteSource?.url?"1":"0";
+        if(sourceShadow?.style){
+          sourceShadow.style.translate=move;
+          sourceShadow.style.visibility=window.visible&&spriteSource?.url
+            ? (previousSource.shadowVisibility||"visible") : "hidden";
+        }
       }
       if(window.visible){
         beginPass(window.index);
@@ -276,7 +287,11 @@ export function playDomStampedeFxV1({
       if(previousSource.casterActive===null)delete nativeCaster.dataset.stampedeCasterActive;
       else nativeCaster.dataset.stampedeCasterActive=previousSource.casterActive;
     }
-    if(sourceShadow?.style)sourceShadow.style.opacity=previousSource.shadowOpacity;
+    if(sourceShadow?.style){
+      sourceShadow.style.opacity=previousSource.shadowOpacity;
+      sourceShadow.style.translate=previousSource.shadowTranslate;
+      sourceShadow.style.visibility=previousSource.shadowVisibility;
+    }
   }
   const finished=Promise.resolve(animation.finished).then(
     ()=>{stop();return {status:"arrived"};},

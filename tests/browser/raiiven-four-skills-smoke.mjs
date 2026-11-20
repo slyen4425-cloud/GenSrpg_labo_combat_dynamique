@@ -18,6 +18,8 @@ import {createDomDecoyOverlayV1} from "/src/adapters/renderer/dom-decoy-overlay-
 import {composeDomTransform} from "/src/adapters/renderer/dom-keyframes.js";
 import {applySpriteVisual} from "/src/adapters/renderer/dom-skill-fx.js";
 import {playDomShadowEchoFxV1} from "/src/adapters/renderer/dom-shadow-echo-fx-v1.js";
+import {createDomSkillFxRenderer} from "/src/adapters/renderer/dom-skill-fx.js";
+import {combatHealthDeltaEventsV1} from "/src/core/combat/combat-health-feedback-v1.js";
 const check=(condition,reason)=>{if(!condition)throw Error(reason);};
 const skill=async id=>{
  const response=await fetch("/data/capture/showcase/"+id+".capture-skill-transfer-v1.json");
@@ -131,9 +133,66 @@ async function scenario(two){
   return two?"2v2":"1v1";
  }finally{overlay.dispose();area.remove();}
 }
+async function shadowProjectileContactScenario(){
+ const ids=["raiiven","enemy"];
+ const format=normalizeBattleFormatDefinition({id:"echo-browser-contact",localActorId:"raiiven",
+   teams:{players:["raiiven"],enemies:["enemy"]},
+   actors:ids.map(actorId=>({actorId,teamId:actorId==="raiiven"?"players":"enemies",
+     creatureId:actorId,displayName:actorId,fighterConfigId:actorId,controllerId:"human-local"}))});
+ const session=createCombatSession({battleFormat:format,fighters:ids.map(fighter)});
+ check(session.useSkill({actorId:"enemy",targetId:"raiiven",skill:strike}).ok,
+   "enemy real projectile supplies a copyable source");
+ const initial=session.snapshot();
+ const area=document.createElement("section");area.className="arena";document.body.append(area);
+ const slots=Object.fromEntries(ids.map((id,index)=>{
+   const node=document.createElement("div");node.className="actor";
+   node.style.left=(index?420:75)+"px";node.style.top="110px";
+   area.append(node);return [id,node];
+ }));
+ let count=0,actual=null;
+ const fx=createDomSkillFxRenderer({arena:area,anchors:slots,targetAnchors:slots,
+   presentationForSkill:()=>null,
+   requestFrame:fn=>setTimeout(fn,10),cancelFrame:handle=>clearTimeout(handle),
+   targetCollisionModelFor:slot=>({snapshot(){
+     const r=slots[slot].getBoundingClientRect();
+     return {mask:{width:12,height:12,opaque:new Uint8Array(144).fill(1)},
+       origin:{x:r.left,y:r.top},axisX:{x:r.right,y:r.top},axisY:{x:r.left,y:r.bottom}};
+   }}),
+   onProjectileContact(contact){
+     count++;
+     actual=session.useSkill({actorId:contact.actorId,targetId:contact.targetId,skill:echo});
+     return {ok:actual.ok,outcome:actual.outcome};
+   }
+ });
+ try{
+   const launched=fx.play({type:"projectile",shadowEcho:true,
+     fromSlot:"raiiven",targetSlot:"enemy",skillId:echo.id,durationMs:260});
+   check(launched.status==="running","real shadow projectile is emitted");
+   const ball=area.querySelector('[data-shadow-echo="true"][data-skill-fx="projectile"]');
+   check(ball!==null,"one reused visual shadow orb");
+   const target=slots.enemy.getBoundingClientRect();
+   // Chromium's virtual time can freeze compositor movement. The live orb
+   // node feeds the SAME swept collision watcher with its sampled bounds.
+   ball.getBoundingClientRect=()=>({
+     left:target.left+12,top:target.top+12,
+     right:target.left+32,bottom:target.top+32,width:20,height:20
+   });
+   await new Promise(resolve=>setTimeout(resolve,75));
+   check(count===1,"copied shadow projectile reports ONE native contact");
+   check(actual?.ok===true&&actual?.outcome==="hit"&&actual?.echoCopied===true,
+     "only native CombatSession resolves the hit");
+   check(session.snapshot().fighters.enemy.hp===initial.fighters.enemy.hp-12,
+     "copied 20-damage projectile applies 12 shadow damage");
+   const numbers=combatHealthDeltaEventsV1(initial,session.snapshot());
+   check(numbers.some(e=>e.actorId==="enemy"&&e.kind==="damage"&&e.amount===12),
+     "normal native damage-feedback event exists for the floating 12");
+ }finally{fx.dispose();area.remove();}
+}
 try{
  const done=[];
  for(const two of [false,true])done.push(await scenario(two));
+ await shadowProjectileContactScenario();
+ done.push("echo-contact");
  document.body.dataset.raiivenSkillsBrowser="pass:"+done.join("+");
 }catch(error){document.body.dataset.raiivenSkillsBrowser="fail:"+String(error.stack||error);}
 </script></body></html>`;
