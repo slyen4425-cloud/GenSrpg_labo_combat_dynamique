@@ -198,8 +198,12 @@ export function applyCombatDamageV1({
   // removed, never when an attack was immune, avoided or shielded.
   if (appliedDamage > 0) {
     const current = fighterOf(nextState, targetActorId).statusEffects;
+    // A real damage-over-time tick exposes the genuine actor: Dédale clones
+    // cannot survive while their owner is visibly losing HP to a status.
+    // Preserve shields, other buffs and all damage/KO ownership here.
     const remaining = current.filter(entry =>
-      entry.definition?.durationModel !== "until_damage");
+      entry.definition?.durationModel !== "until_damage" &&
+      !(incomingKind === "dot" && entry.definition?.kind === "decoy"));
     if (remaining.length !== current.length) {
       nextState = withFighterStatusEffects(nextState, targetActorId, remaining);
     }
