@@ -4,7 +4,7 @@ import {createDomDecoyOverlayV1,nextDecoyRealSlotV1} from "../../src/adapters/re
 import {chooseBattleActorDecoyV1} from "../../src/core/combat/battle-actor-ai-controller.js";
 const makeState=(statuses,elapsedMs=0)=>({elapsedMs,fighters:{raiiven:{hp:120,statusEffects:statuses},enemy:{hp:100,statusEffects:[]}}});
 const decoy=id=>({definition:{id,kind:"decoy",durationMs:20000},appliedAtMs:0,expiresAtMs:20000});
-function harness(){
+function harness({formationFor=()=>null}={}){
   const clicked=[];
   const doc={createElement(tag){
     return {tag,ownerDocument:doc,style:{},dataset:{},listeners:{},
@@ -17,7 +17,7 @@ function harness(){
   }};
   const fighterContainers={raiiven:doc.createElement("div"),enemy:doc.createElement("div")};
   const overlay=createDomDecoyOverlayV1({fighterContainers,appearanceFor:()=>null,
-    random:()=>0,onChoose:choice=>clicked.push(choice),
+    formationFor,random:()=>0,onChoose:choice=>clicked.push(choice),
     applySpriteVisual:()=>({frameAnimation:null})});
   return {clicked,overlay,fighterContainers};
 }
@@ -67,4 +67,17 @@ test("Dédale's visible real horse changes position and never repeats its curren
  assert.equal(h.overlay.count(),2);
  h.overlay.dispose();
  assert.equal(real.removed,true);
+});
+
+test("Author-defined shuffle interval is honored at runtime, not overwritten by generic default",()=>{
+  const h=harness({formationFor:()=>({reshuffleMs:2500,spacingPct:84})});
+  const state=at=>makeState([decoy("left"),decoy("right")],at);
+  h.overlay.render(state(0));
+  const real=h.fighterContainers.raiiven.children[2];
+  const first=real.style.left;
+  h.overlay.render(state(2400));
+  assert.equal(real.style.left,first,"no premature 5-second-default or early shuffle");
+  h.overlay.render(state(2500));
+  assert.notEqual(real.style.left,first,"actual author value 2.5s takes precedence");
+  h.overlay.dispose();
 });
