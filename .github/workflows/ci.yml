@@ -125,3 +125,25 @@ jobs:
         run: node tests/browser/capture-wolf-phone-pc-author-offset-smoke.mjs
       - name: Real Chromium authored Gorice ice and Firestorm FX phone/PC geometry, 1v1 and 2v2
         run: node tests/browser/capture-global-fx-phone-pc-parity-smoke.mjs
+
+
+  combat-pc-hud-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # immutable START baseline from git show; no second CSS copy
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Real native Capture HUD / Chromium (1v1, 2v2, PC sizes, zoom breakpoints, phone parity)
+        run: node tests/browser/capture-combat-pc-hud-geometry-smoke.mjs
+      - name: Preserve before/after Chromium screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: combat-pc-hud-before-after
+          path: artifacts/combat-pc-hud/*.png
+          if-no-files-found: warn
+
