@@ -415,7 +415,7 @@ const server = createServer(async (req, res) => {
             clearInterval(timer);
             try{
               const original=[...select.options].map(x=>x.value).filter(Boolean);
-              if(original.length!==111)throw Error("expected 111 before rename, got "+original.length);
+              if(original.length!==112)throw Error("expected 112 before rename, got "+original.length);
               const change=(element,value)=>{
                 element.value=value;
                 element.dispatchEvent(new Event("input",{bubbles:true}));
@@ -449,7 +449,7 @@ const server = createServer(async (req, res) => {
               if(q("[data-editor-status]")?.dataset.tone==="error")
                 throw Error("save rejected: "+q("[data-editor-status]").textContent);
               const saved=[...select.options].map(x=>x.value).filter(Boolean);
-              if(saved.length!==111 || new Set(saved).size!==111 ||
+              if(saved.length!==112 || new Set(saved).size!==112 ||
                  saved.includes("veuve-jaune") || !saved.includes("veuve-jaune-auteur"))
                 throw Error("rename duplicated or lost species");
               if(id.value!=="veuve-jaune-auteur" || !id.readOnly)
@@ -468,12 +468,12 @@ const server = createServer(async (req, res) => {
               change(id,"crea_lumilo");
               q("[data-creature-update]").click();
               const after=[...select.options].map(x=>x.value).filter(Boolean);
-              if(after.length!==111 || !after.includes("veuve-jaune-auteur") ||
+              if(after.length!==112 || !after.includes("veuve-jaune-auteur") ||
                  after.filter(x=>x==="crea_lumilo").length!==1)
                 throw Error("collision unexpectedly overwrote a creature");
               if(!/déjà utilisé/i.test(q("[data-editor-status]").textContent))
                 throw Error("collision was not explained");
-              document.body.dataset.creatureIdRenameProbe="ok:rename:reload:collision:111";
+              document.body.dataset.creatureIdRenameProbe="ok:rename:reload:collision:112";
             }catch(error){
               document.body.dataset.creatureIdRenameProbe="fail:"+error.message;
             }
@@ -1818,7 +1818,7 @@ const server = createServer(async (req, res) => {
               if (!["Feu","Eau"].every(x=>skillGroups.includes(x)))
                 throw Error("skill groups: "+skillGroups.join(","));
               const ids=[...creature.options].map(x=>x.value).filter(Boolean);
-              if(ids.length!==111 || new Set(ids).size!==111)
+              if(ids.length!==112 || new Set(ids).size!==112)
                 throw Error("creature identity count "+ids.length);
               creature.value="crea_aquafin";
               creature.dispatchEvent(new Event("change",{bubbles:true}));
@@ -2274,7 +2274,7 @@ function assertCreatures(dom, scenario) {
   if (!select) throw new Error(scenario + ": creature library <select> missing");
   const options = [...select[1].matchAll(/<option\b[^>]*value="([^"]+)"/g)]
     .map((match) => match[1]).filter(Boolean);
-  const required = ["crea_maraileron", "crea_mossback", "crea-loup", "kitsune_lunaire", "gorice", "crea_sylvorne", "crea_selachombre", "crea_vyrame", "veuve-jaune", "Ephemus", "Veldra_crea"];
+  const required = ["crea_maraileron", "crea_mossback", "crea-loup", "kitsune_lunaire", "gorice", "crea_sylvorne", "crea_selachombre", "crea_vyrame", "veuve-jaune", "Ephemus", "Veldra_crea", "raiiven"];
   for (const id of required) {
     if (!options.includes(id)) {
       const libraryStatus = dom.match(/data-creature-library-state[^>]*>([^<]*)/i)?.[1]?.trim() ?? "not mounted";
@@ -2285,8 +2285,8 @@ function assertCreatures(dom, scenario) {
         "; jsError=" + error.slice(0,600));
     }
   }
-  if (options.length !== 111 || new Set(options).size !== 111) {
-    throw new Error(scenario + ": expected 111 unique creature ids; got " + options.length);
+  if (options.length !== 112 || new Set(options).size !== 112) {
+    throw new Error(scenario + ": expected 112 unique creature ids; got " + options.length);
   }
   console.log(scenario + ": " + options.length + " active creatures, all required IDs present");
 }
@@ -2324,7 +2324,7 @@ try {
   assertCreatures(normalDom, "normal browser bootstrap");
   const renameDom=await dumpDom(url+"?verify-creature-id-rename=1");
   const renameProbe=renameDom.match(/data-creature-id-rename-probe="([^"]+)"/)?.[1]??"missing";
-  if(renameProbe!=="ok:rename:reload:collision:111")
+  if(renameProbe!=="ok:rename:reload:collision:112")
     throw Error("Real Chrome creature ID change/collision regression: "+renameProbe+
       " JS="+(renameDom.match(/data-bootstrap-error="([^"]+)"/)?.[1]??"none"));
   console.log("Veuve jaune ID: actual editor rename, reload and conflicting ID rejection verified in Chromium");

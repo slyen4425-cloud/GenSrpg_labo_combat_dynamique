@@ -71,6 +71,10 @@
       "text": "À la tombée de la nuit, Kitsune Lunaire apparaît dans les clairières baignées de lune. Ce renard spirituel semble connaître des sentiers invisibles aux voyageurs ; certains racontent que le suivre conduit aux secrets les mieux gardés de la forêt."
     },
     {
+      "creatureId": "raiiven",
+      "text": "Raiiven est un cheval spectral au pelage sombre, aux yeux violets lumineux et à la crinière qui semble animée par des flammes mauves. Ses armures argentées, ses sabots incandescents et les spirales brillantes de son corps composent une silhouette reconnaissable entre toutes."
+    },
+    {
       "creatureId": "Veldra_crea",
       "text": "Veldra traverse le ciel comme une promesse d'aube, ses plumes baignées d'une lumière presque irréelle. Cet oiseau légendaire veille sur ses compagnons et, lorsque l'espoir vacille, son éclat semble assez puissant pour leur rendre le courage de se relever."
     },

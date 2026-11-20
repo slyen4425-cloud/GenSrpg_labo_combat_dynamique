@@ -36,8 +36,8 @@ test("Acier 2026-10-18 preserved; Nature 2026-10-21 appended without changing ea
 });
 
 test("Scarabacier author preset and immutable historical archive remain unique",async()=>{
- assert.equal(catalog.length,22);
-  for(const id of ["Ephemus","Veldra_crea"])
+ assert.equal(catalog.length,23);
+  for(const id of ["Ephemus","Veldra_crea","raiiven"])
     assert.equal(catalog.filter(p=>p.endsWith("/"+id+".capture-creature-transfer-v1.json")).length,1,id+" registered once");
  assert.equal(catalog.filter(p=>p.endsWith("/veuve-jaune.capture-creature-transfer-v1.json")).length,1,"Veuve jaune must exist exactly once");
  assert.equal(catalog.filter(p=>p.endsWith("/crea_sylvorne.capture-creature-transfer-v1.json")).length,1,"new Sylvorne must exist exactly once");
