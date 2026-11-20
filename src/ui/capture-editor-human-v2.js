@@ -2787,9 +2787,9 @@ export function humanSkillEditorFieldsFromDraftV1(
       travelPerspectiveAmount: travel?.perspectiveAmount ?? 0,
       travelFarScaleRatio: travel?.farScaleRatio ?? 1,
       travelArrivalLayer: travel?.arrivalLayer ?? "same",
-      travelTrajectoryMode: definition.projectileTargeting === "stampede" ? "stampede" :
-        definition.projectileTargeting === "expanding_wave"
-        ? "expanding_wave" : travel?.trajectoryMode ?? "linear",
+      travelTrajectoryMode: definition.projectileTargeting === "expanding_wave"
+        ? "expanding_wave" : definition.projectileTargeting === "stampede"
+        ? "stampede" : travel?.trajectoryMode ?? "linear",
       groundMotion: travel?.groundMotion ?? (travel?.trajectoryMode==="under_target"?"rise":"fixed"),
       groundOffsetXPx: travel?.groundOffsetXPx ?? 0,
       groundOffsetYPx: travel?.groundOffsetYPx ?? 0,
@@ -3005,12 +3005,23 @@ export function buildHumanSkillDraftV1(fields) {
   const isStampede=fields.form==="projectile" &&
     fields.presentation?.travelTrajectoryMode==="stampede";
   const hasEffects=Object.prototype.hasOwnProperty.call(fields,"effects");
+  // Decoys have their own canonical status contract (retaliation and clock).
+  // Do not pass these through the legacy generic status-row serializer:
+  // it discards retaliationDamage. The dedicated editor projection below
+  // keeps the original IDs and untouched native metadata.
+  const authoredDecoys=(fields.effects??[]).filter(effect=>
+    effect.kind==="apply_status"&&effect.status?.kind==="decoy");
+  const ordinaryEffects=(fields.effects??[]).filter(effect=>
+    !(effect.kind==="apply_status"&&effect.status?.kind==="decoy"));
   const readTacticalEffects=hasEffects
-    ? buildHumanTacticalSkillEffectsV1(fields.effects??[],
+    ? buildHumanTacticalSkillEffectsV1(ordinaryEffects,
       {defaultDamageChannel:fields.element??null}) : [];
-  const decoyTacticalEffects=fields.decoy===undefined
+  const decoySettings=fields.decoy===undefined && authoredDecoys.length
+    ? captureDecoySettingsFromDefinitionV1({effects:authoredDecoys})
+    : fields.decoy;
+  const decoyTacticalEffects=decoySettings===undefined
     ? readTacticalEffects
-    : captureDecoyEffectsFromEditorV1(readTacticalEffects,fields.decoy,id,fields.element);
+    : captureDecoyEffectsFromEditorV1(readTacticalEffects,decoySettings,id,fields.element);
   // Cavalcade has exactly ONE legacy damage authority, even though the
   // human editor exposes that value through the existing damage effect row.
   const stampedeDamage=isStampede
@@ -3151,12 +3162,13 @@ export function buildHumanSkillDraftV1(fields) {
               "Utilisations max par combat"
             ),
       allowedDistances:
-        usesTacticalEffects
+        (isStampede || usesTacticalEffects)
           ? [...CAPTURE_EDITOR_COMPAT_DISTANCES_V1]
           : stableIds(
               fields.allowedDistances
             ),
       targetRelations:
+        isStampede ? ["enemy"] :
         usesTacticalEffects
           ? humanSkillTargetRelationsFromTacticalEffectsV1(
               fields.channeling
