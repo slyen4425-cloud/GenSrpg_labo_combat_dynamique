@@ -9073,9 +9073,8 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null, cre
   }
 
   const catalog = await response.json();
-  // Restore the personal asset BLOBS through the one existing runtime session
-  // BEFORE populating the official select menus. This is not a second catalog.
-  if(creatorSpritesReady)await creatorSpritesReady;
+  // Never block Capture startup on browser storage; restored files are
+  // appended to the SAME canonical visual catalog when IndexedDB settles.
   const assets = Array.isArray(catalog.assets)
     ? [...catalog.assets]
     : [];
@@ -9399,6 +9398,33 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null, cre
     syncScalePreview
   );
   syncScalePreview();
+
+  // Optional personal media loads AFTER the official editor can start, even
+  // when IndexedDB is blocked, slow or unusable on a private/mobile browser.
+  // Only refresh this existing catalog; no global listener, polling or
+  // duplicate AssetDefinition store. Existing selected IDs are preserved.
+  if(creatorSpritesReady){
+    void creatorSpritesReady.then(()=>{
+      if(!root.isConnected)return;
+      for(const personal of creatorVisualAssets?.list?.()??[]){
+        const previous=byId.get(personal.id);
+        if(previous){
+          if(previous!==personal)
+            throw Error('Conflit ID personnel/officiel : aucune référence remplacée.');
+          continue;
+        }
+        assets.push(personal);
+        byId.set(personal.id,personal);
+      }
+      refreshCreatorAssetLists();
+      syncPreviews(frontSelect,[frontImage,socketFrontImage]);
+      syncPreviews(backSelect,[backImage,socketBackImage]);
+      syncPreviews(iconSelect,[iconImage]);
+    }).catch(error=>{
+      setStatus(root,'Mes sprites : '+(error?.message??String(error))+
+        ' — sauvegardes historiques préservées.','error');
+    });
+  }
 
   return catalog;
 }
