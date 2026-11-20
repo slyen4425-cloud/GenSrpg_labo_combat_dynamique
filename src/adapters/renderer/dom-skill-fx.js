@@ -2252,8 +2252,19 @@ export function createDomSkillFxRenderer({
       const effect=playDomShadowEchoFxV1({arena,sourceRect:from,targetRect:to,
         type,durationMs,animate});
       const record={node:effect.node,animation:effect.animation,frameAnimation:null,
-        type,skillId,fromSlot:sourceKey,targetSlot};
+        type,skillId,fromSlot:sourceKey,targetSlot,
+        contactFrameId:null,contactReported:false,
+        mirrorSurfaceEligible:type==="projectile",
+        trajectoryMode:null,
+        projectilePower:Math.max(0,Number(projectilePower)||0),
+        barrierSegment:Object.freeze({from:rectCenter(from),to:rectCenter(to)})};
       active.add(record);
+      // An echo projectile is still a REAL projectile. Previously the visual
+      // orb returned before registering the canonical swept-mask observer,
+      // so it looked as if it struck yet CombatRuntime NEVER got a contact.
+      // Reuse the SAME native watch as every other direct projectile: one
+      // animation, one visible-model sensor and one CombatRuntime damage owner.
+      if(type==="projectile")watchProjectileContact(record);
       void Promise.resolve(effect.finished).finally(()=>cleanup(record)).catch(()=>{});
       return Object.freeze({status:"running",animation:effect.animation,finished:effect.finished});
     }
