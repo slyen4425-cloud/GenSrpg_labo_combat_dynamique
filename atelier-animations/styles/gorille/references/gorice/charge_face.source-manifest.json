@@ -1,0 +1,183 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "assetId": "pack:capture:creature-gorille-des-glaces-attack-opponent-12-charge-v1",
+  "creatureId": "gorille_des_glaces",
+  "action": "attack",
+  "variant": "charge-canalisation",
+  "view": "opponent",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 110,
+  "frameDurationsMs": [
+    115,
+    105,
+    110,
+    110,
+    110,
+    100,
+    100,
+    105,
+    110,
+    115,
+    135,
+    190
+  ],
+  "playbackMode": "once",
+  "holdLastFrame": true,
+  "persistentFrameIndex": 11,
+  "sourceArchive": "Gorille_Glaces_Adversaire_12F.zip",
+  "sourceArchiveSha256": "487b1cc772c4dcf1f4daa541ec99f6c04eaaf88bc8e27d19e6c3db201e2d84ba",
+  "sourceGitBlob": "73dfb24b904103a5278f533bea21b73c19c20ba4",
+  "atlas": {
+    "file": "atlases/gorille_des_glaces_charge_opponent_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "sha256": "924b9970ff1a5d67298c27765b22ae11bbe3a71ccce637373304c4a595359df7",
+    "lossless": true
+  },
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/gorille_des_glaces_charge_opponent_01.png",
+      "sha256": "f221ed7f8bb7bbd65fbfea0e90366be0afda0a9390ea564d5c59eac6faec6f74",
+      "marginsLTRB": [
+        104,
+        149,
+        73,
+        51
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/gorille_des_glaces_charge_opponent_02.png",
+      "sha256": "ac23084a21980030246827c5bc5d38af83212172f7d16b949e76f0730c476e9e",
+      "marginsLTRB": [
+        97,
+        159,
+        79,
+        51
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/gorille_des_glaces_charge_opponent_03.png",
+      "sha256": "88e4748d5ed1a8665f5af106badebeac80858322726d1e77ab1ed5d14141e77c",
+      "marginsLTRB": [
+        70,
+        177,
+        95,
+        52
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/gorille_des_glaces_charge_opponent_04.png",
+      "sha256": "e807c83b969e224db36953846170f570f64d1318d8400707a0b69c4152146f53",
+      "marginsLTRB": [
+        69,
+        202,
+        86,
+        51
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/gorille_des_glaces_charge_opponent_05.png",
+      "sha256": "f456b8d6fd53f560cfd50c6dd05c19335eef0c7681b79264df7a1b3cc45ae96f",
+      "marginsLTRB": [
+        91,
+        188,
+        70,
+        51
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/gorille_des_glaces_charge_opponent_06.png",
+      "sha256": "24d6f6dd38de251083e9eb3c9c46035892c0cb6d9b9a6773ac1f342cc8a2c8e4",
+      "marginsLTRB": [
+        74,
+        160,
+        66,
+        51
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/gorille_des_glaces_charge_opponent_07.png",
+      "sha256": "9d9ab8030440af9646f11d39f78a17d89a83a54213db9cd3d58fc7257aca242b",
+      "marginsLTRB": [
+        38,
+        148,
+        77,
+        51
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/gorille_des_glaces_charge_opponent_08.png",
+      "sha256": "de930aa35a8ce15be8cbda7333dbb7731eec727cb39bae9d82459cea8f4e9bd7",
+      "marginsLTRB": [
+        42,
+        139,
+        69,
+        51
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/gorille_des_glaces_charge_opponent_09.png",
+      "sha256": "db6e551b61f4cc251b1de8ce6c87cfd21ed261704a731c1eca847a1c8ec4805f",
+      "marginsLTRB": [
+        61,
+        128,
+        51,
+        52
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/gorille_des_glaces_charge_opponent_10.png",
+      "sha256": "58cd7feabd2f3d1f5b6a9e7f670430f953a04abf546218683c78eca1d0340adf",
+      "marginsLTRB": [
+        46,
+        124,
+        59,
+        52
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/gorille_des_glaces_charge_opponent_11.png",
+      "sha256": "665ada0a3415f7398b96cd9e015edd44c644c9d0298423719e152dd1a52aaf67",
+      "marginsLTRB": [
+        30,
+        130,
+        68,
+        51
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/gorille_des_glaces_charge_opponent_12.png",
+      "sha256": "3a33b43424a59b441e846d5419afb59f195222df838f95b08d02051176905d7a",
+      "marginsLTRB": [
+        33,
+        125,
+        59,
+        52
+      ]
+    }
+  ],
+  "previews": {
+    "canalisation": "previews/canalisation.webp",
+    "planche": "previews/controle_4x3.png"
+  },
+  "approvalStatus": "artist_requested_import",
+  "notes": "Fixed opponent-facing art, final pose held, no automatic binding."
+}

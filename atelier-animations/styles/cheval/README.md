@@ -21,7 +21,7 @@
 | Galop | FACE / adversaire | 6 | 130 ms/image, boucle | [galop_face_6f.png](references/raiiven/galop_face_6f.png) |
 | Attaque | FACE / adversaire | 5 | 180 ms/image, une fois | [attaque_face_5f.png](references/raiiven/attaque_face_5f.png) |
 
-**Important :** ces nombres de frames décrivent les **planches validées de Raiiven** ; ce ne sont pas des limites imposées aux futures créatures. Une nouvelle animation peut exiger 8, 12, 16 ou davantage de vraies poses pour conserver la fluidité.
+**Règle de production prioritaire :** lorsqu'on demande de créer une animation **« en suivant le modèle Raiiven »**, le **nombre de frames de la séquence choisie est obligatoire et exact** : galop DOS **7**, attaque DOS **5**, galop FACE **6**, attaque FACE **5**. Reproduire l'ordre des poses, les appuis et la logique de lecture sans ajouter de frames pour atteindre 8, 12, 16 ou 20. Ces chiffres **ne sont pas une limite universelle** pour d'autres modèles : un découpage différent doit faire l'objet d'un **autre modèle/variante explicitement choisi et validé**, jamais d'une adaptation automatique. La nouvelle créature conserve ses propres maîtres et sa propre anatomie.
 
 ## Pour fabriquer une nouvelle créature équine
 
