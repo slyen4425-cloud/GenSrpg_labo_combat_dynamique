@@ -51,15 +51,26 @@ async function scenario(source){
  const anchors=Object.fromEntries(ids.map(id=>{
   const element=document.createElement("div");element.className="fighter";
   element.dataset.actor=id;element.style.left=xy[id][0]+"px";element.style.top=xy[id][1]+"px";
+  const motion=document.createElement("div");
+  motion.className="fighter__motion";
+  motion.dataset.demoMotion="true";
+  const standing=document.createElement("img");
+  standing.src="/assets/test/creatures/braisombre/runtime/braisombre_player.webp";
+  standing.className="fighter__image";
+  standing.dataset.demoImage="true";
+  motion.append(standing);
+  element.append(motion);
   arena.append(element);return [id,element];
  }));
+ const sourceMotions=Object.fromEntries(ids.map(id=>[id,
+   anchors[id].querySelector("[data-demo-motion]")]));
  const mask={width:4,height:4,opaque:new Uint8Array(16).fill(1)};
  const visualModel=slot=>({snapshot(){
   const r=anchors[slot].getBoundingClientRect();
   return {mask,origin:{x:r.left,y:r.top},
    axisX:{x:r.right,y:r.top},axisY:{x:r.left,y:r.bottom}};
  }});
- let runtime=null,releaseShell=null,samples=0,waveStartAt=0;
+ let runtime=null,releaseShell=null,samples=0,waveStartAt=0,actorMoved=false;
  const contacts=[],resolutions=[];
  const fx=createDomSkillFxRenderer({
    arena,anchors,targetAnchors:anchors,presentationForSkill:()=>null,
@@ -73,9 +84,12 @@ async function scenario(source){
        motion.currentTime=Math.min(6600,Math.max(0,performance.now()-waveStartAt));
      }
      samples++;callback();
+     actorMoved ||= !!sourceMotions[source].style.translate &&
+       sourceMotions[source].style.translate!=="0px 0px";
    },16),
    cancelFrame:handle=>clearTimeout(handle),
    sourceSpriteFor(){return {movement:{url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",frameCount:7,playbackMode:"loop",assetId:"test:raiiven-official-movement-7f"}};},
+   sourceMotionFor:slot=>sourceMotions[slot],
    waveTargetsFor(fromSlot){
      return ids.filter(id=>format.teamOf(id)!==format.teamOf(fromSlot));
    },
@@ -102,10 +116,16 @@ async function scenario(source){
   runtime.start();
   check(runtime.startSkill({actorId:source,targetId:enemies[0],skill}).ok,"started action");
   check(releaseShell?.dataset.stampede==="true","real native stampede shell");
-  check(releaseShell.querySelectorAll(".skill-fx--stampede-ghost").length===5,"five equally sized moving horse appearances");
+  check(releaseShell.querySelectorAll(".skill-fx--stampede-ghost").length===4,"four copies only; fifth horse is the real sourceMotion");
+  check(releaseShell.dataset.stampedeNativeCaster==="true","real actor—not a fake caster—is in herd");
+  check(sourceMotions[source].dataset.stampedeCasterActive==="true","real source actor participates during wave");
+  check(sourceMotions[source].querySelectorAll(".skill-fx--stampede-caster").length===1,
+    "native fighter owns moving official atlas");
+  check(releaseShell.querySelectorAll("[data-stampede-horse-shadow]").length===0,
+    "no huge copied Cavalcade shadows");
   check(releaseShell.dataset.stampedePose==="movement","official movement atlas used, not attack fallback");
   const horseNodes=[...releaseShell.querySelectorAll(".skill-fx--stampede-ghost")];
-  check(horseNodes.every(node=>node.style.opacity==="1"&&node.style.width===horseNodes[0].style.width),"five equal-sized and equally visible horses");
+  check(horseNodes.every(node=>node.style.opacity==="1"&&node.style.width===horseNodes[0].style.width),"four equal-sized ghost companions to the native fifth horse");
   await new Promise(resolve=>setTimeout(resolve,7400));
   check(contacts.filter(x=>x.waveMultiTarget).length===6,
    "two distinct visible ring crossings: "+contacts.map(x=>x.targetId).join(",")+
@@ -123,6 +143,7 @@ async function scenario(source){
   }
   check(session.snapshot().fighters[source].energy===10,"only one energy cost");
   check(runtime.hasActiveAction===false,"action reaches natural deadline");
+  check(actorMoved,"the actual native source model physically advances with its herd");
   return source+":"+enemies.join("+");
  } finally {
   runtime.dispose();fx.dispose();arena.remove();
