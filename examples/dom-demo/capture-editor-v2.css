@@ -2136,11 +2136,11 @@ html {
     width: var(--combat-pc-command-width);
   }
   .capture-preview-shell[data-landscape-required="true"] .combat-dodge-action--arena {
-    right: calc(var(--combat-pc-command-width) + 1rem);
+    right: calc(var(--combat-pc-command-width) + 1.5rem);
     bottom: .7rem;
   }
   .capture-preview-shell[data-landscape-required="true"] .arena--coop-2v2[data-combat-active-count="2"] .combat-dodge-action--arena {
-    right: calc(var(--combat-pc-command-width) + 1rem);
+    right: calc(var(--combat-pc-command-width) + 1.5rem);
     bottom: .7rem;
   }
   .capture-preview-shell[data-landscape-required="true"] .combat-dodge-action {
