@@ -7,6 +7,18 @@
 
 Cette charte complète [LAB_CHARTE.md](LAB_CHARTE.md), en particulier ses sections 6 (image unique compatible), 14 (portabilité des assets), 33 (données auteur) et 34 (vérification du contenu réel). La charte technique du laboratoire prime en cas de conflit de gouvernance.
 
+## Priorité des standards de l'Atelier d'animations (mise à jour du 20 novembre 2026)
+
+Pour toute **nouvelle animation basée sur un modèle/preset**, consulter d'abord [🚩 l'Atelier](../00_ATELIER_ANIMATIONS_LIRE_EN_PREMIER.md), son [index](../atelier-animations/README.md), puis le **standard, l'action, la vue et le manifeste de référence réellement sélectionnés**. **Ce standard validé prévaut sur toutes les longueurs numériques génériques, exemples de grilles, recettes 12 ou 16–20 frames et cadences illustratives** figurant dans la présente charte.
+
+- **Même séquence choisie = même nombre exact de frames** et même ordre des poses, du début à la fin. Un modèle à **6 frames** exige une production à **6 frames** ; ni remplissage, ni répétition, ni interpolation factice pour atteindre un ancien gabarit. Si la référence est un mouvement FACE 6f, sa durée n'est pas transposée à l'attaque DOS.
+- Respecter également les **articulations, phases de mouvement, orientation, cadence de référence, comportement de lecture** (boucle, lecture unique ou maintien) et ancrages. La cadence de rendu en jeu reste la responsabilité de l'Animation Core et des contrats existants ; l'Atelier n'invente pas de gameplay.
+- **Exemple factuel Cheval/Raiiven** : déplacement DOS 7f ; attaque DOS 5f ; déplacement FACE 6f ; attaque FACE 5f. **Gorille/Gorice** : quatre références de 12f, à utiliser seulement dès leur intégration officielle dans l'Atelier.
+- Un nombre différent constitue **une nouvelle variante explicitement demandée/validée**, pas un ajustement silencieux. Sans modèle exact ou en cas de conflit entre documents et source, rechercher la référence et arrêter la production plutôt qu'improviser.
+- Les maîtres FACE/DOS de **la créature cible** restent obligatoires : ne copier que la chorégraphie, jamais la texture, les pixels ou l'identité de Raiiven/Gorice. Maintenir l'intégralité des contrôles qualité, preview, marges, validation auteur, bibliothèque canonique et CI. Les défauts de vieux médias archivés restent tracés, non reproduits automatiquement.
+
+**Les tableaux de 20 ou 16 frames ci-dessous sont des exemples historiques pour créations sans standard, pas des obligations.** Cette section précise la [priorité contractuelle de la charte permanente §36](LAB_CHARTE.md).
+
 ## 1. Principe non négociable : animer LE modèle validé
 
 - **Face — frame 01 = copie pixel pour pixel du fichier maître FACE approuvé** (RGBA et canvas identiques). L'animation reste dans **l'angle face approuvé**, même s'il est légèrement de trois-quarts.
@@ -48,7 +60,7 @@ Chaque créature destinée au combat nécessite, au minimum :
 | Propriété | Règle |
 |---|---|
 | Vues | **Deux animations indépendantes** : face et dos ; jamais l'une dérivée par rotation de l'autre |
-| Longueur standard | **16 à 20 frames** ; 20 par défaut pour attaque élaborée, 16 si validé |
+| Nombre de frames | **Nombre exact de la séquence du standard sélectionné, pour cette action et cette vue.** Aucun 12/16/20 universel ; hors standard, déterminer avec l'auteur et valider avant production. |
 | Fichier source d'une frame | **PNG RGBA, 512 × 512 px**, même canevas et même ordre des frames |
 | Transparence | Alpha réel sur toutes les frames, y compris zones d'effets ; **pas de fond noir/marron incrusté** |
 | Frame 01 | **Identique bit par bit en pixels décodés (RGBA) au PNG maître** de la vue correspondante |
@@ -56,12 +68,12 @@ Chaque créature destinée au combat nécessite, au minimum :
 | Échelle / pivot | Ancrage sol constant ; aucun saut de position, zoom ou recadrage non voulu |
 | Cadence | Paramétrable par l'Animation Core ; **prévisualisation suggérée à 12 FPS**, sans imposer ce timing au moteur |
 | Animation finale | Retour à la pose initiale de la même vue sauf état final explicitement demandé |
-| Atlas | Planche optionnelle **sans marge/gouttière** : 20 frames = grille 5 colonnes × 4 lignes (2560 × 2048) ; 16 frames = 4 × 4 (2048 × 2048) ; préciser ordre gauche→droite, haut→bas |
+| Atlas | Planche optionnelle **sans marge/gouttière**, grille calculée pour **le nombre exact de frames du modèle** ; préciser l'ordre gauche→droite puis haut→bas. Grilles 5×4 (20f) et 4×4 (16f) = exemples historiques uniquement. |
 | Effets | Ailes/énergie/particules permis, mais sans altérer ni masquer durablement la créature ; effets séparables préférables lorsque réutilisables |
 
 **Aucune légende, aucun numéro, aucun encadrement, aucune couleur de fond sur les frames ou l'atlas de production.** Ces éléments sont autorisés uniquement dans une planche de revue séparée.
 
-### Exemple recommandé d'attaque ailée en 20 frames (pour chaque vue)
+### Exemple historique d'attaque ailée en 20 frames (uniquement si 20f ont été explicitement choisis ; ne remplace jamais un standard)
 
 - **01–03 :** modèle approuvé au repos, tension légère, aucune dérive de perspective ;
 - **04–07 :** ailes/carapace s'ouvrent depuis leurs véritables articulations, tête et pattes restent reconnaissables ;
@@ -94,14 +106,14 @@ Cette règle concerne **toutes** les nouvelles planches de sprites de créatures
 
 - **Une pose = une case indépendante.** Réserver une zone de sécurité transparente d'au moins **42 px entre la silhouette réelle (flammes, queue, museau, cornes, ailes, particules comprises) et chacune des quatre limites de la case**, à la résolution de travail de la planche. Pour les poses très étendues, agrandir le canevas ou réduire proportionnellement toutes les poses : ne jamais rogner.
 - Entre deux silhouettes de cases voisines, viser **au moins 84 px de séparation transparente effective** (42 px par case), y compris pour les flammes/traînées. Le nombre de pixels peut évoluer si le format de génération change ; les marges et la distance mesurées dans le **fichier source** font autorité.
-- **Avant découpe**, contrôler les 20 cases et la zone de sécurité complète. Tout pixel opaque de la créature qui atteint une frontière, ou toute silhouette voisine qui déborde dans une case, implique **rejet du lot** et révision de la planche ; aucun découpage automatique ne doit masquer cette anomalie.
+- **Avant découpe**, contrôler **toutes les cases correspondant au nombre exact de frames du standard choisi** et la zone de sécurité complète. Tout pixel opaque de la créature qui atteint une frontière, ou toute silhouette voisine qui déborde dans une case, implique **rejet du lot** et révision de la planche ; aucun découpage automatique ne doit masquer cette anomalie.
 - Un tracé de grille, une légende ou un repère peut être présent dans un **gabarit de contrôle distinct**, jamais sur la planche de production ou les frames exportées. Si la source générée comporte une grille incrustée, la retirer avant de valider le fond transparent et vérifier l'absence de résidus.
 - La découpe doit utiliser les coordonnées réelles de la grille, vérifier dimensions/alpha, et produire une **planche de poses + un aperçu animé pour chaque vue**. Vérifier les 4 coins et les 4 bords, puis la continuité anatomique frame par frame (queue, museau, pattes, appendices).
 - **Ne jamais réparer une partie réellement coupée** par une simple suppression de pixels, un zoom/recentrage ou un remplissage artificiel en la déclarant « restaurée ». Si la pointe de la queue ou du museau n'existe pas dans le fichier source, la frame est **à refaire depuis le modèle maître validé**, en conservant l'angle exact, puis l'animation repasse en attente de validation.
-- La distance entre les poses sur la planche source est **indépendante** de l'atlas final de production : l'atlas peut rester un 5×4 de cellules **512 × 512 sans gouttière**, puisque chaque cellule contient déjà une pose avec une marge interne vérifiée.
+- La distance entre les poses sur la planche source est **indépendante** de l'atlas final de production : l'atlas reste organisé selon la **grille adaptée au nombre exact de poses du standard** en cellules **512 × 512 sans gouttière**, puisque chaque cellule contient déjà une pose avec une marge interne vérifiée.
 - Les deux animations de déplacement du Loup volcanique validées verbalement le 20/10 sont **protégées** : ne pas les régénérer ni les modifier dans le lot de correction des attaques. Aucun média non approuvé ne doit devenir un asset runtime par défaut.
 
-**Sentinelle recommandée :** calculer la boîte englobante des pixels RGBA de chaque pose, y compris effets, et refuser toute frame dont la marge gauche/droite/haut/bas descend sous 42 px sur la source. Conserver le rapport des 20 poses dans le dossier de revue.
+**Sentinelle recommandée :** calculer la boîte englobante des pixels RGBA de chaque pose, y compris effets, et refuser toute frame dont la marge gauche/droite/haut/bas descend sous 42 px sur la source. Conserver le rapport du nombre exact de poses prévu par le standard dans le dossier de revue.
 
 ### Gabarit renforcé et contrôles obligatoires — 1er novembre 2026
 
@@ -137,7 +149,7 @@ Pour **chaque animation et chaque vue** fournir **avant tout raccord catalogue/r
 1. **La planche de poses** (contact sheet) montrant toutes les frames numérotées **pour revue uniquement**, sans contaminer les PNG de production ;
 2. **Une vraie animation lisible en mouvement** : WebP animé ou GIF (ou vidéo dédiée), vitesse réaliste et éventuellement version au ralenti ;
 3. **Une prévisualisation distincte FACE et DOS**, avec libellés explicites ;
-4. **Les 16–20 PNG RGBA individuels** et **l'atlas optionnel** dans l'ordre de lecture documenté ;
+4. **Les PNG RGBA individuels en nombre strictement égal à la séquence choisie** et **l'atlas optionnel** dans l'ordre de lecture documenté ;
 5. Une comparaison visible **frame 01 à côté du maître approuvé**, avec contrôle d'égalité RGBA ;
 6. Si possible un exemple d'affichage à l'échelle du combat sur un fond contrasté, **sans aplatir la transparence des médias sources**.
 
@@ -147,7 +159,7 @@ La visualisation doit permettre à l'auteur de voir clairement le mouvement comp
 
 ## 6. Nommage, dossiers et statut des livrables
 
-Convention recommandée pour une créature (slug stable, par exemple `scarabacier`) :
+Convention **illustrative historique sans standard sélectionné** pour une créature (slug stable, par exemple `scarabacier`) ; les fichiers et manifestes chiffrés à 20 frames ne sont pas une norme :
 
 ```text
 capture/creatures/scarabacier/
@@ -225,7 +237,7 @@ Un statut n'implique **pas** le suivant. `GREEN` artistique exige la validation 
 - [ ] Frame 01 DOS identique au maître DOS
 - [ ] **Aucune rotation/perspective nouvelle** pendant les deux animations
 - [ ] Aucune mutation anatomique (pattes, ailes, queue, tête, armure)
-- [ ] 16–20 frames par vue, 512 × 512 RGBA, numérotées et ordonnées
+- [ ] Nombre exact de frames de la référence (action + vue), 512 × 512 RGBA, numérotées et ordonnées ; aucune pose ajoutée/retirée pour rejoindre une ancienne norme
 - [ ] Ancrage et proportions constants ; animation à cadence vérifiée
 - [ ] Planche de poses et animation lisible pour chaque vue
 - [ ] Aperçu comparatif au modèle initial, sans fond incrusté
