@@ -1,3 +1,9 @@
+## 2026-11-20 — Raiiven : quatre compétences inédites (lot temporaire)
+- START `main@2c3aa91c25002e48af6516b478a190535aba5931` ; checkpoint `checkpoint/lab-start-raiiven-four-skills-20261120` ; branche `work/lab-raiiven-four-skills-20261120`.
+- Propriétaires : contrats de statut, événement Combat Rules, packs de compétences Capture ; protections : ultime et visuels de Raiiven, autres compétences, global-assets, PWA, Exploration.
+- Critères : Fer maudit 12+8 après offensive, leurres choisis 20 s/riposte 10, dégâts = 5+5×max esquives avec vol réel, rémanence universelle hors ultime et FX Ombre ; tests de gameplay et navigateur avant promotion ; puissance copie 60 % provisoire.
+- Spécification/risques détaillés : `docs/RAIIVEN_FOUR_SKILLS_IMPLEMENTATION_V1.md`. État PRÉPARATION, NON GREEN.
+
 ## 2026-11-20 — Raiiven : ultime Cavalcade des damnés (triple passage)
 - START `main@88b6b19823bce7659b1ffbf0d32414e6053a9d64` ; checkpoint `checkpoint/lab-start-raiiven-stampede-20261120` ; branche temporaire `work/lab-raiiven-stampede-20261120`. Retour exclusif sur `main` après CI ; aucune fusion PWA.
 - Contrat auteur : ultime niveau 20, 3 charges de 40 dégâts (avant modificateurs du moteur), peut toucher les DEUX ennemis actifs en 2v2 à chaque charge ; esquive séparée par cible/passage ; si KO puis remplacement, les passages restants poursuivent l'attaque sur le nouveau membre ; un coût d'activation, 10 énergie, 1 usage/combat après 30 secondes.

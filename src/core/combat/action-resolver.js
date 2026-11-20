@@ -690,13 +690,24 @@ export function resolveSkillStart({
     actorId,
     skill.id
   );
+  // Native event: an offensive activation can detonate a cursed fighter's
+  // one-shot mark. It is evaluated only AFTER a legal paid skill start.
+  const triggered = skill.category === "offensive"
+    ? applyEventTriggeredBuffsV2({
+        state:committed,statusState:committed,
+        eventType:"offensive_skill_start",ownerId:actorId,
+        otherId:effectiveTargetId,skill,atMs:0,
+        combatAtMs:committed.elapsedMs,battleFormat
+      })
+    : {state:committed,events:[]};
 
   return Object.freeze({
     ok: true,
     outcome: "started",
-    state: committed,
+    state: triggered.state,
     action,
     events: Object.freeze([
+      ...triggered.events,
       ...(
         effectiveTargetId !== targetId
           ? [

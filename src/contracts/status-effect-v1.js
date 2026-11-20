@@ -27,7 +27,7 @@ export const STATUS_EFFECT_V1_KINDS = Object.freeze([
 
 // Canonical event registry, shared with Human Editor and Combat Rules.
 export const TRIGGERED_BUFF_EVENT_TYPES_V2 = Object.freeze([
-  "damage_dealt", "damage_taken", "movement", "evaded"
+  "damage_dealt", "damage_taken", "movement", "evaded", "offensive_skill_start"
 ]);
 
 export const STATUS_EFFECT_V1_POLARITIES = Object.freeze([
@@ -697,7 +697,7 @@ export function normalizeStatusEffectV1(input) {
     if (!trigger || typeof trigger !== "object" || Array.isArray(trigger)) {
       throw new TypeError("StatusEffectV1." + label + " must be an object");
     }
-    assertKnownFields(trigger, new Set(hasNew ? ["event", "effects"] : ["effects"]),
+    assertKnownFields(trigger, new Set(hasNew ? ["event", "effects", "consume"] : ["effects"]),
       "StatusEffectV1." + label);
     if (hasNew && !TRIGGERED_BUFF_EVENT_TYPES_V2.includes(trigger.event)) {
       throw new RangeError("Unsupported triggered buff event: " + trigger.event);
@@ -720,8 +720,13 @@ export function normalizeStatusEffectV1(input) {
       return effect;
     });
     if (hasNew) {
+      if (trigger.consume != null && typeof trigger.consume !== "boolean")
+        throw new TypeError("onEvent.consume must be boolean");
+      if (trigger.consume === true && trigger.event !== "offensive_skill_start")
+        throw new RangeError("consumable triggers require offensive_skill_start");
       output.onEvent = Object.freeze({
         event: trigger.event,
+        ...(trigger.consume === true ? { consume:true } : {}),
         effects: Object.freeze(effects)
       });
     } else {
