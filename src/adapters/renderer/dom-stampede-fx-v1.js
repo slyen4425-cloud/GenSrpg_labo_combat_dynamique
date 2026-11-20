@@ -49,7 +49,8 @@ export function playDomStampedeFxV1({
   const total=stampede.passes*stampede.passDurationMs+
     (stampede.passes-1)*stampede.gapMs;
   const group=doc.createElement("span");
-  group.className="skill-fx skill-fx--projectile skill-fx--stampede";
+  // Do NOT reuse .skill-fx--projectile: that class paints the orange fireball.
+  group.className="skill-fx skill-fx--stampede";
   group.dataset.skillFx="projectile";
   group.dataset.stampede="true";
   Object.assign(group.style,{
