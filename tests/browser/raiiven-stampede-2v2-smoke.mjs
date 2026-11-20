@@ -75,7 +75,7 @@ async function scenario(source){
      samples++;callback();
    },16),
    cancelFrame:handle=>clearTimeout(handle),
-   sourceSpriteFor(){return {attack:{url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",frameCount:5,playbackMode:"once",assetId:"test:raiiven-official-attack-5f"},movement:null};},
+   sourceSpriteFor(){return {movement:{url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",frameCount:7,playbackMode:"loop",assetId:"test:raiiven-official-movement-7f"}};},,
    waveTargetsFor(fromSlot){
      return ids.filter(id=>format.teamOf(id)!==format.teamOf(fromSlot));
    },
@@ -102,8 +102,8 @@ async function scenario(source){
   runtime.start();
   check(runtime.startSkill({actorId:source,targetId:enemies[0],skill}).ok,"started action");
   check(releaseShell?.dataset.stampede==="true","real native stampede shell");
-  check(releaseShell.querySelectorAll(".skill-fx--stampede-ghost").length===5,"five identical attack copies");
-  check(releaseShell.dataset.stampedePose==="attack","official attack atlas used, not movement or fallback");
+  check(releaseShell.querySelectorAll(".skill-fx--stampede-ghost").length===5,"five equally sized moving horse appearances");
+  check(releaseShell.dataset.stampedePose==="movement","official movement atlas used, not attack fallback");
   const horseNodes=[...releaseShell.querySelectorAll(".skill-fx--stampede-ghost")];
   check(horseNodes.every(node=>node.style.opacity==="1"&&node.style.width===horseNodes[0].style.width),"five equal-sized and equally visible horses");
   await new Promise(resolve=>setTimeout(resolve,7400));
