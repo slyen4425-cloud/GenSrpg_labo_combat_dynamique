@@ -35,7 +35,7 @@ const format=normalizeBattleFormatDefinition({
 const skill=normalizeSkillDefinition({
  id:"raiiven-stampede-browser",name:"Cavalcade des damnés",category:"offensive",
  form:"projectile",element:"shadow",projectileTargeting:"stampede",
- stampede:{passes:3,passDurationMs:1000,gapMs:1800,cloneCount:6},
+ stampede:{passes:3,passDurationMs:1800,gapMs:600,cloneCount:5},
  hitPresenceStates:["surface","airborne"],targetRelations:["enemy"],
  allowedDistances:["short","medium","long"],
  energyCost:10,preparationMs:0,travelMs:6600,recoveryMs:200,cooldownMs:0,
@@ -75,7 +75,7 @@ async function scenario(source){
      samples++;callback();
    },16),
    cancelFrame:handle=>clearTimeout(handle),
-   sourceSpriteFor(){return {url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",frameCount:1,playbackMode:"loop"};},
+   sourceSpriteFor(){return {attack:{url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",frameCount:5,playbackMode:"once",assetId:"test:raiiven-official-attack-5f"},movement:null};},
    waveTargetsFor(fromSlot){
      return ids.filter(id=>format.teamOf(id)!==format.teamOf(fromSlot));
    },
@@ -102,7 +102,10 @@ async function scenario(source){
   runtime.start();
   check(runtime.startSkill({actorId:source,targetId:enemies[0],skill}).ok,"started action");
   check(releaseShell?.dataset.stampede==="true","real native stampede shell");
-  check(releaseShell.querySelectorAll(".skill-fx--stampede-ghost").length===6,"six copied movements");
+  check(releaseShell.querySelectorAll(".skill-fx--stampede-ghost").length===5,"five identical attack copies");
+  check(releaseShell.dataset.stampedePose==="attack","official attack atlas used, not movement or fallback");
+  const horseNodes=[...releaseShell.querySelectorAll(".skill-fx--stampede-ghost")];
+  check(horseNodes.every(node=>node.style.opacity==="1"&&node.style.width===horseNodes[0].style.width),"five equal-sized and equally visible horses");
   await new Promise(resolve=>setTimeout(resolve,7400));
   check(contacts.filter(x=>x.waveMultiTarget).length===6,
    "two distinct visible ring crossings: "+contacts.map(x=>x.targetId).join(",")+
