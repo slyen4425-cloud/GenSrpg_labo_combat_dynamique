@@ -75,7 +75,7 @@ async function scenario(source){
      samples++;callback();
    },16),
    cancelFrame:handle=>clearTimeout(handle),
-   sourceSpriteFor(){return {movement:{url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",frameCount:7,playbackMode:"loop",assetId:"test:raiiven-official-movement-7f"}};},,
+   sourceSpriteFor(){return {movement:{url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",frameCount:7,playbackMode:"loop",assetId:"test:raiiven-official-movement-7f"}};},
    waveTargetsFor(fromSlot){
      return ids.filter(id=>format.teamOf(id)!==format.teamOf(fromSlot));
    },
