@@ -75,7 +75,10 @@ async function scenario(two){
    sourceRect:slots.raiiven.getBoundingClientRect(),targetRect:slots.enemy.getBoundingClientRect(),
    durationMs:220,animate:(node,frames,settings)=>node.animate(frames,settings)});
   check(fx.node.dataset.shadowEcho==="true","shared shadow presentation");
-  // Virtual-time Chromium can freeze compositor animations; finish only the\n  // VISUAL clock, then observe the real WAAPI finished/cleanup lifecycle.\n  fx.animation.finish();\n  await fx.finished;check(fx.node.isConnected===false,"FX cleanup");
+  // Virtual-time Chromium can freeze compositor animations; finish only the
+  // VISUAL clock, then observe the real WAAPI finished/cleanup lifecycle.
+  fx.animation.finish();
+  await fx.finished;check(fx.node.isConnected===false,"FX cleanup");
   return two?"2v2":"1v1";
  }finally{overlay.dispose();area.remove();}
 }
