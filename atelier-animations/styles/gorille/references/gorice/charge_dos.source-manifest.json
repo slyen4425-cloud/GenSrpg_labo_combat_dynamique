@@ -1,0 +1,189 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "assetId": "pack:capture:creature-gorille-des-glaces-attack-player-12-charge-v1",
+  "creatureId": "gorille_des_glaces",
+  "action": "attack",
+  "variant": "charge-canalisation",
+  "view": "player",
+  "frameCount": 12,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 110,
+  "frameDurationsMs": [
+    115,
+    105,
+    110,
+    110,
+    110,
+    100,
+    100,
+    105,
+    110,
+    115,
+    135,
+    190
+  ],
+  "playbackMode": "once",
+  "holdLastFrame": true,
+  "persistentFrameIndex": 11,
+  "anchor": {
+    "x": 256,
+    "y": 462,
+    "description": "frame-space fixed ground baseline, unchanged across 12 frames"
+  },
+  "sourceArchive": "gorille_des_glaces_canalisation_corrigee_12f.zip",
+  "sourceArchiveSha256": "379afd5861977a636059dd8453e67fb3d622fe78d52830a08f58562f6dba390b",
+  "sourceGitBlob": "5891b83b944b9d7735d118fdc0e90c2367b4a91c",
+  "atlas": {
+    "file": "atlases/gorille_des_glaces_charge_player_12_atlas.webp",
+    "format": "sprite-strip",
+    "frameCount": 12,
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "sha256": "216b31570818fa0b2067c9b8b7d3869e40ce440fff735dd3f1e9be682972e03c",
+    "lossless": true
+  },
+  "frames": [
+    {
+      "index": 0,
+      "file": "frames/gorille_des_glaces_charge_player_01.png",
+      "sha256": "4c687d21bdd4dc2f440932085ca56fab080999703bcfb79d6bff341c557a1aa7",
+      "marginsLTRB": [
+        53,
+        57,
+        62,
+        49
+      ]
+    },
+    {
+      "index": 1,
+      "file": "frames/gorille_des_glaces_charge_player_02.png",
+      "sha256": "ef5974ca9923c091617e0e4ada223514e6be83d2faf868c038d176c4752e89dc",
+      "marginsLTRB": [
+        54,
+        67,
+        73,
+        51
+      ]
+    },
+    {
+      "index": 2,
+      "file": "frames/gorille_des_glaces_charge_player_03.png",
+      "sha256": "dfbcc1918e4d38489e2f0047d9dce08dfd70b7f474409308f0cf65558d1fdc68",
+      "marginsLTRB": [
+        50,
+        87,
+        73,
+        51
+      ]
+    },
+    {
+      "index": 3,
+      "file": "frames/gorille_des_glaces_charge_player_04.png",
+      "sha256": "02e73763f852e331b7357ac550a254197d63bee85b447ae819eb2330d47fa23e",
+      "marginsLTRB": [
+        35,
+        67,
+        82,
+        52
+      ]
+    },
+    {
+      "index": 4,
+      "file": "frames/gorille_des_glaces_charge_player_05.png",
+      "sha256": "78ce26bf337c4e7c361a5e119fdcdf5800f4458885d00ffaad434437c5695e34",
+      "marginsLTRB": [
+        40,
+        61,
+        70,
+        52
+      ]
+    },
+    {
+      "index": 5,
+      "file": "frames/gorille_des_glaces_charge_player_06.png",
+      "sha256": "db8df56a100aded23bd6981c9d495553a26ae3fe65917f4c0cb82a5d8047f498",
+      "marginsLTRB": [
+        52,
+        50,
+        62,
+        52
+      ]
+    },
+    {
+      "index": 6,
+      "file": "frames/gorille_des_glaces_charge_player_07.png",
+      "sha256": "9e3322e90fd45caf7c14edd71dfa7b1c7e00e9c6df2ac403c85f2d504fe17ac6",
+      "marginsLTRB": [
+        47,
+        39,
+        63,
+        52
+      ]
+    },
+    {
+      "index": 7,
+      "file": "frames/gorille_des_glaces_charge_player_08.png",
+      "sha256": "582b7a039603c191274611185106488a4ea33d92517adb7d820c6d4d9e74abef",
+      "marginsLTRB": [
+        48,
+        32,
+        34,
+        52
+      ]
+    },
+    {
+      "index": 8,
+      "file": "frames/gorille_des_glaces_charge_player_09.png",
+      "sha256": "a5ff89b3a2b835ed469c5b87a4d6e63f3cba5369cd6d8e52c8a7ea7869014250",
+      "marginsLTRB": [
+        52,
+        36,
+        34,
+        51
+      ]
+    },
+    {
+      "index": 9,
+      "file": "frames/gorille_des_glaces_charge_player_10.png",
+      "sha256": "8cc7f7053d5f152250b9477c5d73e5bbd99af7651ae3b944ad98c5c150f778e7",
+      "marginsLTRB": [
+        56,
+        40,
+        32,
+        52
+      ]
+    },
+    {
+      "index": 10,
+      "file": "frames/gorille_des_glaces_charge_player_11.png",
+      "sha256": "199088ba73a64143f5a7235cfd82b20aec1ba92e52dcdf970c986d9dc4ba3395",
+      "marginsLTRB": [
+        60,
+        41,
+        31,
+        51
+      ]
+    },
+    {
+      "index": 11,
+      "file": "frames/gorille_des_glaces_charge_player_12.png",
+      "sha256": "5ba5168b1a970b117ed7bff1636259a513e969c25c306f9ea0638c9224002785",
+      "marginsLTRB": [
+        61,
+        41,
+        31,
+        51
+      ]
+    }
+  ],
+  "previews": {
+    "canalisation": "previews/canalisation.webp",
+    "mouvement": "previews/mouvement.webp",
+    "planche": "previews/controle_4x3.png"
+  },
+  "approvalStatus": "artist_requested_import",
+  "notes": "Final pose held by engine during charging/channeling, not looped. No automatic binding."
+}

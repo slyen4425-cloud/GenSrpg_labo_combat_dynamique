@@ -1,0 +1,198 @@
+{
+  "schema": "gensrpg-animation-production-reference-v1",
+  "styleId": "gorille",
+  "referenceId": "gorice-20261103",
+  "referenceCreature": "gorice",
+  "canonicalMediaCreatureId": "gorille_des_glaces",
+  "createdAt": "2026-11-20",
+  "source": {
+    "repository": "slyen4425-cloud/GenSrpg_labo_combat_dynamique",
+    "branch": "global-assets",
+    "prMovement": "https://github.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/pull/219",
+    "prAttackPlayer": "https://github.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/pull/211",
+    "prAttackOpponent": "https://github.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/pull/214"
+  },
+  "status": "reference-only-no-runtime-integration",
+  "framesPerAnimation": 12,
+  "atlasLayout": "horizontal-12x512",
+  "frameSize": [
+    512,
+    512
+  ],
+  "approvalNotes": [
+    "Déplacement : artistique validé le 03/11/2026 ; image 01 joueur pas certifiée RGBA identique au maître officiel.",
+    "Charge/canalisation : versions officielles enregistrées, dernières poses maintenues ; ne pas traiter comme animation en boucle.",
+    "Plusieurs frames historiques des attaques ont une marge transparente inférieure à 42 px : copies de référence uniquement, les nouvelles animations doivent respecter la charte 42 px."
+  ],
+  "copiedMedia": "Blobs Git exacts (sans retouche, réencodage ou modification); la bibliothèque officielle global-assets reste propriétaire des ressources runtime.",
+  "assets": [
+    {
+      "file": "deplacement_dos_12f.webp",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/movement/player/atlases/gorice_deplacement_joueur_12f.webp",
+      "sourceGitBlobSha": "aff50b6e5ca49d44b10001a3f91165723976ee93",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/deplacement_dos_12f.webp",
+      "kind": "atlas",
+      "action": "movement",
+      "view": "dos",
+      "frameCount": 12,
+      "frameMs": 130,
+      "playbackMode": "loop"
+    },
+    {
+      "file": "deplacement_face_12f.webp",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/movement/opponent/atlases/gorice_deplacement_adversaire_12f.webp",
+      "sourceGitBlobSha": "09e4b35a820ddbef2c4526f6fe35cfb1906cd059",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/deplacement_face_12f.webp",
+      "kind": "atlas",
+      "action": "movement",
+      "view": "face",
+      "frameCount": 12,
+      "frameMs": 110,
+      "playbackMode": "loop"
+    },
+    {
+      "file": "charge_dos_12f.webp",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/attack/player/atlases/gorille_des_glaces_charge_player_12_atlas.webp",
+      "sourceGitBlobSha": "ed166c9fdc05849abcbb198c4bfaac0f0bfb58d8",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/charge_dos_12f.webp",
+      "kind": "atlas",
+      "action": "attack-charge",
+      "view": "dos",
+      "frameCount": 12,
+      "frameMs": 110,
+      "playbackMode": "once-hold-last"
+    },
+    {
+      "file": "charge_face_12f.webp",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/attack/opponent/atlases/gorille_des_glaces_charge_opponent_12_atlas.webp",
+      "sourceGitBlobSha": "c1c37ceec5af6389936d6d0ca25707db17f97fbb",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/charge_face_12f.webp",
+      "kind": "atlas",
+      "action": "attack-charge",
+      "view": "face",
+      "frameCount": 12,
+      "frameMs": 110,
+      "playbackMode": "once-hold-last"
+    },
+    {
+      "file": "deplacement_dos_preview.webp",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/movement/player/previews/gorice_deplacement_joueur_12f.webp",
+      "sourceGitBlobSha": "23ea3e521b5f4de29698f061fd7ca7b3ce8ce8e2",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/deplacement_dos_preview.webp",
+      "kind": "preview",
+      "action": "movement",
+      "view": "dos",
+      "frameCount": 12
+    },
+    {
+      "file": "deplacement_face_preview.webp",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/movement/opponent/previews/gorice_deplacement_adversaire_12f.webp",
+      "sourceGitBlobSha": "173ff2295ad2a594e1491d3340f5575795a6c352",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/deplacement_face_preview.webp",
+      "kind": "preview",
+      "action": "movement",
+      "view": "face",
+      "frameCount": 12
+    },
+    {
+      "file": "charge_dos_preview.webp",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/attack/player/previews/canalisation.webp",
+      "sourceGitBlobSha": "925d051164a5ae115b9c6ff083706d4c578f4c11",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/charge_dos_preview.webp",
+      "kind": "preview",
+      "action": "attack-charge",
+      "view": "dos",
+      "frameCount": 12
+    },
+    {
+      "file": "charge_face_preview.webp",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/attack/opponent/previews/canalisation.webp",
+      "sourceGitBlobSha": "57d4d7ce130e766336e397ed6f5f44cdf9fe2270",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/charge_face_preview.webp",
+      "kind": "preview",
+      "action": "attack-charge",
+      "view": "face",
+      "frameCount": 12
+    },
+    {
+      "file": "deplacement_dos_preview.gif",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/movement/player/previews/gorice_deplacement_joueur_12f.gif",
+      "sourceGitBlobSha": "27a1ea27efe6c12312edc3e79d8a5ae78fcd7d88",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/deplacement_dos_preview.gif",
+      "kind": "gif",
+      "action": "movement",
+      "view": "dos",
+      "frameCount": 12
+    },
+    {
+      "file": "deplacement_face_preview.gif",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/movement/opponent/previews/gorice_deplacement_adversaire_12f.gif",
+      "sourceGitBlobSha": "24ce8c04ade2855bf33be05546a0feef6ae4866d",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/deplacement_face_preview.gif",
+      "kind": "gif",
+      "action": "movement",
+      "view": "face",
+      "frameCount": 12
+    },
+    {
+      "file": "charge_dos_planche.png",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/attack/player/previews/controle_4x3.png",
+      "sourceGitBlobSha": "1d027e3938453706de64f7bf17dd8a266782efa7",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/charge_dos_planche.png",
+      "kind": "contact-sheet",
+      "action": "attack-charge",
+      "view": "dos",
+      "frameCount": 12
+    },
+    {
+      "file": "charge_face_planche.png",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/attack/opponent/previews/controle_4x3.png",
+      "sourceGitBlobSha": "912dbd4822dc5b835358a10ab6714078cd6d2d4d",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/charge_face_planche.png",
+      "kind": "contact-sheet",
+      "action": "attack-charge",
+      "view": "face",
+      "frameCount": 12
+    },
+    {
+      "file": "deplacement_dos.source-manifest.json",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/movement/player/movement.manifest.json",
+      "sourceGitBlobSha": "7de9236bf7bc9866ef1bf82cbaca69efc94a0ea1",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/deplacement_dos.source-manifest.json",
+      "kind": "source-manifest",
+      "action": "movement",
+      "view": "dos",
+      "frameCount": 12
+    },
+    {
+      "file": "deplacement_face.source-manifest.json",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/movement/opponent/movement.manifest.json",
+      "sourceGitBlobSha": "c601169e9f8956580dd89b642f7ee341b3a9bc66",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/deplacement_face.source-manifest.json",
+      "kind": "source-manifest",
+      "action": "movement",
+      "view": "face",
+      "frameCount": 12
+    },
+    {
+      "file": "charge_dos.source-manifest.json",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/attack/player/attack.manifest.json",
+      "sourceGitBlobSha": "d00e9d6d5433e99e95676344ec0f3ae9d0230021",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/charge_dos.source-manifest.json",
+      "kind": "source-manifest",
+      "action": "attack-charge",
+      "view": "dos",
+      "frameCount": 12
+    },
+    {
+      "file": "charge_face.source-manifest.json",
+      "sourcePath": "assets/library/capture/creatures/gorille_des_glaces/animations/attack/opponent/attack.manifest.json",
+      "sourceGitBlobSha": "722cd85c801c80796d8c648537500547318e638e",
+      "copyPath": "atelier-animations/styles/gorille/references/gorice/charge_face.source-manifest.json",
+      "kind": "source-manifest",
+      "action": "attack-charge",
+      "view": "face",
+      "frameCount": 12
+    }
+  ]
+}

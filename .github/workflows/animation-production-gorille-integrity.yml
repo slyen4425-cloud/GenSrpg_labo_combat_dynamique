@@ -1,0 +1,33 @@
+name: Atelier animations — références GORILLE
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'atelier-animations/styles/gorille/**'
+      - 'scripts/verify-animation-production-gorice.py'
+      - '.github/workflows/animation-production-gorille-integrity.yml'
+      - 'atelier-animations/README.md'
+      - '00_ATELIER_ANIMATIONS_LIRE_EN_PREMIER.md'
+  push:
+    branches: [main]
+    paths:
+      - 'atelier-animations/styles/gorille/**'
+      - 'scripts/verify-animation-production-gorice.py'
+      - '.github/workflows/animation-production-gorille-integrity.yml'
+  workflow_dispatch:
+
+jobs:
+  gorice-reference-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'Pillow>=11,<13'
+      - name: Contrôle des copies exactes des 4 vraies animations Gorice
+        run: python scripts/verify-animation-production-gorice.py
+      - name: Préserver le standard Cheval
+        run: python scripts/verify-animation-production-raiiven.py
+      - run: git diff --check

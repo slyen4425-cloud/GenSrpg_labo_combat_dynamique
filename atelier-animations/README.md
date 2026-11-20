@@ -3,13 +3,15 @@
 ## Point de reprise permanent
 
 **Premier modèle standard : [🐎 CHEVAL](styles/cheval/README.md)**  
-**Références copiées : [Raiiven — 4 planches](styles/cheval/references/raiiven/README.md)**
+**Références copiées : [Raiiven — 4 planches](styles/cheval/references/raiiven/README.md)**  
+**Deuxième modèle standard : [🦍 GORILLE](styles/gorille/README.md)**  
+**Références copiées : [Gorice — 4 planches + previews animées](styles/gorille/references/gorice/README.md)**
 
 Les standards sont classés **par morphologie/style de mouvement**, pas par créature et pas par identité graphique. Ils définissent la logique des poses, l'ordre des frames, les appuis au sol, les directions et les transitions. La créature à animer garde **ses propres maîtres FACE/DOS**, anatomie, textures, palette et orientation.
 
 ## Procédure (nouvelle direction)
 
-1. Choisir un standard existant : actuellement **cheval**, puis lire sa fiche.
+1. Choisir un standard existant : **cheval** ou **gorille**, puis lire sa fiche.
 2. Récupérer les vrais PNG maîtres FACE/DOS de la créature cible ; frame 01 = le modèle approuvé à l'identique.
 3. Définir les poses clés, puis dessiner les véritables poses intermédiaires : **pas de déplacement global ou d'interpolation floue en guise d'animation**.
 4. Inspecter les membres et les transitions, et conserver 512×512 RGBA, marges transparentes, ancrages cohérents.
@@ -31,9 +33,10 @@ Les standards sont classés **par morphologie/style de mouvement**, pas par cré
 | Morphologie | Standard | Référence | État |
 |---|---|---|---|
 | Cheval / quadrupède équin | [Cheval](styles/cheval/README.md) | Raiiven, 4 planches approuvées 19/11/2026 | **RÉFÉRENCE INSTALLÉE** |
+| Gorille / grand primate massif | [Gorille](styles/gorille/README.md) | Gorice, 4 planches de 12 images et previews, importées 02–03/11/2026 | **RÉFÉRENCE INSTALLÉE** |
 
-Les prochains styles seront ajoutés ici, **sans réécrire ni altérer les références du cheval**.
+Les prochains styles seront ajoutés ici, **sans réécrire ni altérer les références déjà installées**.
 
 ### Intégrité
 
-Exécuter `python3 scripts/verify-animation-production-raiiven.py` à la racine. Vérifie la présence et l'identité Git exacte des 10 références, les dimensions PNG et l'ordre des copies. Le contrôle visuel/artistique reste distinct.
+Exécuter `python3 scripts/verify-animation-production-raiiven.py` à la racine. Vérifie la présence et l'identité Git exacte des 10 références, les dimensions PNG et l'ordre des copies. Pour le gorille : `python3 scripts/verify-animation-production-gorice.py` (nécessite Pillow) ; contrôle des 16 copies, 4 atlas et 4 previews animées. Le contrôle visuel/artistique reste distinct.
