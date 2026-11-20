@@ -149,7 +149,7 @@
           "mode": "sprite",
           "displayScale": 1,
           "rotationTurns": 6,
-          "frameCount": 1,
+          "frameCount": 6,
           "transitionMs": 20
         },
         "rangedAttack": {
@@ -157,7 +157,7 @@
           "mode": "sprite",
           "displayScale": 1,
           "rotationTurns": 0,
-          "frameCount": 1,
+          "frameCount": 5,
           "transitionMs": 80
         },
         "rangedAttackBack": {
@@ -165,7 +165,7 @@
           "mode": "sprite",
           "displayScale": 1,
           "rotationTurns": 0,
-          "frameCount": 1,
+          "frameCount": 5,
           "transitionMs": 80
         },
         "rangedAttackPlacement": {
@@ -195,7 +195,7 @@
           "mode": "sprite",
           "displayScale": 1,
           "rotationTurns": 6,
-          "frameCount": 1,
+          "frameCount": 7,
           "transitionMs": 20
         }
       },
