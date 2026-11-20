@@ -106,6 +106,24 @@ test("timed reserve source stores the real authored effects, not a zero-effect a
  assert.equal(settled.ok,true);
  assert.equal(roster.reserveMemberSnapshot("raiiven","r1").hp,170,"no double effects");
 });
+test("a relay replaces the caster without transferring the outgoing member's echo history",()=>{
+ const {session,roster}=harness();
+ const trigger=roster.useSkillOnTarget({actorId:"raiiven",
+   targetRef:{scope:"reserve",teamId:"enemy",memberId:"e1"},skill:reserveShot});
+ assert.equal(trigger.ok,true);
+ const before=session.inspectEchoSource({actorId:"enemy",targetId:"raiiven",skill:echo});
+ assert.equal(before.ok,true);
+ // Relay on the raiven side: the caster slot becomes a different member.
+ const relay=normalizeSkillDefinition({id:"echo-test-relay",name:"Native relay",category:"heal",
+   form:"self",approachMode:"none",energyCost:0,preparationMs:0,travelMs:0,
+   recoveryMs:0,cooldownMs:0,targetRelations:["ally"],targetLocations:["reserve"],
+   effect:{damage:0,heal:0},
+   effects:[{kind:"ally_reserve_relay",targetScope:"target",healAmount:5,durationMs:1000,outgoingDamagePct:10}]});
+ const replacement=roster.useSkillOnTarget({actorId:"raiiven",
+   targetRef:{scope:"reserve",teamId:"raiiven",memberId:"r1"},skill:relay});
+ assert.equal(replacement.ok,true,replacement.outcome);
+ assert.equal(session.inspectEchoSource({actorId:"enemy",targetId:"raiiven",skill:echo}).outcome,"no_copy_source");
+});
 test("ultimate and a replacement still cannot be used as an echo source",()=>{
  const {session,roster}=harness();
  const ultimate=normalizeSkillDefinition({...reserveShot,id:"enemy-reserve-ultimate",loadoutSlot:"ultimate"});

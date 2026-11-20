@@ -917,7 +917,9 @@ export function createRosterSession({
     const forcedResult = (forced || relay) ? forceSwitchMemberBySkill(team, member) : null;
     // Synchronous reserve casts use Roster's native start rather than
     // session.startSkill; record only truly committed non-preview actions.
-    combatSession.recordRosterSkillCommit?.(actorId,skill);
+    // An allied relay may replace the *caster*. Its old spell must not
+    // become the NEW creature's last usable spell after the switch.
+    if(!(relay && forcedResult))combatSession.recordRosterSkillCommit?.(actorId,skill);
     if (relay && forcedResult) commitVoluntaryCooldown(team);
     if (completedResolution !== null) consumedTimedReserveResolutions.add(completedResolution);
     return Object.freeze({
