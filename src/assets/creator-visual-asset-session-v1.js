@@ -153,62 +153,58 @@ export function createCreatorVisualAssetSessionV1({
     }
   }
 
-  function importImage({
-    file,
-    label,
-    role,
-    frameCount=1,
-    frameMs=100
-  }) {
+  function attachImage({id,file,label,role,frameCount=1,frameMs=100}) {
     assertUsable();
-
-    if (
-      !CREATOR_VISUAL_ROLES_V1.includes(role)
-    ) {
-      throw new RangeError(
-        "Unsupported creator visual role: " +
-          String(role)
-      );
-    }
-
+    if (!CREATOR_VISUAL_ROLES_V1.includes(role))
+      throw new RangeError('Unsupported creator visual role: '+String(role));
+    if(typeof id!=='string'||!/^user:[a-zA-Z0-9][a-zA-Z0-9._:-]{0,125}$/.test(id))
+      throw new TypeError('Identifiant personnel user: requis');
+    if(assets.has(id))throw new Error('Cet asset personnel est déjà chargé');
     if(!Number.isInteger(frameCount)||frameCount<1||frameCount>32)
       throw new RangeError('Creator animation frameCount must be 1..32');
     if(!Number.isInteger(frameMs)||frameMs<30||frameMs>1000)
       throw new RangeError('Creator animation frameMs must be 30..1000');
     if((role==='creature'||role==='icon')&&frameCount!==1)
       throw new RangeError('Un modèle ou une icône doit contenir une seule image.');
-    const manager = createImageSourceManager({
-      createObjectURL,
-      revokeObjectURL
-    });
+    const manager=createImageSourceManager({createObjectURL,revokeObjectURL});
     manager.validateFile(file);
-    const runtimeUrl = manager.load(file);
+    try {
+      const runtimeUrl=manager.load(file);
+      const definition=definitionFor({
+        id,label:requiredText(label||file?.name,'creator asset label'),
+        role,runtimeUrl,file,frameCount,frameMs
+      });
+      assets.set(id,definition);
+      managers.set(id,manager);
+      return definition;
+    }catch(error){manager.dispose();throw error;}
+  }
 
-    let id = "user:" +
-      requiredText(createId(), "creator asset id");
-    let suffix = 2;
-    const baseId = id;
-    while (assets.has(id)) {
-      id = baseId + "-" + suffix;
-      suffix += 1;
-    }
+  function importImage({file,label,role,frameCount=1,frameMs=100}) {
+    assertUsable();
+    let id='user:'+requiredText(createId(),'creator asset id');
+    const baseId=id;
+    let suffix=2;
+    while(assets.has(id)){id=baseId+'-'+suffix;suffix++;}
+    return attachImage({id,file,label,role,frameCount,frameMs});
+  }
 
-    const definition = definitionFor({
-      id,
-      label: requiredText(
-        label || file?.name,
-        "creator asset label"
-      ),
-      role,
-      runtimeUrl,
-      file,
-      frameCount,
-      frameMs
-    });
+  // Storage or room receiver may only restore an existing generated ID.
+  // Never invent an ID on reload; the runtime URL is freshly reconstructed
+  // from verified Blob bytes rather than persisted object URLs.
+  function restoreImage({id,file,label,role,frameCount=1,frameMs=100}){
+    return attachImage({id,file,label,role,frameCount,frameMs});
+  }
 
-    assets.set(id, definition);
-    managers.set(id, manager);
-    return definition;
+  // Rollback ONLY an uncommitted session asset after failed IndexedDB write.
+  // Never removes saved bytes or an authored creature/skill record.
+  function discardSessionImage(id){
+    assertUsable();
+    if(!assets.has(id))return false;
+    managers.get(id)?.dispose();
+    managers.delete(id);
+    assets.delete(id);
+    return true;
   }
 
   function asset(assetId) {
@@ -238,6 +234,8 @@ export function createCreatorVisualAssetSessionV1({
 
   return Object.freeze({
     importImage,
+    restoreImage,
+    discardSessionImage,
     asset,
     list,
     dispose,
