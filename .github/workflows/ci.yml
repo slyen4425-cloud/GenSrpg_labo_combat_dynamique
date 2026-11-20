@@ -133,7 +133,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # immutable START baseline from git show; no second CSS copy
+          fetch-depth: 12 # START commit is an ancestor; avoid fetching all historical branches
       - uses: actions/setup-node@v4
         with:
           node-version: 22
