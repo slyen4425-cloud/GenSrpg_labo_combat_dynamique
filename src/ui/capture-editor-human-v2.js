@@ -9219,12 +9219,12 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
       previewBitmap=null;
       if(previewWrap)previewWrap.hidden=true;
     }
-    listeners.push(()=>{generation++;candidate=null;stopPreview();});
+
     function report(message,tone='info'){
       state.textContent=message;state.dataset.tone=tone;
     }
     function animate(startAt){
-      if(!previewBitmap||!candidate||disposed||!importer.open)return;
+      if(!previewBitmap||!candidate||!importer.isConnected||!importer.open)return;
       if(!document.hidden&&importer.getClientRects().length&&ctx){
         const frameMs=Number(speedInput?.value)||100;
         const frameIndex=Math.floor((performance.now()-startAt)/frameMs)%candidate.frameCount;
@@ -9247,13 +9247,13 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
         report('Préparation de la prévisualisation…');
         const count=files.length===1?Number(frameInput?.value??1):files.length;
         const ready=await prepareCreatorVisualImportV1({files,stripFrames:count});
-        if(index!==generation||disposed)return;
+        if(index!==generation||!importer.isConnected)return;
         if((role==='movement'||role==='attack')&&ready.frameCount<2)
           throw Error('Pour une animation de créature, choisis au moins 2 images ou indique 2+ frames sur la planche.');
         if((role==='creature'||role==='icon')&&ready.frameCount>1)
           throw Error('Pour une pose ou icône, choisis une image fixe. Les animations vont dans déplacement/attaque ou FX.');
         const bitmap=await createImageBitmap(ready.file);
-        if(index!==generation||disposed){bitmap.close?.();return;}
+        if(index!==generation||!importer.isConnected){bitmap.close?.();return;}
         candidate=ready;previewBitmap=bitmap;
         const isMulti=files.length>1;
         if(frameInput)frameInput.disabled=isMulti;
