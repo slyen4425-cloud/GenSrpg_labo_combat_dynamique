@@ -175,8 +175,6 @@ export function createCreatorVisualAssetSessionV1({
       throw new RangeError('Creator animation frameCount must be 1..32');
     if(!Number.isInteger(frameMs)||frameMs<30||frameMs>1000)
       throw new RangeError('Creator animation frameMs must be 30..1000');
-    if((role==='movement'||role==='attack')&&frameCount<2)
-      throw new RangeError('Une animation de créature exige au moins deux frames.');
     if((role==='creature'||role==='icon')&&frameCount!==1)
       throw new RangeError('Un modèle ou une icône doit contenir une seule image.');
     const manager = createImageSourceManager({
