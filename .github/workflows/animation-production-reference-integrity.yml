@@ -1,0 +1,27 @@
+name: Atelier animations — intégrité du standard CHEVAL
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'atelier-animations/**'
+      - 'scripts/verify-animation-production-raiiven.py'
+      - '.github/workflows/animation-production-reference-integrity.yml'
+      - '00_ATELIER_ANIMATIONS_LIRE_EN_PREMIER.md'
+  push:
+    branches: [main]
+    paths:
+      - 'atelier-animations/**'
+      - 'scripts/verify-animation-production-raiiven.py'
+      - '.github/workflows/animation-production-reference-integrity.yml'
+  workflow_dispatch:
+
+jobs:
+  horse-reference-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Contrôler les copies exactes Raiiven et les 4 atlas
+        run: python3 scripts/verify-animation-production-raiiven.py
+      - name: Contrôler le diff
+        run: git diff --check

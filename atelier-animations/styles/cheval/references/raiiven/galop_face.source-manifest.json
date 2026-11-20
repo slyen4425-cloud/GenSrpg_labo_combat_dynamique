@@ -1,0 +1,51 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "raiiven",
+  "action": "movement",
+  "view": "opponent",
+  "frameCount": 6,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 130,
+  "playbackMode": "loop",
+  "sourceArchive": "raiiven_mouvement_adversaire_6_frames.zip",
+  "sourceArchiveSha256": "05c68d5b2b96ec0b092c4c1b0da30d30e4d20fc5eb82c0be1dfe4be745bb163f",
+  "firstFrame": "approved-static-master",
+  "firstFrameRgbaSha256": "8740fb7e1ebb8814571eb567ddb114410093e8158690f736e739e34573354bd6",
+  "opponentAttackApproved": false,
+  "frames": [
+    {
+      "index": 0,
+      "rgbaSha256": "8740fb7e1ebb8814571eb567ddb114410093e8158690f736e739e34573354bd6"
+    },
+    {
+      "index": 1,
+      "rgbaSha256": "30599d3ce789e76241968017539e10a0dd628aa7b52cb882f76b844eafb936b3"
+    },
+    {
+      "index": 2,
+      "rgbaSha256": "c88151ffa8fd045111b2babf36ded1d583efa11dca0ff51dc2cc1c0c020b2a4b"
+    },
+    {
+      "index": 3,
+      "rgbaSha256": "545f3e2c882ad9b671ea7de94fe2de537c5ffeb9962e409031c2c24239313f71"
+    },
+    {
+      "index": 4,
+      "rgbaSha256": "cfa2028be02e6400aefd9bdb12e576295e2aee89a107d542df8443c4bc101876"
+    },
+    {
+      "index": 5,
+      "rgbaSha256": "03e5170941aa312e0a529898363bce843401dea17c2c131c68455ff3bc94896d"
+    }
+  ],
+  "atlas": {
+    "file": "capture/creatures/raiiven/animations/movement/opponent/raiiven_movement_opponent_6f.png",
+    "format": "sprite-strip",
+    "frameCount": 6,
+    "frameWidth": 512,
+    "frameHeight": 512
+  }
+}

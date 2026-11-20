@@ -1,0 +1,142 @@
+{
+  "schema": "gensrpg-animation-production-reference-v1",
+  "styleId": "cheval",
+  "referenceId": "raiiven-20261119",
+  "referenceCreature": "raiiven",
+  "createdAt": "2026-11-20",
+  "artisticStatus": "approuve-par-auteur-comme-reference-raiiven",
+  "runtimeIntegratedByThisCopy": false,
+  "canonicalSource": {
+    "repo": "slyen4425-cloud/GenSrpg_labo_combat_dynamique",
+    "branch": "global-assets",
+    "integrationPr": "https://github.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/pull/346"
+  },
+  "policy": "COPIES EXACTES de blobs Git. Aucune transformation, inversion, interpolation, modification de palette ou de pose. Les copies ne sont ni des assets runtime ni un second catalogue.",
+  "order": "gauche-vers-droite; une frame RGBA 512x512 par cellule; strip horizontal; 0-index dans les manifestes sources, 1-index à l'affichage",
+  "assets": [
+    {
+      "file": "modele_dos.png",
+      "kind": "master",
+      "view": "dos",
+      "size": [
+        512,
+        512
+      ],
+      "sourcePath": "assets/library/capture/creatures/raiiven/runtime/raiiven_dos.png",
+      "sourceGitBlobSha": "abf5044dc6fd51edd8e643ad5ca33c78c4be0d06",
+      "copyPath": "atelier-animations/styles/cheval/references/raiiven/modele_dos.png"
+    },
+    {
+      "file": "modele_face.png",
+      "kind": "master",
+      "view": "face",
+      "size": [
+        512,
+        512
+      ],
+      "sourcePath": "assets/library/capture/creatures/raiiven/runtime/raiiven_face.png",
+      "sourceGitBlobSha": "237e1fda221649ed70ddc73889fe21c311f09169",
+      "copyPath": "atelier-animations/styles/cheval/references/raiiven/modele_face.png"
+    },
+    {
+      "file": "galop_dos_7f.png",
+      "kind": "atlas",
+      "view": "dos",
+      "action": "course",
+      "frameCount": 7,
+      "frameMs": 120,
+      "playback": "loop",
+      "size": [
+        3584,
+        512
+      ],
+      "sourcePath": "assets/library/capture/creatures/raiiven/animations/movement/player/raiiven_movement_player_7f.png",
+      "sourceGitBlobSha": "82b50acc2b7dced6f45fbf5bac906b84f21c9db2",
+      "copyPath": "atelier-animations/styles/cheval/references/raiiven/galop_dos_7f.png"
+    },
+    {
+      "file": "attaque_dos_5f.png",
+      "kind": "atlas",
+      "view": "dos",
+      "action": "attaque",
+      "frameCount": 5,
+      "frameMs": 180,
+      "playback": "once",
+      "size": [
+        2560,
+        512
+      ],
+      "sourcePath": "assets/library/capture/creatures/raiiven/animations/attack/player/raiiven_attack_player_5f.png",
+      "sourceGitBlobSha": "b3b6a3ddcc531672bbb443e247b0e92ba285a278",
+      "copyPath": "atelier-animations/styles/cheval/references/raiiven/attaque_dos_5f.png"
+    },
+    {
+      "file": "galop_face_6f.png",
+      "kind": "atlas",
+      "view": "face",
+      "action": "course",
+      "frameCount": 6,
+      "frameMs": 130,
+      "playback": "loop",
+      "size": [
+        3072,
+        512
+      ],
+      "sourcePath": "assets/library/capture/creatures/raiiven/animations/movement/opponent/raiiven_movement_opponent_6f.png",
+      "sourceGitBlobSha": "d493d4c1bebab63d26815e0a9c80c4c7cae69093",
+      "copyPath": "atelier-animations/styles/cheval/references/raiiven/galop_face_6f.png"
+    },
+    {
+      "file": "attaque_face_5f.png",
+      "kind": "atlas",
+      "view": "face",
+      "action": "attaque",
+      "frameCount": 5,
+      "frameMs": 180,
+      "playback": "once",
+      "size": [
+        2560,
+        512
+      ],
+      "sourcePath": "assets/library/capture/creatures/raiiven/animations/attack/opponent/raiiven_attack_opponent_5f.png",
+      "sourceGitBlobSha": "0f7734252194ee1b87f2ee5d5b8305e9832e97f7",
+      "copyPath": "atelier-animations/styles/cheval/references/raiiven/attaque_face_5f.png"
+    },
+    {
+      "file": "galop_dos.source-manifest.json",
+      "kind": "source-manifest",
+      "view": "dos",
+      "action": "course",
+      "sourcePath": "assets/library/capture/creatures/raiiven/animations/movement/player/animation.manifest.json",
+      "sourceGitBlobSha": "191aeab6bcc57a25c8d8fb6a524e935aa9d4f1ac",
+      "copyPath": "atelier-animations/styles/cheval/references/raiiven/galop_dos.source-manifest.json"
+    },
+    {
+      "file": "attaque_dos.source-manifest.json",
+      "kind": "source-manifest",
+      "view": "dos",
+      "action": "attaque",
+      "sourcePath": "assets/library/capture/creatures/raiiven/animations/attack/player/animation.manifest.json",
+      "sourceGitBlobSha": "36e319d22e70cbf7893a521441bd98df5cfed0cc",
+      "copyPath": "atelier-animations/styles/cheval/references/raiiven/attaque_dos.source-manifest.json"
+    },
+    {
+      "file": "galop_face.source-manifest.json",
+      "kind": "source-manifest",
+      "view": "face",
+      "action": "course",
+      "sourcePath": "assets/library/capture/creatures/raiiven/animations/movement/opponent/animation.manifest.json",
+      "sourceGitBlobSha": "2002672f99123a19ea63a7612096671aec9deeee",
+      "copyPath": "atelier-animations/styles/cheval/references/raiiven/galop_face.source-manifest.json"
+    },
+    {
+      "file": "attaque_face.source-manifest.json",
+      "kind": "source-manifest",
+      "view": "face",
+      "action": "attaque",
+      "sourcePath": "assets/library/capture/creatures/raiiven/animations/attack/opponent/animation.manifest.json",
+      "sourceGitBlobSha": "fc464ab20846191861bd3974648d01573804dd98",
+      "copyPath": "atelier-animations/styles/cheval/references/raiiven/attaque_face.source-manifest.json"
+    }
+  ]
+}
