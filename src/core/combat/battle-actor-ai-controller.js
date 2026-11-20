@@ -62,7 +62,7 @@ function tacticalValue(skill, target, actor, enemy, recentSkillIds, profile, var
 // The AI selects between REAL advertised silhouettes. The status owner
 // decides which decoys exist; only the native resolver decides their outcome.
 export function chooseBattleActorDecoyV1({state,targetId,skill,seed=17,turn=0}) {
-  if(skill?.category!=="offensive" || !["contact","projectile","beam"].includes(skill.form))
+  if(!skill?.targetRelations?.includes("enemy") || !["contact","projectile","beam"].includes(skill.form))
     return null;
   const decoys=activeStatusEffectsV1(state,targetId,state.elapsedMs)
     .filter(x=>x.definition.kind==="decoy");
