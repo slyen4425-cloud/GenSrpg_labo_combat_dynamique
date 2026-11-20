@@ -2794,7 +2794,7 @@ export function createDomSkillFxRenderer({
         targetRect:slot=>anchor(targetAnchors,slot,"target").getBoundingClientRect(),
         targetSlots:waveTargetsFor?.(fromSlot,targetSlot)??[],
         targetCollisionModelFor,onContact:contact=>onProjectileContact?.(contact),
-        animate,requestFrame,cancelFrame,applySpriteVisual});
+        animate,requestFrame,cancelFrame,applySpriteVisual,authorPixels:fxAuthorPixelsV1});
       const record={node:pass.node,animation:pass.animation,frameAnimation:pass.frameAnimation,
         type:"projectile",skillId,fromSlot,targetSlot,contactFrameId:null,
         expandingWave:null,stampede,contactReported:false};
