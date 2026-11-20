@@ -127,16 +127,22 @@ export function createDomDecoyOverlayV1({
       Object.assign(image.style,{position:"absolute",inset:"0",width:"100%",
         height:"100%",display:"block",pointerEvents:"none"});
       let frameAnimation=null;
-      if(visual?.url){
-        const playback=applySpriteVisual(image,{
-          ...visual,playbackMode:"loop"
-        },duration);
-        frameAnimation=playback.frameAnimation;
-      }else if(realImage?.src){
+      // While Dédale is active, ALL THREE remain in the same official
+      // standing pose. A looping gallop in place reveals an unnecessary FX
+      // and does not match the user's true creature model.
+      if(realImage?.src){
+        image.dataset.decoyPose="standing";
         image.style.backgroundImage="url("+JSON.stringify(realImage.src)+")";
         image.style.backgroundSize="contain";
         image.style.backgroundPosition="center";
         image.style.backgroundRepeat="no-repeat";
+      }else if(visual?.url){
+        // Asset-unavailable fallback is identical across the trio, never a
+        // special purple ghost with a different model or brightness.
+        const playback=applySpriteVisual(image,{
+          ...visual,playbackMode:"loop"
+        },duration);
+        frameAnimation=playback.frameAnimation;
       }
       button.append(image);
       const sprite={button,frameAnimation,decoyId:null};
