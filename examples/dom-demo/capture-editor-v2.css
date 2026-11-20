@@ -2315,3 +2315,59 @@ html {
     font-size: .8rem;
   }
 }
+
+
+/* Compact author media input, shared by creature and skill tabs. Only one
+   native catalogue; the details are closed by default on phone and desktop. */
+details.creator-visual-import {
+  border:1px solid rgba(121,217,201,.28);
+  background:rgba(17,43,49,.48);
+  border-radius:10px;
+  margin:9px 0;
+  max-width:100%;
+}
+details.creator-visual-import > summary {
+  padding:11px 13px;
+  cursor:pointer;
+  font-weight:650;
+  font-size:.94rem;
+  list-style-position:inside;
+}
+.creator-visual-import__body {
+  padding:9px 12px 12px;
+  display:grid;
+  gap:8px;
+}
+.creator-visual-import__body .grid {margin:0}
+.creator-visual-import__body label {min-width:0}
+.creator-visual-import__body input[type=file] {width:100%;min-width:0;max-width:100%}
+.creator-animation-options {
+  padding:8px;
+  border:1px solid rgba(136,208,210,.20);
+  border-radius:8px;
+}
+.creator-animation-options > summary {cursor:pointer;font-size:.88rem}
+.creator-animation-options[open] > summary {margin-bottom:8px}
+.creator-import-preview {
+  display:flex;
+  gap:12px;
+  align-items:center;
+  font-size:.82rem;
+  color:#c1dfdd;
+  flex-wrap:wrap;
+}
+.creator-import-preview[hidden] {display:none}
+.creator-import-preview canvas {
+  width:150px;
+  height:120px;
+  object-fit:contain;
+  border:1px solid #47706b;
+  border-radius:7px;
+  background:repeating-conic-gradient(#3a4648 0 25%,#202b2e 0 50%) 50%/18px 18px;
+}
+@media(max-width:650px) {
+  .creator-visual-import__body .grid.three {grid-template-columns:1fr}
+  .creator-animation-options .grid.two {grid-template-columns:1fr}
+  .creator-visual-import__body {padding:8px}
+  details.creator-visual-import > summary {min-height:44px}
+}

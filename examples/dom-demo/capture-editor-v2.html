@@ -501,9 +501,10 @@
         <details class="creature-appearance-group" data-creature-appearance-group="imports">
           <summary><strong>4. Bibliothèque de visuels</strong><small>Importer et choisir mes sprites</small></summary>
           <div class="creature-appearance-group__body">
-        <div class="creator-visual-import" data-creator-visual-importer data-creature-visual-importer>
-          <h3>Mes visuels / Importer</h3>
-          <p class="note">PNG, WebP ou JPEG. L’asset est ajouté à la bibliothèque de cette session avec un ID user:… puis utilisable dans les listes Créature / Cast / Projectile / Impact / Zone / Statut / Esquive / Animation. La persistance projet sera un lot séparé.</p>
+        <details class="creator-visual-import" data-creator-visual-importer data-creature-visual-importer>
+          <summary>＋ Importer mes visuels de créature</summary>
+          <div class="creator-visual-import__body">
+          <p class="note">PNG / WebP / JPEG. Tu peux choisir plusieurs images d'un coup pour une animation ; elles seront classées par numéro de fichier. Les imports restent pour l'instant limités à cette session.</p>
           <div class="grid three">
             <label>Usage
               <select data-creator-visual-role>
@@ -522,13 +523,30 @@
             <label>Nom
               <input type="text" placeholder="Mon sprite" data-creator-visual-label>
             </label>
-            <label>Fichier
-              <input type="file" accept="image/png,image/webp,image/jpeg" data-creator-visual-file>
+            <label>Une image ou plusieurs frames
+              <input type="file" accept="image/png,image/webp,image/jpeg" multiple data-creator-visual-file>
             </label>
           </div>
-          <button type="button" data-creator-visual-import>Importer dans la session</button>
+          <details class="creator-animation-options" data-creator-visual-options>
+            <summary>Options d’animation (planche déjà assemblée)</summary>
+            <div class="grid two">
+              <label>Nombre de frames horizontales (si un seul fichier)
+                <input type="number" min="1" max="32" step="1" value="1" data-creator-visual-frames>
+              </label>
+              <label>Temps par frame (ms)
+                <input type="number" min="30" max="1000" step="10" value="100" data-creator-visual-frame-ms>
+              </label>
+            </div>
+            <small>Plusieurs images : assemblage automatique dans l’ordre des noms (frame_01, frame_02…). Une planche : indique son nombre de colonnes. Pas de ZIP nécessaire.</small>
+          </details>
+          <div class="creator-import-preview" data-creator-visual-preview-wrap hidden>
+            <canvas data-creator-visual-preview width="150" height="120" role="img" aria-label="Aperçu réel des frames animées"></canvas>
+            <span data-creator-visual-preview-info aria-live="polite"></span>
+          </div>
+          <button type="button" data-creator-visual-import disabled>Importer dans la session</button>
           <p class="note" data-creator-visual-state data-tone="info">Aucun visuel personnel importé.</p>
-        </div>
+          </div>
+        </details>
 
           </div>
         </details>
@@ -1839,10 +1857,10 @@
         <p class="note">Les échelles restent personnalisables. Sauvegarde ensuite avec « Mettre à jour la capacité existante ». Un changement de style ou de pack ne remplace jamais silencieusement la version enregistrée.</p>
         </section>
 
-        <div class="creator-visual-import" data-creator-visual-importer data-skill-visual-importer>
-          <h3>Mes assets — Mes sprites / Importer un sprite</h3>
-          <p class="note">Dans chaque liste Icône, Cast, Projectile, Impact, Zone ou Statut, « Bibliothèque GenSrpG » contient les visuels fournis avec GenSrpG et « Mes assets » contient tes imports. Le style visuel de l’étape 1 est une base prête à l’emploi : ce n’est pas une deuxième bibliothèque.</p>
-          <p class="note">Ajoute ton propre PNG, WebP ou JPEG directement à la bibliothèque de cette session. Après import, le sprite reçoit un assetId personnel et apparaît dans la liste correspondante en utilisant exactement le même binding et le même rendu que les assets GenSrpG.</p>
+        <details class="creator-visual-import" data-creator-visual-importer data-skill-visual-importer>
+          <summary>Mes sprites / Importer un sprite</summary>
+          <div class="creator-visual-import__body">
+          <p class="note">Une image, une planche animée ou plusieurs frames : « Bibliothèque GenSrpG » pour les visuels fournis, « Mes assets » pour les tiens. Le style visuel de l’étape 1 reste un préréglage, pas un deuxième catalogue. Imports temporaires pour cette session.</p>
           <div class="grid three">
             <label>Utiliser comme
               <select data-creator-visual-role>
@@ -1857,13 +1875,30 @@
             <label>Nom
               <input type="text" placeholder="Mon sprite" data-creator-visual-label>
             </label>
-            <label>Fichier
-              <input type="file" accept="image/png,image/webp,image/jpeg" data-creator-visual-file>
+            <label>Une image ou plusieurs frames
+              <input type="file" accept="image/png,image/webp,image/jpeg" multiple data-creator-visual-file>
             </label>
           </div>
-          <button type="button" class="primary-action" data-creator-visual-import>Importer mon sprite</button>
+          <details class="creator-animation-options" data-creator-visual-options>
+            <summary>Options d’animation (planche déjà assemblée)</summary>
+            <div class="grid two">
+              <label>Nombre de frames horizontales (si un seul fichier)
+                <input type="number" min="1" max="32" step="1" value="1" data-creator-visual-frames>
+              </label>
+              <label>Temps par frame (ms)
+                <input type="number" min="30" max="1000" step="10" value="100" data-creator-visual-frame-ms>
+              </label>
+            </div>
+            <small>Plusieurs images : assemblage automatique dans l’ordre des noms (frame_01, frame_02…). Une planche : indique son nombre de colonnes. Pas de ZIP nécessaire.</small>
+          </details>
+          <div class="creator-import-preview" data-creator-visual-preview-wrap hidden>
+            <canvas data-creator-visual-preview width="150" height="120" role="img" aria-label="Aperçu réel des frames animées"></canvas>
+            <span data-creator-visual-preview-info aria-live="polite"></span>
+          </div>
+          <button type="button" class="primary-action" data-creator-visual-import disabled>Importer mon sprite</button>
           <p class="note" data-creator-visual-state data-tone="info">Aucun sprite personnel importé dans cette session.</p>
-        </div>
+          </div>
+        </details>
 
         <details class="skill-fx-authoring" data-skill-fx-advanced open>
           <summary>
