@@ -54,7 +54,15 @@ async function scenario(two){
   check(session.useSkill({actorId:"raiiven",targetId:"raiiven",skill:decoy}).ok,"decoy starts");
   overlay.render(session.snapshot());
   const visuals=slots.raiiven.querySelectorAll("[data-combat-decoy]");
-  check(visuals.length===2,"two visible copies");
+  check(visuals.length===2,"two selectable decoys");
+  check(slots.raiiven.querySelectorAll(".combat-decoy").length===3,"three identical silhouettes including real target");
+  const realBody=slots.raiiven.querySelector("[data-combat-decoy-real]");
+  const beforeSlot=realBody.style.left;
+  check(realBody!==null,"real horse is one of the three selectable silhouettes");
+  check([...slots.raiiven.querySelectorAll(".combat-decoy")].every(node=>node.querySelector(".combat-decoy__sprite")?.style.backgroundImage===visuals[0].querySelector(".combat-decoy__sprite")?.style.backgroundImage),"all three use the same exact sprite");
+  session.advanceMs(5000);
+  overlay.render(session.snapshot());
+  check(realBody.style.left!==beforeSlot,"true horse changes slot during Dédale");
   visuals[0].click();check(selected?.actorId==="raiiven","real click selects decoy");
   const enemyHpBefore=session.snapshot().fighters.enemy.hp;
   const raiivenHpBefore=session.snapshot().fighters.raiiven.hp;
