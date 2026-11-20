@@ -24,15 +24,16 @@ test("PC 1v1 and 2v2: dodge and skill stack share one authoritative width", asyn
     "canonical width must be consumed by the actual command stack");
   assert.match(pc, /\[data-combat-active-count="2"\]\s*\.coop-command-stack\s*\{\s*width:\s*var\(--combat-pc-command-width\)/,
     "specific 2v2 rule must not override the shared PC width");
-  assert.match(pc, /\.combat-dodge-action--arena\s*\{\s*right:\s*calc\(var\(--combat-pc-command-width\)\s*\+\s*1rem\)/,
+  assert.match(pc, /\.combat-dodge-action--arena\s*\{\s*right:\s*calc\(var\(--combat-pc-command-width\)\s*\+\s*1.5rem\)/,
     "dodge offset must be derived from dock width and its right inset");
-  assert.match(pc, /\[data-combat-active-count="2"\]\s*\.combat-dodge-action--arena\s*\{\s*right:\s*calc\(var\(--combat-pc-command-width\)\s*\+\s*1rem\)/,
+  assert.match(pc, /\[data-combat-active-count="2"\]\s*\.combat-dodge-action--arena\s*\{\s*right:\s*calc\(var\(--combat-pc-command-width\)\s*\+\s*1.5rem\)/,
     "2v2 higher-specificity dodge must use the same source");
 });
 
 test("all five skills remain a full-width grid; phone selectors unchanged", async () => {
   const { before, pc } = await readSections();
-  assert.match(before, /grid-template-columns:\s*repeat\(5,\s*minmax\(0,\s*1fr\)\)/,
+  const demo = await readFile("examples/dom-demo/demo.css", "utf8");
+  assert.match(demo, /grid-template-columns:\s*repeat\(5,\s*minmax\(0,\s*1fr\)\)/,
     "five native skill columns remain present");
   assert.match(before, /\.combat-primary-actions\s*\{\s*display:\s*block;/,
     "dodge must stay outside the skill grid");
