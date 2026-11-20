@@ -26,7 +26,7 @@ const expected = new Map([
 ]);
 
 test("author originals remain unchanged while Showcase hydration gives 8 sound choices with 3 stable official IDs", () => {
-  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.length, 22);
+  assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.length, 23);
   const seen = new Set();
   let changed = 0;
   for (const filename of CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1) {
@@ -62,7 +62,7 @@ test("author originals remain unchanged while Showcase hydration gives 8 sound c
     assert.equal(reapplied, applied, id + " is idempotent without a second audio owner");
     if (applied !== original) changed++;
   }
-  assert.equal(seen.size, 22);
+  assert.equal(seen.size, 23);
   assert.equal(changed, 7, "Foudrillon retains its exact reviewed original, other seven receive new sounds");
 });
 

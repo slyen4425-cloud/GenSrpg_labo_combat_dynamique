@@ -12,7 +12,7 @@ test("A single editorial published-lore source covers all short Showcase bios wi
   assert.equal(officialLore.schema,"capture-bestiary-published-lore-v1");
   assert.equal(officialLore.version,1);
   assert.ok(published.length>=22);
-  assert.equal(officialLore.entries.length,19);
+  assert.equal(officialLore.entries.length,20);
   const publishedIds=new Set(published.map(x=>x.record.draft.id));
   assert.equal(publishedIds.size,published.length);
   const overlayIds=new Set();
@@ -51,7 +51,7 @@ function bestiaryCards(withOverlay){
     assetCatalog:{assets:[...assets.values()]},statRegistry:{stats:[]},skillTransfers:[],nativeSkills:[],
     ...(withOverlay?{publishedLore:officialLore.entries}:{})});
 }
-test("Published Bestiary renders exactly 19 editorial portraits and three existing authored descriptions",()=>{
+test("Published Bestiary renders exactly 20 editorial portraits and three existing authored descriptions",()=>{
   const cards=bestiaryCards(true);
   assert.equal(cards.length,published.length);
   const editorial=new Map(officialLore.entries.map(x=>[x.creatureId,x.text]));

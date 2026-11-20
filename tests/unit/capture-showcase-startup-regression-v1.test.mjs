@@ -182,8 +182,8 @@ test("startup library remains complete while showcase presets are applied throug
 
   assert.equal(
     configuredCreatures.size,
-    111,
-    "Moussados replaces its historical record; Loup, Kitsune, Gorice, Sylvorne, Sélachombre, Vyrâme, Veuve jaune, Ephemus and Veldra insert without deleting the roster"
+    112,
+    "Moussados replaces its historical record; Loup, Kitsune, Gorice, Sylvorne, Sélachombre, Vyrâme, Veuve jaune, Ephemus, Veldra and Raiiven insert without deleting the roster"
   );
   assert.ok(configuredCreatures.has("crea_mossback"));
   assert.ok(configuredCreatures.has("crea-loup"));
@@ -195,6 +195,7 @@ test("startup library remains complete while showcase presets are applied throug
   assert.equal(configuredCreatures.get("veuve-jaune")?.draft?.displayName, "Veuve jaune");
    assert.equal(configuredCreatures.get("Ephemus")?.draft?.displayName, "Ephemus");
    assert.equal(configuredCreatures.get("Veldra_crea")?.draft?.displayName, "Veldra");
+   assert.equal(configuredCreatures.get("raiiven")?.draft?.displayName, "Raiiven");
   assert.equal(configuredCreatures.has("nouvelle-creature"), false);
   const ailevent = configuredCreatures.get("crea_ailevent");
   assert.ok(ailevent,"Ailevent remains the one canonical ID");
@@ -214,7 +215,7 @@ test("startup library remains complete while showcase presets are applied throug
       configuredSkills,
       metadata: { producer: "startup-regression-test" }
     }).creatures.length,
-    111
+    112
   );
 });
 
