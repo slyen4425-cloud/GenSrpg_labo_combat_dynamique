@@ -107,7 +107,7 @@ try{
   .filter(Boolean).find(bin=>spawnSync('which',[bin]).status===0);
  if(!chrome)throw Error('Chromium required');
  for(const [w,h] of [[932,430],[1440,900]]){
-  const url='http://127.0.0.1:'+server.address().port+'/examples/dom-demo/capture-editor-v2.html?tab=creatures';
+  const url='http://127.0.0.1:'+server.address().port+'/examples/dom-demo/capture-editor-v2.html?tab=skills';
   const child=spawn(chrome,['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage',
    '--no-first-run','--window-size='+w+','+h,
    '--force-device-scale-factor=1','--virtual-time-budget=26000','--dump-dom',url],
