@@ -1,6 +1,6 @@
-// Dédale: the visible bodies are equal projections of the SAME canonical
-// creature appearance. The actual actor stays the only combat fighter; only
-// its two real CombatStatus decoys can intercept targeted actions.
+// Dédale: ONE native animated creature, plus exactly one visible copy for
+// each native decoy status. Never draw a third "real" picture over the actor.
+// Combat Session remains sole owner of real and decoy target identities.
 import {activeStatusEffectsV1} from "../../core/combat/status-effect-runtime-v1.js";
 
 export const DECOY_FORMATION_V1=Object.freeze({
@@ -38,6 +38,25 @@ function formationOffsetPct(anchor,config,total=3){
   return 100*(desired-center)/own.width;
 }
 
+function targetSurface(anchor,actorId,onChoose,decoyId){
+  const button=anchor.ownerDocument.createElement("button");
+  button.type="button";
+  button.dataset.decoyOwner=actorId;
+  Object.assign(button.style,{
+    position:"absolute",top:"0",width:"100%",height:"auto",aspectRatio:"1",
+    padding:"0",margin:"0",border:"0",borderRadius:"0",
+    background:"transparent",outline:"none",cursor:"crosshair",
+    zIndex:"8",pointerEvents:"auto",overflow:"visible"
+  });
+  button.addEventListener("click",event=>{
+    event.stopPropagation?.();
+    event.preventDefault?.();
+    onChoose({actorId,decoyId});
+  });
+  anchor.append(button);
+  return button;
+}
+
 export function createDomDecoyOverlayV1({
   fighterContainers,appearanceFor,onChoose,applySpriteVisual,
   formationFor=()=>null,random=unbiasedRandomV1,config=DECOY_FORMATION_V1
@@ -51,16 +70,20 @@ export function createDomDecoyOverlayV1({
   function cleanup(actorId){
     const entry=active.get(actorId);
     if(!entry)return;
-    for(const sprite of entry.sprites){
-      sprite.frameAnimation?.cancel?.();
-      sprite.button.remove();
+    for(const fake of entry.sprites){
+      fake.frameAnimation?.cancel?.();
+      fake.button.remove();
+      fake.shadow?.remove?.();
     }
+    entry.realTarget?.remove?.();
     if(entry.motion){
-      entry.motion.style.opacity=entry.previous.opacity;
       entry.motion.style.translate=entry.previous.translate;
       entry.motion.style.scale=entry.previous.scale;
     }
-    if(entry.shadow)entry.shadow.style.opacity=entry.previous.shadowOpacity;
+    if(entry.shadow){
+      entry.shadow.style.left=entry.previous.shadowLeft;
+      entry.shadow.style.translate=entry.previous.shadowTranslate;
+    }
     delete entry.anchor.dataset.combatDecoyIllusionActive;
     active.delete(actorId);
   }
@@ -68,110 +91,113 @@ export function createDomDecoyOverlayV1({
   function place(entry){
     const cfg=entry.config,total=entry.decoyIds.length+1;
     const center=formationOffsetPct(entry.anchor,cfg,total);
-    const occupied=Array.from({length:total},(_,i)=>i).filter(index=>index!==entry.realIndex);
-    const targets=[...entry.decoyIds.map((id,i)=>({id,index:occupied[i]})),
-      {id:null,index:entry.realIndex}];
-    for(const [n,where] of targets.entries()){
-      const sprite=entry.sprites[n];
-      sprite.decoyId=where.id;
-      const button=sprite.button;
-      button.style.left=(center+(where.index-(total-1)/2)*cfg.spacingPct)+"%";
-      if(where.id===null){
-        delete button.dataset.combatDecoy;
-        button.dataset.combatDecoyReal="true";
-        button.setAttribute("aria-label","Cibler une silhouette");
-      }else{
-        delete button.dataset.combatDecoyReal;
-        button.dataset.combatDecoy=where.id;
-        button.setAttribute("aria-label","Cibler une silhouette");
+    const occupied=Array.from({length:total},(_,i)=>i)
+      .filter(index=>index!==entry.realIndex);
+    const offset=index=>center+(index-(total-1)/2)*cfg.spacingPct;
+
+    // The ACTUAL character and its own canonical shadow follow the randomly
+    // chosen real slot; they remain fully visible, never projected a second time.
+    const realOffset=offset(entry.realIndex);
+    if(entry.motion)entry.motion.style.translate=realOffset+"% 0%";
+    if(entry.shadow){
+      entry.shadow.style.left="calc(var(--creature-shadow-left, 50%) + "+realOffset+"%)";
+    }
+    entry.realTarget.style.left=realOffset+"%";
+
+    for(let i=0;i<entry.sprites.length;i++){
+      const fake=entry.sprites[i];
+      const pct=offset(occupied[i]);
+      fake.button.style.left=pct+"%";
+      if(fake.shadow){
+        fake.shadow.style.left="calc(var(--creature-shadow-left, 50%) + "+pct+"%)";
+        fake.shadow.style.scale=String(cfg.scale);
+      }
+      // Clone the Animation Core's body transform, not a second manually
+      // guessed scale. This includes author scale, transform origin and pose.
+      if(fake.visual&&entry.motion){
+        fake.visual.style.transform=entry.motion.style.transform??"";
+        fake.visual.style.transformOrigin=entry.motion.style.transformOrigin??"50% 50%";
       }
     }
-    // Move the actual visual collision model under its true projected slot.
-    // Its pixels are hidden only while the three identical selectors render.
-    if(entry.motion){
-      entry.motion.style.translate=(center+(entry.realIndex-(total-1)/2)*cfg.spacingPct)+"% 0%";
-      entry.motion.style.scale="1";
-      entry.motion.style.opacity="0";
-    }
-    if(entry.shadow)entry.shadow.style.opacity="0";
   }
 
   function create(actorId,anchor,statuses,atMs){
     const motion=anchor.querySelector?.("[data-demo-motion]")??null;
     const shadow=anchor.querySelector?.(".fighter__shadow")??null;
     const previous={
-      opacity:motion?.style.opacity??"",translate:motion?.style.translate??"",
-      scale:motion?.style.scale??"",shadowOpacity:shadow?.style.opacity??""
+      translate:motion?.style.translate??"",scale:motion?.style.scale??"",
+      shadowLeft:shadow?.style.left??"",
+      shadowTranslate:shadow?.style.translate??""
     };
+    const authored=formationFor(actorId,statuses)??{};
+    const cfg=Object.freeze({...config,...authored});
     const entry={
-      anchor,motion,shadow,previous,decoyIds:statuses.map(s=>s.definition.id),
+      anchor,motion,shadow,previous,config:cfg,
+      decoyIds:statuses.map(s=>s.definition.id),
       signature:statuses.map(s=>s.definition.id+"@"+s.appliedAtMs).join("|"),
-      config:Object.freeze({...config,...(formationFor(actorId,statuses)??{})}),
       realIndex:nextDecoyRealSlotV1(null,random,statuses.length+1),
-      lastShuffleAt:atMs,sprites:[]
+      lastShuffleAt:atMs,realTarget:null,sprites:[]
     };
     const visual=appearanceFor(actorId);
     const duration=Math.max(1,Math.max(...statuses.map(x=>x.definition.durationMs||20000)));
-    const realImage=motion?.querySelector?.("img")??anchor.querySelector?.("[data-demo-image]");
+    const realImage=motion?.querySelector?.("[data-demo-image]")??motion?.querySelector?.("img")??null;
     anchor.dataset.combatDecoyIllusionActive="true";
-    for(let i=0;i<statuses.length+1;i++){
-      const button=anchor.ownerDocument.createElement("button");
-      button.type="button";
+
+    for(const status of statuses){
+      const id=status.definition.id;
+      const button=targetSurface(anchor,actorId,onChoose,id);
       button.className="combat-decoy";
-      button.dataset.decoyOwner=actorId;
-      Object.assign(button.style,{
-        position:"absolute",top:"0%",width:"100%",height:"100%",
-        padding:"0",margin:"0",border:"0",borderRadius:"0",
-        background:"transparent",outline:"none",cursor:"crosshair",
-        zIndex:"8",opacity:"1",pointerEvents:"auto",
-        transform:"scale("+entry.config.scale+")",transformOrigin:"center center",
-        aspectRatio:"1",overflow:"visible"
+      button.dataset.combatDecoy=id;
+      // Exactly N visual copies. The real character is NOT drawn here.
+      button.style.transform="scale("+cfg.scale+")";
+      button.style.transformOrigin="center center";
+      const sprite=anchor.ownerDocument.createElement("span");
+      sprite.className="combat-decoy__sprite";
+      Object.assign(sprite.style,{
+        position:"absolute",inset:"0",width:"100%",height:"100%",
+        display:"grid",placeItems:"center",pointerEvents:"none",
+        transform:motion?.style.transform??"",
+        transformOrigin:motion?.style.transformOrigin??"50% 50%"
       });
-      const image=anchor.ownerDocument.createElement("span");
-      image.className="combat-decoy__sprite";
-      Object.assign(image.style,{position:"absolute",inset:"0",width:"100%",
-        height:"100%",display:"block",pointerEvents:"none",
-        // The actual Animation Renderer scales the original body using this
-        // canonical per-creature property; the static illusion must too.
-        transform:"scale(var(--creature-display-scale, 1))",
-        transformOrigin:"center center"});
       let frameAnimation=null;
-      // While Dédale is active, ALL THREE remain in the same official
-      // standing pose. A looping gallop in place reveals an unnecessary FX
-      // and does not match the user's true creature model.
       if(realImage?.src){
+        const image=realImage.cloneNode?.(false)??anchor.ownerDocument.createElement("img");
+        image.src=realImage.src;
+        image.className=realImage.className||"fighter__image";
+        if(image.id)image.removeAttribute?.("id");
+        image.removeAttribute?.("data-demo-image");
+        image.style.opacity="1";
+        image.style.visibility="visible";
         image.dataset.decoyPose="standing";
-        image.style.backgroundImage="url("+JSON.stringify(realImage.src)+")";
-        image.style.backgroundSize="contain";
-        image.style.backgroundPosition="center";
-        image.style.backgroundRepeat="no-repeat";
+        image.style.width="100%";
+        image.style.height="100%";
+        image.style.objectFit="contain";
+        sprite.append(image);
       }else if(visual?.url){
-        // Asset-unavailable fallback is identical across the trio, never a
-        // special purple ghost with a different model or brightness.
-        const playback=applySpriteVisual(image,{
-          ...visual,playbackMode:"loop"
-        },duration);
+        const playback=applySpriteVisual(sprite,{...visual,playbackMode:"loop"},duration);
         frameAnimation=playback.frameAnimation;
       }
-      // Clone the same existing shadow geometry and alpha silhouette.
-      // It inherits the canonical lighting vars from the fighter, never
-      // invents a second cast-shadow system or a tell for the real horse.
-      const copy=shadow?.cloneNode?.(true)??anchor.ownerDocument.createElement("span");
-      copy.className=shadow?.className??"fighter__shadow";
-      if(copy.id)copy.removeAttribute?.("id");
-      copy.style.opacity="1";
-      copy.style.pointerEvents="none";
-      copy.dataset.combatDecoyShadow="true";
-      button.append(copy,image);
-      const sprite={button,frameAnimation,decoyId:null};
-      button.addEventListener("click",event=>{
-        event.stopPropagation?.();
-        event.preventDefault?.();
-        onChoose({actorId,decoyId:sprite.decoyId});
-      });
-      anchor.append(button);
-      entry.sprites.push(sprite);
+      button.append(sprite);
+      let copy=null;
+      if(shadow?.cloneNode){
+        copy=shadow.cloneNode(true);
+        if(copy.id)copy.removeAttribute?.("id");
+        copy.dataset.combatDecoyShadow="true";
+        copy.style.opacity=shadow.style.opacity||"1";
+        copy.style.pointerEvents="none";
+        // Keep this shadow beside the ORIGINAL native shadow, not inside the
+        // visual button, so silhouette alpha/contact is identically grounded.
+        anchor.append(copy);
+      }
+      entry.sprites.push({button,shadow:copy,visual:sprite,frameAnimation,id});
     }
+
+    // Transparent hit surface on the existing real body: no 3rd clone image,
+    // no 3rd clone shadow, no ambiguity over the actual Combat fighter.
+    entry.realTarget=targetSurface(anchor,actorId,onChoose,null);
+    entry.realTarget.className="combat-decoy-real-target";
+    entry.realTarget.dataset.combatDecoyReal="true";
+    entry.realTarget.style.opacity="0";
     active.set(actorId,entry);
     place(entry);
     return entry;
@@ -206,6 +232,6 @@ export function createDomDecoyOverlayV1({
   }
   return Object.freeze({
     render,dispose,
-    count:()=>[...active.values()].reduce((n,entry)=>n+entry.decoyIds.length,0)
+    count:()=>[...active.values()].reduce((n,e)=>n+e.decoyIds.length,0)
   });
 }
