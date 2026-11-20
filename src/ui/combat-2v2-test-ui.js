@@ -776,6 +776,7 @@ export async function mountCoop2v2Test({
   const decoyOverlay=createDomDecoyOverlayV1({
     fighterContainers,applySpriteVisual,
     appearanceFor:actorId=>visuals.getMovementAppearanceFor?.(actorId)??null,
+    formationFor:(_actorId,statuses)=>skillsById[statuses[0]?.sourceSkillId]?.decoyFormation??null,
     onChoose:({actorId,decoyId})=>decoyId===null
       ?selectTarget(actorId):selectDecoy(actorId,decoyId)
   });
