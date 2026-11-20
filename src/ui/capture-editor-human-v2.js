@@ -9291,7 +9291,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
           throw Error('Temps par frame : entre 30 et 1000 ms.');
         const label=String(labelInput?.value??'').trim()||
           candidate.file.name||'Sprite personnel';
-        const asset=creatorVisualAssets.importImage({
+        const asset = creatorVisualAssets.importImage({
           file:candidate.file,label,role,frameCount:candidate.frameCount,frameMs
         });
         assets.push(asset);byId.set(asset.id,asset);
