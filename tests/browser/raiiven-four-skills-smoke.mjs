@@ -9,7 +9,7 @@ const root=process.cwd();
 const html=`<!doctype html><html><head><meta charset="utf-8"><style>
 body{background:#15101f;color:white}.arena{position:relative;width:650px;height:350px}
 .actor{position:absolute;width:75px;height:75px;overflow:visible}
-</style></head><body data-raiiven-skills-browser="pending"><script type="module">
+</style></head><body data-raiiven-skills-browser="pending"><script>window.addEventListener("error",event=>{document.body.dataset.raiivenSkillsBrowser="fail:page error "+(event.message||"unknown")});window.addEventListener("unhandledrejection",event=>{document.body.dataset.raiivenSkillsBrowser="fail:promise "+String(event.reason)});</script><script type="module">
 import {normalizeCaptureSkillTransferV1} from "/src/contracts/capture-skill-transfer-v1.js";
 import {normalizeSkillDefinition} from "/src/contracts/skill-definition.js";
 import {normalizeBattleFormatDefinition} from "/src/contracts/battle-format-definition.js";
@@ -75,7 +75,7 @@ async function scenario(two){
    sourceRect:slots.raiiven.getBoundingClientRect(),targetRect:slots.enemy.getBoundingClientRect(),
    durationMs:220,animate:(node,frames,settings)=>node.animate(frames,settings)});
   check(fx.node.dataset.shadowEcho==="true","shared shadow presentation");
-  await fx.finished;check(fx.node.isConnected===false,"FX cleanup");
+  // Virtual-time Chromium can freeze compositor animations; finish only the\n  // VISUAL clock, then observe the real WAAPI finished/cleanup lifecycle.\n  fx.animation.finish();\n  await fx.finished;check(fx.node.isConnected===false,"FX cleanup");
   return two?"2v2":"1v1";
  }finally{overlay.dispose();area.remove();}
 }
@@ -116,6 +116,6 @@ try{
  const document=Buffer.concat(out).toString("utf8");
  const result=document.match(/data-raiiven-skills-browser="([^"]*)"/)?.[1]??"no-outcome";
  if(code!==0||!result.startsWith("pass:"))
-   throw Error("Raiiven real Chromium: "+result+"\n"+Buffer.concat(err).toString("utf8").slice(-350));
+   throw Error("Raiiven real Chromium: "+result+"\nDOM="+document.slice(0,1000)+"\nChrome="+Buffer.concat(err).toString("utf8").slice(-2000));
  console.log("Raiiven real Chromium native 1v1/2v2 decoy and shadow echo",result);
 }finally{server.close();}
