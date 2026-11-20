@@ -35,9 +35,10 @@ window.addEventListener('DOMContentLoaded',()=>{
     const creature=document.querySelector('[data-creature-visual-importer]');
     const skill=document.querySelector('[data-skill-visual-importer]');
     const types=document.querySelector('[data-creature-front-select]');
-    if(creature&&skill&&types?.options?.length>1)return {creature,skill};
+    if(creature&&skill&&types)return {creature,skill};
     return null;
   },'native Capture editor boot');
+  await delay(2400); // Let the real native editor hydrate its single asset catalog.
   assert(!author.creature.open&&!author.skill.open,'import panels must be collapsed by default');
   const outer=author.creature.closest('[data-creature-appearance-group="imports"]');
   assert(outer&&!outer.open,'legacy creature visual library should remain folded');
