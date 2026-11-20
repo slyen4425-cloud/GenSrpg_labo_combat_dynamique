@@ -15,7 +15,15 @@ window.addEventListener('DOMContentLoaded',()=>{
  const delay=ms=>new Promise(done=>setTimeout(done,ms));
  async function until(check,label){
   for(let i=0;i<125;i++){const ok=check();if(ok)return ok;await delay(160);}
-  throw Error('Timed out: '+label);
+  const field=document.querySelector('[data-creature-visual-importer] [data-creator-visual-file]');
+  const state=document.querySelector('[data-creature-visual-importer] [data-creator-visual-state]');
+  throw Error('Timed out: '+label+
+   ' state='+state?.textContent+
+   ' disabled='+document.querySelector('[data-creature-visual-importer] [data-creator-visual-import]')?.disabled+
+   ' files='+field?.files?.length+
+   ' assetOptions='+document.querySelector('[data-creature-front-select]')?.options?.length+
+   ' editor='+document.querySelector('[data-editor-status]')?.textContent+
+   ' hasBitmap='+String(typeof createImageBitmap));
  }
  const assert=(cond,message)=>{if(!cond)throw Error(message);};
  async function png(name,color,w=32,h=32){
