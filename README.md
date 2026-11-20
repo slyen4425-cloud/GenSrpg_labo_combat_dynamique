@@ -1,3 +1,7 @@
+> # 🚩 [ATELIER DE FABRICATION DES ANIMATIONS — ENTRÉE OFFICIELLE](00_ATELIER_ANIMATIONS_LIRE_EN_PREMIER.md)
+>
+> **Premier standard : [CHEVAL](atelier-animations/styles/cheval/README.md) — 4 planches Raiiven conservées comme références.** Anciens prototypes inchangés.
+
 # GenSrpG — Laboratoire combat dynamique
 
 Prototype autonome destiné à expérimenter un moteur de combat visuel dynamique à partir d'une image unique par créature.

@@ -1,0 +1,55 @@
+{
+  "schema": "capture-creature-animation-v1",
+  "creatureId": "raiiven",
+  "action": "movement",
+  "view": "player",
+  "frameCount": 7,
+  "frameSize": [
+    512,
+    512
+  ],
+  "frameMs": 120,
+  "playbackMode": "loop",
+  "sourceArchive": "raiiven_galop_7_frames_valide.zip",
+  "sourceArchiveSha256": "22389bbc0a20914d33a123038b2169118c8a146783bd09f621e7c1abc2071324",
+  "firstFrame": "approved-static-master",
+  "firstFrameRgbaSha256": "1727b11a47768f94eae35fac6e204805d827b1a6232bf5f482effd6fd725fb3f",
+  "opponentAttackApproved": false,
+  "frames": [
+    {
+      "index": 0,
+      "rgbaSha256": "1727b11a47768f94eae35fac6e204805d827b1a6232bf5f482effd6fd725fb3f"
+    },
+    {
+      "index": 1,
+      "rgbaSha256": "0f54cb33e0abcbd56f9b71930a17d37aebefe15187027179e64dd716ed7a01d0"
+    },
+    {
+      "index": 2,
+      "rgbaSha256": "650cd82e7bce5e9b58ce85fb884687cca11b8d6e53a980f5739d2bc3667f998b"
+    },
+    {
+      "index": 3,
+      "rgbaSha256": "963de66d705f185da0ba8769ae625ca750b3ff8c881b841d0e874a554fb9f4b5"
+    },
+    {
+      "index": 4,
+      "rgbaSha256": "b6580e1572aeb39b4bc12ead52d80fd1008e867d7d70fe4ea541763560b0aebe"
+    },
+    {
+      "index": 5,
+      "rgbaSha256": "12d5052587b0f52851d17d9040f3f2d22fac636ee1688b8b79ce4ed48036abae"
+    },
+    {
+      "index": 6,
+      "rgbaSha256": "99fd7e2906ea9acb1c67a4b8dd2be600a4608680aad32b30bd6792c565fbd64a"
+    }
+  ],
+  "atlas": {
+    "file": "capture/creatures/raiiven/animations/movement/player/raiiven_movement_player_7f.png",
+    "format": "sprite-strip",
+    "frameCount": 7,
+    "frameWidth": 512,
+    "frameHeight": 512
+  }
+}
