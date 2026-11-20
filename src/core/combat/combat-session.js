@@ -136,7 +136,7 @@ export function createCombatSession({
     );
   }
 
-  function previewSkill({ actorId, targetId, skill, reactionSkill = null }) {
+  function previewSkill({ actorId, targetId, skill, reactionSkill = null, decoyId = null }) {
     const guard = reserveSkillGuard(skill);
     if (guard) return guard;
     return resolveSkill({
@@ -145,23 +145,25 @@ export function createCombatSession({
       targetId,
       skill,
       reactionSkill,
+      decoyId,
       skillSpeedMultiplier:
         normalizedSkillSpeedMultiplier,
       battleFormat
     });
   }
 
-  function useSkill({ actorId, targetId, skill, reactionSkill = null }) {
+  function useSkill({ actorId, targetId, skill, reactionSkill = null, decoyId = null }) {
     const result = previewSkill({
       actorId,
       targetId,
       skill,
-      reactionSkill
+      reactionSkill,
+      decoyId
     });
     return withReserveSkillEffects(commitCompletedOwnerAction(result, actorId), actorId, skill);
   }
 
-  function startSkill({ actorId, targetId, skill }) {
+  function startSkill({ actorId, targetId, skill, decoyId = null }) {
     const guard = reserveSkillGuard(skill);
     if (guard) return guard;
     const result = resolveSkillStart({
@@ -169,6 +171,7 @@ export function createCombatSession({
       actorId,
       targetId,
       skill,
+      decoyId,
       skillSpeedMultiplier:
         normalizedSkillSpeedMultiplier,
       battleFormat

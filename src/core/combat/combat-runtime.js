@@ -1470,7 +1470,7 @@ export function createCombatRuntime({
       chargeCount:charge.chargeCount,maxCharges:config.maxCharges,remainingWindowMs});
   }
 
-  function startSkill({ actorId, targetId, skill }) {
+  function startSkill({ actorId, targetId, skill, decoyId = null }) {
     const active = activeByActor.get(actorId);
     if (active && active.action.actionType === "skill" &&
         active.action.actionId === skill?.id && active.action.chargeState) {
@@ -1509,7 +1509,7 @@ export function createCombatRuntime({
     }
 
     return beginAction(
-      session.startSkill({ actorId, targetId, skill })
+      session.startSkill({ actorId, targetId, skill, decoyId })
     );
   }
 

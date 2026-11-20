@@ -47,6 +47,7 @@ import {
 } from "./combat-presence-v1.js";
 import { applyEventTriggeredBuffsV2 } from "./triggered-buff-events-v1.js";
 import {evasionSiphonDamageV1,applyEvasionSiphonV1} from "./evasion-siphon-v1.js";
+import {activeDecoyForV1,resolveDecoyHitV1} from "./decoy-hit-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -397,6 +398,7 @@ export function resolveSkillStart({
   actorId,
   targetId,
   skill,
+  decoyId = null,
   skillSpeedMultiplier = 1,
   battleFormat = null
 }) {
@@ -451,6 +453,14 @@ export function resolveSkillStart({
   const effectiveTargetId =
     tauntSource ?? targetId;
   fighterOf(state, effectiveTargetId);
+  if (decoyId !== null && (
+    skill.category !== "offensive" ||
+    !["contact","projectile","beam"].includes(skill.form) ||
+    !activeDecoyForV1(state,effectiveTargetId,decoyId)
+  )) return Object.freeze({ok:false,outcome:"invalid_decoy_target",state,
+    events:Object.freeze([event("skill-rejected",0,{
+      actorId,targetId:effectiveTargetId,skillId:skill.id,reason:"invalid_decoy_target"
+    })])});
 
   // One canonical target permission for both the 1v1/2v2 picker and
   // direct Runtime / AI calls. Keep pre-format legacy sessions intact.
@@ -664,6 +674,7 @@ export function resolveSkillStart({
     actorId,
     targetId: effectiveTargetId,
     skill,
+    ...(decoyId === null ? {} : {decoyId}),
     persistentZoneReinforcementsAtStart: snapshotPersistentZoneReinforcementsV1({
       state, actorId, skill
     }),
@@ -983,8 +994,12 @@ export function resolveSkillCompletion({
   const autoDodge = forcedOutcome == null && reaction == null
     ? autoDodgeEvasionFor({state, actorId, targetId, skill, atMs:combatImpactAtMs})
     : null;
+  const attemptedDecoy=typeof action.decoyId==="string";
+  const decoyAtImpact=attemptedDecoy
+    ? activeDecoyForV1(state,targetId,action.decoyId,combatImpactAtMs):null;
   const outcome =
     forcedOutcome ??
+    (attemptedDecoy ? (decoyAtImpact ? "decoy" : "decoy_expired") : null) ??
     reaction?.outcome ??
     autoDodge?.outcome ??
     presence.evasion?.outcome ??
@@ -1049,7 +1064,12 @@ export function resolveSkillCompletion({
       approachMode: skill.approachMode
     }));
 
-    if (outcome === "hit") {
+    if (outcome === "decoy") {
+      const interception=resolveDecoyHitV1({state:nextState,actorId,targetId,
+        decoyId:action.decoyId,skillId:skill.id,atMs:combatImpactAtMs,impactAtMs});
+      nextState=interception.state;
+      events.push(...interception.events);
+    } else if (outcome === "hit") {
       const damage =
         statAdjustedDamageFor(
           nextState,
@@ -1367,6 +1387,7 @@ export function resolveSkill({
   targetId,
   skill,
   reactionSkill = null,
+  decoyId = null,
   skillSpeedMultiplier = 1,
   battleFormat = null
 }) {
@@ -1375,6 +1396,7 @@ export function resolveSkill({
     actorId,
     targetId,
     skill,
+    decoyId,
     skillSpeedMultiplier,
     battleFormat
   });

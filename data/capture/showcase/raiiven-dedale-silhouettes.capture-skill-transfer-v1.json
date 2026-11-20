@@ -1,0 +1,100 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "raiiven-dedale-silhouettes",
+    "requiredLevel": 5,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "description": "Dédale des silhouettes : Raiiven crée deux doubles spectraux ciblables pendant 20 s. Chaque leurre frappé disparaît et inflige une riposte de 10 dégâts Ombre à l'assaillant. Le véritable Raiiven reste vulnérable aux attaques de zone et aux attaques qui le ciblent.",
+    "definition": {
+      "id": "raiiven-dedale-silhouettes",
+      "name": "Dédale des silhouettes",
+      "category": "buff_debuff",
+      "form": "self",
+      "loadoutSlot": "standard",
+      "element": "shadow",
+      "approachMode": "none",
+      "energyCost": 5,
+      "preparationMs": 850,
+      "travelMs": 0,
+      "recoveryMs": 400,
+      "cooldownMs": 32000,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "dodgeable": false,
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "label": "Leurre spectral",
+            "kind": "decoy",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 20000,
+            "stacking": "refresh",
+            "retaliationDamage": 10,
+            "channel": "shadow",
+            "tags": [
+              "shadow",
+              "illusion"
+            ],
+            "id": "raiiven-decoy-left"
+          }
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "label": "Leurre spectral",
+            "kind": "decoy",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 20000,
+            "stacking": "refresh",
+            "retaliationDamage": 10,
+            "channel": "shadow",
+            "tags": [
+              "shadow",
+              "illusion"
+            ],
+            "id": "raiiven-decoy-right"
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:raiiven-dedale-silhouettes",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "raiiven-dedale-silhouettes",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:creature-raiiven-icon-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

@@ -22,7 +22,8 @@ export const STATUS_EFFECT_V1_KINDS = Object.freeze([
   "roster_lock",
   "silence",
   "stun",
-  "taunt"
+  "taunt",
+  "decoy"
 ]);
 
 // Canonical event registry, shared with Human Editor and Combat Rules.
@@ -158,6 +159,7 @@ const FIELDS_BY_KIND = Object.freeze({
   ]),
   projectile_mirror: COMMON_FIELDS,
   auto_dodge: COMMON_FIELDS,
+  decoy: new Set([...COMMON_FIELDS,"retaliationDamage","channel"]),
   triggered_buff: new Set([...COMMON_FIELDS, "onDamageDealt", "onEvent"]),
   immunity: new Set([
     ...COMMON_FIELDS,
@@ -639,6 +641,13 @@ export function normalizeStatusEffectV1(input) {
         "StatusEffectV1.tickIntervalMs is not used by owner_action_end HoT"
       );
     }
+  }
+
+  if (kind === "decoy") {
+    if (polarity !== "beneficial" || duration.durationModel !== "time_ms" || stacking !== "refresh")
+      throw new RangeError("decoy requires beneficial, time_ms, refresh semantics");
+    output.retaliationDamage=positiveNumber(value.retaliationDamage,"decoy.retaliationDamage");
+    output.channel=requiredString(value.channel??"shadow","decoy.channel");
   }
 
   if (kind === "shield") {
