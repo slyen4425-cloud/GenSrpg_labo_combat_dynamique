@@ -1,10 +1,9 @@
 // Presentation projection only: two selectable silhouettes backed by canonical
 // CombatStatus instances. HP, collision outcomes and retaliation remain in Combat Rules.
 import {activeStatusEffectsV1} from "../../core/combat/status-effect-runtime-v1.js";
-import {applySpriteVisual} from "./dom-skill-fx.js";
 
-export function createDomDecoyOverlayV1({fighterContainers,appearanceFor,onChoose}) {
-  if(!fighterContainers || typeof appearanceFor!=="function" || typeof onChoose!=="function")
+export function createDomDecoyOverlayV1({fighterContainers,appearanceFor,onChoose,applySpriteVisual}) {
+  if(!fighterContainers || typeof appearanceFor!=="function" || typeof onChoose!=="function" || typeof applySpriteVisual!=="function")
     throw new TypeError("decoy overlay requires live combat slots, a sprite source and a choice callback");
   const active=new Map();
   let disposed=false;

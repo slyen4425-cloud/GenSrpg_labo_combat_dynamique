@@ -17,7 +17,8 @@ function harness(){
   }};
   const fighterContainers={raiiven:doc.createElement("div"),enemy:doc.createElement("div")};
   const overlay=createDomDecoyOverlayV1({fighterContainers,appearanceFor:()=>null,
-    onChoose:choice=>clicked.push(choice)});
+    onChoose:choice=>clicked.push(choice),
+    applySpriteVisual:()=>({frameAnimation:null})});
   return {clicked,overlay,fighterContainers};
 }
 test("Dédale overlays reflect only two actual status instances, choice is explicit and disposes",()=>{

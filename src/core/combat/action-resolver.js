@@ -1347,6 +1347,7 @@ export function resolveSkillCompletion({
     actorId,
     targetId,
     skillId: skill.id,
+    ...(skill.echoSourceSkillId?{echoCopied:true,echoSourceSkillId:skill.echoSourceSkillId}:{}),
     outcome,
     persistentZoneOnly:
       isPurePersistentZoneSkill(skill),
