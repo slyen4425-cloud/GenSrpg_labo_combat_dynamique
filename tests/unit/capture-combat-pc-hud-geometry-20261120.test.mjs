@@ -41,6 +41,6 @@ test("all five skills remain a full-width grid; phone selectors unchanged", asyn
     "approved phone 1v1 position stays as authored");
   assert.match(before, /right:\s*calc\(min\(19rem,\s*34%\)\s*\+\s*\.58rem\)/,
     "approved phone 2v2 position stays as authored");
-  assert.match(pc, /@media\s*\(min-width:\s*1100px\)\s*and\s*\(min-height:\s*680px\)\s*and\s*\(pointer:\s*fine\)/,
+  assert.match(pc, /@media\s*\(min-width:\s*1100px\)\s*and\s*\(min-height:\s*650px\)\s*and\s*\(pointer:\s*fine\)/,
     "PC edits must be scoped away from Android touch screens");
 });
