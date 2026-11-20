@@ -167,9 +167,14 @@ export function createCombatSession({
   }
 
   function useSkill({ actorId, targetId, skill, reactionSkill = null, decoyId = null }) {
-    const result = previewSkill({ actorId,targetId,skill,reactionSkill,decoyId });
+    const projected=projectEcho({actorId,targetId,skill});
+    if(!projected.ok)return Object.freeze({...projected,state});
+    const result=previewSkill({actorId,targetId,skill,reactionSkill,decoyId});
     if(result.ok)rememberSkill(actorId,skill);
-    return withReserveSkillEffects(commitCompletedOwnerAction(result, actorId), actorId, skill);
+    // A copied spell may include all_enemy_reserves / all_ally_reserves.
+    // The canonical Roster owner must receive the EFFECTIVE copied skill,
+    // never the authored Remanence shell with no tactical effects.
+    return withReserveSkillEffects(commitCompletedOwnerAction(result, actorId),actorId,projected.skill);
   }
 
   function startSkill({ actorId, targetId, skill, decoyId = null }) {
@@ -646,9 +651,12 @@ export function createCombatSession({
   }
 
   function replaceFighter(fighterId, fighter, {
-    clearSourceZones = false, departingMemberId = null
+    clearSourceZones = false, departingMemberId = null,
+    preserveSkillEchoHistory = false
   } = {}) {
-    lastStandardSkillByActor.delete(fighterId);
+    // True replacement: a new creature inherits no action history.
+    // Roster's atomic same-actor effect settlement is NOT a replacement.
+    if(!preserveSkillEchoHistory)lastStandardSkillByActor.delete(fighterId);
     if (clearSourceZones) {
       state = removePersistentZonesFromActorV1(state, fighterId, {departingMemberId});
     }

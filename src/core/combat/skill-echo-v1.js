@@ -28,12 +28,13 @@ export function projectNativeSkillEchoV1({echoSkill,sourceSkill,actorId,targetId
   if(sourceSkill.id===echoSkill.id||sourceSkill.echoCopy||
      sourceSkill.loadoutSlot==="ultimate")
     return Object.freeze({ok:false,outcome:"copy_source_forbidden"});
-  // Reserve targets require a selected member and a RosterSession transaction.
-  // Do not pretend a combat slot is a reserve member or silently use a fallback.
-  if(sourceSkill.targetLocations?.includes("reserve") ||
-     sourceSkill.effects?.some(e=>["force_reserve_switch","ally_reserve_relay"].includes(e.kind)||
-       ["all_enemy_reserves","all_ally_reserves"].includes(e.targetScope)))
-    return Object.freeze({ok:false,outcome:"copy_reserve_requires_roster"});
+  // Supplemental all-reserve effects already belong to the canonical RosterSession.
+  // Preserve those scopes and let CombatSession require a real Roster owner.
+  // Only explicit reserve-only targeting requires a selected bench member.
+  if(sourceSkill.targetLocations && !sourceSkill.targetLocations.includes("active"))
+    return Object.freeze({ok:false,outcome:"copy_reserve_requires_member_selection"});
+  if(sourceSkill.effects?.some(e=>["force_reserve_switch","ally_reserve_relay"].includes(e.kind)))
+    return Object.freeze({ok:false,outcome:"copy_reserve_requires_member_selection"});
   const pct=echoSkill.echoCopy.powerPct;
   const supporting=!sourceSkill.targetRelations?.includes("enemy") &&
     (sourceSkill.targetRelations?.includes("self")||

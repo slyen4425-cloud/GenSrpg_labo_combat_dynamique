@@ -649,7 +649,7 @@ export function createRosterSession({
         }
       }
     }
-    if (results.length > 0) combatSession.replaceFighter(actorId, sourceFighter);
+    if (results.length > 0) combatSession.replaceFighter(actorId,sourceFighter,{preserveSkillEchoHistory:true});
     return Object.freeze({ok:true,outcome:"resolved",results:Object.freeze(results)});
   }
 
@@ -904,7 +904,8 @@ export function createRosterSession({
       actorId,
       tactical.state.fighters[
         actorId
-      ]
+      ],
+      {preserveSkillEchoHistory:true}
     );
     member.savedFighter =
       snapshotFighter(
