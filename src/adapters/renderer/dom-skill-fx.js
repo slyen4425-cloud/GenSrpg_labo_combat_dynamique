@@ -1,4 +1,5 @@
 import {playDomStampedeFxV1} from "./dom-stampede-fx-v1.js";
+import {playDomShadowEchoFxV1} from "./dom-shadow-echo-fx-v1.js";
 import {sweptSegmentRectContactV1,nearestBarrierSegmentContactV1,barrierContactAllowedForTrajectoryV1} from "../../core/combat/combat-barrier-spatial-v1.js";
 import { sweptPointHitsOpaqueMask, sweptPointHitsSpriteEllipseV1, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1, sweptExpandingWaveMeetsProjectileV1 } from "./dom-visible-model-contact.js?v=wall-ground-stop-20261101";
 
@@ -2208,6 +2209,7 @@ export function createDomSkillFxRenderer({
     label = null,
     expandingWave = null,
     stampede = null,
+    shadowEcho = false,
     projectilePower = 0,
     sizeMultiplier = 1,
     holdUntilCancelled = false,
@@ -2239,6 +2241,19 @@ export function createDomSkillFxRenderer({
           phase
         })
       : null;
+
+    if(shadowEcho && ["cast","projectile","beam","impact"].includes(type)){
+      const sourceKey=sourceSlot??targetSlot;
+      const from=sourceRect(sourceKey);
+      const to=targetSlot?anchor(targetAnchors,targetSlot,"target").getBoundingClientRect():from;
+      const effect=playDomShadowEchoFxV1({arena,sourceRect:from,targetRect:to,
+        type,durationMs,animate});
+      const record={node:effect.node,animation:effect.animation,frameAnimation:null,
+        type,skillId,fromSlot:sourceKey,targetSlot};
+      active.add(record);
+      void Promise.resolve(effect.finished).finally(()=>cleanup(record)).catch(()=>{});
+      return Object.freeze({status:"running",animation:effect.animation,finished:effect.finished});
+    }
 
     if (type === "cast") {
       // For native channeling, the authored cast cycles until Runtime emits

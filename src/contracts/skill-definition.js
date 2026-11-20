@@ -341,6 +341,34 @@ export function normalizeSkillDefinition(input) {
     throw new RangeError("expandingWave requires 1..60% start, larger end up to 150%, and 0.5..end% thickness");
   }
 
+  // Native dodge-resource theft, using the canonical rechargeable-action ledger.
+  let evasionSiphon=null;
+  if(input.evasionSiphon!=null){
+    const v=input.evasionSiphon;
+    if(!v||typeof v!=="object"||Array.isArray(v)||
+      Object.keys(v).some(k=>!["baseDamage","perMaxChargeDamage","stealCharges"].includes(k)))
+      throw new TypeError("evasionSiphon configuration is invalid");
+    const baseDamage=Number(v.baseDamage),perMaxChargeDamage=Number(v.perMaxChargeDamage);
+    if(category!=="offensive"||form!=="contact"||!Number.isFinite(baseDamage)||
+      baseDamage<0||!Number.isFinite(perMaxChargeDamage)||perMaxChargeDamage<=0||
+      v.stealCharges!==1||Number(input.effect?.damage)!==baseDamage)
+      throw new RangeError("evasionSiphon requires offensive contact, positive scale, one stolen charge and matching base damage");
+    evasionSiphon=Object.freeze({baseDamage,perMaxChargeDamage,stealCharges:1});
+  }
+
+  // Native echo reads a real previously paid skill from CombatSession.
+  // The UI never supplies an arbitrary copied definition or damage amount.
+  let echoCopy=null;
+  if(input.echoCopy!=null){
+    const v=input.echoCopy;
+    if(!v||typeof v!=="object"||Array.isArray(v)||
+       Object.keys(v).some(k=>k!=="powerPct")||
+       category!=="buff_debuff"||form!=="self"||
+       !Number.isFinite(Number(v.powerPct))||Number(v.powerPct)<1||Number(v.powerPct)>100)
+      throw new RangeError("echoCopy requires a self-form support skill with 1..100% power");
+    echoCopy=Object.freeze({powerPct:Number(v.powerPct)});
+  }
+
   // Generic serial charge: every pass owns its real collision, never each rendered clone.
   let stampede = null;
   if (projectileTargeting === "stampede") {
@@ -641,6 +669,8 @@ export function normalizeSkillDefinition(input) {
     ...(chargedEffects ? {chargedEffects} : {}),
     ...(projectileTargeting === "expanding_wave" ? { expandingWave: Object.freeze({startRadiusPct,endRadiusPct,thicknessPct}) } : {}),
     ...(stampede ? { stampede } : {}),
+    ...(evasionSiphon ? { evasionSiphon } : {}),
+    ...(echoCopy ? { echoCopy } : {}),
     loadoutSlot,
     element,
     approachMode,

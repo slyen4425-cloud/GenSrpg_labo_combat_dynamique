@@ -10,6 +10,7 @@ export function planSkillPreparationFx({
     Object.freeze({
       type: "cast",
       skillId: action.skill.id,
+      ...(action.skill.echoSourceSkillId ? {shadowEcho:true} : {}),
       actorSlot,
       ...(action.skill.channeling ? {holdUntilCancelled:true} : {}),
       ...(action.chargeState ? {sizeMultiplier:action.chargeState.sizeMultiplier} : {}),
@@ -37,6 +38,7 @@ export function planSkillReleaseFx({
     Object.freeze({
       type: action.skill.form,
       skillId: action.skill.id,
+      ...(action.skill.echoSourceSkillId ? {shadowEcho:true} : {}),
       element: action.skill.element ?? null,
       fromSlot: actorSlot,
       targetSlot,
@@ -166,6 +168,14 @@ export function planSkillOutcomeFx({
         durationMs: 520
       })
     ]);
+  }
+
+  // A copied spell always has the SAME shadow orb as its visual identity.
+  // Actual healing/damage/statuses have already been determined by Combat Rules.
+  // Never display a fake hit when the native outcome was a miss.
+  if(resolution.echoCopied===true && resolution.outcome==="hit"){
+    return Object.freeze([Object.freeze({type:"impact",skillId:resolution.skillId,
+      targetSlot,shadowEcho:true,durationMs:500})]);
   }
 
   // An intercepted strike ends on its physical wall, not the protected

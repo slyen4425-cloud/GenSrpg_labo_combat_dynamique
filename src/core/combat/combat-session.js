@@ -6,6 +6,8 @@ import {
   createCombatState,
   withFighterEnergy,
   withFighterMovementActiveV1,
+  skillCooldownRemainingMs,
+  skillUseCount,
   replaceFighter as replaceCombatFighter
 } from "./combat-state.js";
 import {
@@ -45,6 +47,7 @@ import {
 import {
   applyImmediateTacticalEffectsV1
 } from "./immediate-tactical-effects-v1.js";
+import {projectNativeSkillEchoV1} from "./skill-echo-v1.js";
 
 export function createCombatSession({
   distance = "medium",
@@ -58,6 +61,41 @@ export function createCombatSession({
     );
   const initialDistance = distance;
   const initialFighters = fighters.map((fighter) => ({ ...fighter }));
+  // Each active fighter slot owns only its own last real non-ultimate cast.
+  // A replacement clears this pointer: two occupants can never share history.
+  const lastStandardSkillByActor=new Map();
+  const rememberSkill=(actorId,skill)=>{
+    // Roster's timed bench cast uses a zero-effect visual anchor. The real
+    // paid skill is carried solely as metadata for the LAST-SKILL journal;
+    // no second effect ever resolves on the visible target.
+    const actual=skill?.rosterOriginalSkillForEcho??skill;
+    if(actual && actual.loadoutSlot!=="ultimate" && !actual.echoCopy && !actual.echoSourceSkillId)
+      lastStandardSkillByActor.set(actorId,actual);
+  };
+  const projectEcho=({actorId,targetId,skill,allowReserveTarget=false})=>
+    !skill?.echoCopy ? Object.freeze({ok:true,skill,targetId}) :
+      projectNativeSkillEchoV1({echoSkill:skill,sourceSkill:lastStandardSkillByActor.get(targetId)??null,
+        actorId,targetId,allowReserveTarget});
+
+  // Read-only projection for the UI to display legal bench targets. A later
+  // Roster preview and timed Runtime activation MUST recheck this choice.
+  function inspectEchoSource({actorId,targetId,skill}){
+    if(!skill?.echoCopy)return Object.freeze({ok:false,outcome:"not_echo"});
+    const actor=state.fighters[actorId],source=state.fighters[targetId];
+    if(!actor||!source||actor.hp<=0||source.hp<=0||actorId===targetId)
+      return Object.freeze({ok:false,outcome:"invalid_copy_source"});
+    const cooldown=skillCooldownRemainingMs(state,actorId,skill.id);
+    if(cooldown>0)return Object.freeze({ok:false,outcome:"cooldown",remainingCooldownMs:cooldown});
+    if(actor.energy<skill.energyCost)return Object.freeze({ok:false,outcome:"insufficient_energy"});
+    if(skill.maxUsesPerCombat!==null && skillUseCount(state,actorId,skill.id)>=skill.maxUsesPerCombat)
+      return Object.freeze({ok:false,outcome:"usage_limit"});
+    return projectEcho({actorId,targetId,skill,allowReserveTarget:true});
+  }
+  function recordRosterSkillCommit(actorId,skill){
+    // Called only after Roster confirms a real direct reserve spell. Timed
+    // spells already pass through session.startSkill and are not double-counted.
+    rememberSkill(actorId,skill);
+  }
   let reserveSkillResolver = null;
   const hasReserveSplash = skill => skill?.effects?.some(effect => isReserveEffectTargetScopeV2(effect.targetScope)) === true;
   function registerReserveSkillResolver(resolver) {
@@ -136,45 +174,53 @@ export function createCombatSession({
     );
   }
 
-  function previewSkill({ actorId, targetId, skill, reactionSkill = null }) {
-    const guard = reserveSkillGuard(skill);
-    if (guard) return guard;
+  function previewSkill({ actorId, targetId, skill, reactionSkill = null, decoyId = null }) {
+    const copy=projectEcho({actorId,targetId,skill});
+    if(!copy.ok)return Object.freeze({...copy,state});
+    const guard=reserveSkillGuard(copy.skill);
+    if(guard)return guard;
     return resolveSkill({
       state,
       actorId,
-      targetId,
-      skill,
+      targetId:copy.targetId,
+      skill:copy.skill,
       reactionSkill,
+      decoyId,
       skillSpeedMultiplier:
         normalizedSkillSpeedMultiplier,
       battleFormat
     });
   }
 
-  function useSkill({ actorId, targetId, skill, reactionSkill = null }) {
-    const result = previewSkill({
-      actorId,
-      targetId,
-      skill,
-      reactionSkill
-    });
-    return withReserveSkillEffects(commitCompletedOwnerAction(result, actorId), actorId, skill);
+  function useSkill({ actorId, targetId, skill, reactionSkill = null, decoyId = null }) {
+    const projected=projectEcho({actorId,targetId,skill});
+    if(!projected.ok)return Object.freeze({...projected,state});
+    const result=previewSkill({actorId,targetId,skill,reactionSkill,decoyId});
+    if(result.ok)rememberSkill(actorId,skill);
+    // A copied spell may include all_enemy_reserves / all_ally_reserves.
+    // The canonical Roster owner must receive the EFFECTIVE copied skill,
+    // never the authored Remanence shell with no tactical effects.
+    return withReserveSkillEffects(commitCompletedOwnerAction(result, actorId),actorId,projected.skill);
   }
 
-  function startSkill({ actorId, targetId, skill }) {
-    const guard = reserveSkillGuard(skill);
-    if (guard) return guard;
+  function startSkill({ actorId, targetId, skill, decoyId = null }) {
+    const copy=projectEcho({actorId,targetId,skill});
+    if(!copy.ok)return Object.freeze({...copy,state});
+    const guard=reserveSkillGuard(copy.skill);
+    if(guard)return guard;
     const result = resolveSkillStart({
       state,
       actorId,
-      targetId,
-      skill,
+      targetId:copy.targetId,
+      skill:copy.skill,
+      decoyId,
       skillSpeedMultiplier:
         normalizedSkillSpeedMultiplier,
       battleFormat
     });
     if (result.ok) {
       state = result.state;
+      rememberSkill(actorId,skill);
     }
     return result;
   }
@@ -623,6 +669,7 @@ export function createCombatSession({
   }
 
   function departFighter(fighterId, {departingMemberId = null} = {}) {
+    lastStandardSkillByActor.delete(fighterId);
     state = removePersistentZonesFromActorV1(state, fighterId, {departingMemberId});
     state = removeInheritedZoneBoundStatusesV1(state, fighterId);
     state = resetPersistentZoneOccupancyForSlotV1(state, fighterId, {absent:true});
@@ -630,8 +677,12 @@ export function createCombatSession({
   }
 
   function replaceFighter(fighterId, fighter, {
-    clearSourceZones = false, departingMemberId = null
+    clearSourceZones = false, departingMemberId = null,
+    preserveSkillEchoHistory = false
   } = {}) {
+    // True replacement: a new creature inherits no action history.
+    // Roster's atomic same-actor effect settlement is NOT a replacement.
+    if(!preserveSkillEchoHistory)lastStandardSkillByActor.delete(fighterId);
     if (clearSourceZones) {
       state = removePersistentZonesFromActorV1(state, fighterId, {departingMemberId});
     }
@@ -644,6 +695,7 @@ export function createCombatSession({
   }
 
   function reset() {
+    lastStandardSkillByActor.clear();
     state = createCombatState({
       distance: initialDistance,
       fighters: initialFighters
@@ -656,6 +708,8 @@ export function createCombatSession({
       return normalizedSkillSpeedMultiplier;
     },
     snapshot,
+    inspectEchoSource,
+    recordRosterSkillCommit,
     setMovementActiveV1,
     payChargedActivationEnergy,
     registerReserveSkillResolver,

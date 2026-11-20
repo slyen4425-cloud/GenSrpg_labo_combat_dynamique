@@ -98,7 +98,9 @@ test("combat skill button and target-required indicator use the same resolver, w
   const source=await readFile(new URL("../../src/ui/combat-2v2-test-ui.js",import.meta.url),"utf8");
   assert.match(source,/function renderAvailability\(\)[\s\S]*resolveCombatSkillClickTargetV1/);
   assert.match(source,/const onClick = \(\) => \{[\s\S]*resolveCombatSkillClickTargetV1/);
-  assert.match(source,/activateLocalSkill\(skill, resolvedTargetId\)/);
+  assert.match(source,/activateLocalSkill\(skill, resolvedTargetId, decoy\)/);
+  assert.match(source,/selectedDecoyId/);
+  assert.match(source,/skill\.category==="offensive"/);
   assert.match(source,/runtime\.startSkill\(/);
 });
 

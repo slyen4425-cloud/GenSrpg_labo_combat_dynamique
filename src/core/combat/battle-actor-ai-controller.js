@@ -1,3 +1,5 @@
+import {activeStatusEffectsV1} from "./status-effect-runtime-v1.js";
+
 export const CAPTURE_AI_TACTICS_V1_DEFAULT = Object.freeze({
   enabled: true,
   seed: 17,
@@ -55,6 +57,19 @@ function tacticalValue(skill, target, actor, enemy, recentSkillIds, profile, var
   if (recentSkillIds[1] === skill.id) value -= profile.repeatPenalty / 3;
   value -= Math.max(0, Number(skill.energyCost) || 0) / 5;
   return value + variation * 2;
+}
+
+// The AI selects between REAL advertised silhouettes. The status owner
+// decides which decoys exist; only the native resolver decides their outcome.
+export function chooseBattleActorDecoyV1({state,targetId,skill,seed=17,turn=0}) {
+  if(skill?.category!=="offensive" || !["contact","projectile","beam"].includes(skill.form))
+    return null;
+  const decoys=activeStatusEffectsV1(state,targetId,state.elapsedMs)
+    .filter(x=>x.definition.kind==="decoy");
+  if(decoys.length===0)return null;
+  const roll=tacticalVariation(seed,turn,97);
+  if(roll>=0.67)return null;
+  return decoys[Math.min(decoys.length-1,Math.floor(roll/0.67*decoys.length))].definition.id;
 }
 
 function requiredMethod(owner, method, label) {
@@ -187,7 +202,8 @@ export function createBattleActorAiController({
       for (const targetId of candidateTargetIds(skill)) {
         const target = state.fighters[targetId];
         if (!target || Number(target.hp) <= 0 || !holdAvailable(skill,targetId,state)) continue;
-        const preview = session.previewSkill({ actorId: normalizedActorId, targetId, skill });
+        const decoyId=chooseBattleActorDecoyV1({state,targetId,skill,seed:tacticSeed,turn:tacticalTurnIndex});
+        const preview = session.previewSkill({ actorId: normalizedActorId, targetId, skill, decoyId });
         if (!preview.ok) {
           if (preview.outcome === "insufficient_energy" && !saving) {
             saving = { skill, targetId };
@@ -205,7 +221,7 @@ export function createBattleActorAiController({
           continue;
         }
         choices.push({
-          skill, targetId, candidateIndex: index,
+          skill, targetId, decoyId, candidateIndex: index,
           score: tacticalValue(skill, target, actor, targetId !== normalizedActorId && !allies.includes(targetId),
             recentSkillIds, profile, tacticalVariation(tacticSeed, tacticalTurnIndex, index + (targets.indexOf(targetId) + 1) * skills.length))
             + (goal?.active ? 75 : goal ? 16 : 0)
@@ -214,7 +230,7 @@ export function createBattleActorAiController({
     }
     choices.sort((a,b) => b.score - a.score || a.candidateIndex - b.candidateIndex);
     for (const choice of choices) {
-      const result = runtime.startSkill({actorId:normalizedActorId, targetId:choice.targetId, skill:choice.skill});
+      const result = runtime.startSkill({actorId:normalizedActorId, targetId:choice.targetId, skill:choice.skill,decoyId:choice.decoyId});
       if (!result.ok) continue;
       watchHold(choice.skill,choice.targetId,state);
       recentSkillIds.unshift(choice.skill.id);
@@ -361,10 +377,11 @@ export function createBattleActorAiController({
 
     for (const { skill, candidateIndex, goal } of candidates) {
       if (!allowAllySacrifice(state, actor, skill) || !holdAvailable(skill,targetId,state)) continue;
+      const decoyId=chooseBattleActorDecoyV1({state,targetId,skill,seed:tacticSeed,turn:tacticalTurnIndex});
       const preview = session.previewSkill({
         actorId: normalizedActorId,
         targetId,
-        skill
+        skill,decoyId
       });
 
       attempts.push({ skill, preview, candidateIndex });
@@ -401,7 +418,7 @@ export function createBattleActorAiController({
       const result = runtime.startSkill({
         actorId: normalizedActorId,
         targetId,
-        skill
+        skill,decoyId
       });
 
       if (!result.ok) {

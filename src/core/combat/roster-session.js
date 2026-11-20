@@ -649,7 +649,7 @@ export function createRosterSession({
         }
       }
     }
-    if (results.length > 0) combatSession.replaceFighter(actorId, sourceFighter);
+    if (results.length > 0) combatSession.replaceFighter(actorId,sourceFighter,{preserveSkillEchoHistory:true});
     return Object.freeze({ok:true,outcome:"resolved",results:Object.freeze(results)});
   }
 
@@ -904,7 +904,8 @@ export function createRosterSession({
       actorId,
       tactical.state.fighters[
         actorId
-      ]
+      ],
+      {preserveSkillEchoHistory:true}
     );
     member.savedFighter =
       snapshotFighter(
@@ -914,6 +915,11 @@ export function createRosterSession({
       );
 
     const forcedResult = (forced || relay) ? forceSwitchMemberBySkill(team, member) : null;
+    // Synchronous reserve casts use Roster's native start rather than
+    // session.startSkill; record only truly committed non-preview actions.
+    // An allied relay may replace the *caster*. Its old spell must not
+    // become the NEW creature's last usable spell after the switch.
+    if(!(relay && forcedResult))combatSession.recordRosterSkillCommit?.(actorId,skill);
     if (relay && forcedResult) commitVoluntaryCooldown(team);
     if (completedResolution !== null) consumedTimedReserveResolutions.add(completedResolution);
     return Object.freeze({
@@ -948,7 +954,8 @@ export function createRosterSession({
     const preview = previewSkillOnTarget({actorId,targetRef,skill});
     if (!preview.ok) return preview;
     const team = teamOf(targetRef.teamId);
-    const staged = zeroEffectSkill(skill);
+    const staged = Object.freeze({...zeroEffectSkill(skill),
+      rosterOriginalSkillForEcho:skill});
     const relation = relationToReserveTeam(actorId,team);
     return Object.freeze({
       ok:true,outcome:"ready",targetId:team.slotId,

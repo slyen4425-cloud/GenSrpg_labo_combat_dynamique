@@ -1,4 +1,6 @@
 import {resolveCaptureCombatBattleOutcomeV1} from "./capture-combat-battle-outcome-v1.js";
+import {createDomDecoyOverlayV1} from "../adapters/renderer/dom-decoy-overlay-v1.js";
+import {activeDecoyForV1} from "../core/combat/decoy-hit-v1.js";
 import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-bestiary-hp-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-barrier-dual-view-20261105-barrier-side-layout-20261105";
 import { captureReactionRechargeClockV1 } from "./capture-reaction-recharge-clock-v1.js";
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
@@ -22,7 +24,7 @@ import {
   targetRelation
 } from "../core/combat/targeting.js";
 import { createCombatResolutionPresenter } from "../adapters/renderer/combat-resolution-presenter.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-channel-ground-mine-filter-20261102-wall-channel-loop-audio-20261103-solar-beneficial-contact-20261103";
-import { createDomSkillFxRenderer } from "../adapters/renderer/dom-skill-fx.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113-recolor-sliders-20261113";
+import { createDomSkillFxRenderer, applySpriteVisual } from "../adapters/renderer/dom-skill-fx.js?v=liane-audio-r2-20261030-snowball-v46-20261031-stage-energy-boule-20261031-ice-author-r2-20261031-charged-effects-20261031-ice-ground-spike-fog-20261031-barrier-20261031-hud-20261031-wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-persistent-ice-walls-20261101-wall-live-r2-20261101-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-impact-20261101-wall-bestiary-hp-20261102-channel-ground-mine-filter-20261102-ice-channel-spikes-20261102-unified-effects-20261102-pique-glace-editor-20261102-ground-filter-20261102-attack-pose-hold-20261102-gorice-pique-furie-20261102-self-periodic-prose-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-phone-pc-author-offset-20261103-global-fx-phone-pc-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-lumilo-attack-role-20261104-reference-elements-skill-id-20261104-dual-status-sprite-20261104-armure-pointe-import-20261105-visual-elements-20261105-ground-approach-steps-20261105-ai-charge-hold-20261105-barrier-dual-view-20261105-barrier-side-layout-20261105-burrow-visual-fields-20261107-sylvorne-showcase-media-20261111-sylvorne-editor-media-20261111-sylvorne-combat-visuals-20261111-sylvorne-fx-size-20261111-recolor-20261113-recolor-sliders-20261113";
 import { createCombatImpactHealthCueSyncV1 } from "../adapters/renderer/combat-impact-health-cue-v1.js";
 import { createDomStatusFxRenderer } from "../adapters/renderer/dom-status-fx.js";
 import { createDomDamageFeedbackRenderer } from "../adapters/renderer/dom-damage-feedback.js";
@@ -771,6 +773,12 @@ export async function mountCoop2v2Test({
     ])
   );
 
+  const decoyOverlay=createDomDecoyOverlayV1({
+    fighterContainers,applySpriteVisual,
+    appearanceFor:actorId=>visuals.getMovementAppearanceFor?.(actorId)??null,
+    onChoose:({actorId,decoyId})=>selectDecoy(actorId,decoyId)
+  });
+
   const hpRefs = Object.fromEntries(
     format.actors.map((actor) => [
       actor.actorId,
@@ -825,7 +833,11 @@ export async function mountCoop2v2Test({
   const targetPulseTimers = new Map();
   let disposed = false;
   let selectedTargetId = previewFormat.initialTargetId;
+  let selectedDecoyId = null;
   let pendingSkillId = null;
+  // The inspected enemy caster is distinct from the selected bench target.
+  // This is a read-only UI intent; RosterSession validates the actual member.
+  let pendingReserveEcho = null;
   // Only the selected reserve reference lives in UI; CombatRuntime owns the
   // entire clock/reactions, and RosterSession owns all applied bench effects.
   const pendingTimedReserveByActor = new Map();
@@ -1118,8 +1130,10 @@ export async function mountCoop2v2Test({
   }
 
   function reserveSkillTargetOptions(skill) {
+    const projected=pendingReserveEcho?.skillId===skill?.id
+      ? pendingReserveEcho.projectedSkill : skill;
     return combatSkillReserveTargetOptionsV2({
-      format, actorId:controlledActorId(), skill,
+      format, actorId:controlledActorId(), skill:projected,
       rosterSnapshot:rosterController?.snapshot() ?? null,
       previewTarget:args=>rosterController.previewSkillOnTarget(args)
     });
@@ -1131,8 +1145,21 @@ export async function mountCoop2v2Test({
       actorId: controlledActorId(),
       skill,
       state,
-      previewSkill: ({ actorId, targetId, skill }) =>
-        session.previewSkill({ actorId, targetId, skill }),
+      previewSkill: ({ actorId, targetId, skill }) => {
+        const ordinary=session.previewSkill({actorId,targetId,skill});
+        if(!skill.echoCopy || ordinary.outcome!=="copy_reserve_requires_member_selection" ||
+           !rosterController)return ordinary;
+        const inspected=session.inspectEchoSource({actorId,targetId,skill});
+        if(!inspected.ok || !inspected.reserveMemberRequired)return ordinary;
+        const legal=combatSkillReserveTargetOptionsV2({
+          format,actorId,skill:inspected.skill,
+          rosterSnapshot:rosterController.snapshot(),
+          previewTarget:args=>rosterController.previewSkillOnTarget(args)
+        });
+        return legal.length>0
+          ? Object.freeze({ok:true,outcome:"copy_reserve_selection_required"})
+          : ordinary;
+      },
       isPresent: actorId =>
         rosterController === null || rosterController.isPresent(actorId)
     });
@@ -1153,6 +1180,7 @@ export async function mountCoop2v2Test({
   }
 
   function renderTargetSelection() {
+    if(selectedDecoyId && !activeDecoyForV1(session.snapshot(),selectedTargetId,selectedDecoyId)) selectedDecoyId=null;
     const armedSkill = pendingSkillId === null
       ? null : skillRefs.get(pendingSkillId)?.skill ?? null;
     const candidates = armedSkill
@@ -1178,6 +1206,7 @@ export async function mountCoop2v2Test({
   }
 
   function renderState(state = session.snapshot()) {
+    decoyOverlay.render(state);
     statusFx?.sync(state);
     combatEntityOverlay.render(state);
     for (const actor of format.actors) {
@@ -1430,6 +1459,26 @@ export async function mountCoop2v2Test({
     renderTargetSelection();
   }
 
+  function selectDecoy(actorId,decoyId) {
+    if(!isAlive(actorId) || !activeDecoyForV1(session.snapshot(),actorId,decoyId))return;
+    const armedSkill=pendingSkillId===null?null:skillRefs.get(pendingSkillId)?.skill??null;
+    selectedTargetId=actorId;
+    selectedDecoyId=decoyId;
+    if(!armedSkill){
+      setStatus("Leurre spectral sélectionné. Choisis une attaque ciblée pour essayer de le frapper.","accent");
+      renderTargetSelection();
+      return;
+    }
+    const preview=session.previewSkill({actorId:controlledActorId(),targetId:actorId,
+      skill:armedSkill,decoyId});
+    if(!preview.ok){
+      setStatus("Ce leurre ne peut pas recevoir "+armedSkill.name+" : "+preview.outcome+".","warn");
+      return;
+    }
+    activateLocalSkill(armedSkill,actorId,decoyId);
+    renderTargetSelection();
+  }
+
   function selectTarget(actorId) {
     if (!actorMeta(actorId) || !isAlive(actorId)) {
       return;
@@ -1452,6 +1501,8 @@ export async function mountCoop2v2Test({
     }
 
     selectedTargetId = actorId;
+    selectedDecoyId = null;
+    if(pendingReserveEcho?.sourceActorId!==actorId)pendingReserveEcho=null;
     const relation = targetRelation({
       format,
       actorId: controlledActorId(),
@@ -1553,6 +1604,25 @@ export async function mountCoop2v2Test({
   }
 
   function activateLocalReserveSkill(skill, targetRef) {
+    let effectiveSkill=skill;
+    if(skill.echoCopy){
+      const intent=pendingReserveEcho;
+      if(!intent || intent.skillId!==skill.id){
+        setStatus("Rémanence : choisis d'abord la créature dont tu copies la compétence.","warn");
+        return false;
+      }
+      const current=session.inspectEchoSource({
+        actorId:controlledActorId(),targetId:intent.sourceActorId,skill});
+      if(!current.ok || !current.reserveMemberRequired ||
+         current.sourceSkillId!==intent.sourceSkillId){
+        pendingReserveEcho=null;
+        pendingSkillId=null;
+        setStatus("La compétence à copier a changé. Sélectionne de nouveau la source.","warn");
+        renderAvailability();
+        return false;
+      }
+      effectiveSkill=current.skill;
+    }
     const eligible = reserveSkillTargetOptions(skill).some(option =>
       option.targetRef.teamId === targetRef.teamId && option.targetRef.memberId === targetRef.memberId
     );
@@ -1562,7 +1632,7 @@ export async function mountCoop2v2Test({
       return false;
     }
     const actorId=controlledActorId();
-    const staged=rosterController.prepareSkillOnTarget({actorId,targetRef,skill});
+    const staged=rosterController.prepareSkillOnTarget({actorId,targetRef,skill:effectiveSkill});
     if (!staged.ok) {
       setStatus(skill.name + " : " + staged.outcome + ".", "warn");
       renderAvailability();
@@ -1570,7 +1640,7 @@ export async function mountCoop2v2Test({
     }
     // Register the selected bench member before starting: a zero-duration
     // skill can be resolved synchronously by the canonical Runtime.
-    const intent={skill,targetRef,expectedActiveMemberId:staged.expectedActiveMemberId,
+    const intent={skill:effectiveSkill,targetRef,expectedActiveMemberId:staged.expectedActiveMemberId,
       targetId:staged.targetId};
     pendingTimedReserveByActor.set(actorId,intent);
     const result=runtime.startSkill({actorId,targetId:staged.targetId,skill:staged.skill});
@@ -1581,15 +1651,16 @@ export async function mountCoop2v2Test({
       return false;
     }
     pendingSkillId=null;
+    pendingReserveEcho=null;
     const member=rosterController.snapshot()[targetRef.teamId]?.members.find(x=>x.id===targetRef.memberId);
-    setStatus(skill.name + (skill.effects?.some(effect => effect.kind === "ally_reserve_relay")
+    setStatus(skill.name + (effectiveSkill.effects?.some(effect => effect.kind === "ally_reserve_relay")
       ? " se prépare : relève céleste pour " : " se prépare : liane vers ") +
       (member?.displayName ?? targetRef.memberId) + ". L'adversaire peut esquiver ou contrer.", "accent");
     renderAvailability();
     return true;
   }
 
-  function activateLocalSkill(skill, targetId) {
+  function activateLocalSkill(skill, targetId, decoyId = null) {
     const allowed = isSkillTargetAllowed({
       format, actorId: controlledActorId(), targetId, skill
     });
@@ -1598,8 +1669,35 @@ export async function mountCoop2v2Test({
       renderAvailability();
       return;
     }
+    if(skill.echoCopy){
+      const inspected=session.inspectEchoSource({
+        actorId:controlledActorId(),targetId,skill});
+      if(inspected.ok && inspected.reserveMemberRequired){
+        pendingReserveEcho={
+          skillId:skill.id,sourceActorId:targetId,
+          sourceSkillId:inspected.sourceSkillId,projectedSkill:inspected.skill
+        };
+        pendingSkillId=skill.id;
+        const candidates=reserveSkillTargetOptions(skill);
+        if(candidates.length===0){
+          pendingReserveEcho=null;pendingSkillId=null;
+          setStatus("Rémanence : aucune créature de réserve éligible.","warn");
+          renderAvailability();
+          return;
+        }
+        const enemyBench=candidates.some(option=>
+          format.teamOf(option.targetRef.teamId)!==format.teamOf(controlledActorId()));
+        setStatus("Rémanence copie "+inspected.sourceSkillId+
+          " : choisis la réserve "+(enemyBench?"adverse.":"alliée."),"accent");
+        if(enemyBench)rosterPanel?.openEnemyForSkill();
+        else rosterPanel?.openForSkill();
+        renderAvailability();
+        renderTargetSelection();
+        return;
+      }
+    }
     const result = runtime.startSkill({
-      actorId: controlledActorId(), targetId, skill
+      actorId: controlledActorId(), targetId, skill, decoyId
     });
     if (!result.ok) {
       setStatus(result.outcome === "insufficient_energy"
@@ -1609,8 +1707,9 @@ export async function mountCoop2v2Test({
       return;
     }
     pendingSkillId = null;
+    selectedDecoyId = null;
     const target = actorMeta(targetId);
-    setStatus(skill.name + " se prépare sur " + target.displayName + ".", "accent");
+    setStatus(skill.name + (decoyId ? " vise le leurre de " : " se prépare sur ") + target.displayName + ".", "accent");
     renderAvailability();
   }
 
@@ -1719,7 +1818,9 @@ export async function mountCoop2v2Test({
         return;
       }
       pendingSkillId = null;
-      activateLocalSkill(skill, resolvedTargetId);
+      const decoy=selectedTargetId===resolvedTargetId && skill.category==="offensive" &&
+        ["contact","projectile","beam"].includes(skill.form) ? selectedDecoyId : null;
+      activateLocalSkill(skill, resolvedTargetId, decoy);
     };
     button.addEventListener("click", onClick);
 
@@ -1728,6 +1829,7 @@ export async function mountCoop2v2Test({
 
   function renderLocalSkills() {
     pendingSkillId = null;
+    pendingReserveEcho = null;
     for (const refs of skillRefs.values()) refs.dispose();
     skillRefs.clear();
     skillContainer.replaceChildren();
@@ -1995,7 +2097,11 @@ export async function mountCoop2v2Test({
       const actor = actorMeta(resolution.actorId);
       const target = actorMeta(resolution.targetId);
       const healEvents = resolution.events?.filter(event => event.type === "heal") ?? [];
-      if (resolution.outcome === "hit" && healEvents.length > 0) {
+      if(resolution.outcome==="decoy"){
+        const retaliation=resolution.events?.find(event=>event.decoyRetaliation===true);
+        setStatus("Leurre détruit ! " +(actor?.displayName??resolution.actorId)+
+          " subit " +(retaliation?.appliedDamage??0)+" dégâts Ombre.","accent");
+      } else if (resolution.outcome === "hit" && healEvents.length > 0) {
         const totalHealed = healEvents.reduce(
           (sum, event) => sum + Math.max(0, Number(event.applied) || 0), 0
         );
@@ -2160,6 +2266,7 @@ export async function mountCoop2v2Test({
       for (const refs of skillRefs.values()) refs.dispose();
       skillRefs.clear();
       clearTargetPulses();
+      decoyOverlay.dispose();
       for (const cleanup of cleanups.splice(0)) {
         cleanup();
       }
