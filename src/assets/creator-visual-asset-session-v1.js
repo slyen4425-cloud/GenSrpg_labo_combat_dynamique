@@ -39,7 +39,9 @@ function definitionFor({
   label,
   role,
   runtimeUrl,
-  file
+  file,
+  frameCount=1,
+  frameMs=100
 }) {
   const common = {
     id,
@@ -54,6 +56,7 @@ function definitionFor({
     resource: {
       runtimeUrl,
       mime: file.type,
+      ...(frameCount > 1 ? {frameCount,frameMs,playbackMode:'loop'} : {}),
       originalName:
         typeof file.name === "string"
           ? file.name
@@ -153,7 +156,9 @@ export function createCreatorVisualAssetSessionV1({
   function importImage({
     file,
     label,
-    role
+    role,
+    frameCount=1,
+    frameMs=100
   }) {
     assertUsable();
 
@@ -166,6 +171,14 @@ export function createCreatorVisualAssetSessionV1({
       );
     }
 
+    if(!Number.isInteger(frameCount)||frameCount<1||frameCount>32)
+      throw new RangeError('Creator animation frameCount must be 1..32');
+    if(!Number.isInteger(frameMs)||frameMs<30||frameMs>1000)
+      throw new RangeError('Creator animation frameMs must be 30..1000');
+    if((role==='movement'||role==='attack')&&frameCount<2)
+      throw new RangeError('Une animation de créature exige au moins deux frames.');
+    if((role==='creature'||role==='icon')&&frameCount!==1)
+      throw new RangeError('Un modèle ou une icône doit contenir une seule image.');
     const manager = createImageSourceManager({
       createObjectURL,
       revokeObjectURL
@@ -190,7 +203,9 @@ export function createCreatorVisualAssetSessionV1({
       ),
       role,
       runtimeUrl,
-      file
+      file,
+      frameCount,
+      frameMs
     });
 
     assets.set(id, definition);
