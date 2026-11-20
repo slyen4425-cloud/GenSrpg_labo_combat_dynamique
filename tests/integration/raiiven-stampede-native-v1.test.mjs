@@ -85,3 +85,49 @@ test("Raiiven authored ultimate is portable and bound to the existing creature w
   assert.equal(creature.loadout.slots.find(s=>s.id==="slot-ultimate").skillId,skill.draft.id);
   assert.equal(creature.draft.presentation.visual.movementBack.assetId,"pack:capture:creature-raiiven-movement-player-7-v1");
 });
+
+test("Raiiven stampede native rechargeable dodge evades only the SECOND pass for one target",()=>{
+  const g=game(),s=stampede();
+  g.runtime.startSkill({actorId:"player",targetId:"opponent",skill:s});
+  g.timer.setTime(500);assert.equal(contact(g,0,"opponent").ok,true);
+  assert.equal(contact(g,0,"opponent-b").ok,true);
+  const dodge=buildCaptureDodgeReactionSkillV1({dodge:{enabled:true,maxCharges:2,rechargeMs:30000,activeWindowMs:500}});
+  g.timer.setTime(3300);
+  const armed=g.runtime.activateRechargeableReaction(dodge,{
+    actorId:"opponent",recharge:{actionId:dodge.id,maxCharges:2,rechargeMs:30000},
+    activeWindowMs:500
+  });
+  assert.equal(armed.ok,true);
+  const missed=contact(g,1,"opponent");
+  assert.equal(missed.ok,true);
+  assert.equal(missed.resolution.outcome,"evaded");
+  assert.equal(contact(g,1,"opponent-b").resolution.outcome,"hit");
+  assert.equal(g.session.snapshot().fighters.opponent.hp,120);
+  assert.equal(g.session.snapshot().fighters["opponent-b"].hp,80);
+  g.timer.setTime(6100);
+  assert.equal(contact(g,2,"opponent").resolution.outcome,"hit");
+  assert.equal(g.session.snapshot().fighters.opponent.hp,80);
+  g.runtime.dispose();
+});
+
+test("Raiiven stampede integrates with canonical RosterSession KO replacement",()=>{
+  const rosterData=JSON.parse(readFileSync("data/combat/rosters/demo-2v2.roster.json","utf8"));
+  const marai=JSON.parse(readFileSync("data/combat/fighters/maraileron.combat.json","utf8"));
+  const braisombre=JSON.parse(readFileSync("data/combat/fighters/braisombre.combat.json","utf8"));
+  const g=game(30);
+  const roster=createRosterSession({combatSession:g.session,roster:rosterData,
+    battleFormat:format,fighterConfigs:{maraileron:marai,braisombre}});
+  g.runtime.startSkill({actorId:"player",targetId:"opponent",skill:stampede()});
+  g.timer.setTime(500);
+  assert.equal(contact(g,0,"opponent").ok,true);
+  assert.equal(g.session.snapshot().fighters.opponent.hp,0);
+  const next=roster.replaceKnockedOut("opponent");
+  assert.equal(next.outcome,"ko_replaced");
+  assert.equal(next.creatureId,"maraileron");
+  g.timer.setTime(3300);
+  const second=contact(g,1,"opponent");
+  assert.equal(second.ok,true);
+  assert.equal(second.resolution.outcome,"hit");
+  assert.equal(g.session.snapshot().fighters.opponent.hp,marai.initialHp-40);
+  g.runtime.dispose();
+});
