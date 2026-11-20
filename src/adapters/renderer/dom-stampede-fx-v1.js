@@ -2,6 +2,7 @@
 // N-1 visual herd copies. No cloned shadows, no projected fake "caster".
 // ONE collision report per enemy/pass remains owned by Combat Runtime.
 import {sweptPointHitsOpaqueMask,visibleModelOpaqueRect} from "./dom-visible-model-contact.js?v=wall-ground-stop-20261101";
+import {composeCreatureMovementPoseV1} from "./dom-keyframes.js";
 
 export function stampedePassWindowV1(config,travelElapsedMs){
   const total=config.passes*config.passDurationMs+(config.passes-1)*config.gapMs;
@@ -32,7 +33,7 @@ export function stampedeChargeGeometryV1({
 export function playDomStampedeFxV1({
   arena,fromSlot,targetSlot,stampede,sourceVisual,sourceMotion=null,
   sourceRect,targetRect,targetSlots=[],targetCollisionModelFor,
-  onContact,animate,requestFrame,cancelFrame,applySpriteVisual
+  onContact,animate,requestFrame,cancelFrame,applySpriteVisual,authorPixels
 }){
   const bounds=arena.getBoundingClientRect(),doc=arena.ownerDocument;
   const source=sourceRect(fromSlot),target=targetRect(targetSlot);
@@ -79,6 +80,13 @@ export function playDomStampedeFxV1({
   const officialAttack=sourceVisual?.attack?.url?sourceVisual.attack:null;
   const spriteSource=officialMovement??officialAttack;
   group.dataset.stampedePose=officialMovement?"movement":officialAttack?"attack-fallback":"missing";
+  // Exact same authored appearance transform as the standard movement
+  // renderer: separate FACE/DOS displayScale and offsetX/Y, expressed in
+  // the same responsive combat-arena pixels. Herd lane deltas remain the
+  // only stampede-specific offsets; we never hand-tune Raiiven's model.
+  const movementPose=composeCreatureMovementPoseV1({
+    arena,visual:spriteSource,authorPixels
+  });
   const sourceShadow=sourceFighter?.querySelector?.(".fighter__shadow")??null;
   const previousSource={
     translate:sourceMotion?.style?.translate??"",
@@ -163,6 +171,8 @@ export function playDomStampedeFxV1({
       Object.assign(sprite.style,{
         position:"absolute",inset:"0",width:"100%",height:"100%",pointerEvents:"none"
       });
+      sprite.style.transform=movementPose;
+      sprite.style.transformOrigin="center center";
       casterLayer.append(sprite);
       const playback=applySpriteVisual(sprite,{
         ...spriteSource,playbackMode:"loop"
@@ -180,6 +190,8 @@ export function playDomStampedeFxV1({
         position:"absolute",inset:"0",display:"block",
         width:"100%",height:"100%",pointerEvents:"none"
       });
+      sprite.style.transform=movementPose;
+      sprite.style.transformOrigin="center center";
       ghost.append(sprite);
       const result=applySpriteVisual(sprite,{
         ...spriteSource,

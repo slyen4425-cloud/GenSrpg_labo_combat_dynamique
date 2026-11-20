@@ -1,6 +1,7 @@
 // One temporary appearance per active creature slot; locomotion and contact
 // remain owned by Animation Core and Visible Model Collision respectively.
 import { applySpriteVisual,fxAuthorPixelsV1 } from "./dom-skill-fx.js";
+import {composeCreatureMovementPoseV1} from "./dom-keyframes.js";
 
 export function createDomCreatureMovementVisualV1({ motion, image, collisionModel }) {
   if (!motion || !image || !collisionModel) throw new TypeError("motion/image/collisionModel required");
@@ -131,12 +132,9 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
       // to compensate for off-centre artwork in individual attack strips.
       // All author offsets share the same arena unit as the body and skill FX.
       const arena=motion.closest?.("[data-combat-arena]") ?? null;
-      const offsetX = fxAuthorPixelsV1(arena,visual.offsetX);
-      const offsetY = fxAuthorPixelsV1(arena,visual.offsetY);
-      const poseOrigin = offsetX || offsetY
-        ? "translate(" + offsetX + "px, " + offsetY + "px) "
-        : "";
-      const poseScale = poseOrigin + "scale(" + visual.displayScale + ")";
+      const poseScale=composeCreatureMovementPoseV1({
+        arena,visual,authorPixels:fxAuthorPixelsV1
+      });
       shell.style.transform = poseScale;
       if (visual.mode === "roll" && visual.rotationTurns > 0) {
         record.spin = shell.animate([

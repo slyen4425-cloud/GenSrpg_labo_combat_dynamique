@@ -88,7 +88,13 @@ async function scenario(source){
        sourceMotions[source].style.translate!=="0px 0px";
    },16),
    cancelFrame:handle=>clearTimeout(handle),
-   sourceSpriteFor(){return {movement:{url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",frameCount:7,playbackMode:"loop",assetId:"test:raiiven-official-movement-7f"}};},
+   sourceSpriteFor(slot){return {movement:{
+      url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",
+      frameCount:7,playbackMode:"loop",assetId:"test:raiiven-official-movement-7f",
+      displayScale:slot==="player"?1.3:0.75,
+      offsetX:slot==="player"?12:-7,
+      offsetY:slot==="player"?-21:34
+    }};},
    sourceMotionFor:slot=>sourceMotions[slot],
    waveTargetsFor(fromSlot){
      return ids.filter(id=>format.teamOf(id)!==format.teamOf(fromSlot));
@@ -124,6 +130,16 @@ async function scenario(source){
   check(releaseShell.querySelectorAll("[data-stampede-horse-shadow]").length===0,
     "no huge copied Cavalcade shadows");
   check(releaseShell.dataset.stampedePose==="movement","official movement atlas used, not attack fallback");
+   // Native combat Movement Visual and stampede must share identical pose.
+   await new Promise(resolve=>setTimeout(resolve,160));
+   const realPose=sourceMotions[source].querySelector(".skill-fx--stampede-caster-sprite")?.style.transform;
+   const expectedPose=source==="player"
+     ? "translate(12px, -21px) scale(1.3)"
+     : "translate(-7px, 34px) scale(0.75)";
+   check(realPose===expectedPose,"real caster native movement pose "+realPose);
+   check([...releaseShell.querySelectorAll(".skill-fx--stampede-attack-pose")]
+     .every(ghost=>ghost.style.transform===realPose),
+     "every horse uses the same official FACE/DOS scale and XY offset as the standard creature animation");
   const horseNodes=[...releaseShell.querySelectorAll(".skill-fx--stampede-ghost")];
   check(horseNodes.every(node=>node.style.opacity==="1"&&node.style.width===horseNodes[0].style.width),"four equal-sized ghost companions to the native fifth horse");
   await new Promise(resolve=>setTimeout(resolve,7400));

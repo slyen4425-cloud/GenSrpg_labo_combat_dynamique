@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {captureArenaAuthorPositionScaleV1} from "../../src/ui/demo-app.js";
 import {fxArenaScaleV1,fxAuthorPixelsV1} from "../../src/adapters/renderer/dom-skill-fx.js";
+import {composeCreatureMovementPoseV1} from "../../src/adapters/renderer/dom-keyframes.js";
 import {playDomBurrowTerrainFxV2} from "../../src/adapters/renderer/dom-burrow-terrain-fx-v2.js";
 import {cameraShakeTimelineV1} from "../../src/adapters/renderer/dom-camera-fx.js";
 
@@ -74,11 +75,26 @@ test("RED: camera effects project authored pixels but preserve runtime timing",(
  assert.match(b.keyframes[1].transform,/translate3d\(6px, 2\.0?9/);
 });
 test("RED: movement, dodge and wall offsets all share one visual pixel unit",()=>{
+ // The original pixel converter remains authoritative for dodge and walls.
  for(const file of ["src/adapters/renderer/dom-creature-dodge-fx-v1.js",
-  "src/adapters/renderer/dom-creature-movement-visual-v1.js",
   "src/adapters/renderer/combat-entity-overlay-v1.js"]){
   assert.match(read(file),/fxAuthorPixelsV1\(/,file);
  }
+ // Movement and stampede now call the SAME pose helper with the SAME
+ // fxAuthorPixelsV1 owner instead of duplicating responsive geometry.
+ const standard=read("src/adapters/renderer/dom-creature-movement-visual-v1.js");
+ const stampede=read("src/adapters/renderer/dom-stampede-fx-v1.js");
+ const fx=read("src/adapters/renderer/dom-skill-fx.js");
+ assert.match(standard,/composeCreatureMovementPoseV1\(/);
+ assert.match(standard,/authorPixels:fxAuthorPixelsV1/);
+ assert.match(stampede,/composeCreatureMovementPoseV1\(/);
+ assert.match(fx,/authorPixels:fxAuthorPixelsV1/);
+ const onPhone=composeCreatureMovementPoseV1({arena:arena(400,711).el,
+   visual:{displayScale:1.2,offsetX:12,offsetY:-20},authorPixels:fxAuthorPixelsV1});
+ const onPc=composeCreatureMovementPoseV1({arena:arena(600,1600).el,
+   visual:{displayScale:1.2,offsetX:12,offsetY:-20},authorPixels:fxAuthorPixelsV1});
+ assert.equal(onPhone,"translate(12px, -20px) scale(1.2)");
+ assert.equal(onPc,"translate(18px, -30px) scale(1.2)");
  const current=JSON.parse(read("data/capture/showcase/attaque-sous-terraine.capture-skill-transfer-v1.json"));
  assert.deepEqual(["start","travel","impact"].map(s=>current.draft.presentation.visual.burrowTerrain[s].scale),[1.5,1.5,1]);
  assert.deepEqual(["start","travel","impact"].map(s=>current.draft.presentation.visual.burrowTerrain[s].offsetY),[-25,-50,0]);

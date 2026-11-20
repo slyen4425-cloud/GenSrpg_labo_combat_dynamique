@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {playDomStampedeFxV1,stampedePassWindowV1} from "../../src/adapters/renderer/dom-stampede-fx-v1.js";
+import {composeCreatureMovementPoseV1} from "../../src/adapters/renderer/dom-keyframes.js";
 
 const config=Object.freeze({passes:3,passDurationMs:1800,gapMs:600,cloneCount:5});
 function dom() {
@@ -19,7 +20,8 @@ function frame() {
   return {mask:{width:10,height:10,opaque:new Uint8Array(100).fill(1)},
     origin:{x:700,y:100},axisX:{x:800,y:100},axisY:{x:700,y:200}};
 }
-function harness(targetSlots=["opponent","opponent-b"],{displayedWidth=null,authoredScale=1}={}){
+function harness(targetSlots=["opponent","opponent-b"],{displayedWidth=null,authoredScale=1,
+  authoredMovement=null,arenaScale=1}={}){
   const sourceShadow={style:{opacity:"0.42"},cloneNode(){return {
     style:{opacity:""},dataset:{},removeAttribute(){}
   };}};
@@ -34,17 +36,20 @@ function harness(targetSlots=["opponent","opponent-b"],{displayedWidth=null,auth
       ? {getBoundingClientRect(){return {width:displayedWidth,height:displayedWidth}}}:null;}
   };
   const {arena,nodes}=dom(),calls=[],sprites=[],frames=[];
+  const movement=authoredMovement??{url:"https://assets.example/raiiven-movement-player-7-frames.png",
+    frameCount:7,assetId:"pack:capture:creature-raiiven-movement-player-7-v1"};
   const animation={currentTime:0,finished:new Promise(()=>{}),cancel(){}};
   const handle=playDomStampedeFxV1({arena,fromSlot:"player",targetSlot:"opponent",
-    stampede:config,sourceMotion,sourceVisual:{movement:{url:"https://assets.example/raiiven-movement-player-7-frames.png",frameCount:7,assetId:"pack:capture:creature-raiiven-movement-player-7-v1"}},
+    stampede:config,sourceMotion,sourceVisual:{movement},
     sourceRect:()=>({left:100,top:0,width:40,height:40}),
     targetRect:()=>({left:700,top:100,width:50,height:50}),targetSlots,
     targetCollisionModelFor:()=>({snapshot:frame}),
     onContact:contact=>{calls.push(contact);return {ok:true};},
     animate:()=>animation,requestFrame(fn){frames.push(fn);return frames.length;},
-    cancelFrame(){},applySpriteVisual(node,visual){sprites.push(visual.url);return {frameAnimation:null};}});
+    cancelFrame(){},applySpriteVisual(node,visual){sprites.push(visual.url);return {frameAnimation:null};},
+    authorPixels(_arena,value){return (Number(value)||0)*arenaScale;}});
   function step(ms){animation.currentTime=ms;const callback=frames.shift();assert.ok(callback);callback();}
-  return {handle,calls,sprites,arena,nodes,sourceMotion,sourceShadow,step};
+  return {handle,calls,sprites,arena,nodes,sourceMotion,sourceShadow,movement,step};
 }
 
 test("3 stampede passes follow the one canonical animation timeline, never repeat in gaps",()=>{
@@ -130,4 +135,41 @@ test("Cavalcade passes move the genuine actor rather than hiding it behind a fal
   assert.equal(layer.children.length,1,"actual source carries one authored motion atlas");
   g.handle.stop();
   assert.equal(layer.removed,true,"native combat image restored after charge");
+});
+
+test("Cavalcade shares the native attack/movement pose: original and four copies inherit author scale and XY, with only herd lane offsets",()=>{
+  const movement={
+    url:"https://assets.example/authored-horse-back-movement.webp",
+    frameCount:7,displayScale:1.35,offsetX:14,offsetY:-22
+  };
+  const g=harness(["opponent"],{authoredMovement:movement,arenaScale:1.5});
+  const expected=composeCreatureMovementPoseV1({
+    arena:g.arena,visual:movement,authorPixels:(_arena,value)=>Number(value)*1.5
+  });
+  assert.equal(expected,"translate(21px, -33px) scale(1.35)");
+  g.step(900);
+  assert.equal(g.sourceMotion.children.length,1);
+  const nativeLayer=g.sourceMotion.children[0].children[0];
+  assert.equal(nativeLayer.style.transform,expected,
+    "real source actor applies exactly the standard authored movement scale/X/Y");
+  assert.equal(g.arena.node.children.length,4);
+  for(const ghost of g.arena.node.children){
+    assert.equal(ghost.children[0].style.transform,expected,
+      "all four copies reuse the same standard appearance pose without their own size rules");
+  }
+  assert.ok(new Set(g.arena.node.children.map(node=>node.style.top)).size>=3,
+    "only herd lane staggering differs between copies");
+  g.handle.stop();
+});
+test("Opponent/front movement can have its own native 0.8 scale and positive Y offset",()=>{
+  const g=harness(["opponent"],{authoredMovement:{
+    url:"https://assets.example/horse-front.webp",frameCount:6,
+    displayScale:0.8,offsetX:-5,offsetY:32
+  }});
+  g.step(900);
+  const native=g.sourceMotion.children[0].children[0];
+  assert.equal(native.style.transform,"translate(-5px, 32px) scale(0.8)");
+  assert.ok(g.arena.node.children.every(ghost=>
+    ghost.children[0].style.transform===native.style.transform));
+  g.handle.stop();
 });
