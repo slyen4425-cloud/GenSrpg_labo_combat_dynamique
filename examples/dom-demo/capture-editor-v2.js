@@ -215,23 +215,36 @@ let universeRevision=universeSnapshot?.revision??null;
 const creatorSpriteScopeId=universeId??'capture-local-preview';
 let creatorSpriteStore=null;
 let creatorRestoreWarning=null;
-try{
- creatorSpriteStore=createCaptureCreatorSpriteStoreV1();
- const stored=await creatorSpriteStore.list(creatorSpriteScopeId);
- for(const row of stored){
-  const file=new File([row.blob],row.originalName||row.id+'.png',{type:row.mime});
-  creatorVisualAssets.restoreImage({
-   id:row.id,file,label:row.label,role:row.role,
-   frameCount:row.frameCount,frameMs:row.frameMs
-  });
- }
-}catch(error){
- // Preserve ALL historical rows, even if one is corrupt. A broken store
- // must never trigger clearing, silent reset or a false saved confirmation.
+function reportCreatorRestoreFailure(error){
  creatorRestoreWarning='Mes sprites : restauration impossible ('+
   (error?.message??String(error))+'). Aucun fichier n’a été supprimé.';
  console.error(creatorRestoreWarning);
+ const existing=document.querySelector('[data-capture-personal-sprite-warning]');
+ if(!existing){
+  const warning=document.createElement('p');
+  warning.setAttribute('role','alert');
+  warning.dataset.capturePersonalSpriteWarning='true';
+  warning.textContent=creatorRestoreWarning;
+  editorStatus.after(warning);
+ }
 }
+// Start opening IndexedDB without blocking the entire editor entry module.
+// Hydration of the ONE canonical visual catalog awaits this promise separately.
+let creatorSpritesReady=Promise.resolve();
+try{
+ creatorSpriteStore=createCaptureCreatorSpriteStoreV1();
+ creatorSpritesReady=creatorSpriteStore.list(creatorSpriteScopeId)
+  .then(stored=>{
+   for(const row of stored){
+    const file=new File([row.blob],row.originalName||row.id+'.png',{type:row.mime});
+    creatorVisualAssets.restoreImage({
+     id:row.id,file,label:row.label,role:row.role,
+     frameCount:row.frameCount,frameMs:row.frameMs
+    });
+   }
+  })
+  .catch(error=>{reportCreatorRestoreFailure(error);});
+}catch(error){reportCreatorRestoreFailure(error);}
 
 let editor;
 try {
@@ -239,6 +252,7 @@ try {
     root,
     creatorVisualAssets,
     creatorAudioAssets,
+    creatorSpritesReady,
     saveCreatorVisualAsset:async({asset,file,label,role,frameCount,frameMs})=>{
       if(!creatorSpriteStore||creatorRestoreWarning)
        throw new Error(creatorRestoreWarning??'Stockage personnel indisponible.');
@@ -257,14 +271,6 @@ try {
     (error?.message ?? String(error));
   editorStatus.dataset.tone = "error";
   throw error;
-}
-
-if(creatorRestoreWarning){
- const warning=document.createElement('p');
- warning.setAttribute('role','alert');
- warning.dataset.capturePersonalSpriteWarning='true';
- warning.textContent=creatorRestoreWarning;
- editorStatus.after(warning);
 }
 
 if(universeSnapshot){
