@@ -83,9 +83,11 @@ test('new private AssetDefinition metadata enables the ONE existing animation se
  });
  assert.equal(captureEditorAssetMatchesRoleV1(effect,'travel'),true);
  assert.equal(user.list().length,3);
- assert.throws(()=>user.importImage({
-  file:file('un-frame.png'),role:'movement',frameCount:1
- }),/au moins deux frames/);
+ const staticLegacy=user.importImage({
+  file:file('un-frame.png'),role:'movement',label:'Ancienne image fixe',frameCount:1
+ });
+ assert.equal(captureEditorAssetMatchesRoleV1(staticLegacy,'movement'),false,
+  'old single-frame author import remains valid but cannot masquerade as a new animation');
  assert.throws(()=>user.importImage({
   file:file('bad-icon.png'),role:'icon',frameCount:10
  }),/une seule image/);
