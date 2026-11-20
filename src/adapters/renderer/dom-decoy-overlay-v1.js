@@ -130,7 +130,11 @@ export function createDomDecoyOverlayV1({
       const image=anchor.ownerDocument.createElement("span");
       image.className="combat-decoy__sprite";
       Object.assign(image.style,{position:"absolute",inset:"0",width:"100%",
-        height:"100%",display:"block",pointerEvents:"none"});
+        height:"100%",display:"block",pointerEvents:"none",
+        // The actual Animation Renderer scales the original body using this
+        // canonical per-creature property; the static illusion must too.
+        transform:"scale(var(--creature-display-scale, 1))",
+        transformOrigin:"center center"});
       let frameAnimation=null;
       // While Dédale is active, ALL THREE remain in the same official
       // standing pose. A looping gallop in place reveals an unnecessary FX
