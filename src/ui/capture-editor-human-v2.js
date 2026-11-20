@@ -9297,7 +9297,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
         assets.push(asset);byId.set(asset.id,asset);
         refreshCreatorAssetLists();
         const preferredSelect=role==='creature'?frontSelect:
-          root.querySelector('[data-asset-role="'+role+'"]');
+          root.querySelector('[data-asset-role="' + role + '"]');
         if(preferredSelect){
           preferredSelect.value=asset.id;
           preferredSelect.dispatchEvent(new Event('change',{bubbles:true}));
