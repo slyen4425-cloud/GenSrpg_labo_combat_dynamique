@@ -18,7 +18,7 @@ const fighter=(id,hp=160)=>({id,maxHp:160,initialHp:hp,maxEnergy:20,initialEnerg
   energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0,chargeTimeModifierPct:0});
 const stampede=()=>normalizeSkillDefinition({id:"raiiven-cavalcade-damnes",name:"Cavalcade des damnés",
   category:"offensive",form:"projectile",projectileTargeting:"stampede",
-  stampede:{passes:3,passDurationMs:1000,gapMs:1800,cloneCount:6},loadoutSlot:"ultimate",
+  stampede:{passes:3,passDurationMs:1800,gapMs:600,cloneCount:5},loadoutSlot:"ultimate",
   element:"shadow",approachMode:"none",energyCost:10,preparationMs:0,
   travelMs:6600,recoveryMs:200,cooldownMs:0,maxUsesPerCombat:1,
   targetRelations:["enemy"],allowedDistances:["short","medium","long"],
@@ -69,7 +69,7 @@ test("Raiiven stampede preserves future passes after KO and hits new occupant of
 test("Raiiven stampede rejects fake passes and outside-of-pass collision windows",()=>{
   const g=game();g.runtime.startSkill({actorId:"player",targetId:"opponent",skill:stampede()});
   g.timer.setTime(500);assert.equal(contact(g,2,"opponent").ok,false);
-  g.timer.setTime(1500);assert.equal(contact(g,0,"opponent").ok,false);
+  g.timer.setTime(2100);assert.equal(contact(g,0,"opponent").ok,false);
   g.timer.setTime(3300);assert.equal(contact(g,1,"ally").ok,false);
   g.timer.setTime(6100);assert.equal(contact(g,4,"opponent").ok,false);
   g.runtime.dispose();
