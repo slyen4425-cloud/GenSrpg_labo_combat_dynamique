@@ -454,7 +454,7 @@ export function resolveSkillStart({
     tauntSource ?? targetId;
   fighterOf(state, effectiveTargetId);
   if (decoyId !== null && (
-    skill.category !== "offensive" ||
+    !skill.targetRelations?.includes("enemy") ||
     !["contact","projectile","beam"].includes(skill.form) ||
     !activeDecoyForV1(state,effectiveTargetId,decoyId)
   )) return Object.freeze({ok:false,outcome:"invalid_decoy_target",state,
