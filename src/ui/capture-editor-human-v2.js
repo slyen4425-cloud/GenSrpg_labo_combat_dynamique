@@ -1,4 +1,5 @@
 import {appendCaptureEffectConditionFieldsV1,readCaptureEffectConditionV1} from "./capture-effect-condition-fields-v1.js";
+import {prepareCreatorVisualImportV1} from "../assets/creator-visual-strip-import-v1.js";
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js?v=self-periodic-prose-20261102-sylvorne-fx-size-20261111";
 import { createCaptureReferenceElementFiltersV1 } from "./capture-reference-element-filter-v1.js?v=visual-elements-20261105-sylvorne-fx-size-20261111";
 import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104";
@@ -9190,135 +9191,125 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
     root.dispatchEvent(new Event("capture-visual-assets-changed"));
   }
 
-  function mountCreatorVisualImporter(
-    importer
-  ) {
-    const creatorImportButton =
-      importer.querySelector(
-        "[data-creator-visual-import]"
-      );
-    const creatorImportFile =
-      importer.querySelector(
-        "[data-creator-visual-file]"
-      );
-    const creatorImportRole =
-      importer.querySelector(
-        "[data-creator-visual-role]"
-      );
-    const creatorImportLabel =
-      importer.querySelector(
-        "[data-creator-visual-label]"
-      );
-    const creatorImportState =
-      importer.querySelector(
-        "[data-creator-visual-state]"
-      );
-
-    if (
-      !creatorImportButton ||
-      !creatorImportFile ||
-      !creatorImportRole
-    ) {
+  function mountCreatorVisualImporter(importer) {
+    const button=importer.querySelector('[data-creator-visual-import]');
+    const picker=importer.querySelector('[data-creator-visual-file]');
+    const rolePicker=importer.querySelector('[data-creator-visual-role]');
+    const labelInput=importer.querySelector('[data-creator-visual-label]');
+    const frameInput=importer.querySelector('[data-creator-visual-frames]');
+    const speedInput=importer.querySelector('[data-creator-visual-frame-ms]');
+    const state=importer.querySelector('[data-creator-visual-state]');
+    const previewWrap=importer.querySelector('[data-creator-visual-preview-wrap]');
+    const canvas=importer.querySelector('[data-creator-visual-preview]');
+    const previewInfo=importer.querySelector('[data-creator-visual-preview-info]');
+    if(!button||!picker||!rolePicker||!state)return;
+    if(!creatorVisualAssets||typeof creatorVisualAssets.importImage!=='function'){
+      button.disabled=true;
+      state.textContent='Import personnel indisponible dans ce contexte.';
+      state.dataset.tone='warning';
       return;
     }
 
-    if (
-      !creatorVisualAssets ||
-      typeof creatorVisualAssets.importImage !==
-        "function"
-    ) {
-      creatorImportButton.disabled = true;
-      if (creatorImportState) {
-        creatorImportState.textContent =
-          "Import personnel indisponible dans ce contexte.";
-        creatorImportState.dataset.tone =
-          "warning";
+    let generation=0,candidate=null,previewBitmap=null,animationFrame=0;
+    const ctx=canvas?.getContext('2d');
+    function stopPreview(){
+      if(animationFrame)cancelAnimationFrame(animationFrame);
+      animationFrame=0;
+      previewBitmap?.close?.();
+      previewBitmap=null;
+      if(previewWrap)previewWrap.hidden=true;
+    }
+    listeners.push(()=>{generation++;candidate=null;stopPreview();});
+    function report(message,tone='info'){
+      state.textContent=message;state.dataset.tone=tone;
+    }
+    function animate(startAt){
+      if(!previewBitmap||!candidate||disposed||!importer.open)return;
+      if(!document.hidden&&importer.getClientRects().length&&ctx){
+        const frameMs=Number(speedInput?.value)||100;
+        const frameIndex=Math.floor((performance.now()-startAt)/frameMs)%candidate.frameCount;
+        const cellWidth=candidate.frameWidth,cellHeight=candidate.frameHeight;
+        const scale=Math.min(canvas.width/cellWidth,canvas.height/cellHeight);
+        const w=cellWidth*scale,h=cellHeight*scale;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(previewBitmap,frameIndex*cellWidth,0,cellWidth,cellHeight,
+          (canvas.width-w)/2,(canvas.height-h)/2,w,h);
       }
-      return;
+      animationFrame=requestAnimationFrame(()=>animate(startAt));
     }
+    async function prepare(){
+      const index=++generation;
+      candidate=null;button.disabled=true;stopPreview();
+      const files=Array.from(picker.files??[]);
+      if(!files.length){report('Sélectionne une image ou plusieurs frames.');return;}
+      const role=rolePicker.value;
+      try{
+        report('Préparation de la prévisualisation…');
+        const count=files.length===1?Number(frameInput?.value??1):files.length;
+        const ready=await prepareCreatorVisualImportV1({files,stripFrames:count});
+        if(index!==generation||disposed)return;
+        if((role==='movement'||role==='attack')&&ready.frameCount<2)
+          throw Error('Pour une animation de créature, choisis au moins 2 images ou indique 2+ frames sur la planche.');
+        if((role==='creature'||role==='icon')&&ready.frameCount>1)
+          throw Error('Pour une pose ou icône, choisis une image fixe. Les animations vont dans déplacement/attaque ou FX.');
+        const bitmap=await createImageBitmap(ready.file);
+        if(index!==generation||disposed){bitmap.close?.();return;}
+        candidate=ready;previewBitmap=bitmap;
+        const isMulti=files.length>1;
+        if(frameInput)frameInput.disabled=isMulti;
+        if(previewWrap)previewWrap.hidden=false;
+        if(previewInfo)previewInfo.textContent=ready.frameCount+
+          ' frame(s) · '+ready.frameWidth+'×'+ready.frameHeight+
+          (isMulti?' · ordre des noms automatique':' · planche horizontale');
+        button.disabled=false;
+        report('Prévisualisation prête. Vérifie les frames puis importe.','ok');
+        if(importer.open)animate(performance.now());
+      }catch(error){
+        if(index!==generation)return;
+        report(error.message,'error');
+      }
+    }
+    listen(picker,'change',()=>{void prepare();});
+    listen(frameInput,'change',()=>{void prepare();});
+    listen(speedInput,'change',()=>{if(candidate&&previewInfo)previewInfo.textContent=
+      candidate.frameCount+' frame(s) · '+candidate.frameWidth+'×'+candidate.frameHeight+
+      ' · '+(Number(speedInput.value)||100)+' ms/frame';});
+    listen(rolePicker,'change',()=>{if(picker.files?.length)void prepare();});
+    listen(importer,'toggle',()=>{
+      if(!importer.open){
+        if(animationFrame)cancelAnimationFrame(animationFrame);
+        animationFrame=0;
+      }else if(candidate&&previewBitmap&&!animationFrame)animate(performance.now());
+    });
 
-    listen(
-      creatorImportButton,
-      "click",
-      () => {
-        try {
-          const file =
-            creatorImportFile.files?.[0];
-          if (!file) {
-            throw new Error(
-              "Choisis une image PNG, WebP ou JPEG."
-            );
-          }
-
-          const role =
-            String(
-              creatorImportRole.value ?? ""
-            ).trim();
-          const label =
-            String(
-              creatorImportLabel?.value ??
-                file.name ??
-                "Asset personnel"
-            ).trim();
-
-          const asset =
-            creatorVisualAssets.importImage({
-              file,
-              label,
-              role
-            });
-
-          assets.push(asset);
-          byId.set(asset.id, asset);
-          refreshCreatorAssetLists();
-
-          const preferredSelect =
-            role === "creature"
-              ? frontSelect
-              : root.querySelector(
-                  '[data-asset-role="' +
-                    role +
-                    '"]'
-                );
-
-          if (preferredSelect) {
-            preferredSelect.value =
-              asset.id;
-            preferredSelect.dispatchEvent(
-              new Event("change", {
-                bubbles: true
-              })
-            );
-          }
-
-          for (
-            const state of root.querySelectorAll(
-              "[data-creator-visual-state]"
-            )
-          ) {
-            state.textContent =
-              "Importé : " +
-              asset.label +
-              " (" +
-              asset.id +
-              ")";
-            state.dataset.tone = "ok";
-          }
-
-          creatorImportFile.value = "";
-          if (creatorImportLabel) {
-            creatorImportLabel.value = "";
-          }
-        } catch (error) {
-          if (creatorImportState) {
-            creatorImportState.textContent =
-              error.message;
-            creatorImportState.dataset.tone =
-              "error";
-          }
+    listen(button,'click',()=>{
+      if(!candidate||button.disabled)return;
+      try{
+        const role=rolePicker.value;
+        const frameMs=Number(speedInput?.value??100);
+        if(!Number.isInteger(frameMs)||frameMs<30||frameMs>1000)
+          throw Error('Temps par frame : entre 30 et 1000 ms.');
+        const label=String(labelInput?.value??'').trim()||
+          candidate.file.name||'Sprite personnel';
+        const asset=creatorVisualAssets.importImage({
+          file:candidate.file,label,role,frameCount:candidate.frameCount,frameMs
+        });
+        assets.push(asset);byId.set(asset.id,asset);
+        refreshCreatorAssetLists();
+        const preferredSelect=role==='creature'?frontSelect:
+          root.querySelector('[data-asset-role="'+role+'"]');
+        if(preferredSelect){
+          preferredSelect.value=asset.id;
+          preferredSelect.dispatchEvent(new Event('change',{bubbles:true}));
         }
-      }
-    );
+        report('Importé : '+asset.label+' · '+candidate.frameCount+
+          ' frame(s) — Mes assets (session temporaire).','ok');
+        generation++;candidate=null;stopPreview();
+        picker.value='';if(labelInput)labelInput.value='';
+        if(frameInput){frameInput.value='1';frameInput.disabled=false;}
+        button.disabled=true;
+      }catch(error){report(error.message,'error');}
+    });
   }
 
   for (
