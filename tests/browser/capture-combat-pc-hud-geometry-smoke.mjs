@@ -126,6 +126,22 @@ const assert=(condition,details)=>{if(!condition)throw Error(details);};
 const close=(a,b)=>Math.abs(a-b)<1.5;
 const outDir="artifacts/combat-pc-hud";
 try {
+  // Preserve visual evidence even when a geometry assertion is RED.
+  await mkdir(outDir,{recursive:true});
+  for(const count of ["1","2"]){
+    for(const mode of ["before","after"]){
+      const name=outDir+"/"+mode+"-1648x927-"+count+"v"+count+".png";
+      const url=host+"/__hud_layout?count="+count+"&mode="+mode;
+      await runChrome(["--window-size=1648,927","--screenshot="+resolve(name),url],name);
+      console.log("SCREENSHOT "+name);
+    }
+  }
+  for(const mode of ["before","after"]){
+    const name=outDir+"/"+mode+"-915x412-phone-2v2.png";
+    await runChrome(["--window-size=915,412","--screenshot="+resolve(name),
+      host+"/__hud_layout?count=2&mode="+mode],name);
+    console.log("SCREENSHOT "+name);
+  }
   // Full and resized desktop landscape, wide, and zoom-equivalent CSS viewports.
   // The latter test responsive breakpoints; actual browser zoom still needs manual verification.
   const desktops=[[1366,768],[1648,927],[1920,1080],[2560,1080],[1518,853],[1318,742]];
@@ -155,20 +171,5 @@ try {
       }
       console.log("PASS phone parity "+w+"x"+h+" active="+count);
     }
-  }
-  await mkdir(outDir,{recursive:true});
-  for(const count of ["1","2"]){
-    for(const mode of ["before","after"]){
-      const name=outDir+"/"+mode+"-1648x927-"+count+"v"+count+".png";
-      const url=host+"/__hud_layout?count="+count+"&mode="+mode;
-      await runChrome(["--window-size=1648,927","--screenshot="+resolve(name),url],name);
-      console.log("SCREENSHOT "+name);
-    }
-  }
-  for(const mode of ["before","after"]){
-    const name=outDir+"/"+mode+"-915x412-phone-2v2.png";
-    await runChrome(["--window-size=915,412","--screenshot="+resolve(name),
-      host+"/__hud_layout?count=2&mode="+mode],name);
-    console.log("SCREENSHOT "+name);
   }
 }finally{server.close();}
