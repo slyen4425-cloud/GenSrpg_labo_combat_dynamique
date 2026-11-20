@@ -4,11 +4,16 @@ import {readFileSync} from "node:fs";
 import {createCombatSession} from "../../src/core/combat/combat-session.js";
 import {createRosterSession} from "../../src/core/combat/roster-session.js";
 import {normalizeCaptureSkillTransferV1} from "../../src/contracts/capture-skill-transfer-v1.js";
+import {normalizeSkillDefinition} from "../../src/contracts/skill-definition.js";
 
 const load=id=>normalizeCaptureSkillTransferV1(JSON.parse(readFileSync(
   "data/capture/showcase/"+id+".capture-skill-transfer-v1.json","utf8"))).draft.definition;
 const echo=load("raiiven-remanence-interdite");
-const vine=load("liane_venimeuse");
+const vineUltimate=load("liane_venimeuse");
+// The authored Liane venimeuse is an ULTIMATE, rightly forbidden. This test
+// uses a standalone, non-ultimate contract carrying its native switch mechanics.
+const vine=normalizeSkillDefinition({...vineUltimate,
+ id:"test-reserve-switch-standard",name:"Changement forcé non ultime",loadoutSlot:"standard"});
 const fighter=id=>({id,maxHp:200,initialHp:200,maxEnergy:30,initialEnergy:30,
  energyChargeAmount:0,energyChargeIntervalMs:2000,movementEnergyPerStep:0,chargeTimeModifierPct:0});
 const format={actors:[
@@ -38,7 +43,7 @@ test("native Rémanence replicates an actual force-switch spell with native Rost
  assert.equal(roster.snapshot().raiiven.activeMemberId,"r0","Raiiven remains available");
  const echoSource=session.inspectEchoSource({actorId:"raiiven",targetId:"enemy",skill:echo});
  assert.equal(echoSource.ok,true,echoSource.outcome);
- assert.equal(echoSource.sourceSkillId,"liane_venimeuse");
+ assert.equal(echoSource.sourceSkillId,vine.id);
  assert.equal(echoSource.reserveMemberRequired,true);
  assert.equal(echoSource.skill.effects[0].kind,"force_reserve_switch");
  assert.equal(echoSource.skill.effects[1].marker.periodic.channel,"shadow","periodic original nature converted");
@@ -64,4 +69,14 @@ test("native Rémanence replicates an actual force-switch spell with native Rost
  assert.equal(roster.useSkillOnTarget({actorId:"raiiven",targetRef,skill:echoSource.skill,
    expectedActiveMemberId:prepared.expectedActiveMemberId,completedResolution:result}).ok,false,
    "one visual contact may only settle once");
+});
+
+test("real Liane venimeuse is an ultimate and correctly cannot become Rémanence source",()=>{
+ assert.equal(vineUltimate.loadoutSlot,"ultimate");
+ const {session,roster}=harness();
+ const cast=roster.useSkillOnTarget({actorId:"enemy",
+   targetRef:{scope:"reserve",teamId:"friend",memberId:"f1"},skill:vineUltimate});
+ assert.equal(cast.ok,true);
+ assert.equal(session.inspectEchoSource({
+   actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,"no_copy_source");
 });
