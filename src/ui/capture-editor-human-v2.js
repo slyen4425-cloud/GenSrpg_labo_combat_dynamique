@@ -3075,7 +3075,8 @@ export function buildHumanSkillDraftV1(fields) {
       }} : {}),
       ...(fields.decoy?.enabled===true ? {decoyFormation:{
         reshuffleMs:Number(fields.decoy.reshuffleMs),
-        spacingPct:Number(fields.decoy.spacingPct)
+        spacingPct:Number(fields.decoy.spacingPct),
+        scale:Number(fields.decoy.scale??1)
       }} : {}),
       loadoutSlot:
         fields.loadoutSlot === "ultimate"
@@ -3955,6 +3956,7 @@ function writeSkillDraftFields(
     ["[data-skill-decoy-retaliation]",fields.decoy.retaliationDamage],
     ["[data-skill-decoy-shuffle]",fields.decoy.reshuffleMs/1000],
     ["[data-skill-decoy-spacing]",fields.decoy.spacingPct],
+    ["[data-skill-decoy-scale]",Math.round((fields.decoy.scale??1)*100)],
     ["[data-skill-wave-start-radius]", fields.presentation.waveStartRadiusPct],
     ["[data-skill-wave-end-radius]", fields.presentation.waveEndRadiusPct],
     ["[data-skill-wave-thickness]", fields.presentation.waveThicknessPct],
@@ -4182,6 +4184,7 @@ function prepareNewSkillDraftFields(
     ["[data-skill-decoy-retaliation]",10],
     ["[data-skill-decoy-shuffle]",5],
     ["[data-skill-decoy-spacing]",56],
+    ["[data-skill-decoy-scale]",100],
     ["[data-skill-wave-start-radius]", 3],
     ["[data-skill-wave-end-radius]", 65],
     ["[data-skill-wave-thickness]", 6],
@@ -10024,6 +10027,7 @@ function readSkillFields(root) {
       retaliationDamage:numericValue(root,"[data-skill-decoy-retaliation]"),
       reshuffleMs:Math.round(numericValue(root,"[data-skill-decoy-shuffle]")*1000),
       spacingPct:numericValue(root,"[data-skill-decoy-spacing]"),
+      scale:numericValue(root,"[data-skill-decoy-scale]")/100,
       templates:JSON.parse(one(root,"[data-skill-decoy-source]").value||"[]")
     },
     stampede:{
