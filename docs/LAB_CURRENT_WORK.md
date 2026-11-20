@@ -1,3 +1,16 @@
+## 2026-11-20 — Raiiven, leurres loyaux et charge réelle + paramètres dans l'éditeur
+
+- START : `main@1042d8583c081fabfc79323947b1a8085ac5bbc1`, checkpoint `checkpoint/lab-start-raiiven-decoy-herd-editor-20261120` ; branche temporaire `work/lab-raiiven-decoy-herd-editor-20261120`.
+- Retour auteur : deux leurres et Raiiven **strictement indiscernables** (taille originale, ombre au sol identique, aucune indication par teinte ou animation) ; position du vrai permutée ; toucher un leurre consomme ce seul leurre et inflige ses dégâts de riposte, sans recevoir de debuff, même pour une attaque non-damaging ciblée ; toucher la vraie créature met fin à **tous** ses leurres immédiatement. Attaques de zone, immunités et esquives restent sous l'autorité Combat Rules.
+- Cavalcade : le vrai lanceur doit visuellement faire partie des 5 chevaux pendant la charge ; aucune copie statique en arrière-plan ; réutiliser le **mouvement** officiel face/dos, taille égale au vrai ; décalages X/Y pour un troupeau moins géométrique, 3 passes/40 dégâts restent natifs.
+- Éditeur : auditer d'abord le parcours existant ; intégrer un groupe repliable dans **Effets tactiques** pour les leurres (générant les `apply_status(decoy)` officiels) et un dans **Effets visuels > Trajectoire** pour la charge (réglages `stampede` natifs). Le rendu reste propriétaire du renderer, la logique HP/status du combat, aucune configuration spéciale par ID de créature.
+- Fichiers autorisés : `src/core/combat/decoy-hit-v1.js`, `action-resolver.js`, `src/contracts/skill-definition.js`, `src/adapters/renderer/dom-decoy-overlay-v1.js`, `dom-stampede-fx-v1.js`, `dom-skill-fx.js`, `src/ui/combat-2v2-test-ui.js`, `capture-editor-human-v2.js`, helpers UI locaux, `examples/dom-demo/capture-editor-v2.html`, `demo.css`, transferts auteur Raiiven si nécessaire, tests et cette note. Aucun autre média ou créature.
+- À garder intact : autres créatures, assets maîtres, architecture sonore, lab Exploration, Hub/PWA, atelier standards, partie multijoueur, contrôles PC validés.
+- Tests requis : vrai chemin ciblé 1v1/2v2, attaque de buff/debuff visant un leurre (pas de statut appliqué), vraie cible => tous leurres disparaissent, ombre/même taille du vrai et des clones, charge source mobile, export/import/édition générique et rétrocompatibilité ; CI 8/8 sur le dernier SHA, ensuite contrôle HTTPS. Changement de `main` uniquement après preuve complète ; revue visuelle auteur avant PWA. Audit ergonomique général reporté.
+- Statut initial : EN COURS / NON GREEN.
+
+---
+
 ## 2026-11-20 — Raiiven : refonte visuelle Dédale/Cavalcade (retour auteur)
 
 - Point de départ : `main@ae1287b47858e6c92f4d8e042d9ac7e411f4c579` ; checkpoint `checkpoint/lab-start-raiiven-illusion-charge-20261120` ; branche de validation unique `work/lab-raiiven-illusion-charge-20261120` (non publiée comme labo parallèle).
