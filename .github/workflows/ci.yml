@@ -125,3 +125,14 @@ jobs:
         run: node tests/browser/capture-wolf-phone-pc-author-offset-smoke.mjs
       - name: Real Chromium authored Gorice ice and Firestorm FX phone/PC geometry, 1v1 and 2v2
         run: node tests/browser/capture-global-fx-phone-pc-parity-smoke.mjs
+
+  raiiven-four-skills-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Real Chromium Raiiven selectable decoys, native retaliation, spectral echo 1v1 and 2v2
+        run: node tests/browser/raiiven-four-skills-smoke.mjs
