@@ -100,7 +100,7 @@ test("combat skill button and target-required indicator use the same resolver, w
   assert.match(source,/const onClick = \(\) => \{[\s\S]*resolveCombatSkillClickTargetV1/);
   assert.match(source,/activateLocalSkill\(skill, resolvedTargetId, decoy\)/);
   assert.match(source,/selectedDecoyId/);
-  assert.match(source,/skill\.category==="offensive"/);
+  assert.match(source,/skill\.targetRelations\?\.includes\("enemy"\)/);
   assert.match(source,/runtime\.startSkill\(/);
 });
 
