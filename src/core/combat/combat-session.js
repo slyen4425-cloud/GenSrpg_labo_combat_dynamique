@@ -6,6 +6,8 @@ import {
   createCombatState,
   withFighterEnergy,
   withFighterMovementActiveV1,
+  skillCooldownRemainingMs,
+  skillUseCount,
   replaceFighter as replaceCombatFighter
 } from "./combat-state.js";
 import {
@@ -66,10 +68,30 @@ export function createCombatSession({
     if(skill && skill.loadoutSlot!=="ultimate" && !skill.echoCopy && !skill.echoSourceSkillId)
       lastStandardSkillByActor.set(actorId,skill);
   };
-  const projectEcho=({actorId,targetId,skill})=>
+  const projectEcho=({actorId,targetId,skill,allowReserveTarget=false})=>
     !skill?.echoCopy ? Object.freeze({ok:true,skill,targetId}) :
       projectNativeSkillEchoV1({echoSkill:skill,sourceSkill:lastStandardSkillByActor.get(targetId)??null,
-        actorId,targetId});
+        actorId,targetId,allowReserveTarget});
+
+  // Read-only projection for the UI to display legal bench targets. A later
+  // Roster preview and timed Runtime activation MUST recheck this choice.
+  function inspectEchoSource({actorId,targetId,skill}){
+    if(!skill?.echoCopy)return Object.freeze({ok:false,outcome:"not_echo"});
+    const actor=state.fighters[actorId],source=state.fighters[targetId];
+    if(!actor||!source||actor.hp<=0||source.hp<=0||actorId===targetId)
+      return Object.freeze({ok:false,outcome:"invalid_copy_source"});
+    const cooldown=skillCooldownRemainingMs(state,actorId,skill.id);
+    if(cooldown>0)return Object.freeze({ok:false,outcome:"cooldown",remainingCooldownMs:cooldown});
+    if(actor.energy<skill.energyCost)return Object.freeze({ok:false,outcome:"insufficient_energy"});
+    if(skill.maxUsesPerCombat!==null && skillUseCount(state,actorId,skill.id)>=skill.maxUsesPerCombat)
+      return Object.freeze({ok:false,outcome:"usage_limit"});
+    return projectEcho({actorId,targetId,skill,allowReserveTarget:true});
+  }
+  function recordRosterSkillCommit(actorId,skill){
+    // Called only after Roster confirms a real direct reserve spell. Timed
+    // spells already pass through session.startSkill and are not double-counted.
+    rememberSkill(actorId,skill);
+  }
   let reserveSkillResolver = null;
   const hasReserveSplash = skill => skill?.effects?.some(effect => isReserveEffectTargetScopeV2(effect.targetScope)) === true;
   function registerReserveSkillResolver(resolver) {
@@ -682,6 +704,8 @@ export function createCombatSession({
       return normalizedSkillSpeedMultiplier;
     },
     snapshot,
+    inspectEchoSource,
+    recordRosterSkillCommit,
     setMovementActiveV1,
     payChargedActivationEnergy,
     registerReserveSkillResolver,

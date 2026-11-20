@@ -22,19 +22,23 @@ export function spectralizeCopiedEffectV1(value,powerPct){
   }
   return Object.freeze(next);
 }
-export function projectNativeSkillEchoV1({echoSkill,sourceSkill,actorId,targetId}){
+export function projectNativeSkillEchoV1({echoSkill,sourceSkill,actorId,targetId,allowReserveTarget=false}){
   if(!echoSkill?.echoCopy)return Object.freeze({ok:false,outcome:"not_echo"});
   if(!sourceSkill)return Object.freeze({ok:false,outcome:"no_copy_source"});
   if(sourceSkill.id===echoSkill.id||sourceSkill.echoCopy||
      sourceSkill.loadoutSlot==="ultimate")
     return Object.freeze({ok:false,outcome:"copy_source_forbidden"});
-  // Supplemental all-reserve effects already belong to the canonical RosterSession.
-  // Preserve those scopes and let CombatSession require a real Roster owner.
-  // Only explicit reserve-only targeting requires a selected bench member.
-  if(sourceSkill.targetLocations && !sourceSkill.targetLocations.includes("active"))
-    return Object.freeze({ok:false,outcome:"copy_reserve_requires_member_selection"});
-  if(sourceSkill.effects?.some(e=>["force_reserve_switch","ally_reserve_relay"].includes(e.kind)))
-    return Object.freeze({ok:false,outcome:"copy_reserve_requires_member_selection"});
+  // For explicit reserve-only spells, a genuine Roster member must be
+  // selected. The UI may INSPECT this source but may not activate it on a
+  // fabricated active slot. The native Roster transaction remains authoritative.
+  const reserveOnly=sourceSkill.targetLocations?.includes("reserve") &&
+    !sourceSkill.targetLocations?.includes("active");
+  const reserveTransfer=sourceSkill.effects?.some(e=>
+    ["force_reserve_switch","ally_reserve_relay"].includes(e.kind))===true;
+  const requiresMember=reserveOnly || reserveTransfer;
+  if(requiresMember && !allowReserveTarget)
+    return Object.freeze({ok:false,outcome:"copy_reserve_requires_member_selection",
+      sourceSkillId:sourceSkill.id});
   const pct=echoSkill.echoCopy.powerPct;
   const supporting=!sourceSkill.targetRelations?.includes("enemy") &&
     (sourceSkill.targetRelations?.includes("self")||
@@ -55,8 +59,10 @@ export function projectNativeSkillEchoV1({echoSkill,sourceSkill,actorId,targetId
     // Use the copied form's trajectory/area/ticks, but Remanence's windup.
     preparationMs:echoSkill.preparationMs,recoveryMs:echoSkill.recoveryMs,
     allowedDistances:echoSkill.allowedDistances,
-    targetRelations:supporting?Object.freeze(["self"]):sourceSkill.targetRelations,
-    targetLocations:Object.freeze(["active"]),
+    targetRelations:requiresMember
+      ? Object.freeze(sourceSkill.targetRelations.map(relation=>relation==="self"?"ally":relation))
+      : supporting?Object.freeze(["self"]):sourceSkill.targetRelations,
+    targetLocations:Object.freeze([requiresMember?"reserve":"active"]),
     effect:legacy,effects:transformedEffects,
     ...(sourceSkill.chargedAttack?{chargedAttack:Object.freeze({
       ...sourceSkill.chargedAttack,
@@ -67,5 +73,6 @@ export function projectNativeSkillEchoV1({echoSkill,sourceSkill,actorId,targetId
     ...(sourceSkill.contactHold?{contactHold:spectralizeCopiedEffectV1(sourceSkill.contactHold,pct)}:{}),
     echoSourceSkillId:sourceSkill.id,echoPowerPct:pct
   });
-  return Object.freeze({ok:true,skill,targetId:aimId,sourceSkillId:sourceSkill.id});
+  return Object.freeze({ok:true,skill,targetId:aimId,sourceSkillId:sourceSkill.id,
+    reserveMemberRequired:requiresMember});
 }

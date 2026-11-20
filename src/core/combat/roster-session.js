@@ -915,6 +915,9 @@ export function createRosterSession({
       );
 
     const forcedResult = (forced || relay) ? forceSwitchMemberBySkill(team, member) : null;
+    // Synchronous reserve casts use Roster's native start rather than
+    // session.startSkill; record only truly committed non-preview actions.
+    if(completedResolution===null)combatSession.recordRosterSkillCommit?.(actorId,skill);
     if (relay && forcedResult) commitVoluntaryCooldown(team);
     if (completedResolution !== null) consumedTimedReserveResolutions.add(completedResolution);
     return Object.freeze({
