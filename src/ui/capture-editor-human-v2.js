@@ -9282,7 +9282,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
       }else if(candidate&&previewBitmap&&!animationFrame)animate(performance.now());
     });
 
-    listen(button,'click',()=>{
+    listen(button,'click',async()=>{
       if(!candidate||button.disabled)return;
       try{
         const role=rolePicker.value;
@@ -9294,6 +9294,23 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
         const asset = creatorVisualAssets.importImage({
           file:candidate.file,label,role,frameCount:candidate.frameCount,frameMs
         });
+        // The new user asset is NOT published to selectors until the same
+        // validated Blob has completed its canonical IndexedDB transaction.
+        // On quota/permission failure rollback only this transient session ID.
+        if(typeof saveCreatorVisualAsset==='function'){
+          button.disabled=true;
+          report('Enregistrement local et vérification du sprite…');
+          try{
+            await saveCreatorVisualAsset({
+              asset,file:candidate.file,label,role,
+              frameCount:candidate.frameCount,frameMs
+            });
+          }catch(error){
+            creatorVisualAssets.discardSessionImage?.(asset.id);
+            button.disabled=false;
+            throw new Error('Sprite non enregistré : '+(error?.message??String(error)));
+          }
+        }
         assets.push(asset);byId.set(asset.id,asset);
         refreshCreatorAssetLists();
         const preferredSelect=role==='creature'?frontSelect:
@@ -9302,8 +9319,9 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
           preferredSelect.value=asset.id;
           preferredSelect.dispatchEvent(new Event('change',{bubbles:true}));
         }
-        report('Importé : '+asset.label+' · '+candidate.frameCount+
-          ' frame(s) — Mes assets (session temporaire).','ok');
+        report((typeof saveCreatorVisualAsset==='function'
+          ?'Sauvegardé : ':'Import temporaire : ')+asset.label+
+          ' · '+candidate.frameCount+' frame(s) — Mes assets.','ok');
         generation++;candidate=null;stopPreview();
         picker.value='';if(labelInput)labelInput.value='';
         if(frameInput){frameInput.value='1';frameInput.disabled=false;}
@@ -10995,7 +11013,7 @@ export function mountEditorCardDisclosuresV1({
   return count;
 }
 
-export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null, initialTab = "creature", initialDatabase = null }) {
+export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null, saveCreatorVisualAsset = null, initialTab = "creature", initialDatabase = null }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root doit être un élément DOM");
   }
