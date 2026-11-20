@@ -1,4 +1,6 @@
 import {appendCaptureEffectConditionFieldsV1,readCaptureEffectConditionV1} from "./capture-effect-condition-fields-v1.js";
+import {captureDecoySettingsFromDefinitionV1,captureDecoyEffectsFromEditorV1,
+  stampedeTravelMsV1,stampedeDirectDamageFromEffectsV1} from "./capture-editor-illusion-herd-v1.js";
 import {mountCaptureContextualHelpV1} from "./capture-editor-contextual-help-v1.js?v=self-periodic-prose-20261102-sylvorne-fx-size-20261111";
 import { createCaptureReferenceElementFiltersV1 } from "./capture-reference-element-filter-v1.js?v=visual-elements-20261105-sylvorne-fx-size-20261111";
 import { mountCaptureMarkerLibraryV1, captureMarkerOptionsV1, captureMarkerDefinitionV1, captureMarkerRefreshReferenceChoicesV1 } from "./capture-marker-library-v1.js?v=marker-life-drain-20261028-reference-elements-skill-id-20261104";
@@ -2738,6 +2740,8 @@ export function humanSkillEditorFieldsFromDraftV1(
     preparationMs: definition.preparationMs,
     chargedAttack: definition.chargedAttack ?? null,
     chargedEffects: definition.chargedEffects ?? null,
+    decoy: captureDecoySettingsFromDefinitionV1(definition),
+    stampede: definition.stampede ?? null,
     travelMs: definition.travelMs,
     recoveryMs: definition.recoveryMs,
     cooldownMs: definition.cooldownMs ?? 0,
@@ -2783,7 +2787,8 @@ export function humanSkillEditorFieldsFromDraftV1(
       travelPerspectiveAmount: travel?.perspectiveAmount ?? 0,
       travelFarScaleRatio: travel?.farScaleRatio ?? 1,
       travelArrivalLayer: travel?.arrivalLayer ?? "same",
-      travelTrajectoryMode: definition.projectileTargeting === "expanding_wave"
+      travelTrajectoryMode: definition.projectileTargeting === "stampede" ? "stampede" :
+        definition.projectileTargeting === "expanding_wave"
         ? "expanding_wave" : travel?.trajectoryMode ?? "linear",
       groundMotion: travel?.groundMotion ?? (travel?.trajectoryMode==="under_target"?"rise":"fixed"),
       groundOffsetXPx: travel?.groundOffsetXPx ?? 0,
@@ -2997,21 +3002,21 @@ export function buildHumanSkillDraftV1(fields) {
   const id = requiredText(fields.id, "ID capacité");
   const reaction = fields.reaction ?? {};
   const projectileClash = fields.projectileClash ?? {};
-  const usesTacticalEffects =
-    Object.prototype.hasOwnProperty.call(
-      fields,
-      "effects"
-    );
-  const tacticalEffects =
-    usesTacticalEffects
-      ? buildHumanTacticalSkillEffectsV1(
-          fields.effects ?? [],
-          {
-            defaultDamageChannel:
-              fields.element ?? null
-          }
-        )
-      : [];
+  const isStampede=fields.form==="projectile" &&
+    fields.presentation?.travelTrajectoryMode==="stampede";
+  const hasEffects=Object.prototype.hasOwnProperty.call(fields,"effects");
+  const readTacticalEffects=hasEffects
+    ? buildHumanTacticalSkillEffectsV1(fields.effects??[],
+      {defaultDamageChannel:fields.element??null}) : [];
+  const decoyTacticalEffects=fields.decoy===undefined
+    ? readTacticalEffects
+    : captureDecoyEffectsFromEditorV1(readTacticalEffects,fields.decoy,id,fields.element);
+  // Cavalcade has exactly ONE legacy damage authority, even though the
+  // human editor exposes that value through the existing damage effect row.
+  const stampedeDamage=isStampede
+    ? stampedeDirectDamageFromEffectsV1(readTacticalEffects) : null;
+  const usesTacticalEffects=hasEffects&&!isStampede;
+  const tacticalEffects=isStampede?[]:decoyTacticalEffects;
 
   return normalizeCaptureSkillEditorDraftV1({
     schema: "capture-skill-editor-draft-v1",
@@ -3036,6 +3041,8 @@ export function buildHumanSkillDraftV1(fields) {
       // other projectiles remain direct. Combat Rules reads only this definition.
       projectileTargeting:
         fields.form !== "projectile" ? "direct"
+          : fields.presentation?.travelTrajectoryMode === "stampede"
+            ? "stampede"
           : fields.presentation?.travelTrajectoryMode === "expanding_wave"
             ? "expanding_wave"
             : fields.presentation?.travelTrajectoryMode === "skyfall"
@@ -3049,6 +3056,16 @@ export function buildHumanSkillDraftV1(fields) {
               thicknessPct: finiteNumber(fields.presentation.waveThicknessPct ?? 6,"Épaisseur de l’onde")
             }}
           : {}),
+      ...(isStampede ? {stampede:{
+        passes:Number(fields.stampede?.passes),
+        passDurationMs:Number(fields.stampede?.passDurationMs),
+        gapMs:Number(fields.stampede?.gapMs),
+        cloneCount:Number(fields.stampede?.cloneCount)
+      }} : {}),
+      ...(fields.decoy?.enabled===true ? {decoyFormation:{
+        reshuffleMs:Number(fields.decoy.reshuffleMs),
+        spacingPct:Number(fields.decoy.spacingPct)
+      }} : {}),
       loadoutSlot:
         fields.loadoutSlot === "ultimate"
           ? "ultimate"
@@ -3113,7 +3130,7 @@ export function buildHumanSkillDraftV1(fields) {
         potencyIncreasePct:finiteNumber(fields.chargedEffects.potencyIncreasePct,"Puissance des effets par charge"),
         sizeIncreasePct:finiteNumber(fields.chargedEffects.sizeIncreasePct,"Taille du cast par charge")
       }}),
-      travelMs: finiteNumber(
+      travelMs: isStampede ? stampedeTravelMsV1(fields.stampede) : finiteNumber(
         fields.travelMs,
         "Temps pour atteindre la cible"
       ),
@@ -3183,13 +3200,10 @@ export function buildHumanSkillDraftV1(fields) {
         )
       },
       effect: {
-        damage:
-          usesTacticalEffects
-            ? 0
-            : finiteNumber(
-                fields.damage ?? 0,
-                "Dégâts"
-              ),
+        damage: isStampede ? stampedeDamage :
+          usesTacticalEffects ? 0 : finiteNumber(
+            fields.damage ?? 0,"Dégâts"
+          ),
         heal:
           usesTacticalEffects
             ? 0
@@ -3780,6 +3794,26 @@ function syncHumanGuidedSkillEffectPanelsV1(root, selected = null) {
   return mode;
 }
 
+function syncSkillIllusionHerdControlsV1(root){
+  const decoyEnabled=root.querySelector("[data-skill-decoy-enabled]")?.checked===true;
+  const decoy=root.querySelector("[data-skill-decoy-fields]");
+  if(decoy)decoy.hidden=!decoyEnabled;
+  const stampede=root.querySelector("[data-skill-form]")?.value==="projectile" &&
+    root.querySelector("[data-skill-trajectory-mode]")?.value==="stampede";
+  const panel=root.querySelector("[data-skill-stampede-panel]");
+  if(panel)panel.hidden=!stampede;
+  const travel=root.querySelector("[data-skill-travel-time]");
+  if(travel){
+    travel.readOnly=stampede;
+    if(stampede){
+      const count=Number(root.querySelector("[data-skill-stampede-passes]")?.value),
+        duration=Number(root.querySelector("[data-skill-stampede-pass-ms]")?.value),
+        gap=Number(root.querySelector("[data-skill-stampede-gap-ms]")?.value);
+      if(Number.isInteger(count)&&count>=2&&Number.isFinite(duration)&&duration>0&&
+          Number.isFinite(gap)&&gap>0)travel.value=String(count*duration+(count-1)*gap);
+    }
+  }
+}
 function syncSkillGroundVisualControlsV14(root) {
   const group=root.querySelector("[data-skill-ground-settings]");
   if(group)group.hidden=root.querySelector("[data-skill-trajectory-mode]")?.value!=="under_target";
@@ -3900,6 +3934,15 @@ function writeSkillDraftFields(
     ["[data-skill-travel-far-scale]", fields.presentation.travelFarScaleRatio],
     ["[data-skill-travel-arrival-layer]", fields.presentation.travelArrivalLayer],
     ["[data-skill-trajectory-mode]", fields.presentation.travelTrajectoryMode],
+    ["[data-skill-stampede-clones]",fields.stampede?.cloneCount??5],
+    ["[data-skill-stampede-passes]",fields.stampede?.passes??3],
+    ["[data-skill-stampede-pass-ms]",fields.stampede?.passDurationMs??1800],
+    ["[data-skill-stampede-gap-ms]",fields.stampede?.gapMs??600],
+    ["[data-skill-decoy-count]",fields.decoy.count],
+    ["[data-skill-decoy-duration]",fields.decoy.durationMs/1000],
+    ["[data-skill-decoy-retaliation]",fields.decoy.retaliationDamage],
+    ["[data-skill-decoy-shuffle]",fields.decoy.reshuffleMs/1000],
+    ["[data-skill-decoy-spacing]",fields.decoy.spacingPct],
     ["[data-skill-wave-start-radius]", fields.presentation.waveStartRadiusPct],
     ["[data-skill-wave-end-radius]", fields.presentation.waveEndRadiusPct],
     ["[data-skill-wave-thickness]", fields.presentation.waveThicknessPct],
@@ -4051,9 +4094,11 @@ function writeSkillDraftFields(
     fields.activationRequirements
   );
   renderHumanSkillMarkerCostV1(root,fields.markerCost);
+  one(root,"[data-skill-decoy-enabled]").checked=fields.decoy.enabled;
+  one(root,"[data-skill-decoy-source]").value=JSON.stringify(fields.decoy.templates??[]);
   renderHumanSkillEffectsV1(
     root,
-    fields.effects,
+    fields.effects.filter(effect=>!(effect.kind==="apply_status"&&effect.status?.kind==="decoy")),
     statRegistry,
     fields.presentation.statusVisuals
   );
@@ -4067,6 +4112,7 @@ function writeSkillDraftFields(
   );
   syncHumanGuidedSkillEffectPanelsV1(root);
   syncSkillGroundVisualControlsV14(root);
+  syncSkillIllusionHerdControlsV1(root);
 
   return fields;
 }
@@ -4115,6 +4161,15 @@ function prepareNewSkillDraftFields(
     ["[data-skill-travel-far-scale]", 1],
     ["[data-skill-travel-arrival-layer]", "same"],
     ["[data-skill-trajectory-mode]", "linear"],
+    ["[data-skill-stampede-clones]",5],
+    ["[data-skill-stampede-passes]",3],
+    ["[data-skill-stampede-pass-ms]",1800],
+    ["[data-skill-stampede-gap-ms]",600],
+    ["[data-skill-decoy-count]",2],
+    ["[data-skill-decoy-duration]",20],
+    ["[data-skill-decoy-retaliation]",10],
+    ["[data-skill-decoy-shuffle]",5],
+    ["[data-skill-decoy-spacing]",56],
     ["[data-skill-wave-start-radius]", 3],
     ["[data-skill-wave-end-radius]", 65],
     ["[data-skill-wave-thickness]", 6],
@@ -4214,6 +4269,9 @@ function prepareNewSkillDraftFields(
     {}
   );
   syncHumanGuidedSkillEffectPanelsV1(root,"standard");
+  one(root,"[data-skill-decoy-enabled]").checked=false;
+  one(root,"[data-skill-decoy-source]").value="[]";
+  syncSkillIllusionHerdControlsV1(root);
 
 }
 
@@ -9947,6 +10005,21 @@ function readSkillFields(root) {
         root
       ),
     markerCost:readHumanSkillMarkerCostV1(root),
+    decoy:{
+      enabled:one(root,"[data-skill-decoy-enabled]").checked,
+      count:numericValue(root,"[data-skill-decoy-count]"),
+      durationMs:Math.round(numericValue(root,"[data-skill-decoy-duration]")*1000),
+      retaliationDamage:numericValue(root,"[data-skill-decoy-retaliation]"),
+      reshuffleMs:Math.round(numericValue(root,"[data-skill-decoy-shuffle]")*1000),
+      spacingPct:numericValue(root,"[data-skill-decoy-spacing]"),
+      templates:JSON.parse(one(root,"[data-skill-decoy-source]").value||"[]")
+    },
+    stampede:{
+      passes:numericValue(root,"[data-skill-stampede-passes]"),
+      passDurationMs:numericValue(root,"[data-skill-stampede-pass-ms]"),
+      gapMs:numericValue(root,"[data-skill-stampede-gap-ms]"),
+      cloneCount:numericValue(root,"[data-skill-stampede-clones]")
+    },
     effects: readHumanSkillEffectsV1(root),
     reaction: {
       blockForms: [],
@@ -11066,7 +11139,27 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   listen(one(root,"[data-skill-approach]"),"change",()=>updateBurrowStageVisibilityV1(root));
   updateBurrowStageVisibilityV1(root);
   const beamStageLayout = mountCaptureBeamStageLayoutV1(root);
-  listen(one(root, "[data-skill-form]"), "change", () => beamStageLayout.sync());
+  listen(one(root, "[data-skill-form]"), "change", () => {
+    beamStageLayout.sync();
+    syncSkillIllusionHerdControlsV1(root);
+  });
+  listen(one(root,"[data-skill-trajectory-mode]"),"change",()=>
+    syncSkillIllusionHerdControlsV1(root));
+  listen(one(root,"[data-skill-decoy-enabled]"),"change",()=>{
+    if(one(root,"[data-skill-decoy-enabled]").checked){
+      // The native status owner requires a self-targeting buff/debuff.
+      one(root,"[data-skill-form]").value="self";
+      one(root,"[data-skill-category]").value="buff_debuff";
+      one(root,"[data-skill-approach]").value="none";
+      beamStageLayout.sync();
+    }
+    syncSkillIllusionHerdControlsV1(root);
+  });
+  for(const key of ["passes","pass-ms","gap-ms"]){
+    listen(one(root,"[data-skill-stampede-"+key+"]"),"input",()=>
+      syncSkillIllusionHerdControlsV1(root));
+  }
+  syncSkillIllusionHerdControlsV1(root);
 
   mountEditorCardDisclosuresV1({
     root,
