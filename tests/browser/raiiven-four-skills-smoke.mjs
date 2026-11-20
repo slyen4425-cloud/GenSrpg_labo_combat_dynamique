@@ -44,6 +44,7 @@ async function scenario(two){
   const node=document.createElement("div");node.className="actor";
   node.style.left=(90+index*120)+"px";node.style.top=(80+index%2*100)+"px";
   node.dataset.actor=id;
+  const shadow=document.createElement("span");shadow.className="fighter__shadow";shadow.dataset.shadowMode="soft";node.append(shadow);
   const motion=document.createElement("div");motion.dataset.demoMotion="true";
   const standing=document.createElement("img");
   standing.src="/assets/test/creatures/braisombre/runtime/braisombre_player.webp";
@@ -61,6 +62,8 @@ async function scenario(two){
   const visuals=slots.raiiven.querySelectorAll("[data-combat-decoy]");
   check(visuals.length===2,"two selectable decoys");
   check(slots.raiiven.querySelectorAll(".combat-decoy").length===3,"three identical silhouettes including real target");
+  check(slots.raiiven.querySelectorAll("[data-combat-decoy-shadow]").length===3,"three matching canonical ground shadows, including the real horse");
+  check([...slots.raiiven.querySelectorAll(".combat-decoy")].every(node=>node.style.transform==="scale(1)"),"full-size horses without small-clone scaling");
   const realBody=slots.raiiven.querySelector("[data-combat-decoy-real]");
   const beforeSlot=realBody.style.left;
   check(realBody!==null,"real horse is one of the three selectable silhouettes");
