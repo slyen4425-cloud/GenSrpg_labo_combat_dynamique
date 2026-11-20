@@ -86,7 +86,8 @@ test('native editor opts in to IndexedDB; saved images are hydrated before nativ
  const session=await readFile(new URL('../../src/assets/creator-visual-asset-session-v1.js',import.meta.url),'utf8');
  assert.equal((entry.match(/createCaptureCreatorSpriteStoreV1\(\)/g)??[]).length,1);
  assert.match(entry,/creatorSpriteStore\.list\(creatorSpriteScopeId\)/);
- assert.match(ui,/if\(creatorSpritesReady\)await creatorSpritesReady/);
+ assert.match(ui,/void creatorSpritesReady\.then\(\(\)=>/);
+ assert.doesNotMatch(ui,/if\(creatorSpritesReady\)await creatorSpritesReady/);
  assert.match(entry,/creatorVisualAssets\.restoreImage\(\{/);
  assert.match(entry,/creatorSpriteScopeId=universeId\?\?'capture-local-preview'/);
  assert.match(entry,/saveCreatorVisualAsset:async\(/);
