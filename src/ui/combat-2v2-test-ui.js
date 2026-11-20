@@ -1,4 +1,6 @@
 import {resolveCaptureCombatBattleOutcomeV1} from "./capture-combat-battle-outcome-v1.js";
+import {createDomDecoyOverlayV1} from "../adapters/renderer/dom-decoy-overlay-v1.js";
+import {activeDecoyForV1} from "../core/combat/decoy-hit-v1.js";
 import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-overlay-v1.js?v=wall-spatial-20261031-wall-state-20261031-wall-geometry-20261031-wall-placement-ux-20261101-wall-layer-scale-xy-20261101-wall-bestiary-hp-20261102-author-three-wall-side-hp-20261103-wall-channel-loop-audio-20261103-wall-trajectory-phone-pc-20261103-wall-opponent-channel-safe-20261103-barrier-dual-view-20261105-barrier-side-layout-20261105";
 import { captureReactionRechargeClockV1 } from "./capture-reaction-recharge-clock-v1.js";
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
@@ -771,6 +773,12 @@ export async function mountCoop2v2Test({
     ])
   );
 
+  const decoyOverlay=createDomDecoyOverlayV1({
+    fighterContainers,
+    appearanceFor:actorId=>visuals.getMovementAppearanceFor?.(actorId)??null,
+    onChoose:({actorId,decoyId})=>selectDecoy(actorId,decoyId)
+  });
+
   const hpRefs = Object.fromEntries(
     format.actors.map((actor) => [
       actor.actorId,
@@ -825,6 +833,7 @@ export async function mountCoop2v2Test({
   const targetPulseTimers = new Map();
   let disposed = false;
   let selectedTargetId = previewFormat.initialTargetId;
+  let selectedDecoyId = null;
   let pendingSkillId = null;
   // Only the selected reserve reference lives in UI; CombatRuntime owns the
   // entire clock/reactions, and RosterSession owns all applied bench effects.
@@ -1153,6 +1162,7 @@ export async function mountCoop2v2Test({
   }
 
   function renderTargetSelection() {
+    if(selectedDecoyId && !activeDecoyForV1(session.snapshot(),selectedTargetId,selectedDecoyId)) selectedDecoyId=null;
     const armedSkill = pendingSkillId === null
       ? null : skillRefs.get(pendingSkillId)?.skill ?? null;
     const candidates = armedSkill
@@ -1178,6 +1188,7 @@ export async function mountCoop2v2Test({
   }
 
   function renderState(state = session.snapshot()) {
+    decoyOverlay.render(state);
     statusFx?.sync(state);
     combatEntityOverlay.render(state);
     for (const actor of format.actors) {
@@ -1430,6 +1441,26 @@ export async function mountCoop2v2Test({
     renderTargetSelection();
   }
 
+  function selectDecoy(actorId,decoyId) {
+    if(!isAlive(actorId) || !activeDecoyForV1(session.snapshot(),actorId,decoyId))return;
+    const armedSkill=pendingSkillId===null?null:skillRefs.get(pendingSkillId)?.skill??null;
+    selectedTargetId=actorId;
+    selectedDecoyId=decoyId;
+    if(!armedSkill){
+      setStatus("Leurre spectral sélectionné. Choisis une attaque ciblée pour essayer de le frapper.","accent");
+      renderTargetSelection();
+      return;
+    }
+    const preview=session.previewSkill({actorId:controlledActorId(),targetId:actorId,
+      skill:armedSkill,decoyId});
+    if(!preview.ok){
+      setStatus("Ce leurre ne peut pas recevoir "+armedSkill.name+" : "+preview.outcome+".","warn");
+      return;
+    }
+    activateLocalSkill(armedSkill,actorId,decoyId);
+    renderTargetSelection();
+  }
+
   function selectTarget(actorId) {
     if (!actorMeta(actorId) || !isAlive(actorId)) {
       return;
@@ -1452,6 +1483,7 @@ export async function mountCoop2v2Test({
     }
 
     selectedTargetId = actorId;
+    selectedDecoyId = null;
     const relation = targetRelation({
       format,
       actorId: controlledActorId(),
@@ -1589,7 +1621,7 @@ export async function mountCoop2v2Test({
     return true;
   }
 
-  function activateLocalSkill(skill, targetId) {
+  function activateLocalSkill(skill, targetId, decoyId = null) {
     const allowed = isSkillTargetAllowed({
       format, actorId: controlledActorId(), targetId, skill
     });
@@ -1599,7 +1631,7 @@ export async function mountCoop2v2Test({
       return;
     }
     const result = runtime.startSkill({
-      actorId: controlledActorId(), targetId, skill
+      actorId: controlledActorId(), targetId, skill, decoyId
     });
     if (!result.ok) {
       setStatus(result.outcome === "insufficient_energy"
@@ -1609,8 +1641,9 @@ export async function mountCoop2v2Test({
       return;
     }
     pendingSkillId = null;
+    selectedDecoyId = null;
     const target = actorMeta(targetId);
-    setStatus(skill.name + " se prépare sur " + target.displayName + ".", "accent");
+    setStatus(skill.name + (decoyId ? " vise le leurre de " : " se prépare sur ") + target.displayName + ".", "accent");
     renderAvailability();
   }
 
@@ -1719,7 +1752,9 @@ export async function mountCoop2v2Test({
         return;
       }
       pendingSkillId = null;
-      activateLocalSkill(skill, resolvedTargetId);
+      const decoy=selectedTargetId===resolvedTargetId && skill.category==="offensive" &&
+        ["contact","projectile","beam"].includes(skill.form) ? selectedDecoyId : null;
+      activateLocalSkill(skill, resolvedTargetId, decoy);
     };
     button.addEventListener("click", onClick);
 
@@ -1995,7 +2030,11 @@ export async function mountCoop2v2Test({
       const actor = actorMeta(resolution.actorId);
       const target = actorMeta(resolution.targetId);
       const healEvents = resolution.events?.filter(event => event.type === "heal") ?? [];
-      if (resolution.outcome === "hit" && healEvents.length > 0) {
+      if(resolution.outcome==="decoy"){
+        const retaliation=resolution.events?.find(event=>event.decoyRetaliation===true);
+        setStatus("Leurre détruit ! " +(actor?.displayName??resolution.actorId)+
+          " subit " +(retaliation?.appliedDamage??0)+" dégâts Ombre.","accent");
+      } else if (resolution.outcome === "hit" && healEvents.length > 0) {
         const totalHealed = healEvents.reduce(
           (sum, event) => sum + Math.max(0, Number(event.applied) || 0), 0
         );
@@ -2160,6 +2199,7 @@ export async function mountCoop2v2Test({
       for (const refs of skillRefs.values()) refs.dispose();
       skillRefs.clear();
       clearTargetPulses();
+      decoyOverlay.dispose();
       for (const cleanup of cleanups.splice(0)) {
         cleanup();
       }
