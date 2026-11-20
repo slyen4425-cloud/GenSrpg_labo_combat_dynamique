@@ -1,3 +1,15 @@
+## 2026-11-20 — REPRISE BUG VISUEL auteur : Dédale ≠ Cavalcade (lot isolé)
+
+- Point de départ : `main@028b7973e8f961311b778907079e93cbc50b465e`; checkpoint `checkpoint/lab-start-raiiven-visual-separation-20261120`; tampon `work/lab-raiiven-visual-separation-20261120`. Ne pas retoucher les autres compétences ou assets.
+- Défaut Dédale confirmé par l'auteur : original toujours présent + **trois corps supplémentaires** = 4 ; clones sous-dimensionnés ; la taille doit être **réglable dans l'éditeur de compétences** existant.
+- Correctif Dédale : maintenir **un seul modèle réel**, rendu par l'Animation Core existant, et exactement **N** copies du modèle de repos, jamais ajouter une seconde projection visible du vrai ; conserver l'ombre native sous le vrai et N ombres seulement sous les copies. Déplacement de la vraie silhouette dans les places aléatoires, ciblage du leurre via status actuel, copie de la transformation native et contrôle `scale` (100 % par défaut ; plage éditable), sans changer Combat Rules.
+- Défaut Cavalcade confirmé : clones avec grandes ombres artificielles et véritable Raiiven toujours immobile malgré un fantôme « caster » dans le groupe. Correctif : supprimer les ombres ajoutées, **faire réellement traverser l'arène au modèle de base** via son `sourceMotion` officiel, jouer l'atlas officiel de déplacement sur le même corps ; dans le groupe seul N−1 copies visuelles et aucun double physique du vrai. Restaurer image/position/ombre à la fin ou annulation.
+- Propriétaires : `src/adapters/renderer/dom-decoy-overlay-v1.js`, `dom-stampede-fx-v1.js`, `demo.css`, `src/contracts/skill-definition.js`, `src/ui/capture-editor-illusion-herd-v1.js`, `capture-editor-human-v2.js`, `examples/dom-demo/capture-editor-v2.html` ; tests unitaires, intégration et vrai Chromium.
+- Garde-fous : pas de changement moteur combat, PWA, Exploration, atelier d'animation, médias, refactor général de l'éditeur ou duplication d'assets ; conservation durée/dégâts/vagues des compétences existantes.
+- Conditions de sortie : tests RED reproduisant 4 chevaux / double caster / ombres ultime, correction + CI complète sur SHA exact, publication unique sur `main` et SHA Pages, test auteur avant transfert PWA. **NON GREEN jusqu'à inspection visuelle et accord utilisateur**.
+
+---
+
 ## 2026-11-20 — Raiiven, leurres loyaux et charge réelle + paramètres dans l'éditeur
 
 - START : `main@1042d8583c081fabfc79323947b1a8085ac5bbc1`, checkpoint `checkpoint/lab-start-raiiven-decoy-herd-editor-20261120` ; branche temporaire `work/lab-raiiven-decoy-herd-editor-20261120`.
