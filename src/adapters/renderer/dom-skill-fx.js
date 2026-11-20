@@ -1,3 +1,4 @@
+import {playDomStampedeFxV1} from "./dom-stampede-fx-v1.js";
 import {sweptSegmentRectContactV1,nearestBarrierSegmentContactV1,barrierContactAllowedForTrajectoryV1} from "../../core/combat/combat-barrier-spatial-v1.js";
 import { sweptPointHitsOpaqueMask, sweptPointHitsSpriteEllipseV1, visibleModelOpaqueAimPoint, sweptExpandingWaveHitsOpaqueMaskV1, sweptExpandingWaveMeetsProjectileV1 } from "./dom-visible-model-contact.js?v=wall-ground-stop-20261101";
 
@@ -386,6 +387,7 @@ export function createDomSkillFxRenderer({
   targetCollisionModelFor = null,
   barrierCollisionRectsFor = null,
   waveTargetsFor = null,
+  sourceSpriteFor = null,
   playCameraFx = null
 }) {
   if (!arena || typeof arena.append !== "function" || !arena.ownerDocument) {
@@ -447,6 +449,8 @@ export function createDomSkillFxRenderer({
     );
   }
 
+  if (sourceSpriteFor !== null && typeof sourceSpriteFor !== "function")
+    throw new TypeError("sourceSpriteFor must be function");
   let disposed = false;
   const active = new Set();
   const persistentZones = new Map();
@@ -2203,6 +2207,7 @@ export function createDomSkillFxRenderer({
     amount = null,
     label = null,
     expandingWave = null,
+    stampede = null,
     projectilePower = 0,
     sizeMultiplier = 1,
     holdUntilCancelled = false,
@@ -2760,6 +2765,24 @@ export function createDomSkillFxRenderer({
       });
     }
 
+
+    if (type === "projectile" && stampede !== null) {
+      // One native action, several visible passes: Renderer only reports
+      // real masked collisions to Combat Runtime, never HP or dodge results.
+      const sprites=sourceSpriteFor?.(fromSlot)??null;
+      const pass=playDomStampedeFxV1({arena,fromSlot,targetSlot,stampede,
+        sourceVisual:sprites,sourceRect:slot=>sourceRect(slot),
+        targetRect:slot=>anchor(targetAnchors,slot,"target").getBoundingClientRect(),
+        targetSlots:waveTargetsFor?.(fromSlot,targetSlot)??[],
+        targetCollisionModelFor,onContact:contact=>onProjectileContact?.(contact),
+        animate,requestFrame,cancelFrame,applySpriteVisual});
+      const record={node:pass.node,animation:pass.animation,frameAnimation:pass.frameAnimation,
+        type:"projectile",skillId,fromSlot,targetSlot,contactFrameId:null,
+        expandingWave:null,stampede,contactReported:false};
+      active.add(record);
+      void Promise.resolve(pass.finished).finally(()=>cleanup(record)).catch(()=>{});
+      return Object.freeze({status:"running",animation:pass.animation,finished:pass.finished});
+    }
 
     if (type === "projectile" && expandingWave !== null) {
       // The animated shell and its expanding annular hit sensor are the
