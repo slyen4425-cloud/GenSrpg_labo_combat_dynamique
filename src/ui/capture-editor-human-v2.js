@@ -9058,7 +9058,7 @@ async function hydrateNativeSkillCatalog() {
   );
 }
 
-async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
+async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null, creatorSpritesReady = null) {
   const response = await fetch(
     GLOBAL_VISUAL_LIBRARY.catalogUrl,
     { cache: "no-store" }
@@ -9073,9 +9073,19 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
   }
 
   const catalog = await response.json();
+  // Restore the personal asset BLOBS through the one existing runtime session
+  // BEFORE populating the official select menus. This is not a second catalog.
+  if(creatorSpritesReady)await creatorSpritesReady;
   const assets = Array.isArray(catalog.assets)
     ? [...catalog.assets]
     : [];
+  const officialIds=new Set(assets.map(asset=>asset.id));
+  for(const personal of creatorVisualAssets?.list?.()??[]){
+    if(officialIds.has(personal.id))
+      throw new Error('Un sprite personnel entre en conflit avec un ID officiel. Aucune source remplacée.');
+    officialIds.add(personal.id);
+    assets.push(personal);
+  }
   catalog.assets = assets;
 
   const byId = new Map(
@@ -11013,7 +11023,7 @@ export function mountEditorCardDisclosuresV1({
   return count;
 }
 
-export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null, saveCreatorVisualAsset = null, initialTab = "creature", initialDatabase = null }) {
+export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null, creatorSpritesReady = null, saveCreatorVisualAsset = null, initialTab = "creature", initialDatabase = null }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root doit être un élément DOM");
   }
@@ -14539,7 +14549,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   const ready =
     settleCaptureEditorStartupDependenciesV1({
       assetCatalogPromise:
-        hydrateAssetCatalog(root, listen, creatorVisualAssets),
+        hydrateAssetCatalog(root, listen, creatorVisualAssets, creatorSpritesReady),
       privateAudioCatalogPromise:
         hydratePrivateAudioCatalog(
           root,
