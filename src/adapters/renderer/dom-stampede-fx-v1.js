@@ -80,7 +80,7 @@ export function playDomStampedeFxV1({
   const spriteSource=officialMovement??officialAttack;
   group.dataset.stampedePose=officialMovement?"movement":officialAttack?"attack-fallback":"missing";
   const sourceShadow=sourceFighter?.querySelector?.(".fighter__shadow")??null;
-  const previous={
+  const previousSource={
     translate:sourceMotion?.style?.translate??"",
     opacity:sourceMotion?.style?.opacity??"",
     shadowOpacity:sourceShadow?.style?.opacity??"",
@@ -259,12 +259,12 @@ export function playDomStampedeFxV1({
     casterLayer?.remove?.();
     group.remove?.();
     if(nativeCaster){
-      nativeCaster.style.translate=previous.translate;
-      nativeCaster.style.opacity=previous.opacity;
-      if(previous.casterActive===null)delete nativeCaster.dataset.stampedeCasterActive;
-      else nativeCaster.dataset.stampedeCasterActive=previous.casterActive;
+      nativeCaster.style.translate=previousSource.translate;
+      nativeCaster.style.opacity=previousSource.opacity;
+      if(previousSource.casterActive===null)delete nativeCaster.dataset.stampedeCasterActive;
+      else nativeCaster.dataset.stampedeCasterActive=previousSource.casterActive;
     }
-    if(sourceShadow?.style)sourceShadow.style.opacity=previous.shadowOpacity;
+    if(sourceShadow?.style)sourceShadow.style.opacity=previousSource.shadowOpacity;
   }
   const finished=Promise.resolve(animation.finished).then(
     ()=>{stop();return {status:"arrived"};},
