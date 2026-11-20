@@ -265,8 +265,14 @@ summary {
 .fighter[data-combat-decoy-illusion-active="true"] .status-fx {
   visibility: hidden;
 }
-.fighter[data-combat-decoy-illusion-active="true"] .combat-decoy__shadow {
-  visibility: visible;
+/* Cavalcade lives on the real actor motion element, not a projected
+   'caster' horse. Native resting/attack layers are presentation-hidden only
+   while its canonical movement atlas is actively displayed. */
+.fighter__motion[data-stampede-caster-active="true"] > :not(.skill-fx--stampede-caster) {
+  visibility: hidden !important;
+}
+.fighter__motion[data-stampede-caster-active="true"] {
+  opacity: 1 !important;
 }
 
 .fighter__motion {

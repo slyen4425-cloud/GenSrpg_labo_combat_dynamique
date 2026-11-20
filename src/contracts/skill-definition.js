@@ -659,16 +659,17 @@ export function normalizeSkillDefinition(input) {
   if(input.decoyFormation!=null){
     const v=input.decoyFormation;
     if(!v||typeof v!=="object"||Array.isArray(v)||
-        Object.keys(v).some(key=>!["reshuffleMs","spacingPct"].includes(key)))
-      throw new TypeError("decoyFormation accepts only reshuffleMs and spacingPct");
+        Object.keys(v).some(key=>!["reshuffleMs","spacingPct","scale"].includes(key)))
+      throw new TypeError("decoyFormation accepts only reshuffleMs, spacingPct and scale");
     const count=effects.filter(effect=>effect.kind==="apply_status"&&effect.status?.kind==="decoy").length;
     if(form!=="self"||count<1||count>6)
       throw new RangeError("decoyFormation requires 1..6 native self-decoy statuses on a self skill");
-    const reshuffleMs=Number(v.reshuffleMs),spacingPct=Number(v.spacingPct);
+    const reshuffleMs=Number(v.reshuffleMs),spacingPct=Number(v.spacingPct),scale=Number(v.scale??1);
     if(!Number.isInteger(reshuffleMs)||reshuffleMs<250||reshuffleMs>20000||
-       !Number.isFinite(spacingPct)||spacingPct<15||spacingPct>150)
-      throw new RangeError("decoyFormation reshuffleMs 250..20000 and spacingPct 15..150 required");
-    decoyFormation=Object.freeze({reshuffleMs,spacingPct});
+       !Number.isFinite(spacingPct)||spacingPct<15||spacingPct>150||
+       !Number.isFinite(scale)||scale<0.5||scale>2)
+      throw new RangeError("decoyFormation reshuffleMs 250..20000, spacingPct 15..150, scale 0.5..2 required");
+    decoyFormation=Object.freeze({reshuffleMs,spacingPct,scale});
   }
 
   if (stampede && (normalizedLegacyEffect.damage <= 0 || normalizedLegacyEffect.heal > 0 || effects.length > 0))
