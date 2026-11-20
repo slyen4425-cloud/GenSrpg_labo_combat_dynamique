@@ -30,7 +30,16 @@ function formationOffsetPct(anchor,config,total=3){
   const outer=arena?.getBoundingClientRect?.();
   const own=anchor.getBoundingClientRect?.();
   if(!outer||!own||!own.width||!outer.width)return 0;
-  const halfExtent=own.width*((total-1)/2*config.spacingPct/100+config.scale/2);
+  // Formation movement uses fighter-slot percentages but the pixels may be
+  // much wider after authored creature scaling (especially player/back).
+  // Measure the *rendered native model*, not only the unscaled slot, when
+  // clamping the leftmost and rightmost clone to the visible arena.
+  const visual=anchor.querySelector?.("[data-demo-image]")??
+    anchor.querySelector?.("[data-demo-motion]")??null;
+  const visualWidth=Number(visual?.getBoundingClientRect?.()?.width);
+  const footprint=Number.isFinite(visualWidth)&&visualWidth>0?visualWidth:own.width;
+  const halfExtent=own.width*((total-1)/2*config.spacingPct/100)+
+    footprint*config.scale/2;
   const left=outer.left+config.edgePaddingPx+halfExtent;
   const right=outer.right-config.edgePaddingPx-halfExtent;
   const center=own.left+own.width/2;
