@@ -98,10 +98,10 @@ window.addEventListener('DOMContentLoaded',()=>{
   const travel=document.querySelector('[data-asset-role="travel"]');
   await until(()=>[...travel.options].some(opt=>opt.value.startsWith('user:')),'personal projectile in shared skill selector');
   assert(travel.value.startsWith('user:'),'user skill projectile not selected');
-  assert(c.querySelector('[data-creator-visual-state]').textContent.startsWith('Sauvegardé'),
-   'creature sprite must be committed in IndexedDB before selected');
-  assert(skill.querySelector('[data-creator-visual-state]').textContent.startsWith('Sauvegardé'),
-   'skill sprite must be committed in IndexedDB before selected');
+  await until(()=>c.querySelector('[data-creator-visual-state]').textContent.startsWith('Sauvegardé'),
+   'creature sprite committed in IndexedDB');
+  await until(()=>skill.querySelector('[data-creator-visual-state]').textContent.startsWith('Sauvegardé'),
+   'skill sprite committed in IndexedDB');
   sessionStorage.setItem('creator-bulk-reload-ids',JSON.stringify({
     movement:mov.value,travel:travel.value
   }));
