@@ -1,3 +1,11 @@
+## 2026-11-20 — Chantier #351 : ergonomie HUD PC / Esquive (1v1, 2v2)
+- START : `main@1ec3174f6c2106f5b1ff35676fbe3fd0c9c2c8ea`, checkpoint `checkpoint/lab-start-combat-pc-hud-20261120` ; branche exceptionnelle de validation `work/lab-combat-pc-hud-20261120` (aucune autre source officielle).
+- Cause : CSS PC `.coop-command-stack` passe à `min(23rem, 41%)` en 1v1 tandis qu'Esquive garde `min(15rem, 35%)`. En 2v2, les sélecteurs spécifiques maintiennent `min(19rem, 34%)`. L'ancrage Esquive n'utilisait pas la même dimension que son dock ; le conflit PC masque le premier slot.
+- RED de départ : test `tests/unit/capture-combat-pc-hud-geometry-20261120.test.mjs`, commit `a597418f450a00406ff376bea5a6f0228533d385`; la largeur PC partagée est absente du CSS d'origine.
+- Périmètre : uniquement `examples/dom-demo/capture-editor-v2.css`, sentinelle UI, vrai test Chromium sur le template Combat natif, CI et documentation. Géométrie PC fine-pointer : variable unique par format 1v1/2v2 pour largeur dock + Esquive. Règles Android/paysage inchangées, 5 slots et clic/souris testés. Réduction PC légère du dock et contrôles ; aucun contrat/mécanique/audio/FX/asset/sauvegarde touché.
+- Preuves : script `tests/browser/capture-combat-pc-hud-geometry-smoke.mjs`, comparaison CSS immuable START vs patch, 1366×768, 1648×927, 1920×1080, large, dimensions équivalentes zoom ; parité 915×412/800×360 ; screenshots avant/après archivés par la CI `combat-pc-hud-browser`.
+- Statut : **EN VALIDATION / NON GREEN** tant que jobs CI du SHA exact, revue captures, combat réel/resize/fullscreen 1v1 et 2v2, et preuve HTTPS sur main ne sont pas vérifiés. **Aucune synchronisation GenSRPG/PWA.**
+
 ## 2026-11-20 — Raiiven : ultime Cavalcade des damnés (triple passage)
 - START `main@88b6b19823bce7659b1ffbf0d32414e6053a9d64` ; checkpoint `checkpoint/lab-start-raiiven-stampede-20261120` ; branche temporaire `work/lab-raiiven-stampede-20261120`. Retour exclusif sur `main` après CI ; aucune fusion PWA.
 - Contrat auteur : ultime niveau 20, 3 charges de 40 dégâts (avant modificateurs du moteur), peut toucher les DEUX ennemis actifs en 2v2 à chaque charge ; esquive séparée par cible/passage ; si KO puis remplacement, les passages restants poursuivent l'attaque sur le nouveau membre ; un coût d'activation, 10 énergie, 1 usage/combat après 30 secondes.
