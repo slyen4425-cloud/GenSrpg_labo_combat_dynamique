@@ -21,7 +21,7 @@ export const SKILL_LOADOUT_SLOTS = Object.freeze([
   "ultimate"
 ]);
 
-export const SKILL_PROJECTILE_TARGETINGS = Object.freeze(["direct", "fixed_point", "expanding_wave"]);
+export const SKILL_PROJECTILE_TARGETINGS = Object.freeze(["direct", "fixed_point", "expanding_wave", "stampede"]);
 
 export const SKILL_FORMS = Object.freeze([
   "contact",
@@ -341,6 +341,34 @@ export function normalizeSkillDefinition(input) {
     throw new RangeError("expandingWave requires 1..60% start, larger end up to 150%, and 0.5..end% thickness");
   }
 
+  // Generic serial charge: every pass owns its real collision, never each rendered clone.
+  let stampede = null;
+  if (projectileTargeting === "stampede") {
+    if (form !== "projectile" || category !== "offensive" || input.expandingWave != null)
+      throw new RangeError("stampede requires an offensive projectile, no expanding wave");
+    const v = input.stampede;
+    if (!v || typeof v !== "object" || Array.isArray(v))
+      throw new TypeError("stampede configuration required");
+    for (const key of Object.keys(v))
+      if (!["passes", "passDurationMs", "gapMs", "cloneCount"].includes(key))
+        throw new TypeError("stampede unknown field: " + key);
+    const passes = Number(v.passes);
+    const passDurationMs = Number(v.passDurationMs);
+    const gapMs = Number(v.gapMs);
+    const cloneCount = Number(v.cloneCount);
+    if (!Number.isInteger(passes) || passes < 2 || passes > 6 ||
+        !Number.isInteger(passDurationMs) || passDurationMs < 250 || passDurationMs > 5000 ||
+        !Number.isInteger(gapMs) || gapMs < 100 || gapMs > 6000 ||
+        !Number.isInteger(cloneCount) || cloneCount < 2 || cloneCount > 10)
+      throw new RangeError("stampede passes 2..6, passMs 250..5000, gapMs 100..6000, clones 2..10");
+    const total = passes * passDurationMs + (passes - 1) * gapMs;
+    if (Number(input.travelMs) !== total)
+      throw new RangeError("stampede travelMs must equal the complete 3-pass timeline");
+    stampede = Object.freeze({ passes, passDurationMs, gapMs, cloneCount });
+  } else if (input.stampede != null) {
+    throw new RangeError("stampede field requires stampede projectile targeting");
+  }
+
   const element = input.element == null
     ? null
     : nonEmptyString(input.element, "element");
@@ -596,6 +624,9 @@ export function normalizeSkillDefinition(input) {
     throw new RangeError("chargedAttack must be the only direct damage authority");
   }
 
+  if (stampede && (normalizedLegacyEffect.damage <= 0 || normalizedLegacyEffect.heal > 0 || effects.length > 0))
+    throw new RangeError("stampede requires one positive direct-damage authority and no parallel tactical effects");
+
   if(channeling && (normalizedLegacyEffect.damage>0||normalizedLegacyEffect.heal>0||
      normalizedLegacyEffect.stunMs>0||normalizedLegacyEffect.interruptsPreparation||effects.length>0))
     throw new RangeError("channeling uses one pulse-only effect authority, not initial damage/effects");
@@ -609,6 +640,7 @@ export function normalizeSkillDefinition(input) {
     ...(chargedAttack ? {chargedAttack} : {}),
     ...(chargedEffects ? {chargedEffects} : {}),
     ...(projectileTargeting === "expanding_wave" ? { expandingWave: Object.freeze({startRadiusPct,endRadiusPct,thicknessPct}) } : {}),
+    ...(stampede ? { stampede } : {}),
     loadoutSlot,
     element,
     approachMode,
