@@ -1824,7 +1824,7 @@ export async function mountCoop2v2Test({
         return;
       }
       pendingSkillId = null;
-      const decoy=selectedTargetId===resolvedTargetId && skill.category==="offensive" &&
+      const decoy=selectedTargetId===resolvedTargetId && skill.targetRelations?.includes("enemy") &&
         ["contact","projectile","beam"].includes(skill.form) ? selectedDecoyId : null;
       activateLocalSkill(skill, resolvedTargetId, decoy);
     };
