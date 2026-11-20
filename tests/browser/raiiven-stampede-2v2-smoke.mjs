@@ -96,15 +96,15 @@ async function scenario(source){
    sourceSpriteFor(slot){return {
      attack:{
        url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",
-       frameCount:5,playbackMode:"loop",assetId:"test:raiiven-standard-attack-5f",
-       displayScale:slot==="player"?1.1:0.85,
-       offsetX:slot==="player"?9:-4,
-       offsetY:slot==="player"?-20:18
+       frameCount:5,playbackMode:"loop",assetId:"test:raiiven-attack-must-not-be-used",
+       displayScale:1.8,offsetX:80,offsetY:-90
      },
      movement:{
        url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",
-       frameCount:7,assetId:"test:raiiven-movement-must-not-be-used",
-       displayScale:1.8,offsetX:80,offsetY:-90
+       frameCount:slot==="player"?7:6,assetId:"test:raiiven-standard-movement",
+       displayScale:slot==="player"?1.1:0.85,
+       offsetX:slot==="player"?9:-4,
+       offsetY:slot==="player"?-20:18
      }
    };},
    sourceMotionFor:slot=>sourceMotions[slot],
@@ -141,22 +141,22 @@ async function scenario(source){
     "native fighter owns moving official atlas");
   check(releaseShell.querySelectorAll("[data-stampede-horse-shadow]").length===0,
     "no huge copied Cavalcade shadows");
-  check(releaseShell.dataset.stampedePose==="standard-attack","same canonical attack atlas as ordinary combat");
+  check(releaseShell.dataset.stampedePose==="standard-movement","same canonical movement atlas as ordinary combat");
    // Native combat Movement Visual and stampede must share identical pose.
    await new Promise(resolve=>setTimeout(resolve,160));
    const realPose=sourceMotions[source].querySelector(".skill-fx--stampede-caster-sprite")?.style.transform;
    const expectedPose=source==="player"
      ? "translate(9px, -20px) scale(1.1)"
      : "translate(-4px, 18px) scale(0.85)";
-   check(realPose===expectedPose,"real caster official ATTACK pose "+realPose);
+   check(realPose===expectedPose,"real caster official MOVEMENT pose "+realPose);
    check(sourceMotions[source].querySelector(".skill-fx--stampede-caster-sprite")?.dataset.assetId
-     ==="test:raiiven-standard-attack-5f","attack uses 5-frame authored atlas, not 7-frame movement");
+     ==="test:raiiven-standard-movement","gallop uses authored 7/6-frame movement atlas, never attack");
    const originalShadow=anchors[source].querySelector("[data-demo-shadow]");
    check(originalShadow.style.translate===sourceMotions[source].style.translate &&
      originalShadow.style.translate!=="","native shadow follows the true horse rather than remaining at origin");
    check(originalShadow.style.visibility==="visible","native shadow visible under the real caster during the pass");
    check([...releaseShell.querySelectorAll(".skill-fx--stampede-ghost")].every(ghost=>ghost.style.transform==="none"),
-     "copies keep the source attack orientation; no automatic horizontal flip");
+     "copies keep the source movement orientation; no automatic horizontal flip");
    check([...releaseShell.querySelectorAll(".skill-fx--stampede-attack-pose")]
      .every(ghost=>ghost.style.transform===realPose),
      "every horse uses the same official FACE/DOS scale and XY offset as the standard creature animation");
