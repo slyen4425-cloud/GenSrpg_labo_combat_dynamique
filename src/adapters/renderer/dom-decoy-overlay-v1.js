@@ -166,8 +166,8 @@ export function createDomDecoyOverlayV1({
         image.className=realImage.className||"fighter__image";
         if(image.id)image.removeAttribute?.("id");
         image.removeAttribute?.("data-demo-image");
-        image.style.opacity="1";
-        image.style.visibility="visible";
+        // Preserve the same native status-opacity/visibility as the real
+        // model: overriding either makes a decoy visually identifiable.
         image.dataset.decoyPose="standing";
         image.style.width="100%";
         image.style.height="100%";
@@ -182,6 +182,9 @@ export function createDomDecoyOverlayV1({
       if(shadow?.cloneNode){
         copy=shadow.cloneNode(true);
         if(copy.id)copy.removeAttribute?.("id");
+        // The copy is presentation-only; the canonical shadow controller
+        // must still find only the one original [data-demo-shadow] owner.
+        copy.removeAttribute?.("data-demo-shadow");
         copy.dataset.combatDecoyShadow="true";
         copy.style.opacity=shadow.style.opacity||"1";
         copy.style.pointerEvents="none";
