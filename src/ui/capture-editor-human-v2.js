@@ -9058,7 +9058,7 @@ async function hydrateNativeSkillCatalog() {
   );
 }
 
-async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
+async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null, creatorSpritesReady = null, saveCreatorVisualAsset = null) {
   const response = await fetch(
     GLOBAL_VISUAL_LIBRARY.catalogUrl,
     { cache: "no-store" }
@@ -9073,9 +9073,18 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
   }
 
   const catalog = await response.json();
+  // Never block Capture startup on browser storage; restored files are
+  // appended to the SAME canonical visual catalog when IndexedDB settles.
   const assets = Array.isArray(catalog.assets)
     ? [...catalog.assets]
     : [];
+  const officialIds=new Set(assets.map(asset=>asset.id));
+  for(const personal of creatorVisualAssets?.list?.()??[]){
+    if(officialIds.has(personal.id))
+      throw new Error('Un sprite personnel entre en conflit avec un ID officiel. Aucune source remplacée.');
+    officialIds.add(personal.id);
+    assets.push(personal);
+  }
   catalog.assets = assets;
 
   const byId = new Map(
@@ -9282,7 +9291,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
       }else if(candidate&&previewBitmap&&!animationFrame)animate(performance.now());
     });
 
-    listen(button,'click',()=>{
+    listen(button,'click',async()=>{
       if(!candidate||button.disabled)return;
       try{
         const role=rolePicker.value;
@@ -9294,6 +9303,23 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
         const asset = creatorVisualAssets.importImage({
           file:candidate.file,label,role,frameCount:candidate.frameCount,frameMs
         });
+        // The new user asset is NOT published to selectors until the same
+        // validated Blob has completed its canonical IndexedDB transaction.
+        // On quota/permission failure rollback only this transient session ID.
+        if(typeof saveCreatorVisualAsset==='function'){
+          button.disabled=true;
+          report('Enregistrement local et vérification du sprite…');
+          try{
+            await saveCreatorVisualAsset({
+              asset,file:candidate.file,label,role,
+              frameCount:candidate.frameCount,frameMs
+            });
+          }catch(error){
+            creatorVisualAssets.discardSessionImage?.(asset.id);
+            button.disabled=false;
+            throw new Error('Sprite non enregistré : '+(error?.message??String(error)));
+          }
+        }
         assets.push(asset);byId.set(asset.id,asset);
         refreshCreatorAssetLists();
         const preferredSelect=role==='creature'?frontSelect:
@@ -9302,8 +9328,9 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
           preferredSelect.value=asset.id;
           preferredSelect.dispatchEvent(new Event('change',{bubbles:true}));
         }
-        report('Importé : '+asset.label+' · '+candidate.frameCount+
-          ' frame(s) — Mes assets (session temporaire).','ok');
+        report((typeof saveCreatorVisualAsset==='function'
+          ?'Sauvegardé : ':'Import temporaire : ')+asset.label+
+          ' · '+candidate.frameCount+' frame(s) — Mes assets.','ok');
         generation++;candidate=null;stopPreview();
         picker.value='';if(labelInput)labelInput.value='';
         if(frameInput){frameInput.value='1';frameInput.disabled=false;}
@@ -9371,6 +9398,33 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
     syncScalePreview
   );
   syncScalePreview();
+
+  // Optional personal media loads AFTER the official editor can start, even
+  // when IndexedDB is blocked, slow or unusable on a private/mobile browser.
+  // Only refresh this existing catalog; no global listener, polling or
+  // duplicate AssetDefinition store. Existing selected IDs are preserved.
+  if(creatorSpritesReady){
+    void creatorSpritesReady.then(()=>{
+      if(!root.isConnected)return;
+      for(const personal of creatorVisualAssets?.list?.()??[]){
+        const previous=byId.get(personal.id);
+        if(previous){
+          if(previous!==personal)
+            throw Error('Conflit ID personnel/officiel : aucune référence remplacée.');
+          continue;
+        }
+        assets.push(personal);
+        byId.set(personal.id,personal);
+      }
+      refreshCreatorAssetLists();
+      syncPreviews(frontSelect,[frontImage,socketFrontImage]);
+      syncPreviews(backSelect,[backImage,socketBackImage]);
+      syncPreviews(iconSelect,[iconImage]);
+    }).catch(error=>{
+      setStatus(root,'Mes sprites : '+(error?.message??String(error))+
+        ' — sauvegardes historiques préservées.','error');
+    });
+  }
 
   return catalog;
 }
@@ -10995,7 +11049,7 @@ export function mountEditorCardDisclosuresV1({
   return count;
 }
 
-export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null, initialTab = "creature", initialDatabase = null }) {
+export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, creatorAudioAssets = null, creatorSpritesReady = null, saveCreatorVisualAsset = null, initialTab = "creature", initialDatabase = null }) {
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root doit être un élément DOM");
   }
@@ -14521,7 +14575,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   const ready =
     settleCaptureEditorStartupDependenciesV1({
       assetCatalogPromise:
-        hydrateAssetCatalog(root, listen, creatorVisualAssets),
+        hydrateAssetCatalog(root, listen, creatorVisualAssets, creatorSpritesReady, saveCreatorVisualAsset),
       privateAudioCatalogPromise:
         hydratePrivateAudioCatalog(
           root,
