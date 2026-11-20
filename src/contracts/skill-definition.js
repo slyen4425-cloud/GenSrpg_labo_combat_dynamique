@@ -356,6 +356,19 @@ export function normalizeSkillDefinition(input) {
     evasionSiphon=Object.freeze({baseDamage,perMaxChargeDamage,stealCharges:1});
   }
 
+  // Native echo reads a real previously paid skill from CombatSession.
+  // The UI never supplies an arbitrary copied definition or damage amount.
+  let echoCopy=null;
+  if(input.echoCopy!=null){
+    const v=input.echoCopy;
+    if(!v||typeof v!=="object"||Array.isArray(v)||
+       Object.keys(v).some(k=>k!=="powerPct")||
+       category!=="buff_debuff"||form!=="self"||
+       !Number.isFinite(Number(v.powerPct))||Number(v.powerPct)<1||Number(v.powerPct)>100)
+      throw new RangeError("echoCopy requires a self-form support skill with 1..100% power");
+    echoCopy=Object.freeze({powerPct:Number(v.powerPct)});
+  }
+
   // Generic serial charge: every pass owns its real collision, never each rendered clone.
   let stampede = null;
   if (projectileTargeting === "stampede") {
@@ -657,6 +670,7 @@ export function normalizeSkillDefinition(input) {
     ...(projectileTargeting === "expanding_wave" ? { expandingWave: Object.freeze({startRadiusPct,endRadiusPct,thicknessPct}) } : {}),
     ...(stampede ? { stampede } : {}),
     ...(evasionSiphon ? { evasionSiphon } : {}),
+    ...(echoCopy ? { echoCopy } : {}),
     loadoutSlot,
     element,
     approachMode,

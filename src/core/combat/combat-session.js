@@ -45,6 +45,7 @@ import {
 import {
   applyImmediateTacticalEffectsV1
 } from "./immediate-tactical-effects-v1.js";
+import {projectNativeSkillEchoV1} from "./skill-echo-v1.js";
 
 export function createCombatSession({
   distance = "medium",
@@ -58,6 +59,17 @@ export function createCombatSession({
     );
   const initialDistance = distance;
   const initialFighters = fighters.map((fighter) => ({ ...fighter }));
+  // Each active fighter slot owns only its own last real non-ultimate cast.
+  // A replacement clears this pointer: two occupants can never share history.
+  const lastStandardSkillByActor=new Map();
+  const rememberSkill=(actorId,skill)=>{
+    if(skill && skill.loadoutSlot!=="ultimate" && !skill.echoCopy && !skill.echoSourceSkillId)
+      lastStandardSkillByActor.set(actorId,skill);
+  };
+  const projectEcho=({actorId,targetId,skill})=>
+    !skill?.echoCopy ? Object.freeze({ok:true,skill,targetId}) :
+      projectNativeSkillEchoV1({echoSkill:skill,sourceSkill:lastStandardSkillByActor.get(targetId)??null,
+        actorId,targetId});
   let reserveSkillResolver = null;
   const hasReserveSplash = skill => skill?.effects?.some(effect => isReserveEffectTargetScopeV2(effect.targetScope)) === true;
   function registerReserveSkillResolver(resolver) {
@@ -137,13 +149,15 @@ export function createCombatSession({
   }
 
   function previewSkill({ actorId, targetId, skill, reactionSkill = null, decoyId = null }) {
-    const guard = reserveSkillGuard(skill);
-    if (guard) return guard;
+    const copy=projectEcho({actorId,targetId,skill});
+    if(!copy.ok)return Object.freeze({...copy,state});
+    const guard=reserveSkillGuard(copy.skill);
+    if(guard)return guard;
     return resolveSkill({
       state,
       actorId,
-      targetId,
-      skill,
+      targetId:copy.targetId,
+      skill:copy.skill,
       reactionSkill,
       decoyId,
       skillSpeedMultiplier:
@@ -153,24 +167,21 @@ export function createCombatSession({
   }
 
   function useSkill({ actorId, targetId, skill, reactionSkill = null, decoyId = null }) {
-    const result = previewSkill({
-      actorId,
-      targetId,
-      skill,
-      reactionSkill,
-      decoyId
-    });
+    const result = previewSkill({ actorId,targetId,skill,reactionSkill,decoyId });
+    if(result.ok)rememberSkill(actorId,skill);
     return withReserveSkillEffects(commitCompletedOwnerAction(result, actorId), actorId, skill);
   }
 
   function startSkill({ actorId, targetId, skill, decoyId = null }) {
-    const guard = reserveSkillGuard(skill);
-    if (guard) return guard;
+    const copy=projectEcho({actorId,targetId,skill});
+    if(!copy.ok)return Object.freeze({...copy,state});
+    const guard=reserveSkillGuard(copy.skill);
+    if(guard)return guard;
     const result = resolveSkillStart({
       state,
       actorId,
-      targetId,
-      skill,
+      targetId:copy.targetId,
+      skill:copy.skill,
       decoyId,
       skillSpeedMultiplier:
         normalizedSkillSpeedMultiplier,
@@ -178,6 +189,7 @@ export function createCombatSession({
     });
     if (result.ok) {
       state = result.state;
+      rememberSkill(actorId,skill);
     }
     return result;
   }
@@ -626,6 +638,7 @@ export function createCombatSession({
   }
 
   function departFighter(fighterId, {departingMemberId = null} = {}) {
+    lastStandardSkillByActor.delete(fighterId);
     state = removePersistentZonesFromActorV1(state, fighterId, {departingMemberId});
     state = removeInheritedZoneBoundStatusesV1(state, fighterId);
     state = resetPersistentZoneOccupancyForSlotV1(state, fighterId, {absent:true});
@@ -635,6 +648,7 @@ export function createCombatSession({
   function replaceFighter(fighterId, fighter, {
     clearSourceZones = false, departingMemberId = null
   } = {}) {
+    lastStandardSkillByActor.delete(fighterId);
     if (clearSourceZones) {
       state = removePersistentZonesFromActorV1(state, fighterId, {departingMemberId});
     }
@@ -647,6 +661,7 @@ export function createCombatSession({
   }
 
   function reset() {
+    lastStandardSkillByActor.clear();
     state = createCombatState({
       distance: initialDistance,
       fighters: initialFighters

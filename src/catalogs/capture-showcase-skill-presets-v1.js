@@ -108,6 +108,7 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/raiiven-fer-maudit.capture-skill-transfer-v1.json",
     "data/capture/showcase/raiiven-dedale-silhouettes.capture-skill-transfer-v1.json",
     "data/capture/showcase/raiiven-vol-foulees.capture-skill-transfer-v1.json",
+    "data/capture/showcase/raiiven-remanence-interdite.capture-skill-transfer-v1.json",
   ]);
 
 // Author-approved retirement from the ACTIVE Capture skill library.

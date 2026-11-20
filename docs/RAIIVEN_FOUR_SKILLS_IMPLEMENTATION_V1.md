@@ -28,4 +28,4 @@ Ne modifier ni les animations maîtres, ni `global-assets`, ni les autres créat
 - Palier D : écho universel, règles de support / réserves / zone, FX Ombre.
 - Palier E : 4 transferts Capture valides, loadout Raiiven 1/5/10/15/20, CI complète, browser 1v1 et 2v2, mobile paysage, source HTTPS au SHA exact.
 
-**État de ce lot : préparation technique. Aucune promotion sur main avant tests de gameplay complets et GREEN.**
+**État de ce lot : préparation technique.** Rémanence dispose désormais d'une projection native sur la dernière compétence non ultime du slot (dégâts/soins projetés, copie sans nouveau moteur). Tests ciblés requis. Cibles de réserve non supportées sans membre Roster explicite ; retour explicite sans consommation. **60 % reste provisoire et non validé.** FX d'Ombre et vérifications navigateur encore nécessaires. Aucune promotion sur main avant couverture complète et GREEN.
