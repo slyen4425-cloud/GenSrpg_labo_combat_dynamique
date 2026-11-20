@@ -19,12 +19,14 @@ test("Dédale: two existing status IDs, duration, retaliation and original trans
   assert.equal(fields.decoy.enabled,true);
   assert.equal(fields.decoy.count,2);
   assert.equal(fields.decoy.retaliationDamage,10);
+  assert.equal(fields.decoy.scale,1,"100% default for legacy authored transfers");
   const edited=buildHumanSkillDraftV1(fields);
   const statuses=edited.definition.effects.filter(x=>x.kind==="apply_status"&&x.status.kind==="decoy");
   assert.equal(statuses.length,2);
   assert.deepEqual(statuses.map(x=>x.status.id),native.definition.effects.map(x=>x.status.id));
   assert.equal(edited.definition.decoyFormation.reshuffleMs,5000);
   assert.equal(edited.definition.decoyFormation.spacingPct,56);
+  assert.equal(edited.definition.decoyFormation.scale,1);
 });
 test("Dédale: native non-Raiiven author supports extra illusion with generated stable IDs and author spacing",()=>{
   const initial=authored("raiiven-dedale-silhouettes");
@@ -32,7 +34,7 @@ test("Dédale: native non-Raiiven author supports extra illusion with generated 
   const edited=buildHumanSkillDraftV1({
     ...fields,id:"test-mage-illusion",name:"Illusion du mage",
     decoy:{...fields.decoy,count:4,retaliationDamage:17,
-      reshuffleMs:3000,spacingPct:84}
+      reshuffleMs:3000,spacingPct:84,scale:1.3}
   });
   const statuses=edited.definition.effects.filter(x=>x.status?.kind==="decoy");
   assert.equal(statuses.length,4);
@@ -40,6 +42,7 @@ test("Dédale: native non-Raiiven author supports extra illusion with generated 
   assert.ok(statuses.every(x=>x.status.retaliationDamage===17));
   assert.equal(edited.definition.decoyFormation.reshuffleMs,3000);
   assert.equal(edited.definition.decoyFormation.spacingPct,84);
+  assert.equal(edited.definition.decoyFormation.scale,1.3,"editor size for different creatures survives export");
 });
 test("Generic decoy helper preserves unrelated tactical effects and does not manufacture a new rules engine",()=>{
   const generic={kind:"apply_status",targetScope:"self",status:{
@@ -80,4 +83,17 @@ test("Stampede rejects multiple damage authorities instead of silently dropping 
     {kind:"apply_status",targetScope:"target",status:{kind:"stun"}}
   ]),/exactement un effet/);
   assert.throws(()=>stampedeTravelMsV1({passes:1,passDurationMs:300,gapMs:500}),/2 à 6/);
+});
+
+test("Decoy scale is a single validated authored parameter, no second visual authority",()=>{
+  const base=authored("raiiven-dedale-silhouettes");
+  const fields=humanSkillEditorFieldsFromDraftV1(base);
+  assert.throws(()=>buildHumanSkillDraftV1({
+    ...fields,decoy:{...fields.decoy,scale:2.5}
+  }),/scale 0.5..2/);
+  const within=buildHumanSkillDraftV1({
+    ...fields,decoy:{...fields.decoy,scale:0.7}
+  });
+  assert.equal(within.definition.decoyFormation.scale,0.7);
+  assert.equal(within.definition.effects.filter(x=>x.status?.kind==="decoy").length,2);
 });
