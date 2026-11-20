@@ -68,6 +68,8 @@ export function playDomStampedeFxV1({
   const spriteSource=officialMovement??officialAttack;
   group.dataset.stampedePose=officialMovement?"movement":officialAttack?"attack-fallback":"missing";
   const originalOpacity=sourceMotion?.style?.opacity??null;
+  const sourceShadow=sourceMotion?.closest?.(".fighter")?.querySelector?.(".fighter__shadow")??null;
+  const originalShadowOpacity=sourceShadow?.style?.opacity??null;
   const horses=[];
   for(let i=0;i<count;i++){
     const ghost=doc.createElement("span");
@@ -89,6 +91,13 @@ export function playDomStampedeFxV1({
       transform:geometry.direction>0?"none":"scaleX(-1)",
       transformOrigin:"center center"
     });
+    if(sourceShadow?.cloneNode){
+      const shadow=sourceShadow.cloneNode(true);
+      if(shadow.id)shadow.removeAttribute?.("id");
+      shadow.style.opacity="1";
+      shadow.dataset.stampedeHorseShadow="true";
+      ghost.append(shadow);
+    }
     group.append(ghost);
     horses.push({ghost,playback:null,layer:null});
   }
@@ -97,6 +106,7 @@ export function playDomStampedeFxV1({
   // instead of standing behind its own copies. Gameplay identity never moves
   // into the renderer and the original is restored on every cleanup path.
   if(sourceMotion?.style)sourceMotion.style.opacity="0";
+  if(sourceShadow?.style)sourceShadow.style.opacity="0";
   // The existing WAAPI owner is the ONLY presentation clock. The native
   // action's release and deadline still govern real hits and cost.
   const animation=animate(group,[{visibility:"visible"},{visibility:"visible"}],
@@ -189,6 +199,7 @@ export function playDomStampedeFxV1({
     }
     group.remove?.();
     if(sourceMotion?.style && originalOpacity!==null)sourceMotion.style.opacity=originalOpacity;
+    if(sourceShadow?.style && originalShadowOpacity!==null)sourceShadow.style.opacity=originalShadowOpacity;
   }
   const finished=Promise.resolve(animation.finished).then(
     ()=>{stop();return {status:"arrived"};},
