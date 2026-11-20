@@ -15,6 +15,7 @@ import {normalizeSkillDefinition} from "/src/contracts/skill-definition.js";
 import {normalizeBattleFormatDefinition} from "/src/contracts/battle-format-definition.js";
 import {createCombatSession} from "/src/core/combat/combat-session.js";
 import {createDomDecoyOverlayV1} from "/src/adapters/renderer/dom-decoy-overlay-v1.js";
+import {composeDomTransform} from "/src/adapters/renderer/dom-keyframes.js";
 import {applySpriteVisual} from "/src/adapters/renderer/dom-skill-fx.js";
 import {playDomShadowEchoFxV1} from "/src/adapters/renderer/dom-shadow-echo-fx-v1.js";
 const check=(condition,reason)=>{if(!condition)throw Error(reason);};
@@ -46,6 +47,13 @@ async function scenario(two){
   node.dataset.actor=id;
   const shadow=document.createElement("span");shadow.className="fighter__shadow";shadow.dataset.shadowMode="soft";node.append(shadow);
   const motion=document.createElement("div");motion.dataset.demoMotion="true";
+  // Canonical creature actor (face/opponent versus dos/player) owns X/Y/scale.
+  const player=id==="raiiven"||id==="friend";
+  motion.style.transform=composeDomTransform({
+    position:{x:player?-22:15,y:player?-30:60},
+    scale:player?1.7:.82
+  });
+  motion.style.transformOrigin=player?"50% 86%":"54% 90%";
   const standing=document.createElement("img");
   standing.src="/assets/test/creatures/braisombre/runtime/braisombre_player.webp";
   standing.dataset.demoImage="true";motion.append(standing);node.append(motion);
@@ -67,6 +75,12 @@ async function scenario(two){
   check(slots.raiiven.querySelectorAll(".fighter__shadow").length===3,"one native ground shadow plus exactly two clone shadows");
   check([...slots.raiiven.querySelectorAll(".combat-decoy")].every(node=>node.style.transform==="scale(1)"),"full-size horses without small-clone scaling");
   check([...slots.raiiven.querySelectorAll(".combat-decoy__sprite")].every(sprite=>sprite.style.transform===slots.raiiven.querySelector("[data-demo-motion]").style.transform),"cloned pixels use exact native actor transform rather than a guessed scale");
+  check([...slots.raiiven.querySelectorAll(".combat-decoy__sprite")].every(sprite=>
+    sprite.style.transform.includes("-30px")&&sprite.style.transform.includes("scale(1.7")),
+    "clones preserve player/back scale 1.7 and authored negative Y offset");
+  check([...slots.raiiven.querySelectorAll(".combat-decoy__sprite")].every(sprite=>
+    sprite.style.transformOrigin==="50% 86%"),
+    "clones preserve exactly the native image pivot");
   const realBody=slots.raiiven.querySelector("[data-combat-decoy-real]");
   const beforeSlot=realBody.style.left;
   check(realBody!==null && realBody.querySelector("img")===null,"real selector is transparent, NEVER a duplicate horse image");
@@ -92,6 +106,20 @@ async function scenario(two){
   check(cast.echoCopied===true,"native echo tag");
   check(session.snapshot().fighters.enemy.hp===enemyHpBefore-22,"copied 20 fire becomes 12 shadow");
   check(cast.events.some(e=>e.type==="hit"&&e.damageChannel==="shadow"),"shadow channel");
+  // The same skill must render the original creature's opponent/FACE X/Y
+  // adjustment and scale, with no special Raiiven-only mapping.
+  const enemyIllusion=session.useSkill({actorId:"enemy",targetId:"enemy",skill:decoy});
+  check(enemyIllusion.ok,"opponent can use generic decoy skill");
+  overlay.render(session.snapshot());
+  const enemyMotion=slots.enemy.querySelector("[data-demo-motion]");
+  const enemyCopies=[...slots.enemy.querySelectorAll(".combat-decoy__sprite")];
+  check(enemyCopies.length===2,"opponent also gets exactly two clones");
+  check(enemyCopies.every(sprite=>sprite.style.transform===enemyMotion.style.transform),
+    "opponent clones inherit official front-view scale X/Y");
+  check(enemyCopies.every(sprite=>sprite.style.transform.includes("60px") &&
+    sprite.style.transform.includes("scale(0.82") &&
+    sprite.style.transformOrigin==="54% 90%"),
+    "opponent clones preserve Y=+60, 0.82x and native origin");
   const fx=playDomShadowEchoFxV1({arena:area,type:"projectile",
    sourceRect:slots.raiiven.getBoundingClientRect(),targetRect:slots.enemy.getBoundingClientRect(),
    durationMs:220,animate:(node,frames,settings)=>node.animate(frames,settings)});
