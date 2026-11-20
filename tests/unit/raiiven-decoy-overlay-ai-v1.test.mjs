@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {createDomDecoyOverlayV1} from "../../src/adapters/renderer/dom-decoy-overlay-v1.js";
+import {createDomDecoyOverlayV1,nextDecoyRealSlotV1} from "../../src/adapters/renderer/dom-decoy-overlay-v1.js";
 import {chooseBattleActorDecoyV1} from "../../src/core/combat/battle-actor-ai-controller.js";
 const makeState=(statuses,elapsedMs=0)=>({elapsedMs,fighters:{raiiven:{hp:120,statusEffects:statuses},enemy:{hp:100,statusEffects:[]}}});
 const decoy=id=>({definition:{id,kind:"decoy",durationMs:20000},appliedAtMs:0,expiresAtMs:20000});
@@ -17,7 +17,7 @@ function harness(){
   }};
   const fighterContainers={raiiven:doc.createElement("div"),enemy:doc.createElement("div")};
   const overlay=createDomDecoyOverlayV1({fighterContainers,appearanceFor:()=>null,
-    onChoose:choice=>clicked.push(choice),
+    random:()=>0,onChoose:choice=>clicked.push(choice),
     applySpriteVisual:()=>({frameAnimation:null})});
   return {clicked,overlay,fighterContainers};
 }
@@ -25,7 +25,11 @@ test("Dédale overlays reflect only two actual status instances, choice is expli
   const h=harness();
   h.overlay.render(makeState([decoy("left"),decoy("right")]));
   assert.equal(h.overlay.count(),2);
-  const [a,b]=h.fighterContainers.raiiven.children;
+  const [a,b,real]=h.fighterContainers.raiiven.children;
+  assert.equal(h.fighterContainers.raiiven.children.length,3,"three visible identical target surfaces");
+  real.listeners.click({stopPropagation(){},preventDefault(){}});
+  assert.deepEqual(h.clicked,[{actorId:"raiiven",decoyId:null}]);
+  h.clicked.length=0;
   a.listeners.click({stopPropagation(){},preventDefault(){}});
   assert.deepEqual(h.clicked,[{actorId:"raiiven",decoyId:"left"}]);
   h.overlay.render(makeState([decoy("right")]));
@@ -45,4 +49,19 @@ test("AI may deliberately hit a selectable silhouette but cannot fake a zone tar
   assert.ok([...results].some(x=>x==="left"||x==="right"));
   assert.equal(chooseBattleActorDecoyV1({state,targetId:"raiiven",skill:{...hit,form:"area"}}),null);
   assert.equal(chooseBattleActorDecoyV1({state,targetId:"enemy",skill:hit}),null);
+});
+
+test("Dédale's visible real horse changes position and never repeats its current slot",()=>{
+ assert.equal(nextDecoyRealSlotV1(null,()=>0),0);
+ assert.equal(nextDecoyRealSlotV1(0,()=>0),1);
+ assert.equal(nextDecoyRealSlotV1(1,()=>0),2);
+ const h=harness();
+ h.overlay.render(makeState([decoy("left"),decoy("right")],0));
+ const real=h.fighterContainers.raiiven.children[2];
+ const first=real.style.left;
+ h.overlay.render(makeState([decoy("left"),decoy("right")],5000));
+ assert.notEqual(real.style.left,first);
+ assert.equal(h.overlay.count(),2);
+ h.overlay.dispose();
+ assert.equal(real.removed,true);
 });
