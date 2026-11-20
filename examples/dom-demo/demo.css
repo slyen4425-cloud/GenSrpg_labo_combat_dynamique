@@ -259,6 +259,16 @@ summary {
   font-size: 0.73rem;
 }
 
+/* The three apparent horses use ONE canonical combat fighter and a common
+   visible model/shadow projection. Status tint on the hidden original must
+   never reveal the true position while decoys are active. */
+.fighter[data-combat-decoy-illusion-active="true"] .status-fx {
+  visibility: hidden;
+}
+.fighter[data-combat-decoy-illusion-active="true"] .combat-decoy__shadow {
+  visibility: visible;
+}
+
 .fighter__motion {
   position: relative;
   z-index: 1;
