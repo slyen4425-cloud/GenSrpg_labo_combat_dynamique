@@ -100,8 +100,10 @@
       }
     },
     "skillIds": [
-      "cap_fire_special_1",
-      "claw",
+      "raiiven-fer-maudit",
+      "raiiven-dedale-silhouettes",
+      "raiiven-vol-foulees",
+      "raiiven-remanence-interdite",
       "raiiven-cavalcade-damnes"
     ],
     "presentation": {
@@ -245,19 +247,19 @@
     "slots": [
       {
         "id": "slot-1",
-        "skillId": "claw"
+        "skillId": "raiiven-fer-maudit"
       },
       {
         "id": "slot-2",
-        "skillId": null
+        "skillId": "raiiven-dedale-silhouettes"
       },
       {
         "id": "slot-3",
-        "skillId": "cap_fire_special_1"
+        "skillId": "raiiven-vol-foulees"
       },
       {
         "id": "slot-4",
-        "skillId": null
+        "skillId": "raiiven-remanence-interdite"
       },
       {
         "id": "slot-ultimate",
