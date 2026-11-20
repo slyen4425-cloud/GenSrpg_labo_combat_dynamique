@@ -42,13 +42,16 @@ test("Dédale overlays reflect only two actual status instances, choice is expli
 });
 test("AI may deliberately hit a selectable silhouette but cannot fake a zone target",()=>{
   const state=makeState([decoy("left"),decoy("right")]);
-  const hit={category:"offensive",form:"projectile"};
+  const hit={category:"offensive",form:"projectile",targetRelations:["enemy"]};
   const results=new Set(Array.from({length:30},(_,turn)=>
     chooseBattleActorDecoyV1({state,targetId:"raiiven",skill:hit,turn})));
   assert.ok(results.has(null));
   assert.ok([...results].some(x=>x==="left"||x==="right"));
   assert.equal(chooseBattleActorDecoyV1({state,targetId:"raiiven",skill:{...hit,form:"area"}}),null);
   assert.equal(chooseBattleActorDecoyV1({state,targetId:"enemy",skill:hit}),null);
+  const debuff={...hit,category:"buff_debuff"};
+  assert.ok(["left","right",null].includes(chooseBattleActorDecoyV1({state,targetId:"raiiven",skill:debuff,turn:1})));
+  assert.equal(chooseBattleActorDecoyV1({state,targetId:"raiiven",skill:{...hit,targetRelations:["ally"]}}),null);
 });
 
 test("Dédale's visible real horse changes position and never repeats its current slot",()=>{
