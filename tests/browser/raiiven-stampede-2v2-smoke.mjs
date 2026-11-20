@@ -51,6 +51,11 @@ async function scenario(source){
  const anchors=Object.fromEntries(ids.map(id=>{
   const element=document.createElement("div");element.className="fighter";
   element.dataset.actor=id;element.style.left=xy[id][0]+"px";element.style.top=xy[id][1]+"px";
+  const shadow=document.createElement("span");
+  shadow.className="fighter__shadow";
+  shadow.dataset.demoShadow="true";
+  shadow.style.opacity="0.42";
+  element.append(shadow);
   const motion=document.createElement("div");
   motion.className="fighter__motion";
   motion.dataset.demoMotion="true";
@@ -88,13 +93,20 @@ async function scenario(source){
        sourceMotions[source].style.translate!=="0px 0px";
    },16),
    cancelFrame:handle=>clearTimeout(handle),
-   sourceSpriteFor(slot){return {movement:{
-      url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",
-      frameCount:7,playbackMode:"loop",assetId:"test:raiiven-official-movement-7f",
-      displayScale:slot==="player"?1.3:0.75,
-      offsetX:slot==="player"?12:-7,
-      offsetY:slot==="player"?-21:34
-    }};},
+   sourceSpriteFor(slot){return {
+     attack:{
+       url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",
+       frameCount:5,playbackMode:"loop",assetId:"test:raiiven-standard-attack-5f",
+       displayScale:slot==="player"?1.1:0.85,
+       offsetX:slot==="player"?9:-4,
+       offsetY:slot==="player"?-20:18
+     },
+     movement:{
+       url:"/assets/test/creatures/braisombre/runtime/braisombre_player.webp",
+       frameCount:7,assetId:"test:raiiven-movement-must-not-be-used",
+       displayScale:1.8,offsetX:80,offsetY:-90
+     }
+   };},
    sourceMotionFor:slot=>sourceMotions[slot],
    waveTargetsFor(fromSlot){
      return ids.filter(id=>format.teamOf(id)!==format.teamOf(fromSlot));
@@ -129,14 +141,22 @@ async function scenario(source){
     "native fighter owns moving official atlas");
   check(releaseShell.querySelectorAll("[data-stampede-horse-shadow]").length===0,
     "no huge copied Cavalcade shadows");
-  check(releaseShell.dataset.stampedePose==="movement","official movement atlas used, not attack fallback");
+  check(releaseShell.dataset.stampedePose==="standard-attack","same canonical attack atlas as ordinary combat");
    // Native combat Movement Visual and stampede must share identical pose.
    await new Promise(resolve=>setTimeout(resolve,160));
    const realPose=sourceMotions[source].querySelector(".skill-fx--stampede-caster-sprite")?.style.transform;
    const expectedPose=source==="player"
-     ? "translate(12px, -21px) scale(1.3)"
-     : "translate(-7px, 34px) scale(0.75)";
-   check(realPose===expectedPose,"real caster native movement pose "+realPose);
+     ? "translate(9px, -20px) scale(1.1)"
+     : "translate(-4px, 18px) scale(0.85)";
+   check(realPose===expectedPose,"real caster official ATTACK pose "+realPose);
+   check(sourceMotions[source].querySelector(".skill-fx--stampede-caster-sprite")?.dataset.assetId
+     ==="test:raiiven-standard-attack-5f","attack uses 5-frame authored atlas, not 7-frame movement");
+   const originalShadow=anchors[source].querySelector("[data-demo-shadow]");
+   check(originalShadow.style.translate===sourceMotions[source].style.translate &&
+     originalShadow.style.translate!=="","native shadow follows the true horse rather than remaining at origin");
+   check(originalShadow.style.visibility==="visible","native shadow visible under the real caster during the pass");
+   check([...releaseShell.querySelectorAll(".skill-fx--stampede-ghost")].every(ghost=>ghost.style.transform==="none"),
+     "copies keep the source attack orientation; no automatic horizontal flip");
    check([...releaseShell.querySelectorAll(".skill-fx--stampede-attack-pose")]
      .every(ghost=>ghost.style.transform===realPose),
      "every horse uses the same official FACE/DOS scale and XY offset as the standard creature animation");
