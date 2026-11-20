@@ -8,7 +8,16 @@
 - Sortie : tests unitaires/intégration/Chromium 1v1+2v2 et mobile, CI complète sur SHA PR exact puis main, checkpoint GREEN **uniquement** si tous les contrôles sont réellement verts, publication HTTPS de main au SHA. Retour auteur avant toute PWA. La CI rouge 2v2 observée sur `main@ae1287b4` interdit de supposer GREEN.
 - Risque spécifique : vérifier que la projection visuelle du vrai et son modèle de collision restent alignés en mouvement/KO et que les copies exécutent réellement l'atlas 5f sans boule de feu.
 
+
 ---
+
+## 2026-11-20 — Chantier #351 : ergonomie HUD PC / Esquive (1v1, 2v2)
+- START : `main@1ec3174f6c2106f5b1ff35676fbe3fd0c9c2c8ea`, checkpoint `checkpoint/lab-start-combat-pc-hud-20261120` ; branche de validation initiale `work/lab-combat-pc-hud-20261120` ; intégration sans conflit sur `main` récent via `work/lab-combat-pc-hud-main-integration-20261120` (PR #353 conservée pour trace).
+- Cause : CSS PC `.coop-command-stack` passe à `min(23rem, 41%)` en 1v1 tandis qu'Esquive garde `min(15rem, 35%)`. En 2v2, les sélecteurs spécifiques maintiennent `min(19rem, 34%)`. L'ancrage Esquive n'utilisait pas la même dimension que son dock ; le conflit PC masque le premier slot.
+- RED de départ : test `tests/unit/capture-combat-pc-hud-geometry-20261120.test.mjs`, commit `a597418f450a00406ff376bea5a6f0228533d385`; la largeur PC partagée est absente du CSS d'origine.
+- Périmètre : uniquement `examples/dom-demo/capture-editor-v2.css`, sentinelle UI, vrai test Chromium sur le template Combat natif, CI et documentation. Géométrie PC fine-pointer : variable unique par format 1v1/2v2 pour largeur dock + Esquive. Règles Android/paysage inchangées, 5 slots et clic/souris testés. Réduction PC légère du dock et contrôles ; aucun contrat/mécanique/audio/FX/asset/sauvegarde touché.
+- Preuves : script `tests/browser/capture-combat-pc-hud-geometry-smoke.mjs`, comparaison CSS immuable START vs patch, 1366×768, 1648×927, 1920×1080, large, dimensions équivalentes zoom ; parité 915×412/800×360 ; screenshots avant/après archivés par la CI `combat-pc-hud-browser`.
+- Statut : **EN VALIDATION / NON GREEN** tant que jobs CI du SHA exact, revue captures, combat réel/resize/fullscreen 1v1 et 2v2, et preuve HTTPS sur main ne sont pas vérifiés. **Aucune synchronisation GenSRPG/PWA.**
 
 ## 2026-11-20 — Charte artistique : priorité contractuelle des standards de l'Atelier d'animations (C1 documentation)
 - START `main@ae1287b47858e6c92f4d8e042d9ac7e411f4c579` ; checkpoint `checkpoint/lab-start-animation-charte-priorite-presets-20261120` ; branche temporaire `work/lab-animation-charte-priorite-presets-20261120`.

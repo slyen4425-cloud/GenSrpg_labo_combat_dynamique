@@ -2077,7 +2077,7 @@ html {
 /* PC-only combat legibility. Do not override the phone-authored 16:9
    arena geometry or the landscape/touch rules above. Only HUD controls
    grow, not creature scale, collision positions or battle mechanics. */
-@media (min-width: 1100px) and (min-height: 680px) and (pointer: fine) {
+@media (min-width: 1100px) and (min-height: 650px) and (pointer: fine) {
   .capture-preview-shell[data-landscape-required="true"] .combat-card {
     width: min(19rem, 29%);
     min-height: 6rem;
@@ -2118,28 +2118,59 @@ html {
     min-height: 4.5rem;
     padding: .45rem .55rem;
   }
+
+  /* PC-only canonical geometry. Both dock width and dodge anchor are resolved
+     relative to the SAME 16:9 arena. The 2v2 width remains phone-approved;
+     the separate fine-pointer desktop mode never changes touch rules. */
+  .capture-preview-shell[data-landscape-required="true"] .arena--coop-2v2 {
+    --combat-pc-command-width: min(22rem, 39%);
+  }
+  .capture-preview-shell[data-landscape-required="true"] .arena--coop-2v2[data-combat-active-count="2"] {
+    --combat-pc-command-width: min(19rem, 34%);
+  }
   .capture-preview-shell[data-landscape-required="true"] .coop-command-stack {
-    width: min(23rem, 41%);
-    gap: .36rem;
+    width: var(--combat-pc-command-width);
+    gap: .3rem;
+  }
+  .capture-preview-shell[data-landscape-required="true"] .arena--coop-2v2[data-combat-active-count="2"] .coop-command-stack {
+    width: var(--combat-pc-command-width);
+  }
+  .capture-preview-shell[data-landscape-required="true"] .combat-dodge-action--arena {
+    right: calc(var(--combat-pc-command-width) + 1.5rem);
+    bottom: .7rem;
+  }
+  .capture-preview-shell[data-landscape-required="true"] .arena--coop-2v2[data-combat-active-count="2"] .combat-dodge-action--arena {
+    right: calc(var(--combat-pc-command-width) + 1.5rem);
+    bottom: .7rem;
+  }
+  .capture-preview-shell[data-landscape-required="true"] .combat-dodge-action {
+    min-width: 4rem;
+    width: 4rem;
+    min-height: 3.1rem;
+    padding: .2rem;
+  }
+  .capture-preview-shell[data-landscape-required="true"] .combat-dodge-action__icon-shell {
+    width: 2rem;
+    height: 2rem;
   }
   .capture-preview-shell[data-landscape-required="true"] .coop-controls {
-    padding: .42rem;
-    gap: .35rem;
+    padding: .36rem;
+    gap: .3rem;
   }
   .capture-preview-shell[data-landscape-required="true"] .skill-bar__grid {
-    gap: .25rem;
+    gap: .22rem;
   }
   .capture-preview-shell[data-landscape-required="true"] .action-option--skill {
-    min-height: 3.75rem;
-    padding: .25rem;
+    min-height: 3.5rem;
+    padding: .2rem;
   }
   .capture-preview-shell[data-landscape-required="true"] .action-option--skill strong {
-    font-size: .7rem;
+    font-size: .62rem;
     line-height: 1.1;
   }
   .capture-preview-shell[data-landscape-required="true"] .action-option__icon {
-    width: 2.35rem;
-    height: 2.35rem;
+    width: 2.15rem;
+    height: 2.15rem;
   }
   .capture-preview-shell[data-landscape-required="true"] .action-menu > summary {
     font-size: .8rem;
