@@ -1449,9 +1449,11 @@
               <input type="number" min="0.25" max="20" step="0.25" value="5" data-skill-decoy-shuffle></label>
             <label>Écartement des apparitions (% de la taille de la créature)
               <input type="number" min="15" max="150" step="1" value="56" data-skill-decoy-spacing></label>
+            <label>Taille des clones (% du modèle réel)
+              <input type="number" min="50" max="200" step="5" value="100" data-skill-decoy-scale></label>
           </div>
           <input type="hidden" data-skill-decoy-source value="[]">
-          <p class="note">Les apparitions utilisent toutes la même image, la taille du vrai et la même ombre canonique. Si un leurre est visé, il absorbe l'attaque (même un débuff), disparaît et déclenche la riposte. Un vrai coup sur la créature retire tous les leurres. Leurs statuts et IDs sont générés dans les Effets tactiques existants, sans second moteur.</p>
+          <p class="note">Le vrai reste le modèle officiel, accompagné uniquement de N clones. Taille des clones configurable par rapport au vrai (100 % par défaut). Les ombres proviennent du modèle canonique. Si un leurre est visé, il absorbe l'attaque (même un débuff), disparaît et déclenche la riposte. Un vrai coup sur la créature retire tous les leurres. Leurs statuts et IDs sont générés dans les Effets tactiques existants, sans second moteur.</p>
         </details>
 
         <details class="projectile-clash-config" aria-label="Attaque chargée" data-skill-charged-panel hidden>
