@@ -48,7 +48,7 @@ test("creature-library regression guard still exists beside browser-bootstrap is
 
   assert.match(
     source,
-    /configuredCreatures\.size,\s*111/
+    /configuredCreatures\.size,\s*112/
   );
   assert.match(
     source,
