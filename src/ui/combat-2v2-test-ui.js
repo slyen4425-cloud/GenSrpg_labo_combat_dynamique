@@ -945,13 +945,14 @@ export async function mountCoop2v2Test({
       return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId,kind});
     },
     sourceSpriteFor(slotId) {
-      // Stampede displays the canonical attack atlas from the actor's view;
-      // the movement atlas remains a no-asset fallback for old creatures.
+      // The movement atlas is authoritative for a visible herd, including
+      // the real caster. Attack artwork is a fallback for old creatures.
       return {
         attack:visuals.getAttackAppearanceFor?.(slotId)??null,
         movement:visuals.getMovementAppearanceFor?.(slotId)??null
       };
     },
+    sourceMotionFor(slotId) { return motionAnchors[slotId]??null; },
     waveTargetsFor(fromSlot) {
       // This is only a list of visible opponent models. The Runtime
       // independently enforces valid active enemy targets.
