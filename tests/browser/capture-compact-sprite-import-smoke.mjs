@@ -47,6 +47,20 @@ window.addEventListener('DOMContentLoaded',()=>{
     return null;
   },'native Capture editor boot');
   await delay(2400); // Let the real native editor hydrate its single asset catalog.
+  const previous=sessionStorage.getItem('creator-bulk-reload-ids');
+  if(previous){
+    const ids=JSON.parse(previous);
+    const mov=document.querySelector('[data-creature-movement-visual]');
+    const travel=document.querySelector('[data-asset-role="travel"]');
+    await until(()=>[...mov.options].some(o=>o.value===ids.movement)&&
+      [...travel.options].some(o=>o.value===ids.travel),
+      'saved personal sprites must return with unchanged IDs after page reload');
+    assert(!author.creature.open&&!author.skill.open,
+      'saved assets must not open the two compact import panels');
+    sessionStorage.removeItem('creator-bulk-reload-ids');
+    report('pass:3f-creature-and-4f-projectile-restored-after-reload');
+    return;
+  }
   assert(!author.creature.open&&!author.skill.open,'import panels must be collapsed by default');
   const outer=author.creature.closest('[data-creature-appearance-group="imports"]');
   assert(outer&&!outer.open,'legacy creature visual library should remain folded');
@@ -84,7 +98,14 @@ window.addEventListener('DOMContentLoaded',()=>{
   const travel=document.querySelector('[data-asset-role="travel"]');
   await until(()=>[...travel.options].some(opt=>opt.value.startsWith('user:')),'personal projectile in shared skill selector');
   assert(travel.value.startsWith('user:'),'user skill projectile not selected');
-  report('pass:creature-movement-3f:skill-travel-4f:folded-by-default');
+  assert(c.querySelector('[data-creator-visual-state]').textContent.startsWith('Sauvegardé'),
+   'creature sprite must be committed in IndexedDB before selected');
+  assert(skill.querySelector('[data-creator-visual-state]').textContent.startsWith('Sauvegardé'),
+   'skill sprite must be committed in IndexedDB before selected');
+  sessionStorage.setItem('creator-bulk-reload-ids',JSON.stringify({
+    movement:mov.value,travel:travel.value
+  }));
+  location.reload();
  }
  run().catch(err=>report('fail:'+String(err?.message??err)));
 });
@@ -110,7 +131,7 @@ try{
   const url='http://127.0.0.1:'+server.address().port+'/examples/dom-demo/capture-editor-v2.html?tab=skills';
   const child=spawn(chrome,['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage',
    '--no-first-run','--window-size='+w+','+h,
-   '--force-device-scale-factor=1','--virtual-time-budget=26000','--dump-dom',url],
+   '--force-device-scale-factor=1','--virtual-time-budget=50000','--dump-dom',url],
    {stdio:['ignore','pipe','pipe']});
   const out=[],err=[];child.stdout.on('data',b=>out.push(b));child.stderr.on('data',b=>err.push(b));
   const closed=once(child,'close').then(([code])=>code);
