@@ -47,6 +47,9 @@ export function planSkillReleaseFx({
       ...(action.skill.projectileTargeting === "expanding_wave"
         ? { expandingWave: action.skill.expandingWave }
         : {}),
+      ...(action.skill.projectileTargeting === "stampede"
+        ? { stampede: action.skill.stampede }
+        : {}),
       ...(action.mirrorReturn?.contactPoint ? { fromPoint: action.mirrorReturn.contactPoint } : {}),
       delayMs: 0,
       durationMs: Math.max(0, Number(action.travelMs) || 0)

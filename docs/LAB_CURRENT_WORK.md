@@ -1,3 +1,11 @@
+## 2026-11-20 — Raiiven : ultime Cavalcade des damnés (triple passage)
+- START `main@88b6b19823bce7659b1ffbf0d32414e6053a9d64` ; checkpoint `checkpoint/lab-start-raiiven-stampede-20261120` ; branche temporaire `work/lab-raiiven-stampede-20261120`. Retour exclusif sur `main` après CI ; aucune fusion PWA.
+- Contrat auteur : ultime niveau 20, 3 charges de 40 dégâts (avant modificateurs du moteur), peut toucher les DEUX ennemis actifs en 2v2 à chaque charge ; esquive séparée par cible/passage ; si KO puis remplacement, les passages restants poursuivent l'attaque sur le nouveau membre ; un coût d'activation, 10 énergie, 1 usage/combat après 30 secondes.
+- Présentation : 6 copies purement visuelles du même atlas de mouvement de l'acteur, offsets et décalages de frames, AUCUN nouveau sprite, clone sans collision propre. Un seul capteur par passage/cible, décision de dégâts et esquive dans Combat Runtime/Session. Aucune autorité gameplay dans le renderer.
+- Périmètre : contrat générique de compétence projectile, moteur Runtime/Session, plan FX, renderer et contrôleur visuel natifs, bibliothèque Capture (fichier de compétence, catalogue et slot ultime Raiiven), tests intégration. Protégés : autres compétences, animation maître Raiiven, données des autres créatures, `global-assets`, Exploration, PWA, auteurs ZIP et médias.
+- Tests RED avant implémentation : 3×40 indépendants, 2v2 deux cibles, KO→remplacement entre passages, esquive par passage, pas de double collision, limites temporelles, coût/usage uniques, export Capture, visuels non autoritaires. GREEN uniquement après CI du SHA exact, test navigateur et preuve Pages HTTPS.
+- Statut : chantier en cours, NON GREEN.
+
 ## 2026-11-20 — Raiiven : correction auteur de placement adverse, animations protégées
 - START `main@a4f2d04961a03aa8c7fd26f1eb123b1ca957f8f5` ; checkpoint `checkpoint/lab-start-raiiven-author-correction-20261120` ; propriétaire : fichier canonique de transfert auteur `data/capture/showcase/raiiven.capture-creature-transfer-v1.json`.
 - Import de la version corrigée fournie par l'auteur : adversaire déplacé à Y=45, conservation des animations adversaires validées (mouvement 6 frames, attaque 5 frames), visuels dos et sockets inchangés.

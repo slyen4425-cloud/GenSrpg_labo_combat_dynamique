@@ -1215,6 +1215,10 @@ export async function mountCombatDemo({
     setCreatureFor,
     setSlotVisible,
     getCreatureDescriptor,
+    getMovementAppearanceFor(slotKey) {
+      const slot=slotOf(slotKey);
+      return creatureMovementAppearanceForViewV1(slot.meta,slot.view);
+    },
     playCameraFx(plan) {
       return cameraFx.play(plan);
     },

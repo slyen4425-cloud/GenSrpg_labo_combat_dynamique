@@ -931,6 +931,9 @@ export async function mountCoop2v2Test({
     barrierCollisionRectsFor({sourceActorId,targetActorId,kind}) {
       return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId,kind});
     },
+    sourceSpriteFor(slotId) {
+      return visuals.getMovementAppearanceFor?.(slotId) ?? null;
+    },
     waveTargetsFor(fromSlot) {
       // This is only a list of visible opponent models. The Runtime
       // independently enforces valid active enemy targets.

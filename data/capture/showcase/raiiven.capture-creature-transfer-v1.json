@@ -101,7 +101,8 @@
     },
     "skillIds": [
       "cap_fire_special_1",
-      "claw"
+      "claw",
+      "raiiven-cavalcade-damnes"
     ],
     "presentation": {
       "id": "creature:raiiven",
@@ -260,7 +261,7 @@
       },
       {
         "id": "slot-ultimate",
-        "skillId": null
+        "skillId": "raiiven-cavalcade-damnes"
       }
     ]
   }

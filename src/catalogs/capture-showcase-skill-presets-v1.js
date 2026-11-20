@@ -104,6 +104,7 @@ export const CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1 =
     "data/capture/showcase/ephemus-chrysalide-fantome.capture-skill-transfer-v1.json",
     "data/capture/showcase/ephemus-lanterne-ames.capture-skill-transfer-v1.json",
     "data/capture/showcase/ephemus-danse-mille-ames.capture-skill-transfer-v1.json",
+    "data/capture/showcase/raiiven-cavalcade-damnes.capture-skill-transfer-v1.json",
   ]);
 
 // Author-approved retirement from the ACTIVE Capture skill library.

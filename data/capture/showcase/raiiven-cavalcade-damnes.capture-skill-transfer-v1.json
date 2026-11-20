@@ -1,0 +1,79 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "raiiven-cavalcade-damnes",
+    "description": "Cavalcade des damnés — Raiiven se lance avec un troupeau de doubles spectraux en 3 charges successives. Chaque charge inflige 40 dégâts Ombre par adversaire réellement touché, avec esquive indépendante pour chacun. En 2v2, les deux ennemis peuvent être touchés à chaque passage. Si une cible est KO, les passages suivants poursuivent l'attaque sur sa remplaçante. Les chevaux spectraux sont purement visuels. Une utilisation par combat, disponible après 30 secondes.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "raiiven-cavalcade-damnes",
+      "name": "Cavalcade des damnés",
+      "category": "offensive",
+      "form": "projectile",
+      "projectileTargeting": "stampede",
+      "stampede": {
+        "passes": 3,
+        "passDurationMs": 1000,
+        "gapMs": 1800,
+        "cloneCount": 6
+      },
+      "loadoutSlot": "ultimate",
+      "element": "shadow",
+      "approachMode": "none",
+      "energyCost": 10,
+      "preparationMs": 1600,
+      "travelMs": 6600,
+      "recoveryMs": 500,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "combat_elapsed_ms",
+            "threshold": 30000
+          }
+        ]
+      },
+      "effect": {
+        "damage": 40,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": []
+    },
+    "presentation": {
+      "id": "skill:raiiven-cavalcade-damnes",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "raiiven-cavalcade-damnes",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:creature-raiiven-icon-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

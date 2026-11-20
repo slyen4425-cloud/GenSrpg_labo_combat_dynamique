@@ -874,7 +874,8 @@ export function createCombatRuntime({
     // Once any 2v2 wave target is contacted, each defender has already
     // been resolved independently. End the single paid action at its
     // natural deadline without adding a duplicate hit or a fake miss.
-    if (record.multiTargetWave && record.waveTargetsResolved.size > 0) {
+    if (record.multiTargetWave && (record.waveTargetsResolved.size > 0 ||
+        record.action.skill?.projectileTargeting === "stampede")) {
       enterRecovery(record, {
         resolvedAtMs: record.action.impactAtMs,
         atNowMs
@@ -1408,9 +1409,10 @@ export function createCombatRuntime({
       resolvedAtMs: null,
       sequence: sequence++,
       multiTargetWave:
-        enableExpandingWaveMultiTarget === true &&
         result.action.actionType === "skill" &&
-        result.action.skill?.projectileTargeting === "expanding_wave",
+        (result.action.skill?.projectileTargeting === "stampede" ||
+          (enableExpandingWaveMultiTarget === true &&
+          result.action.skill?.projectileTargeting === "expanding_wave")),
       waveTargetsResolved: new Set()
     };
 
@@ -1946,7 +1948,7 @@ export function createCombatRuntime({
   // crosses it. Rules, teams, states, statuses and damage belong here and
   // to CombatSession, never to the visual sensor or 2v2 UI.
   function reportExpandingWaveTargetContact({
-    actorId, targetId, skillId = null
+    actorId, targetId, skillId = null, passIndex = 0
   }) {
     if (disposed) return Object.freeze({ok:false,outcome:"disposed"});
     const current = now();
@@ -1965,7 +1967,19 @@ export function createCombatRuntime({
     if (current > absoluteResolutionAt(record)) {
       return Object.freeze({ok:false,outcome:"travel_finished"});
     }
-    if (record.waveTargetsResolved.has(targetId)) {
+    const stampede = record.action.skill?.projectileTargeting === "stampede"
+      ? record.action.skill.stampede : null;
+    if (stampede) {
+      const elapsed = elapsedFor(record, current) - record.action.releaseAtMs;
+      const start = passIndex * (stampede.passDurationMs + stampede.gapMs);
+      if (!Number.isInteger(passIndex) || passIndex < 0 || passIndex >= stampede.passes ||
+          elapsed < start || elapsed > start + stampede.passDurationMs)
+        return Object.freeze({ok:false,outcome:"outside_pass"});
+    } else if (passIndex !== 0) {
+      return Object.freeze({ok:false,outcome:"invalid_pass"});
+    }
+    const hitKey = stampede ? passIndex + ":" + targetId : targetId;
+    if (record.waveTargetsResolved.has(hitKey)) {
       return Object.freeze({ok:false,outcome:"already_contacted"});
     }
     const targetRecord = activeByActor.get(targetId) ?? null;
@@ -1984,8 +1998,8 @@ export function createCombatRuntime({
       travelMs: impactAtMs - record.action.releaseAtMs,
       impactAtMs
     });
-    const reaction = targetId === record.action.targetId
-      ? record.reaction
+    const reaction = targetId === record.action.targetId && (!stampede || passIndex === 0)
+      ? record.reaction ?? armedRechargeableReactionFor({record:{...record,reaction:null},action:aimedAction,impactAtMs})
       : armedRechargeableReactionFor({
           record: {...record, reaction:null},
           action: aimedAction,
@@ -1998,7 +2012,7 @@ export function createCombatRuntime({
     if (!resolution.ok) {
       return Object.freeze({ok:false,outcome:"invalid_target"});
     }
-    record.waveTargetsResolved.add(targetId);
+    record.waveTargetsResolved.add(hitKey);
     applyResolutionInterrupt(resolution);
     stopImmobilizedApproaches();
     const koActorId = koActorIdFromResolution(resolution);
@@ -2007,7 +2021,8 @@ export function createCombatRuntime({
         includeTargeted:true,reason:"ko"
       });
     }
-    const presented = Object.freeze({...resolution,waveContact:true});
+    const presented = Object.freeze({...resolution,waveContact:true,
+      ...(stampede ? {stampedePassIndex:passIndex} : {})});
     onResolved(presented);
     emitStateIfChanged({force:true});
     return Object.freeze({
