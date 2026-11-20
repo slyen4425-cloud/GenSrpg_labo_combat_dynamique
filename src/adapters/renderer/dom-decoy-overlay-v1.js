@@ -192,7 +192,7 @@ export function createDomDecoyOverlayV1({
         cleanup(actorId);
         entry=create(actorId,anchor,statuses,state.elapsedMs);
       }
-      if(state.elapsedMs-entry.lastShuffleAt>=config.reshuffleMs){
+      if(state.elapsedMs-entry.lastShuffleAt>=entry.config.reshuffleMs){
         entry.realIndex=nextDecoyRealSlotV1(entry.realIndex,random,entry.decoyIds.length+1);
         entry.lastShuffleAt=state.elapsedMs;
       }
