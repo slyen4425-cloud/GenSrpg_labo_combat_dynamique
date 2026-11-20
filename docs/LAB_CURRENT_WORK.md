@@ -1,3 +1,16 @@
+## 2026-11-20 — Raiiven : refonte visuelle Dédale/Cavalcade (retour auteur)
+
+- Point de départ : `main@ae1287b47858e6c92f4d8e042d9ac7e411f4c579` ; checkpoint `checkpoint/lab-start-raiiven-illusion-charge-20261120` ; branche de validation unique `work/lab-raiiven-illusion-charge-20261120` (non publiée comme labo parallèle).
+- **Dédale** : trois projections **identiques** du modèle officiel debout de l'acteur (deux statuts-leurres + vrai combattant), même taille/alignement/opacité ; pas d'animation de course sur place (fallback commun si le modèle debout manque) ; vrais et faux tous cliquables ; vrai à position initiale non prédictible et nouvelle permutation toutes les 5 secondes. Le vrai conserve une seule identité de CombatSession, les leurres restent les deux statuts propriétaires déjà existants. Les zones et le ciblage natif restent inchangés. Aucune autre bibliothèque de médias.
+- **Cavalcade** : cinq copies **de même taille et opacité** utilisant l'animation officielle d'attaque 5f face/dos par le contrôleur de créature, déplacement de la source jusqu'aux ennemis ; trois passages **1,8 s** et pauses **0,6 s** (total 6,6 s conservé). Suppression de l'ancien effet de cercle/fumée qui masquait les chevaux ; aucune copie physique ou autorité dégâts hors Runtime.
+- Fichiers propriétaires : `src/adapters/renderer/dom-decoy-overlay-v1.js`, `dom-stampede-fx-v1.js`, `src/ui/demo-app.js` (exposition du preset attaque), `src/ui/combat-2v2-test-ui.js` (raccord), deux JSON auteur Raiiven, tests ciblés et cette note.
+- Protégés : autres créatures/compétences, assets maîtres `global-assets`, géométrie de collision et dégâts du Runtime, PWA, Exploration, sauvegardes, ateliers de production et autres chantiers GitHub.
+- Sortie : tests unitaires/intégration/Chromium 1v1+2v2 et mobile, CI complète sur SHA PR exact puis main, checkpoint GREEN **uniquement** si tous les contrôles sont réellement verts, publication HTTPS de main au SHA. Retour auteur avant toute PWA. La CI rouge 2v2 observée sur `main@ae1287b4` interdit de supposer GREEN.
+- Risque spécifique : vérifier que la projection visuelle du vrai et son modèle de collision restent alignés en mouvement/KO et que les copies exécutent réellement l'atlas 5f sans boule de feu.
+
+
+---
+
 ## 2026-11-20 — Chantier #351 : ergonomie HUD PC / Esquive (1v1, 2v2)
 - START : `main@1ec3174f6c2106f5b1ff35676fbe3fd0c9c2c8ea`, checkpoint `checkpoint/lab-start-combat-pc-hud-20261120` ; branche de validation initiale `work/lab-combat-pc-hud-20261120` ; intégration sans conflit sur `main` récent via `work/lab-combat-pc-hud-main-integration-20261120` (PR #353 conservée pour trace).
 - Cause : CSS PC `.coop-command-stack` passe à `min(23rem, 41%)` en 1v1 tandis qu'Esquive garde `min(15rem, 35%)`. En 2v2, les sélecteurs spécifiques maintiennent `min(19rem, 34%)`. L'ancrage Esquive n'utilisait pas la même dimension que son dock ; le conflit PC masque le premier slot.

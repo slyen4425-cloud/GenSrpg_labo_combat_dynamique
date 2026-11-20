@@ -43,7 +43,12 @@ async function scenario(two){
  const slots=Object.fromEntries(ids.map((id,index)=>{
   const node=document.createElement("div");node.className="actor";
   node.style.left=(90+index*120)+"px";node.style.top=(80+index%2*100)+"px";
-  node.dataset.actor=id;area.append(node);return [id,node];
+  node.dataset.actor=id;
+  const motion=document.createElement("div");motion.dataset.demoMotion="true";
+  const standing=document.createElement("img");
+  standing.src="/assets/test/creatures/braisombre/runtime/braisombre_player.webp";
+  standing.dataset.demoImage="true";motion.append(standing);node.append(motion);
+  area.append(node);return [id,node];
  }));
  let selected=null;
  const overlay=createDomDecoyOverlayV1({fighterContainers:slots,
@@ -54,7 +59,16 @@ async function scenario(two){
   check(session.useSkill({actorId:"raiiven",targetId:"raiiven",skill:decoy}).ok,"decoy starts");
   overlay.render(session.snapshot());
   const visuals=slots.raiiven.querySelectorAll("[data-combat-decoy]");
-  check(visuals.length===2,"two visible copies");
+  check(visuals.length===2,"two selectable decoys");
+  check(slots.raiiven.querySelectorAll(".combat-decoy").length===3,"three identical silhouettes including real target");
+  const realBody=slots.raiiven.querySelector("[data-combat-decoy-real]");
+  const beforeSlot=realBody.style.left;
+  check(realBody!==null,"real horse is one of the three selectable silhouettes");
+  check([...slots.raiiven.querySelectorAll(".combat-decoy")].every(node=>node.querySelector(".combat-decoy__sprite")?.style.backgroundImage===visuals[0].querySelector(".combat-decoy__sprite")?.style.backgroundImage),"all three use the same exact sprite");
+  check([...slots.raiiven.querySelectorAll(".combat-decoy__sprite")].every(image=>image.dataset.decoyPose==="standing"),"all three use the official standing horse, not a looping in-place gallop");
+  session.advanceMs(5000);
+  overlay.render(session.snapshot());
+  check(realBody.style.left!==beforeSlot,"true horse changes slot during Dédale");
   visuals[0].click();check(selected?.actorId==="raiiven","real click selects decoy");
   const enemyHpBefore=session.snapshot().fighters.enemy.hp;
   const raiivenHpBefore=session.snapshot().fighters.raiiven.hp;

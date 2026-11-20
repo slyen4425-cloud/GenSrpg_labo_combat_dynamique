@@ -776,7 +776,8 @@ export async function mountCoop2v2Test({
   const decoyOverlay=createDomDecoyOverlayV1({
     fighterContainers,applySpriteVisual,
     appearanceFor:actorId=>visuals.getMovementAppearanceFor?.(actorId)??null,
-    onChoose:({actorId,decoyId})=>selectDecoy(actorId,decoyId)
+    onChoose:({actorId,decoyId})=>decoyId===null
+      ?selectTarget(actorId):selectDecoy(actorId,decoyId)
   });
 
   const hpRefs = Object.fromEntries(
@@ -944,7 +945,12 @@ export async function mountCoop2v2Test({
       return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId,kind});
     },
     sourceSpriteFor(slotId) {
-      return visuals.getMovementAppearanceFor?.(slotId) ?? null;
+      // Stampede displays the canonical attack atlas from the actor's view;
+      // the movement atlas remains a no-asset fallback for old creatures.
+      return {
+        attack:visuals.getAttackAppearanceFor?.(slotId)??null,
+        movement:visuals.getMovementAppearanceFor?.(slotId)??null
+      };
     },
     waveTargetsFor(fromSlot) {
       // This is only a list of visible opponent models. The Runtime

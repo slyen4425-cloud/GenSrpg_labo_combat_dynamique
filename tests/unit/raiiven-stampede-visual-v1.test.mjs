@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {playDomStampedeFxV1,stampedePassWindowV1} from "../../src/adapters/renderer/dom-stampede-fx-v1.js";
 
-const config=Object.freeze({passes:3,passDurationMs:1000,gapMs:1800,cloneCount:6});
+const config=Object.freeze({passes:3,passDurationMs:1800,gapMs:600,cloneCount:5});
 function dom() {
   const nodes=[];
   const doc={createElement(tag){
@@ -23,7 +23,7 @@ function harness(targetSlots=["opponent","opponent-b"]){
   const {arena,nodes}=dom(),calls=[],sprites=[],frames=[];
   const animation={currentTime:0,finished:new Promise(()=>{}),cancel(){}};
   const handle=playDomStampedeFxV1({arena,fromSlot:"player",targetSlot:"opponent",
-    stampede:config,sourceVisual:{url:"https://assets.example/raiiven-7-frames.png",frameCount:7},
+    stampede:config,sourceVisual:{attack:{url:"https://assets.example/raiiven-attack-5-frames.png",frameCount:5,assetId:"pack:capture:creature-raiiven-attack-player-5-v1"}},
     sourceRect:()=>({left:100,top:0,width:40,height:40}),
     targetRect:()=>({left:700,top:100,width:50,height:50}),targetSlots,
     targetCollisionModelFor:()=>({snapshot:frame}),
@@ -35,24 +35,26 @@ function harness(targetSlots=["opponent","opponent-b"]){
 }
 
 test("3 stampede passes follow the one canonical animation timeline, never repeat in gaps",()=>{
-  assert.deepEqual(stampedePassWindowV1(config,500),{index:0,visible:true,progress:0.5});
-  assert.equal(stampedePassWindowV1(config,1100).visible,false);
+  assert.deepEqual(stampedePassWindowV1(config,900),{index:0,visible:true,progress:0.5});
+  assert.equal(stampedePassWindowV1(config,2100).visible,false);
   assert.deepEqual(stampedePassWindowV1(config,3300),{index:1,visible:true,progress:0.5});
-  assert.equal(stampedePassWindowV1(config,3900).visible,false);
+  assert.equal(stampedePassWindowV1(config,4500).visible,false);
   assert.equal(stampedePassWindowV1(config,6100).index,2);
   assert.equal(stampedePassWindowV1(config,7000),null);
 });
 
-test("six animated shadows reuse ONE canonical sprite URL; only 3 contacts per enemy exist",()=>{
+test("five equal attack horses use the canonical five-frame atlas; only 3 contacts per enemy exist",()=>{
   const g=harness();
-  assert.equal(g.sprites.length,6);
-  assert.equal(new Set(g.sprites).size,1);
-  assert.equal(g.arena.node.children.length,6);
+  assert.equal(g.arena.node.dataset.stampedePose,"attack");
+  assert.equal(g.sprites.length,0,"atlas starts with native pass, not a second clock");
+  assert.equal(g.arena.node.children.length,5);
   for(let index=0;index<3;index++){
-    g.step(index*2800+500);
-    g.step(index*2800+700);
-    g.step(index*2800+800);
+    g.step(index*2400+1550);
+    g.step(index*2400+1700);
+    g.step(index*2400+1790);
   }
+  assert.equal(g.sprites.length,15,"one shared official sprite appears on five horses per pass");
+  assert.equal(new Set(g.sprites).size,1,"no source atlas duplication");
   assert.equal(g.calls.length,6);
   assert.deepEqual(g.calls.map(x=>x.passIndex),[0,0,1,1,2,2]);
   assert.deepEqual(new Set(g.calls.map(x=>x.targetId)),new Set(["opponent","opponent-b"]));
@@ -64,7 +66,7 @@ test("six animated shadows reuse ONE canonical sprite URL; only 3 contacts per e
 test("solo stampede reuses the same one-sensor path with only one enemy",()=>{
   const g=harness(["opponent"]);
   for(let index=0;index<3;index++){
-    g.step(index*2800+500);g.step(index*2800+700);
+    g.step(index*2400+1550);g.step(index*2400+1700);
   }
   assert.equal(g.calls.length,3);
   assert.deepEqual(g.calls.map(x=>x.passIndex),[0,1,2]);
