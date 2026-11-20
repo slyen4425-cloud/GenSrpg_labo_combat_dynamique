@@ -165,3 +165,24 @@ export function animationPlanToDomTimeline(plan, actor) {
     totalDurationMs
   });
 }
+
+/**
+ * One canonical movement-sprite pose for the creature's ordinary motion and
+ * stampede copies alike. The actor's FACE/DOS base position and model scale
+ * remain owned by composeDomTransform; this adds only the authored visual's
+ * own offsetX/Y and displayScale (which were missing from stampede).
+ *
+ * Pixel conversion is passed in from the existing FX owner so this function
+ * does not duplicate or override arena-responsive authoring units.
+ */
+export function composeCreatureMovementPoseV1({arena,visual,authorPixels}) {
+  if(typeof authorPixels!=="function")
+    throw new TypeError("composeCreatureMovementPoseV1 requires the native author-pixel converter");
+  const offsetX=authorPixels(arena,visual?.offsetX);
+  const offsetY=authorPixels(arena,visual?.offsetY);
+  const shifted=offsetX||offsetY
+    ? "translate("+offsetX+"px, "+offsetY+"px) " : "";
+  const rawScale=Number(visual?.displayScale);
+  const scale=Number.isFinite(rawScale)&&rawScale>0?rawScale:1;
+  return shifted+"scale("+scale+")";
+}
