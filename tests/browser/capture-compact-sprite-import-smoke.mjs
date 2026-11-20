@@ -2,8 +2,9 @@
 // native scene asset session and the actual creature/skill dropdowns.
 import {spawn,spawnSync} from 'node:child_process';
 import {createServer} from 'node:http';
-import {readFile} from 'node:fs/promises';
-import {resolve,extname,sep} from 'node:path';
+import {readFile,mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {resolve,extname,sep,join} from 'node:path';
 import {once} from 'node:events';
 const root=process.cwd();
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript',
@@ -123,25 +124,99 @@ const server=createServer(async(req,res)=>{
  }catch(e){res.writeHead(404).end(String(e));}
 });
 server.listen(0,'127.0.0.1');await once(server,'listening');
+// IndexedDB commits are real I/O: Chromium's virtual-time-budget can fast-
+// forward setTimeout while the disk transaction has not completed. Use a real
+// DevTools session here; never fake/suppress the persistence assertion.
+async function runWithCDP(chrome,width,height){
+ const profile=await mkdtemp(join(tmpdir(),'gensrpg-creator-sprites-'));
+ const url='http://127.0.0.1:'+server.address().port+
+  '/examples/dom-demo/capture-editor-v2.html?tab=skills';
+ const child=spawn(chrome,[
+  '--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage',
+  '--no-first-run','--window-size='+width+','+height,
+  '--force-device-scale-factor=1','--remote-allow-origins=*',
+  '--remote-debugging-port=0','--user-data-dir='+profile,url
+ ],{stdio:['ignore','ignore','pipe']});
+ let ws=null,lastError='',finished=false;
+ child.stderr.on('data',chunk=>{lastError=(lastError+chunk.toString()).slice(-2300)});
+ const startAt=Date.now();
+ const sleep=ms=>new Promise(ok=>setTimeout(ok,ms));
+ try{
+  let port;
+  while(!port){
+   try{
+    const lines=(await readFile(join(profile,'DevToolsActivePort'),'utf8')).split(/\r?\n/);
+    port=Number(lines[0])||null;
+   }catch{}
+   if(!port){if(Date.now()-startAt>18000)throw Error('Chrome DevTools startup timeout '+lastError);await sleep(120);}
+  }
+  let target;
+  while(!target){
+   const res=await fetch('http://127.0.0.1:'+port+'/json/list');
+   const pages=await res.json();
+   target=pages.find(x=>x.type==='page'&&x.webSocketDebuggerUrl)??null;
+   if(!target){if(Date.now()-startAt>18000)throw Error('Chrome page target timeout');await sleep(120);}
+  }
+  ws=new WebSocket(target.webSocketDebuggerUrl);
+  await new Promise((resolve,reject)=>{
+   ws.addEventListener('open',resolve,{once:true});
+   ws.addEventListener('error',()=>reject(Error('DevTools connection failed')),{once:true});
+  });
+  let sequence=0;
+  const pending=new Map();
+  ws.addEventListener('message',event=>{
+   let frame;try{frame=JSON.parse(event.data)}catch{return;}
+   if(frame.id===undefined)return;
+   const item=pending.get(frame.id);
+   if(!item)return;
+   pending.delete(frame.id);clearTimeout(item.timer);
+   if(frame.error)item.reject(Error(frame.error.message??'DevTools command failed'));
+   else item.resolve(frame.result);
+  });
+  function command(method,params={}){
+   return new Promise((resolve,reject)=>{
+    const id=++sequence;
+    const timer=setTimeout(()=>{
+     pending.delete(id);reject(Error('DevTools command timeout '+method));
+    },8000);
+    pending.set(id,{resolve,reject,timer});
+    ws.send(JSON.stringify({id,method,params}));
+   });
+  }
+  let outcome='',lastSeen='';
+  while(Date.now()-startAt<85000){
+   try{
+    const response=await command('Runtime.evaluate',{
+     expression:"document.documentElement?.dataset?.creatorBulkSmoke ?? ''",
+     returnByValue:true
+    });
+    outcome=String(response?.result?.value??'');
+    if(outcome)lastSeen=outcome;
+    if(outcome.startsWith('pass:')){
+     finished=true;break;
+    }
+    if(outcome.startsWith('fail:'))throw Error('Capture import UI: '+outcome);
+   }catch(error){
+    if(String(error?.message).startsWith('Capture import UI:'))throw error;
+    // During location.reload(), CDP drops the execution context briefly.
+   }
+   await sleep(220);
+  }
+  if(!finished)throw Error('Capture author recovery timeout '+width+'x'+height+
+   ' lastStatus='+lastSeen+' '+lastError.slice(-500));
+  console.log('PASS real-time Chromium IndexedDB SAVE/RELOAD '+width+'x'+height+' '+outcome);
+ }finally{
+  try{ws?.close()}catch{}
+  child.kill('SIGKILL');
+  await Promise.race([once(child,'close').catch(()=>{}),sleep(1200)]);
+  await rm(profile,{recursive:true,force:true,maxRetries:3});
+ }
+}
 try{
  const chrome=[process.env.CHROME_PATH,'google-chrome','google-chrome-stable','chromium','chromium-browser']
   .filter(Boolean).find(bin=>spawnSync('which',[bin]).status===0);
  if(!chrome)throw Error('Chromium required');
  for(const [w,h] of [[932,430],[1440,900]]){
-  const url='http://127.0.0.1:'+server.address().port+'/examples/dom-demo/capture-editor-v2.html?tab=skills';
-  const child=spawn(chrome,['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage',
-   '--no-first-run','--window-size='+w+','+h,
-   '--force-device-scale-factor=1','--virtual-time-budget=50000','--dump-dom',url],
-   {stdio:['ignore','pipe','pipe']});
-  const out=[],err=[];child.stdout.on('data',b=>out.push(b));child.stderr.on('data',b=>err.push(b));
-  const closed=once(child,'close').then(([code])=>code);
-  const code=await Promise.race([closed,
-   new Promise((_,reject)=>{const timeout=setTimeout(()=>{child.kill('SIGKILL');reject(Error('bulk importer Chromium timeout'));},90000);
-    timeout.unref();child.once('close',()=>clearTimeout(timeout));})]);
-  const html=Buffer.concat(out).toString('utf8');
-  const result=html.match(/data-creator-bulk-smoke="([^"]*)"/)?.[1]??'missing';
-  if(code!==0||!result.startsWith('pass:'))throw Error(
-   'Capture bulk import '+w+'x'+h+' : '+result+' '+Buffer.concat(err).toString('utf8').slice(-700));
-  console.log('GREEN real Capture personal strip import '+w+'x'+h+' '+result);
+  await runWithCDP(chrome,w,h);
  }
 }finally{server.close();}
