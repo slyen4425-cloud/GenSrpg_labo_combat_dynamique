@@ -182,7 +182,12 @@ export function createCreatorVisualAssetSessionV1({
 
   function importImage({file,label,role,frameCount=1,frameMs=100}) {
     assertUsable();
-    let id='user:'+requiredText(createId(),'creator asset id');
+    // Validate first, BEFORE consuming a generated ID (historical contract).
+    if(!CREATOR_VISUAL_ROLES_V1.includes(role))
+      throw new RangeError('Unsupported creator visual role: '+String(role));
+    const check=createImageSourceManager({createObjectURL,revokeObjectURL});
+    try{check.validateFile(file);}finally{check.dispose();}
+    let id = "user:" + requiredText(createId(),'creator asset id');
     const baseId=id;
     let suffix=2;
     while(assets.has(id)){id=baseId+'-'+suffix;suffix++;}
