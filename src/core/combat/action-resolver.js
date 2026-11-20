@@ -46,6 +46,7 @@ import {
   skillPresenceReachV1
 } from "./combat-presence-v1.js";
 import { applyEventTriggeredBuffsV2 } from "./triggered-buff-events-v1.js";
+import {evasionSiphonDamageV1,applyEvasionSiphonV1} from "./evasion-siphon-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -87,7 +88,7 @@ function statAdjustedDamageFor(
     state,
     attackerId,
     targetId,
-    baseDamage: skill.effect.damage,
+    baseDamage: evasionSiphonDamageV1({state,targetId,skill}),
     channel: damageChannelFor(skill)
   });
 }
@@ -1069,6 +1070,13 @@ export function resolveSkillCompletion({
         });
       nextState = applied.state;
       barrierIntercepted = applied.entityId !== null;
+      if (!barrierIntercepted && skill.evasionSiphon) {
+        const theft=applyEvasionSiphonV1({state:nextState,actorId,targetId,skill,atMs:combatImpactAtMs});
+        nextState=theft.state;
+        events.push(event("evasion-charge-stolen",impactAtMs,{
+          actorId,targetId,skillId:skill.id,stolen:theft.stolen,restored:theft.restored
+        }));
+      }
 
       if (barrierIntercepted) {
         events.push(event("combat-entity-hit", impactAtMs, {

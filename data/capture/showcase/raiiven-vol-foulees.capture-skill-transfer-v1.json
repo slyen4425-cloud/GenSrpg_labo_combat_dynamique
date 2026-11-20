@@ -1,0 +1,66 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "raiiven-vol-foulees",
+    "description": "Vol de foulées — 5 + 5 dégâts Ombre par charge maximale d'esquive de la cible, même si elles sont vides. Vole une charge réellement disponible sans activer de fausse esquive, restaure une charge de Raiiven au maximum.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "raiiven-vol-foulees",
+      "name": "Vol de foulées",
+      "category": "offensive",
+      "form": "contact",
+      "loadoutSlot": "standard",
+      "element": "shadow",
+      "approachMode": "teleport",
+      "energyCost": 5,
+      "preparationMs": 350,
+      "travelMs": 250,
+      "recoveryMs": 480,
+      "cooldownMs": 25000,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "dodgeable": true,
+      "evasionSiphon": {
+        "baseDamage": 5,
+        "perMaxChargeDamage": 5,
+        "stealCharges": 1
+      },
+      "effect": {
+        "damage": 5,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": []
+    },
+    "presentation": {
+      "id": "skill:raiiven-vol-foulees",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "raiiven-vol-foulees",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:creature-raiiven-icon-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}
