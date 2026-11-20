@@ -9058,7 +9058,7 @@ async function hydrateNativeSkillCatalog() {
   );
 }
 
-async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null, creatorSpritesReady = null) {
+async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null, creatorSpritesReady = null, saveCreatorVisualAsset = null) {
   const response = await fetch(
     GLOBAL_VISUAL_LIBRARY.catalogUrl,
     { cache: "no-store" }
@@ -14575,7 +14575,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   const ready =
     settleCaptureEditorStartupDependenciesV1({
       assetCatalogPromise:
-        hydrateAssetCatalog(root, listen, creatorVisualAssets, creatorSpritesReady),
+        hydrateAssetCatalog(root, listen, creatorVisualAssets, creatorSpritesReady, saveCreatorVisualAsset),
       privateAudioCatalogPromise:
         hydratePrivateAudioCatalog(
           root,
