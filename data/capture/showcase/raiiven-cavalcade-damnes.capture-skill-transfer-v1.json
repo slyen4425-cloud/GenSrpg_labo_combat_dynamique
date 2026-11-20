@@ -4,7 +4,7 @@
   "draft": {
     "schema": "capture-skill-editor-draft-v1",
     "id": "raiiven-cavalcade-damnes",
-    "description": "Cavalcade des damnés — Raiiven se lance avec un troupeau de doubles spectraux en 3 charges successives. Chaque charge inflige 40 dégâts Ombre par adversaire réellement touché, avec esquive indépendante pour chacun. En 2v2, les deux ennemis peuvent être touchés à chaque passage. Si une cible est KO, les passages suivants poursuivent l'attaque sur sa remplaçante. Les chevaux spectraux sont purement visuels. Une utilisation par combat, disponible après 30 secondes.",
+    "description": "Cavalcade des damnés — cinq copies identiques de l'animation d'attaque officielle de Raiiven chargent ensemble jusqu'aux adversaires, en trois passages lisibles de 1,8 s. Chaque passage inflige 40 dégâts Ombre par adversaire réellement touché (esquive indépendante) ; en 2v2 les deux ennemis peuvent être touchés. Après KO, les passages suivants peuvent atteindre le remplaçant. Les copies sont exclusivement visuelles, le moteur conserve l'unique gestion des dégâts et collisions. Une utilisation par combat, disponible après 30 s.",
     "requiredLevel": 20,
     "usageScopes": [
       "capture",
@@ -18,9 +18,9 @@
       "projectileTargeting": "stampede",
       "stampede": {
         "passes": 3,
-        "passDurationMs": 1000,
-        "gapMs": 1800,
-        "cloneCount": 6
+        "passDurationMs": 1800,
+        "gapMs": 600,
+        "cloneCount": 5
       },
       "loadoutSlot": "ultimate",
       "element": "shadow",
