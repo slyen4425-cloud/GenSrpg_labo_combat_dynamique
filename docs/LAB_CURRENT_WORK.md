@@ -1,3 +1,11 @@
+## 2026-11-20 — Raiiven : correction auteur de placement adverse, animations protégées
+- START `main@a4f2d04961a03aa8c7fd26f1eb123b1ca957f8f5` ; checkpoint `checkpoint/lab-start-raiiven-author-correction-20261120` ; propriétaire : fichier canonique de transfert auteur `data/capture/showcase/raiiven.capture-creature-transfer-v1.json`.
+- Import de la version corrigée fournie par l'auteur : adversaire déplacé à Y=45, conservation des animations adversaires validées (mouvement 6 frames, attaque 5 frames), visuels dos et sockets inchangés.
+- Alignement du paramètre `movementBack.frameCount=7` avec l'asset officiel `pack:capture:creature-raiiven-movement-player-7-v1` et son manifeste (la valeur 6 de l'export joint tronquait la séquence). Aucune frame ni ressource média n'est réécrite. Les compétences provisoires `claw`/`cap_fire_special_1` restent inchangées jusqu'à validation des cinq propositions.
+- Domaine protégé : bibliothèque unique `global-assets`, autres créatures et compétences, moteur, registres, PWA/Exploration, médias approuvés. Tests ciblés : transfert Raiiven (frameCount ↔ assetId), présence des 4 manifestes canoniques, CI du SHA livré. Statut : validation CI et contrôle réel de publication requis avant checkpoint GREEN.
+
+---
+
 ## 2026-11-19 — Raiiven : import natif des quatre animations validées (face incluse)
 - START `main@b1237d84083e64221723a86b563e2e066afdb95a`, checkpoint `checkpoint/lab-start-raiiven-animation-import-20261119`, branche `work/lab-raiiven-animation-import-20261119`.
 - ZIP auteur déjà sur main, intacts : `raiiven_galop_7_frames_valide.zip` (7 images dos sans frame 6), `raiiven_attaque_5_frames_preview.zip` (attaque dos validée), `raiiven_mouvement_adversaire_6_frames.zip` (6 images face). L'archive `raiiven_attaque_face_5_frames_PROTO.zip` est **validée par l'auteur le 19 novembre** (GIF correct) : 5 PNG RGBA transparents, pose 01 égale à 05. Son nom historique PROTO est conservé pour retrouver le ZIP source, mais il est maintenant inclus dans le lot. Des défauts résiduels d'alpha et des zones au bord existent, revue visuelle nécessaire.
