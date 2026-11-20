@@ -1,5 +1,5 @@
-// Cavalcade: five equal copies of the creature's *official attack atlas*
-// charge from the actual caster toward the enemy. ONE collision report per
+// Cavalcade: one actual caster and equal visual copies share the official
+// MOVEMENT atlas. The standing caster is projected as a member of the herd. ONE collision report per
 // target/pass still belongs to Combat Runtime; the copies never own damage.
 import {sweptPointHitsOpaqueMask,visibleModelOpaqueRect} from "./dom-visible-model-contact.js?v=wall-ground-stop-20261101";
 
@@ -30,16 +30,25 @@ export function stampedeChargeGeometryV1({
 }
 
 export function playDomStampedeFxV1({
-  arena,fromSlot,targetSlot,stampede,sourceVisual,
+  arena,fromSlot,targetSlot,stampede,sourceVisual,sourceMotion=null,
   sourceRect,targetRect,targetSlots=[],targetCollisionModelFor,
   onContact,animate,requestFrame,cancelFrame,applySpriteVisual
 }){
   const bounds=arena.getBoundingClientRect(),doc=arena.ownerDocument;
   const source=sourceRect(fromSlot),target=targetRect(targetSlot);
   const count=Math.max(1,Number(stampede.cloneCount)||5);
-  const horseSize=Math.max(26,Math.min(
-    bounds.height*.42,source.width*.7,bounds.width*.21
-  ));
+  // The active actor may scale its *model* independently of its motion
+  // slot. Use the real displayed model bounds when available: measuring the
+  // slot alone made all five charging horses visibly smaller than Raiiven.
+  // For older templates or a temporarily hidden standing image, use the
+  // exact authored scale already stored on the canonical fighter container.
+  const sourceFighter=sourceMotion?.closest?.(".fighter")??null;
+  const realImageBounds=sourceMotion?.querySelector?.("[data-demo-image]")?.getBoundingClientRect?.()??null;
+  const authoredScale=Number(sourceFighter?.style?.getPropertyValue?.("--creature-display-scale"));
+  const fallbackScale=Number.isFinite(authoredScale)&&authoredScale>0?authoredScale:1;
+  const displayedWidth=Number(realImageBounds?.width);
+  const horseSize=Math.max(26,Number.isFinite(displayedWidth)&&displayedWidth>0
+    ? displayedWidth : (Number(source.width)||26)*fallbackScale);
   const destinations=[...new Set([targetSlot,...targetSlots])];
   const geometry=stampedeChargeGeometryV1({
     arenaBounds:bounds,sourceBounds:source,targetBounds:target,
@@ -55,18 +64,21 @@ export function playDomStampedeFxV1({
   group.dataset.stampede="true";
   Object.assign(group.style,{
     position:"absolute",left:geometry.fromX+"px",top:geometry.fromY+"px",
-    width:horseSize*3+"px",height:horseSize*1.8+"px",
+    width:horseSize*2.9+"px",height:horseSize*1.65+"px",
     pointerEvents:"none",zIndex:"5",opacity:"0",
     transform:"translate(-50%, -50%)"
   });
 
   // View selection happens in the same creature visual controller as ordinary
   // attacks; there is no copied atlas, redrawn ghost or substitute fireball.
-  const officialAttack=sourceVisual?.attack?.url?sourceVisual.attack:null;
   const officialMovement=sourceVisual?.movement?.url?sourceVisual.movement:
     sourceVisual?.url?sourceVisual:null;
-  const spriteSource=officialAttack??officialMovement;
-  group.dataset.stampedePose=officialAttack?"attack":officialMovement?"movement-fallback":"missing";
+  const officialAttack=sourceVisual?.attack?.url?sourceVisual.attack:null;
+  const spriteSource=officialMovement??officialAttack;
+  group.dataset.stampedePose=officialMovement?"movement":officialAttack?"attack-fallback":"missing";
+  const originalOpacity=sourceMotion?.style?.opacity??null;
+  const sourceShadow=sourceFighter?.querySelector?.(".fighter__shadow")??null;
+  const originalShadowOpacity=sourceShadow?.style?.opacity??null;
   const horses=[];
   for(let i=0;i<count;i++){
     const ghost=doc.createElement("span");
@@ -74,19 +86,36 @@ export function playDomStampedeFxV1({
     ghost.dataset.ghostIndex=String(i);
     const middle=(count-1)/2;
     const column=i-middle;
+    // Staggered, natural herd: not five perfectly aligned identical lanes.
+    // No horse gets a size/opacity clue; the caster is the central rider.
+    const horizontal=horseSize*(1.45+column*.34+((i*3)%4)*.04);
+    const vertical=horseSize*(.26+((i*7)%5)*.11);
+    ghost.dataset.stampedeRole=i===Math.floor(count/2)?"caster":"visual-copy";
     Object.assign(ghost.style,{
       position:"absolute",display:"block",
       width:horseSize+"px",height:horseSize+"px",
-      left:(horseSize+column*horseSize*.43)+"px",
-      top:(horseSize*.38+(i%2===0?0:horseSize*.12))+"px",
+      left:horizontal+"px",
+      top:vertical+"px",
       opacity:"1",pointerEvents:"none",
       transform:geometry.direction>0?"none":"scaleX(-1)",
       transformOrigin:"center center"
     });
+    if(sourceShadow?.cloneNode){
+      const shadow=sourceShadow.cloneNode(true);
+      if(shadow.id)shadow.removeAttribute?.("id");
+      shadow.style.opacity="1";
+      shadow.dataset.stampedeHorseShadow="true";
+      ghost.append(shadow);
+    }
     group.append(ghost);
     horses.push({ghost,playback:null,layer:null});
   }
   arena.append(group);
+  // The actual caster is now PRESENT in the moving herd (one of count),
+  // instead of standing behind its own copies. Gameplay identity never moves
+  // into the renderer and the original is restored on every cleanup path.
+  if(sourceMotion?.style)sourceMotion.style.opacity="0";
+  if(sourceShadow?.style)sourceShadow.style.opacity="0";
   // The existing WAAPI owner is the ONLY presentation clock. The native
   // action's release and deadline still govern real hits and cost.
   const animation=animate(group,[{visibility:"visible"},{visibility:"visible"}],
@@ -114,9 +143,9 @@ export function playDomStampedeFxV1({
       ghost.append(sprite);
       const result=applySpriteVisual(sprite,{
         ...spriteSource,
-        // Preserve the author's frame count and order; stretch the complete
-        // five-frame attack through each readable native 1.8-second pass.
-        playbackMode:"stretch"
+        // Keep the source creature's author-approved movement frame count
+        // and timing, looping its stride throughout each charge pass.
+        playbackMode:"loop"
       },stampede.passDurationMs,animate);
       const horse=horses.find(entry=>entry.ghost===ghost);
       horse.playback=result.frameAnimation;
@@ -178,6 +207,8 @@ export function playDomStampedeFxV1({
       horse.layer?.remove?.();
     }
     group.remove?.();
+    if(sourceMotion?.style && originalOpacity!==null)sourceMotion.style.opacity=originalOpacity;
+    if(sourceShadow?.style && originalShadowOpacity!==null)sourceShadow.style.opacity=originalShadowOpacity;
   }
   const finished=Promise.resolve(animation.finished).then(
     ()=>{stop();return {status:"arrived"};},

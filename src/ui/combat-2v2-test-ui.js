@@ -776,6 +776,7 @@ export async function mountCoop2v2Test({
   const decoyOverlay=createDomDecoyOverlayV1({
     fighterContainers,applySpriteVisual,
     appearanceFor:actorId=>visuals.getMovementAppearanceFor?.(actorId)??null,
+    formationFor:(_actorId,statuses)=>skillsById[statuses[0]?.sourceSkillId]?.decoyFormation??null,
     onChoose:({actorId,decoyId})=>decoyId===null
       ?selectTarget(actorId):selectDecoy(actorId,decoyId)
   });
@@ -945,13 +946,14 @@ export async function mountCoop2v2Test({
       return combatEntityOverlay.collisionRectsFor({sourceActorId,targetActorId,kind});
     },
     sourceSpriteFor(slotId) {
-      // Stampede displays the canonical attack atlas from the actor's view;
-      // the movement atlas remains a no-asset fallback for old creatures.
+      // The movement atlas is authoritative for a visible herd, including
+      // the real caster. Attack artwork is a fallback for old creatures.
       return {
         attack:visuals.getAttackAppearanceFor?.(slotId)??null,
         movement:visuals.getMovementAppearanceFor?.(slotId)??null
       };
     },
+    sourceMotionFor(slotId) { return motionAnchors[slotId]??null; },
     waveTargetsFor(fromSlot) {
       // This is only a list of visible opponent models. The Runtime
       // independently enforces valid active enemy targets.
@@ -1824,7 +1826,7 @@ export async function mountCoop2v2Test({
         return;
       }
       pendingSkillId = null;
-      const decoy=selectedTargetId===resolvedTargetId && skill.category==="offensive" &&
+      const decoy=selectedTargetId===resolvedTargetId && skill.targetRelations?.includes("enemy") &&
         ["contact","projectile","beam"].includes(skill.form) ? selectedDecoyId : null;
       activateLocalSkill(skill, resolvedTargetId, decoy);
     };

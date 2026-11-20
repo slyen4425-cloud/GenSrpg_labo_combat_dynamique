@@ -47,7 +47,7 @@ import {
 } from "./combat-presence-v1.js";
 import { applyEventTriggeredBuffsV2 } from "./triggered-buff-events-v1.js";
 import {evasionSiphonDamageV1,applyEvasionSiphonV1} from "./evasion-siphon-v1.js";
-import {activeDecoyForV1,resolveDecoyHitV1} from "./decoy-hit-v1.js";
+import {activeDecoyForV1,resolveDecoyHitV1,dismissDecoysOnTrueHitV1} from "./decoy-hit-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -454,7 +454,7 @@ export function resolveSkillStart({
     tauntSource ?? targetId;
   fighterOf(state, effectiveTargetId);
   if (decoyId !== null && (
-    skill.category !== "offensive" ||
+    !skill.targetRelations?.includes("enemy") ||
     !["contact","projectile","beam"].includes(skill.form) ||
     !activeDecoyForV1(state,effectiveTargetId,decoyId)
   )) return Object.freeze({ok:false,outcome:"invalid_decoy_target",state,
@@ -1090,6 +1090,19 @@ export function resolveSkillCompletion({
         });
       nextState = applied.state;
       barrierIntercepted = applied.entityId !== null;
+      // Only a confirmed body hit of the true enemy removes ALL illusions.
+      // Decoy interception happens earlier and never applies status/debuff
+      // effects to the fighter. A shielded direct hit still reveals the real
+      // body; intangible protection and barrier hits do not.
+      if(!barrierIntercepted && !applied.intangibleProtection &&
+          actorId!==targetId && skill.targetRelations?.includes("enemy")){
+        const revealed=dismissDecoysOnTrueHitV1(nextState,targetId);
+        nextState=revealed.state;
+        if(revealed.removedIds.length)events.push(event("decoys-revealed",impactAtMs,{
+          actorId:targetId,sourceActorId:actorId,skillId:skill.id,
+          removedDecoyIds:revealed.removedIds
+        }));
+      }
       if (!barrierIntercepted && skill.evasionSiphon) {
         const theft=applyEvasionSiphonV1({state:nextState,actorId,targetId,skill,atMs:combatImpactAtMs});
         nextState=theft.state;

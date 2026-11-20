@@ -652,6 +652,25 @@ export function normalizeSkillDefinition(input) {
     throw new RangeError("chargedAttack must be the only direct damage authority");
   }
 
+  // Generic decoy formation: the existing apply_status(decoy) records remain
+  // the sole owned decoys. These settings describe their visual arrangement,
+  // not an extra status collection or a creature-specific override.
+  let decoyFormation=null;
+  if(input.decoyFormation!=null){
+    const v=input.decoyFormation;
+    if(!v||typeof v!=="object"||Array.isArray(v)||
+        Object.keys(v).some(key=>!["reshuffleMs","spacingPct"].includes(key)))
+      throw new TypeError("decoyFormation accepts only reshuffleMs and spacingPct");
+    const count=effects.filter(effect=>effect.kind==="apply_status"&&effect.status?.kind==="decoy").length;
+    if(form!=="self"||count<1||count>6)
+      throw new RangeError("decoyFormation requires 1..6 native self-decoy statuses on a self skill");
+    const reshuffleMs=Number(v.reshuffleMs),spacingPct=Number(v.spacingPct);
+    if(!Number.isInteger(reshuffleMs)||reshuffleMs<250||reshuffleMs>20000||
+       !Number.isFinite(spacingPct)||spacingPct<15||spacingPct>150)
+      throw new RangeError("decoyFormation reshuffleMs 250..20000 and spacingPct 15..150 required");
+    decoyFormation=Object.freeze({reshuffleMs,spacingPct});
+  }
+
   if (stampede && (normalizedLegacyEffect.damage <= 0 || normalizedLegacyEffect.heal > 0 || effects.length > 0))
     throw new RangeError("stampede requires one positive direct-damage authority and no parallel tactical effects");
 
@@ -669,6 +688,7 @@ export function normalizeSkillDefinition(input) {
     ...(chargedEffects ? {chargedEffects} : {}),
     ...(projectileTargeting === "expanding_wave" ? { expandingWave: Object.freeze({startRadiusPct,endRadiusPct,thicknessPct}) } : {}),
     ...(stampede ? { stampede } : {}),
+    ...(decoyFormation ? {decoyFormation} : {}),
     ...(evasionSiphon ? { evasionSiphon } : {}),
     ...(echoCopy ? { echoCopy } : {}),
     loadoutSlot,

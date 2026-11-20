@@ -34,3 +34,18 @@ export function resolveDecoyHitV1({state,actorId,targetId,decoyId,skillId,atMs=s
       absorbedByShield:applied.absorbedByShield,hpBefore:applied.hpBefore,hpAfter:applied.hpAfter})
   ])});
 }
+
+// A genuine hostile hit exposes the original creature: all remaining decoys
+// disappear in ONE CombatState transition. A wrong-choice decoy interception
+// never uses this path, and no rendering module mutates the fighter.
+export function dismissDecoysOnTrueHitV1(state,targetId){
+  const fighter=state.fighters?.[targetId];
+  if(!fighter)return Object.freeze({state,removedIds:Object.freeze([])});
+  const decoys=fighter.statusEffects.filter(x=>x.definition.kind==="decoy");
+  if(decoys.length===0)return Object.freeze({state,removedIds:Object.freeze([])});
+  const remaining=fighter.statusEffects.filter(x=>x.definition.kind!=="decoy");
+  return Object.freeze({
+    state:withFighterStatusEffects(state,targetId,remaining),
+    removedIds:Object.freeze(decoys.map(x=>x.definition.id))
+  });
+}

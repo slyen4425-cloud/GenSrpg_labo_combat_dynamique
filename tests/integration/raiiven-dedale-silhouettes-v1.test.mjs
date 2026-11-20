@@ -42,7 +42,7 @@ test("A real target and area attack hit Raiiven even when illusions are active",
  assert.equal(s.snapshot().fighters.raiiven.hp,80);
  assert.equal(s.useSkill({actorId:"enemy",targetId:"raiiven",skill:area}).outcome,"hit");
  assert.equal(s.snapshot().fighters.raiiven.hp,60);
- assert.equal(s.snapshot().fighters.raiiven.statusEffects.length,2);
+ assert.equal(s.snapshot().fighters.raiiven.statusEffects.length,0,"a true hit destroys every remaining clone");
 });
 test("Decoy selection after natural expiration is rejected without energy spending",()=>{
  const s=createCombatSession({fighters:[fighter("raiiven"),fighter("enemy")]});
@@ -58,4 +58,31 @@ test("No fake decoy selection for area skills or beneficial skills",()=>{
  s.useSkill({actorId:"raiiven",targetId:"raiiven",skill:decoy});
  const r=s.useSkill({actorId:"enemy",targetId:"raiiven",skill:area,decoyId:"raiiven-decoy-left"});
  assert.equal(r.ok,false);assert.equal(r.outcome,"invalid_decoy_target");
+});
+
+test("A hostile non-damaging debuff intercepted by a decoy destroys only that clone and never affects the real creature",()=>{
+ const s=createCombatSession({fighters:[fighter("raiiven"),fighter("enemy")]});
+ s.useSkill({actorId:"raiiven",targetId:"raiiven",skill:decoy});
+ const debuff=normalizeSkillDefinition({
+   id:"test-hostile-debuff",name:"Malédiction ciblée",category:"buff_debuff",form:"projectile",
+   element:"shadow",approachMode:"none",energyCost:0,preparationMs:0,travelMs:0,
+   recoveryMs:0,cooldownMs:0,allowedDistances:["short","medium","long"],
+   targetRelations:["enemy"],
+   effect:{damage:0,heal:0,stunMs:0,interruptsPreparation:false,tags:[]},
+   effects:[{kind:"apply_status",targetScope:"target",status:{
+     id:"test-hostile-silence",kind:"silence",polarity:"detrimental",
+     durationModel:"time_ms",durationMs:5000,stacking:"refresh"
+   }}]
+ });
+ const r=s.useSkill({actorId:"enemy",targetId:"raiiven",skill:debuff,decoyId:"raiiven-decoy-left"});
+ assert.equal(r.outcome,"decoy");
+ assert.equal(s.snapshot().fighters.raiiven.hp,100);
+ assert.equal(s.snapshot().fighters.enemy.hp,90);
+ assert.equal(s.snapshot().fighters.raiiven.statusEffects.length,1);
+ assert.ok(s.snapshot().fighters.raiiven.statusEffects.every(x=>x.definition.kind==="decoy"),
+   "the actual horse must not receive the silence");
+ const real=s.useSkill({actorId:"enemy",targetId:"raiiven",skill:debuff});
+ assert.equal(real.outcome,"hit");
+ assert.equal(s.snapshot().fighters.raiiven.statusEffects.some(x=>x.definition.kind==="decoy"),false,
+   "a confirmed direct debuff also reveals the actual horse");
 });

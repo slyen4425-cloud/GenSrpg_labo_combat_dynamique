@@ -4,7 +4,7 @@
 import {activeStatusEffectsV1} from "../../core/combat/status-effect-runtime-v1.js";
 
 export const DECOY_FORMATION_V1=Object.freeze({
-  scale:0.55,spacingPct:56,reshuffleMs:5000,edgePaddingPx:4
+  scale:1,spacingPct:56,reshuffleMs:5000,edgePaddingPx:4
 });
 
 function unbiasedRandomV1(){
@@ -17,19 +17,20 @@ function unbiasedRandomV1(){
   return Math.random();
 }
 
-export function nextDecoyRealSlotV1(previous=null,random=unbiasedRandomV1){
+export function nextDecoyRealSlotV1(previous=null,random=unbiasedRandomV1,count=3){
+  const slots=Math.max(2,Math.trunc(Number(count)||3));
   const sample=Math.min(0.999999,Math.max(0,Number(random())||0));
   return previous===null
-    ? Math.floor(sample*3)
-    : (previous+1+Math.floor(sample*2))%3;
+    ? Math.floor(sample*slots)
+    : (previous+1+Math.floor(sample*(slots-1)))%slots;
 }
 
-function formationOffsetPct(anchor,config){
+function formationOffsetPct(anchor,config,total=3){
   const arena=anchor.closest?.("[data-combat-arena]")??anchor.closest?.(".arena")??null;
   const outer=arena?.getBoundingClientRect?.();
   const own=anchor.getBoundingClientRect?.();
   if(!outer||!own||!own.width||!outer.width)return 0;
-  const halfExtent=own.width*(config.spacingPct/100+config.scale/2);
+  const halfExtent=own.width*((total-1)/2*config.spacingPct/100+config.scale/2);
   const left=outer.left+config.edgePaddingPx+halfExtent;
   const right=outer.right-config.edgePaddingPx-halfExtent;
   const center=own.left+own.width/2;
@@ -39,7 +40,7 @@ function formationOffsetPct(anchor,config){
 
 export function createDomDecoyOverlayV1({
   fighterContainers,appearanceFor,onChoose,applySpriteVisual,
-  random=unbiasedRandomV1,config=DECOY_FORMATION_V1
+  formationFor=()=>null,random=unbiasedRandomV1,config=DECOY_FORMATION_V1
 }){
   if(!fighterContainers||typeof appearanceFor!=="function"||
       typeof onChoose!=="function"||typeof applySpriteVisual!=="function")
@@ -60,34 +61,36 @@ export function createDomDecoyOverlayV1({
       entry.motion.style.scale=entry.previous.scale;
     }
     if(entry.shadow)entry.shadow.style.opacity=entry.previous.shadowOpacity;
+    delete entry.anchor.dataset.combatDecoyIllusionActive;
     active.delete(actorId);
   }
 
   function place(entry){
-    const center=formationOffsetPct(entry.anchor,config);
-    const occupied=[0,1,2].filter(index=>index!==entry.realIndex);
+    const cfg=entry.config,total=entry.decoyIds.length+1;
+    const center=formationOffsetPct(entry.anchor,cfg,total);
+    const occupied=Array.from({length:total},(_,i)=>i).filter(index=>index!==entry.realIndex);
     const targets=[...entry.decoyIds.map((id,i)=>({id,index:occupied[i]})),
       {id:null,index:entry.realIndex}];
     for(const [n,where] of targets.entries()){
       const sprite=entry.sprites[n];
       sprite.decoyId=where.id;
       const button=sprite.button;
-      button.style.left=(center+(where.index-1)*config.spacingPct)+"%";
+      button.style.left=(center+(where.index-(total-1)/2)*cfg.spacingPct)+"%";
       if(where.id===null){
         delete button.dataset.combatDecoy;
         button.dataset.combatDecoyReal="true";
-        button.setAttribute("aria-label","Choisir le véritable combattant");
+        button.setAttribute("aria-label","Cibler une silhouette");
       }else{
         delete button.dataset.combatDecoyReal;
         button.dataset.combatDecoy=where.id;
-        button.setAttribute("aria-label","Choisir une silhouette");
+        button.setAttribute("aria-label","Cibler une silhouette");
       }
     }
     // Move the actual visual collision model under its true projected slot.
     // Its pixels are hidden only while the three identical selectors render.
     if(entry.motion){
-      entry.motion.style.translate=(center+(entry.realIndex-1)*config.spacingPct)+"% 0%";
-      entry.motion.style.scale=String(config.scale);
+      entry.motion.style.translate=(center+(entry.realIndex-(total-1)/2)*cfg.spacingPct)+"% 0%";
+      entry.motion.style.scale="1";
       entry.motion.style.opacity="0";
     }
     if(entry.shadow)entry.shadow.style.opacity="0";
@@ -103,12 +106,14 @@ export function createDomDecoyOverlayV1({
     const entry={
       anchor,motion,shadow,previous,decoyIds:statuses.map(s=>s.definition.id),
       signature:statuses.map(s=>s.definition.id+"@"+s.appliedAtMs).join("|"),
-      realIndex:nextDecoyRealSlotV1(null,random),
+      config:Object.freeze({...config,...(formationFor(actorId,statuses)??{})}),
+      realIndex:nextDecoyRealSlotV1(null,random,statuses.length+1),
       lastShuffleAt:atMs,sprites:[]
     };
     const visual=appearanceFor(actorId);
     const duration=Math.max(1,Math.max(...statuses.map(x=>x.definition.durationMs||20000)));
     const realImage=motion?.querySelector?.("img")??anchor.querySelector?.("[data-demo-image]");
+    anchor.dataset.combatDecoyIllusionActive="true";
     for(let i=0;i<statuses.length+1;i++){
       const button=anchor.ownerDocument.createElement("button");
       button.type="button";
@@ -119,13 +124,17 @@ export function createDomDecoyOverlayV1({
         padding:"0",margin:"0",border:"0",borderRadius:"0",
         background:"transparent",outline:"none",cursor:"crosshair",
         zIndex:"8",opacity:"1",pointerEvents:"auto",
-        transform:"scale("+config.scale+")",transformOrigin:"center center",
+        transform:"scale("+entry.config.scale+")",transformOrigin:"center center",
         aspectRatio:"1",overflow:"visible"
       });
       const image=anchor.ownerDocument.createElement("span");
       image.className="combat-decoy__sprite";
       Object.assign(image.style,{position:"absolute",inset:"0",width:"100%",
-        height:"100%",display:"block",pointerEvents:"none"});
+        height:"100%",display:"block",pointerEvents:"none",
+        // The actual Animation Renderer scales the original body using this
+        // canonical per-creature property; the static illusion must too.
+        transform:"scale(var(--creature-display-scale, 1))",
+        transformOrigin:"center center"});
       let frameAnimation=null;
       // While Dédale is active, ALL THREE remain in the same official
       // standing pose. A looping gallop in place reveals an unnecessary FX
@@ -144,7 +153,16 @@ export function createDomDecoyOverlayV1({
         },duration);
         frameAnimation=playback.frameAnimation;
       }
-      button.append(image);
+      // Clone the same existing shadow geometry and alpha silhouette.
+      // It inherits the canonical lighting vars from the fighter, never
+      // invents a second cast-shadow system or a tell for the real horse.
+      const copy=shadow?.cloneNode?.(true)??anchor.ownerDocument.createElement("span");
+      copy.className=shadow?.className??"fighter__shadow";
+      if(copy.id)copy.removeAttribute?.("id");
+      copy.style.opacity="1";
+      copy.style.pointerEvents="none";
+      copy.dataset.combatDecoyShadow="true";
+      button.append(copy,image);
       const sprite={button,frameAnimation,decoyId:null};
       button.addEventListener("click",event=>{
         event.stopPropagation?.();
@@ -174,8 +192,8 @@ export function createDomDecoyOverlayV1({
         cleanup(actorId);
         entry=create(actorId,anchor,statuses,state.elapsedMs);
       }
-      if(state.elapsedMs-entry.lastShuffleAt>=config.reshuffleMs){
-        entry.realIndex=nextDecoyRealSlotV1(entry.realIndex,random);
+      if(state.elapsedMs-entry.lastShuffleAt>=entry.config.reshuffleMs){
+        entry.realIndex=nextDecoyRealSlotV1(entry.realIndex,random,entry.decoyIds.length+1);
         entry.lastShuffleAt=state.elapsedMs;
       }
       place(entry);
