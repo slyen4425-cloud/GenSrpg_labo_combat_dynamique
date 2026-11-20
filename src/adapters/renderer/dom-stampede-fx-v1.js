@@ -73,18 +73,16 @@ export function playDomStampedeFxV1({
     transform:"translate(-50%, -50%)"
   });
 
-  // Normal basic ATTACK is authoritative for Cavalcade, not the creature's
-  // running/movement atlas. Normal combat already selects the correct
-  // front/back attack and authored X/Y placement for this source slot.
-  const officialAttack=sourceVisual?.attack?.url?sourceVisual.attack:null;
+  // Cavalcade is a gallop, NOT an attack pose. Reuse the normal
+  // FACE/DOS movement atlas and authored movement offsets/scale. The attack
+  // atlas is a fallback only for creatures without a movement animation.
   const officialMovement=sourceVisual?.movement?.url?sourceVisual.movement:
     sourceVisual?.url?sourceVisual:null;
-  const spriteSource=officialAttack??officialMovement;
-  group.dataset.stampedePose=officialAttack?"standard-attack":
-    officialMovement?"movement-fallback":"missing";
-  // Share the standard creature-attack pose composer, including its
-  // FACE/DOS-specific authored placement and scale.
-  const attackPose=composeCreatureMovementPoseV1({
+  const officialAttack=sourceVisual?.attack?.url?sourceVisual.attack:null;
+  const spriteSource=officialMovement??officialAttack;
+  group.dataset.stampedePose=officialMovement?"standard-movement":
+    officialAttack?"attack-fallback":"missing";
+  const movementPose=composeCreatureMovementPoseV1({
     arena,visual:spriteSource,authorPixels
   });
   const sourceShadow=sourceFighter?.querySelector?.(".fighter__shadow")??null;
@@ -133,7 +131,7 @@ export function playDomStampedeFxV1({
       left:horizontal+"px",
       top:vertical+"px",
       opacity:"1",pointerEvents:"none",
-      // Use precisely the native attack orientation. The ordinary attack
+      // Use precisely the native movement orientation. The ordinary movement
       // does not mirror the player/opponent atlas based on travel direction.
       transform:"none",
       transformOrigin:sourceMotion?.style?.transformOrigin||"center center"
@@ -176,7 +174,7 @@ export function playDomStampedeFxV1({
       Object.assign(sprite.style,{
         position:"absolute",inset:"0",width:"100%",height:"100%",pointerEvents:"none"
       });
-      sprite.style.transform=attackPose;
+      sprite.style.transform=movementPose;
       sprite.style.transformOrigin="center center";
       casterLayer.append(sprite);
       const playback=applySpriteVisual(sprite,{
@@ -195,7 +193,7 @@ export function playDomStampedeFxV1({
         position:"absolute",inset:"0",display:"block",
         width:"100%",height:"100%",pointerEvents:"none"
       });
-      sprite.style.transform=attackPose;
+      sprite.style.transform=movementPose;
       sprite.style.transformOrigin="center center";
       ghost.append(sprite);
       const result=applySpriteVisual(sprite,{
