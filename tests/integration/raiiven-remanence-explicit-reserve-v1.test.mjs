@@ -88,6 +88,24 @@ test("self/ally reserve healing projects as ally and uses Roster permissions",()
   targetRef:{scope:"reserve",teamId:"enemy",memberId:"e1"},skill:inspect.skill});
  assert.equal(deny.outcome,"target_relation");
 });
+test("timed reserve source stores the real authored effects, not a zero-effect animation anchor",()=>{
+ const {session,roster}=harness();
+ const sourceRef={scope:"reserve",teamId:"raiiven",memberId:"r1"};
+ const staged=roster.prepareSkillOnTarget({actorId:"enemy",targetRef:sourceRef,skill:reserveShot});
+ assert.equal(staged.ok,true);
+ assert.deepEqual(staged.skill.effects,[],"visible body never receives reserve damage");
+ const started=session.startSkill({actorId:"enemy",targetId:staged.targetId,skill:staged.skill});
+ assert.equal(started.ok,true);
+ const inspected=session.inspectEchoSource({actorId:"raiiven",targetId:"enemy",skill:echo});
+ assert.equal(inspected.ok,true);
+ assert.equal(inspected.skill.effects[0].amount,18);
+ assert.equal(inspected.sourceSkillId,reserveShot.id);
+ const completed=session.completeSkill({action:started.action});
+ const settled=roster.useSkillOnTarget({actorId:"enemy",targetRef:sourceRef,skill:reserveShot,
+   expectedActiveMemberId:staged.expectedActiveMemberId,completedResolution:completed});
+ assert.equal(settled.ok,true);
+ assert.equal(roster.reserveMemberSnapshot("raiiven","r1").hp,170,"no double effects");
+});
 test("ultimate and a replacement still cannot be used as an echo source",()=>{
  const {session,roster}=harness();
  const ultimate=normalizeSkillDefinition({...reserveShot,id:"enemy-reserve-ultimate",loadoutSlot:"ultimate"});

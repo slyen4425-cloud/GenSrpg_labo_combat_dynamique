@@ -65,8 +65,12 @@ export function createCombatSession({
   // A replacement clears this pointer: two occupants can never share history.
   const lastStandardSkillByActor=new Map();
   const rememberSkill=(actorId,skill)=>{
-    if(skill && skill.loadoutSlot!=="ultimate" && !skill.echoCopy && !skill.echoSourceSkillId)
-      lastStandardSkillByActor.set(actorId,skill);
+    // Roster's timed bench cast uses a zero-effect visual anchor. The real
+    // paid skill is carried solely as metadata for the LAST-SKILL journal;
+    // no second effect ever resolves on the visible target.
+    const actual=skill?.rosterOriginalSkillForEcho??skill;
+    if(actual && actual.loadoutSlot!=="ultimate" && !actual.echoCopy && !actual.echoSourceSkillId)
+      lastStandardSkillByActor.set(actorId,actual);
   };
   const projectEcho=({actorId,targetId,skill,allowReserveTarget=false})=>
     !skill?.echoCopy ? Object.freeze({ok:true,skill,targetId}) :

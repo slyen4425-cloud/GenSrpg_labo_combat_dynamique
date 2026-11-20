@@ -917,7 +917,7 @@ export function createRosterSession({
     const forcedResult = (forced || relay) ? forceSwitchMemberBySkill(team, member) : null;
     // Synchronous reserve casts use Roster's native start rather than
     // session.startSkill; record only truly committed non-preview actions.
-    if(completedResolution===null)combatSession.recordRosterSkillCommit?.(actorId,skill);
+    combatSession.recordRosterSkillCommit?.(actorId,skill);
     if (relay && forcedResult) commitVoluntaryCooldown(team);
     if (completedResolution !== null) consumedTimedReserveResolutions.add(completedResolution);
     return Object.freeze({
@@ -952,7 +952,8 @@ export function createRosterSession({
     const preview = previewSkillOnTarget({actorId,targetRef,skill});
     if (!preview.ok) return preview;
     const team = teamOf(targetRef.teamId);
-    const staged = zeroEffectSkill(skill);
+    const staged = Object.freeze({...zeroEffectSkill(skill),
+      rosterOriginalSkillForEcho:skill});
     const relation = relationToReserveTeam(actorId,team);
     return Object.freeze({
       ok:true,outcome:"ready",targetId:team.slotId,

@@ -835,6 +835,9 @@ export async function mountCoop2v2Test({
   let selectedTargetId = previewFormat.initialTargetId;
   let selectedDecoyId = null;
   let pendingSkillId = null;
+  // The inspected enemy caster is distinct from the selected bench target.
+  // This is a read-only UI intent; RosterSession validates the actual member.
+  let pendingReserveEcho = null;
   // Only the selected reserve reference lives in UI; CombatRuntime owns the
   // entire clock/reactions, and RosterSession owns all applied bench effects.
   const pendingTimedReserveByActor = new Map();
@@ -1127,8 +1130,10 @@ export async function mountCoop2v2Test({
   }
 
   function reserveSkillTargetOptions(skill) {
+    const projected=pendingReserveEcho?.skillId===skill?.id
+      ? pendingReserveEcho.projectedSkill : skill;
     return combatSkillReserveTargetOptionsV2({
-      format, actorId:controlledActorId(), skill,
+      format, actorId:controlledActorId(), skill:projected,
       rosterSnapshot:rosterController?.snapshot() ?? null,
       previewTarget:args=>rosterController.previewSkillOnTarget(args)
     });
@@ -1140,8 +1145,21 @@ export async function mountCoop2v2Test({
       actorId: controlledActorId(),
       skill,
       state,
-      previewSkill: ({ actorId, targetId, skill }) =>
-        session.previewSkill({ actorId, targetId, skill }),
+      previewSkill: ({ actorId, targetId, skill }) => {
+        const ordinary=session.previewSkill({actorId,targetId,skill});
+        if(!skill.echoCopy || ordinary.outcome!=="copy_reserve_requires_member_selection" ||
+           !rosterController)return ordinary;
+        const inspected=session.inspectEchoSource({actorId,targetId,skill});
+        if(!inspected.ok || !inspected.reserveMemberRequired)return ordinary;
+        const legal=combatSkillReserveTargetOptionsV2({
+          format,actorId,skill:inspected.skill,
+          rosterSnapshot:rosterController.snapshot(),
+          previewTarget:args=>rosterController.previewSkillOnTarget(args)
+        });
+        return legal.length>0
+          ? Object.freeze({ok:true,outcome:"copy_reserve_selection_required"})
+          : ordinary;
+      },
       isPresent: actorId =>
         rosterController === null || rosterController.isPresent(actorId)
     });
@@ -1484,6 +1502,7 @@ export async function mountCoop2v2Test({
 
     selectedTargetId = actorId;
     selectedDecoyId = null;
+    if(pendingReserveEcho?.sourceActorId!==actorId)pendingReserveEcho=null;
     const relation = targetRelation({
       format,
       actorId: controlledActorId(),
@@ -1585,6 +1604,25 @@ export async function mountCoop2v2Test({
   }
 
   function activateLocalReserveSkill(skill, targetRef) {
+    let effectiveSkill=skill;
+    if(skill.echoCopy){
+      const intent=pendingReserveEcho;
+      if(!intent || intent.skillId!==skill.id){
+        setStatus("Rémanence : choisis d'abord la créature dont tu copies la compétence.","warn");
+        return false;
+      }
+      const current=session.inspectEchoSource({
+        actorId:controlledActorId(),targetId:intent.sourceActorId,skill});
+      if(!current.ok || !current.reserveMemberRequired ||
+         current.sourceSkillId!==intent.sourceSkillId){
+        pendingReserveEcho=null;
+        pendingSkillId=null;
+        setStatus("La compétence à copier a changé. Sélectionne de nouveau la source.","warn");
+        renderAvailability();
+        return false;
+      }
+      effectiveSkill=current.skill;
+    }
     const eligible = reserveSkillTargetOptions(skill).some(option =>
       option.targetRef.teamId === targetRef.teamId && option.targetRef.memberId === targetRef.memberId
     );
@@ -1594,7 +1632,7 @@ export async function mountCoop2v2Test({
       return false;
     }
     const actorId=controlledActorId();
-    const staged=rosterController.prepareSkillOnTarget({actorId,targetRef,skill});
+    const staged=rosterController.prepareSkillOnTarget({actorId,targetRef,skill:effectiveSkill});
     if (!staged.ok) {
       setStatus(skill.name + " : " + staged.outcome + ".", "warn");
       renderAvailability();
@@ -1602,7 +1640,7 @@ export async function mountCoop2v2Test({
     }
     // Register the selected bench member before starting: a zero-duration
     // skill can be resolved synchronously by the canonical Runtime.
-    const intent={skill,targetRef,expectedActiveMemberId:staged.expectedActiveMemberId,
+    const intent={skill:effectiveSkill,targetRef,expectedActiveMemberId:staged.expectedActiveMemberId,
       targetId:staged.targetId};
     pendingTimedReserveByActor.set(actorId,intent);
     const result=runtime.startSkill({actorId,targetId:staged.targetId,skill:staged.skill});
@@ -1613,8 +1651,9 @@ export async function mountCoop2v2Test({
       return false;
     }
     pendingSkillId=null;
+    pendingReserveEcho=null;
     const member=rosterController.snapshot()[targetRef.teamId]?.members.find(x=>x.id===targetRef.memberId);
-    setStatus(skill.name + (skill.effects?.some(effect => effect.kind === "ally_reserve_relay")
+    setStatus(skill.name + (effectiveSkill.effects?.some(effect => effect.kind === "ally_reserve_relay")
       ? " se prépare : relève céleste pour " : " se prépare : liane vers ") +
       (member?.displayName ?? targetRef.memberId) + ". L'adversaire peut esquiver ou contrer.", "accent");
     renderAvailability();
@@ -1629,6 +1668,33 @@ export async function mountCoop2v2Test({
       setStatus(skill.name + " : cible indisponible.", "warn");
       renderAvailability();
       return;
+    }
+    if(skill.echoCopy){
+      const inspected=session.inspectEchoSource({
+        actorId:controlledActorId(),targetId,skill});
+      if(inspected.ok && inspected.reserveMemberRequired){
+        pendingReserveEcho={
+          skillId:skill.id,sourceActorId:targetId,
+          sourceSkillId:inspected.sourceSkillId,projectedSkill:inspected.skill
+        };
+        pendingSkillId=skill.id;
+        const candidates=reserveSkillTargetOptions(skill);
+        if(candidates.length===0){
+          pendingReserveEcho=null;pendingSkillId=null;
+          setStatus("Rémanence : aucune créature de réserve éligible.","warn");
+          renderAvailability();
+          return;
+        }
+        const enemyBench=candidates.some(option=>
+          format.teamOf(option.targetRef.teamId)!==format.teamOf(controlledActorId()));
+        setStatus("Rémanence copie "+inspected.sourceSkillId+
+          " : choisis la réserve "+(enemyBench?"adverse.":"alliée."),"accent");
+        if(enemyBench)rosterPanel?.openEnemyForSkill();
+        else rosterPanel?.openForSkill();
+        renderAvailability();
+        renderTargetSelection();
+        return;
+      }
     }
     const result = runtime.startSkill({
       actorId: controlledActorId(), targetId, skill, decoyId
@@ -1763,6 +1829,7 @@ export async function mountCoop2v2Test({
 
   function renderLocalSkills() {
     pendingSkillId = null;
+    pendingReserveEcho = null;
     for (const refs of skillRefs.values()) refs.dispose();
     skillRefs.clear();
     skillContainer.replaceChildren();
