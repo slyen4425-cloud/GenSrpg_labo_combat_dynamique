@@ -64,6 +64,7 @@ async function scenario(two){
   check(slots.raiiven.querySelectorAll(".combat-decoy").length===3,"three identical silhouettes including real target");
   check(slots.raiiven.querySelectorAll("[data-combat-decoy-shadow]").length===3,"three matching canonical ground shadows, including the real horse");
   check([...slots.raiiven.querySelectorAll(".combat-decoy")].every(node=>node.style.transform==="scale(1)"),"full-size horses without small-clone scaling");
+  check([...slots.raiiven.querySelectorAll(".combat-decoy__sprite")].every(sprite=>sprite.style.transform==="scale(var(--creature-display-scale, 1))"),"full-size cloned pixels inherit the same authored creature scale as the actual actor");
   const realBody=slots.raiiven.querySelector("[data-combat-decoy-real]");
   const beforeSlot=realBody.style.left;
   check(realBody!==null,"real horse is one of the three selectable silhouettes");
