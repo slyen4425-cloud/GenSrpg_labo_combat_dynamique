@@ -1,6 +1,6 @@
 > # 🚩 [ATELIER DE FABRICATION DES ANIMATIONS — ENTRÉE OFFICIELLE](00_ATELIER_ANIMATIONS_LIRE_EN_PREMIER.md)
 >
-> **Premier standard : [CHEVAL](atelier-animations/styles/cheval/README.md) — 4 planches Raiiven conservées comme références.** Anciens prototypes inchangés.
+> **Standards : [🐎 CHEVAL](atelier-animations/styles/cheval/README.md) (Raiiven) · [🦍 GORILLE](atelier-animations/styles/gorille/README.md) (Gorice).** Références officielles copiées ; prototypes historiques inchangés.
 
 # GenSrpG — Laboratoire combat dynamique
 
