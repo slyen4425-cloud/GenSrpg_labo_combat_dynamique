@@ -93,6 +93,7 @@ test('native editor opts in to IndexedDB; saved images are hydrated before nativ
  assert.match(entry,/saveCreatorVisualAsset:async\(/);
  assert.match(entry,/frameCount: creatorAsset\.resource\.frameCount\?\?1/);
  assert.match(ui,/await saveCreatorVisualAsset\(\{/);
+ assert.match(ui,/hydrateAssetCatalog\(root, listen, creatorVisualAssets, creatorSpritesReady, saveCreatorVisualAsset\)/);
  assert.match(ui,/creatorVisualAssets\.discardSessionImage\?\.\(asset\.id\)/);
  assert.match(session,/restoreImage,/);
  assert.doesNotMatch(entry,/localStorage\.setItem\(.+sprite|sessionStorage\.setItem\(.+sprite/);
