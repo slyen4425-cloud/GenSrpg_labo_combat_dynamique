@@ -37,9 +37,18 @@ export function playDomStampedeFxV1({
   const bounds=arena.getBoundingClientRect(),doc=arena.ownerDocument;
   const source=sourceRect(fromSlot),target=targetRect(targetSlot);
   const count=Math.max(1,Number(stampede.cloneCount)||5);
-  // The horses are drawn at the SAME square size as the active actor, not
-  // 70% or a capped arena-relative projectile scale.
-  const horseSize=Math.max(26,Number(source.width)||26);
+  // The active actor may scale its *model* independently of its motion
+  // slot. Use the real displayed model bounds when available: measuring the
+  // slot alone made all five charging horses visibly smaller than Raiiven.
+  // For older templates or a temporarily hidden standing image, use the
+  // exact authored scale already stored on the canonical fighter container.
+  const sourceFighter=sourceMotion?.closest?.(".fighter")??null;
+  const realImageBounds=sourceMotion?.querySelector?.("[data-demo-image]")?.getBoundingClientRect?.()??null;
+  const authoredScale=Number(sourceFighter?.style?.getPropertyValue?.("--creature-display-scale"));
+  const fallbackScale=Number.isFinite(authoredScale)&&authoredScale>0?authoredScale:1;
+  const displayedWidth=Number(realImageBounds?.width);
+  const horseSize=Math.max(26,Number.isFinite(displayedWidth)&&displayedWidth>0
+    ? displayedWidth : (Number(source.width)||26)*fallbackScale);
   const destinations=[...new Set([targetSlot,...targetSlots])];
   const geometry=stampedeChargeGeometryV1({
     arenaBounds:bounds,sourceBounds:source,targetBounds:target,
@@ -68,7 +77,7 @@ export function playDomStampedeFxV1({
   const spriteSource=officialMovement??officialAttack;
   group.dataset.stampedePose=officialMovement?"movement":officialAttack?"attack-fallback":"missing";
   const originalOpacity=sourceMotion?.style?.opacity??null;
-  const sourceShadow=sourceMotion?.closest?.(".fighter")?.querySelector?.(".fighter__shadow")??null;
+  const sourceShadow=sourceFighter?.querySelector?.(".fighter__shadow")??null;
   const originalShadowOpacity=sourceShadow?.style?.opacity??null;
   const horses=[];
   for(let i=0;i<count;i++){
