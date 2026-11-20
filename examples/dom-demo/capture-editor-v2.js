@@ -20,6 +20,8 @@ import {
 import {
   createCreatorVisualAssetSessionV1
 } from "../../src/assets/creator-visual-asset-session-v1.js";
+import {createCaptureCreatorSpriteStoreV1}
+ from "../../src/assets/capture-creator-sprite-persistent-store-v1.js";
 import {
   createCreatorAudioAssetSessionV1
 } from "../../src/assets/creator-audio-asset-session-v1.js";
@@ -207,12 +209,44 @@ const {universeId,universeStore,universeSnapshot} =
  createCaptureUniverseEditorBrowserV1({search:globalThis.location?.search ?? ''});
 let universeRevision=universeSnapshot?.revision??null;
 
+// Same site's local Blob store is canonical for personal visuals.
+// Each universe has its own scope. This lab-only fallback is explicitly NOT
+// a PWA/multiplayer authority (other origins require an approved adapter).
+const creatorSpriteScopeId=universeId??'capture-local-preview';
+let creatorSpriteStore=null;
+let creatorRestoreWarning=null;
+try{
+ creatorSpriteStore=createCaptureCreatorSpriteStoreV1();
+ const stored=await creatorSpriteStore.list(creatorSpriteScopeId);
+ for(const row of stored){
+  const file=new File([row.blob],row.originalName||row.id+'.png',{type:row.mime});
+  creatorVisualAssets.restoreImage({
+   id:row.id,file,label:row.label,role:row.role,
+   frameCount:row.frameCount,frameMs:row.frameMs
+  });
+ }
+}catch(error){
+ // Preserve ALL historical rows, even if one is corrupt. A broken store
+ // must never trigger clearing, silent reset or a false saved confirmation.
+ creatorRestoreWarning='Mes sprites : restauration impossible ('+
+  (error?.message??String(error))+'). Aucun fichier n’a été supprimé.';
+ console.error(creatorRestoreWarning);
+}
+
 let editor;
 try {
   editor = mountCaptureEditorHumanV2({
     root,
     creatorVisualAssets,
     creatorAudioAssets,
+    saveCreatorVisualAsset:async({asset,file,label,role,frameCount,frameMs})=>{
+      if(!creatorSpriteStore||creatorRestoreWarning)
+       throw new Error(creatorRestoreWarning??'Stockage personnel indisponible.');
+      return creatorSpriteStore.put({
+       scopeId:creatorSpriteScopeId,assetId:asset.id,label,role,file,
+       frameCount,frameMs
+      });
+    },
     // The author UI itself selects the tab; no post-ready synthetic click.
     initialTab: new URLSearchParams(globalThis.location?.search ?? "").get("tab") ?? "creature",
     initialDatabase: universeSnapshot?.database ?? null
@@ -223,6 +257,14 @@ try {
     (error?.message ?? String(error));
   editorStatus.dataset.tone = "error";
   throw error;
+}
+
+if(creatorRestoreWarning){
+ const warning=document.createElement('p');
+ warning.setAttribute('role','alert');
+ warning.dataset.capturePersonalSpriteWarning='true';
+ warning.textContent=creatorRestoreWarning;
+ editorStatus.after(warning);
 }
 
 if(universeSnapshot){
@@ -455,8 +497,9 @@ function resolvePreviewPresentationAsset(assetId) {
     return Object.freeze({
       assetId,
       url: creatorAsset.resource.runtimeUrl,
-      frameCount: 1,
-      playbackMode: "once"
+      frameCount: creatorAsset.resource.frameCount??1,
+      ...(creatorAsset.resource.frameMs!=null?{frameMs:creatorAsset.resource.frameMs}:{}),
+      playbackMode: creatorAsset.resource.playbackMode??"once"
     });
   }
 
@@ -673,6 +716,7 @@ globalThis.addEventListener(
     soundtrackLocalMedia.dispose();
     creatorAudioAssets.dispose();
     creatorVisualAssets.dispose();
+    creatorSpriteStore?.close();
   },
   { once: true }
 );
