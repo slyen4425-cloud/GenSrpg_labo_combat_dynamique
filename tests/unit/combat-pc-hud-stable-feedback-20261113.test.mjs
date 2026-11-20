@@ -9,7 +9,9 @@ test("desktop HUD overrides stay opt-in and do not touch mobile or combat geomet
   const start=css.indexOf(marker);
   assert.ok(start>0,"PC-only block exists");
   const desktop=css.slice(start);
-  assert.match(desktop,/@media \(min-width: 1100px\) and \(min-height: 680px\) and \(pointer: fine\)/);
+  // #351: extended fine-pointer desktop HUD to short PC windows (650px),
+  // still excluding touch/phone and leaving the 16:9 arena untouched.
+  assert.match(desktop,/@media \(min-width: 1100px\) and \(min-height: 650px\) and \(pointer: fine\)/);
   for(const selector of [".combat-controls",".combat-card",".squad-card--local-full",".coop-command-stack",".action-option--skill",".action-option__icon"]){
     assert.ok(desktop.includes(selector),"desktop sizing includes "+selector);
   }
