@@ -103,7 +103,14 @@ if(!chrome) { server.close(); throw Error("Real Chromium is required for combat 
 const host="http://127.0.0.1:"+server.address().port;
 
 async function runChrome(args,label) {
-  const proc=spawn(chrome,["--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage",
+  // Bare headless Chrome defaults to pointer:none and silently skips the PC
+  // (pointer:fine) media rule. Emulate physical mouse on desktop and touch
+  // on phone, matching Chromium's supported Blink pointer/hover settings.
+  const phone = args.some(arg => /--window-size=(915,412|800,360)/.test(arg));
+  const pointer = phone
+    ? "--blink-settings=primaryHoverType=0,availableHoverTypes=0,primaryPointerType=2,availablePointerTypes=2"
+    : "--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4";
+  const proc=spawn(chrome,["--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage",pointer,
     "--disable-background-networking","--no-first-run","--hide-scrollbars",
     "--virtual-time-budget=1300",...args],{stdio:["ignore","pipe","pipe"]});
   const out=[],err=[];
@@ -150,6 +157,7 @@ try {
     for(const [w,h] of desktops){
       const before=await probe(w,h,count,"before");
       const after=await probe(w,h,count,"after");
+      assert(after.fine === true && before.fine === true, "desktop must use mouse/fine pointer: "+w+" "+count);
       assert(after.skillCount===5,"not five skills: "+w+" "+count);
       assert(after.accessible.every(Boolean),"skill under another HUD or unreachable: "+w+" "+count+" "+JSON.stringify(after));
       assert(after.dodgeVsStack===0 && after.dodgeVsSkills.every(x=>x===0),
@@ -164,6 +172,7 @@ try {
     }
     for(const [w,h] of phones){
       const before=await probe(w,h,count,"before"),after=await probe(w,h,count,"after");
+      assert(after.fine === false && before.fine === false, "phone must use touch/coarse pointer: "+w+" "+count);
       for(const el of ["stack","dodge","playerHp"]){
         for(const axis of ["x","y","width","height"])
           assert(close(before.box[el][axis],after.box[el][axis]),
