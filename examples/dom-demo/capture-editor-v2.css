@@ -2077,7 +2077,7 @@ html {
 /* PC-only combat legibility. Do not override the phone-authored 16:9
    arena geometry or the landscape/touch rules above. Only HUD controls
    grow, not creature scale, collision positions or battle mechanics. */
-@media (min-width: 1100px) and (min-height: 680px) and (pointer: fine) {
+@media (min-width: 1100px) and (min-height: 650px) and (pointer: fine) {
   .capture-preview-shell[data-landscape-required="true"] .combat-card {
     width: min(19rem, 29%);
     min-height: 6rem;
@@ -2165,7 +2165,7 @@ html {
     padding: .2rem;
   }
   .capture-preview-shell[data-landscape-required="true"] .action-option--skill strong {
-    font-size: .7rem;
+    font-size: .62rem;
     line-height: 1.1;
   }
   .capture-preview-shell[data-landscape-required="true"] .action-option__icon {
