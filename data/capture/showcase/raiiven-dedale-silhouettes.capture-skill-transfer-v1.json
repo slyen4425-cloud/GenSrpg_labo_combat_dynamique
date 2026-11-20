@@ -9,7 +9,7 @@
       "capture",
       "combat"
     ],
-    "description": "Dédale des silhouettes : Raiiven crée deux doubles spectraux ciblables pendant 20 s. Chaque leurre frappé disparaît et inflige une riposte de 10 dégâts Ombre à l'assaillant. Le véritable Raiiven reste vulnérable aux attaques de zone et aux attaques qui le ciblent.",
+    "description": "Dédale des silhouettes : Raiiven affiche trois chevaux d'apparence strictement identique, même atlas, taille, position verticale et animation. Deux sont des leurres ciblables, le troisième est le vrai. Leur ordre change lors du lancement puis toutes les 5 secondes, sans identification visuelle du vrai. Chaque leurre frappé disparaît et inflige 10 dégâts Ombre à l'assaillant. Durée 20 secondes ; les attaques de zone et les vrais coups directs continuent de fonctionner.",
     "definition": {
       "id": "raiiven-dedale-silhouettes",
       "name": "Dédale des silhouettes",
