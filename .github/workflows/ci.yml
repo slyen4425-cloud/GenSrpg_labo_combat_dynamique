@@ -136,3 +136,26 @@ jobs:
           node-version: 22
       - name: Real Chromium Raiiven selectable decoys, native retaliation, spectral echo 1v1 and 2v2
         run: node tests/browser/raiiven-four-skills-smoke.mjs
+
+  combat-pc-hud-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1 # fetch only the exact immutable START commit below
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch immutable HUD START baseline (single commit, no full-history clone)
+        run: git fetch --no-tags --depth=1 origin 1ec3174f6c2106f5b1ff35676fbe3fd0c9c2c8ea
+      - name: Real native Capture HUD / Chromium (1v1, 2v2, PC sizes, zoom breakpoints, phone parity)
+        run: node tests/browser/capture-combat-pc-hud-geometry-smoke.mjs
+      - name: Preserve before/after Chromium screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: combat-pc-hud-before-after
+          path: artifacts/combat-pc-hud/*.png
+          if-no-files-found: warn
+
