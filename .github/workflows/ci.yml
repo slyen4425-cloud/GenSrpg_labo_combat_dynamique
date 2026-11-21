@@ -68,12 +68,24 @@ jobs:
         run: node tests/browser/capture-heal-inversion-editor-smoke.mjs
       - name: Real Chromium ice barrier author and entity HUD
         run: node tests/browser/capture-ice-barrier-editor-smoke.mjs
-      - name: Real Chromium 2.5D arena shadow and flying light projection
-        run: node tests/browser/shadow-light-real-render-smoke.mjs
       - name: Real Chromium Sylvorne original player/back and opponent/front in combat actor slots
         run: node tests/browser/capture-sylvorne-combat-visual-smoke.mjs
       - name: Real Chromium Capture Bestiaire (front only)
         run: node tests/browser/capture-bestiary-smoke.mjs
+
+  # Keep this exact native alpha-mask contact test mandatory but isolate it
+  # from the 20 heavy sequential Chromium launches of creature-library-browser.
+  # Same sensor and assertions: no mocked collision or alternate renderer.
+  shadow-light-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Real Chromium 2.5D arena shadow and flying light projection
+        run: node tests/browser/shadow-light-real-render-smoke.mjs
 
   firestorm-zone-growth-browser:
     runs-on: ubuntu-latest
