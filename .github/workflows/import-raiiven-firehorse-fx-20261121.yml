@@ -58,6 +58,11 @@ jobs:
           assert sum(1 for r in info["items"] if "remanence-interdite-" in r["id"] and "sprite" in r["id"])==3
           assert sum(1 for r in info["items"] if "author-fx-" in r["id"])==11
           assert sum(1 for r in info["items"] if "creature-cheval-de-feu-" in r["id"])==6
+          ids={a["id"]:a for a in cat["assets"]}
+          skill_atlases=[ids[r["id"]] for r in info["items"] if r["id"].startswith("pack:capture:sprite-skill-")]
+          assert len(skill_atlases)==14
+          assert all("travel" in a["compatibility"].get("editorRoles",[]) for a in skill_atlases)
+          assert all(a["compatibility"]["uses"]==["combat","capture","editor"] for a in skill_atlases)
           print("PASS 25 canonical assets; 5 Raiiven icons + 3 echo strips + 11 FX + 6 fire horse media")
           PY
       - name: Publish only after source change merged on main
