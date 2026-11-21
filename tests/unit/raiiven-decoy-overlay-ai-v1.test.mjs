@@ -54,7 +54,7 @@ test("AI may deliberately hit a selectable silhouette but cannot fake a zone tar
   assert.equal(chooseBattleActorDecoyV1({state,targetId:"raiiven",skill:{...hit,targetRelations:["ally"]}}),null);
 });
 
-test("Dédale's visible real horse changes position and never repeats its current slot",()=>{
+test("Dédale permutes immediately at activation, not after 5 seconds",()=>{
  assert.equal(nextDecoyRealSlotV1(null,()=>0),0);
  assert.equal(nextDecoyRealSlotV1(0,()=>0),1);
  assert.equal(nextDecoyRealSlotV1(1,()=>0),2);
@@ -63,7 +63,7 @@ test("Dédale's visible real horse changes position and never repeats its curren
  const real=h.fighterContainers.raiiven.children[2];
  const first=real.style.left;
  h.overlay.render(makeState([decoy("left"),decoy("right")],5000));
- assert.notEqual(real.style.left,first);
+ assert.equal(real.style.left,first,"the real position is chosen immediately at activation");
  assert.equal(h.overlay.count(),2);
  h.overlay.dispose();
  assert.equal(real.removed,true);
