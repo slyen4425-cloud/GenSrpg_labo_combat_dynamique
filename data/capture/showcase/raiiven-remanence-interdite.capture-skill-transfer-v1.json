@@ -9,7 +9,7 @@
       "capture",
       "combat"
     ],
-    "description": "Rémanence interdite — reproduit à 100 % la dernière compétence non ultime réellement utilisée par la cible : dégâts, soins, ralentissements, étourdissements, dégâts sur la durée, autres malus et effets secondaires natifs. Les dégâts deviennent Ombre, les soins s'appliquent à Raiiven ; durées, valeurs et conditions des malus copiés sont conservées. Projectiles, zones, soutien et réserve suivent les règles natives, avec choix d'une cible en réserve lorsque nécessaire.",
+    "description": "Rémanence interdite — la compétence 4 mémorise automatiquement la dernière attaque compatible réellement subie par Raiiven (pas seulement lancée par l'adversaire). Son icône et son nom sont temporairement remplacés par ceux de la compétence reçue. À l'activation, elle reproduit son cast, son projectile ou sa zone, ses animations, ses dégâts à 100 %, ses soins et tous ses malus/effets secondaires ; seuls les dégâts deviennent Ombre. Après un lancement réussi, la copie est consommée et l'icône d'origine revient, avec le temps de recharge propre à Rémanence. Ultimes, attaques nécessitant vol/téléportation/terrassement, vol de ressources, charges privées, invocations spéciales et capacités désactivées dans l'éditeur ne sont pas copiables ; elles ne remplacent pas une copie valide.",
     "definition": {
       "id": "raiiven-remanence-interdite",
       "name": "Rémanence interdite",
