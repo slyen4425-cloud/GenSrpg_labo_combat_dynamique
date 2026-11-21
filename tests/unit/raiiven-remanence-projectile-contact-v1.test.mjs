@@ -115,7 +115,7 @@ test("Raiiven skill 4 shadow projectile uses native visible-mask contact, conver
   renderer.dispose();
 });
 
-test("Non-damaging copied skills are not assigned fictitious shadow damage",()=>{
+test("An enemy self-buff was NOT received by Raiiven and must not arm Rémanence",()=>{
   const session=createCombatSession({battleFormat:format,distance:"short",
     fighters:[fighter("raiiven"),fighter("enemy")]});
   const shield=normalizeSkillDefinition({
@@ -127,7 +127,7 @@ test("Non-damaging copied skills are not assigned fictitious shadow damage",()=>
   });
   assert.equal(session.useSkill({actorId:"enemy",targetId:"enemy",skill:shield}).ok,true);
   const projected=session.inspectEchoSource({actorId:"raiiven",targetId:"enemy",skill:echo});
-  assert.equal(projected.ok,true);
-  assert.equal(projected.skill.effect.damage,0);
-  assert.equal(projected.targetId,"raiiven","support copied skill targets Raiiven, not the enemy");
+  assert.equal(projected.ok,false);
+  assert.equal(projected.outcome,"no_copy_source");
+  assert.equal(session.inspectMemorizedEcho({actorId:"raiiven"}),null);
 });
