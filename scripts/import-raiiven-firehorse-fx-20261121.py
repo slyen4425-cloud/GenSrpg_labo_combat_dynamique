@@ -75,7 +75,7 @@ def image_record(asset_id,label,category,resource,tags,kind="sprite"):
       "id":asset_id,"label":label,
       "assetType":kind,"mediaType":"image","category":category,
       "tags":["capture","2026-11-21","author-upload",*tags],
-      "source":SOURCE,"resource":resource,"compatibility":USES
+      "source":SOURCE,"resource":resource,"compatibility":{**USES,**({"editorRoles":["cast","travel","impact","zone","status","dodge"]} if category=="skill" and kind=="sprite" else {})}
     }
 
 def run(source_root,canonical_root):
