@@ -374,6 +374,7 @@ function normalizedInjectedCombatSource(input) {
     skillIdsByActor,
     roster: input.roster ?? null,
     displayLevelsByRosterMember: input.displayLevelsByRosterMember ?? null,
+    displayNamesByRosterMember: input.displayNamesByRosterMember ?? null,
     fighterConfigs: input.fighterConfigs ?? null,
     skillIdsByCreature: input.skillIdsByCreature ?? null,
     ...(input.skillIdsByRosterMember === undefined ? {} : {
@@ -613,7 +614,7 @@ export async function mountCoop2v2Test({
     skillsById,
     skillIdsByActor,
     roster: rosterDefinition, fighterConfigs, skillIdsByCreature, skillIdsByRosterMember,
-    displayLevelsByRosterMember,
+    displayLevelsByRosterMember,displayNamesByRosterMember,
     skillSpeedMultiplier, recallPreparationMs, gameOptions
   } = await loadCoop2v2CombatSource({
     nativeCombatSource,
@@ -1225,7 +1226,8 @@ export async function mountCoop2v2Test({
         ? displayLevelsByRosterMember?.[actor.actorId]?.[activeMember.id]
         : null;
       const heading=captureCombatActorLevelLabelV1(
-        actorMeta(actor.actorId)?.displayName,level);
+        (activeMember&&displayNamesByRosterMember?.[actor.actorId]?.[activeMember.id])??
+         actorMeta(actor.actorId)?.displayName,level);
       for(const card of targetNodes(actor.actorId)){
         if(!card.classList?.contains("squad-card"))continue;
         const title=card.querySelector("strong");
