@@ -168,8 +168,7 @@ def run(source_root,canonical_root):
         z=archives[filename]
         entries=[n for n in z.namelist() if n.lower().endswith(".png")
                  and ("/frames/" in "/"+n or n.startswith("frames/"))]
-        entries.sort(key=lambda n:int(re.search(r"(\\d+)\\.png$",n).group(1))
-                     if re.search(r"(\\d+)\\.png$",n) else -1)
+        entries.sort(key=lambda n:int(Path(n).stem.rsplit("_",1)[-1]))
         assert len(entries)==count,(short,len(entries),entries)
         imgs=[open_rgba(z,n) for n in entries]
         assert all(img.size==(512,512) for img in imgs),short
