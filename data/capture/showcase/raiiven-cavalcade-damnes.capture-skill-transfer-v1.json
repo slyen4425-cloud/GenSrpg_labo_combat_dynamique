@@ -69,7 +69,7 @@
       "subjectId": "raiiven-cavalcade-damnes",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:creature-raiiven-icon-01"
+          "assetId": "pack:capture:icon-skill-raiiven-cavalcade-damnes-v1"
         }
       },
       "audio": {},
