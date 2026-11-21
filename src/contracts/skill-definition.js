@@ -665,10 +665,10 @@ export function normalizeSkillDefinition(input) {
     if(form!=="self"||count<1||count>6)
       throw new RangeError("decoyFormation requires 1..6 native self-decoy statuses on a self skill");
     const reshuffleMs=Number(v.reshuffleMs),spacingPct=Number(v.spacingPct),scale=Number(v.scale??1);
-    if(!Number.isInteger(reshuffleMs)||reshuffleMs<250||reshuffleMs>20000||
+    if(!Number.isInteger(reshuffleMs)||(reshuffleMs!==0&&(reshuffleMs<250||reshuffleMs>20000))||
        !Number.isFinite(spacingPct)||spacingPct<15||spacingPct>150||
        !Number.isFinite(scale)||scale<0.5||scale>2)
-      throw new RangeError("decoyFormation reshuffleMs 250..20000, spacingPct 15..150, scale 0.5..2 required");
+      throw new RangeError("decoyFormation reshuffleMs 0 (immédiat seulement) ou 250..20000, spacingPct 15..150, scale 0.5..2 required");
     decoyFormation=Object.freeze({reshuffleMs,spacingPct,scale});
   }
 
