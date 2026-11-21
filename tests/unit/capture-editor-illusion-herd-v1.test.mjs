@@ -115,6 +115,9 @@ test("Capture editor exposes native clone and Cavalcade controls together in Tac
   assert.match(section,/value="0" data-skill-decoy-shuffle/);
   assert.equal(html.match(/data-skill-decoy-panel/g).length,1);
   assert.equal(html.match(/data-skill-stampede-panel/g).length,1);
+  const css=readFileSync("examples/dom-demo/capture-editor-v2.css","utf8");
+  assert.match(css,/\[data-skill-decoy-panel\]\[hidden\]/);
+  assert.match(css,/\[data-skill-stampede-panel\]\[hidden\]/);
   const editor=readFileSync("src/ui/capture-editor-human-v2.js","utf8");
   assert.match(editor,/syncGuidedEffectPanelsV1\("decoy"\)/);
   assert.match(editor,/syncGuidedEffectPanelsV1\("stampede"\)/);
