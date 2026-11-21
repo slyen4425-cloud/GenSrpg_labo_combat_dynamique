@@ -4,6 +4,7 @@ const MAX_ARCHIVE=64*1024*1024;
 const MAX_FRAME=8*1024*1024;
 const MAX_FRAMES=32;
 const MAX_CANVAS_WIDTH=16384;
+const MAX_CANVAS_PIXELS=16*1024*1024; // avoid exhausting landscape Android memory
 const PNG_HEADER=Uint8Array.of(137,80,78,71,13,10,26,10);
 const u16=(d,p)=>{if(p<0||p+2>d.byteLength)throw Error('Archive ZIP tronquée');return d.getUint16(p,true);};
 const u32=(d,p)=>{if(p<0||p+4>d.byteLength)throw Error('Archive ZIP tronquée');return d.getUint32(p,true);};
@@ -133,6 +134,10 @@ export async function buildCreatureAnimationStripV1(files,{
    if(decoded.length&&(frame.width!==decoded[0].width||
       frame.height!==decoded[0].height))throw Error('Toutes les frames doivent avoir les mêmes dimensions');
    decoded.push(frame);
+   // Check the final sheet budget at the first decoded frame, before
+   // accumulating many full-resolution bitmaps in Android memory.
+   if(frame.width*frame.height*ordered.length>MAX_CANVAS_PIXELS)
+    throw RangeError('Planche trop lourde pour mobile : réduire le nombre ou la taille des frames');
   }
   const {width,height}=decoded[0];
   if(width*decoded.length>MAX_CANVAS_WIDTH||height>4096)
