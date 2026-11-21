@@ -63,9 +63,9 @@ test("3 stampede passes follow the one canonical animation timeline, never repea
   assert.equal(stampedePassWindowV1(config,7000),null);
 });
 
-test("five standard-attack horses include real Raiiven and original following shadow restores after three waves",()=>{
+test("five standard-movement horses include real Raiiven and original following shadow restores after three waves",()=>{
   const g=harness();
-  assert.equal(g.arena.node.dataset.stampedePose,"standard-attack");
+  assert.equal(g.arena.node.dataset.stampedePose,"standard-movement");
   assert.equal(g.sourceMotion.style.opacity,"1","the actual horse stays visible in the charge");
   assert.equal(g.arena.node.dataset.stampedeNativeCaster,"true");
   assert.equal(g.arena.node.children.length,4,"only four visual copies, fifth is the REAL actor");
@@ -91,8 +91,8 @@ test("five standard-attack horses include real Raiiven and original following sh
   assert.equal(g.sourceShadow.style.translate,g.sourceMotion.style.translate,
     "the ONLY existing shadow travels with the native Raiiven model");
   assert.equal(g.sourceShadow.style.visibility,"visible","the real caster shadow is visible on a charge pass");
-  assert.deepEqual([...new Set(g.sprites)],[g.attack.url],
-    "all five horses play the STANDARD ATTACK atlas, never the movement atlas");
+  assert.deepEqual([...new Set(g.sprites)],[g.movement.url],
+    "all five horses play the STANDARD MOVEMENT atlas, never the attack atlas");
   assert.equal(g.calls.length,6);
   assert.deepEqual(g.calls.map(x=>x.passIndex),[0,0,1,1,2,2]);
   assert.deepEqual(new Set(g.calls.map(x=>x.targetId)),new Set(["opponent","opponent-b"]));
@@ -146,13 +146,14 @@ test("Cavalcade passes move the genuine actor rather than hiding it behind a fal
   assert.equal(layer.removed,true,"native combat image restored after charge");
 });
 
-test("Cavalcade shares the native attack/movement pose: original and four copies inherit author scale and XY, with only herd lane offsets",()=>{
+test("Cavalcade shares the native movement pose: original and four copies inherit author scale and XY, with only herd lane offsets",()=>{
   const movement={
     url:"https://assets.example/authored-horse-back-movement.webp",
     frameCount:7,displayScale:1.35,offsetX:14,offsetY:-22
   };
-  const g=harness(["opponent"],{authoredMovement:{url:"https://assets.example/different-running.webp",frameCount:7},
-    authoredAttack:movement,arenaScale:1.5});
+  const g=harness(["opponent"],{authoredMovement:movement,
+    authoredAttack:{url:"https://assets.example/different-attack.webp",frameCount:5},
+    arenaScale:1.5});
   const expected=composeCreatureMovementPoseV1({
     arena:g.arena,visual:movement,authorPixels:(_arena,value)=>Number(value)*1.5
   });
@@ -172,8 +173,8 @@ test("Cavalcade shares the native attack/movement pose: original and four copies
   g.handle.stop();
 });
 test("Opponent/front movement can have its own native 0.8 scale and positive Y offset",()=>{
-  const g=harness(["opponent"],{authoredAttack:{
-    url:"https://assets.example/horse-front-attack.webp",frameCount:5,
+  const g=harness(["opponent"],{authoredMovement:{
+    url:"https://assets.example/horse-front-movement.webp",frameCount:6,
     displayScale:0.8,offsetX:-5,offsetY:32
   }});
   g.step(900);
@@ -202,8 +203,16 @@ test("Cavalcade native shadow never stays at the departure point or duplicates o
   assert.equal(g.sourceShadow.style.translate,"");
   assert.equal(g.sourceShadow.style.visibility,"");
 });
-test("Cavalcade never mirrors the official front/back attack atlas based on target travel direction",()=>{
+test("Cavalcade never mirrors the official front/back movement atlas based on target travel direction",()=>{
   const g=harness(["opponent"]);
   assert.ok(g.arena.node.children.every(ghost=>ghost.style.transform==="none"));
+  g.handle.stop();
+});
+
+test("Cavalcade uses attack only as a fallback for a creature without a movement atlas",()=>{
+  const g=harness(["opponent"],{authoredMovement:{}});
+  assert.equal(g.arena.node.dataset.stampedePose,"attack-fallback");
+  g.step(900);
+  assert.deepEqual([...new Set(g.sprites)],[g.attack.url]);
   g.handle.stop();
 });

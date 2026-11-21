@@ -9,7 +9,7 @@
       "capture",
       "combat"
     ],
-    "description": "Rémanence interdite — reproduit la dernière compétence non ultime réellement utilisée par la cible. Mécanique native conservée ; dégâts/sous-effets de soin à 60 % provisoires, dégâts convertis en Ombre, soins sur Raiiven. Aucun effet de secours fictif. Les cibles de réserve nécessitent encore un raccord au roster.",
+    "description": "Rémanence interdite — reproduit la dernière compétence non ultime réellement utilisée par la cible. Les dégâts et les soins copiés sont provisoirement à 60 % de la puissance d'origine ; les dégâts deviennent Ombre et les soins sont appliqués à Raiiven. Les compétences de projectile, zone, soutien et réserve suivent les mécaniques natives, avec sélection d'une cible en réserve lorsque nécessaire.",
     "definition": {
       "id": "raiiven-remanence-interdite",
       "name": "Rémanence interdite",

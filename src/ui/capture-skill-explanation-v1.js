@@ -16,7 +16,8 @@ const scopes=Object.freeze({self:"la créature",target:"la cible",
   all_enemy_reserves:"les ennemis en réserve",all_ally_reserves:"les alliés en réserve",
   all_active:"toutes les créatures sur le terrain"});
 const events=Object.freeze({damage_dealt:"inflige des dégâts",damage_taken:"subit des dégâts",
-  movement:"se déplace",evaded:"esquive une attaque"});
+  movement:"se déplace",evaded:"esquive une attaque",
+  offensive_skill_start:"utilise une compétence offensive"});
 const num=n=>String(Math.round(Number(n)*100)/100).replace(".",",");
 const element=k=>elNames[k]??k??"";
 const elementOf=k=>/^[aeéèêiouy]/i.test(element(k))?"d'"+element(k):"de "+element(k);
@@ -102,6 +103,8 @@ function statusStory(s){
     case "stun":line="Étourdit la cible";break;
     case "taunt":line="Provoque la cible";break;
     case "stack_counter":line="Accumule des charges"+(s.maxStacks>1?" (maximum "+num(s.maxStacks)+")":"");break;
+    case "decoy":line="Crée un leurre ciblable ; si ce leurre est touché, il disparaît et inflige "+
+      num(s.retaliationDamage)+" dégâts "+elementOf(s.channel)+" à l'attaquant";break;
     case "triggered_buff":line="Déclenche un effet sous certaines conditions";break;
     default:{
       const change=simpleChange(s);
@@ -144,6 +147,15 @@ function statusStory(s){
   return result;
 }
 function statusSentence(effect){
+  if(effect.status.kind==="triggered_buff" &&
+     effect.status.onEvent?.event==="offensive_skill_start"){
+    const status=effect.status;
+    const effects=descriptions(status.onEvent.effects).map(lowerSentence).join(" et ");
+    return [finish("Marque "+(effect.targetScope==="target"?"la cible":"la créature")+
+      " pendant "+duration(status.durationMs)+
+      " : à sa prochaine compétence offensive, "+effects+
+      (status.onEvent.consume?" puis la marque disparaît":""))];
+  }
   const result=statusStory(effect.status);
   if(effect.targetScope==="self") {
     // The caster is the recipient. Harmful periodic effects must never
@@ -373,6 +385,22 @@ function descriptions(effects,{perCharge=false,markerNames={}}={}){
           (reserve==="all_enemy_reserves"?", y compris ceux en réserve.":", y compris ceux en réserve.");
       }
       out.push(...lines);
+    }else if(e.kind==="apply_status" && !e.condition && e.status?.kind==="decoy"){
+      const same=[];
+      for(let j=i;j<list.length;j++){
+        const y=list[j];
+        if(y.kind==="apply_status" && !y.condition && y.status?.kind==="decoy" &&
+           y.targetScope===e.targetScope && durationKey(y.status)===durationKey(e.status) &&
+           y.status.retaliationDamage===e.status.retaliationDamage &&
+           y.status.channel===e.status.channel){
+          same.push(j);used.add(j);
+        }
+      }
+      out.push(finish("Crée "+num(same.length)+" leurre"+(same.length>1?"s":"")+
+        " spectral"+(same.length>1?"s":"")+" ciblable"+(same.length>1?"s":"")+
+        " pendant "+duration(e.status.durationMs)+
+        ". Chaque leurre touché disparaît et inflige "+num(e.status.retaliationDamage)+
+        " dégâts "+elementOf(e.status.channel)+" à l'assaillant"));
     }else if(e.kind==="apply_status" && !e.condition && simpleChange(e.status)){
       const same=[];
       for(let j=i;j<list.length;j++){
@@ -464,6 +492,28 @@ function specialRules(d){
     words(d.reaction.counterForms)));
   if(d.evasion?.incomingForms?.length)list.push(finish("Permet d'esquiver "+
     words(d.evasion.incomingForms)));
+  if(d.evasionSiphon){
+    const rule=d.evasionSiphon;
+    list.push(finish("Inflige "+num(rule.baseDamage)+" + "+num(rule.perMaxChargeDamage)+
+      " dégâts "+elementOf(d.element)+" par charge d'esquive MAXIMALE de la cible, "+
+      "même si ses charges sont épuisées"));
+    list.push(finish("Vole jusqu'à "+num(rule.stealCharges)+
+      " charge d'esquive encore disponible, sans dépasser le maximum du lanceur"));
+  }
+  if(d.echoCopy){
+    list.push(finish("Reproduit la dernière compétence réellement utilisée par la cible, "+
+      "hors ultime. Ses dégâts deviennent des dégâts "+elementOf(d.element)+
+      " et les soins sont appliqués au lanceur"));
+    list.push(finish("Puissance des dégâts et soins copiés : "+num(d.echoCopy.powerPct)+
+      " % de l'effet d'origine"));
+  }
+  if(d.stampede){
+    const rule=d.stampede;
+    list.push(finish("Charge en groupe de "+num(rule.cloneCount)+" chevaux pendant "+
+      num(rule.passes)+" passages de "+duration(rule.passDurationMs)+
+      ". Chaque adversaire réellement touché subit "+num(d.effect.damage)+
+      " dégâts "+elementOf(d.element)+" par passage ; les copies sont visuelles"));
+  }
   return list;
 }
 export function describeCaptureSkillV1(input,{markerNames={}}={}) {
@@ -484,7 +534,8 @@ export function describeCaptureSkillV1(input,{markerNames={}}={}) {
       " énergie et peut agrandir le cast de "+num(c.sizeIncreasePct)+" %. Nouvelle activation possible pendant "+duration(c.reactivationWindowMs)+
       " après la préparation. Une seule application à l'impact, immunités conservées."));
   }
-  if(d.effect.damage>0)phrases.push(finish("Inflige "+num(d.effect.damage)+" dégâts"));
+  if(d.effect.damage>0&&!d.evasionSiphon&&!d.stampede)
+    phrases.push(finish("Inflige "+num(d.effect.damage)+" dégâts"));
   if(d.effect.heal>0)phrases.push(finish("Rend "+num(d.effect.heal)+" PV"));
   if(d.effect.stunMs>0)phrases.push(finish("Étourdit pendant "+duration(d.effect.stunMs)));
   if(d.effect.interruptsPreparation)phrases.push("Interrompt l'action en préparation.");

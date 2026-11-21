@@ -67,9 +67,15 @@ export function chooseBattleActorDecoyV1({state,targetId,skill,seed=17,turn=0}) 
   const decoys=activeStatusEffectsV1(state,targetId,state.elapsedMs)
     .filter(x=>x.definition.kind==="decoy");
   if(decoys.length===0)return null;
-  const roll=tacticalVariation(seed,turn,97);
-  if(roll>=0.67)return null;
-  return decoys[Math.min(decoys.length-1,Math.floor(roll/0.67*decoys.length))].definition.id;
+  // Each real-looking silhouette has the same chance of being chosen.
+  // A seeded rotating cycle prevents one AI repeatedly choosing only the
+  // invisible real target due to an unlucky deterministic tactical roll.
+  // This is presentation target selection only; Combat Rules resolves hits.
+  const count=decoys.length+1;
+  const phase=Math.floor(Math.max(0,Number(turn)||0)/count);
+  const offset=Math.floor(tacticalVariation(seed,phase,97)*count);
+  const index=(offset+Math.max(0,Math.trunc(Number(turn)||0))%count)%count;
+  return index===decoys.length?null:decoys[index].definition.id;
 }
 
 function requiredMethod(owner, method, label) {
