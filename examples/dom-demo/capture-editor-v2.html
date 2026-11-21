@@ -436,7 +436,27 @@
               <input type="number" min="0" max="350" step="10" value="80" data-creature-movement-transition>
             </label>
           </div>
-          <p class="note">Choisis les animations face et dos séparément. Si DOS est vide, le joueur réutilise la FACE pour garder la compatibilité des anciennes créatures. Les deux menus utilisent uniquement les animations de déplacement déjà présentes dans la bibliothèque.</p>
+<details class="creature-animation-import" data-creature-animation-importer="movement">
+            <summary>Importer mes frames · PNG/WebP ou ZIP</summary>
+            <p class="note">Uniquement le déplacement de la créature, jamais les effets des compétences. Les frames sont triées numériquement (00, 01, 02…) et assemblées sur une seule planche horizontale PNG transparente, sans modifier l’animation originale. Le nombre de frames vient de tes images (6, 8, 12 ou autre), pas d’une limite de preset imposée.</p>
+            <div class="grid two">
+              <label>Vue à remplacer
+                <select data-creature-animation-target><option value="front">FACE · adversaire</option><option value="back">DOS · joueur</option></select>
+              </label>
+              <label>Nom de l’animation
+                <input type="text" maxlength="80" placeholder="Ex. course face" data-creature-animation-name>
+              </label>
+              <label>Images séparées PNG/WebP (1 à 32)
+                <input type="file" accept="image/png,image/webp" multiple data-creature-animation-files>
+              </label>
+              <label>Ou un seul ZIP contenant ces images
+                <input type="file" accept=".zip,application/zip" data-creature-animation-zip>
+              </label>
+            </div>
+            <button type="button" class="secondary-action" data-creature-animation-import>Importer cette animation</button>
+            <output role="status" aria-live="polite" data-creature-animation-status>Choisis des images séparées ou un ZIP, puis importe.</output>
+          </details>
+                    <p class="note">Choisis les animations face et dos séparément. Si DOS est vide, le joueur réutilise la FACE pour garder la compatibilité des anciennes créatures. Les deux menus utilisent uniquement les animations de déplacement déjà présentes dans la bibliothèque.</p>
           <p class="note">S'applique à l'approche au sol, sans modifier la vitesse ni les dégâts. Le visuel normal revient automatiquement après l'approche ou son interruption. Le sprite peut être une bande horizontale ou une image fixe.</p>
           <p class="note">La vitesse de lecture change seulement les frames, jamais la vitesse réelle. Sur une image fixe ou une boule à une frame, ce réglage n'a aucun effet.</p>
           <p class="note">Ce sélecteur propose uniquement les animations de déplacement (et les modèles fixes compatibles), jamais les projectiles, casts ou impacts de capacité.</p>
@@ -491,7 +511,27 @@
               <input type="number" min="0" max="350" step="10" value="80" data-creature-ranged-attack-transition>
             </label>
           </div>
-          <p class="note">Deux sprites indépendants : FACE pour l'adversaire et DOS pour le joueur. Les décalages X/Y corrigent seulement l'alignement de l'image pendant l'attaque (X négatif = gauche, positif = droite ; Y négatif = haut, positif = bas). Pour un sprite joueur trop à droite, essaie X DOS = -20 puis ajuste ; la position du combattant et ses collisions restent inchangées. Les réglages de durée et d'animation restent communs aux deux. Sans sprite DOS, les anciennes créatures reprennent leur sprite FACE comme avant. Lors du tir d’un projectile, rayon ou attaque de zone à distance, la créature revient à sa pose normale après l'animation ; cast, projectile, impact et contact de mêlée restent inchangés. Pour importer les images, ouvre « Bibliothèque de visuels » et choisis l’usage « Animation de créature ».</p>
+<details class="creature-animation-import" data-creature-animation-importer="attack">
+            <summary>Importer mes frames · PNG/WebP ou ZIP</summary>
+            <p class="note">Uniquement l’attaque de la créature, jamais les effets des compétences. Les frames sont triées numériquement (00, 01, 02…) et assemblées sur une seule planche horizontale PNG transparente, sans modifier l’animation originale. Le nombre de frames vient de tes images (6, 8, 12 ou autre), pas d’une limite de preset imposée.</p>
+            <div class="grid two">
+              <label>Vue à remplacer
+                <select data-creature-animation-target><option value="front">FACE · adversaire</option><option value="back">DOS · joueur</option></select>
+              </label>
+              <label>Nom de l’animation
+                <input type="text" maxlength="80" placeholder="Ex. course face" data-creature-animation-name>
+              </label>
+              <label>Images séparées PNG/WebP (1 à 32)
+                <input type="file" accept="image/png,image/webp" multiple data-creature-animation-files>
+              </label>
+              <label>Ou un seul ZIP contenant ces images
+                <input type="file" accept=".zip,application/zip" data-creature-animation-zip>
+              </label>
+            </div>
+            <button type="button" class="secondary-action" data-creature-animation-import>Importer cette animation</button>
+            <output role="status" aria-live="polite" data-creature-animation-status>Choisis des images séparées ou un ZIP, puis importe.</output>
+          </details>
+                    <p class="note">Deux sprites indépendants : FACE pour l'adversaire et DOS pour le joueur. Les décalages X/Y corrigent seulement l'alignement de l'image pendant l'attaque (X négatif = gauche, positif = droite ; Y négatif = haut, positif = bas). Pour un sprite joueur trop à droite, essaie X DOS = -20 puis ajuste ; la position du combattant et ses collisions restent inchangées. Les réglages de durée et d'animation restent communs aux deux. Sans sprite DOS, les anciennes créatures reprennent leur sprite FACE comme avant. Lors du tir d’un projectile, rayon ou attaque de zone à distance, la créature revient à sa pose normale après l'animation ; cast, projectile, impact et contact de mêlée restent inchangés. Pour importer les images, ouvre « Bibliothèque de visuels » et choisis l’usage « Animation de créature ».</p>
         </fieldset>
         </section>
 
