@@ -1426,6 +1426,7 @@
             <option value="wall">Invoquer un mur destructible</option>
             <option value="decoy">Créer des clones / leurres ciblables</option>
             <option value="stampede">Charge de troupeau — vagues de l’ultime</option>
+            <option value="echo">Copier une compétence reçue — Rémanence</option>
             <option value="mine">Mine : explosion différée au sol</option>
             <option value="charged">Attaque chargée : projectile renforcé</option>
             <option value="charged-effects">Charge de buffs, debuffs et soins</option>
@@ -1434,6 +1435,19 @@
           </select>
         </label>
         <p class="note" id="effect-guide" data-skill-effect-guide>Choisis un effet : ses paramètres apparaissent directement. Les autres mécanismes restent repliés, sans perte de tes configurations.</p>
+        <label class="switch-line"><input type="checkbox" data-skill-echo-copyable checked>
+          <span>Cette capacité peut être copiée par Rémanence (hors exclusions automatiques)</span>
+        </label>
+        <p class="note">Même si cochée, une capacité ultime, aérienne, à téléportation, à transformation ou utilisant une mécanique privée impossible reste non copiable.</p>
+        <details class="projectile-clash-config" data-skill-echo-panel hidden>
+          <summary><strong>Copie fidèle d'une compétence reçue — Rémanence</strong></summary>
+          <label class="switch-line"><input type="checkbox" data-skill-echo-enabled>
+            <span>Transformer cet emplacement en copie temporaire</span></label>
+          <div class="grid two" data-skill-echo-fields hidden>
+            <label>Puissance copiée (%)<input type="number" min="1" max="100" step="1" value="100" data-skill-echo-power></label>
+          </div>
+          <p class="note">Réception d'une attaque compatible réellement subie → mémorisation d'une seule compétence. L'emplacement prend immédiatement son nom et son icône d'origine. À l'activation, il lance la mécanique, le cast, le trajet, l'impact et les malus originaux ; seuls les dégâts sont convertis en Ombre. Après activation réussie : retour à l'icône initiale et rechargement propre à cette capacité. Un ultime ou une compétence non reproductible n'écrase jamais la copie déjà mémorisée.</p>
+        </details>
         <button type="button" class="secondary-action" data-skill-effect-add>Ajouter un effet de dégâts</button>
         <div class="skill-effects-list" data-skill-effects-host></div>
         <details class="projectile-clash-config" data-skill-decoy-panel hidden>
