@@ -39,6 +39,7 @@ import {
 } from "./persistent-zone-runtime-v1.js";
 import {
   activeTauntSourceActorIdV1,
+  activeStatusEffectsV1,
   hasActiveStatusKindV1,
   consumeCaptureMarkerStacksV1
 } from "./status-effect-runtime-v1.js";
@@ -47,7 +48,7 @@ import {
 } from "./combat-presence-v1.js";
 import { applyEventTriggeredBuffsV2 } from "./triggered-buff-events-v1.js";
 import {evasionSiphonDamageV1,applyEvasionSiphonV1} from "./evasion-siphon-v1.js";
-import {activeDecoyForV1,resolveDecoyHitV1,dismissDecoysOnTrueHitV1} from "./decoy-hit-v1.js";
+import {activeDecoyForV1,resolveDecoyHitV1,dismissDecoysOnTrueHitV1,reselectPrelockedDecoyV1} from "./decoy-hit-v1.js";
 
 function fighterOf(state, fighterId) {
   const fighter = state.fighters[fighterId];
@@ -675,6 +676,11 @@ export function resolveSkillStart({
     targetId: effectiveTargetId,
     skill,
     ...(decoyId === null ? {} : {decoyId}),
+    // Capture what was visible at lock time. A later Dédale activation
+    // invalidates guaranteed aim against the original, even mid-projectile.
+    targetDecoyIdsAtStart: Object.freeze(activeStatusEffectsV1(state,effectiveTargetId,state.elapsedMs)
+      .filter(x=>x.definition.kind==="decoy").map(x=>x.definition.id)),
+    targetingSequence: skillUseCount(state,actorId,skill.id),
     persistentZoneReinforcementsAtStart: snapshotPersistentZoneReinforcementsV1({
       state, actorId, skill
     }),
@@ -994,9 +1000,11 @@ export function resolveSkillCompletion({
   const autoDodge = forcedOutcome == null && reaction == null
     ? autoDodgeEvasionFor({state, actorId, targetId, skill, atMs:combatImpactAtMs})
     : null;
-  const attemptedDecoy=typeof action.decoyId==="string";
+  const rerolled=reselectPrelockedDecoyV1({state,action,atMs:combatImpactAtMs});
+  const impactDecoyId=rerolled.reselected?rerolled.decoyId:action.decoyId;
+  const attemptedDecoy=typeof impactDecoyId==="string";
   const decoyAtImpact=attemptedDecoy
-    ? activeDecoyForV1(state,targetId,action.decoyId,combatImpactAtMs):null;
+    ? activeDecoyForV1(state,targetId,impactDecoyId,combatImpactAtMs):null;
   const outcome =
     forcedOutcome ??
     (attemptedDecoy ? (decoyAtImpact ? "decoy" : "decoy_expired") : null) ??
@@ -1066,7 +1074,7 @@ export function resolveSkillCompletion({
 
     if (outcome === "decoy") {
       const interception=resolveDecoyHitV1({state:nextState,actorId,targetId,
-        decoyId:action.decoyId,skillId:skill.id,atMs:combatImpactAtMs,impactAtMs});
+        decoyId:impactDecoyId,skillId:skill.id,atMs:combatImpactAtMs,impactAtMs});
       nextState=interception.state;
       events.push(...interception.events);
     } else if (outcome === "hit") {
