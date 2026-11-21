@@ -1,0 +1,29 @@
+name: Capture certified global assets 21 November
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-global-assets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout audited Combat source
+        uses: actions/checkout@v4
+      - name: Checkout exact immutable global-assets SHA
+        uses: actions/checkout@v4
+        with:
+          repository: slyen4425-cloud/GenSrpg_labo_combat_dynamique
+          ref: 204564e5f3e0fa5081d23927ef4dfc8b74f9cc90
+          path: media-certified
+          persist-credentials: false
+      - name: Install Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate official catalog, 25 WebP files, deduplication and exact SHA
+        env:
+          GENSRPG_VISUALS_CHECKOUT: media-certified
+        run: node --test tests/unit/capture-visual-global-assets-certified-20261121.test.mjs
