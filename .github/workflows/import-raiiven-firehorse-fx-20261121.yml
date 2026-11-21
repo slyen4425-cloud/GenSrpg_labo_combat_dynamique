@@ -1,0 +1,78 @@
+name: Import Raiiven icons, echo FX, 11 uploaded FX and fire horse into canonical global-assets
+on:
+  push:
+    branches:
+      - main
+      - work/raiiven-firehorse-fx-import-20261121
+    paths:
+      - scripts/import-raiiven-firehorse-fx-20261121.py
+      - .github/workflows/import-raiiven-firehorse-fx-20261121.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/import-raiiven-firehorse-fx-20261121.py
+      - .github/workflows/import-raiiven-firehorse-fx-20261121.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-canonical-import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout current Combat branch source ZIPs
+        uses: actions/checkout@v4
+        with:
+          path: source
+          persist-credentials: true
+      - name: Checkout ONE global-assets catalog branch
+        uses: actions/checkout@v4
+        with:
+          ref: global-assets
+          path: canonical
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'Pillow>=11,<13'
+      - name: Verify 15 exact ZIP SHA256 and materialize canonical previews/media
+        run: python source/scripts/import-raiiven-firehorse-fx-20261121.py source canonical
+      - name: Assert full batch, 25 unique IDs and single global-assets catalog
+        working-directory: canonical
+        run: |
+          git diff --check
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          cat=json.loads(Path("data/assets/catalog/global-visual-assets.v1.json").read_text())
+          info=json.loads(Path("assets/library/capture/author-uploads-20261121.manifest.json").read_text())
+          assert cat["storage"]["branch"]=="global-assets"
+          assert len(info["items"])==25
+          assert cat["counts"]["assets"]==len(cat["assets"])
+          assert len({a["id"] for a in cat["assets"]})==len(cat["assets"])
+          assert len({a["resource"]["file"] for a in cat["assets"]})==len(cat["assets"])
+          assert all((Path("assets/library")/r["file"]).is_file() for r in info["items"])
+          assert sum(1 for r in info["items"] if "icon-skill-raiiven-" in r["id"])==5
+          assert sum(1 for r in info["items"] if "remanence-interdite-" in r["id"] and "sprite" in r["id"])==3
+          assert sum(1 for r in info["items"] if "author-fx-" in r["id"])==11
+          assert sum(1 for r in info["items"] if "creature-cheval-de-feu-" in r["id"])==6
+          print("PASS 25 canonical assets; 5 Raiiven icons + 3 echo strips + 11 FX + 6 fire horse media")
+          PY
+      - name: Publish only after source change merged on main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: canonical
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/library/capture/icons/skills/raiiven \
+            assets/library/capture/sprites/skills/raiiven \
+            assets/library/capture/sprites/skills/author-uploads-20261121 \
+            assets/library/capture/creatures/cheval-de-feu \
+            assets/library/capture/author-uploads-20261121.manifest.json \
+            data/assets/catalog/global-visual-assets.v1.json
+          git diff --cached --check
+          test "$(git diff --cached --name-only | grep -E '[.]webp$' | wc -l)" -eq 25
+          git commit -m 'assets(capture): publish 5 Raiiven icons, 3 echo FX, 11 other FX and fire-horse media'
+          git push origin HEAD:global-assets
