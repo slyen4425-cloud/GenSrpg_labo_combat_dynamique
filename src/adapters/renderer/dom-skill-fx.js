@@ -2249,8 +2249,10 @@ export function createDomSkillFxRenderer({
       const sourceKey=sourceSlot??targetSlot;
       const from=sourceRect(sourceKey);
       const to=targetSlot?anchor(targetAnchors,targetSlot,"target").getBoundingClientRect():from;
+      const echoVisual=type==="cast"?presentation?.cast:
+        type==="impact"?presentation?.impact:presentation?.travel;
       const effect=playDomShadowEchoFxV1({arena,sourceRect:from,targetRect:to,
-        type,durationMs,animate});
+        type,durationMs,animate,visual:echoVisual});
       const record={node:effect.node,animation:effect.animation,frameAnimation:null,
         type,skillId,fromSlot:sourceKey,targetSlot,
         contactFrameId:null,contactReported:false,
