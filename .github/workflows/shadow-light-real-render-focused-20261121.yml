@@ -1,0 +1,27 @@
+name: Focused Chromium alpha-mask contact regression
+on:
+  push:
+    branches: [work/raiiven-firehorse-fx-import-20261121]
+    paths:
+      - tests/browser/shadow-light-fixture.html
+      - tests/browser/shadow-light-real-render-smoke.mjs
+      - .github/workflows/shadow-light-real-render-focused-20261121.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - tests/browser/shadow-light-fixture.html
+      - tests/browser/shadow-light-real-render-smoke.mjs
+      - .github/workflows/shadow-light-real-render-focused-20261121.yml
+permissions:
+  contents: read
+jobs:
+  real-alpha-mask-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Genuine DOM alpha-mask contact and native shadow motion
+        run: node tests/browser/shadow-light-real-render-smoke.mjs
