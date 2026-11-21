@@ -1,7 +1,7 @@
 // One author projection for the native decoy statuses and stampede contract.
 // No special creature ID, fallback skill catalogue or extra combat authority.
 export const DECOY_EDITOR_DEFAULTS_V1=Object.freeze({
-  count:2,durationMs:20000,retaliationDamage:10,reshuffleMs:5000,spacingPct:56,scale:1
+  count:2,durationMs:20000,retaliationDamage:10,reshuffleMs:0,spacingPct:56,scale:1
 });
 
 const isDecoy=effect=>effect?.kind==="apply_status"&&effect?.status?.kind==="decoy";
