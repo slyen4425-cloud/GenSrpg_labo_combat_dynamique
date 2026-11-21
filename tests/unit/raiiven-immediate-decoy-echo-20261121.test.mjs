@@ -116,3 +116,43 @@ test("Rémanence copies full DAMAGE and the actual native DEBUFF duration/streng
   assert.equal(copiedSlow.definition.durationMs,sourceSlow.definition.durationMs);
   assert.equal(copiedSlow.definition.polarity,"detrimental");
 });
+
+test("Real adaptive AI + real CombatSession actually hits a decoy, retaliates, and sometimes finds Raiiven",()=>{
+  const attack=normalizeSkillDefinition({id:"live-ai-attack",name:"Projectile direct",
+    category:"offensive",form:"projectile",element:"fire",energyCost:0,
+    preparationMs:0,travelMs:0,recoveryMs:0,cooldownMs:0,
+    allowedDistances:["short","medium","long"],targetRelations:["enemy"],
+    effect:{damage:14,heal:0,interruptsPreparation:false,stunMs:0,tags:[]}});
+  const outcomes=new Set();
+  for(let seed=1;seed<=32;seed++){
+    const battle=session();
+    assert.equal(battle.useSkill({actorId:"raiiven",targetId:"raiiven",
+      skill:skill("raiiven-dedale-silhouettes")}).ok,true);
+    const applied=[];
+    const ai=createBattleActorAiController({
+      actorId:"enemy",targetIds:["raiiven"],skillIds:[attack.id],
+      skillsById:{[attack.id]:attack},session:battle,
+      runtime:{hasActiveActionFor:()=>false,startSkill:args=>{
+        const result=battle.useSkill(args);applied.push({args,result});return result;
+      }},tactics:{enabled:true,seed}
+    });
+    const played=ai.takeTurn();
+    assert.equal(played.status,"skill_started");
+    assert.equal(applied.length,1);
+    outcomes.add(played.result.outcome);
+    if(played.result.outcome==="decoy"){
+      assert.ok(applied[0].args.decoyId,"AI submitted a real native decoy ID");
+      assert.equal(battle.snapshot().fighters.raiiven.hp,160);
+      assert.ok(battle.snapshot().fighters.enemy.hp<160,"decoy retaliated in real combat");
+      assert.equal(decoyStatuses(battle.snapshot()).length,1);
+    }else if(played.result.outcome==="hit"){
+      assert.equal(applied[0].args.decoyId,null);
+      assert.ok(battle.snapshot().fighters.raiiven.hp<160);
+      assert.equal(decoyStatuses(battle.snapshot()).length,0,"real hit reveals the original");
+    }else{
+      assert.fail("unexpected native outcome: "+played.result.outcome);
+    }
+  }
+  assert.deepEqual(outcomes,new Set(["decoy","hit"]),
+    "real AI sometimes chooses a false horse and sometimes the original");
+});
