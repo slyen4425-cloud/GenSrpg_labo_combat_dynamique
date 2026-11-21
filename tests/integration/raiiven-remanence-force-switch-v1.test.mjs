@@ -5,6 +5,7 @@ import {createCombatSession} from "../../src/core/combat/combat-session.js";
 import {createRosterSession} from "../../src/core/combat/roster-session.js";
 import {normalizeCaptureSkillTransferV1} from "../../src/contracts/capture-skill-transfer-v1.js";
 import {normalizeSkillDefinition} from "../../src/contracts/skill-definition.js";
+import {projectNativeSkillEchoV1} from "../../src/core/combat/skill-echo-v1.js";
 
 const load=id=>normalizeCaptureSkillTransferV1(JSON.parse(readFileSync(
   "data/capture/showcase/"+id+".capture-skill-transfer-v1.json","utf8"))).draft.definition;
@@ -33,42 +34,20 @@ function harness(){
   }}});
  return {session,roster};
 }
-test("native Rémanence replicates an actual force-switch spell with native Roster, not a dummy buff",()=>{
+test("force-switch retains its native Roster transaction but is excluded from copied skills",()=>{
  const {session,roster}=harness();
- const sourceCast=roster.useSkillOnTarget({actorId:"enemy",
-   targetRef:{scope:"reserve",teamId:"friend",memberId:"f1"},skill:vine});
- assert.equal(sourceCast.ok,true,sourceCast.outcome);
- assert.equal(sourceCast.outcome,"forced_switched");
+ const cast=roster.useSkillOnTarget({actorId:"enemy",
+  targetRef:{scope:"reserve",teamId:"friend",memberId:"f1"},skill:vine});
+ assert.equal(cast.ok,true,cast.outcome);
+ assert.equal(cast.outcome,"forced_switched");
  assert.equal(roster.snapshot().friend.activeMemberId,"f1");
- assert.equal(roster.snapshot().raiiven.activeMemberId,"r0","Raiiven remains available");
- const echoSource=session.inspectEchoSource({actorId:"raiiven",targetId:"enemy",skill:echo});
- assert.equal(echoSource.ok,true,echoSource.outcome);
- assert.equal(echoSource.sourceSkillId,vine.id);
- assert.equal(echoSource.reserveMemberRequired,true);
- assert.equal(echoSource.skill.effects[0].kind,"force_reserve_switch");
- assert.equal(echoSource.skill.effects[1].marker.periodic.channel,"shadow","periodic original nature converted");
- assert.equal(echoSource.skill.effects[1].marker.periodic.amount,5,"periodic effect is copied at 100%");
- const targetRef={scope:"reserve",teamId:"enemy",memberId:"e2"};
- const prepared=roster.prepareSkillOnTarget({actorId:"raiiven",targetRef,skill:echoSource.skill});
- assert.equal(prepared.ok,true,prepared.outcome);
- assert.equal(prepared.targetId,"enemy");
- assert.deepEqual(prepared.skill.effects,[]);
- const started=session.startSkill({actorId:"raiiven",targetId:prepared.targetId,skill:prepared.skill});
- assert.equal(started.ok,true);
- const result=session.completeSkill({action:started.action});
- assert.equal(result.ok,true);
- assert.equal(result.outcome,"hit");
- const applied=roster.useSkillOnTarget({actorId:"raiiven",targetRef,
-   skill:echoSource.skill,expectedActiveMemberId:prepared.expectedActiveMemberId,completedResolution:result});
- assert.equal(applied.ok,true,applied.outcome);
- assert.equal(applied.outcome,"forced_switched");
- assert.equal(roster.snapshot().enemy.activeMemberId,"e2");
- assert.equal(session.snapshot().fighters.raiiven.energy,23,"Remanence pays 7 energy exactly once");
- assert.equal(session.snapshot().fighters.raiiven.skillUseCounts[echo.id],1);
- assert.ok(session.snapshot().fighters.enemy.statusEffects.length>0,"native status transfer applied to new reserve");
- assert.equal(roster.useSkillOnTarget({actorId:"raiiven",targetRef,skill:echoSource.skill,
-   expectedActiveMemberId:prepared.expectedActiveMemberId,completedResolution:result}).ok,false,
-   "one visual contact may only settle once");
+ assert.equal(roster.snapshot().raiiven.activeMemberId,"r0");
+ assert.equal(session.inspectEchoSource({actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,
+   "no_copy_source","a bench switch is not an attack suffered by Raiiven");
+ const direct=projectNativeSkillEchoV1({echoSkill:echo,sourceSkill:vine,
+   actorId:"raiiven",targetId:"enemy"});
+ assert.equal(direct.outcome,"copy_source_forbidden",
+   "even a non-ultimate roster-switch is impossible to reproduce");
 });
 
 test("real Liane venimeuse is an ultimate and correctly cannot become Rémanence source",()=>{
