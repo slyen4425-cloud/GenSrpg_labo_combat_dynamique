@@ -14,11 +14,11 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 494,
+    "assets": 495,
     "icons": 212,
     "sprites": 250,
     "fx": 2,
-    "portraits": 25,
+    "portraits": 26,
     "backgrounds": 5,
     "creatures": 86
   },
@@ -16784,6 +16784,39 @@
         "frameCount": 5,
         "frameMs": 180,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-icon-v1",
+      "label": "Cheval de feu — icône",
+      "assetType": "portrait",
+      "mediaType": "image",
+      "category": "ui",
+      "tags": [
+        "capture",
+        "creature",
+        "cheval-de-feu",
+        "fire",
+        "icon",
+        "2026-11-21",
+        "author-upload"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Icône validée par l'auteur et déposée sur GitHub le 21 novembre 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/cheval-de-feu/runtime/icone.png",
+        "mime": "image/png"
       },
       "compatibility": {
         "uses": [

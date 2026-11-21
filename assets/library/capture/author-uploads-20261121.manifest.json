@@ -144,6 +144,11 @@
       "id": "pack:capture:creature-cheval-de-feu-attack-player-5-v1",
       "file": "capture/creatures/cheval-de-feu/animations/attack-player.webp",
       "frameCount": 5
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-icon-v1",
+      "file": "capture/creatures/cheval-de-feu/runtime/icone.png",
+      "frameCount": 1
     }
   ],
   "skillsConnectedOnMain": [
