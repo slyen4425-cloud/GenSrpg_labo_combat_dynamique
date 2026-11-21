@@ -81,6 +81,15 @@ test('planche horizontale : chaque frame garde exactement son emplacement sans r
  ]);
  assert.equal(out.file.type,'image/png');
 });
+test('mobile : très grandes frames rejetées avant allocation de la planche',async()=>{
+ const files=[0,1].map(i=>new File([frame(i)],'frame_'+i+'.png',{type:'image/png'}));
+ const closed=[];
+ await assert.rejects(buildCreatureAnimationStripV1(files,{
+  decode:async f=>({width:4096,height:4096,close(){closed.push(f.name);}}),
+  createCanvas:()=>{throw Error('Canvas ne doit pas être alloué');}
+ }),/trop lourde pour mobile/);
+ assert.equal(closed.length,1);
+});
 test('défaut de taille des canevas : aucune planche enregistrée',async()=>{
  const files=[0,1].map(i=>new File([frame(i)],'f_'+i+'.png',{type:'image/png'}));
  await assert.rejects(buildCreatureAnimationStripV1(files,{decode:async f=>({
