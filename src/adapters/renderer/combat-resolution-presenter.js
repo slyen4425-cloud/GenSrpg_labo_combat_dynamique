@@ -395,7 +395,8 @@ export function createCombatResolutionPresenter({
       action,
       actorSlot
     })) {
-      const next = fx?.play(fxPlan) ?? null;
+      const next = fx?.play(action?.skill?.echoSourceSkillId
+        ? {...fxPlan,shadowEcho:false} : fxPlan) ?? null;
       if (next?.status === "running") {
         handle = next;
       }
@@ -592,7 +593,8 @@ export function createCombatResolutionPresenter({
       actorSlot,
       targetSlot
     })) {
-      fx?.play(fxPlan);
+      fx?.play(action?.skill?.echoSourceSkillId
+        ? {...fxPlan,shadowEcho:false} : fxPlan);
     }
 
     const releaseSkillId = action.skill?.id ?? null;
@@ -710,7 +712,10 @@ export function createCombatResolutionPresenter({
     let impactAudioPlayed = false;
     const outcomeFx = planSkillOutcomeFx({ resolution, actorSlot, targetSlot });
     for (const fxPlan of outcomeFx) {
-      fx?.play(fxPlan);
+      // Copied skills borrow their ORIGINAL FX/sound media; the legacy
+      // purple orb fallback is only for the original non-copied shell.
+      fx?.play(resolution.echoCopied===true
+        ? {...fxPlan,shadowEcho:false} : fxPlan);
 
       if (
         !impactAudioPlayed &&
