@@ -11,7 +11,7 @@ import re
 import sys
 from pathlib import Path
 from zipfile import ZipFile
-from PIL import Image
+from PIL import Image, ImageChops
 
 ARCHIVES = {
  "raiiven_assets_for_deposit.zip": "f9dde8ec7b5a849700666e4fc8d03d601c7da49f584ae27a77388d348db71b80",
@@ -153,11 +153,23 @@ def run(source_root,canonical_root):
         left=round(col*sheet.width/4);right=round((col+1)*sheet.width/4)
         top=round(row*sheet.height/2);bottom=round((row+1)*sheet.height/2)
         crop=sheet.crop((left,top,right,bottom)).resize((512,512),Image.Resampling.LANCZOS)
-        # ImageGen sheet contains residual near-invisible alpha/checker dust;
-        # clear only those low-alpha pixels, never redraw author pixels.
-        a=crop.getchannel("A").point(lambda p:p if p>=28 else 0)
+        # This source PNG has a translucent gray/white checker haze with alpha
+        # as high as ~250, not merely invisible low-alpha dust. Recover the
+        # intended shadow silhouette using original pixel hue/darkness; do
+        # not alter actual geometry, frames, sprite content or combat logic.
+        r,g,b,old_alpha=crop.split()
+        pale=ImageChops.darker(ImageChops.darker(r,g),b)
+        intense=ImageChops.lighter(ImageChops.lighter(r,g),b)
+        chroma=ImageChops.subtract(intense,pale)
+        color_keep=chroma.point(lambda v:min(255,max(0,(v-15)*9)))
+        dark_keep=pale.point(lambda v:min(255,max(0,(198-v)*3)))
+        mask=ImageChops.lighter(color_keep,dark_keep)
+        a=ImageChops.multiply(old_alpha,mask).point(
+          lambda v:0 if v<35 else min(255,int(v*1.5)))
         crop.putalpha(a)
         assert crop.getchannel("A").getbbox()
+        assert a.histogram()[0] > 512*512//5, "sprite cell has opaque backdrop"
+        assert crop.getpixel((0,0))[3]==0, "a frame corner cannot contain background"
         frames.append(crop)
     for name,subset,frame_ms,playback in [
       ("cast",frames[0:2],135,"once"),
