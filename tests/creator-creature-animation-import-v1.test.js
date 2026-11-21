@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {deflateRawSync} from 'node:zlib';
+import {readFileSync} from 'node:fs';
 import {
  readCreatureAnimationZipV1,orderCreatureAnimationFramesV1,
  buildCreatureAnimationStripV1
@@ -95,4 +96,20 @@ test('défaut de taille des canevas : aucune planche enregistrée',async()=>{
  await assert.rejects(buildCreatureAnimationStripV1(files,{decode:async f=>({
   width:f.name.includes('_0')?48:64,height:64,close(){}
  })}),/mêmes dimensions/);
+});
+
+test('import dédié uniquement aux sprites Mouvement et Attaque, sans dupliquer le renderer',()=>{
+ const html=readFileSync(new URL('../examples/dom-demo/capture-editor-v2.html',import.meta.url),'utf8');
+ const js=readFileSync(new URL('../src/ui/capture-editor-human-v2.js',import.meta.url),'utf8');
+ assert.equal((html.match(/data-creature-animation-importer="movement"/g)??[]).length,1);
+ assert.equal((html.match(/data-creature-animation-importer="attack"/g)??[]).length,1);
+ assert.equal((html.match(/data-creature-animation-importer=/g)??[]).length,2);
+ assert.equal((html.match(/data-creature-animation-files>/g)??[]).length,2);
+ assert.equal((html.match(/data-creature-animation-zip>/g)??[]).length,2);
+ assert.match(js,/buildCreatureAnimationStripV1\(source\)/);
+ assert.match(js,/creatorVisualAssets\.importImage\(/);
+ for(const id of ['movement-visual','movement-back-visual','ranged-attack-visual','ranged-attack-back-visual'])
+  assert.match(js,new RegExp('data-creature-'+id));
+ assert.match(js,/frames\.value=String\(strip\.frames\)/);
+ assert.doesNotMatch(html,/data-creature-animation-importer="cast"/);
 });
