@@ -56,7 +56,7 @@
       "subjectId": "raiiven-vol-foulees",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:creature-raiiven-icon-01"
+          "assetId": "pack:capture:icon-skill-raiiven-vol-foulees-v1"
         }
       },
       "audio": {},
