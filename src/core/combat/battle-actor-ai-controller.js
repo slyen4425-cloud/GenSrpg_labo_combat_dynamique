@@ -437,6 +437,9 @@ export function createBattleActorAiController({
       }
 
       watchHold(skill,targetId,state);
+      // Advance the actual choice sequence in non-adaptive mode too.
+      // Otherwise a fixed seed can aim at the real Raiiven forever.
+      tacticalTurnIndex++;
       skillIndex =
         (candidateIndex + 1) % skills.length;
 
