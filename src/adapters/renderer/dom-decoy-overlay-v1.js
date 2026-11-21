@@ -230,7 +230,9 @@ export function createDomDecoyOverlayV1({
         cleanup(actorId);
         entry=create(actorId,anchor,statuses,state.elapsedMs);
       }
-      // Activation shuffles immediately in create(). No delayed five-second\n      // first shuffle: a zero interval means activation-only.\n      if(entry.config.reshuffleMs>0 && state.elapsedMs-entry.lastShuffleAt>=entry.config.reshuffleMs){
+      // Activation shuffles immediately in create(). No delayed five-second
+      // first shuffle: a zero interval means activation-only.
+      if(entry.config.reshuffleMs>0 && state.elapsedMs-entry.lastShuffleAt>=entry.config.reshuffleMs){
         entry.realIndex=nextDecoyRealSlotV1(entry.realIndex,random,entry.decoyIds.length+1);
         entry.lastShuffleAt=state.elapsedMs;
       }
