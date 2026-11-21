@@ -52,7 +52,7 @@ jobs:
           assert len(info["items"])==25
           assert cat["counts"]["assets"]==len(cat["assets"])
           assert len({a["id"] for a in cat["assets"]})==len(cat["assets"])
-          assert len({a["resource"]["file"] for a in cat["assets"]})==len(cat["assets"])
+          assert len({r["file"] for r in info["items"]})==len(info["items"])
           assert all((Path("assets/library")/r["file"]).is_file() for r in info["items"])
           assert sum(1 for r in info["items"] if "icon-skill-raiiven-" in r["id"])==5
           assert sum(1 for r in info["items"] if "remanence-interdite-" in r["id"] and "sprite" in r["id"])==3
