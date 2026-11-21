@@ -8,7 +8,8 @@ const DAMAGE_KINDS=new Set(["damage","life_steal","damage_over_time"]);
 // A creature with no wings or private siphon cannot execute those mechanics.
 const FORBIDDEN_APPROACH_MODES=new Set(["aerial","teleport","burrow"]);
 const FORBIDDEN_TACTICAL_KINDS=new Set([
-  "force_reserve_switch","ally_reserve_relay","drain_energy","steal_energy",
+  "force_reserve_switch","ally_reserve_relay","energy_drain",
+  "summon_entity","consume_marker","knockout",
   "summon","spawn_creature","transform_creature"
 ]);
 export function isCopyableReceivedSkillV1(skill) {
