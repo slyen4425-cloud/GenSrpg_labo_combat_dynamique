@@ -40,7 +40,14 @@ export function attachCaptureEncounterDisplayLevelsV1(source,{local,opponent,loc
     [localId]:levelsByMember(own,[local,...localReserve]),
     [enemyId]:levelsByMember(rival,[opponent,...opponentReserve])
   };
-  return Object.freeze({...source,displayLevelsByRosterMember:Object.freeze(levels)});
+  // Read-only names by official roster member ID: recall and KO do not mix names.
+  const names=Object.fromEntries(rival.map((member,index)=>[
+    member.id,[opponent,...opponentReserve][index]?.npcInstance?.displayName
+  ]).filter(([,name])=>typeof name==='string'&&name.trim()));
+  return Object.freeze({...source,displayLevelsByRosterMember:Object.freeze(levels),
+    ...(Object.keys(names).length?{displayNamesByRosterMember:Object.freeze({
+      [enemyId]:Object.freeze(names)
+    })}:{})});
 }
 
 // The official Combat builder owns the sole encounter-only HP projection.
