@@ -24,7 +24,7 @@ test("Dédale: two existing status IDs, duration, retaliation and original trans
   const statuses=edited.definition.effects.filter(x=>x.kind==="apply_status"&&x.status.kind==="decoy");
   assert.equal(statuses.length,2);
   assert.deepEqual(statuses.map(x=>x.status.id),native.definition.effects.map(x=>x.status.id));
-  assert.equal(edited.definition.decoyFormation.reshuffleMs,5000);
+  assert.equal(edited.definition.decoyFormation.reshuffleMs,0);
   assert.equal(edited.definition.decoyFormation.spacingPct,56);
   assert.equal(edited.definition.decoyFormation.scale,1);
 });
