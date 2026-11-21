@@ -75,7 +75,7 @@ function fakeFxArena(){
   };
 }
 
-test("Raiiven skill 4 shadow projectile uses native visible-mask contact, converts 20 to 12 shadow damage, and emits a damage number",()=>{
+test("Raiiven skill 4 shadow projectile uses native visible-mask contact, converts 20 to 20 shadow damage, and emits a damage number",()=>{
   const session=createCombatSession({battleFormat:format,distance:"short",
     fighters:[fighter("raiiven"),fighter("enemy")]});
   const enemyShot=session.useSkill({actorId:"enemy",targetId:"raiiven",skill:shot});
@@ -107,11 +107,11 @@ test("Raiiven skill 4 shadow projectile uses native visible-mask contact, conver
   assert.equal(resolutions[0].ok,true);
   assert.equal(resolutions[0].outcome,"hit");
   assert.equal(resolutions[0].echoCopied,true);
-  assert.equal(session.snapshot().fighters.enemy.hp,prior.fighters.enemy.hp-12,
-    "Remanence applies 60% native damage only after the visible contact");
+  assert.equal(session.snapshot().fighters.enemy.hp,prior.fighters.enemy.hp-20,
+    "Remanence applies 100% native damage only after the visible contact");
   const deltas=combatHealthDeltaEventsV1(prior,session.snapshot());
   assert.deepEqual(deltas.filter(e=>e.actorId==="enemy").map(e=>[e.kind,e.amount]),
-    [["damage",12]],"normal CombatRuntime health-delta fires the floating 12 damage cue");
+    [["damage",20]],"normal CombatRuntime health-delta fires the floating 20 damage cue");
   renderer.dispose();
 });
 

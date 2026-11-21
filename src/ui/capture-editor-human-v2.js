@@ -2750,7 +2750,12 @@ export function humanSkillEditorFieldsFromDraftV1(
     activationRequirements:
       definition.activationRequirements,
     markerCost:definition.markerCost ?? null,
-    effects: [...(definition.effects ?? [])],
+    // Stampede exposes its ONE native direct-damage owner as an editable
+    // tactical damage row; saving maps it back to effect.damage, never a
+    // second tactical effect or an invisible legacy setting.
+    effects: definition.stampede ? [{kind:"damage",targetScope:"target",
+      amount:definition.effect.damage,channel:definition.element??"shadow"}]
+      : [...(definition.effects ?? [])],
     reaction: definition.reaction,
     evasion: definition.evasion,
     projectileClash:
@@ -3782,6 +3787,8 @@ function writeSkillTemplateFields(
 
 function syncHumanGuidedSkillEffectPanelsV1(root, selected = null) {
   const settings = [
+    ["decoy","[data-skill-decoy-panel]",null],
+    ["stampede","[data-skill-stampede-panel]",null],
     ["charged","[data-skill-charged-panel]","[data-skill-charged-enabled]"],
     ["charged-effects","[data-skill-charged-effects-panel]","[data-skill-charged-effects-enabled]"],
     ["channeling","[data-skill-channeling-section]","[data-skill-channeling-enabled]"],
@@ -3789,18 +3796,23 @@ function syncHumanGuidedSkillEffectPanelsV1(root, selected = null) {
   ];
   // The selected view is NOT a gameplay field. Loading a skill chooses the
   // existing active owner; changing the view never disables or migrates it.
-  const mode=selected ?? settings.find(([, ,checkbox])=>root.querySelector(checkbox)?.checked)?.[0] ?? "standard";
+  const existingDecoy=root.querySelector("[data-skill-decoy-enabled]")?.checked===true;
+  const existingStampede=root.querySelector("[data-skill-form]")?.value==="projectile" &&
+    root.querySelector("[data-skill-trajectory-mode]")?.value==="stampede";
+  const mode=selected ?? (existingDecoy ? "decoy" : existingStampede ? "stampede" :
+    settings.find(([, ,checkbox])=>checkbox && root.querySelector(checkbox)?.checked)?.[0])
+    ?? "standard";
   for(const [kind,selector] of settings) {
     const panel=root.querySelector(selector);
     if(!panel)continue;
     panel.hidden=mode!==kind;
     panel.open=mode===kind;
   }
-  const immediate=mode==="standard";
+  const immediate=mode==="standard" || mode==="stampede";
   const host=root.querySelector("[data-skill-effects-host]");
   const add=root.querySelector("[data-skill-effect-add]");
   if(host)host.hidden=!immediate;
-  if(add)add.hidden=!immediate;
+  if(add)add.hidden=mode!=="standard";
   const choice=root.querySelector("[data-skill-effect-add-kind]");
   if(choice && [...choice.options].some(option=>option.value===mode))
     choice.value=mode;
@@ -3814,7 +3826,8 @@ function syncSkillIllusionHerdControlsV1(root){
   const stampede=root.querySelector("[data-skill-form]")?.value==="projectile" &&
     root.querySelector("[data-skill-trajectory-mode]")?.value==="stampede";
   const panel=root.querySelector("[data-skill-stampede-panel]");
-  if(panel)panel.hidden=!stampede;
+  const selected=root.querySelector("[data-skill-effect-add-kind]")?.value==="stampede";
+  if(panel)panel.hidden=!(stampede && selected);
   const travel=root.querySelector("[data-skill-travel-time]");
   if(travel){
     travel.readOnly=stampede;
@@ -4182,7 +4195,7 @@ function prepareNewSkillDraftFields(
     ["[data-skill-decoy-count]",2],
     ["[data-skill-decoy-duration]",20],
     ["[data-skill-decoy-retaliation]",10],
-    ["[data-skill-decoy-shuffle]",5],
+    ["[data-skill-decoy-shuffle]",0],
     ["[data-skill-decoy-spacing]",56],
     ["[data-skill-decoy-scale]",100],
     ["[data-skill-wave-start-radius]", 3],
@@ -11159,8 +11172,13 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     beamStageLayout.sync();
     syncSkillIllusionHerdControlsV1(root);
   });
-  listen(one(root,"[data-skill-trajectory-mode]"),"change",()=>
-    syncSkillIllusionHerdControlsV1(root));
+  listen(one(root,"[data-skill-trajectory-mode]"),"change",()=>{
+    if(one(root,"[data-skill-trajectory-mode]").value==="stampede")
+      syncHumanGuidedSkillEffectPanelsV1(root,"stampede");
+    else if(one(root,"[data-skill-effect-add-kind]").value==="stampede")
+      syncHumanGuidedSkillEffectPanelsV1(root,"standard");
+    syncSkillIllusionHerdControlsV1(root);
+  });
   listen(one(root,"[data-skill-decoy-enabled]"),"change",()=>{
     if(one(root,"[data-skill-decoy-enabled]").checked){
       // The native status owner requires a self-targeting buff/debuff.
@@ -11170,6 +11188,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       beamStageLayout.sync();
     }
     syncSkillIllusionHerdControlsV1(root);
+    if(one(root,"[data-skill-decoy-enabled]").checked)
+      syncHumanGuidedSkillEffectPanelsV1(root,"decoy");
   });
   for(const key of ["passes","pass-ms","gap-ms"]){
     listen(one(root,"[data-skill-stampede-"+key+"]"),"input",()=>
@@ -13451,6 +13471,46 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       one(root,"[data-skill-approach]").value="none";
       beamStageLayout.sync();
       setStatus(root,"Mine créée : règle le délai, les dégâts, le sprite et le son d’impact ; le cercle suit la position de pose au sol.","ok");
+      return;
+    }
+    if (choice.value === "decoy") {
+      // One standard apply_status(decoy) owner, presented as a first-class
+      // effect choice. The fields still serialize into that same native list.
+      const enabled=one(root,"[data-skill-decoy-enabled]");
+      if(!enabled.checked){
+        enabled.checked=true;
+        enabled.dispatchEvent(new Event("change",{bubbles:true}));
+      }
+      syncGuidedEffectPanelsV1("decoy");
+      guideEffectV1("Leurres ajoutés : règle nombre, durée, riposte et espacement. La permutation initiale est immédiate.");
+      return;
+    }
+    if (choice.value === "stampede") {
+      if(channelingEnabled.checked||chargedEnabled.checked||chargedEffectsEnabled.checked||
+         contactHoldEnabled.checked){
+        choice.value="standard";
+        setStatus(root,"Charge de troupeau incompatible avec une autre mécanique de charge, canalisation ou maintien. Aucun effet effacé.","warn");
+        return;
+      }
+      const authored=readHumanSkillEffectsV1(root);
+      if(authored.length && !(authored.length===1 &&
+          authored[0].kind==="damage" && authored[0].targetScope==="target")){
+        choice.value="standard";
+        setStatus(root,"La charge de troupeau nécessite un seul effet Dégâts sur la cible. Ajuste les effets existants avant de l'activer.","warn");
+        return;
+      }
+      if(!authored.length)appendHumanSkillEffectV1(root,{
+        kind:"damage",targetScope:"target",amount:40,
+        channel:one(root,"[data-skill-element]").value||"shadow"
+      },statRegistry);
+      one(root,"[data-skill-category]").value="offensive";
+      one(root,"[data-skill-form]").value="projectile";
+      one(root,"[data-skill-approach]").value="none";
+      one(root,"[data-skill-trajectory-mode]").value="stampede";
+      beamStageLayout.sync();
+      syncGuidedEffectPanelsV1("stampede");
+      syncSkillIllusionHerdControlsV1(root);
+      guideEffectV1("Charge de troupeau : les vagues, créatures et pauses se règlent dans le panneau. Les dégâts sont dans l'unique ligne Dégâts.");
       return;
     }
     if (choice.value === "wall") {

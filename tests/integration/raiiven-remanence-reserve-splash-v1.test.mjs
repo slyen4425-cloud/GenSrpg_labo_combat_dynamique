@@ -47,9 +47,9 @@ test("Rémanence copies real all-enemy-reserves scope through canonical Roster o
  assert.equal(preview.ok,true,preview.outcome);
  const copied=h.session.useSkill({actorId:"raiiven",targetId:"enemy",skill:echo});
  assert.equal(copied.ok,true);
- assert.equal(h.session.snapshot().fighters.enemy.hp,188,"20 * 60% shadow on active target");
- assert.equal(h.hp("enemy","e1"),194,"10 * 60% shadow on first reserve");
- assert.equal(h.hp("enemy","e2"),194,"10 * 60% shadow on second reserve");
+ assert.equal(h.session.snapshot().fighters.enemy.hp,180,"20 * 100% shadow on active target");
+ assert.equal(h.hp("enemy","e1"),190,"10 * 100% shadow on first reserve");
+ assert.equal(h.hp("enemy","e2"),190,"10 * 100% shadow on second reserve");
  assert.equal(h.session.snapshot().fighters.raiiven.energy,43,"echo paid 7 energy once");
  assert.equal(h.session.snapshot().fighters.raiiven.skillUseCounts[echo.id],1);
  assert.equal(copied.reserveResults.length,2,"one effect per living enemy reserve");
@@ -60,7 +60,7 @@ test("without Roster owner an echoed all-reserve effect fails without charging e
  const direct=projectNativeSkillEchoV1({echoSkill:echo,sourceSkill:mixed,actorId:"raiiven",targetId:"enemy"});
  assert.equal(direct.ok,true);
  assert.equal(direct.skill.effects[1].targetScope,"all_enemy_reserves");
- assert.equal(direct.skill.effects[1].amount,6);
+ assert.equal(direct.skill.effects[1].amount,10);
  assert.equal(direct.skill.effects[1].channel,"shadow");
 });
 test("true replacement clears native last-skill history, tactical refresh preserves it",()=>{

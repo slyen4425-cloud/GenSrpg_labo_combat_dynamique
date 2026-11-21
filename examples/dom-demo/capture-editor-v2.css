@@ -1313,6 +1313,9 @@ body[data-preview-landscape-active="true"] {
 }
 /* The original data remains in the native controls; the single effects
    selector alone chooses which mechanics panel is visible. */
+[data-skill-decoy-panel][hidden],
+[data-skill-decoy-fields][hidden],
+[data-skill-stampede-panel][hidden],
 [data-skill-charged-panel][hidden],
 [data-skill-charged-effects-panel][hidden],
 [data-skill-channeling-section][hidden],

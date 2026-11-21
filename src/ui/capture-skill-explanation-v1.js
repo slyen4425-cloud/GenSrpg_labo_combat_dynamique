@@ -400,7 +400,7 @@ function descriptions(effects,{perCharge=false,markerNames={}}={}){
         " spectral"+(same.length>1?"s":"")+" ciblable"+(same.length>1?"s":"")+
         " pendant "+duration(e.status.durationMs)+
         ". Chaque leurre touché disparaît et inflige "+num(e.status.retaliationDamage)+
-        " dégâts "+elementOf(e.status.channel)+" à l'assaillant"));
+        " dégâts "+elementOf(e.status.channel)+" à l'assaillant. Si la véritable créature est touchée, tous ses leurres disparaissent immédiatement"));
     }else if(e.kind==="apply_status" && !e.condition && simpleChange(e.status)){
       const same=[];
       for(let j=i;j<list.length;j++){
@@ -505,7 +505,7 @@ function specialRules(d){
       "hors ultime. Ses dégâts deviennent des dégâts "+elementOf(d.element)+
       " et les soins sont appliqués au lanceur"));
     list.push(finish("Puissance des dégâts et soins copiés : "+num(d.echoCopy.powerPct)+
-      " % de l'effet d'origine"));
+      " % de l'effet d'origine. Les malus et autres effets secondaires sont également reproduits avec leurs durées et intensités d'origine"));
   }
   if(d.stampede){
     const rule=d.stampede;

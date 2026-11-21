@@ -23,7 +23,7 @@ test("Rémanence refuses no source before energy is paid",()=>{
   assert.equal(s.startSkill({actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,"no_copy_source");
   assert.equal(s.snapshot().fighters.raiiven.energy,30);
 });
-test("Rémanence copies the last native projectile, converts 40 -> 24 shadow and pays only echo",()=>{
+test("Rémanence copies the last native projectile, converts 40 -> 40 shadow and pays only echo",()=>{
   const s=createCombatSession({fighters:[fighter("raiiven"),fighter("enemy")]});
   assert.equal(s.useSkill({actorId:"enemy",targetId:"raiiven",skill:attack}).outcome,"hit");
   const before=s.snapshot().fighters.enemy.hp;
@@ -32,7 +32,7 @@ test("Rémanence copies the last native projectile, converts 40 -> 24 shadow and
   assert.equal(preview.events.find(e=>e.type==="hit").damageChannel,"shadow");
   const r=s.useSkill({actorId:"raiiven",targetId:"enemy",skill:echo});
   assert.equal(r.ok,true);
-  assert.equal(s.snapshot().fighters.enemy.hp,before-24);
+  assert.equal(s.snapshot().fighters.enemy.hp,before-40);
   assert.equal(s.snapshot().fighters.raiiven.energy,23);
   assert.equal(s.useSkill({actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,"cooldown");
 });
@@ -41,9 +41,9 @@ test("Rémanence copies a real ally/self heal to Raiiven with same native effect
   assert.equal(s.useSkill({actorId:"enemy",targetId:"enemy",skill:heal}).outcome,"hit");
   const r=s.useSkill({actorId:"raiiven",targetId:"enemy",skill:echo});
   assert.equal(r.ok,true);
-  assert.equal(s.snapshot().fighters.raiiven.hp,92);
+  assert.equal(s.snapshot().fighters.raiiven.hp,100);
   assert.equal(s.snapshot().fighters.enemy.hp,120);
-  assert.equal(r.events.find(e=>e.type==="heal")?.applied,12);
+  assert.equal(r.events.find(e=>e.type==="heal")?.applied,20);
 });
 test("Native source cannot be ultimate and new member cannot inherit old source",()=>{
   const s=createCombatSession({fighters:[fighter("raiiven"),fighter("enemy")]});
@@ -61,8 +61,8 @@ test("Nested zone damage/heal, statuses and channel effects project only numbers
       {kind:"heal",targetScope:"self",amount:9}],effect:{...attack.effect,damage:0}},
     actorId:"raiiven",targetId:"enemy"});
   assert.equal(projected.ok,true);
-  assert.equal(projected.skill.effects[0].tickEffect.amount,3);
+  assert.equal(projected.skill.effects[0].tickEffect.amount,5);
   assert.equal(projected.skill.effects[0].tickEffect.channel,"shadow");
-  assert.equal(projected.skill.effects[1].amount,5);
+  assert.equal(projected.skill.effects[1].amount,9);
   assert.equal(projected.skill.id,echo.id);
 });

@@ -43,7 +43,7 @@ test("real enemy reserve-only cast becomes inspectable, but direct echo rejects 
  assert.equal(inspected.ok,true);
  assert.equal(inspected.reserveMemberRequired,true);
  assert.deepEqual(inspected.skill.targetLocations,["reserve"]);
- assert.equal(inspected.skill.effects[0].amount,18);
+ assert.equal(inspected.skill.effects[0].amount,30);
  assert.equal(inspected.skill.effects[0].channel,"shadow");
  // Roster independently verifies an exact reserve member and target relation.
  const ref={scope:"reserve",teamId:"enemy",memberId:"e2"};
@@ -59,7 +59,7 @@ test("real enemy reserve-only cast becomes inspectable, but direct echo rejects 
  const settled=roster.useSkillOnTarget({actorId:"raiiven",targetRef:ref,skill:inspected.skill,
   expectedActiveMemberId:preview.expectedActiveMemberId,completedResolution:resolution});
  assert.equal(settled.ok,true,settled.outcome);
- assert.equal(roster.reserveMemberSnapshot("enemy","e2").hp,182);
+ assert.equal(roster.reserveMemberSnapshot("enemy","e2").hp,170);
  assert.equal(roster.reserveMemberSnapshot("enemy","e1").hp,200);
  assert.equal(session.snapshot().fighters.raiiven.energy,23,"cost once");
  assert.equal(session.snapshot().fighters.raiiven.skillUseCounts[echo.id],1);
@@ -79,7 +79,7 @@ test("self/ally reserve healing projects as ally and uses Roster permissions",()
  assert.equal(inspect.ok,true);
  assert.deepEqual(inspect.skill.targetRelations,["ally"]);
  assert.deepEqual(inspect.skill.targetLocations,["reserve"]);
- assert.equal(inspect.skill.effects[0].amount,18);
+ assert.equal(inspect.skill.effects[0].amount,30);
  // On Raiiven side, ally means Raiiven's own bench, not the enemy's.
  const ok=roster.previewSkillOnTarget({actorId:"raiiven",
   targetRef:{scope:"reserve",teamId:"raiiven",memberId:"r1"},skill:inspect.skill});
@@ -98,7 +98,7 @@ test("timed reserve source stores the real authored effects, not a zero-effect a
  assert.equal(started.ok,true);
  const inspected=session.inspectEchoSource({actorId:"raiiven",targetId:"enemy",skill:echo});
  assert.equal(inspected.ok,true);
- assert.equal(inspected.skill.effects[0].amount,18);
+ assert.equal(inspected.skill.effects[0].amount,30);
  assert.equal(inspected.sourceSkillId,reserveShot.id);
  const completed=session.completeSkill({action:started.action});
  const settled=roster.useSkillOnTarget({actorId:"enemy",targetRef:sourceRef,skill:reserveShot,

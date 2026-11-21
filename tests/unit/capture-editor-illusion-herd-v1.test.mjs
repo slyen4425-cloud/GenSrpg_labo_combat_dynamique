@@ -24,7 +24,7 @@ test("Dédale: two existing status IDs, duration, retaliation and original trans
   const statuses=edited.definition.effects.filter(x=>x.kind==="apply_status"&&x.status.kind==="decoy");
   assert.equal(statuses.length,2);
   assert.deepEqual(statuses.map(x=>x.status.id),native.definition.effects.map(x=>x.status.id));
-  assert.equal(edited.definition.decoyFormation.reshuffleMs,5000);
+  assert.equal(edited.definition.decoyFormation.reshuffleMs,0);
   assert.equal(edited.definition.decoyFormation.spacingPct,56);
   assert.equal(edited.definition.decoyFormation.scale,1);
 });
@@ -96,4 +96,47 @@ test("Decoy scale is a single validated authored parameter, no second visual aut
   });
   assert.equal(within.definition.decoyFormation.scale,0.7);
   assert.equal(within.definition.effects.filter(x=>x.status?.kind==="decoy").length,2);
+});
+
+test("Capture editor exposes native clone and Cavalcade controls together in Tactical Effects, not buried in FX",()=>{
+  const html=readFileSync("examples/dom-demo/capture-editor-v2.html","utf8");
+  const start=html.indexOf("<h2>Effets tactiques</h2>");
+  const end=html.indexOf("<h2>Effets visuels</h2>");
+  assert.ok(start>=0&&end>start);
+  const section=html.slice(start,end);
+  assert.match(section,/<option value="decoy">Créer des clones/);
+  assert.match(section,/<option value="stampede">Charge de troupeau/);
+  assert.match(section,/data-skill-decoy-panel hidden/);
+  assert.match(section,/data-skill-stampede-panel hidden/);
+  assert.match(section,/data-skill-stampede-passes/);
+  assert.match(section,/data-skill-stampede-gap-ms/);
+  assert.match(section,/data-skill-stampede-pass-ms/);
+  assert.match(section,/data-skill-stampede-clones/);
+  assert.match(section,/value="0" data-skill-decoy-shuffle/);
+  assert.equal(html.match(/data-skill-decoy-panel/g).length,1);
+  assert.equal(html.match(/data-skill-stampede-panel/g).length,1);
+  const css=readFileSync("examples/dom-demo/capture-editor-v2.css","utf8");
+  assert.match(css,/\[data-skill-decoy-panel\]\[hidden\]/);
+  assert.match(css,/\[data-skill-stampede-panel\]\[hidden\]/);
+  const editor=readFileSync("src/ui/capture-editor-human-v2.js","utf8");
+  assert.match(editor,/syncGuidedEffectPanelsV1\("decoy"\)/);
+  assert.match(editor,/syncGuidedEffectPanelsV1\("stampede"\)/);
+});
+
+test("Loading and saving an ultimate preserves waves, its only damage owner, and edited parameters",()=>{
+  const native=authored("raiiven-cavalcade-damnes");
+  const fields=humanSkillEditorFieldsFromDraftV1(native);
+  assert.equal(fields.loadoutSlot,"ultimate");
+  assert.equal(fields.effects.length,1,"one visible damage effect to edit");
+  assert.equal(fields.effects[0].amount,40);
+  const next=buildHumanSkillDraftV1({...fields,
+    effects:[{...fields.effects[0],amount:48}],
+    stampede:{passes:5,passDurationMs:800,gapMs:250,cloneCount:6}
+  });
+  assert.equal(next.definition.loadoutSlot,"ultimate");
+  assert.equal(next.definition.stampede.passes,5);
+  assert.equal(next.definition.stampede.cloneCount,6);
+  assert.equal(next.definition.travelMs,5000);
+  assert.equal(next.definition.effect.damage,48);
+  assert.equal(next.definition.effects.length,0,"no duplicate tactical damage authority");
 });

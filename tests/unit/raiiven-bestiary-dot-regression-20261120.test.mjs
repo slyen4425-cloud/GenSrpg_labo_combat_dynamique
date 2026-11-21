@@ -21,6 +21,7 @@ test("Bestiary derives all five Raiiven abilities from their active canonical de
   assert.match(decoys,/2 leurres/);
   assert.match(decoys,/20 secondes/);
   assert.match(decoys,/10 dégâts/);
+  assert.match(decoys,/tous ses leurres disparaissent immédiatement/);
   const siphon=descriptions("raiiven-vol-foulees");
   assert.match(siphon,/5 \+ 5 dégâts/);
   assert.match(siphon,/MAXIMALE/);
@@ -28,7 +29,8 @@ test("Bestiary derives all five Raiiven abilities from their active canonical de
   const echo=descriptions("raiiven-remanence-interdite");
   assert.match(echo,/dernière compétence/);
   assert.match(echo,/hors ultime/);
-  assert.match(echo,/60 %/);
+  assert.match(echo,/100 %/);
+  assert.match(echo,/malus et autres effets secondaires/);
   const charge=descriptions("raiiven-cavalcade-damnes");
   assert.match(charge,/3 passages/);
   assert.match(charge,/40 dégâts/);

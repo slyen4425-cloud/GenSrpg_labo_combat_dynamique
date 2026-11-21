@@ -4,7 +4,7 @@
 import {activeStatusEffectsV1} from "../../core/combat/status-effect-runtime-v1.js";
 
 export const DECOY_FORMATION_V1=Object.freeze({
-  scale:1,spacingPct:56,reshuffleMs:5000,edgePaddingPx:4
+  scale:1,spacingPct:56,reshuffleMs:0,edgePaddingPx:4
 });
 
 function unbiasedRandomV1(){
@@ -230,7 +230,9 @@ export function createDomDecoyOverlayV1({
         cleanup(actorId);
         entry=create(actorId,anchor,statuses,state.elapsedMs);
       }
-      if(state.elapsedMs-entry.lastShuffleAt>=entry.config.reshuffleMs){
+      // Activation shuffles immediately in create(). No delayed five-second
+      // first shuffle: a zero interval means activation-only.
+      if(entry.config.reshuffleMs>0 && state.elapsedMs-entry.lastShuffleAt>=entry.config.reshuffleMs){
         entry.realIndex=nextDecoyRealSlotV1(entry.realIndex,random,entry.decoyIds.length+1);
         entry.lastShuffleAt=state.elapsedMs;
       }
