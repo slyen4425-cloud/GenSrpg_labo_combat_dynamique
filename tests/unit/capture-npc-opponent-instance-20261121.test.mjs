@@ -90,6 +90,20 @@ test('compétences : le joueur peut choisir seulement parmi celles réellement d
   opponent:{speciesId:'wolf',level:1,npcInstance:npc({skillIds:['not-unlocked']})}});
  assert.throws(broken,/débloquées/);
 });
+test('nom custom du PNJ suit la bonne instance de combattant et pas l espèce',()=>{
+ const x=opts();
+ const result=buildCaptureEncounterCombatSourceV1({...x,
+  local:{speciesId:'hero',level:1},
+  opponent:{speciesId:'wolf',level:3,npcInstance:npc({displayName:'Gardien nocturne'})}
+ });
+ const enemyId=result.battleFormat.teams['enemy-team'][0];
+ const member=result.roster.teams[enemyId].activeMemberId;
+ assert.equal(result.displayNamesByRosterMember[enemyId][member],'Gardien nocturne');
+ const legacy=buildCaptureEncounterCombatSourceV1({...x,
+  local:{speciesId:'hero',level:1},opponent:{speciesId:'wolf',level:1}
+ });
+ assert.equal('displayNamesByRosterMember' in legacy,false);
+});
 test('les allocations ennemies directes historiques restent rejetées : contrat explicite requis',()=>{
  const x=opts();
  assert.throws(()=>buildCaptureEncounterCombatSourceV1({...x,
