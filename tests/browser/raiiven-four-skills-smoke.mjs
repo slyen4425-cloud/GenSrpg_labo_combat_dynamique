@@ -90,7 +90,7 @@ async function scenario(two){
   check([...slots.raiiven.querySelectorAll(".combat-decoy__sprite img")].every(image=>image.dataset.decoyPose==="standing"),"only the two clones duplicate the standing pose");
   session.advanceMs(5000);
   overlay.render(session.snapshot());
-  check(realBody.style.left!==beforeSlot,"true horse changes slot during Dédale");
+  check(realBody.style.left===beforeSlot,"true horse is placed instantly, not shuffled after five seconds");
   check(slots.raiiven.querySelector("[data-demo-motion]").style.translate!=="","the REAL native model moves with its selected true slot");
   visuals[0].click();check(selected?.actorId==="raiiven","real click selects decoy");
   const enemyHpBefore=session.snapshot().fighters.enemy.hp;
@@ -106,7 +106,7 @@ async function scenario(two){
   const cast=session.useSkill({actorId:"raiiven",targetId:"enemy",skill:echo});
   check(cast.ok,"echo runs native copy");
   check(cast.echoCopied===true,"native echo tag");
-  check(session.snapshot().fighters.enemy.hp===enemyHpBefore-22,"copied 20 fire becomes 12 shadow");
+  check(session.snapshot().fighters.enemy.hp===enemyHpBefore-30,"copied 20 fire becomes 20 shadow, plus 10 decoy retaliation");
   check(cast.events.some(e=>e.type==="hit"&&e.damageChannel==="shadow"),"shadow channel");
   // The same skill must render the original creature's opponent/FACE X/Y
   // adjustment and scale, with no special Raiiven-only mapping.
@@ -181,11 +181,11 @@ async function shadowProjectileContactScenario(){
    check(count===1,"copied shadow projectile reports ONE native contact");
    check(actual?.ok===true&&actual?.outcome==="hit"&&actual?.echoCopied===true,
      "only native CombatSession resolves the hit");
-   check(session.snapshot().fighters.enemy.hp===initial.fighters.enemy.hp-12,
-     "copied 20-damage projectile applies 12 shadow damage");
+   check(session.snapshot().fighters.enemy.hp===initial.fighters.enemy.hp-20,
+     "copied 20-damage projectile applies 20 shadow damage");
    const numbers=combatHealthDeltaEventsV1(initial,session.snapshot());
-   check(numbers.some(e=>e.actorId==="enemy"&&e.kind==="damage"&&e.amount===12),
-     "normal native damage-feedback event exists for the floating 12");
+   check(numbers.some(e=>e.actorId==="enemy"&&e.kind==="damage"&&e.amount===20),
+     "normal native damage-feedback event exists for the floating 20");
  }finally{fx.dispose();area.remove();}
 }
 try{
