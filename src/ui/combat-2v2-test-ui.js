@@ -832,6 +832,9 @@ export async function mountCoop2v2Test({
 
   const cleanups = [];
   const skillRefs = new Map();
+  // A copied skill's original media is authoritative for the whole native
+  // cast/release/impact. The slot itself returns to Rémanence after activation.
+  const inFlightEchoByActor=new Map();
   const targetPulseTimers = new Map();
   let disposed = false;
   let selectedTargetId = previewFormat.initialTargetId;
@@ -899,9 +902,12 @@ export async function mountCoop2v2Test({
             actorId: sourceActorId
           });
 
+    const caster=context.sourceActorId ?? context.sourceView ?? null;
+    const nativeSkillId=skillsById[skillId]?.echoCopy && caster !== null
+      ? (inFlightEchoByActor.get(caster)??skillId) : skillId;
     return (
       presentationAssets?.presentationForSkill?.(
-        skillId,
+        nativeSkillId,
         {
           ...context,
           sourceActorId,
@@ -1306,6 +1312,22 @@ export async function mountCoop2v2Test({
       button.dataset.targeting =
         pendingSkillId === skill.id ? "true" : "false";
       const statMissing = preview?.outcome === "no_stat_points";
+      if(skill.echoCopy){
+        const memory=session.inspectMemorizedEcho({actorId:controlledActorId()});
+        const original=memory?.skill??null;
+        const nativeIcon=button.dataset.originalIconUrl??"";
+        const copyIcon=original
+          ? presentationForActorSkill(original.id,{sourceActorId:controlledActorId()})?.icon?.url
+          : null;
+        const selectedIcon=copyIcon??nativeIcon;
+        for(const image of button.querySelectorAll(".action-option__icon")){
+          if(selectedIcon && image.src!==selectedIcon)image.src=selectedIcon;
+        }
+        const name=button.querySelector("strong");
+        if(name)name.textContent=original?.name??skill.name;
+        button.dataset.echoSourceSkillId=original?.id??"";
+        button.dataset.echoReady=original?"true":"false";
+      }
       button.title = statMissing
         ? `Invocation impossible : ${preview.statId} = 0 point`
         : button.dataset.targetRequired === "true"
@@ -1335,6 +1357,13 @@ export async function mountCoop2v2Test({
         : remainingSeconds > 0
           ? remainingSeconds + " s"
           : "";
+      if(skill.echoCopy){
+        const sourceId=button.dataset.echoSourceSkillId;
+        button.title=sourceId
+          ? "Rémanence : compétence reçue "+button.querySelector("strong")?.textContent+
+            " · 1 copie, effets natifs, dégâts Ombre"
+          : "Rémanence : attends de subir une compétence compatible";
+      }
       if (remainingSeconds > 0) button.title += " · recharge dans " + remainingSeconds + " s";
       cooldown.hidden = !statMissing && remainingCooldownMs <= 0;
       button.dataset.combatCooldown =
@@ -1776,6 +1805,7 @@ export async function mountCoop2v2Test({
       button.append(iconShell);
     }
 
+    button.dataset.originalIconUrl=presentation?.icon?.url??"";
     const label = root.ownerDocument.createElement("strong");
     label.textContent = skill.name;
 
@@ -1985,6 +2015,8 @@ export async function mountCoop2v2Test({
       }
     },
     onStarted({ action }) {
+      if(action.actionType==="skill" && action.skill?.echoSourceSkillId)
+        inFlightEchoByActor.set(action.actorId,action.skill.echoSourceSkillId);
       if (action.actionType !== "skill") {
         presenter.presentPreparation({ action, actorSlot: action.actorId });
         actionRefs[action.actorId].textContent = `${action.command.name} · préparation`;
@@ -2141,6 +2173,7 @@ export async function mountCoop2v2Test({
 
       if (presentation.ko) queueKoReplacement(presentation.koActorId, presentation.finished);
       void Promise.resolve(presentation.finished).then(() => {
+        if(resolution.echoCopied===true)inFlightEchoByActor.delete(resolution.actorId);
         if (!disposed) renderState();
       });
 
@@ -2154,6 +2187,7 @@ export async function mountCoop2v2Test({
     },
     onInterrupted(result) {
       const actorId = result.action?.actorId;
+      if(actorId)inFlightEchoByActor.delete(actorId);
       if (actorId) pendingTimedReserveByActor.delete(actorId);
       if (actorId && actionRefs[actorId]) {
         actionRefs[actorId].textContent = "Interrompu";
