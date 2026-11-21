@@ -2742,7 +2742,7 @@ export function humanSkillEditorFieldsFromDraftV1(
     chargedEffects: definition.chargedEffects ?? null,
     decoy: captureDecoySettingsFromDefinitionV1(definition),
     stampede: definition.stampede ?? null,
-    echoCopy: definition.echoCopy ?? null,
+    echoCopy: definition.echoCopy == null ? null : {...definition.echoCopy,enabled:true},
     echoCopyable: definition.echoCopyable !== false,
     travelMs: definition.travelMs,
     recoveryMs: definition.recoveryMs,
