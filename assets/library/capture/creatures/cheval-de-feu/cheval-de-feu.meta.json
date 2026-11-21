@@ -1,0 +1,38 @@
+{
+  "id": "cheval-de-feu",
+  "name": "Cheval de feu",
+  "status": "approved-artwork-only-no-bestiary-creature",
+  "views": {
+    "opponent": "runtime/face.webp",
+    "player": "runtime/dos.webp",
+    "icon": "runtime/icone.png"
+  },
+  "animations": {
+    "movementOpponent": "animations/movement-opponent.webp",
+    "attackOpponent": "animations/attack-opponent.webp",
+    "movementPlayer": "animations/movement-player.webp",
+    "attackPlayer": "animations/attack-player.webp"
+  },
+  "assetIds": {
+    "opponent": "pack:capture:creature-cheval-de-feu-opponent-v1",
+    "player": "pack:capture:creature-cheval-de-feu-player-v1",
+    "icon": "pack:capture:creature-cheval-de-feu-icon-v1",
+    "movementOpponent": "pack:capture:creature-cheval-de-feu-movement-opponent-6-v1",
+    "attackOpponent": "pack:capture:creature-cheval-de-feu-attack-opponent-5-v1",
+    "movementPlayer": "pack:capture:creature-cheval-de-feu-movement-player-7-v1",
+    "attackPlayer": "pack:capture:creature-cheval-de-feu-attack-player-5-v1"
+  },
+  "frameCounts": {
+    "movementOpponent": 6,
+    "attackOpponent": 5,
+    "movementPlayer": 7,
+    "attackPlayer": 5
+  },
+  "source": {
+    "iconUploadPath": "assets/library/capture/creatures/file_00000000519c8210be0a8e0b97e62743.png",
+    "iconGitBlobSha": "a76e43987492997185a96b0e06aae8de21c3d757",
+    "branch": "global-assets",
+    "mediaManifest": "assets/library/capture/author-uploads-20261121.manifest.json"
+  },
+  "notes": "Visuels et animation disponibles dans la bibliothèque canonique. Aucune fiche de bestiaire, statistique ou capacité inventée."
+}
