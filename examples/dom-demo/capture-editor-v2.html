@@ -1424,6 +1424,8 @@
           <select data-skill-effect-add-kind aria-describedby="effect-guide">
             <option value="standard" selected>Effets immédiats : voir / modifier</option>
             <option value="wall">Invoquer un mur destructible</option>
+            <option value="decoy">Créer des clones / leurres ciblables</option>
+            <option value="stampede">Charge de troupeau — vagues de l’ultime</option>
             <option value="mine">Mine : explosion différée au sol</option>
             <option value="charged">Attaque chargée : projectile renforcé</option>
             <option value="charged-effects">Charge de buffs, debuffs et soins</option>
@@ -1434,7 +1436,7 @@
         <p class="note" id="effect-guide" data-skill-effect-guide>Choisis un effet : ses paramètres apparaissent directement. Les autres mécanismes restent repliés, sans perte de tes configurations.</p>
         <button type="button" class="secondary-action" data-skill-effect-add>Ajouter un effet de dégâts</button>
         <div class="skill-effects-list" data-skill-effects-host></div>
-        <details class="projectile-clash-config" data-skill-decoy-panel>
+        <details class="projectile-clash-config" data-skill-decoy-panel hidden>
           <summary><strong>Leurres — clones indiscernables (facultatif)</strong></summary>
           <label class="switch-line"><input type="checkbox" data-skill-decoy-enabled>
             <span>Créer des leurres ciblables de la créature</span></label>
@@ -1445,16 +1447,31 @@
               <input type="number" min="0.5" max="120" step="0.5" value="20" data-skill-decoy-duration></label>
             <label>Dégâts sur l'attaquant en cas de mauvais choix
               <input type="number" min="0.1" step="0.5" value="10" data-skill-decoy-retaliation></label>
-            <label>Permutation du vrai (secondes)
-              <input type="number" min="0.25" max="20" step="0.25" value="5" data-skill-decoy-shuffle></label>
+            <label>Nouvelle permutation facultative (secondes, 0 = seulement à l’activation)
+              <input type="number" min="0" max="20" step="0.25" value="0" data-skill-decoy-shuffle></label>
             <label>Écartement des apparitions (% de la taille de la créature)
               <input type="number" min="15" max="150" step="1" value="56" data-skill-decoy-spacing></label>
             <label>Taille des clones (% du modèle réel)
               <input type="number" min="50" max="200" step="5" value="100" data-skill-decoy-scale></label>
           </div>
           <input type="hidden" data-skill-decoy-source value="[]">
-          <p class="note">Le vrai reste le modèle officiel, accompagné uniquement de N clones. Taille des clones configurable par rapport au vrai (100 % par défaut). Les ombres proviennent du modèle canonique. Si un leurre est visé, il absorbe l'attaque (même un débuff), disparaît et déclenche la riposte. Un vrai coup sur la créature retire tous les leurres. Leurs statuts et IDs sont générés dans les Effets tactiques existants, sans second moteur.</p>
+          <p class="note">Les clones se répartissent immédiatement avec le vrai dès l’activation. Le vrai reste le modèle officiel, accompagné uniquement de N clones. Taille des clones configurable par rapport au vrai (100 % par défaut). Les ombres proviennent du modèle canonique. Si un leurre est visé, il absorbe l'attaque (même un débuff), disparaît et déclenche la riposte. Un vrai coup sur la créature retire tous les leurres. Leurs statuts et IDs sont générés dans les Effets tactiques existants, sans second moteur.</p>
         </details>
+
+          <details class="projectile-clash-config" data-skill-stampede-panel hidden>
+            <summary><strong>Charge de troupeau — vagues de l’ultime (réglages)</strong></summary>
+            <div class="grid two">
+              <label>Nombre de créatures visibles (vrai inclus)
+                <input type="number" min="2" max="10" step="1" value="5" data-skill-stampede-clones></label>
+              <label>Nombre de vagues
+                <input type="number" min="2" max="6" step="1" value="3" data-skill-stampede-passes></label>
+              <label>Durée d'une vague (millisecondes)
+                <input type="number" min="250" max="5000" step="50" value="1800" data-skill-stampede-pass-ms></label>
+              <label>Pause entre les vagues (millisecondes)
+                <input type="number" min="100" max="6000" step="50" value="600" data-skill-stampede-gap-ms></label>
+            </div>
+            <p class="note">Le vrai lanceur participe visuellement à la charge ; les autres créatures sont des copies du même modèle de déplacement. Les dégâts par vague se règlent avec exactement un effet « Dégâts » ciblé dans Effets tactiques. Le temps de trajet total est calculé automatiquement à partir des vagues ; un seul moteur applique les contacts et les dégâts.</p>
+          </details>
 
         <details class="projectile-clash-config" aria-label="Attaque chargée" data-skill-charged-panel hidden>
           <summary><strong>Attaque chargée — réactiver avant le tir</strong></summary>
@@ -1737,20 +1754,7 @@
                 </select>
               </label>
             </div>
-            <details class="projectile-clash-config" data-skill-stampede-panel hidden>
-              <summary><strong>Charge de troupeau — vagues éditables</strong></summary>
-              <div class="grid two">
-                <label>Nombre de créatures visibles (vrai inclus)
-                  <input type="number" min="2" max="10" step="1" value="5" data-skill-stampede-clones></label>
-                <label>Nombre de vagues
-                  <input type="number" min="2" max="6" step="1" value="3" data-skill-stampede-passes></label>
-                <label>Durée d'une vague (millisecondes)
-                  <input type="number" min="250" max="5000" step="50" value="1800" data-skill-stampede-pass-ms></label>
-                <label>Pause entre les vagues (millisecondes)
-                  <input type="number" min="100" max="6000" step="50" value="600" data-skill-stampede-gap-ms></label>
-              </div>
-              <p class="note">Le vrai lanceur participe visuellement à la charge ; les autres créatures sont des copies du même modèle de déplacement. Les dégâts par vague se règlent avec exactement un effet « Dégâts » ciblé dans Effets tactiques. Le temps de trajet total est calculé automatiquement à partir des vagues ; un seul moteur applique les contacts et les dégâts.</p>
-            </details>
+
             <p class="note">Projectile classique, Rayon continu, Zone, Contact… ce choix garde exactement ses règles de combat actuelles. Pour un projectile, précise si le trajet est direct, tombe du ciel ou s'étend en onde. Les réglages d'animation sont ensuite disponibles ci-dessous.</p>
           </div>
         </section>
