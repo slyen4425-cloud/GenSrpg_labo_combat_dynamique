@@ -69,9 +69,11 @@ export async function readCreatureAnimationZipV1(archive){
   const nameLength=u16(view,cursor+28),extra=u16(view,cursor+30),comment=u16(view,cursor+32);
   const offset=u32(view,cursor+42),end=cursor+46+nameLength+extra+comment;
   if(end>central+size)throw Error('Chemin ZIP tronqué');
-  const path=validatePath(new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(cursor+46,cursor+46+nameLength)));
+  const rawPath=new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(cursor+46,cursor+46+nameLength));
+  const directory=rawPath.endsWith('/');
+  const path=validatePath(directory?rawPath.slice(0,-1):rawPath);
   cursor=end;
-  if(path.endsWith('/')||path.startsWith('__MACOSX/')||path.endsWith('.DS_Store'))continue;
+  if(directory||path.startsWith('__MACOSX/')||path.endsWith('.DS_Store'))continue;
   const mime=imageMime(path);
   if(!mime)continue; // Other files in creative-tool exports, e.g. manifests.
   if((flags&1)||![0,8].includes(method)||unpacked<1||unpacked>MAX_FRAME)
