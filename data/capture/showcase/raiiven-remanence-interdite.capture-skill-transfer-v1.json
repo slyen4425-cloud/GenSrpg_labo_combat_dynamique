@@ -60,7 +60,7 @@
           "assetId": "pack:capture:sprite-skill-raiiven-remanence-interdite-cast-v1",
           "attachment": "source",
           "anchor": "mouth",
-          "trigger": "cast-start",
+          "trigger": "preparation-start",
           "playbackMode": "once",
           "displayScale": 0.95,
           "opacity": 1
