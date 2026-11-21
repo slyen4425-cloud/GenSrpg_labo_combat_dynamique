@@ -21,7 +21,7 @@ test('25 médias du manifeste auteur existent et correspondent au catalogue offi
  for(const item of author.items){
   assert.ok(!ids.has(item.id),'duplicate assetId '+item.id);ids.add(item.id);
   assert.ok(!paths.has(item.file),'duplicate image path '+item.file);paths.add(item.file);
-  assert.match(item.file,/^[a-z0-9][a-z0-9\\/_.-]*\\.webp$/i);
+  assert.ok(item.file.endsWith('.webp') && [...item.file].every(ch=>'abcdefghijklmnopqrstuvwxyz0123456789/_.-'.includes(ch)),item.file);
   assert.ok(!item.file.includes('..'),'unsafe path');
   assert.ok(Number.isInteger(item.frameCount)&&item.frameCount>=1);
   const mapped=catalog.assets.filter(asset=>asset.id===item.id);
