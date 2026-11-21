@@ -1,0 +1,158 @@
+{
+  "schema": "capture-author-media-import-v1",
+  "sourceBranch": "main",
+  "canonicalBranch": "global-assets",
+  "archives": {
+    "raiiven_assets_for_deposit.zip": "f9dde8ec7b5a849700666e4fc8d03d601c7da49f584ae27a77388d348db71b80",
+    "face_cheval_feu.zip": "bc9a31244ecd01f62e5bc4a9cb62cd192ce9d711881e572bbba5dac00973a941",
+    "dos_cheval_feu.zip": "d21d2124cd143550414d35cc335600830a72095eee2a4401adeac07f1608c1cc",
+    "modeles_cheval_feu.zip": "0ae29b0d4beefc4b36636e752b807f791d17ba34ad8af322747163161398e9fd",
+    "Colonne_Spectrale_12_Frames_PNG_512.zip": "fc616672e9ffe996c1bea1402e9d76ad81a8f5275199ca1a88a8b87a2625638b",
+    "MC_FX_Cristaux_Telluriques_12Frames_V2_PROPOSITION.zip": "6c9a63f5e15d69052959810d27ecda94b660b584d90bc7b35d58b4fcce8870ac",
+    "MC_FX_Floraison_Epineuse_12Frames_V1.zip": "9366d1487abdc08333a6f66abc9950c25666a95576831a8b13d2be68925385ad",
+    "MC_FX_Geyser_Magma_12Frames_V2_CLEAN.zip": "b940bc9be4c56d744199eed6f95f8c8d16342dab591350c03dc3d5904b756c04",
+    "MC_FX_Grele_de_Cristal_Chute_8Frames.zip": "eac16fdcfdc5a67316c0a5155d27aa640a486e481adb7baaf0b7d40a5e4655c1",
+    "MC_FX_Grele_de_Cristal_Impact_8Frames.zip": "78890e6b98c60f2598922a99b5863915da72b5aa49314f3ac0a621e724a7b205",
+    "MC_FX_Lance_Celeste_12Frames_V1.zip": "d22dd86be6e16e777d8b84b919bb6e3109649844c4e7ac71d998bc9494be7f84",
+    "MC_FX_Meteore_12Frames.zip": "7d2fc03dde539aa201a7debfae642e1ea9806fd392b96c485d84ab04b8051fb9",
+    "MC_FX_Pluie_de_Foudre_12Frames_V2.zip": "eb937423ea200d73173a6f03a1d546326829405eed21ff04c4ed77552ba64565",
+    "MC_FX_RacinesPerforantes_8Frames_TEST.zip": "c824e471e64545cd07d13b41916239d4f4827eee6db1088b04e31f350d8e5c29",
+    "MC_FX_Vortex_des_Abysses_12Frames_V1.zip": "fad4ba7ff09c046f1b792ade8a3122b263613a0f2871af5792a0594029078c38"
+  },
+  "items": [
+    {
+      "id": "pack:capture:icon-skill-raiiven-fer-maudit-v1",
+      "file": "capture/icons/skills/raiiven/fer-maudit.webp",
+      "frameCount": 1
+    },
+    {
+      "id": "pack:capture:icon-skill-raiiven-dedale-silhouettes-v1",
+      "file": "capture/icons/skills/raiiven/dedale-silhouettes.webp",
+      "frameCount": 1
+    },
+    {
+      "id": "pack:capture:icon-skill-raiiven-vol-foulees-v1",
+      "file": "capture/icons/skills/raiiven/vol-foulees.webp",
+      "frameCount": 1
+    },
+    {
+      "id": "pack:capture:icon-skill-raiiven-remanence-interdite-v1",
+      "file": "capture/icons/skills/raiiven/remanence-interdite.webp",
+      "frameCount": 1
+    },
+    {
+      "id": "pack:capture:icon-skill-raiiven-cavalcade-damnes-v1",
+      "file": "capture/icons/skills/raiiven/cavalcade-damnes.webp",
+      "frameCount": 1
+    },
+    {
+      "id": "pack:capture:sprite-skill-raiiven-remanence-interdite-cast-v1",
+      "file": "capture/sprites/skills/raiiven/remanence-interdite-cast.webp",
+      "frameCount": 2
+    },
+    {
+      "id": "pack:capture:sprite-skill-raiiven-remanence-interdite-projectile-v1",
+      "file": "capture/sprites/skills/raiiven/remanence-interdite-projectile.webp",
+      "frameCount": 3
+    },
+    {
+      "id": "pack:capture:sprite-skill-raiiven-remanence-interdite-impact-v1",
+      "file": "capture/sprites/skills/raiiven/remanence-interdite-impact.webp",
+      "frameCount": 3
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-colonne-spectrale-20261121",
+      "file": "capture/sprites/skills/author-uploads-20261121/colonne-spectrale.webp",
+      "frameCount": 12
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-cristaux-telluriques-20261121",
+      "file": "capture/sprites/skills/author-uploads-20261121/cristaux-telluriques.webp",
+      "frameCount": 12
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-floraison-epineuse-20261121",
+      "file": "capture/sprites/skills/author-uploads-20261121/floraison-epineuse.webp",
+      "frameCount": 12
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-geyser-magma-20261121",
+      "file": "capture/sprites/skills/author-uploads-20261121/geyser-magma.webp",
+      "frameCount": 12
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-grele-cristal-chute-20261121",
+      "file": "capture/sprites/skills/author-uploads-20261121/grele-cristal-chute.webp",
+      "frameCount": 8
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-grele-cristal-impact-20261121",
+      "file": "capture/sprites/skills/author-uploads-20261121/grele-cristal-impact.webp",
+      "frameCount": 8
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-lance-celeste-20261121",
+      "file": "capture/sprites/skills/author-uploads-20261121/lance-celeste.webp",
+      "frameCount": 12
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-meteore-20261121",
+      "file": "capture/sprites/skills/author-uploads-20261121/meteore.webp",
+      "frameCount": 12
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-pluie-de-foudre-20261121",
+      "file": "capture/sprites/skills/author-uploads-20261121/pluie-de-foudre.webp",
+      "frameCount": 12
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-racines-perforantes-20261121",
+      "file": "capture/sprites/skills/author-uploads-20261121/racines-perforantes.webp",
+      "frameCount": 8
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-vortex-des-abysses-20261121",
+      "file": "capture/sprites/skills/author-uploads-20261121/vortex-des-abysses.webp",
+      "frameCount": 12
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-opponent-v1",
+      "file": "capture/creatures/cheval-de-feu/runtime/face.webp",
+      "frameCount": 1
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-player-v1",
+      "file": "capture/creatures/cheval-de-feu/runtime/dos.webp",
+      "frameCount": 1
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-movement-opponent-6-v1",
+      "file": "capture/creatures/cheval-de-feu/animations/movement-opponent.webp",
+      "frameCount": 6
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-attack-opponent-5-v1",
+      "file": "capture/creatures/cheval-de-feu/animations/attack-opponent.webp",
+      "frameCount": 5
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-movement-player-7-v1",
+      "file": "capture/creatures/cheval-de-feu/animations/movement-player.webp",
+      "frameCount": 7
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-attack-player-5-v1",
+      "file": "capture/creatures/cheval-de-feu/animations/attack-player.webp",
+      "frameCount": 5
+    }
+  ],
+  "skillsConnectedOnMain": [
+    "raiiven-fer-maudit",
+    "raiiven-dedale-silhouettes",
+    "raiiven-vol-foulees",
+    "raiiven-remanence-interdite",
+    "raiiven-cavalcade-damnes"
+  ],
+  "fireHorse": "media only; no invented creature definition",
+  "fx": "11 author sequences selectable in catalog; not assigned to unrelated skills"
+}

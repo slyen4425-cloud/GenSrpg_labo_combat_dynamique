@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 469,
-    "icons": 207,
-    "sprites": 230,
+    "assets": 494,
+    "icons": 212,
+    "sprites": 250,
     "fx": 2,
     "portraits": 25,
     "backgrounds": 5,
@@ -15751,6 +15751,1039 @@
         "frameCount": 6,
         "frameMs": 130,
         "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-raiiven-fer-maudit-v1",
+      "label": "Raiiven — Fer maudit",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "raiiven",
+        "shadow",
+        "fer-maudit"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/raiiven/fer-maudit.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-raiiven-dedale-silhouettes-v1",
+      "label": "Raiiven — Dédale des silhouettes",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "raiiven",
+        "shadow",
+        "dedale-silhouettes"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/raiiven/dedale-silhouettes.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-raiiven-vol-foulees-v1",
+      "label": "Raiiven — Vol de foulées",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "raiiven",
+        "shadow",
+        "vol-foulees"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/raiiven/vol-foulees.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-raiiven-remanence-interdite-v1",
+      "label": "Raiiven — Rémanence interdite",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "raiiven",
+        "shadow",
+        "remanence-interdite"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/raiiven/remanence-interdite.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-raiiven-cavalcade-damnes-v1",
+      "label": "Raiiven — Cavalcade des damnés",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "raiiven",
+        "shadow",
+        "cavalcade-damnes"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/raiiven/cavalcade-damnes.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-raiiven-remanence-interdite-cast-v1",
+      "label": "Raiiven — Rémanence interdite / cast",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "raiiven",
+        "shadow",
+        "echo",
+        "animated",
+        "cast"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/raiiven/remanence-interdite-cast.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 2,
+        "frameMs": 135,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-raiiven-remanence-interdite-projectile-v1",
+      "label": "Raiiven — Rémanence interdite / projectile",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "raiiven",
+        "shadow",
+        "echo",
+        "animated",
+        "projectile"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/raiiven/remanence-interdite-projectile.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 3,
+        "frameMs": 120,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-raiiven-remanence-interdite-impact-v1",
+      "label": "Raiiven — Rémanence interdite / impact",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "raiiven",
+        "shadow",
+        "echo",
+        "animated",
+        "impact"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/raiiven/remanence-interdite-impact.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 3,
+        "frameMs": 115,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-colonne-spectrale-20261121",
+      "label": "Colonne Spectrale (12 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fx",
+        "animated",
+        "new-import",
+        "unassigned",
+        "colonne-spectrale",
+        "spirit"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/author-uploads-20261121/colonne-spectrale.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 12,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-cristaux-telluriques-20261121",
+      "label": "Cristaux Telluriques (12 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fx",
+        "animated",
+        "new-import",
+        "unassigned",
+        "cristaux-telluriques",
+        "earth"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/author-uploads-20261121/cristaux-telluriques.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 12,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-floraison-epineuse-20261121",
+      "label": "Floraison Epineuse (12 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fx",
+        "animated",
+        "new-import",
+        "unassigned",
+        "floraison-epineuse",
+        "nature"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/author-uploads-20261121/floraison-epineuse.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 12,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-geyser-magma-20261121",
+      "label": "Geyser Magma (12 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fx",
+        "animated",
+        "new-import",
+        "unassigned",
+        "geyser-magma",
+        "fire"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/author-uploads-20261121/geyser-magma.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 12,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-grele-cristal-chute-20261121",
+      "label": "Grele Cristal Chute (8 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fx",
+        "animated",
+        "new-import",
+        "unassigned",
+        "grele-cristal-chute",
+        "ice"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/author-uploads-20261121/grele-cristal-chute.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 8,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-grele-cristal-impact-20261121",
+      "label": "Grele Cristal Impact (8 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fx",
+        "animated",
+        "new-import",
+        "unassigned",
+        "grele-cristal-impact",
+        "ice"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/author-uploads-20261121/grele-cristal-impact.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 8,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-lance-celeste-20261121",
+      "label": "Lance Celeste (12 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fx",
+        "animated",
+        "new-import",
+        "unassigned",
+        "lance-celeste",
+        "light"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/author-uploads-20261121/lance-celeste.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 12,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-meteore-20261121",
+      "label": "Meteore (12 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fx",
+        "animated",
+        "new-import",
+        "unassigned",
+        "meteore",
+        "fire"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/author-uploads-20261121/meteore.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 12,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-pluie-de-foudre-20261121",
+      "label": "Pluie De Foudre (12 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fx",
+        "animated",
+        "new-import",
+        "unassigned",
+        "pluie-de-foudre",
+        "electric"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/author-uploads-20261121/pluie-de-foudre.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 12,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-racines-perforantes-20261121",
+      "label": "Racines Perforantes (8 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fx",
+        "animated",
+        "new-import",
+        "unassigned",
+        "racines-perforantes",
+        "nature"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/author-uploads-20261121/racines-perforantes.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 8,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-author-fx-vortex-des-abysses-20261121",
+      "label": "Vortex Des Abysses (12 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fx",
+        "animated",
+        "new-import",
+        "unassigned",
+        "vortex-des-abysses",
+        "water"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/author-uploads-20261121/vortex-des-abysses.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 12,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ],
+        "editorRoles": [
+          "cast",
+          "travel",
+          "impact",
+          "zone",
+          "status",
+          "dodge"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-opponent-v1",
+      "label": "Cheval de feu — face",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fire",
+        "cheval-de-feu",
+        "opponent",
+        "model"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/cheval-de-feu/runtime/face.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-player-v1",
+      "label": "Cheval de feu — dos",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fire",
+        "cheval-de-feu",
+        "player",
+        "model"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/cheval-de-feu/runtime/dos.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-movement-opponent-6-v1",
+      "label": "Cheval de feu — movement opponent (6 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fire",
+        "cheval-de-feu",
+        "opponent",
+        "movement",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/cheval-de-feu/animations/movement-opponent.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 6,
+        "frameMs": 130,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-attack-opponent-5-v1",
+      "label": "Cheval de feu — attack opponent (5 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fire",
+        "cheval-de-feu",
+        "opponent",
+        "attack",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/cheval-de-feu/animations/attack-opponent.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 5,
+        "frameMs": 180,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-movement-player-7-v1",
+      "label": "Cheval de feu — movement player (7 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fire",
+        "cheval-de-feu",
+        "player",
+        "movement",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/cheval-de-feu/animations/movement-player.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 7,
+        "frameMs": 130,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-attack-player-5-v1",
+      "label": "Cheval de feu — attack player (5 images)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "2026-11-21",
+        "author-upload",
+        "fire",
+        "cheval-de-feu",
+        "player",
+        "attack",
+        "animated"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Author ZIP uploaded to Labo Combat, 2026-11-21",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/cheval-de-feu/animations/attack-player.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 5,
+        "frameMs": 180,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [
