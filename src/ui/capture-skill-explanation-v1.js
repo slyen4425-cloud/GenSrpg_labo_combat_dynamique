@@ -501,9 +501,10 @@ function specialRules(d){
       " charge d'esquive encore disponible, sans dépasser le maximum du lanceur"));
   }
   if(d.echoCopy){
-    list.push(finish("Reproduit la dernière compétence réellement utilisée par la cible, "+
-      "hors ultime. Ses dégâts deviennent des dégâts "+elementOf(d.element)+
-      " et les soins sont appliqués au lanceur"));
+    list.push(finish("Mémorise la dernière compétence compatible réellement reçue par le lanceur. "+
+      "Son nom, son icône, son cast et ses autres visuels deviennent ceux de la compétence reçue, "+
+      "jusqu'à son utilisation unique. Ses dégâts deviennent des dégâts "+elementOf(d.element)+
+      ". Les ultimes, le vol, la téléportation et les mécanismes non reproductibles sont exclus"));
     list.push(finish("Puissance des dégâts et soins copiés : "+num(d.echoCopy.powerPct)+
       " % de l'effet d'origine. Les malus et autres effets secondaires sont également reproduits avec leurs durées et intensités d'origine"));
   }

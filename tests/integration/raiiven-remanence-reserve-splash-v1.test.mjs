@@ -36,37 +36,34 @@ function setup(){
  const hp=(side,id)=>roster.reserveMemberSnapshot(side,id).hp;
  return {session,roster,hp};
 }
-test("Rémanence copies real all-enemy-reserves scope through canonical Roster once",()=>{
+test("mixed native active+reserve splash still damages live targets, but Rémanence cannot duplicate benches",()=>{
  const h=setup();
  const origin=h.session.useSkill({actorId:"enemy",targetId:"raiiven",skill:mixed});
  assert.equal(origin.ok,true);
  assert.equal(h.session.snapshot().fighters.raiiven.hp,180);
  assert.equal(h.hp("raiiven","r1"),190);
- // The source player was atomically refreshed by Roster; echo history must survive.
- const preview=h.session.previewSkill({actorId:"raiiven",targetId:"enemy",skill:echo});
- assert.equal(preview.ok,true,preview.outcome);
- const copied=h.session.useSkill({actorId:"raiiven",targetId:"enemy",skill:echo});
- assert.equal(copied.ok,true);
- assert.equal(h.session.snapshot().fighters.enemy.hp,180,"20 * 100% shadow on active target");
- assert.equal(h.hp("enemy","e1"),190,"10 * 100% shadow on first reserve");
- assert.equal(h.hp("enemy","e2"),190,"10 * 100% shadow on second reserve");
- assert.equal(h.session.snapshot().fighters.raiiven.energy,43,"echo paid 7 energy once");
- assert.equal(h.session.snapshot().fighters.raiiven.skillUseCounts[echo.id],1);
- assert.equal(copied.reserveResults.length,2,"one effect per living enemy reserve");
+ assert.equal(h.session.inspectMemorizedEcho({actorId:"raiiven"}),null);
+ assert.equal(h.session.previewSkill({actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,"no_copy_source");
 });
-test("without Roster owner an echoed all-reserve effect fails without charging energy",()=>{
+
+test("an unowned Roster effect remains rejected and is explicitly not copyable",()=>{
  const session=createCombatSession({fighters:[fighter("raiiven"),fighter("enemy")],battleFormat:format});
  assert.equal(session.useSkill({actorId:"enemy",targetId:"raiiven",skill:mixed}).outcome,"reserve_roster_required");
- const direct=projectNativeSkillEchoV1({echoSkill:echo,sourceSkill:mixed,actorId:"raiiven",targetId:"enemy"});
- assert.equal(direct.ok,true);
- assert.equal(direct.skill.effects[1].targetScope,"all_enemy_reserves");
- assert.equal(direct.skill.effects[1].amount,10);
- assert.equal(direct.skill.effects[1].channel,"shadow");
+ const copied=projectNativeSkillEchoV1({echoSkill:echo,sourceSkill:mixed,
+   actorId:"raiiven",targetId:"enemy"});
+ assert.equal(copied.ok,false);
+ assert.equal(copied.outcome,"copy_source_forbidden");
+ assert.equal(session.snapshot().fighters.raiiven.energy,50);
 });
-test("true replacement clears native last-skill history, tactical refresh preserves it",()=>{
+
+test("the suffered active-only spell belongs to Raiiven even after enemy replacement; own replacement clears it",()=>{
  const h=setup();
- h.session.useSkill({actorId:"enemy",targetId:"raiiven",skill:mixed});
+ const direct=normalizeSkillDefinition({...mixed,id:"original-active-wave",
+   effects:[mixed.effects[0]]});
+ assert.equal(h.session.useSkill({actorId:"enemy",targetId:"raiiven",skill:direct}).ok,true);
  assert.equal(h.session.previewSkill({actorId:"raiiven",targetId:"enemy",skill:echo}).ok,true);
  h.session.replaceFighter("enemy",fighter("enemy"));
+ assert.equal(h.session.previewSkill({actorId:"raiiven",targetId:"enemy",skill:echo}).ok,true);
+ h.session.replaceFighter("raiiven",fighter("raiiven"));
  assert.equal(h.session.previewSkill({actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,"no_copy_source");
 });

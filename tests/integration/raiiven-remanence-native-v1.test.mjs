@@ -34,16 +34,15 @@ test("Rémanence copies the last native projectile, converts 40 -> 40 shadow and
   assert.equal(r.ok,true);
   assert.equal(s.snapshot().fighters.enemy.hp,before-40);
   assert.equal(s.snapshot().fighters.raiiven.energy,23);
-  assert.equal(s.useSkill({actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,"cooldown");
+  assert.equal(s.useSkill({actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,"no_copy_source","one-use memory consumed after the copy");
 });
-test("Rémanence copies a real ally/self heal to Raiiven with same native effect kind",()=>{
+test("an enemy's self-heal is not an attack suffered by Raiiven and never arms Rémanence",()=>{
   const s=createCombatSession({fighters:[fighter("raiiven",80),fighter("enemy",100)]});
   assert.equal(s.useSkill({actorId:"enemy",targetId:"enemy",skill:heal}).outcome,"hit");
   const r=s.useSkill({actorId:"raiiven",targetId:"enemy",skill:echo});
-  assert.equal(r.ok,true);
-  assert.equal(s.snapshot().fighters.raiiven.hp,100);
+  assert.equal(r.outcome,"no_copy_source");
+  assert.equal(s.snapshot().fighters.raiiven.hp,80);
   assert.equal(s.snapshot().fighters.enemy.hp,120);
-  assert.equal(r.events.find(e=>e.type==="heal")?.applied,20);
 });
 test("Native source cannot be ultimate and new member cannot inherit old source",()=>{
   const s=createCombatSession({fighters:[fighter("raiiven"),fighter("enemy")]});
@@ -52,6 +51,9 @@ test("Native source cannot be ultimate and new member cannot inherit old source"
   assert.equal(s.previewSkill({actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,"no_copy_source");
   s.useSkill({actorId:"enemy",targetId:"raiiven",skill:attack});
   s.replaceFighter("enemy",fighter("enemy"));
+  assert.equal(s.previewSkill({actorId:"raiiven",targetId:"enemy",skill:echo}).ok,true,
+    "memory belongs to Raiiven, not to the former enemy");
+  s.replaceFighter("raiiven",fighter("raiiven"));
   assert.equal(s.previewSkill({actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,"no_copy_source");
 });
 test("Nested zone damage/heal, statuses and channel effects project only numbers and shadow channel",()=>{

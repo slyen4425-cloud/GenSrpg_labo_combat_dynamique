@@ -4,6 +4,29 @@
 const SCALABLE_KINDS=new Set(["damage","heal","life_steal","damage_over_time","heal_over_time"]);
 const DAMAGE_KINDS=new Set(["damage","life_steal","damage_over_time"]);
 
+// Copy compatibility is evaluated against the ORIGINAL native definition.
+// A creature with no wings or private siphon cannot execute those mechanics.
+const FORBIDDEN_APPROACH_MODES=new Set(["aerial","teleport","burrow"]);
+const FORBIDDEN_TACTICAL_KINDS=new Set([
+  "force_reserve_switch","ally_reserve_relay","energy_drain",
+  "summon_entity","consume_marker","knockout",
+  "summon","spawn_creature","transform_creature"
+]);
+export function isCopyableReceivedSkillV1(skill) {
+  if(!skill || skill.echoCopyable===false || skill.loadoutSlot==="ultimate" ||
+    skill.echoCopy || skill.echoSourceSkillId || skill.evasionSiphon ||
+    skill.decoyFormation || skill.stampede || skill.chargedAttack ||
+    skill.chargedEffects || skill.markerCost ||
+    FORBIDDEN_APPROACH_MODES.has(skill.approachMode) ||
+    skill.targetLocations?.includes("reserve") ||
+    skill.projectileTargeting==="stampede") return false;
+  const effects=[...(skill.effects??[]),...(skill.channeling?.effects??[]),
+    ...(skill.contactHold?.effects??[])];
+  return !effects.some(effect=>FORBIDDEN_TACTICAL_KINDS.has(effect.kind) ||
+    (effect.kind==="apply_status" && effect.status?.kind==="decoy") ||
+    ["all_enemy_reserves","all_ally_reserves"].includes(effect.targetScope));
+}
+
 function scaleAmount(value,pct){
   return Math.max(0,Math.round(Number(value)*pct/100));
 }
@@ -25,8 +48,7 @@ export function spectralizeCopiedEffectV1(value,powerPct){
 export function projectNativeSkillEchoV1({echoSkill,sourceSkill,actorId,targetId,allowReserveTarget=false}){
   if(!echoSkill?.echoCopy)return Object.freeze({ok:false,outcome:"not_echo"});
   if(!sourceSkill)return Object.freeze({ok:false,outcome:"no_copy_source"});
-  if(sourceSkill.id===echoSkill.id||sourceSkill.echoCopy||
-     sourceSkill.loadoutSlot==="ultimate")
+  if(sourceSkill.id===echoSkill.id || !isCopyableReceivedSkillV1(sourceSkill))
     return Object.freeze({ok:false,outcome:"copy_source_forbidden"});
   // For explicit reserve-only spells, a genuine Roster member must be
   // selected. The UI may INSPECT this source but may not activate it on a
@@ -49,16 +71,14 @@ export function projectNativeSkillEchoV1({echoSkill,sourceSkill,actorId,targetId
   const legacy=Object.freeze({...sourceSkill.effect,
     damage:scaleAmount(sourceSkill.effect.damage,pct),
     heal:scaleAmount(sourceSkill.effect.heal,pct)});
-  // Preserve source form and native mechanics, but price the ONE Remanence
-  // activation with its own declared energy, cooldown, uses and requirements.
+  // Copy the source's REAL form/timing/geometry/statuses; only damage is
+  // shadow. Slot 4 still owns its cooldown/cost to prevent a second authority.
   const skill=Object.freeze({...sourceSkill,
-    id:echoSkill.id,name:echoSkill.name,element:"shadow",
+    id:echoSkill.id,name:sourceSkill.name,element:"shadow",
     loadoutSlot:"standard",energyCost:echoSkill.energyCost,
     cooldownMs:echoSkill.cooldownMs,maxUsesPerCombat:echoSkill.maxUsesPerCombat,
     activationRequirements:echoSkill.activationRequirements,
-    // Use the copied form's trajectory/area/ticks, but Remanence's windup.
-    preparationMs:echoSkill.preparationMs,recoveryMs:echoSkill.recoveryMs,
-    allowedDistances:echoSkill.allowedDistances,
+    // Original native windup/recovery/distance, trajectory and animations.
     targetRelations:requiresMember
       ? Object.freeze(sourceSkill.targetRelations.map(relation=>relation==="self"?"ally":relation))
       : supporting?Object.freeze(["self"]):sourceSkill.targetRelations,

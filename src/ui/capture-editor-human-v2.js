@@ -2742,6 +2742,8 @@ export function humanSkillEditorFieldsFromDraftV1(
     chargedEffects: definition.chargedEffects ?? null,
     decoy: captureDecoySettingsFromDefinitionV1(definition),
     stampede: definition.stampede ?? null,
+    echoCopy: definition.echoCopy == null ? null : {...definition.echoCopy,enabled:true},
+    echoCopyable: definition.echoCopyable !== false,
     travelMs: definition.travelMs,
     recoveryMs: definition.recoveryMs,
     cooldownMs: definition.cooldownMs ?? 0,
@@ -3072,6 +3074,11 @@ export function buildHumanSkillDraftV1(fields) {
               thicknessPct: finiteNumber(fields.presentation.waveThicknessPct ?? 6,"Épaisseur de l’onde")
             }}
           : {}),
+      // One native echo projection, configured beside the other tactical mechanisms.
+      ...(fields.echoCopy?.enabled===true ? {echoCopy:{
+        powerPct:finiteNumber(fields.echoCopy.powerPct??100,"Puissance de copie")
+      }} : {}),
+      echoCopyable:fields.echoCopyable!==false,
       ...(isStampede ? {stampede:{
         passes:Number(fields.stampede?.passes),
         passDurationMs:Number(fields.stampede?.passDurationMs),
@@ -3168,12 +3175,13 @@ export function buildHumanSkillDraftV1(fields) {
               "Utilisations max par combat"
             ),
       allowedDistances:
-        (isStampede || usesTacticalEffects)
+        (fields.echoCopy?.enabled===true || isStampede || usesTacticalEffects)
           ? [...CAPTURE_EDITOR_COMPAT_DISTANCES_V1]
           : stableIds(
               fields.allowedDistances
             ),
       targetRelations:
+        fields.echoCopy?.enabled===true ? ["enemy"] :
         isStampede ? ["enemy"] :
         usesTacticalEffects
           ? humanSkillTargetRelationsFromTacticalEffectsV1(
@@ -3789,6 +3797,7 @@ function syncHumanGuidedSkillEffectPanelsV1(root, selected = null) {
   const settings = [
     ["decoy","[data-skill-decoy-panel]",null],
     ["stampede","[data-skill-stampede-panel]",null],
+    ["echo","[data-skill-echo-panel]",null],
     ["charged","[data-skill-charged-panel]","[data-skill-charged-enabled]"],
     ["charged-effects","[data-skill-charged-effects-panel]","[data-skill-charged-effects-enabled]"],
     ["channeling","[data-skill-channeling-section]","[data-skill-channeling-enabled]"],
@@ -3799,7 +3808,8 @@ function syncHumanGuidedSkillEffectPanelsV1(root, selected = null) {
   const existingDecoy=root.querySelector("[data-skill-decoy-enabled]")?.checked===true;
   const existingStampede=root.querySelector("[data-skill-form]")?.value==="projectile" &&
     root.querySelector("[data-skill-trajectory-mode]")?.value==="stampede";
-  const mode=selected ?? (existingDecoy ? "decoy" : existingStampede ? "stampede" :
+  const existingEcho=root.querySelector("[data-skill-echo-enabled]")?.checked===true;
+  const mode=selected ?? (existingEcho ? "echo" : existingDecoy ? "decoy" : existingStampede ? "stampede" :
     settings.find(([, ,checkbox])=>checkbox && root.querySelector(checkbox)?.checked)?.[0])
     ?? "standard";
   for(const [kind,selector] of settings) {
@@ -4121,6 +4131,10 @@ function writeSkillDraftFields(
     fields.activationRequirements
   );
   renderHumanSkillMarkerCostV1(root,fields.markerCost);
+  one(root,"[data-skill-echo-enabled]").checked=fields.echoCopy!==null;
+  one(root,"[data-skill-echo-fields]").hidden=fields.echoCopy===null;
+  one(root,"[data-skill-echo-power]").value=String(fields.echoCopy?.powerPct??100);
+  one(root,"[data-skill-echo-copyable]").checked=fields.echoCopyable!==false;
   one(root,"[data-skill-decoy-enabled]").checked=fields.decoy.enabled;
   one(root,"[data-skill-decoy-source]").value=JSON.stringify(fields.decoy.templates??[]);
   renderHumanSkillEffectsV1(
@@ -4297,6 +4311,10 @@ function prepareNewSkillDraftFields(
     {}
   );
   syncHumanGuidedSkillEffectPanelsV1(root,"standard");
+  one(root,"[data-skill-echo-enabled]").checked=false;
+  one(root,"[data-skill-echo-fields]").hidden=true;
+  one(root,"[data-skill-echo-power]").value="100";
+  one(root,"[data-skill-echo-copyable]").checked=true;
   one(root,"[data-skill-decoy-enabled]").checked=false;
   one(root,"[data-skill-decoy-source]").value="[]";
   syncSkillIllusionHerdControlsV1(root);
@@ -10033,6 +10051,10 @@ function readSkillFields(root) {
         root
       ),
     markerCost:readHumanSkillMarkerCostV1(root),
+    echoCopy:one(root,"[data-skill-echo-enabled]").checked
+      ? {enabled:true,powerPct:numericValue(root,"[data-skill-echo-power]")}
+      : null,
+    echoCopyable:one(root,"[data-skill-echo-copyable]").checked,
     decoy:{
       enabled:one(root,"[data-skill-decoy-enabled]").checked,
       count:numericValue(root,"[data-skill-decoy-count]"),
@@ -11178,6 +11200,18 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     else if(one(root,"[data-skill-effect-add-kind]").value==="stampede")
       syncHumanGuidedSkillEffectPanelsV1(root,"standard");
     syncSkillIllusionHerdControlsV1(root);
+  });
+  listen(one(root,"[data-skill-echo-enabled]"),"change",()=>{
+    const enabled=one(root,"[data-skill-echo-enabled]").checked;
+    one(root,"[data-skill-echo-fields]").hidden=!enabled;
+    if(enabled){
+      one(root,"[data-skill-form]").value="self";
+      one(root,"[data-skill-category]").value="buff_debuff";
+      one(root,"[data-skill-approach]").value="none";
+      one(root,"[data-skill-element]").value="shadow";
+      beamStageLayout.sync();
+      syncHumanGuidedSkillEffectPanelsV1(root,"echo");
+    }
   });
   listen(one(root,"[data-skill-decoy-enabled]"),"change",()=>{
     if(one(root,"[data-skill-decoy-enabled]").checked){
@@ -13471,6 +13505,16 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       one(root,"[data-skill-approach]").value="none";
       beamStageLayout.sync();
       setStatus(root,"Mine créée : règle le délai, les dégâts, le sprite et le son d’impact ; le cercle suit la position de pose au sol.","ok");
+      return;
+    }
+    if (choice.value === "echo") {
+      const enabled=one(root,"[data-skill-echo-enabled]");
+      if(!enabled.checked){
+        enabled.checked=true;
+        enabled.dispatchEvent(new Event("change",{bubbles:true}));
+      }
+      syncGuidedEffectPanelsV1("echo");
+      guideEffectV1("Copie de compétence reçue : exclus les ultimes et les mécaniques incompatibles, conserve nom, icône, sprites et effets natifs. Seuls les dégâts deviennent Ombre.");
       return;
     }
     if (choice.value === "decoy") {

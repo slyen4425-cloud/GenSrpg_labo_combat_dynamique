@@ -27,8 +27,8 @@ test("Bestiary derives all five Raiiven abilities from their active canonical de
   assert.match(siphon,/MAXIMALE/);
   assert.match(siphon,/Vole jusqu'à 1 charge/);
   const echo=descriptions("raiiven-remanence-interdite");
-  assert.match(echo,/dernière compétence/);
-  assert.match(echo,/hors ultime/);
+  assert.match(echo,/dernière compétence compatible réellement reçue/);
+  assert.match(echo,/ultimes, le vol, la téléportation/);
   assert.match(echo,/100 %/);
   assert.match(echo,/malus et autres effets secondaires/);
   const charge=descriptions("raiiven-cavalcade-damnes");
