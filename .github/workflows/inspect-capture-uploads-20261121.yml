@@ -1,0 +1,29 @@
+name: Inspect uploaded Raiiven Fire Horse and FX archives
+on:
+  push:
+    branches:
+      - work/raiiven-firehorse-fx-import-20261121
+    paths:
+      - scripts/inspect-capture-uploads-20261121.py
+      - .github/workflows/inspect-capture-uploads-20261121.yml
+      - scripts/import-raiiven-firehorse-fx-20261121.py
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/inspect-capture-uploads-20261121.py
+      - .github/workflows/inspect-capture-uploads-20261121.yml
+      - scripts/import-raiiven-firehorse-fx-20261121.py
+permissions:
+  contents: read
+jobs:
+  inspect-sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'Pillow>=11,<13'
+      - name: Inspect exact author ZIP entries and frame dimensions
+        run: python scripts/inspect-capture-uploads-20261121.py

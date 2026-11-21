@@ -20,6 +20,15 @@
 import { mountCombatDemo } from "../../src/ui/demo-app.js";
 import { mountCaptureCombatPreviewV1 } from "../../src/ui/capture-combat-preview-v1.js";
 import { visibleModelsOverlap } from "../../src/adapters/renderer/dom-visible-model-contact.js";
+// Observe the real browser RAF cadence during the native alpha-mask sensor.
+// This diagnostic preserves the exact requested callback and frame identifier;
+// it creates NO extra sensor, clock or synthetic contact.
+const nativeRequestFrame=window.requestAnimationFrame.bind(window);
+let actualRafRequests=0,actualRafCallbacks=0;
+window.requestAnimationFrame=callback=>{
+  actualRafRequests++;
+  return nativeRequestFrame(time=>{actualRafCallbacks++;callback(time);});
+};
 const query = selector => document.querySelector(selector);
 const fail = message => { document.body.dataset.shadowProbe = "fail:" + message; };
 try {
@@ -272,7 +281,7 @@ try {
         ));
         await new Promise(resolve => setTimeout(resolve, 35));
       }
-      if (touchCount !== 1) throw Error("real contact count="+touchCount+" closest="+nearestDistance+" sourceSnapshots="+sourceSnapshotCount+" targetSnapshots="+targetSnapshotCount+" actor="+JSON.stringify(player.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON())+" target="+JSON.stringify(flying.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON()));
+      if (touchCount !== 1) throw Error("real contact count="+touchCount+" closest="+nearestDistance+" sourceSnapshots="+sourceSnapshotCount+" targetSnapshots="+targetSnapshotCount+" raf="+actualRafCallbacks+"/"+actualRafRequests+" actor="+JSON.stringify(player.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON())+" target="+JSON.stringify(flying.querySelector("[data-demo-motion]").getBoundingClientRect().toJSON()));
       const bodyTracks = player.querySelector("[data-demo-motion]").getAnimations();
       const shadowTracks = a.getAnimations();
       if (!bodyTracks.some(x => x.playState === "paused") ||

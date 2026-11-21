@@ -4,7 +4,7 @@ function middle(rect,arena){
   return {x:Number(rect.left)-Number(arena.left)+Number(rect.width)/2,
     y:Number(rect.top)-Number(arena.top)+Number(rect.height)/2};
 }
-export function playDomShadowEchoFxV1({arena,sourceRect,targetRect,type,durationMs,animate}) {
+export function playDomShadowEchoFxV1({arena,sourceRect,targetRect,type,durationMs,animate,visual=null}) {
   if(!arena?.ownerDocument || typeof animate!=="function")throw new TypeError("shadow echo requires arena and animator");
   const bounds=arena.getBoundingClientRect();
   const source=middle(sourceRect,bounds);
@@ -20,6 +20,24 @@ export function playDomShadowEchoFxV1({arena,sourceRect,targetRect,type,duration
     borderRadius:"50%",pointerEvents:"none",zIndex:"8",
     background:"radial-gradient(circle at 40% 35%,rgba(204,165,255,.9),rgba(92,42,150,.85) 34%,rgba(29,13,56,.7) 60%,transparent 75%)",
     filter:"drop-shadow(0 0 14px rgba(106,48,209,.8))"});
+  // One authored, reusable animation for every copied form. The CombatRuntime
+  // remains responsible for actual hit/damage; this only changes presentation.
+  if(typeof visual?.url==="string" && visual.url.length){
+    const frames=Math.max(1,Math.floor(Number(visual.frameCount)||1));
+    const interval=Math.max(40,Number(visual.frameMs)||120);
+    node.dataset.assetId=visual.assetId??"";
+    Object.assign(node.style,{
+      background:"none",borderRadius:"0",
+      backgroundImage:'url("'+visual.url+'")',
+      backgroundRepeat:"no-repeat",
+      backgroundSize:(frames*100)+"% 100%",backgroundPosition:"0% 0%",
+      animationName:"skill-fx-strip",
+      animationDuration:(frames*interval)+"ms",
+      animationTimingFunction:"steps("+Math.max(1,frames-1)+", end)",
+      animationIterationCount:(type==="projectile"||type==="beam")?"infinite":"1",
+      animationFillMode:"forwards"
+    });
+  }
   arena.append(node);
   const from=`translate(${start.x}px,${start.y}px) translate(-50%,-50%) scale(0.65)`;
   const to=`translate(${end.x}px,${end.y}px) translate(-50%,-50%) scale(${travelling?1.2:1.5})`;
