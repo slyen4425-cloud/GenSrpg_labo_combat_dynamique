@@ -9424,6 +9424,14 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
   for (const importer of root.querySelectorAll("[data-creature-animation-importer]")) {
     const kind=importer.getAttribute("data-creature-animation-importer");
     if(kind!=="movement"&&kind!=="attack")continue;
+    const disclosure=importer.querySelector("[data-creature-animation-toggle]");
+    const body=importer.querySelector("[data-creature-animation-body]");
+    if(disclosure&&body){
+      listen(disclosure,"click",()=>{
+        body.hidden=!body.hidden;
+        disclosure.setAttribute("aria-expanded",String(!body.hidden));
+      });
+    }
     const input=importer.querySelector("[data-creature-animation-files]");
     const zip=importer.querySelector("[data-creature-animation-zip]");
     const name=importer.querySelector("[data-creature-animation-name]");
