@@ -32,99 +32,60 @@ function harness(){
   roster:{teams:{raiiven:team("raiiven",["r0","r1"]),enemy:team("enemy",["e0","e1","e2"])}}});
  return {session,roster};
 }
-test("real enemy reserve-only cast becomes inspectable, but direct echo rejects until exact reserve member is selected",()=>{
+test("an actual reserve-only bolt still hits its real bench member but cannot arm Rémanence",()=>{
  const {session,roster}=harness();
- const actual=roster.useSkillOnTarget({actorId:"enemy",targetRef:{scope:"reserve",teamId:"raiiven",memberId:"r1"},skill:reserveShot});
- assert.equal(actual.ok,true);
+ const cast=roster.useSkillOnTarget({actorId:"enemy",
+   targetRef:{scope:"reserve",teamId:"raiiven",memberId:"r1"},skill:reserveShot});
+ assert.equal(cast.ok,true);
  assert.equal(roster.reserveMemberSnapshot("raiiven","r1").hp,170);
- assert.equal(session.previewSkill({actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,
-   "copy_reserve_requires_member_selection");
- const inspected=session.inspectEchoSource({actorId:"raiiven",targetId:"enemy",skill:echo});
- assert.equal(inspected.ok,true);
- assert.equal(inspected.reserveMemberRequired,true);
- assert.deepEqual(inspected.skill.targetLocations,["reserve"]);
- assert.equal(inspected.skill.effects[0].amount,30);
- assert.equal(inspected.skill.effects[0].channel,"shadow");
- // Roster independently verifies an exact reserve member and target relation.
- const ref={scope:"reserve",teamId:"enemy",memberId:"e2"};
- const preview=roster.prepareSkillOnTarget({actorId:"raiiven",targetRef:ref,skill:inspected.skill});
- assert.equal(preview.ok,true,preview.outcome);
- assert.equal(preview.skill.id,echo.id);
- assert.deepEqual(preview.skill.effects,[]);
- assert.equal(roster.reserveMemberSnapshot("enemy","e1").hp,200);
- const hit=session.startSkill({actorId:"raiiven",targetId:preview.targetId,skill:preview.skill});
- assert.equal(hit.ok,true);
- const resolution=session.completeSkill({action:hit.action});
- assert.equal(resolution.outcome,"hit");
- const settled=roster.useSkillOnTarget({actorId:"raiiven",targetRef:ref,skill:inspected.skill,
-  expectedActiveMemberId:preview.expectedActiveMemberId,completedResolution:resolution});
- assert.equal(settled.ok,true,settled.outcome);
- assert.equal(roster.reserveMemberSnapshot("enemy","e2").hp,170);
- assert.equal(roster.reserveMemberSnapshot("enemy","e1").hp,200);
- assert.equal(session.snapshot().fighters.raiiven.energy,23,"cost once");
- assert.equal(session.snapshot().fighters.raiiven.skillUseCounts[echo.id],1);
- const repeat=roster.useSkillOnTarget({actorId:"raiiven",targetRef:ref,skill:inspected.skill,
-  expectedActiveMemberId:preview.expectedActiveMemberId,completedResolution:resolution});
- assert.equal(repeat.outcome,"unconfirmed_reserve_hit","no duplicate reserve effect");
+ assert.equal(session.inspectMemorizedEcho({actorId:"raiiven"}),null);
+ assert.equal(session.previewSkill({actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,"no_copy_source");
 });
-test("self/ally reserve healing projects as ally and uses Roster permissions",()=>{
+
+test("reserve ally healing retains canonical Roster permissions and is NOT a received copy",()=>{
  const {session,roster}=harness();
- const harm=roster.useSkillOnTarget({actorId:"raiiven",
-  targetRef:{scope:"reserve",teamId:"enemy",memberId:"e1"},skill:reserveShot});
- assert.equal(harm.ok,true);
+ const ref={scope:"reserve",teamId:"enemy",memberId:"e1"};
+ assert.equal(roster.useSkillOnTarget({actorId:"raiiven",targetRef:ref,skill:reserveShot}).ok,true);
  assert.equal(roster.reserveMemberSnapshot("enemy","e1").hp,170);
- roster.useSkillOnTarget({actorId:"enemy",
-  targetRef:{scope:"reserve",teamId:"enemy",memberId:"e1"},skill:reserveAid});
- const inspect=session.inspectEchoSource({actorId:"raiiven",targetId:"enemy",skill:echo});
- assert.equal(inspect.ok,true);
- assert.deepEqual(inspect.skill.targetRelations,["ally"]);
- assert.deepEqual(inspect.skill.targetLocations,["reserve"]);
- assert.equal(inspect.skill.effects[0].amount,30);
- // On Raiiven side, ally means Raiiven's own bench, not the enemy's.
- const ok=roster.previewSkillOnTarget({actorId:"raiiven",
-  targetRef:{scope:"reserve",teamId:"raiiven",memberId:"r1"},skill:inspect.skill});
- assert.equal(ok.ok,true);
- const deny=roster.previewSkillOnTarget({actorId:"raiiven",
-  targetRef:{scope:"reserve",teamId:"enemy",memberId:"e1"},skill:inspect.skill});
- assert.equal(deny.outcome,"target_relation");
+ assert.equal(roster.useSkillOnTarget({actorId:"enemy",targetRef:ref,skill:reserveAid}).ok,true);
+ assert.equal(roster.reserveMemberSnapshot("enemy","e1").hp,200);
+ assert.equal(session.inspectMemorizedEcho({actorId:"raiiven"}),null);
 });
-test("timed reserve source stores the real authored effects, not a zero-effect animation anchor",()=>{
+
+test("a timed reserve spell settles through Roster but its animation anchor cannot arm false memory",()=>{
  const {session,roster}=harness();
- const sourceRef={scope:"reserve",teamId:"raiiven",memberId:"r1"};
- const staged=roster.prepareSkillOnTarget({actorId:"enemy",targetRef:sourceRef,skill:reserveShot});
+ const ref={scope:"reserve",teamId:"raiiven",memberId:"r1"};
+ const staged=roster.prepareSkillOnTarget({actorId:"enemy",targetRef:ref,skill:reserveShot});
  assert.equal(staged.ok,true);
- assert.deepEqual(staged.skill.effects,[],"visible body never receives reserve damage");
+ assert.deepEqual(staged.skill.effects,[],"no phantom hit against active Raiiven");
  const started=session.startSkill({actorId:"enemy",targetId:staged.targetId,skill:staged.skill});
  assert.equal(started.ok,true);
- const inspected=session.inspectEchoSource({actorId:"raiiven",targetId:"enemy",skill:echo});
- assert.equal(inspected.ok,true);
- assert.equal(inspected.skill.effects[0].amount,30);
- assert.equal(inspected.sourceSkillId,reserveShot.id);
- const completed=session.completeSkill({action:started.action});
- const settled=roster.useSkillOnTarget({actorId:"enemy",targetRef:sourceRef,skill:reserveShot,
-   expectedActiveMemberId:staged.expectedActiveMemberId,completedResolution:completed});
+ const finished=session.completeSkill({action:started.action});
+ const settled=roster.useSkillOnTarget({actorId:"enemy",targetRef:ref,skill:reserveShot,
+   expectedActiveMemberId:staged.expectedActiveMemberId,completedResolution:finished});
  assert.equal(settled.ok,true);
- assert.equal(roster.reserveMemberSnapshot("raiiven","r1").hp,170,"no double effects");
+ assert.equal(roster.reserveMemberSnapshot("raiiven","r1").hp,170);
+ assert.equal(session.inspectMemorizedEcho({actorId:"raiiven"}),null);
 });
-test("a relay replaces the caster without transferring the outgoing member's echo history",()=>{
+
+test("a relay replacing Raiiven clears the skill it actually received",()=>{
  const {session,roster}=harness();
- const trigger=roster.useSkillOnTarget({actorId:"raiiven",
-   targetRef:{scope:"reserve",teamId:"enemy",memberId:"e1"},skill:reserveShot});
- assert.equal(trigger.ok,true);
- const before=session.inspectEchoSource({actorId:"enemy",targetId:"raiiven",skill:echo});
- assert.equal(before.ok,true);
- // Relay on the raiven side: the caster slot becomes a different member.
+ const direct=normalizeSkillDefinition({...reserveShot,
+   id:"active-echo-bolt",targetLocations:["active"]});
+ assert.equal(session.useSkill({actorId:"enemy",targetId:"raiiven",skill:direct}).ok,true);
+ assert.equal(session.inspectMemorizedEcho({actorId:"raiiven"}).skill.id,direct.id);
  const relay=normalizeSkillDefinition({id:"echo-test-relay",name:"Native relay",category:"heal",
    form:"self",approachMode:"none",energyCost:0,preparationMs:0,travelMs:0,
    recoveryMs:0,cooldownMs:0,targetRelations:["ally"],targetLocations:["reserve"],
    effect:{damage:0,heal:0},
    effects:[{kind:"ally_reserve_relay",targetScope:"target",healAmount:5,durationMs:1000,outgoingDamagePct:10}]});
- const replacement=roster.useSkillOnTarget({actorId:"raiiven",
+ const result=roster.useSkillOnTarget({actorId:"raiiven",
    targetRef:{scope:"reserve",teamId:"raiiven",memberId:"r1"},skill:relay});
- assert.equal(replacement.ok,true,replacement.outcome);
- assert.equal(session.inspectEchoSource({actorId:"enemy",targetId:"raiiven",skill:echo}).outcome,"no_copy_source");
+ assert.equal(result.ok,true,result.outcome);
+ assert.equal(session.inspectMemorizedEcho({actorId:"raiiven"}),null);
 });
-test("ultimate and a replacement still cannot be used as an echo source",()=>{
+
+test("neither an ultimate nor a reserve-only source is copyable, even after a real bench hit",()=>{
  const {session,roster}=harness();
  const ultimate=normalizeSkillDefinition({...reserveShot,id:"enemy-reserve-ultimate",loadoutSlot:"ultimate"});
  assert.equal(roster.useSkillOnTarget({actorId:"enemy",
@@ -132,6 +93,5 @@ test("ultimate and a replacement still cannot be used as an echo source",()=>{
  assert.equal(session.inspectEchoSource({actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,"no_copy_source");
  assert.equal(roster.useSkillOnTarget({actorId:"enemy",
   targetRef:{scope:"reserve",teamId:"raiiven",memberId:"r1"},skill:reserveShot}).ok,true);
- session.replaceFighter("enemy",fighter("enemy"));
  assert.equal(session.inspectEchoSource({actorId:"raiiven",targetId:"enemy",skill:echo}).outcome,"no_copy_source");
 });
