@@ -4,6 +4,7 @@ import { buildCaptureEditorCombatTestV1 } from "./capture-editor-combat-test-v1.
 import {projectCaptureEncounterOwnedStatsV1} from "../adapters/input/capture/capture-encounter-owned-stats-v1.js";
 import {allocateCaptureWildLevelStatsV1} from "../adapters/input/capture/capture-wild-level-stats-v1.js";
 import {projectCapturePlannedLoadoutsToCombatV1} from "../adapters/input/capture/capture-planned-loadout-to-combat-v1.js";
+import {normalizeCaptureNpcOpponentInstanceV1,applyCaptureNpcOpponentSkillSelectionV1} from "../adapters/input/capture/capture-npc-opponent-instance-v1.js";
 
 function requireParticipant(participant, side) {
   if (typeof participant?.speciesId !== "string" || !participant.speciesId.trim()) {
@@ -134,6 +135,7 @@ function buildCaptureEncounterRosterSourceV1({local,opponent,localReserve,oppone
   requireParticipant(member,'Opponent member '+index);
   if(member.statAllocations!==undefined)
    throw new RangeError('Opponent statAllocations require an official NPC instance contract');
+  normalizeCaptureNpcOpponentInstanceV1(member.npcInstance);
  }
  if(!options.configuredCreatures||!options.configuredSkills)
   throw new TypeError('Official configured Capture creatures and skills required');
@@ -243,11 +245,19 @@ export function buildCaptureEncounterCombatSourceV1({
   // Explicit enemy allocations need a separate certified NPC contract.
   if (opponent.statAllocations !== undefined)
     throw new RangeError('Opponent statAllocations require an official NPC instance contract');
+  const npcInstance=normalizeCaptureNpcOpponentInstanceV1(opponent.npcInstance);
   const authoredCreatures=options.configuredCreatures;
-  const npcCreatures=options.wildStatProfile===undefined?authoredCreatures:
+  const nativeNpcCreatures=options.wildStatProfile===undefined?authoredCreatures:
    projectCaptureWildOpponentStatsV1({opponent,configuredCreatures:authoredCreatures,
     configuredSkills:options.configuredSkills,statRegistry:options.statRegistry,
     profile:options.wildStatProfile,progressionRules:options.progressionRules});
+  // Apply only the instance-specific bonus by reusing Combat's sole stat
+  // registry projection. A second PNJ of this species keeps its own values.
+  const npcCreatures=npcInstance?.statAllocations
+   ?projectCaptureEncounterOwnedStatsV1({configuredCreatures:nativeNpcCreatures,
+     statRegistry:options.statRegistry,speciesId:opponent.speciesId,
+     statAllocations:npcInstance.statAllocations})
+   :nativeNpcCreatures;
   const hasNpcOverride=npcCreatures!==authoredCreatures;
   const ownedCreatures=projectCaptureEncounterOwnedStatsV1({
     configuredCreatures:authoredCreatures,statRegistry:options.statRegistry,
@@ -270,9 +280,9 @@ export function buildCaptureEncounterCombatSourceV1({
     : { [local.speciesId]: local.level, [opponent.speciesId]: opponent.level },combinedCreatures);
   const source = adaptCaptureCombatExportStackV1(exported);
   if (!mirror || (local.level === opponent.level && !hasOwnedStatOverride && !hasNpcOverride)) {
-    return attachCaptureEncounterDisplayLevelsV1(
+    return applyCaptureNpcOpponentSkillSelectionV1(attachCaptureEncounterDisplayLevelsV1(
       applyCaptureEncounterHpMultiplierV1(Object.freeze({ ...source, exported }), hpMultiplier),
-      {local,opponent});
+      {local,opponent}),opponent);
   }
 
   // The author export is keyed by species. Project the opponent separately
@@ -284,7 +294,7 @@ export function buildCaptureEncounterCombatSourceV1({
   const configId = "roster/" + actorId + "/" + memberId;
   const rivalFighter = rival.fighters.find(fighter => fighter.id === actorId);
   const rivalSkills = rival.skillIdsByActor[actorId];
-  return attachCaptureEncounterDisplayLevelsV1(applyCaptureEncounterHpMultiplierV1(Object.freeze({
+  return applyCaptureNpcOpponentSkillSelectionV1(attachCaptureEncounterDisplayLevelsV1(applyCaptureEncounterHpMultiplierV1(Object.freeze({
     ...source,
     exported,
     battleFormat: normalizeBattleFormatDefinition({
@@ -314,5 +324,5 @@ export function buildCaptureEncounterCombatSourceV1({
     }),
     skills: Object.freeze({ ...source.skills, ...rival.skills }),
     skillPresentations: Object.freeze({ ...source.skillPresentations, ...rival.skillPresentations })
-  }), hpMultiplier),{local,opponent});
+  }), hpMultiplier),{local,opponent}),opponent);
 }
