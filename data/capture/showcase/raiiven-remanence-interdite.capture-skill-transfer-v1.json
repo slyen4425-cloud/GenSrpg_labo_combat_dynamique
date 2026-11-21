@@ -54,7 +54,33 @@
       "subjectId": "raiiven-remanence-interdite",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:creature-raiiven-icon-01"
+          "assetId": "pack:capture:icon-skill-raiiven-remanence-interdite-v1"
+        },
+        "cast": {
+          "assetId": "pack:capture:sprite-skill-raiiven-remanence-interdite-cast-v1",
+          "attachment": "source",
+          "anchor": "mouth",
+          "trigger": "cast-start",
+          "playbackMode": "once",
+          "displayScale": 0.95,
+          "opacity": 1
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-skill-raiiven-remanence-interdite-projectile-v1",
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "displayScale": 1,
+          "opacity": 1
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-skill-raiiven-remanence-interdite-impact-v1",
+          "attachment": "fixed-target",
+          "trigger": "impact",
+          "playbackMode": "once",
+          "displayScale": 1.35,
+          "opacity": 1
         }
       },
       "audio": {},
