@@ -693,7 +693,7 @@ export function normalizeSkillDefinition(input) {
     ...(evasionSiphon ? { evasionSiphon } : {}),
     ...(echoCopy ? { echoCopy } : {}),
     // Editable opt-out for skills incompatible with one-use ability copy.
-    echoCopyable: booleanOrDefault(input.echoCopyable,"echoCopyable",true),
+    ...(booleanOrDefault(input.echoCopyable,"echoCopyable",true)===false ? {echoCopyable:false} : {}),
     loadoutSlot,
     element,
     approachMode,
