@@ -42,7 +42,7 @@ test("shadow effect uses supplied canonical atlas without owning combat damage, 
  const fx=playDomShadowEchoFxV1({arena,sourceRect:rect,targetRect:{...rect,left:500},
    type:"projectile",durationMs:700,visual,animate:()=>({finished:Promise.resolve(),cancel(){}})});
  assert.equal(fx.node.dataset.assetId,visual.assetId);
- assert.match(fx.node.style.backgroundImage,/test\\.webp/);
+ assert.ok(fx.node.style.backgroundImage.includes("test.webp"));
  assert.equal(fx.node.style.backgroundSize,"300% 100%");
  assert.equal(fx.node.style.animationIterationCount,"infinite");
  assert.equal(fx.node.dataset.shadowEcho,"true");
@@ -52,8 +52,8 @@ test("shadow effect uses supplied canonical atlas without owning combat damage, 
 test("one import script, one official catalog and all 15 immutable author archives",()=>{
  const s=readFileSync("scripts/import-raiiven-firehorse-fx-20261121.py","utf8");
  assert.match(s,/global-assets/);
- assert.match(s,/assert len\\(added\\)==25/);
- assert.match(s,/do not replace/mi);
+ assert.ok(s.includes("assert len(added)==25"));
+ assert.match(s,/Never replace/mi);
  for(const item of ["raiiven_assets_for_deposit.zip","dos_cheval_feu.zip",
    "face_cheval_feu.zip","modeles_cheval_feu.zip"]){
    assert.ok(readFileSync(item).byteLength>10000);
