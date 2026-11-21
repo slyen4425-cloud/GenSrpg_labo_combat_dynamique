@@ -47,7 +47,7 @@ test("native Rémanence replicates an actual force-switch spell with native Rost
  assert.equal(echoSource.reserveMemberRequired,true);
  assert.equal(echoSource.skill.effects[0].kind,"force_reserve_switch");
  assert.equal(echoSource.skill.effects[1].marker.periodic.channel,"shadow","periodic original nature converted");
- assert.equal(echoSource.skill.effects[1].marker.periodic.amount,3,"periodic 5 scaled to 60%");
+ assert.equal(echoSource.skill.effects[1].marker.periodic.amount,5,"periodic effect is copied at 100%");
  const targetRef={scope:"reserve",teamId:"enemy",memberId:"e2"};
  const prepared=roster.prepareSkillOnTarget({actorId:"raiiven",targetRef,skill:echoSource.skill});
  assert.equal(prepared.ok,true,prepared.outcome);
