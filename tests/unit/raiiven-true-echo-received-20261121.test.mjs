@@ -102,7 +102,8 @@ test("A cast that misses, a decoy hit and an allied/self cast cannot arm the mem
 test("A friendly explicit uncopyable flag and echo-copy exclusions survive canonical skill normalization",()=>{
  const v=fireball({echoCopyable:false});
  assert.equal(v.echoCopyable,false);
- assert.equal(normalizeSkillDefinition(fireball()).echoCopyable,true);
+ assert.notEqual(normalizeSkillDefinition(fireball()).echoCopyable,false,
+   "default-allowed is implicit to keep legacy JSON byte-for-byte compatible");
  assert.equal(projectNativeSkillEchoV1({
    echoSkill:echo,sourceSkill:v,actorId:"raiiven",targetId:"enemy"
  }).outcome,"copy_source_forbidden");
