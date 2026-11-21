@@ -9,7 +9,7 @@
       "capture",
       "combat"
     ],
-    "description": "Dédale des silhouettes : Raiiven affiche trois chevaux d'apparence strictement identique, même atlas, taille, position verticale et animation. Deux sont des leurres ciblables, le troisième est le vrai. Leur ordre change lors du lancement puis toutes les 5 secondes, sans identification visuelle du vrai. Chaque leurre frappé disparaît et inflige 10 dégâts Ombre à l'assaillant. Durée 20 secondes ; les attaques de zone et les vrais coups directs continuent de fonctionner.",
+    "description": "Dédale des silhouettes : dès l'activation, Raiiven permute immédiatement sa position parmi trois chevaux d'apparence strictement identique (même atlas, taille, hauteur et animation). Deux sont des leurres ciblables ; le troisième est le vrai. Une attaque déjà verrouillée avant l'apparition des clones peut être redirigée vers un leurre. Chaque leurre frappé disparaît et inflige 10 dégâts Ombre à l'assaillant. Si le vrai Raiiven est touché, tous les clones sont immédiatement détruits. Durée : 20 secondes. Les attaques de zone restent efficaces.",
     "definition": {
       "id": "raiiven-dedale-silhouettes",
       "name": "Dédale des silhouettes",
@@ -19,7 +19,7 @@
       "element": "shadow",
       "approachMode": "none",
       "energyCost": 5,
-      "preparationMs": 850,
+      "preparationMs": 0,
       "travelMs": 0,
       "recoveryMs": 400,
       "cooldownMs": 32000,
