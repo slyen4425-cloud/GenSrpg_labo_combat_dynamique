@@ -50,6 +50,14 @@ FX = {
  "racines-perforantes": ("MC_FX_RacinesPerforantes_8Frames_TEST.zip",8),
  "vortex-des-abysses": ("MC_FX_Vortex_des_Abysses_12Frames_V1.zip",12),
 }
+FX_ELEMENTS={
+ "colonne-spectrale":"spirit","cristaux-telluriques":"earth",
+ "floraison-epineuse":"nature","geyser-magma":"fire",
+ "grele-cristal-chute":"ice","grele-cristal-impact":"ice",
+ "lance-celeste":"light","meteore":"fire",
+ "pluie-de-foudre":"electric","racines-perforantes":"nature",
+ "vortex-des-abysses":"water",
+}
 SOURCE={"scope":"pack","packId":"capture","author":"Author ZIP uploaded to Labo Combat, 2026-11-21","license":"project-internal"}
 USES={"uses":["combat","capture","editor"]}
 
@@ -176,7 +184,7 @@ def run(source_root,canonical_root):
            f"capture/sprites/skills/author-uploads-20261121/{short}.webp",
            f"pack:capture:sprite-skill-author-fx-{short}-20261121",
            short.replace("-"," ").title()+f" ({count} images)",
-           "skill",["fx","animated","new-import","unassigned",short],
+           "skill",["fx","animated","new-import","unassigned",short,FX_ELEMENTS[short]],
            framecount=count,frame_ms=120,playback="once")
 
     # Fire-horse visual MODEL only: no invented creature identity/loadout or
