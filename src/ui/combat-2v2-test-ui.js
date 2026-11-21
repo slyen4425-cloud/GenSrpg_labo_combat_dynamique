@@ -5,6 +5,7 @@ import {createCombatEntityOverlayV1} from "../adapters/renderer/combat-entity-ov
 import { captureReactionRechargeClockV1 } from "./capture-reaction-recharge-clock-v1.js";
 import { normalizeBattleFormatDefinition } from "../contracts/battle-format-definition.js";
 import { normalizeSkillDefinition } from "../contracts/skill-definition.js";
+import {projectNativeSkillEchoV1} from "../core/combat/skill-echo-v1.js";
 import {
   normalizeCaptureGameOptionsV1,
   buildCaptureDodgeReactionSkillV1,
@@ -1143,6 +1144,17 @@ export async function mountCoop2v2Test({
     targetPulseTimers.set(actorId, timerId);
   }
 
+  function effectiveSlotSkillV1(skill){
+    if(!skill?.echoCopy)return skill;
+    const received=session.inspectMemorizedEcho({actorId:controlledActorId()});
+    if(!received?.skill)return skill;
+    const projection=projectNativeSkillEchoV1({
+      echoSkill:skill,sourceSkill:received.skill,
+      actorId:controlledActorId(),targetId:selectedTargetId
+    });
+    return projection.ok?projection.skill:skill;
+  }
+
   function reserveSkillTargetOptions(skill) {
     const projected=pendingReserveEcho?.skillId===skill?.id
       ? pendingReserveEcho.projectedSkill : skill;
@@ -1157,7 +1169,7 @@ export async function mountCoop2v2Test({
     return combatSkillTargetOptionsV1({
       format,
       actorId: controlledActorId(),
-      skill,
+      skill:effectiveSlotSkillV1(skill),
       state,
       previewSkill: ({ actorId, targetId, skill }) => {
         const ordinary=session.previewSkill({actorId,targetId,skill});
@@ -1303,7 +1315,7 @@ export async function mountCoop2v2Test({
       const preview = options.previewsById[selectedTargetId] ??
         options.previewsById[options.allowedIds[0]] ?? reserveOptions[0]?.preview ?? { ok: false };
       const resolvedTargetId = resolveCombatSkillClickTargetV1({
-        actorId: controlledActorId(), skill,
+        actorId: controlledActorId(), skill:effectiveSlotSkillV1(skill),
         selectedTargetId, availableIds: options.availableIds
       });
       button.dataset.targetRequired =
@@ -1699,7 +1711,8 @@ export async function mountCoop2v2Test({
 
   function activateLocalSkill(skill, targetId, decoyId = null) {
     const allowed = isSkillTargetAllowed({
-      format, actorId: controlledActorId(), targetId, skill
+      format, actorId: controlledActorId(), targetId,
+      skill:effectiveSlotSkillV1(skill)
     });
     if (!allowed.ok || !skillTargetOptions(skill).availableIds.includes(targetId)) {
       setStatus(skill.name + " : cible indisponible.", "warn");
@@ -1845,7 +1858,7 @@ export async function mountCoop2v2Test({
         return;
       }
       const resolvedTargetId = resolveCombatSkillClickTargetV1({
-        actorId: controlledActorId(), skill,
+        actorId: controlledActorId(), skill:effectiveSlotSkillV1(skill),
         selectedTargetId, availableIds: options.availableIds
       });
       if (resolvedTargetId === null) {
