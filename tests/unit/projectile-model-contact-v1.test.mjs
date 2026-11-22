@@ -434,14 +434,14 @@ test("both combat composition roots route projectile model contact to the generi
   ]);
 
   for (const source of [duelSource, coopSource]) {
-    assert.match(
-      source,
-      /onProjectileContact\(contact\)[\s\S]{0,120}runtime\?\.reportActionContact\(contact\)/
-    );
-    assert.doesNotMatch(
-      source,
-      /onProjectileContact\(contact\)[\s\S]{0,220}(damage|hp\s*=|presentOutcome\()/
-    );
+    const callback=source.match(/onProjectileContact\(contact\)\s*\{([\s\S]*?)\n\s*\}/)?.[1];
+    assert.ok(callback,"native projectile sensor callback must be mounted");
+    assert.match(callback,/runtime\?\.reportActionContact\(contact\)/,
+      "ordinary projectile contact still has its original Runtime authority");
+    assert.match(callback,/contact\.waveMultiTarget[\s\S]*?reportExpandingWaveTargetContact\(contact\)/,
+      "native salvo contact goes through the same per-shot runtime as 2v2");
+    assert.doesNotMatch(callback,/(damage|hp\s*=|presentOutcome\()/,
+      "the UI never owns projectile damage");
   }
 });
 
