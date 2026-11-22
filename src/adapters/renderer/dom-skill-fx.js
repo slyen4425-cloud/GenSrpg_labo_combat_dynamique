@@ -458,6 +458,10 @@ export function createDomSkillFxRenderer({
   let disposed = false;
   const active = new Set();
   const persistentZones = new Map();
+  // Presentation-only start/end anchors from the one native skill preparation
+  // event. The actor has already reached its target when zones are spawned,
+  // so recomputing the path at impact stacks three distinct zones together.
+  const groundTrailPaths = new Map();
   // Scheduled mines have NO visual clock or gameplay state here. This Map
   // projects the existing Combat State records into the same FX renderer.
   const scheduledMineNodes=new Map();
@@ -2031,23 +2035,18 @@ export function createDomSkillFxRenderer({
         "persistent zone center"
       ).getBoundingClientRect();
       let liveSource = centerRelativeTo(anchorRect, arenaRect);
-      // Indexed ground trails reuse the SAME native zones, sprite and
-      // visible-bounds occupancy. The three patches are separate points on
-      // the actual source-to-target charge path, not three stacked sprites.
-      if (Number.isInteger(zone.trailIndex) && zone.trailCount >= zone.trailIndex) {
-        const goal = anchors[String(zone.targetId ?? "")];
-        if (goal) {
-          const startRect = anchor(anchors, sourceActorId, "trail source").getBoundingClientRect();
-          const targetRect = goal.getBoundingClientRect();
-          const from = centerRelativeTo(startRect, arenaRect);
-          const to = centerRelativeTo(targetRect, arenaRect);
-          const along = zone.trailIndex / (zone.trailCount + 1);
-          liveSource = {
-            x: from.x + (to.x - from.x) * along,
-            y: from.y + (to.y - from.y) * along +
-              (startRect.height + (targetRect.height - startRect.height) * along) * 0.35
-          };
-        }
+      // Three independent fixed zones, evenly spaced at 1/4, 2/4 and
+      // 3/4 of the charge actually started by the caster, not the already
+      // co-located actor/target positions sampled at impact.
+      const trail = Number.isInteger(zone.trailIndex) && zone.trailCount >= zone.trailIndex
+        ? groundTrailPaths.get(sourceActorId + ":" + skillId) ?? null
+        : null;
+      if (trail) {
+        const along = zone.trailIndex / (zone.trailCount + 1);
+        liveSource = {
+          x: trail.from.x + (trail.to.x - trail.from.x) * along,
+          y: trail.from.y + (trail.to.y - trail.from.y) * along
+        };
       }
       // This renderer alone owns the visual anchor. fixed-source pins an
       // authored field at first activation; source follows the living caster.
@@ -2138,12 +2137,32 @@ export function createDomSkillFxRenderer({
         record.spritePlayback?.setDuration?.(spriteOwnerDurationMs(zone, record.playbackStartedAtMs));
       }
 
+      // A second cast moves the three *same* zone IDs to the new charge
+      // path. Other fixed-source zones keep their original projection.
+      if (trail && record.playbackStartedAtMs !== zone.appliedAtMs) {
+        record.zoneCenter = liveSource;
+        record.playbackStartedAtMs = zone.appliedAtMs;
+      }
       if (!fixedAtGround || !record.zoneCenter) record.zoneCenter = source;
       const offsetX =
         fxAuthorPixelsV1(arena, visual.offsetX);
       const offsetY =
         fxAuthorPixelsV1(arena, visual.offsetY);
 
+      // Keep all three floor sprites physically separate even on a short
+      // charge. The tactical bounds use this exact visual scale (never a
+      // separately fabricated collision radius).
+      const trailSpacing = trail
+        ? Math.hypot(trail.to.x - trail.from.x, trail.to.y - trail.from.y) /
+          (zone.trailCount + 1) : Infinity;
+      const originalDiameter = Number(record.node.offsetWidth) || 192;
+      const maximumDiameter = trailSpacing * 0.72;
+      const scaleLimiter = trail
+        ? Math.min(1, maximumDiameter /
+          (originalDiameter * Math.max(effectiveScaleX, effectiveScaleY)))
+        : 1;
+      const actualScaleX = effectiveScaleX * scaleLimiter;
+      const actualScaleY = effectiveScaleY * scaleLimiter;
       // Native "long" is *the entire battlefield*, not the 1.9x ellipse.
       // The same persistent-zone sprite must reflect that authoritative
       // reach: otherwise foes take damage outside the visible fire.
@@ -2165,7 +2184,7 @@ export function createDomSkillFxRenderer({
         record.node.style.left = `${source.x + offsetX}px`;
         record.node.style.top = `${source.y + offsetY}px`;
         record.node.style.transform =
-          `translate(-50%, -50%) scale(${effectiveScaleX}, ${effectiveScaleY})`;
+          `translate(-50%, -50%) scale(${actualScaleX}, ${actualScaleY})`;
       }
       record.node.style.opacity =
         String(visual.opacity ?? 1);
@@ -2232,6 +2251,7 @@ export function createDomSkillFxRenderer({
     shadowEcho = false,
     projectilePower = 0,
     sizeMultiplier = 1,
+    trailPath = false,
     holdUntilCancelled = false,
     durationMs,
     delayMs = 0
@@ -2253,6 +2273,17 @@ export function createDomSkillFxRenderer({
 
     const arenaRect = arena.getBoundingClientRect();
     const sourceSlot = actorSlot ?? fromSlot ?? null;
+    if (type === "cast" && trailPath === true && skillId &&
+        sourceSlot && targetSlot && anchors[sourceSlot] && anchors[targetSlot]) {
+      const fromRect = anchors[sourceSlot].getBoundingClientRect();
+      const toRect = anchors[targetSlot].getBoundingClientRect();
+      const from = centerRelativeTo(fromRect, arenaRect);
+      const to = centerRelativeTo(toRect, arenaRect);
+      groundTrailPaths.set(sourceSlot + ":" + skillId, {
+        from: {x: from.x, y: from.y + fromRect.height * 0.35},
+        to: {x: to.x, y: to.y + toRect.height * 0.35}
+      });
+    }
     const presentation = skillId
       ? presentationForSkill(skillId, {
           sourceView: sourceSlot,
