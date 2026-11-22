@@ -2122,6 +2122,31 @@ html {
     padding: .45rem .55rem;
   }
 
+  /* Desktop: the enemy reserve tab occupies its own lane immediately LEFT
+     of the real opponent card. Previously a mobile-landscape selector also
+     applied to PC and positioned the tab across the enemy creature's name.
+     Share the exact card-width expression, not a hand-tuned vw offset. */
+  .capture-preview-shell[data-landscape-required="true"]
+    .arena--coop-2v2 > .combat-test-enemy-reserves,
+  .capture-preview-shell[data-landscape-required="true"]
+    .arena--coop-2v2[data-combat-active-count="2"] > .combat-test-enemy-reserves {
+    left: auto;
+    right: calc(min(15.5rem, 26%) + 1.4rem);
+    top: .6rem;
+    width: min(8.5rem, 16%);
+    max-width: none;
+  }
+  /* Unfold leftwards as well; an open reserve must not conceal the enemy
+     name/HP. Same Roster panel, same focus and target semantics. */
+  .capture-preview-shell[data-landscape-required="true"]
+    .arena--coop-2v2 > .combat-test-enemy-reserves .combat-test-enemy-reserves__body,
+  .capture-preview-shell[data-landscape-required="true"]
+    .arena--coop-2v2[data-combat-active-count="2"] > .combat-test-enemy-reserves .combat-test-enemy-reserves__body {
+    left: auto;
+    right: 0;
+    width: min(19rem, 38vw);
+  }
+
   /* PC-only canonical geometry. Both dock width and dodge anchor are resolved
      relative to the SAME 16:9 arena. The 2v2 width remains phone-approved;
      the separate fine-pointer desktop mode never changes touch rules. */
