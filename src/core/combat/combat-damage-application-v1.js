@@ -298,20 +298,24 @@ export function applyCombatContactRetaliationV1({
       Number(state.fighters[attackerId].hp) <= 0) {
     return Object.freeze({ state, requestedDamage: 0, appliedDamage: 0, absorbedByShield: 0 });
   }
-  const requestedDamage = (state.fighters[defenderId].statusEffects ?? [])
-    .filter(instance =>
-      instance.definition?.kind === "damage_reflection" &&
-      isStatusEffectRuntimeInstanceActiveV1(instance, atMs) &&
-      (instance.definition.incomingKinds === undefined ||
-       instance.definition.incomingKinds.includes("contact")))
-    .reduce((sum, instance) =>
-      sum + (instance.definition.contactDamage ?? 0) * instance.stacks, 0);
-  if (requestedDamage <= 0) {
-    return Object.freeze({ state, requestedDamage: 0, appliedDamage: 0, absorbedByShield: 0 });
-  }
+  const statuses=state.fighters[defenderId].statusEffects ?? [];
+  const active=statuses.filter(instance =>
+    instance.definition?.kind === "damage_reflection" &&
+    isStatusEffectRuntimeInstanceActiveV1(instance, atMs) &&
+    (instance.definition.incomingKinds === undefined ||
+     instance.definition.incomingKinds.includes("contact")));
+  const requestedDamage=active.reduce((sum,instance)=>
+    sum+(instance.definition.contactDamage??0)*instance.stacks,0);
+  if(requestedDamage<=0)
+    return Object.freeze({state,requestedDamage:0,appliedDamage:0,absorbedByShield:0});
+  // Consume precisely the activated one-shot statuses before resolving the
+  // existing canonical Combat Damage calculation. Ordinary thorns survive.
+  const consumed=new Set(active.filter(instance=>instance.definition.consumeOnContact===true));
+  const ready=consumed.size
+    ? withFighterStatusEffects(state,defenderId,statuses.filter(instance=>!consumed.has(instance)))
+    : state;
   return applyCombatDamageV1({
-    state, sourceActorId: defenderId, targetActorId: attackerId,
-    damage: requestedDamage, atMs, allowReflection: false,
-    incomingKind: "other"
+    state:ready, sourceActorId:defenderId,targetActorId:attackerId,
+    damage:requestedDamage,atMs,allowReflection:false,incomingKind:"other"
   });
 }
