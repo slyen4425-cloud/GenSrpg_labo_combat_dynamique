@@ -1955,7 +1955,8 @@ export function createCombatRuntime({
   // crosses it. Rules, teams, states, statuses and damage belong here and
   // to CombatSession, never to the visual sensor or 2v2 UI.
   function reportExpandingWaveTargetContact({
-    actorId, targetId, skillId = null, passIndex = 0
+    actorId, targetId, skillId = null, passIndex = 0,
+    combatEntityId = null
   }) {
     if (disposed) return Object.freeze({ok:false,outcome:"disposed"});
     const current = now();
