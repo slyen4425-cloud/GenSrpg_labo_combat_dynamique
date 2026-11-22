@@ -23,7 +23,7 @@ test("both author exports are published exactly once, with unchanged native load
   assert.equal(record.draft.presentation.visual.icon.assetId,icon);
   assert.ok(record.draft.presentation.visual.front.assetId);
   assert.ok(record.draft.presentation.visual.back.assetId);
-  const ids=["claw","fireball","cap_fire_special_1","lib_flame_bite","cap_fire_atk_6"];
+  const ids=id==="Vipfer" ? ["claw","fireball","cap_fire_special_1","lib_flame_bite","cap_fire_atk_6"] : ["polocendre-charge","polocendre-trainee-feu","polocendre-coup-sabot","cap_fire_atk_5","polocendre-ruee-explosive"];
   assert.deepEqual(record.draft.skillIds,ids);assert.deepEqual(record.loadout.slots.map(x=>x.skillId),ids);
  }
 });
