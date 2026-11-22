@@ -87,7 +87,11 @@ async function scenario(two){
    check(contacts.every(c=>c.waveMultiTarget) &&
      contacts.map(c=>c.passIndex).join(",")==="0,1,2","separate native shot indices");
    check(resolutions.length===3 && resolutions.every(x=>x.outcome==="hit"&&x.waveContact),
-     "three authoritative successful hits");
+     "three authoritative successful hits: "+JSON.stringify({
+       contacts:contacts.map(c=>({pass:c.passIndex,entity:c.combatEntityId,position:c.contactPoint})),
+       resolutions:resolutions.map(v=>({outcome:v.outcome,waveContact:v.waveContact,
+         events:v.events?.map(e=>e.type),targetId:v.targetId})),
+       hp:session.snapshot().fighters.opponent.hp}));
    check(session.snapshot().fighters.opponent.hp===264,"target receives exactly 3x12 damage");
    check(session.snapshot().fighters.player.energy===45,"one energy payment");
    for(const id of ids.filter(id=>id!=="opponent" && id!=="player")){
