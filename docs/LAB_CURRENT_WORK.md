@@ -1,3 +1,9 @@
+## 2026-11-22 — Vipfer : éditeur natif sécurisé (suite PR #380)
+- Revue Codex `e51da975` : un aller-retour par l'éditeur de capacités effaçait trois mécaniques pourtant fonctionnelles : `salvo` de Couronne, `consumeOnContact` de Mue et `stopOnDamageFromTarget` de Broyeur. **Correction dans les sérialiseurs propriétaires de l'éditeur existant** ; pas de second registre, pas d'ID manuel.
+- Interface : trajectoire « Salve de projectiles » dans le sélecteur existant, volet repliable des trois paramètres de salve (tirs, durée, intervalle) et calcul du trajet total ; case « Riposte unique » au sein du statut natif `damage_reflection` ; case « fin si la cible blesse le lanceur » au sein du maintien au contact existant.
+- Gates de régression : test d'intégration `vipfer-five-skills-native-20261122.test.mjs` pour l'aller-retour logique et l'Entrave ; vrai Chromium `vipfer-editor-native-roundtrip-smoke.mjs` sur les menus actifs, enregistré comme job distinct dans `ci.yml`. Le test navigateur choisit **la ligne de statut damage_reflection**, pas les contrôles masqués des autres statuts.
+- Au moment de ce checkpoint documentaire : CI du dernier SHA **à revérifier**, pas de fusion `main`, pas de publication PWA. Médias approuvés des cinq compétences absents de `global-assets` ; ne pas déclarer le lot artistique GREEN.
+
 ## 2026-11-22 — Vipfer : gate navigateur, médias vérifiés et entrave
 - État vérifié de la CI au SHA `e51da975f7eb69b4763d3498d482e2a47150e5aa` : **10/10 jobs Laboratoire verts** + certification globale des assets verte ; PR #380 encore ouverte, nouvelle revue Codex demandée sur ce commit.
 - Ajout d’une sentinelle d’intégration d’**Étreinte d’acier** : 13 dégâts Acier, immobilisation 10 s empêchant les déplacements, mais conservant attaque stationnaire et esquive ; mobilité rétablie après expiration. La CI sur ce nouveau commit doit de nouveau être vérifiée avant toute fusion.
