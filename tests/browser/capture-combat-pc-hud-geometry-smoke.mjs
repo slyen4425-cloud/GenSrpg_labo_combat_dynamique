@@ -37,6 +37,8 @@ const browserScript = [
   'dodge.hidden=false;',
   'dodge.querySelector("[data-combat-dodge-charges]").textContent="2 / 2";',
   'const ally=arena.querySelector(".squad-card--command-ally");',
+  'const bench=arena.querySelector(".combat-test-enemy-reserves");',
+  'bench.hidden=false;',
   'if(count==="1"){',
   '  for(const selector of [".squad-card--command-ally",".squad-card--opponent-b",".fighter--ally",".fighter--opponent-b"]){',
   '    const element=arena.querySelector(selector); if(element) element.style.display="none";',
@@ -54,7 +56,19 @@ const browserScript = [
   'button.focus();const canFocus=document.activeElement===button;',
   'return b.width>=18&&b.height>=18&&canPoint&&canFocus;',
   '});',
+  'const firstEnemyTitle=rect(arena.querySelector(".squad-card--opponent strong"));',
+  'const secondEnemyTitle=count==="2"?rect(arena.querySelector(".squad-card--opponent-b strong")):null;',
+  'const reserveTab=rect(bench.querySelector("summary"));',
+  'bench.open=true;',
+  'const reservePopup=rect(bench.querySelector(".combat-test-enemy-reserves__body"));',
+  'bench.open=false;',
+  'box.enemyName=firstEnemyTitle;box.enemyNameB=secondEnemyTitle;',
+  'box.reserveTab=reserveTab;box.reservePopup=reservePopup;',
   'const data={count,mode,viewport:{width:innerWidth,height:innerHeight},fine:matchMedia("(pointer: fine)").matches,',
+  'reserveTabVsEnemy:overlap(reserveTab,firstEnemyTitle),',
+  'reservePopupVsEnemy:overlap(reservePopup,firstEnemyTitle),',
+  'reserveTabVsEnemyB:secondEnemyTitle?overlap(reserveTab,secondEnemyTitle):0,',
+  'reservePopupVsEnemyB:secondEnemyTitle?overlap(reservePopup,secondEnemyTitle):0,',
   'dodgeVsStack:overlap(box.dodge,box.stack),dodgeVsSkills:skills.map(skill=>overlap(box.dodge,rect(skill))),',
   'dodgeVsHp:overlap(box.dodge,box.playerHp),dodgeVsAlly:box.ally?overlap(box.dodge,box.ally):0,',
   'gap:box.stack.left-box.dodge.right,accessible,skillCount:skills.length,',
@@ -170,6 +184,11 @@ try {
       assert(after.dodgeVsHp===0 && after.dodgeVsAlly===0,
         "Esquive covers HP or ally card: "+w+" "+count+" "+JSON.stringify(after));
       assert(after.overflowX<=1,"horizontal overflow: "+w+" "+count+" "+after.overflowX);
+      assert(after.reserveTabVsEnemy===0 && after.reservePopupVsEnemy===0 &&
+        after.reserveTabVsEnemyB===0 && after.reservePopupVsEnemyB===0,
+        "enemy reserve tab/popover covers enemy creature names: "+w+" "+count+" "+JSON.stringify(after));
+      assert(after.box.reserveTab.right+7<=after.box.enemyName.left,
+        "reserve tab must be at least 7px LEFT of opponent name: "+w+" "+count);
       if(count==="1"&&w===1648)
         assert(before.dodgeVsStack>0,"known RED overlap did not reproduce on original 1648x927 CSS");
       console.log("PASS desktop "+w+"x"+h+" active="+count+" before_overlap="+before.dodgeVsStack.toFixed(1)+" after_gap="+after.gap.toFixed(1));
@@ -177,7 +196,7 @@ try {
     for(const [w,h] of phones){
       const before=await probe(w,h,count,"before"),after=await probe(w,h,count,"after");
       assert(after.fine === false && before.fine === false, "phone must use touch/coarse pointer: "+w+" "+count);
-      for(const el of ["stack","dodge","playerHp"]){
+      for(const el of ["stack","dodge","playerHp","reserveTab","reservePopup"]){
         for(const axis of ["x","y","width","height"])
           assert(close(before.box[el][axis],after.box[el][axis]),
             "approved phone HUD changed "+w+"x"+h+" "+count+" "+el+" "+axis);

@@ -37,3 +37,19 @@ test("upper enemy HUD anchor and downward touch panel use landscape-bounded styl
   assert.ok(css.includes('capture-preview-shell[data-landscape-required="true"] .arena--coop-2v2 > .combat-test-enemy-reserves'),
     "mobile landscape cards have a dedicated adjacent layout");
 });
+
+// PC-only HUD lane is separate from phone geometry and never changes roster
+// identifiers or duplicates the opponent panel.
+test("PC-only enemy reserve tab is pinned beside the real opponent card width",async()=>{
+  const css=await read("examples/dom-demo/capture-editor-v2.css");
+  const start=css.indexOf("/* PC-only combat legibility.");
+  const end=css.indexOf("/* Canonical skill recolor controls:",start);
+  assert.ok(start>=0&&end>start);
+  const pc=css.slice(start,end);
+  assert.match(pc,/\.arena--coop-2v2(?:\[data-combat-active-count="2"\])?\s*>\s*\.combat-test-enemy-reserves\s*\{/);
+  assert.match(pc,/right:\s*calc\(min\(15\.5rem,\s*26%\)\s*\+\s*1\.4rem\)/);
+  assert.match(pc,/\.combat-test-enemy-reserves__body\s*\{\s*left:\s*auto;\s*right:\s*0;/);
+  assert.match(pc,/\(pointer:\s*fine\)/);
+  const mobile=css.slice(0,start);
+  assert.match(mobile,/\.arena--coop-2v2\[data-combat-active-count="2"\]\s*>\s*\.combat-test-enemy-reserves\s*\{[^}]*left:\s*33%/s);
+});
