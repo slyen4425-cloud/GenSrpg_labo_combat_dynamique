@@ -2852,10 +2852,12 @@ export function createDomSkillFxRenderer({
     if (type === "projectile" && salvo !== null) {
       // Three real sprite flights, not three cloned creatures or an extra HP owner.
       // Each flight reports its own swept alpha collision to Combat Runtime.
-      const scheduled=[],children=[];
+      const scheduled=[],children=[],pendingSettlers=[];
+      let cancelled=false;
       const tasks=Array.from({length:salvo.shots},(_,passIndex)=>new Promise(resolve=>{
+        pendingSettlers.push(resolve);
         const fire=()=>{
-          if(disposed){resolve({status:"disposed"});return;}
+          if(cancelled||disposed){resolve({status:"cancelled"});return;}
           const result=play({type:"projectile",skillId,element,fromSlot,targetSlot,
             fromPoint,projectilePower,sizeMultiplier,trailPath,
             durationMs:salvo.shotDurationMs,salvoPassIndex:passIndex});
@@ -2864,8 +2866,14 @@ export function createDomSkillFxRenderer({
         };
         scheduled.push(setTimeout(fire,passIndex*(salvo.shotDurationMs+salvo.gapMs)));
       }));
-      const node={remove(){for(const handle of scheduled)clearTimeout(handle);
-        for(const child of children)child.animation?.cancel?.();}};
+      const node={remove(){
+        if(cancelled)return;
+        cancelled=true;
+        for(const handle of scheduled)clearTimeout(handle);
+        for(const child of children)child.animation?.cancel?.();
+        // Cancelling between shots must also settle the not-yet-fired promises.
+        for(const resolve of pendingSettlers)resolve({status:"cancelled"});
+      }};
       const record={node,animation:null,frameAnimation:null,type:"projectile",
         skillId,fromSlot,targetSlot,contactFrameId:null};
       active.add(record);
