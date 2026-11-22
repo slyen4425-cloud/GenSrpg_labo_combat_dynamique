@@ -110,6 +110,17 @@ jobs:
         run: node tests/browser/expanding-wave-2v2-smoke.mjs
 
 
+  vipfer-editor-roundtrip-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Real Chromium Vipfer author edit save reload without gameplay loss
+        run: node tests/browser/vipfer-editor-native-roundtrip-smoke.mjs
+
   vipfer-salvo-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 10
