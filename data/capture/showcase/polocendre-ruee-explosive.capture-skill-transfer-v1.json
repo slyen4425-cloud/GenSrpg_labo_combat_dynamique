@@ -1,0 +1,123 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "polocendre-ruee-explosive",
+    "description": "ULTIME verrouillée tant qu'aucun allié n'est KO. Ruée au sol volontairement lente jusqu'à l'ennemi, explosion à l'impact : 60 dégâts Feu à la cible et 40 dégâts Feu à chaque ennemi en réserve. Une utilisation par combat.",
+    "requiredLevel": 20,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "polocendre-ruee-explosive",
+      "name": "Ruée explosive",
+      "category": "offensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "ultimate",
+      "element": "fire",
+      "approachMode": "ground",
+      "energyCost": 8,
+      "preparationMs": 1100,
+      "travelMs": 3500,
+      "recoveryMs": 650,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "allies_defeated",
+            "threshold": 1
+          }
+        ]
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 60,
+          "channel": "fire"
+        },
+        {
+          "kind": "damage",
+          "targetScope": "all_enemy_reserves",
+          "amount": 40,
+          "channel": "fire"
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:polocendre-ruee-explosive",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "polocendre-ruee-explosive",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-explosion-flammes-01"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-fluide-meteorite-impact-01",
+          "displayScale": 1.9,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "durationMs": 850
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}
