@@ -57,6 +57,9 @@ export function planSkillReleaseFx({
       ...(action.skill.projectileTargeting === "stampede"
         ? { stampede: action.skill.stampede }
         : {}),
+      ...(action.skill.projectileTargeting === "salvo"
+        ? { salvo: action.skill.salvo }
+        : {}),
       ...(action.mirrorReturn?.contactPoint ? { fromPoint: action.mirrorReturn.contactPoint } : {}),
       delayMs: 0,
       durationMs: Math.max(0, Number(action.travelMs) || 0)
