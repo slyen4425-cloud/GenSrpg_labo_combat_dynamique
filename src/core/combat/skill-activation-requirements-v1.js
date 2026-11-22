@@ -14,6 +14,16 @@ function teamDefeatCount(
   actorId,
   relation
 ) {
+  // The roster owns every individual member's HP, including a knocked-out
+  // creature after its active slot has been replaced. CombatState owns only
+  // the current slot; counting its fighters alone incorrectly relocks ultimates.
+  // This is a read-only roster projection, never a second defeat ledger.
+  if (typeof battleFormat?.rosterDefeatCount === "function") {
+    const count = battleFormat.rosterDefeatCount(actorId, relation);
+    if (!Number.isSafeInteger(count) || count < 0)
+      throw new RangeError("Roster defeat count must be a nonnegative integer");
+    return count;
+  }
   if (
     !battleFormat ||
     typeof battleFormat.teamOf !== "function" ||
