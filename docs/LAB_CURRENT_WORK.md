@@ -1,3 +1,10 @@
+## 2026-11-22 — Vague incendiaire : icône Boule de feu (correctif isolé)
+- Baseline : `main@d7eeae0fdb13454cf5a9ae18a0676e6784e425e5` ; checkpoint `checkpoint/lab-start-vague-incendiaire-icon-20261122` ; branche `work/lab-vague-incendiaire-fireball-icon-20261122`.
+- Symptôme : `cap_fire_atk_5` « Vague incendiaire » affiche l'icône `core:icon-skill-barrier-dome-01` inadaptée.
+- Autorité unique : `data/capture/showcase/cap_fire_atk_5.capture-skill-transfer-v1.json` ; remplacement de `presentation.visual.icon.assetId` par `pack:capture:icon-skill-fireball-01`, déjà réutilisé par « Boule de feu » ; aucun asset ni ID de compétence ajoutés.
+- Périmètre : transfert auteur, sentinelle `tests/unit/capture-vague-incendiaire-author-v1.test.mjs`, ce journal. Gameplay, sprite de vague (`pack:capture:sprite-fire-bubble-expansion-01`), effets, autres capacités, médias, Exploration et PWA protégés.
+- Gate : test du transfert avec empreinte originale reconstituée à l'exception de l'icône, non-régression gameplay/présentation, CI du SHA fusionné, publication HTTPS du Labo Combat uniquement. Aucun transfert vers la PWA sans lot séparé.
+
 ## 2026-11-22 — Polocendre : quatre compétences natives + Vague incendiaire
 - Baseline : `main@c8a2c99ea96f06552f93c2470ea86846ae74aa2f`; checkpoint `checkpoint/lab-start-polocendre-five-skills-20261122`; branche `work/lab-polocendre-five-skills-20261122`.
 - Une seule autorité des compétences dans Combat Showcase. Nouveaux IDs : `polocendre-charge`, `polocendre-trainee-feu`, `polocendre-coup-sabot`, `polocendre-ruee-explosive`. Slot 4 : `cap_fire_atk_5` « Vague incendiaire » existant, inchangé.
