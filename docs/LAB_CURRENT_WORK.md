@@ -1,3 +1,13 @@
+## 2026-11-22 — Polocendre : quatre compétences natives + Vague incendiaire
+- Baseline : `main@c8a2c99ea96f06552f93c2470ea86846ae74aa2f`; checkpoint `checkpoint/lab-start-polocendre-five-skills-20261122`; branche `work/lab-polocendre-five-skills-20261122`.
+- Une seule autorité des compétences dans Combat Showcase. Nouveaux IDs : `polocendre-charge`, `polocendre-trainee-feu`, `polocendre-coup-sabot`, `polocendre-ruee-explosive`. Slot 4 : `cap_fire_atk_5` « Vague incendiaire » existant, inchangé.
+- Charge : niveau 1, physique 10, marqueur Embrasement bénéfique +5 % de tous dégâts par pile, max 5, 15 s, cooldown 8 s. Bonus projeté via unique moteur de statuts.
+- Traînée de feu : 7 Feu sur contact, trois zones natives distinctes sur trajet au sol, chacune 5 Feu à l'entrée, durée 10 s. Zone source Combat, collision et rendu officiel ; aucun second calcul des dégâts.
+- Coup de sabot : 15 dégâts physiques, étourdit 3 s sans déplacement ni projectile, impact physique existant.
+- Ruée explosive : contact lent 3,5 s, 60 dégâts Feu cible et 40 Feu à chaque réserve ennemie vivante ; condition native `allies_defeated >= 1`, une utilisation par combat.
+- Réemploi de l'iconographie et des sprites officiels `global-assets`, sans copie de médias. Aucun changement dans les autres créatures, la racine PWA ou les sauvegardes.
+- Les niveaux 5/10/20, délais de préparation et cooldown non spécifiés sont des valeurs techniques initiales à éprouver ; Vague incendiaire conserve ses réglages d'origine. Gate : CI, tests runtime et navigateur, puis main certifié.
+
 ## 2026-11-22 — Vipfer et Polocendre : fiches auteur pour PWA
 - START Labo Combat : `main@414c0324a2837dee9697e01b4fc4ec9844a61b2a` ; checkpoint `checkpoint/lab-start-vipfer-polocendre-20261122` ; branche `work/lab-vipfer-polocendre-20261122`.
 - Unique autorité : Showcase/Bestiaire Combat, deux transferts auteur ; Vipfer conserve ses valeurs et choix de compétences ; Polocendre référence l'icône officielle du Cheval de feu et ses animations 6/7/5/5. Aucune seconde bibliothèque.

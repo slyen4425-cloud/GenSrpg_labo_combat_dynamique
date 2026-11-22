@@ -95,6 +95,8 @@ const FIELDS_BY_KIND = Object.freeze({
   persistent_zone: new Set([
     ...COMMON_FIELDS,
     "zoneId",
+    "trailIndex",
+    "trailCount",
     "radius",
     "durationMs",
     "tickIntervalMs",
@@ -598,6 +600,16 @@ export function normalizeSkillEffectV1(input) {
       value.zoneId,
       "SkillEffectV1.zoneId"
     );
+
+    // Explicit path positions create multiple separate, ground-anchored native zones.
+    // Non-trail skills keep the exact legacy effect contract and radius semantics.
+    if (value.trailIndex !== undefined || value.trailCount !== undefined) {
+      const count = positiveInteger(value.trailCount, "persistent_zone.trailCount");
+      const index = positiveInteger(value.trailIndex, "persistent_zone.trailIndex");
+      if (count > 5 || index > count) throw new RangeError("persistent_zone trailIndex/trailCount must describe 1..5 distinct zones");
+      output.trailIndex = index;
+      output.trailCount = count;
+    }
 
     output.radius = requiredString(
       value.radius,

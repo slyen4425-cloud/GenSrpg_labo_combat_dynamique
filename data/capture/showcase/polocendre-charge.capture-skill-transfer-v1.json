@@ -1,0 +1,139 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "polocendre-charge",
+    "description": "Charge physique de niveau 1 : 10 dégâts, puis Polocendre gagne un marqueur Embrasement pendant 15 s. Chaque marqueur augmente tous ses dégâts de 5 %, jusqu'à 5 marqueurs (+25 %). Recharge : 8 s.",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "polocendre-charge",
+      "name": "Charge",
+      "category": "offensive",
+      "form": "contact",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": null,
+      "approachMode": "ground",
+      "energyCost": 0,
+      "preparationMs": 300,
+      "travelMs": 1100,
+      "recoveryMs": 250,
+      "cooldownMs": 8000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 10,
+          "channel": "physical"
+        },
+        {
+          "kind": "apply_marker",
+          "targetScope": "self",
+          "marker": {
+            "id": "polocendre-embrasement",
+            "name": "Embrasement",
+            "polarity": "beneficial",
+            "durationMs": 15000,
+            "maxStacks": 5,
+            "iconAssetId": "pack:capture:icon-skill-explosion-flammes-01"
+          },
+          "charges": 1
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "id": "polocendre-embrasement-degats",
+            "kind": "outgoing_damage_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 15000,
+            "stacking": "stack",
+            "maxStacks": 5,
+            "tags": [],
+            "modifierPct": 5
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:polocendre-charge",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "polocendre-charge",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-earth-charge-01"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-physical-01",
+          "displayScale": 1.15,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

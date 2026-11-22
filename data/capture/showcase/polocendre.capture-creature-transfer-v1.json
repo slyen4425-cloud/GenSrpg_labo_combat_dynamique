@@ -100,11 +100,11 @@
       }
     },
     "skillIds": [
-      "claw",
-      "fireball",
-      "cap_fire_special_1",
-      "lib_flame_bite",
-      "cap_fire_atk_6"
+      "polocendre-charge",
+      "polocendre-trainee-feu",
+      "polocendre-coup-sabot",
+      "cap_fire_atk_5",
+      "polocendre-ruee-explosive"
     ],
     "presentation": {
       "id": "creature:polocendre",
@@ -233,23 +233,23 @@
     "slots": [
       {
         "id": "slot-1",
-        "skillId": "claw"
+        "skillId": "polocendre-charge"
       },
       {
         "id": "slot-2",
-        "skillId": "fireball"
+        "skillId": "polocendre-trainee-feu"
       },
       {
         "id": "slot-3",
-        "skillId": "cap_fire_special_1"
+        "skillId": "polocendre-coup-sabot"
       },
       {
         "id": "slot-4",
-        "skillId": "lib_flame_bite"
+        "skillId": "cap_fire_atk_5"
       },
       {
         "id": "slot-ultimate",
-        "skillId": "cap_fire_atk_6"
+        "skillId": "polocendre-ruee-explosive"
       }
     ]
   }

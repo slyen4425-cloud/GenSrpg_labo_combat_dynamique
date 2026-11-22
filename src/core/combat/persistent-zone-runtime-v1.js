@@ -829,6 +829,10 @@ export function applyPersistentZoneEffectsV1({
         skill.element ?? null,
       hitsIntangible: skill.hitsIntangible === true,
       zoneId: effect.zoneId,
+      ...(effect.trailIndex == null ? {} : {
+        trailIndex: effect.trailIndex,
+        trailCount: effect.trailCount
+      }),
       targetScope:
         effect.targetScope,
       baseRadius:
@@ -854,6 +858,11 @@ export function applyPersistentZoneEffectsV1({
       tickEffect:
         effect.tickEffect,
       ...(effect.damageTrigger ? {damageTrigger:effect.damageTrigger} : {}),
+      // Entry-only damaging zones also track occupancy in this same native
+      // state owner, so visible model bounds can distinguish entry/re-entry.
+      ...(effect.damageTrigger === "entry_only"
+        ? {occupiedActorIds: existing?.occupiedActorIds ?? Object.freeze([])}
+        : {}),
       ...(effect.persistAfterRecall !== undefined
         ? {persistAfterRecall: effect.persistAfterRecall} : {}),
       ...(effect.tickEffect.kind === "apply_status" || effect.tickEffect.kind === "apply_marker"
@@ -933,6 +942,38 @@ export function advancePersistentZonesV1({
         zoneSpatialContext
       });
 
+    if (zone.damageTrigger === "entry_only" && zone.tickEffect.kind === "damage") {
+      // Geometry measured from the actual displayed zone sprite takes
+      // precedence over the approximate approach-distance fallback.
+      // Entering, leaving and entering again are distinct native events;
+      // standing inside never adds damage ticks.
+      const inside = zone.expiresAtMs > endMs
+        ? affectedIdsForZone({
+            state: nextState, zone, battleFormat, atMs: endMs, zoneSpatialContext
+          })
+        : [];
+      const previously = new Set(zone.occupiedActorIds ?? []);
+      const entries = [
+        ...events.filter(entry => entry.type === "entry"),
+        ...inside.filter(id => !previously.has(id)).map(targetActorId => ({
+          type: "entry", atMs: endMs, targetActorId
+        }))
+      ];
+      const applied = new Set();
+      for (const entry of entries) {
+        if (applied.has(entry.targetActorId)) continue;
+        applied.add(entry.targetActorId);
+        nextState = reconcileBoundChannelStatusesAtZoneTickV1({
+          state: nextState, atMs: entry.atMs, battleFormat, zoneSpatialContext
+        });
+        nextState = applyZoneDamageToTarget({
+          state: nextState, zone, targetActorId: entry.targetActorId,
+          atMs: entry.atMs
+        });
+      }
+      nextState = updateZoneOccupancyV1(nextState, zone.id, inside);
+      continue;
+    }
     if (zone.tickEffect.kind === "apply_status") {
       nextState = updateZoneStatusOccupancyV1({
         state:nextState,zone,endMs,battleFormat,zoneSpatialContext,
