@@ -118,3 +118,60 @@ test("Broyeur serpentin starts after 30 seconds, pulses 10 every 500ms and stops
   assert.equal(h.session.snapshot().fighters.b.hp,220);
  }finally{h.runtime.dispose();}
 });
+
+test("Couronne collision with observed barrier hits wall only; unobserved wall never absorbs",()=>{
+ const h=harness();try{
+   // Build the wall through the existing Session/Combat Rules path, not by
+   // injecting fake HP directly into a renderer or combat snapshot.
+   const wallSkill=normalizeSkillDefinition({
+     id:"vipfer-salvo-wall-test",name:"Salvo wall test",category:"defensive",
+     form:"self",approachMode:"none",energyCost:0,preparationMs:0,
+     travelMs:0,recoveryMs:0,cooldownMs:0,
+     targetRelations:["self"],allowedDistances:["short","medium","long"],
+     effects:[{kind:"summon_entity",targetScope:"self",entityKind:"barrier",
+       statId:"defense",hpPerStatPoint:3.2,interceptKinds:["projectile"]}]
+   });
+   assert.equal(h.session.useSkill({actorId:"b",targetId:"b",skill:wallSkill}).ok,true);
+   const wall=h.session.snapshot().combatEntities[0];
+   assert.ok(wall?.id);
+   assert.equal(wall.hp,80);
+   assert.equal(h.runtime.startSkill({actorId:"a",targetId:"b",skill:volley}).ok,true);
+   h.advance(850);
+   const first=h.runtime.reportExpandingWaveTargetContact({
+     actorId:"a",targetId:"b",skillId:volley.id,passIndex:0,
+     combatEntityId:wall.id});
+   assert.equal(first.ok,true);
+   assert.equal(h.session.snapshot().fighters.b.hp,300);
+   assert.equal(h.session.snapshot().combatEntities[0].hp,68);
+   assert.equal(h.session.snapshot().fighters.b.statusEffects.some(x=>
+     x.definition.id==="vipfer-couronne-eclats:ralentissement"),false);
+   assert.equal(h.runtime.reportExpandingWaveTargetContact({
+     actorId:"a",targetId:"b",skillId:volley.id,passIndex:0,combatEntityId:wall.id
+   }).outcome,"already_contacted");
+   h.advance(1550);
+   const second=h.runtime.reportExpandingWaveTargetContact({
+     actorId:"a",targetId:"b",skillId:volley.id,passIndex:1,
+     combatEntityId:wall.id});
+   assert.equal(second.ok,true);
+   assert.equal(h.session.snapshot().fighters.b.hp,300);
+   assert.equal(h.session.snapshot().combatEntities[0].hp,56);
+   // No observed wall collision means the core MUST NOT invent an intercept.
+   h.advance(2250);
+   assert.equal(h.runtime.reportExpandingWaveTargetContact({
+     actorId:"a",targetId:"b",skillId:volley.id,passIndex:2
+   }).ok,true);
+   assert.equal(h.session.snapshot().fighters.b.hp,288);
+   assert.equal(h.session.snapshot().combatEntities[0].hp,56);
+   assert.equal(h.session.snapshot().fighters.b.statusEffects.filter(x=>
+     x.definition.id==="vipfer-couronne-eclats:ralentissement").length,1);
+   assert.equal(h.session.snapshot().fighters.a.energy,45);
+ }finally{h.runtime.dispose();}
+});
+
+test("solo and 2v2 interfaces both forward salvo projectiles through the native per-shot resolver",()=>{
+ for(const filename of ["src/ui/combat-test-ui.js","src/ui/combat-2v2-test-ui.js"]){
+   const ui=readFileSync(filename,"utf8");
+   assert.match(ui,/onProjectileContact\(contact\)\s*\{[\s\S]{0,400}contact\.waveMultiTarget[\s\S]{0,250}reportExpandingWaveTargetContact\(contact\)/,
+     filename+" must preserve native per-shot dispatch");
+ }
+});
