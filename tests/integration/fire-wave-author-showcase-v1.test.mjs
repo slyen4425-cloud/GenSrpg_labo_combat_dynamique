@@ -11,8 +11,14 @@ const originalSha256="9e940251a53f66fd2d04e40c1bf4fb09d5abcbfdce074f47e674e29a38
 const creature=JSON.parse(readFileSync(new URL(
   "../../data/capture/showcase/crea_dracendre.capture-creature-transfer-v1.json",import.meta.url),"utf8"));
 
-test("the shipped Vague incendiaire preset is byte-identical to the user's latest transfer",()=>{
-  assert.equal(createHash("sha256").update(raw).digest("hex"),originalSha256);
+test("the shipped Vague incendiaire differs from the author's original only by its requested icon",()=>{
+  const original=raw.replace(
+    '"assetId": "pack:capture:icon-skill-fireball-01"',
+    '"assetId": "core:icon-skill-barrier-dome-01"'
+  );
+  assert.notEqual(original,raw);
+  assert.equal(createHash("sha256").update(original).digest("hex"),originalSha256);
+  assert.equal(JSON.parse(raw).draft.presentation.visual.icon.assetId,"pack:capture:icon-skill-fireball-01");
 });
 test("showcase routes the author's single stable Vague incendiaire into configuredSkills and Dracendre slot 4",()=>{
   const path="data/capture/showcase/cap_fire_atk_5.capture-skill-transfer-v1.json";
