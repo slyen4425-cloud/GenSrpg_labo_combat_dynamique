@@ -1,0 +1,115 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "vipfer-couronne-eclats",
+    "description": "Trois lames successives esquivables séparément : 12 dégâts d’Acier chacune (36 maximum). Une touche ralentit de 15 % pendant 6 s, sans cumul.",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "vipfer-couronne-eclats",
+      "name": "Couronne d’éclats",
+      "category": "offensive",
+      "form": "projectile",
+      "loadoutSlot": "standard",
+      "element": "steel",
+      "approachMode": "none",
+      "energyCost": 5,
+      "preparationMs": 700,
+      "travelMs": 1950,
+      "recoveryMs": 200,
+      "cooldownMs": 28000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 12,
+          "channel": "steel"
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "vipfer-couronne-eclats:ralentissement",
+            "label": "Ralentissement d’éclats",
+            "kind": "approach_time_modifier",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 6000,
+            "stacking": "refresh",
+            "modifierPct": 15,
+            "tags": [
+              "vipfer",
+              "steel",
+              "slow"
+            ]
+          }
+        }
+      ],
+      "projectileTargeting": "salvo",
+      "salvo": {
+        "shots": 3,
+        "shotDurationMs": 550,
+        "gapMs": 150
+      }
+    },
+    "presentation": {
+      "id": "skill:vipfer-couronne-eclats",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "vipfer-couronne-eclats",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-lame-acier-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}
