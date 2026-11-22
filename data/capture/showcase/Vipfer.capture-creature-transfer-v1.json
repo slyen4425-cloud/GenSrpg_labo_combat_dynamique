@@ -101,11 +101,11 @@
       }
     },
     "skillIds": [
-      "claw",
-      "fireball",
-      "cap_fire_special_1",
-      "lib_flame_bite",
-      "cap_fire_atk_6"
+      "vipfer-morsure-ressort",
+      "vipfer-etreinte-acier",
+      "vipfer-mue-tranchante",
+      "vipfer-couronne-eclats",
+      "vipfer-broyeur-serpentin"
     ],
     "presentation": {
       "id": "creature:Vipfer",
@@ -194,23 +194,23 @@
     "slots": [
       {
         "id": "slot-1",
-        "skillId": "claw"
+        "skillId": "vipfer-morsure-ressort"
       },
       {
         "id": "slot-2",
-        "skillId": "fireball"
+        "skillId": "vipfer-etreinte-acier"
       },
       {
         "id": "slot-3",
-        "skillId": "cap_fire_special_1"
+        "skillId": "vipfer-mue-tranchante"
       },
       {
         "id": "slot-4",
-        "skillId": "lib_flame_bite"
+        "skillId": "vipfer-couronne-eclats"
       },
       {
         "id": "slot-ultimate",
-        "skillId": "cap_fire_atk_6"
+        "skillId": "vipfer-broyeur-serpentin"
       }
     ]
   }

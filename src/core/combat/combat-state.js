@@ -248,6 +248,12 @@ function normalizeFighter(input) {
       input.damageTakenTotal ?? 0,
       `${id}.damageTakenTotal`
     ),
+    // The native HP ledger attributes actual losses to each attacker; no
+    // renderer/skill-specific damage bookkeeping is needed for contact holds.
+    damageTakenByActorId: normalizeStatValuesById(
+      input.damageTakenByActorId,
+      id + ".damageTakenByActorId"
+    ),
     knockoutsTotal: finiteNonNegative(
       input.knockoutsTotal ?? 0,
       `${id}.knockoutsTotal`
@@ -592,7 +598,11 @@ export function recordFighterDamage(
       [targetActorId]: Object.freeze({
         ...target,
         damageTakenTotal:
-          target.damageTakenTotal + damage
+          target.damageTakenTotal + damage,
+        damageTakenByActorId:Object.freeze({
+          ...(target.damageTakenByActorId??{}),
+          [sourceActorId]:(target.damageTakenByActorId?.[sourceActorId]??0)+damage
+        })
       })
     })
   });

@@ -1,0 +1,108 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "vipfer-broyeur-serpentin",
+    "description": "Ultime après 30 s, une fois par combat : 60 dégâts à l’impact, puis 10 dégâts chaque 0,5 s sans limite. La cible peut frapper et arrête l’étreinte en blessant Vipfer.",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "vipfer-broyeur-serpentin",
+      "name": "Broyeur serpentin",
+      "category": "offensive",
+      "form": "contact",
+      "loadoutSlot": "ultimate",
+      "element": "steel",
+      "approachMode": "ground",
+      "energyCost": 9,
+      "preparationMs": 1500,
+      "travelMs": 850,
+      "recoveryMs": 200,
+      "cooldownMs": 0,
+      "maxUsesPerCombat": 1,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": [
+          {
+            "type": "combat_elapsed_ms",
+            "threshold": 30000
+          }
+        ]
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 60,
+          "channel": "steel"
+        }
+      ],
+      "contactHold": {
+        "tickIntervalMs": 500,
+        "maxDurationMs": 0,
+        "stopOnDamageFromTarget": true,
+        "effects": [
+          {
+            "kind": "damage",
+            "targetScope": "target",
+            "amount": 10,
+            "channel": "steel"
+          }
+        ]
+      }
+    },
+    "presentation": {
+      "id": "skill:vipfer-broyeur-serpentin",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "vipfer-broyeur-serpentin",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-tourbillons-rouille-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

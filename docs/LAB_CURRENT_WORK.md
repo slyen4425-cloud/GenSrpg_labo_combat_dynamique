@@ -1,3 +1,32 @@
+## 2026-11-22 — Vipfer : éditeur natif sécurisé (suite PR #380)
+- Revue Codex `e51da975` : un aller-retour par l'éditeur de capacités effaçait trois mécaniques pourtant fonctionnelles : `salvo` de Couronne, `consumeOnContact` de Mue et `stopOnDamageFromTarget` de Broyeur. **Correction dans les sérialiseurs propriétaires de l'éditeur existant** ; pas de second registre, pas d'ID manuel.
+- Interface : trajectoire « Salve de projectiles » dans le sélecteur existant, volet repliable des trois paramètres de salve (tirs, durée, intervalle) et calcul du trajet total ; case « Riposte unique » au sein du statut natif `damage_reflection` ; case « fin si la cible blesse le lanceur » au sein du maintien au contact existant.
+- Gates de régression : test d'intégration `vipfer-five-skills-native-20261122.test.mjs` pour l'aller-retour logique et l'Entrave ; vrai Chromium `vipfer-editor-native-roundtrip-smoke.mjs` sur les menus actifs, enregistré comme job distinct dans `ci.yml`. Le test navigateur choisit **la ligne de statut damage_reflection**, pas les contrôles masqués des autres statuts.
+- Au moment de ce checkpoint documentaire : CI du dernier SHA **à revérifier**, pas de fusion `main`, pas de publication PWA. Médias approuvés des cinq compétences absents de `global-assets` ; ne pas déclarer le lot artistique GREEN.
+
+## 2026-11-22 — Vipfer : gate navigateur, médias vérifiés et entrave
+- État vérifié de la CI au SHA `e51da975f7eb69b4763d3498d482e2a47150e5aa` : **10/10 jobs Laboratoire verts** + certification globale des assets verte ; PR #380 encore ouverte, nouvelle revue Codex demandée sur ce commit.
+- Ajout d’une sentinelle d’intégration d’**Étreinte d’acier** : 13 dégâts Acier, immobilisation 10 s empêchant les déplacements, mais conservant attaque stationnaire et esquive ; mobilité rétablie après expiration. La CI sur ce nouveau commit doit de nouveau être vérifiée avant toute fusion.
+- Inventaire réel de `global-assets` : `assets/library/capture/creatures/vipfer/runtime/vipfer_face.png`, `vipfer_dos.png`, `vipfer_icone.png` et preview source existent. Aucun des cinq fichiers médiatiques de compétence Vipfer n’est présent sous un nom propre à Vipfer dans l’arbre global. Les présentations utilisent encore les assets historiques de substitution : **lot gameplay OK aux jalons testés, lot médias non validé**, ne pas annoncer sprites finaux ni supprimer les sources.
+- Interdictions préservées : pas de silhouette humaine Étreinte, pas de modèle de créature créé à la place du sprite de compétence, pas de branche `gh-pages`, pas de contournement du catalogue canonique.
+- Sortie : revue Codex actuelle + CI exacte du dernier SHA, état de publication `main` et HTTPS vérifiés avant toute fusion ; indépendamment, raccord des médias approuvés uniquement après contrôle des octets/atlas, manifeste, catalogue et preview.
+
+## 2026-11-22 — Vipfer : correctifs de revue PR #380 (même lot)
+- Reprise de la branche unique `work/lab-vipfer-skills-native-20261122`, départ et checkpoint inchangés ; aucun développement sur `gh-pages` ou la PWA.
+- Cause 1 : vue solo `src/ui/combat-test-ui.js` envoyait les contacts de la salve au résolveur projectile ordinaire ; le Runtime terminait alors l’action multi-cible sans les dégâts des trois tirs. Correction minimale : aiguillage du marqueur `waveMultiTarget` vers le résolveur natif par tir, comme en 2v2.
+- Cause 2 : le résolveur par tir perdait le `combatEntityId` observé par le capteur officiel des murs ; un tir heurtant le mur endommageait la cible. Correction : transmettre l’identifiant au `barrierContactId` de l’action visée *uniquement pour une salve*, sans créer d’autorité de dégâts alternative.
+- Test : `tests/integration/vipfer-five-skills-native-20261122.test.mjs` vérifie trois coups indépendants, mur 80 PV -> 68 -> 56, aucune blessure ni ralentissement à travers ce mur, et non-interception sans observation ; sentinelle du raccord en 1v1/2v2.
+- Protections : capacités autres que Vipfer, combat classique, éléments, icônes/sprites auteur, Explorateur, hub/PWA, sauvegardes ; **aucun média refusé raccordé**.
+- Gate inchangée : CI complète du SHA exact, test navigateur/FX et revue visuelle obligatoires. **NON GREEN**, pas de fusion main ou publication PWA par simple succès de tests ciblés.
+
+## 2026-11-22 — Vipfer : cinq compétences natives Acier (livraison isolée)
+- START : `main@34c17c15f4ca8b457a94e49fa2f3fcfb8ca93ca0` ; checkpoint `checkpoint/lab-start-vipfer-skills-native-20261122` ; branche `work/lab-vipfer-skills-native-20261122`.
+- Créature canonique `data/capture/showcase/Vipfer.capture-creature-transfer-v1.json` : cinq anciens skills Feu remplacés par cinq références natives Acier ; fiche, statistiques, ID `Vipfer`, visuels maîtres et autres créatures conservés.
+- Compétences : Morsure à ressort 12 (7s, E2) ; Étreinte d'acier 13 + immobilisation 10s (26s, E4) ; Mue tranchante +200 DEF 8s, **première** riposte contact 25 (32s, E5) ; Couronne d'éclats 3 tirs indépendants ×12 et ralentissement 15% 6s (28s, E5) ; Broyeur serpentin ultime 60 impact +10 toutes les 500ms sans timer max, arrêt quand la **cible** inflige une perte réelle de PV au lanceur (30s de combat, une fois, E9).
+- Propriétaires génériques modifiés : contrat `contactHold` source-attribuée, journal de perte de PV par adversaire dans CombatState, riposte à un seul contact dans CombatDamage, salves séquentielles dans CombatRuntime + présentation FX. Aucun calcul de dégâts ajouté au renderer.
+- Médias : anciennes icônes et sprites de la bibliothèque officielle utilisés *provisoirement*. Les cinq icônes et trois séquences auteur du ZIP local ne sont PAS enregistrées dans `global-assets` par cette branche. Aucun sprite d'Étreinte refusé, silhouette humaine ni image générée de la créature n'est raccordé. Les cinq compétences sont le lot gameplay ; les médias auteur feront l'objet d'une validation et d'un lot média distinct.
+- Gate : tests unitaires/intégration + CI complète + revue browser/FX. Pas de publication `main`, pas de checkpoint GREEN, pas de PWA tant que les tests ne sont pas vérifiés et que le lot n'est pas fusionné.
+
 ## 2026-11-22 — Vague incendiaire : icône Boule de feu (correctif isolé)
 - Baseline : `main@d7eeae0fdb13454cf5a9ae18a0676e6784e425e5` ; checkpoint `checkpoint/lab-start-vague-incendiaire-icon-20261122` ; branche `work/lab-vague-incendiaire-fireball-icon-20261122`.
 - Symptôme : `cap_fire_atk_5` « Vague incendiaire » affiche l'icône `core:icon-skill-barrier-dome-01` inadaptée.

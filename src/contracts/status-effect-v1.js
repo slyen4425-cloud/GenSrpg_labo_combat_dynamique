@@ -155,7 +155,8 @@ const FIELDS_BY_KIND = Object.freeze({
     ...COMMON_FIELDS,
     "percent",
     "incomingKinds",
-    "contactDamage"
+    "contactDamage",
+    "consumeOnContact"
   ]),
   projectile_mirror: COMMON_FIELDS,
   auto_dodge: COMMON_FIELDS,
@@ -679,6 +680,12 @@ export function normalizeStatusEffectV1(input) {
       const contactDamage = finiteNumber(value.contactDamage, "StatusEffectV1.contactDamage");
       if (contactDamage < 0) throw new RangeError("StatusEffectV1.contactDamage must be non-negative");
       output.contactDamage = contactDamage;
+    }
+    if (value.consumeOnContact !== undefined) {
+      if (value.consumeOnContact !== true || !(output.contactDamage > 0) ||
+          (output.incomingKinds && !output.incomingKinds.includes("contact")))
+        throw new RangeError("consumeOnContact requires positive contactDamage and contact incoming kind");
+      output.consumeOnContact = true;
     }
   }
 

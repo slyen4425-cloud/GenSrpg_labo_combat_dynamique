@@ -124,6 +124,13 @@ export function createCombatRuntime({
       else if(hold.kind==="channeling"&&
           hold.skill.channeling.stopOnSilence&&hasActiveStatusKindV1(state,hold.actorId,"silence"))
         endContactHold(hold.actorId,"silence");
+      else if(hold.kind!=="channeling" && hold.skill.contactHold?.stopOnDamageFromTarget===true){
+        // Only the held enemy's confirmed HP damage breaks this grip.
+        // Other attacks (e.g. in 2v2), blocked hits and self-damage do not.
+        const takenFromTarget=Number(source.damageTakenByActorId?.[hold.targetId]??0);
+        if(takenFromTarget>hold.damageTakenFromTargetAtStart)
+          endContactHold(hold.actorId,"damage_taken_from_target");
+      }
       else if(taken>hold.damageTakenTotalAtStart&&
           (hold.kind!=="channeling"||hold.skill.channeling.stopOnDamage))
         endContactHold(hold.actorId,"damage_taken");
@@ -220,8 +227,18 @@ export function createCombatRuntime({
     return record.startedAtClockMs + record.action.releaseAtMs;
   }
 
+  // The FX geometry sensor samples real DOM pixels once per animation frame.
+  // A witnessed salvo collision at the visual tail may reach the Runtime
+  // one frame after nominal travel; never award damage without that contact.
+  // A countered action is already resolved and receives no grace.
+  function salvoContactGraceMs(record) {
+    return record.action?.skill?.projectileTargeting === "salvo" &&
+      record.reaction?.outcome !== "countered"
+      ? Math.max(16, Math.min(32, tickMs)) : 0;
+  }
+
   function absoluteResolutionAt(record) {
-    return record.startedAtClockMs + resolutionAtMs(record);
+    return record.startedAtClockMs + resolutionAtMs(record) + salvoContactGraceMs(record);
   }
 
   function idleProgress(actorId = null) {
@@ -875,7 +892,7 @@ export function createCombatRuntime({
     // been resolved independently. End the single paid action at its
     // natural deadline without adding a duplicate hit or a fake miss.
     if (record.multiTargetWave && (record.waveTargetsResolved.size > 0 ||
-        record.action.skill?.projectileTargeting === "stampede")) {
+        ["stampede","salvo"].includes(record.action.skill?.projectileTargeting))) {
       enterRecovery(record, {
         resolvedAtMs: record.action.impactAtMs,
         atNowMs
@@ -1410,7 +1427,7 @@ export function createCombatRuntime({
       sequence: sequence++,
       multiTargetWave:
         result.action.actionType === "skill" &&
-        (result.action.skill?.projectileTargeting === "stampede" ||
+        (["stampede","salvo"].includes(result.action.skill?.projectileTargeting) ||
           (enableExpandingWaveMultiTarget === true &&
           result.action.skill?.projectileTargeting === "expanding_wave")),
       waveTargetsResolved: new Set()
@@ -1948,7 +1965,8 @@ export function createCombatRuntime({
   // crosses it. Rules, teams, states, statuses and damage belong here and
   // to CombatSession, never to the visual sensor or 2v2 UI.
   function reportExpandingWaveTargetContact({
-    actorId, targetId, skillId = null, passIndex = 0
+    actorId, targetId, skillId = null, passIndex = 0,
+    combatEntityId = null
   }) {
     if (disposed) return Object.freeze({ok:false,outcome:"disposed"});
     const current = now();
@@ -1969,16 +1987,21 @@ export function createCombatRuntime({
     }
     const stampede = record.action.skill?.projectileTargeting === "stampede"
       ? record.action.skill.stampede : null;
-    if (stampede) {
+    const salvo = record.action.skill?.projectileTargeting === "salvo"
+      ? record.action.skill.salvo : null;
+    const passes=stampede?.passes??salvo?.shots??1;
+    const passDurationMs=stampede?.passDurationMs??salvo?.shotDurationMs??0;
+    const gapMs=stampede?.gapMs??salvo?.gapMs??0;
+    if (stampede||salvo) {
       const elapsed = elapsedFor(record, current) - record.action.releaseAtMs;
-      const start = passIndex * (stampede.passDurationMs + stampede.gapMs);
-      if (!Number.isInteger(passIndex) || passIndex < 0 || passIndex >= stampede.passes ||
-          elapsed < start || elapsed > start + stampede.passDurationMs)
+      const start = passIndex * (passDurationMs + gapMs);
+      if (!Number.isInteger(passIndex) || passIndex < 0 || passIndex >= passes ||
+          elapsed < start || elapsed > start + passDurationMs + (salvo ? salvoContactGraceMs(record) : 0))
         return Object.freeze({ok:false,outcome:"outside_pass"});
     } else if (passIndex !== 0) {
       return Object.freeze({ok:false,outcome:"invalid_pass"});
     }
-    const hitKey = stampede ? passIndex + ":" + targetId : targetId;
+    const hitKey = (stampede||salvo) ? passIndex + ":" + targetId : targetId;
     if (record.waveTargetsResolved.has(hitKey)) {
       return Object.freeze({ok:false,outcome:"already_contacted"});
     }
@@ -1995,10 +2018,13 @@ export function createCombatRuntime({
       Math.max(record.action.releaseAtMs, elapsedFor(record,current)));
     const aimedAction = Object.freeze({
       ...record.action, targetId,
+      // The FX sensor reports only observed wall contact; Combat Damage
+      // exclusively decides whether this specific wall intercepts the hit.
+      ...(salvo && combatEntityId != null ? {barrierContactId: combatEntityId} : {}),
       travelMs: impactAtMs - record.action.releaseAtMs,
       impactAtMs
     });
-    const reaction = targetId === record.action.targetId && (!stampede || passIndex === 0)
+    const reaction = targetId === record.action.targetId && (!(stampede||salvo) || passIndex === 0)
       ? record.reaction ?? armedRechargeableReactionFor({record:{...record,reaction:null},action:aimedAction,impactAtMs})
       : armedRechargeableReactionFor({
           record: {...record, reaction:null},
@@ -2022,7 +2048,8 @@ export function createCombatRuntime({
       });
     }
     const presented = Object.freeze({...resolution,waveContact:true,
-      ...(stampede ? {stampedePassIndex:passIndex} : {})});
+      ...(stampede ? {stampedePassIndex:passIndex} : {}),
+      ...(salvo ? {salvoShotIndex:passIndex} : {})});
     onResolved(presented);
     emitStateIfChanged({force:true});
     return Object.freeze({
@@ -2190,7 +2217,9 @@ export function createCombatRuntime({
         startedAtClockMs: current,
         nextTickClockMs: current + record.action.skill.contactHold.tickIntervalMs,
         damageTakenTotalAtStart:
-          Number(session.snapshot().fighters[actorId].damageTakenTotal) || 0
+          Number(session.snapshot().fighters[actorId].damageTakenTotal) || 0,
+        damageTakenFromTargetAtStart:
+          Number(session.snapshot().fighters[actorId].damageTakenByActorId?.[targetId]??0)
       };
       contactHoldsByActor.set(actorId, hold);
       onContactHoldStart(Object.freeze({

@@ -454,12 +454,21 @@ export function createCombatSession({
   }) {
     const sourceTeam = battleFormat?.teamOf?.(action?.actorId);
     const targetTeam = battleFormat?.teamOf?.(targetId);
+    // The official solo mount still uses the native, format-less two-fighter
+    // Session. A single hostile active target is unambiguous in that duel.
+    // In 2v2 or any explicit battle format, keep strict team validation.
+    const legacySoloEnemy = battleFormat === null &&
+      Object.keys(state.fighters).length === 2 &&
+      action?.actorId !== targetId &&
+      Boolean(state.fighters[action?.actorId]) &&
+      action?.skill?.targetRelations?.includes("enemy") &&
+      action?.skill?.targetLocations?.includes("active");
     if (
       action?.actionType !== "skill" ||
-      !["expanding_wave", "stampede"].includes(action.skill?.projectileTargeting) ||
+      !["expanding_wave", "stampede", "salvo"].includes(action.skill?.projectileTargeting) ||
       action.skill?.category !== "offensive" ||
-      sourceTeam == null || targetTeam == null ||
-      sourceTeam === targetTeam ||
+      (!legacySoloEnemy && (sourceTeam == null || targetTeam == null ||
+        sourceTeam === targetTeam)) ||
       !state.fighters[targetId] ||
       Number(state.fighters[targetId].hp) <= 0 ||
       // Global and reserve scopes would otherwise duplicate their effects.

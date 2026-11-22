@@ -1,0 +1,127 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "vipfer-mue-tranchante",
+    "description": "Défense +200 pendant 8 s et première riposte au contact : 25 dégâts d’Acier, une seule fois.",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "vipfer-mue-tranchante",
+      "name": "Mue tranchante",
+      "category": "defensive",
+      "form": "self",
+      "loadoutSlot": "standard",
+      "element": "steel",
+      "approachMode": "none",
+      "energyCost": 5,
+      "preparationMs": 700,
+      "travelMs": 0,
+      "recoveryMs": 200,
+      "cooldownMs": 32000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "self"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "id": "vipfer-mue-tranchante:defense",
+            "label": "Mue tranchante",
+            "kind": "stat_modifier",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 8000,
+            "stacking": "refresh",
+            "statId": "defense",
+            "modifierMode": "points",
+            "deltaPoints": 200,
+            "tags": [
+              "vipfer",
+              "steel"
+            ]
+          }
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "self",
+          "status": {
+            "id": "vipfer-mue-tranchante:riposte",
+            "label": "Écailles tranchantes",
+            "kind": "damage_reflection",
+            "polarity": "beneficial",
+            "durationModel": "time_ms",
+            "durationMs": 8000,
+            "stacking": "refresh",
+            "percent": 0,
+            "incomingKinds": [
+              "contact"
+            ],
+            "contactDamage": 25,
+            "consumeOnContact": true,
+            "tags": [
+              "vipfer",
+              "steel"
+            ]
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:vipfer-mue-tranchante",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "vipfer-mue-tranchante",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-carapace-acier-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}

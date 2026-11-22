@@ -6,7 +6,7 @@ export function normalizeContactHoldV1(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new TypeError("contactHold must be an object");
   }
-  const allowed = new Set(["tickIntervalMs", "maxDurationMs", "effects"]);
+  const allowed = new Set(["tickIntervalMs", "maxDurationMs", "stopOnDamageFromTarget", "effects"]);
   for (const key of Object.keys(value)) {
     if (!allowed.has(key)) throw new TypeError("contactHold unknown field: " + key);
   }
@@ -21,6 +21,8 @@ export function normalizeContactHoldV1(value) {
   if (!Array.isArray(value.effects) || value.effects.length < 1 || value.effects.length > 12) {
     throw new RangeError("contactHold.effects requires 1..12 native tactical effects");
   }
+  if(value.stopOnDamageFromTarget !== undefined && value.stopOnDamageFromTarget !== true)
+    throw new TypeError("contactHold.stopOnDamageFromTarget must be true if provided");
   const effects = value.effects.map(normalizeSkillEffectV1);
   if (effects.some(effect => ["persistent_zone", "scheduled_effect"].includes(effect.kind))) {
     throw new RangeError("contactHold.effects cannot own a second zone or delayed scheduler");
@@ -28,6 +30,7 @@ export function normalizeContactHoldV1(value) {
   return Object.freeze({
     tickIntervalMs,
     maxDurationMs,
+    ...(value.stopOnDamageFromTarget === true ? {stopOnDamageFromTarget:true} : {}),
     effects: Object.freeze(effects)
   });
 }

@@ -21,7 +21,7 @@ export const SKILL_LOADOUT_SLOTS = Object.freeze([
   "ultimate"
 ]);
 
-export const SKILL_PROJECTILE_TARGETINGS = Object.freeze(["direct", "fixed_point", "expanding_wave", "stampede"]);
+export const SKILL_PROJECTILE_TARGETINGS = Object.freeze(["direct", "fixed_point", "expanding_wave", "stampede", "salvo"]);
 
 export const SKILL_FORMS = Object.freeze([
   "contact",
@@ -397,6 +397,25 @@ export function normalizeSkillDefinition(input) {
     throw new RangeError("stampede field requires stampede projectile targeting");
   }
 
+  // Generic multi-projectile salvo: one paid action, separate physical impacts.
+  let salvo=null;
+  if(projectileTargeting==="salvo"){
+    if(form!=="projectile"||category!=="offensive"||input.stampede!=null||input.expandingWave!=null)
+      throw new RangeError("salvo requires offensive projectile without other area modes");
+    const v=input.salvo;
+    if(!v||typeof v!=="object"||Array.isArray(v)||
+       Object.keys(v).some(k=>!["shots","shotDurationMs","gapMs"].includes(k)))
+      throw new TypeError("salvo requires shots, shotDurationMs and gapMs");
+    const shots=Number(v.shots),shotDurationMs=Number(v.shotDurationMs),gapMs=Number(v.gapMs);
+    if(!Number.isInteger(shots)||shots<2||shots>6||
+       !Number.isInteger(shotDurationMs)||shotDurationMs<200||shotDurationMs>5000||
+       !Number.isInteger(gapMs)||gapMs<50||gapMs>1500)
+      throw new RangeError("salvo shots 2..6, duration 200..5000 ms, gap 50..1500 ms");
+    if(Number(input.travelMs)!==shots*shotDurationMs+(shots-1)*gapMs)
+      throw new RangeError("salvo travelMs must match all projectile windows");
+    salvo=Object.freeze({shots,shotDurationMs,gapMs});
+  }else if(input.salvo!=null)throw new RangeError("salvo field requires salvo projectile targeting");
+
   const element = input.element == null
     ? null
     : nonEmptyString(input.element, "element");
@@ -689,6 +708,7 @@ export function normalizeSkillDefinition(input) {
     ...(chargedEffects ? {chargedEffects} : {}),
     ...(projectileTargeting === "expanding_wave" ? { expandingWave: Object.freeze({startRadiusPct,endRadiusPct,thicknessPct}) } : {}),
     ...(stampede ? { stampede } : {}),
+    ...(salvo ? { salvo } : {}),
     ...(decoyFormation ? {decoyFormation} : {}),
     ...(evasionSiphon ? { evasionSiphon } : {}),
     ...(echoCopy ? { echoCopy } : {}),
