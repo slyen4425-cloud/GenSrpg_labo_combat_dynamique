@@ -1,3 +1,9 @@
+## 2026-11-22 — Vipfer : validation des cinq compétences (spécification, pas encore implémentée)
+- Approbation auteur des paramètres dans `docs/LAB_VIPFER_FIVE_SKILLS_APPROVED_20261122.md`.
+- Baseline `main@34c17c15f4ca8b457a94e49fa2f3fcfb8ca93ca0`, checkpoint `checkpoint/lab-start-vipfer-five-skills-20261122`, branche préparatoire `work/lab-vipfer-five-skills-20261122`.
+- Morsure 12/7s/2 ; Étreinte 13 + immobilisation 10s/26s/4 ; Mue +200 DEF 8s + première riposte 25/32s/5 ; Couronne 3×12 + ralentissement 15% 6s/28s/5 ; Broyeur ultime 60 initial + 10/0,5s jusqu'à perte réelle de PV de Vipfer par la cible, déverrouillé à 30s, une fois/combat, énergie 9.
+- Préservation : anciens transferts auteur, autres créatures, moteur, médias, PWA, Exploration et sauvegardes inchangés. Le document est un contrat de réalisation et d'essais, **pas une modification du gameplay en production**. Les mécanismes de l'ultime et des trois lames doivent être testés dans la vraie boucle de combat avant annonce GREEN.
+
 ## 2026-11-22 — Vague incendiaire : icône Boule de feu (correctif isolé)
 - Baseline : `main@d7eeae0fdb13454cf5a9ae18a0676e6784e425e5` ; checkpoint `checkpoint/lab-start-vague-incendiaire-icon-20261122` ; branche `work/lab-vague-incendiaire-fireball-icon-20261122`.
 - Symptôme : `cap_fire_atk_5` « Vague incendiaire » affiche l'icône `core:icon-skill-barrier-dome-01` inadaptée.
