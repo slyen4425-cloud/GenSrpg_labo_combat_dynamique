@@ -1,3 +1,11 @@
+## 2026-11-22 — Vipfer : correctifs de revue PR #380 (même lot)
+- Reprise de la branche unique `work/lab-vipfer-skills-native-20261122`, départ et checkpoint inchangés ; aucun développement sur `gh-pages` ou la PWA.
+- Cause 1 : vue solo `src/ui/combat-test-ui.js` envoyait les contacts de la salve au résolveur projectile ordinaire ; le Runtime terminait alors l’action multi-cible sans les dégâts des trois tirs. Correction minimale : aiguillage du marqueur `waveMultiTarget` vers le résolveur natif par tir, comme en 2v2.
+- Cause 2 : le résolveur par tir perdait le `combatEntityId` observé par le capteur officiel des murs ; un tir heurtant le mur endommageait la cible. Correction : transmettre l’identifiant au `barrierContactId` de l’action visée *uniquement pour une salve*, sans créer d’autorité de dégâts alternative.
+- Test : `tests/integration/vipfer-five-skills-native-20261122.test.mjs` vérifie trois coups indépendants, mur 80 PV -> 68 -> 56, aucune blessure ni ralentissement à travers ce mur, et non-interception sans observation ; sentinelle du raccord en 1v1/2v2.
+- Protections : capacités autres que Vipfer, combat classique, éléments, icônes/sprites auteur, Explorateur, hub/PWA, sauvegardes ; **aucun média refusé raccordé**.
+- Gate inchangée : CI complète du SHA exact, test navigateur/FX et revue visuelle obligatoires. **NON GREEN**, pas de fusion main ou publication PWA par simple succès de tests ciblés.
+
 ## 2026-11-22 — Vipfer : cinq compétences natives Acier (livraison isolée)
 - START : `main@34c17c15f4ca8b457a94e49fa2f3fcfb8ca93ca0` ; checkpoint `checkpoint/lab-start-vipfer-skills-native-20261122` ; branche `work/lab-vipfer-skills-native-20261122`.
 - Créature canonique `data/capture/showcase/Vipfer.capture-creature-transfer-v1.json` : cinq anciens skills Feu remplacés par cinq références natives Acier ; fiche, statistiques, ID `Vipfer`, visuels maîtres et autres créatures conservés.
