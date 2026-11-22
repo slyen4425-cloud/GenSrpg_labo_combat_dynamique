@@ -57,7 +57,15 @@ async function scenario(two){
     for(const shell of arena.querySelectorAll(".skill-fx--projectile")){
       shells.add(shell);
       const anim=shell.getAnimations()[0];if(!anim)continue;
-      if(!starts.has(shell))starts.set(shell,performance.now());
+      if(!starts.has(shell)){
+        starts.set(shell,performance.now());
+        // Once a collision is reported the alpha-mask watcher intentionally
+        // stops polling; an independent browser-compositor completion must
+        // still resolve the REAL child WebAnimation's finished promise.
+        setTimeout(()=>{
+          if(shell.isConnected && !["idle","finished"].includes(anim.playState))anim.finish();
+        },560);
+      }
       // Virtual-time headless Chromium can freeze compositor completion for
       // paused animations: advance the REAL WebAnimation to its native end.
       // This settles its finished promise; it never fabricates an impact.
