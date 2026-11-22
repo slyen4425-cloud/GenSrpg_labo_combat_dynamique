@@ -110,6 +110,17 @@ jobs:
         run: node tests/browser/expanding-wave-2v2-smoke.mjs
 
 
+  vipfer-salvo-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Real Chromium Vipfer native three-projectile salvo in 1v1 and 2v2
+        run: node tests/browser/vipfer-salvo-native-smoke.mjs
+
   raiiven-stampede-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 35
