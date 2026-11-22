@@ -3126,7 +3126,7 @@ export function buildHumanSkillDraftV1(fields) {
         contactHold: {
           tickIntervalMs: finiteNumber(fields.contactHold.tickIntervalMs, "Intervalle maintien au contact"),
           maxDurationMs: finiteNumber(fields.contactHold.maxDurationMs ?? 0, "Durée maximale au contact"),
-          stopOnDamageFromTarget: fields.contactHold.stopOnDamageFromTarget === true,
+          ...(fields.contactHold.stopOnDamageFromTarget === true ? {stopOnDamageFromTarget:true} : {}),
           effects: buildHumanTacticalSkillEffectsV1(fields.contactHold.effects ?? [], {
             defaultDamageChannel: fields.element ?? null
           })
