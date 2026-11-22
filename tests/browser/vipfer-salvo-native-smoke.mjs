@@ -47,7 +47,7 @@ async function scenario(two){
  const mask={width:4,height:4,opaque:new Uint8Array(16).fill(1)};
  const model=slot=>({snapshot(){const r=anchors[slot].getBoundingClientRect();
   return {mask,origin:{x:r.left,y:r.top},axisX:{x:r.right,y:r.top},axisY:{x:r.left,y:r.bottom}}}});
- let runtime=null,release=null,frames=0;const starts=new WeakMap(),shells=new Set(),contacts=[],resolutions=[];
+ let runtime=null,release=null,frames=0;const starts=new WeakMap(),shells=new Set(),contacts=[],contactResults=[],resolutions=[];
  const fx=createDomSkillFxRenderer({arena,anchors,targetAnchors:anchors,
   presentationForSkill:()=>({travel:{url:icon,assetId:"test-only-steel-disc",frameCount:1,displayScale:1}}),
   targetCollisionModelFor:model,
@@ -65,7 +65,9 @@ async function scenario(two){
   cancelFrame:handle=>clearTimeout(handle),
   onProjectileContact(contact){
     contacts.push(contact);
-    return contact.waveMultiTarget?runtime.reportExpandingWaveTargetContact(contact):runtime.reportActionContact(contact);
+    const result=contact.waveMultiTarget?runtime.reportExpandingWaveTargetContact(contact):runtime.reportActionContact(contact);
+    contactResults.push({pass:contact.passIndex,result:result?.outcome,at:session.snapshot().elapsedMs});
+    return result;
   }
  });
  runtime=createCombatRuntime({session,tickMs:20,
@@ -89,6 +91,7 @@ async function scenario(two){
    check(resolutions.length===3 && resolutions.every(x=>x.outcome==="hit"&&x.waveContact),
      "three authoritative successful hits: "+JSON.stringify({
        contacts:contacts.map(c=>({pass:c.passIndex,entity:c.combatEntityId,position:c.contactPoint})),
+       contactResults,
        resolutions:resolutions.map(v=>({outcome:v.outcome,waveContact:v.waveContact,
          events:v.events?.map(e=>e.type),targetId:v.targetId})),
        hp:session.snapshot().fighters.opponent.hp}));
