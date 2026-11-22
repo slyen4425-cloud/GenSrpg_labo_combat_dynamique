@@ -1,0 +1,100 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "vipfer-morsure-ressort",
+    "description": "12 dégâts d’Acier. Attaque de contact esquivable.",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "vipfer-morsure-ressort",
+      "name": "Morsure à ressort",
+      "category": "offensive",
+      "form": "contact",
+      "loadoutSlot": "standard",
+      "element": "steel",
+      "approachMode": "ground",
+      "energyCost": 2,
+      "preparationMs": 450,
+      "travelMs": 650,
+      "recoveryMs": 200,
+      "cooldownMs": 7000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 12,
+          "channel": "steel"
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:vipfer-morsure-ressort",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "vipfer-morsure-ressort",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-lame-acier-01"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-claw-impact-01",
+          "displayScale": 1.3,
+          "attachment": "fixed-target",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "stretch",
+          "durationMs": 500
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}
