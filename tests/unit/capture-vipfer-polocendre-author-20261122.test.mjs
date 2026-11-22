@@ -7,7 +7,7 @@ const read=p=>JSON.parse(readFileSync(new URL("../../"+p,import.meta.url),"utf8"
 const registry=read("data/capture/monster-capture-stat-registry.v1.json");
 const specs=[["Vipfer","steel","serpentine","dodge",20,"pack:capture:creature-vipfer-icon-01"],
  ["polocendre","fire","quadruped","defense",10,"pack:capture:creature-cheval-de-feu-icon-v1"]];
-test("both author exports are published exactly once, with unchanged native loadouts",()=>{
+test("both author exports are published exactly once, with the author's native steel skills and protected Polocendre loadout",()=>{
  for(const [id,element,profile,reaction,speed,icon] of specs){
   const p="data/capture/showcase/"+id+".capture-creature-transfer-v1.json";
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(x=>x===p).length,1,id);
@@ -23,7 +23,7 @@ test("both author exports are published exactly once, with unchanged native load
   assert.equal(record.draft.presentation.visual.icon.assetId,icon);
   assert.ok(record.draft.presentation.visual.front.assetId);
   assert.ok(record.draft.presentation.visual.back.assetId);
-  const ids=id==="Vipfer" ? ["claw","fireball","cap_fire_special_1","lib_flame_bite","cap_fire_atk_6"] : ["polocendre-charge","polocendre-trainee-feu","polocendre-coup-sabot","cap_fire_atk_5","polocendre-ruee-explosive"];
+  const ids=id==="Vipfer" ? ["vipfer-morsure-ressort","vipfer-etreinte-acier","vipfer-mue-tranchante","vipfer-couronne-eclats","vipfer-broyeur-serpentin"] : ["polocendre-charge","polocendre-trainee-feu","polocendre-coup-sabot","cap_fire_atk_5","polocendre-ruee-explosive"];
   assert.deepEqual(record.draft.skillIds,ids);assert.deepEqual(record.loadout.slots.map(x=>x.skillId),ids);
  }
 });
