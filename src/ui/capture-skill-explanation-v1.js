@@ -327,9 +327,32 @@ function groupZones(zones){
     augmentent:"augmente",réduisent:"réduit",infligent:"inflige",rendent:"rend",
     convertissent:"convertit",accordent:"accorde",permettent:"permet"
   });
-  const displayClauses=many?clauses:clauses.map(clause=>
-    clause.replace(/^(augmentent|réduisent|infligent|rendent|convertissent|accordent|permettent)\b/,
-      verb=>singular[verb]));
+  const toSingular=clause=>clause.replace(
+    /^(augmentent|réduisent|infligent|rendent|convertissent|accordent|permettent)\b/,
+    verb=>singular[verb]);
+  // A skill that leaves three identical native areas must NEVER print the
+  // same damage clause three times. Keep the zone COUNT and per-zone damage
+  // visible, even when those effects share duration, channel and trigger.
+  const identical=many && clauses.every(clause=>clause===clauses[0]);
+  if(identical){
+    const indexedTrail=zones.every(z=>
+      Number.isInteger(z.trailIndex) && z.trailCount===zones.length);
+    if(indexedTrail && first.tickEffect.kind==="damage" &&
+        first.damageTrigger==="entry_only"){
+      const channel=first.tickEffect.channel??"fire";
+      return [finish("Laisse "+num(zones.length)+" traînées de "+element(channel)+
+        " au sol, espacées uniformément sur son passage pendant "+
+        duration(first.durationMs)+". Chaque zone traversée inflige "+
+        num(first.tickEffect.amount)+" dégâts "+elementOf(channel)+
+        " une fois par entrée")];
+    }
+    return [finish("Crée "+num(zones.length)+" zones "+target+
+      " pendant "+duration(first.durationMs)+". Chaque zone "+
+      toSingular(clauses[0])+
+      (first.statusBehavior==="while_inside"?", tant que les créatures s'y trouvent":"")+
+      (first.persistAfterRecall?" ; elles restent actives après un rappel":""))];
+  }
+  const displayClauses=many?clauses:clauses.map(toSingular);
   let text="Crée "+(many?"des zones qui ":"une zone qui ")+words(displayClauses)+
     " "+target+" pendant "+duration(first.durationMs);
   if(first.statusBehavior==="while_inside")text+=", tant que les créatures s'y trouvent";
