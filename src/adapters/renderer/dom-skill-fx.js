@@ -2025,21 +2025,38 @@ export function createDomSkillFxRenderer({
       const centerActorId = zone.targetScope === "target" &&
         zone.targetId && anchors[zone.targetId]
           ? String(zone.targetId) : sourceActorId;
-      const liveSource = centerRelativeTo(
-        anchor(
-          anchors,
-          centerActorId,
-          "persistent zone center"
-        ).getBoundingClientRect(),
-        arenaRect
-      );
+      const anchorRect = anchor(
+        anchors,
+        centerActorId,
+        "persistent zone center"
+      ).getBoundingClientRect();
+      let liveSource = centerRelativeTo(anchorRect, arenaRect);
+      // Indexed ground trails reuse the SAME native zones, sprite and
+      // visible-bounds occupancy. The three patches are separate points on
+      // the actual source-to-target charge path, not three stacked sprites.
+      if (Number.isInteger(zone.trailIndex) && zone.trailCount >= zone.trailIndex) {
+        const goal = anchors[String(zone.targetId ?? "")];
+        if (goal) {
+          const startRect = anchor(anchors, sourceActorId, "trail source").getBoundingClientRect();
+          const targetRect = goal.getBoundingClientRect();
+          const from = centerRelativeTo(startRect, arenaRect);
+          const to = centerRelativeTo(targetRect, arenaRect);
+          const along = zone.trailIndex / (zone.trailCount + 1);
+          liveSource = {
+            x: from.x + (to.x - from.x) * along,
+            y: from.y + (to.y - from.y) * along +
+              (startRect.height + (targetRect.height - startRect.height) * along) * 0.35
+          };
+        }
+      }
       // This renderer alone owns the visual anchor. fixed-source pins an
       // authored field at first activation; source follows the living caster.
       // A recalled caster also leaves its last field position fixed.
       // Gameplay occupancy continues through the existing native zone sample.
       const fixedAtGround =
         visual.attachment === "fixed-source" ||
-        zone.detachedFromSource === true;
+        zone.detachedFromSource === true ||
+        Number.isInteger(zone.trailIndex);
       const source = fixedAtGround && record?.zoneCenter
         ? record.zoneCenter
         : liveSource;
