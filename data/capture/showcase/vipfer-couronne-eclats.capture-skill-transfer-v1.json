@@ -123,13 +123,7 @@
           "layerByView": {
             "player": "front",
             "opponent": "front"
-          },
-          "offsetMode": "same",
-          "trajectoryMode": "linear",
-          "frameSpeedMultiplier": 1,
-          "perspectiveAmount": 0,
-          "farScaleRatio": 0.5,
-          "arrivalLayer": "front"
+          }
         },
         "impact": {
           "assetId": "pack:capture:sprite-steel-wing-impact-01",
@@ -143,12 +137,11 @@
           "trigger": "impact",
           "playbackMode": "once",
           "rotationDeg": 0,
-          "opacity": 0.75,
+          "opacity": 1,
           "layerByView": {
             "player": "front",
             "opponent": "front"
-          },
-          "offsetMode": "same"
+          }
         }
       },
       "audio": {},
