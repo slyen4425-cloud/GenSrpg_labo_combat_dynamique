@@ -37,7 +37,7 @@ async function scenario(two){
   e:ids.filter(x=>x==="opponent"||x==="opponent-b")},
   actors:ids.map(actorId=>({actorId,teamId:actorId==="player"||actorId==="ally"?"p":"e",
     creatureId:actorId,displayName:actorId,fighterConfigId:actorId,controllerId:"human-local"}))});
- const session=createCombatSession({fighters:ids.map(fighter),battleFormat:format,distance:"medium"});
+ const session=createCombatSession({fighters:ids.map(fighter),...(two?{battleFormat:format}:{}),distance:"medium"});
  const arena=document.createElement("section");arena.className="test-arena";document.body.append(arena);
  const spots={player:[60,140],ally:[60,240],opponent:[355,140],"opponent-b":[455,240]};
  const anchors=Object.fromEntries(ids.map(id=>{const node=document.createElement("div");
@@ -58,7 +58,7 @@ async function scenario(two){
       shells.add(shell);
       const anim=shell.getAnimations()[0];if(!anim)continue;
       if(!starts.has(shell))starts.set(shell,performance.now());
-      anim.pause();anim.currentTime=Math.max(0,Math.min(549,performance.now()-starts.get(shell)));
+      anim.pause();anim.currentTime=Math.max(0,Math.min(550,performance.now()-starts.get(shell)));
     }
     frames++;callback();
   },16),
@@ -101,6 +101,9 @@ async function scenario(two){
      check(session.snapshot().fighters[id].hp===300,"other 2v2 actor remains unharmed: "+id);
    }
    check(runtime.hasActiveAction===false,"action ends at natural deadline");
+   await release.finished;
+   check(fx.activeCount===0,"all salvo child sprite records and collision watchers must be cleaned");
+   check(arena.querySelectorAll(".skill-fx--projectile").length===0,"no orphan projectile sprite after the salvo");
    return two?"2v2":"1v1";
  }finally{runtime.dispose();fx.dispose();arena.remove()}
 }
