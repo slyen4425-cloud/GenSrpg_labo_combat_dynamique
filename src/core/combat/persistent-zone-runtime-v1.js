@@ -829,6 +829,10 @@ export function applyPersistentZoneEffectsV1({
         skill.element ?? null,
       hitsIntangible: skill.hitsIntangible === true,
       zoneId: effect.zoneId,
+      ...(effect.trailIndex == null ? {} : {
+        trailIndex: effect.trailIndex,
+        trailCount: effect.trailCount
+      }),
       targetScope:
         effect.targetScope,
       baseRadius:
