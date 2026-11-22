@@ -2008,6 +2008,9 @@ export function createCombatRuntime({
       Math.max(record.action.releaseAtMs, elapsedFor(record,current)));
     const aimedAction = Object.freeze({
       ...record.action, targetId,
+      // The FX sensor reports only observed wall contact; Combat Damage
+      // exclusively decides whether this specific wall intercepts the hit.
+      ...(salvo && combatEntityId != null ? {barrierContactId: combatEntityId} : {}),
       travelMs: impactAtMs - record.action.releaseAtMs,
       impactAtMs
     });
