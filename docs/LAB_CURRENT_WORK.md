@@ -1,3 +1,11 @@
+## 2026-11-22 — Vipfer : cinq compétences natives Acier (livraison isolée)
+- START : `main@34c17c15f4ca8b457a94e49fa2f3fcfb8ca93ca0` ; checkpoint `checkpoint/lab-start-vipfer-skills-native-20261122` ; branche `work/lab-vipfer-skills-native-20261122`.
+- Créature canonique `data/capture/showcase/Vipfer.capture-creature-transfer-v1.json` : cinq anciens skills Feu remplacés par cinq références natives Acier ; fiche, statistiques, ID `Vipfer`, visuels maîtres et autres créatures conservés.
+- Compétences : Morsure à ressort 12 (7s, E2) ; Étreinte d'acier 13 + immobilisation 10s (26s, E4) ; Mue tranchante +200 DEF 8s, **première** riposte contact 25 (32s, E5) ; Couronne d'éclats 3 tirs indépendants ×12 et ralentissement 15% 6s (28s, E5) ; Broyeur serpentin ultime 60 impact +10 toutes les 500ms sans timer max, arrêt quand la **cible** inflige une perte réelle de PV au lanceur (30s de combat, une fois, E9).
+- Propriétaires génériques modifiés : contrat `contactHold` source-attribuée, journal de perte de PV par adversaire dans CombatState, riposte à un seul contact dans CombatDamage, salves séquentielles dans CombatRuntime + présentation FX. Aucun calcul de dégâts ajouté au renderer.
+- Médias : anciennes icônes et sprites de la bibliothèque officielle utilisés *provisoirement*. Les cinq icônes et trois séquences auteur du ZIP local ne sont PAS enregistrées dans `global-assets` par cette branche. Aucun sprite d'Étreinte refusé, silhouette humaine ni image générée de la créature n'est raccordé. Les cinq compétences sont le lot gameplay ; les médias auteur feront l'objet d'une validation et d'un lot média distinct.
+- Gate : tests unitaires/intégration + CI complète + revue browser/FX. Pas de publication `main`, pas de checkpoint GREEN, pas de PWA tant que les tests ne sont pas vérifiés et que le lot n'est pas fusionné.
+
 ## 2026-11-22 — Vague incendiaire : icône Boule de feu (correctif isolé)
 - Baseline : `main@d7eeae0fdb13454cf5a9ae18a0676e6784e425e5` ; checkpoint `checkpoint/lab-start-vague-incendiaire-icon-20261122` ; branche `work/lab-vague-incendiaire-fireball-icon-20261122`.
 - Symptôme : `cap_fire_atk_5` « Vague incendiaire » affiche l'icône `core:icon-skill-barrier-dome-01` inadaptée.
