@@ -49,7 +49,10 @@ document.addEventListener("DOMContentLoaded",()=>{
    check(!one("[data-skill-salvo-panel]").hidden,"salvo settings not accessible");
    save();
    open("vipfer-mue-tranchante");
-   const reflect=one('[data-skill-effects-host] [data-reflection-consume-on-contact]');
+   const reflectionRow=[...document.querySelectorAll(
+     "[data-skill-effects-host] [data-skill-effect-row]"
+   )].find(row=>row.querySelector("[data-skill-status-kind]")?.value==="damage_reflection");
+   const reflect=reflectionRow?.querySelector("[data-reflection-consume-on-contact]");
    check(reflect?.checked===true,"unique contact retaliation lost on native UI load");
    save();
    open("vipfer-broyeur-serpentin");
@@ -63,7 +66,10 @@ document.addEventListener("DOMContentLoaded",()=>{
       one("[data-skill-salvo-shots]").value==="3",
       "salvo lost after real native save/reload");
    open("vipfer-mue-tranchante");
-   check(one('[data-skill-effects-host] [data-reflection-consume-on-contact]')?.checked,
+   const reopenedReflection=[...document.querySelectorAll(
+     "[data-skill-effects-host] [data-skill-effect-row]"
+   )].find(row=>row.querySelector("[data-skill-status-kind]")?.value==="damage_reflection");
+   check(reopenedReflection?.querySelector("[data-reflection-consume-on-contact]")?.checked,
       "one-use reflection lost after real save/reload");
    open("vipfer-broyeur-serpentin");
    check(one("[data-skill-contact-hold-stop-target]")?.checked,
