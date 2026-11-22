@@ -11,7 +11,7 @@ const probe=`<script>
 window.addEventListener("error",e=>document.body.dataset.vipferEditorSmoke="fail:page:"+e.message);
 window.addEventListener("unhandledrejection",e=>document.body.dataset.vipferEditorSmoke="fail:promise:"+String(e.reason));
 document.addEventListener("DOMContentLoaded",()=>{
- setTimeout(()=>{
+ setTimeout(async ()=>{
   const check=(yes,why)=>{if(!yes)throw Error(why)};
   const one=selector=>document.querySelector(selector);
   const select=one("[data-skill-library-select]");
@@ -28,6 +28,19 @@ document.addEventListener("DOMContentLoaded",()=>{
   };
   try{
    check(select&&one("[data-skill-update]"),"native Capture skill editor not bootstrapped");
+   // The showcase loads asynchronously; check the REAL catalog after hydration,
+   // rather than assuming all skills exist at DOMContentLoaded.
+   for(let attempt=0;attempt<35;attempt++){
+     if([...select.options].some(x=>x.value==="vipfer-couronne-eclats"))break;
+     await new Promise(resolve=>setTimeout(resolve,250));
+   }
+   check([...select.options].some(x=>x.value==="vipfer-couronne-eclats"),
+     "Vipfer presets unavailable after showcase hydration; "+JSON.stringify({
+       options:select.options.length,
+       state:one("[data-skill-library-state]")?.textContent,
+       live:one("[data-combat-live-status]")?.textContent,
+       bootstrap:document.documentElement.dataset.bootstrapError
+     }));
    open("vipfer-couronne-eclats");
    check(one("[data-skill-trajectory-mode]").value==="salvo","salvo became direct in native UI");
    check(one("[data-skill-salvo-shots]").value==="3" &&
@@ -57,7 +70,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       "attributed ultimate release lost after real save/reload");
    document.body.dataset.vipferEditorSmoke="pass:salvo:unique-riposte:target-hold:save-reload";
   }catch(e){document.body.dataset.vipferEditorSmoke="fail:"+String(e.stack||e);}
- },2200);
+ },1000);
 });
 </script>`;
 const server=createServer(async(req,res)=>{
@@ -79,7 +92,7 @@ try{
  if(!bin)throw Error("Chromium required");
  const url="http://127.0.0.1:"+server.address().port+"/examples/dom-demo/capture-editor-v2.html";
  const child=spawn(bin,["--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage",
-   "--disable-background-networking","--no-first-run","--virtual-time-budget=9000","--dump-dom",url],
+   "--disable-background-networking","--no-first-run","--virtual-time-budget=14000","--dump-dom",url],
    {stdio:["ignore","pipe","pipe"]});
  const out=[],err=[];
  child.stdout.on("data",v=>out.push(v));child.stderr.on("data",v=>err.push(v));
