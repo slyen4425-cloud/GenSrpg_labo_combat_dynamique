@@ -2,7 +2,7 @@ import {
   withPersistentZones,
   withFighterStatusEffects
 } from "./combat-state.js";
-import { visiblePersistentZoneRelationV1 } from "../../contracts/persistent-zone-spatial-v1.js";
+import { visiblePersistentZoneRelationV1, visiblePersistentZonePassThroughV1 } from "../../contracts/persistent-zone-spatial-v1.js";
 import {
   computeCombatDamageV1
 } from "./combat-damage-v1.js";
@@ -90,10 +90,14 @@ export function resetPersistentZoneOccupancyForSlotV1(state, actorId, {absent = 
       : oldAbsent.filter(id => id !== actorId);
     const occupancyChanged = occupied.length !== (zone.occupiedActorIds ?? []).length;
     const absentChanged = newAbsent.length !== oldAbsent.length;
-    if (!occupancyChanged && !absentChanged) return zone;
+    const hasOldSpatial = Object.hasOwn(zone.lastVisibleActorBounds ?? {}, actorId);
+    if (!occupancyChanged && !absentChanged && !hasOldSpatial) return zone;
+    const spatial = {...(zone.lastVisibleActorBounds ?? {})};
+    delete spatial[actorId];
     return Object.freeze({
       ...zone,
       ...(zone.occupiedActorIds ? {occupiedActorIds: Object.freeze(occupied)} : {}),
+      ...(zone.lastVisibleActorBounds ? {lastVisibleActorBounds: Object.freeze(spatial)} : {}),
       absentRosterSlots: Object.freeze(newAbsent)
     });
   }));
@@ -240,10 +244,15 @@ function updateZoneTick(
   );
 }
 
-function updateZoneOccupancyV1(state, zoneId, occupiedActorIds) {
+function updateZoneOccupancyV1(state, zoneId, occupiedActorIds, lastVisibleActorBounds = undefined) {
   return withPersistentZones(state, (state.persistentZones ?? []).map(zone =>
     zone.id === zoneId
-      ? Object.freeze({...zone, occupiedActorIds: Object.freeze([...occupiedActorIds])})
+      ? Object.freeze({
+          ...zone,
+          occupiedActorIds: Object.freeze([...occupiedActorIds]),
+          ...(lastVisibleActorBounds === undefined ? {} :
+            {lastVisibleActorBounds: Object.freeze({...lastVisibleActorBounds})})
+        })
       : zone
   ));
 }
@@ -861,7 +870,14 @@ export function applyPersistentZoneEffectsV1({
       // Entry-only damaging zones also track occupancy in this same native
       // state owner, so visible model bounds can distinguish entry/re-entry.
       ...(effect.damageTrigger === "entry_only"
-        ? {occupiedActorIds: existing?.occupiedActorIds ?? Object.freeze([])}
+        ? {
+            occupiedActorIds: effect.trailIndex == null
+              ? existing?.occupiedActorIds ?? Object.freeze([])
+              : Object.freeze([]),
+            lastVisibleActorBounds: effect.trailIndex == null
+              ? existing?.lastVisibleActorBounds ?? Object.freeze({})
+              : Object.freeze({})
+          }
         : {}),
       ...(effect.persistAfterRecall !== undefined
         ? {persistAfterRecall: effect.persistAfterRecall} : {}),
@@ -953,11 +969,35 @@ export function advancePersistentZonesV1({
           })
         : [];
       const previously = new Set(zone.occupiedActorIds ?? []);
+      const visible = zoneSpatialContext?.visibleZones ?? null;
+      const rendered = visible?.zones.some(item =>
+        item.zoneId === zone.id && item.sourceActorId === zone.sourceActorId &&
+        item.radius === zone.radius) === true;
+      const currentBounds = rendered
+        ? Object.fromEntries(visible.actors.map(actor => [actor.actorId, actor.bounds]))
+        : {};
+      const candidates = resolveTacticalEffectTargetIdsV1({
+        format: battleFormat, state: nextState, actorId: zone.sourceActorId,
+        targetId: zone.targetId, targetScope: zone.targetScope
+      });
+      // An actor can traverse a small fire patch BETWEEN two rendered
+      // samples. Read its preceding bounds from this SAME zone instance;
+      // never infer hits from skill timers, distance alone or custom HP code.
+      const crossed = rendered ? candidates.filter(id =>
+        !previously.has(id) && !inside.includes(id) &&
+        !zone.absentRosterSlots?.includes(id) &&
+        visiblePersistentZonePassThroughV1({
+          sample: visible, zoneId: zone.id,
+          sourceActorId: zone.sourceActorId, radius: zone.radius,
+          candidateId: id, previousBounds: zone.lastVisibleActorBounds?.[id]
+        }) === true
+      ) : [];
       const entries = [
         ...events.filter(entry => entry.type === "entry"),
         ...inside.filter(id => !previously.has(id)).map(targetActorId => ({
           type: "entry", atMs: endMs, targetActorId
-        }))
+        })),
+        ...crossed.map(targetActorId => ({type: "entry", atMs: endMs, targetActorId}))
       ];
       const applied = new Set();
       for (const entry of entries) {
@@ -971,7 +1011,7 @@ export function advancePersistentZonesV1({
           atMs: entry.atMs
         });
       }
-      nextState = updateZoneOccupancyV1(nextState, zone.id, inside);
+      nextState = updateZoneOccupancyV1(nextState, zone.id, inside, currentBounds);
       continue;
     }
     if (zone.tickEffect.kind === "apply_status") {
