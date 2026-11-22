@@ -605,7 +605,8 @@ export function createDomSkillFxRenderer({
         record.contactReported=true;
         onProjectileContact(Object.freeze({actorId:record.fromSlot,targetId:record.targetSlot,
           skillId:record.skillId??null,contactPoint:barrierContacts[0].point,
-          combatEntityId:barrierContacts[0].entityId}));
+          combatEntityId:barrierContacts[0].entityId,
+          ...(record.salvoPassIndex===undefined?{}:{waveMultiTarget:true,passIndex:record.salvoPassIndex})}));
         return;
       }
       const contacted =
@@ -635,6 +636,7 @@ export function createDomSkillFxRenderer({
             actorId: record.fromSlot,
             targetId: record.targetSlot,
             skillId: record.skillId ?? null,
+            ...(record.salvoPassIndex===undefined?{}:{waveMultiTarget:true,passIndex:record.salvoPassIndex}),
             // Coordinates describe only the hit location for follow-up visual FX.
             contactPoint: spriteContactPoint ?? Object.freeze({ x: projectilePoint.x, y: projectilePoint.y }),
             ...(mirrorRect !== null
@@ -2248,6 +2250,8 @@ export function createDomSkillFxRenderer({
     label = null,
     expandingWave = null,
     stampede = null,
+    salvo = null,
+    salvoPassIndex = null,
     shadowEcho = false,
     projectilePower = 0,
     sizeMultiplier = 1,
@@ -2844,6 +2848,31 @@ export function createDomSkillFxRenderer({
       });
     }
 
+
+    if (type === "projectile" && salvo !== null) {
+      // Three real sprite flights, not three cloned creatures or an extra HP owner.
+      // Each flight reports its own swept alpha collision to Combat Runtime.
+      const scheduled=[],children=[];
+      const tasks=Array.from({length:salvo.shots},(_,passIndex)=>new Promise(resolve=>{
+        const fire=()=>{
+          if(disposed){resolve({status:"disposed"});return;}
+          const result=play({type:"projectile",skillId,element,fromSlot,targetSlot,
+            fromPoint,projectilePower,sizeMultiplier,trailPath,
+            durationMs:salvo.shotDurationMs,salvoPassIndex:passIndex});
+          children.push(result);
+          Promise.resolve(result.finished).then(resolve,resolve);
+        };
+        scheduled.push(setTimeout(fire,passIndex*(salvo.shotDurationMs+salvo.gapMs)));
+      }));
+      const node={remove(){for(const handle of scheduled)clearTimeout(handle);
+        for(const child of children)child.animation?.cancel?.();}};
+      const record={node,animation:null,frameAnimation:null,type:"projectile",
+        skillId,fromSlot,targetSlot,contactFrameId:null};
+      active.add(record);
+      const finished=Promise.all(tasks).then(values=>{
+        cleanup(record);return {status:"arrived",shots:values.length};});
+      return Object.freeze({status:"running",animation:null,finished});
+    }
 
     if (type === "projectile" && stampede !== null) {
       // One native action, several visible passes: Renderer only reports
@@ -3508,6 +3537,7 @@ export function createDomSkillFxRenderer({
       targetSlot,
       contactFrameId: null,
       contactReported: false,
+      ...(salvoPassIndex===null?{}:{salvoPassIndex}),
       projectilePower: Math.max(0,Number(projectilePower)||0),
       mirrorSurfaceEligible: !skyfall,
       trajectoryMode:travelVisual?.trajectoryMode ?? null,
