@@ -1,0 +1,126 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "polocendre-coup-sabot",
+    "description": "15 dégâts physiques, puis étourdit la cible pendant 3 secondes. Polocendre ne se déplace pas : l'impact physique est joué au sol directement sous l'ennemi, sans projectile.",
+    "requiredLevel": 10,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "polocendre-coup-sabot",
+      "name": "Coup de sabot",
+      "category": "offensive",
+      "form": "area",
+      "projectileTargeting": "direct",
+      "loadoutSlot": "standard",
+      "element": null,
+      "approachMode": "none",
+      "energyCost": 3,
+      "preparationMs": 650,
+      "travelMs": 0,
+      "recoveryMs": 300,
+      "cooldownMs": 24000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "hitsIntangible": false,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 15,
+          "channel": "physical"
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "polocendre-sabot-etourdissement",
+            "kind": "stun",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 3000,
+            "stacking": "refresh",
+            "maxStacks": 1,
+            "tags": []
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:polocendre-coup-sabot",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "polocendre-coup-sabot",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-rock-impact-01"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-impact-physical-01",
+          "displayScale": 1.55,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "durationMs": 650
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}
