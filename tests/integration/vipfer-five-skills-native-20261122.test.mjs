@@ -56,6 +56,44 @@ test("all five Vipfer transfers are canonical, in the native catalogue and activ
  assert.equal(ultimate.activationRequirements.conditions[0].threshold,30000);
 });
 
+test("Étreinte immobilizes for exactly 10 s without disabling stationary attacks or dodges",()=>{
+ const session=createCombatSession({fighters:[fighter("a"),fighter("b")]});
+ const bound=session.useSkill({actorId:"a",targetId:"b",skill:bind});
+ assert.equal(bound.ok,true);
+ assert.equal(session.snapshot().fighters.b.hp,287);
+ assert.equal(session.snapshot().fighters.b.statusEffects.filter(x=>
+   x.definition.id==="vipfer-etreinte-acier:entrave").length,1);
+ assert.equal(session.move("b","short").outcome,"immobilized");
+ const stationary=normalizeSkillDefinition({id:"vipfer-test-stationary",name:"Stationary attack",
+   category:"offensive",form:"projectile",approachMode:"none",energyCost:0,
+   preparationMs:0,travelMs:0,recoveryMs:0,cooldownMs:0,
+   allowedDistances:["short","medium","long"],
+   effect:{damage:2,heal:0,tags:[]}});
+ const attack=session.useSkill({actorId:"b",targetId:"a",skill:stationary});
+ assert.equal(attack.ok,true,"immobilized target may still attack");
+ assert.equal(session.snapshot().fighters.a.hp,298);
+ const incoming=normalizeSkillDefinition({id:"vipfer-test-dodgeable",name:"Incoming projectile",
+   category:"offensive",form:"projectile",approachMode:"none",energyCost:0,
+   preparationMs:0,travelMs:1000,recoveryMs:0,cooldownMs:0,
+   allowedDistances:["short","medium","long"],
+   effect:{damage:8,heal:0,tags:[]}});
+ const evasion=normalizeSkillDefinition({id:"vipfer-test-evasion",name:"Dodge",
+   category:"counter",form:"self",approachMode:"none",energyCost:0,
+   preparationMs:0,travelMs:0,recoveryMs:0,cooldownMs:0,
+   allowedDistances:["short","medium","long"],
+   reaction:{evadeForms:["projectile"]},
+   effect:{damage:0,heal:0,tags:[]}});
+ const start=session.startSkill({actorId:"a",targetId:"b",skill:incoming});
+ assert.equal(start.ok,true);
+ const dodge=session.reactToSkill({action:start.action,reactionSkill:evasion,elapsedMs:0});
+ assert.equal(dodge.ok,true,"immobilization must not block reaction dodge");
+ assert.equal(dodge.outcome,"evaded");
+ session.advanceMs(10000);
+ assert.equal(session.snapshot().fighters.b.statusEffects.some(x=>
+   x.definition.id==="vipfer-etreinte-acier:entrave"),false);
+ assert.equal(session.move("b","short").ok,true,"movement resumes when the bind expires");
+});
+
 test("Mue tranchante retaliation triggers once on melee and not on the second hit",()=>{
  const session=createCombatSession({fighters:[fighter("a"),fighter("b")]});
  assert.equal(session.useSkill({actorId:"a",targetId:"a",skill:armor}).ok,true);
