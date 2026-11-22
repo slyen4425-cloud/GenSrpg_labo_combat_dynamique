@@ -124,6 +124,13 @@ export function createCombatRuntime({
       else if(hold.kind==="channeling"&&
           hold.skill.channeling.stopOnSilence&&hasActiveStatusKindV1(state,hold.actorId,"silence"))
         endContactHold(hold.actorId,"silence");
+      else if(hold.kind!=="channeling" && hold.skill.contactHold?.stopOnDamageFromTarget===true){
+        // Only the held enemy's confirmed HP damage breaks this grip.
+        // Other attacks (e.g. in 2v2), blocked hits and self-damage do not.
+        const takenFromTarget=Number(source.damageTakenByActorId?.[hold.targetId]??0);
+        if(takenFromTarget>hold.damageTakenFromTargetAtStart)
+          endContactHold(hold.actorId,"damage_taken_from_target");
+      }
       else if(taken>hold.damageTakenTotalAtStart&&
           (hold.kind!=="channeling"||hold.skill.channeling.stopOnDamage))
         endContactHold(hold.actorId,"damage_taken");
@@ -2190,7 +2197,9 @@ export function createCombatRuntime({
         startedAtClockMs: current,
         nextTickClockMs: current + record.action.skill.contactHold.tickIntervalMs,
         damageTakenTotalAtStart:
-          Number(session.snapshot().fighters[actorId].damageTakenTotal) || 0
+          Number(session.snapshot().fighters[actorId].damageTakenTotal) || 0,
+        damageTakenFromTargetAtStart:
+          Number(session.snapshot().fighters[actorId].damageTakenByActorId?.[targetId]??0)
       };
       contactHoldsByActor.set(actorId, hold);
       onContactHoldStart(Object.freeze({
