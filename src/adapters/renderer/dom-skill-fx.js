@@ -3626,6 +3626,11 @@ export function createDomSkillFxRenderer({
 
     const finished = Promise.resolve(animation.finished)
       .then(() => {
+        // Salvo child hits report per-shot through the native Runtime, not
+        // through the ordinary presentation hook that cleans normal shots.
+        // Clear the real DOM node, RAF collision watcher and active registry
+        // when its flight ends, even after a successful animation finish.
+        if (salvoPassIndex !== null) cleanup(record);
         return { status: "arrived" };
       })
       .catch((error) => {
