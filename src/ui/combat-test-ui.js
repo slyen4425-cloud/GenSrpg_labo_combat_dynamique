@@ -429,7 +429,10 @@ export async function mountCombatTest({
   const fx = createDomSkillFxRenderer({
     arena,
     onProjectileContact(contact) {
-      runtime?.reportActionContact(contact);
+      // Reuse the authoritative per-pass resolver for native salvo contacts,
+      // exactly as in the 2v2 view. Plain projectiles keep their own path.
+      if (contact.waveMultiTarget) return runtime?.reportExpandingWaveTargetContact(contact) ?? null;
+      return runtime?.reportActionContact(contact) ?? null;
     },
     onProjectileClashContact(contact) {
       return runtime?.reportProjectileClashContact(contact) ?? null;
