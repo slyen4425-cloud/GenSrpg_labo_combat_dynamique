@@ -3168,7 +3168,7 @@ export function buildHumanSkillDraftV1(fields) {
       }}),
       travelMs: isStampede ? stampedeTravelMsV1(fields.stampede)
         : isSalvo ? Number(fields.salvo?.shots)*Number(fields.salvo?.shotDurationMs)+
-            (Number(fields.salvo?.shots)-1)*Number(fields.salvo?.gapMs))
+            (Number(fields.salvo?.shots)-1)*Number(fields.salvo?.gapMs)
         : finiteNumber(fields.travelMs,"Temps pour atteindre la cible"),
       recoveryMs: finiteNumber(
         fields.recoveryMs,
