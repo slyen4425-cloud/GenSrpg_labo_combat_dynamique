@@ -456,7 +456,7 @@ export function createCombatSession({
     const targetTeam = battleFormat?.teamOf?.(targetId);
     if (
       action?.actionType !== "skill" ||
-      !["expanding_wave", "stampede"].includes(action.skill?.projectileTargeting) ||
+      !["expanding_wave", "stampede", "salvo"].includes(action.skill?.projectileTargeting) ||
       action.skill?.category !== "offensive" ||
       sourceTeam == null || targetTeam == null ||
       sourceTeam === targetTeam ||
