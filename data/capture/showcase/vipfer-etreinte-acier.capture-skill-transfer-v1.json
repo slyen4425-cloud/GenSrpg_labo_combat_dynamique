@@ -1,0 +1,107 @@
+{
+  "schema": "capture-skill-transfer-v1",
+  "version": 1,
+  "draft": {
+    "schema": "capture-skill-editor-draft-v1",
+    "id": "vipfer-etreinte-acier",
+    "description": "13 dégâts d’Acier et immobilisation durant 10 s. La cible peut toujours attaquer et esquiver.",
+    "requiredLevel": 1,
+    "usageScopes": [
+      "capture",
+      "combat"
+    ],
+    "definition": {
+      "id": "vipfer-etreinte-acier",
+      "name": "Étreinte d’acier",
+      "category": "offensive",
+      "form": "contact",
+      "loadoutSlot": "standard",
+      "element": "steel",
+      "approachMode": "ground",
+      "energyCost": 4,
+      "preparationMs": 600,
+      "travelMs": 900,
+      "recoveryMs": 200,
+      "cooldownMs": 26000,
+      "maxUsesPerCombat": null,
+      "interruptibleDuringPreparation": true,
+      "allowedDistances": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "targetRelations": [
+        "enemy"
+      ],
+      "targetLocations": [
+        "active"
+      ],
+      "hitPresenceStates": null,
+      "dodgeable": true,
+      "activationRequirements": {
+        "mode": "all",
+        "conditions": []
+      },
+      "evasion": {
+        "window": null,
+        "incomingForms": []
+      },
+      "projectileClash": {
+        "power": 0
+      },
+      "reaction": {
+        "blockForms": [],
+        "reflectForms": [],
+        "immuneElements": [],
+        "counterForms": [],
+        "evadeForms": [],
+        "evadeApproaches": []
+      },
+      "effect": {
+        "damage": 0,
+        "heal": 0,
+        "interruptsPreparation": false,
+        "stunMs": 0,
+        "tags": []
+      },
+      "effects": [
+        {
+          "kind": "damage",
+          "targetScope": "target",
+          "amount": 13,
+          "channel": "steel"
+        },
+        {
+          "kind": "apply_status",
+          "targetScope": "target",
+          "status": {
+            "id": "vipfer-etreinte-acier:entrave",
+            "label": "Étreinte d’acier",
+            "kind": "immobilize",
+            "polarity": "detrimental",
+            "durationModel": "time_ms",
+            "durationMs": 10000,
+            "stacking": "refresh",
+            "tags": [
+              "vipfer",
+              "steel"
+            ]
+          }
+        }
+      ]
+    },
+    "presentation": {
+      "id": "skill:vipfer-etreinte-acier",
+      "version": 9,
+      "subjectType": "skill",
+      "subjectId": "vipfer-etreinte-acier",
+      "visual": {
+        "icon": {
+          "assetId": "pack:capture:icon-skill-carapace-acier-01"
+        }
+      },
+      "audio": {},
+      "statusVisuals": {}
+    }
+  }
+}
