@@ -105,7 +105,7 @@ test("Couronne resolves in the production format-less two-fighter solo session",
  }finally{h.runtime.dispose();}
  // No battle format is only safe when exactly two actors exist.
  const session=createCombatSession({fighters:["a","b","c","d"].map(fighter)});
- const action=session.useSkill({actorId:"a",targetId:"b",skill:volley});
+ const action=session.startSkill({actorId:"a",targetId:"b",skill:volley});
  assert.equal(action.ok,true);
  const invalid=session.completeExpandingWaveTarget({
    action:action.action,targetId:"b"});
