@@ -51,6 +51,12 @@ try {
   const browser = spawn(browserBinary(), [
     "--headless=new", "--no-sandbox", "--disable-gpu",
     "--disable-dev-shm-usage", "--disable-background-networking",
+    // Headless CI may throttle the native rAF scheduler while advancing
+    // virtual JS timers: 66 real alpha snapshots, zero rAF callbacks.
+    // Keep real Chromium paint/WAAPI frames active for the unchanged
+    // non-faked alpha-mask/contact test; never relax its collision assertion.
+    "--disable-background-timer-throttling", "--disable-renderer-backgrounding",
+    "--disable-backgrounding-occluded-windows",
     "--no-first-run", "--disable-extensions", "--virtual-time-budget=12000",
     "--dump-dom", url
   ], { stdio: ["ignore", "pipe", "pipe"] });
