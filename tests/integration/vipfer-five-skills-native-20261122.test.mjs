@@ -14,7 +14,7 @@ const skills=files.map(p=>normalizeCaptureSkillTransferV1(JSON.parse(readFileSyn
 const [bite,bind,armor,volley,ultimate]=skills;
 const skill=(i)=>skills[i];
 const fighter=(id)=>({id,maxHp:300,initialHp:300,maxEnergy:50,initialEnergy:50,
-  energyChargeAmount:0,energyChargeIntervalMs:2000,statValuesById:{defense:25}});
+  energyChargeAmount:0,energyChargeIntervalMs:2000,statValuesById:{defense:25},statEffectRulesById:{defense:{damageReductionPctPerPoint:0.2}}});
 const format=normalizeBattleFormatDefinition({id:"vipfer-native",localActorId:"a",
   teams:{p:["a"],e:["b"]},actors:["a","b"].map(id=>({actorId:id,teamId:id==="a"?"p":"e",
     creatureId:id,displayName:id,fighterConfigId:id,controllerId:"human-local"}))});
