@@ -1,3 +1,10 @@
+## 2026-11-22 — Vipfer : gate navigateur, médias vérifiés et entrave
+- État vérifié de la CI au SHA `e51da975f7eb69b4763d3498d482e2a47150e5aa` : **10/10 jobs Laboratoire verts** + certification globale des assets verte ; PR #380 encore ouverte, nouvelle revue Codex demandée sur ce commit.
+- Ajout d’une sentinelle d’intégration d’**Étreinte d’acier** : 13 dégâts Acier, immobilisation 10 s empêchant les déplacements, mais conservant attaque stationnaire et esquive ; mobilité rétablie après expiration. La CI sur ce nouveau commit doit de nouveau être vérifiée avant toute fusion.
+- Inventaire réel de `global-assets` : `assets/library/capture/creatures/vipfer/runtime/vipfer_face.png`, `vipfer_dos.png`, `vipfer_icone.png` et preview source existent. Aucun des cinq fichiers médiatiques de compétence Vipfer n’est présent sous un nom propre à Vipfer dans l’arbre global. Les présentations utilisent encore les assets historiques de substitution : **lot gameplay OK aux jalons testés, lot médias non validé**, ne pas annoncer sprites finaux ni supprimer les sources.
+- Interdictions préservées : pas de silhouette humaine Étreinte, pas de modèle de créature créé à la place du sprite de compétence, pas de branche `gh-pages`, pas de contournement du catalogue canonique.
+- Sortie : revue Codex actuelle + CI exacte du dernier SHA, état de publication `main` et HTTPS vérifiés avant toute fusion ; indépendamment, raccord des médias approuvés uniquement après contrôle des octets/atlas, manifeste, catalogue et preview.
+
 ## 2026-11-22 — Vipfer : correctifs de revue PR #380 (même lot)
 - Reprise de la branche unique `work/lab-vipfer-skills-native-20261122`, départ et checkpoint inchangés ; aucun développement sur `gh-pages` ou la PWA.
 - Cause 1 : vue solo `src/ui/combat-test-ui.js` envoyait les contacts de la salve au résolveur projectile ordinaire ; le Runtime terminait alors l’action multi-cible sans les dégâts des trois tirs. Correction minimale : aiguillage du marqueur `waveMultiTarget` vers le résolveur natif par tir, comme en 2v2.
