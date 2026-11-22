@@ -28,8 +28,13 @@ const sha256=b=>createHash("sha256").update(b).digest("hex");
 
 test("Vague incendiaire is the exact uploaded transfer and the only active author preset for this ID",()=>{
  const bytes=sourceBytes();
- assert.equal(bytes.length,3352);
- assert.equal(sha256(bytes),"9e940251a53f66fd2d04e40c1bf4fb09d5abcbfdce074f47e674e29a382ee3c3");
+ // Only the requested icon may differ from the original author transfer.
+ const previousBytes=Buffer.from(bytes.toString("utf8").replace(
+  '"assetId": "pack:capture:icon-skill-fireball-01"',
+  '"assetId": "core:icon-skill-barrier-dome-01"'
+ ));
+ assert.equal(previousBytes.length,3352);
+ assert.equal(sha256(previousBytes),"9e940251a53f66fd2d04e40c1bf4fb09d5abcbfdce074f47e674e29a382ee3c3");
  assert.equal(presetFiles.filter(p=>p===path).length,1);
  
  assert.equal(new Set(presetFiles).size,presetFiles.length);
@@ -46,6 +51,11 @@ test("author's Vague incendiaire keeps expanding wave, damage, DOT and exact spr
  const d=skill(),s=d.definition;
  assert.equal(d.requiredLevel,15);
  assert.equal(s.name,"Vague incendiaire");
+ assert.equal(d.presentation.visual.icon.assetId,"pack:capture:icon-skill-fireball-01");
+ const fireball=importCaptureTransferJsonV1(
+  read("data/capture/showcase/fireball.capture-skill-transfer-v1.json").toString("utf8")
+ ).value.draft;
+ assert.equal(d.presentation.visual.icon.assetId,fireball.presentation.visual.icon.assetId);
  assert.equal(s.form,"projectile");
  assert.equal(s.projectileTargeting,"expanding_wave");
  assert.deepEqual(s.expandingWave,{startRadiusPct:8,endRadiusPct:65,thicknessPct:8});
