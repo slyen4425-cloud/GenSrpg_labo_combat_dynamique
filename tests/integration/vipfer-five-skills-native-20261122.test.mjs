@@ -7,6 +7,7 @@ import {normalizeBattleFormatDefinition} from "../../src/contracts/battle-format
 import {normalizeSkillDefinition} from "../../src/contracts/skill-definition.js";
 import {createCombatSession} from "../../src/core/combat/combat-session.js";
 import {createCombatRuntime} from "../../src/core/combat/combat-runtime.js";
+import {buildHumanSkillDraftV1,humanSkillEditorFieldsFromDraftV1} from "../../src/ui/capture-editor-human-v2.js";
 
 const slugs=["morsure-ressort","etreinte-acier","mue-tranchante","couronne-eclats","broyeur-serpentin"];
 const files=slugs.map(x=>"data/capture/showcase/vipfer-"+x+".capture-skill-transfer-v1.json");
@@ -92,6 +93,44 @@ test("Étreinte immobilizes for exactly 10 s without disabling stationary attack
  assert.equal(session.snapshot().fighters.b.statusEffects.some(x=>
    x.definition.id==="vipfer-etreinte-acier:entrave"),false);
  assert.equal(session.move("b","short").ok,true,"movement resumes when the bind expires");
+});
+
+test("Vipfer native author edit/save/reload never erases salvo, one-use retaliation or target-sourced hold",()=>{
+ const originals=files.map(path=>normalizeCaptureSkillTransferV1(
+   JSON.parse(readFileSync(path,"utf8"))).draft);
+ const saved=originals.map(draft=>
+   buildHumanSkillDraftV1(humanSkillEditorFieldsFromDraftV1(draft)));
+ assert.deepEqual(saved.map(d=>d.id),originals.map(d=>d.id));
+ const oldVolley=originals[3].definition;
+ const newVolley=saved[3].definition;
+ assert.equal(newVolley.projectileTargeting,"salvo");
+ assert.deepEqual(newVolley.salvo,oldVolley.salvo);
+ assert.equal(newVolley.travelMs,oldVolley.travelMs);
+ assert.equal(newVolley.effects.find(e=>e.kind==="damage")?.amount,12);
+ assert.equal(newVolley.effects.find(e=>e.kind==="apply_status")?.status?.modifierPct,15);
+ const reflection=saved[2].definition.effects.find(e=>
+   e.kind==="apply_status"&&e.status?.kind==="damage_reflection");
+ assert.equal(reflection?.status?.consumeOnContact,true);
+ assert.equal(reflection?.status?.contactDamage,25);
+ assert.deepEqual(reflection?.status?.incomingKinds,["contact"]);
+ assert.equal(saved[4].definition.contactHold?.stopOnDamageFromTarget,true);
+ assert.equal(saved[4].definition.contactHold?.tickIntervalMs,500);
+ assert.equal(saved[4].definition.contactHold?.maxDurationMs,0);
+ assert.equal(saved[4].definition.contactHold?.effects[0]?.amount,10);
+ // Editing ordinary properties must not reset the three independent mechanics.
+ const fields=humanSkillEditorFieldsFromDraftV1(originals[3]);
+ const changed=buildHumanSkillDraftV1({...fields,
+   description:"Salve ajustée",salvo:{...fields.salvo,shots:4}});
+ assert.equal(changed.definition.projectileTargeting,"salvo");
+ assert.equal(changed.definition.salvo.shots,4);
+ assert.equal(changed.definition.travelMs,4*550+3*150);
+ const html=readFileSync("examples/dom-demo/capture-editor-v2.html","utf8");
+ const editor=readFileSync("src/ui/capture-editor-human-v2.js","utf8");
+ for(const selector of ["data-skill-salvo-shots","data-skill-salvo-shot-ms","data-skill-salvo-gap-ms",
+   "data-skill-contact-hold-stop-target","data-reflection-consume-on-contact"]){
+   assert.match(editor,new RegExp(selector));
+   if(selector!=="data-reflection-consume-on-contact")assert.match(html,new RegExp(selector));
+ }
 });
 
 test("Mue tranchante retaliation triggers once on melee and not on the second hit",()=>{
