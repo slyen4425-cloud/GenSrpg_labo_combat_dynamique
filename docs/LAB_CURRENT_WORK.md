@@ -1,3 +1,10 @@
+## 2026-11-22 — Vipfer et Polocendre : fiches auteur pour PWA
+- START Labo Combat : `main@414c0324a2837dee9697e01b4fc4ec9844a61b2a` ; checkpoint `checkpoint/lab-start-vipfer-polocendre-20261122` ; branche `work/lab-vipfer-polocendre-20261122`.
+- Unique autorité : Showcase/Bestiaire Combat, deux transferts auteur ; Vipfer conserve ses valeurs et choix de compétences ; Polocendre référence l'icône officielle du Cheval de feu et ses animations 6/7/5/5. Aucune seconde bibliothèque.
+- Visuels : global-assets `b807389811c5a7e5236b9fdc96b7f155168d7fd7` certifié CI `44925994443`, à repin PWA seulement après certification des transferts Combat main.
+- Tests : unité des deux transferts, catalogue, statuts, chargement et Bestiaire, vraie sentinelle Chromium ; préserver autres modules et sauvegardes.
+- Statut : source en PR pour revue CI, PWA non encore repin.
+
 ## 2026-11-20 — REPRISE BUG VISUEL auteur : Dédale ≠ Cavalcade (lot isolé)
 
 - Point de départ : `main@028b7973e8f961311b778907079e93cbc50b465e`; checkpoint `checkpoint/lab-start-raiiven-visual-separation-20261120`; tampon `work/lab-raiiven-visual-separation-20261120`. Ne pas retoucher les autres compétences ou assets.
