@@ -106,6 +106,49 @@
       "visual": {
         "icon": {
           "assetId": "pack:capture:icon-skill-lame-acier-01"
+        },
+        "travel": {
+          "assetId": "pack:capture:sprite-steel-wing-projectile-01",
+          "displayScale": 1.5,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "trajectory",
+          "anchor": "mouth",
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "travel-start",
+          "playbackMode": "loop",
+          "rotationDeg": 0,
+          "opacity": 1,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same",
+          "trajectoryMode": "linear",
+          "frameSpeedMultiplier": 1,
+          "perspectiveAmount": 0,
+          "farScaleRatio": 0.5,
+          "arrivalLayer": "front"
+        },
+        "impact": {
+          "assetId": "pack:capture:sprite-steel-wing-impact-01",
+          "displayScale": 1.2,
+          "displayScaleX": 1,
+          "displayScaleY": 1,
+          "attachment": "fixed-target",
+          "anchor": null,
+          "offsetX": 0,
+          "offsetY": 0,
+          "trigger": "impact",
+          "playbackMode": "once",
+          "rotationDeg": 0,
+          "opacity": 0.75,
+          "layerByView": {
+            "player": "front",
+            "opponent": "front"
+          },
+          "offsetMode": "same"
         }
       },
       "audio": {},
