@@ -227,8 +227,18 @@ export function createCombatRuntime({
     return record.startedAtClockMs + record.action.releaseAtMs;
   }
 
+  // The FX geometry sensor samples real DOM pixels once per animation frame.
+  // A witnessed salvo collision at the visual tail may reach the Runtime
+  // one frame after nominal travel; never award damage without that contact.
+  // A countered action is already resolved and receives no grace.
+  function salvoContactGraceMs(record) {
+    return record.action?.skill?.projectileTargeting === "salvo" &&
+      record.reaction?.outcome !== "countered"
+      ? Math.max(16, Math.min(32, tickMs)) : 0;
+  }
+
   function absoluteResolutionAt(record) {
-    return record.startedAtClockMs + resolutionAtMs(record);
+    return record.startedAtClockMs + resolutionAtMs(record) + salvoContactGraceMs(record);
   }
 
   function idleProgress(actorId = null) {
@@ -1986,7 +1996,7 @@ export function createCombatRuntime({
       const elapsed = elapsedFor(record, current) - record.action.releaseAtMs;
       const start = passIndex * (passDurationMs + gapMs);
       if (!Number.isInteger(passIndex) || passIndex < 0 || passIndex >= passes ||
-          elapsed < start || elapsed > start + passDurationMs)
+          elapsed < start || elapsed > start + passDurationMs + (salvo ? salvoContactGraceMs(record) : 0))
         return Object.freeze({ok:false,outcome:"outside_pass"});
     } else if (passIndex !== 0) {
       return Object.freeze({ok:false,outcome:"invalid_pass"});
