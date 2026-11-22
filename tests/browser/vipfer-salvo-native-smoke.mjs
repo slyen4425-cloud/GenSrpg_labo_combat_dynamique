@@ -58,7 +58,12 @@ async function scenario(two){
       shells.add(shell);
       const anim=shell.getAnimations()[0];if(!anim)continue;
       if(!starts.has(shell))starts.set(shell,performance.now());
-      anim.pause();anim.currentTime=Math.max(0,Math.min(550,performance.now()-starts.get(shell)));
+      // Virtual-time headless Chromium can freeze compositor completion for
+      // paused animations: advance the REAL WebAnimation to its native end.
+      // This settles its finished promise; it never fabricates an impact.
+      const age=performance.now()-starts.get(shell);
+      if(age>=550)anim.finish();
+      else if(anim.playState!=="finished"){anim.pause();anim.currentTime=Math.max(0,age);}
     }
     frames++;callback();
   },16),
