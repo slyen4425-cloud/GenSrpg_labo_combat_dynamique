@@ -15,8 +15,8 @@ SETS=[
   [(A/"renard_lunaire/runtime/renard_lunaire_face.webp",.035,.37,.60,(175,115,255)),
    (A/"raiiven/runtime/raiiven_face.png",.72,.34,.62,(152,65,240)),
    (A/"ephemus/runtime/ephemus_face.png",.63,.08,.28,(219,142,255))],
-  [(A/"renard_lunaire/runtime/renard_lunaire_face.webp",.06,.57,.37,(175,115,255)),
-   (A/"raiiven/runtime/raiiven_face.png",.30,.74,.28,(152,65,240)),
+  [(A/"renard_lunaire/runtime/renard_lunaire_face.webp",.02,.56,.25,(175,115,255)),
+   (A/"raiiven/runtime/raiiven_face.png",.49,.79,.19,(152,65,240)),
    (A/"ephemus/runtime/ephemus_face.png",.51,.10,.22,(219,142,255))],
   (30,13,83),"Kitsune Lunaire, Raiiven, Ephemus"),
  ("02_terres_de_polocendre","lava/arena_lava_01.webp",
@@ -53,7 +53,7 @@ def scene_background(fp,size,tint,portrait,seed):
         soft=bg.filter(ImageFilter.GaussianBlur(5))
         bg=Image.blend(bg,soft,.23)
     # Theme-specific screen color grade.
-    sheet=Image.new("RGBA",size,tint+(75 if tint[0]<50 else 37,))
+    sheet=Image.new("RGBA",size,tint+(124 if tint==(30,13,83) else 72 if tint[0]<50 else 37,))
     bg=Image.alpha_composite(bg,sheet)
     # Slight deep blue gradient behind the menu region, no text burned in.
     shade=Image.new("RGBA",size,(0,0,0,0))
