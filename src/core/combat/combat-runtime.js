@@ -882,7 +882,7 @@ export function createCombatRuntime({
     // been resolved independently. End the single paid action at its
     // natural deadline without adding a duplicate hit or a fake miss.
     if (record.multiTargetWave && (record.waveTargetsResolved.size > 0 ||
-        record.action.skill?.projectileTargeting === "stampede")) {
+        ["stampede","salvo"].includes(record.action.skill?.projectileTargeting))) {
       enterRecovery(record, {
         resolvedAtMs: record.action.impactAtMs,
         atNowMs
@@ -1417,7 +1417,7 @@ export function createCombatRuntime({
       sequence: sequence++,
       multiTargetWave:
         result.action.actionType === "skill" &&
-        (result.action.skill?.projectileTargeting === "stampede" ||
+        (["stampede","salvo"].includes(result.action.skill?.projectileTargeting) ||
           (enableExpandingWaveMultiTarget === true &&
           result.action.skill?.projectileTargeting === "expanding_wave")),
       waveTargetsResolved: new Set()
@@ -1976,16 +1976,21 @@ export function createCombatRuntime({
     }
     const stampede = record.action.skill?.projectileTargeting === "stampede"
       ? record.action.skill.stampede : null;
-    if (stampede) {
+    const salvo = record.action.skill?.projectileTargeting === "salvo"
+      ? record.action.skill.salvo : null;
+    const passes=stampede?.passes??salvo?.shots??1;
+    const passDurationMs=stampede?.passDurationMs??salvo?.shotDurationMs??0;
+    const gapMs=stampede?.gapMs??salvo?.gapMs??0;
+    if (stampede||salvo) {
       const elapsed = elapsedFor(record, current) - record.action.releaseAtMs;
-      const start = passIndex * (stampede.passDurationMs + stampede.gapMs);
-      if (!Number.isInteger(passIndex) || passIndex < 0 || passIndex >= stampede.passes ||
-          elapsed < start || elapsed > start + stampede.passDurationMs)
+      const start = passIndex * (passDurationMs + gapMs);
+      if (!Number.isInteger(passIndex) || passIndex < 0 || passIndex >= passes ||
+          elapsed < start || elapsed > start + passDurationMs)
         return Object.freeze({ok:false,outcome:"outside_pass"});
     } else if (passIndex !== 0) {
       return Object.freeze({ok:false,outcome:"invalid_pass"});
     }
-    const hitKey = stampede ? passIndex + ":" + targetId : targetId;
+    const hitKey = (stampede||salvo) ? passIndex + ":" + targetId : targetId;
     if (record.waveTargetsResolved.has(hitKey)) {
       return Object.freeze({ok:false,outcome:"already_contacted"});
     }
@@ -2005,7 +2010,7 @@ export function createCombatRuntime({
       travelMs: impactAtMs - record.action.releaseAtMs,
       impactAtMs
     });
-    const reaction = targetId === record.action.targetId && (!stampede || passIndex === 0)
+    const reaction = targetId === record.action.targetId && (!(stampede||salvo) || passIndex === 0)
       ? record.reaction ?? armedRechargeableReactionFor({record:{...record,reaction:null},action:aimedAction,impactAtMs})
       : armedRechargeableReactionFor({
           record: {...record, reaction:null},
@@ -2029,7 +2034,8 @@ export function createCombatRuntime({
       });
     }
     const presented = Object.freeze({...resolution,waveContact:true,
-      ...(stampede ? {stampedePassIndex:passIndex} : {})});
+      ...(stampede ? {stampedePassIndex:passIndex} : {}),
+      ...(salvo ? {salvoShotIndex:passIndex} : {})});
     onResolved(presented);
     emitStateIfChanged({force:true});
     return Object.freeze({
