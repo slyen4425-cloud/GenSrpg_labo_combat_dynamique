@@ -467,8 +467,8 @@ export function createCombatSession({
       action?.actionType !== "skill" ||
       !["expanding_wave", "stampede", "salvo"].includes(action.skill?.projectileTargeting) ||
       action.skill?.category !== "offensive" ||
-      sourceTeam == null || targetTeam == null ||
-      sourceTeam === targetTeam ||
+      (!legacySoloEnemy && (sourceTeam == null || targetTeam == null ||
+        sourceTeam === targetTeam)) ||
       !state.fighters[targetId] ||
       Number(state.fighters[targetId].hp) <= 0 ||
       // Global and reserve scopes would otherwise duplicate their effects.
