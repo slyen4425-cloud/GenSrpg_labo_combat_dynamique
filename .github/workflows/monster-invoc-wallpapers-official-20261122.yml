@@ -1,0 +1,28 @@
+name: Monster InvoC - backgrounds vrais modeles 20261122
+on:
+  push:
+    branches:
+      - work/monster-invoc-wallpapers-actual-creatures-20261122
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pillow
+        run: python -m pip install --disable-pip-version-check Pillow
+      - name: Build 6 wallpapers from canonical global-assets
+        run: python tools/generate_monster_invo_wallpapers_20261122.py
+      - name: Upload artifacts for user review only
+        uses: actions/upload-artifact@v4
+        with:
+          name: monster-invoc-3-fonds-vrais-modeles
+          path: _monster_invo_wallpaper_output/*
+          retention-days: 7
+          compression-level: 6
