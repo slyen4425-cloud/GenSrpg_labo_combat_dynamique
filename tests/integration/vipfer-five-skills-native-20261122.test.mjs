@@ -18,8 +18,8 @@ const fighter=(id)=>({id,maxHp:300,initialHp:300,maxEnergy:50,initialEnergy:50,
 const format=normalizeBattleFormatDefinition({id:"vipfer-native",localActorId:"a",
   teams:{p:["a"],e:["b"]},actors:["a","b"].map(id=>({actorId:id,teamId:id==="a"?"p":"e",
     creatureId:id,displayName:id,fighterConfigId:id,controllerId:"human-local"}))});
-function harness(){
- const session=createCombatSession({fighters:[fighter("a"),fighter("b")],battleFormat:format,distance:"medium"});
+function harness({withFormat=true}={}){
+ const session=createCombatSession({fighters:[fighter("a"),fighter("b")],...(withFormat?{battleFormat:format}:{}),distance:"medium"});
  let t=0,next=null;const events=[];
  const runtime=createCombatRuntime({session,now:()=>t,
    setTimer(fn){next=fn;return 1;},clearTimer(){},
@@ -90,6 +90,27 @@ test("Couronne d'éclats makes three independent authoritative hits and pays ene
   const slow=h.session.snapshot().fighters.b.statusEffects.filter(x=>x.definition.id==="vipfer-couronne-eclats:ralentissement");
   assert.equal(slow.length,1);
  }finally{h.runtime.dispose();}
+});
+
+test("Couronne resolves in the production format-less two-fighter solo session",()=>{
+ const h=harness({withFormat:false});try{
+   assert.equal(h.runtime.startSkill({actorId:"a",targetId:"b",skill:volley}).ok,true);
+   for(const [time,pass] of [[850,0],[1550,1],[2250,2]]){
+     h.advance(time);
+     assert.equal(h.runtime.reportExpandingWaveTargetContact({
+       actorId:"a",targetId:"b",skillId:volley.id,passIndex:pass}).ok,true);
+   }
+   assert.equal(h.session.snapshot().fighters.b.hp,264);
+   assert.equal(h.session.snapshot().fighters.a.energy,45);
+ }finally{h.runtime.dispose();}
+ // No battle format is only safe when exactly two actors exist.
+ const session=createCombatSession({fighters:["a","b","c","d"].map(fighter)});
+ const action=session.useSkill({actorId:"a",targetId:"b",skill:volley});
+ assert.equal(action.ok,true);
+ const invalid=session.completeExpandingWaveTarget({
+   action:action.action,targetId:"b"});
+ assert.equal(invalid.ok,false);
+ assert.equal(invalid.outcome,"invalid_wave_target");
 });
 
 test("Couronne accepts a late DOM-observed first or last salvo frame without inventing hits",()=>{
