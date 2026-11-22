@@ -986,7 +986,32 @@ export function createRosterSession({
     return Object.freeze({ ok: true, outcome: "no_roster_change" });
   }
 
+  // Count KO *creatures*, not only active BattleFormat slots. When a
+  // defeated ally is replaced its archived 0 HP remains with that one roster
+  // member, so the native allies_defeated gate stays unlocked correctly.
+  // Other allied active slots are included; the caster's current living
+  // creature is excluded. Read CombatSession for active HP, and the existing
+  // savedFighter for each reserve; never create an independent KO list.
+  function rosterDefeatCount(actorId, relation) {
+    if (relation !== "ally" && relation !== "enemy")
+      throw new RangeError("Unknown roster defeat relation");
+    const live = combatSession.snapshot().fighters;
+    let total = 0;
+    for (const team of teams.values()) {
+      if (relationToReserveTeam(actorId, team) !== relation) continue;
+      for (const member of team.members.values()) {
+        if (team.slotId === actorId && member.id === team.activeMemberId) continue;
+        const hp = member.id === team.activeMemberId
+          ? live[team.slotId]?.hp
+          : member.savedFighter?.hp;
+        const resolved = hp ?? member.fighterConfig.initialHp ?? member.fighterConfig.maxHp;
+        if (Number(resolved) <= 0) total++;
+      }
+    }
+    return total;
+  }
   combatSession.registerReserveSkillResolver(resolveReserveSkillEffectsV2);
+  combatSession.registerRosterDefeatCount?.(rosterDefeatCount);
 
   return Object.freeze({
     snapshot,

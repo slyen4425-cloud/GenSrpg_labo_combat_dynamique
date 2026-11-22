@@ -10,6 +10,11 @@ export function planSkillPreparationFx({
     Object.freeze({
       type: "cast",
       skillId: action.skill.id,
+      // A trail needs the PRE-CHARGE source/target coordinates. The renderer
+      // owns presentation geometry; effects and collision stay with Runtime.
+      ...((action.skill.effects ?? []).some(effect =>
+        effect.kind === "persistent_zone" && Number.isInteger(effect.trailIndex))
+        ? {trailPath: true, targetSlot: action.targetId} : {}),
       ...(action.skill.echoSourceSkillId ? {shadowEcho:true} : {}),
       actorSlot,
       ...(action.skill.channeling ? {holdUntilCancelled:true} : {}),

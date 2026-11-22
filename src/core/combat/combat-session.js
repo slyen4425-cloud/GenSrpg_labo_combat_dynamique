@@ -107,6 +107,21 @@ export function createCombatSession({
   // used in reserve cannot count as an attack actually received.
   function recordRosterSkillCommit(actorId,skill){return false;}
   let reserveSkillResolver = null;
+  let rosterDefeatCount = null;
+  function registerRosterDefeatCount(resolver) {
+    if (typeof resolver !== "function") throw new TypeError("Roster defeat resolver must be a function");
+    if (rosterDefeatCount !== null) return false;
+    rosterDefeatCount = resolver;
+    return true;
+  }
+  // All normal team relationships and targeting still come from the exact
+  // BattleFormat. Only the single native activation metric can read the
+  // official Roster's current member HP after an atomic KO replacement.
+  function formatForSkillActivation() {
+    return rosterDefeatCount && battleFormat
+      ? Object.freeze({...battleFormat, rosterDefeatCount})
+      : battleFormat;
+  }
   const hasReserveSplash = skill => skill?.effects?.some(effect => isReserveEffectTargetScopeV2(effect.targetScope)) === true;
   function registerReserveSkillResolver(resolver) {
     if (typeof resolver !== "function") throw new TypeError("Roster resolver must be a function");
@@ -198,7 +213,7 @@ export function createCombatSession({
       decoyId,
       skillSpeedMultiplier:
         normalizedSkillSpeedMultiplier,
-      battleFormat
+      battleFormat: formatForSkillActivation()
     });
   }
 
@@ -229,7 +244,7 @@ export function createCombatSession({
       decoyId,
       skillSpeedMultiplier:
         normalizedSkillSpeedMultiplier,
-      battleFormat
+      battleFormat: formatForSkillActivation()
     });
     if (result.ok) {
       state = result.state;
@@ -262,7 +277,7 @@ export function createCombatSession({
       elapsedMs,
       skillSpeedMultiplier:
         normalizedSkillSpeedMultiplier,
-      battleFormat
+      battleFormat: formatForSkillActivation()
     });
   }
 
@@ -367,7 +382,7 @@ export function createCombatSession({
       elapsedMs,
       skillSpeedMultiplier:
         normalizedSkillSpeedMultiplier,
-      battleFormat
+      battleFormat: formatForSkillActivation()
     });
     if (!reaction.ok) {
       return reaction;
@@ -731,6 +746,7 @@ export function createCombatSession({
     setMovementActiveV1,
     payChargedActivationEnergy,
     registerReserveSkillResolver,
+    registerRosterDefeatCount,
     previewMovement,
     previewSkill,
     previewCommand,
