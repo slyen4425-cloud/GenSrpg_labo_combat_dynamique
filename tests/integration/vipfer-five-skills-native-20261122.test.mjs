@@ -92,6 +92,29 @@ test("Couronne d'éclats makes three independent authoritative hits and pays ene
  }finally{h.runtime.dispose();}
 });
 
+test("Couronne accepts a late DOM-observed first or last salvo frame without inventing hits",()=>{
+ const first=harness();try{
+   assert.equal(first.runtime.startSkill({actorId:"a",targetId:"b",skill:volley}).ok,true);
+   first.advance(1252); // 2 ms beyond nominal first-pass travel, inside one sensor frame
+   assert.equal(first.runtime.reportExpandingWaveTargetContact({
+     actorId:"a",targetId:"b",skillId:volley.id,passIndex:0}).ok,true);
+   assert.equal(first.session.snapshot().fighters.b.hp,288);
+   assert.equal(first.runtime.reportExpandingWaveTargetContact({
+     actorId:"a",targetId:"b",skillId:volley.id,passIndex:0}).outcome,"already_contacted");
+ }finally{first.runtime.dispose();}
+ const last=harness();try{
+   assert.equal(last.runtime.startSkill({actorId:"a",targetId:"b",skill:volley}).ok,true);
+   last.advance(2660); // visual contact 10 ms after the authored last-shot end
+   assert.equal(last.runtime.reportExpandingWaveTargetContact({
+     actorId:"a",targetId:"b",skillId:volley.id,passIndex:2}).ok,true);
+   assert.equal(last.session.snapshot().fighters.b.hp,288);
+   last.advance(2700);
+   assert.equal(last.runtime.reportExpandingWaveTargetContact({
+     actorId:"a",targetId:"b",skillId:volley.id,passIndex:1}).ok,false);
+   assert.equal(last.session.snapshot().fighters.b.hp,288);
+ }finally{last.runtime.dispose();}
+});
+
 test("Broyeur serpentin starts after 30 seconds, pulses 10 every 500ms and stops on target HP damage",()=>{
  const h=harness();
  try{
