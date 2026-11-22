@@ -110,7 +110,7 @@
       "subjectId": "cap_fire_atk_5",
       "visual": {
         "icon": {
-          "assetId": "core:icon-skill-barrier-dome-01"
+          "assetId": "pack:capture:icon-skill-fireball-01"
         },
         "travel": {
           "assetId": "pack:capture:sprite-fire-bubble-expansion-01",
