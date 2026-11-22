@@ -1487,6 +1487,19 @@
             <p class="note">Le vrai lanceur participe visuellement à la charge ; les autres créatures sont des copies du même modèle de déplacement. Les dégâts par vague se règlent avec exactement un effet « Dégâts » ciblé dans Effets tactiques. Le temps de trajet total est calculé automatiquement à partir des vagues ; un seul moteur applique les contacts et les dégâts.</p>
           </details>
 
+        <details class="projectile-clash-config" data-skill-salvo-panel hidden>
+          <summary><strong>Salve de projectiles — réglages</strong></summary>
+          <div class="grid two">
+            <label>Nombre de tirs
+              <input type="number" min="2" max="6" step="1" value="3" data-skill-salvo-shots></label>
+            <label>Durée de chaque tir (ms)
+              <input type="number" min="200" max="5000" step="50" value="550" data-skill-salvo-shot-ms></label>
+            <label>Pause entre tirs (ms)
+              <input type="number" min="50" max="1500" step="50" value="150" data-skill-salvo-gap-ms></label>
+          </div>
+          <p class="note">Chaque projectile peut être esquivé séparément. Les dégâts et statuts viennent des Effets tactiques existants ; l’énergie se paie une seule fois. Le trajet total se calcule automatiquement, sans second moteur.</p>
+        </details>
+
         <details class="projectile-clash-config" aria-label="Attaque chargée" data-skill-charged-panel hidden>
           <summary><strong>Attaque chargée — réactiver avant le tir</strong></summary>
           <label class="switch-line"><input type="checkbox" data-skill-charged-enabled>
@@ -1565,6 +1578,9 @@
                 <input type="number" data-skill-contact-hold-duration min="0" max="120000" step="100" value="0">
               </label>
             </div>
+            <label class="switch-line"><input type="checkbox" data-skill-contact-hold-stop-target>
+              <span>Arrêter le maintien uniquement si la cible maintenue blesse réellement le lanceur</span>
+            </label>
             <p class="note">Les effets ci-dessous sont répétés à chaque pulsation pendant le contact. Ils sont indépendants des effets immédiats de la capacité ci-dessus.</p>
             <div class="skill-effects-list" data-skill-contact-hold-effects-host></div>
             <button type="button" class="secondary-action" data-skill-contact-hold-effect-add>
@@ -1765,6 +1781,7 @@
                   <option value="under_target">Sous la cible — pique de glace surgissante</option>
                   <option value="expanding_wave">Onde sphérique expansive (depuis la créature)</option>
                   <option value="stampede">Charge de troupeau — vagues de créatures</option>
+                  <option value="salvo">Salve de projectiles — tirs séparés</option>
                 </select>
               </label>
             </div>
