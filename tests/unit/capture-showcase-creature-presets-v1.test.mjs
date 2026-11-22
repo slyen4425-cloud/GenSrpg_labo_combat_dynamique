@@ -61,7 +61,9 @@ test("showcase preset catalog discovers authored transfer files without duplicat
       "data/capture/showcase/veuve-jaune.capture-creature-transfer-v1.json",
       "data/capture/showcase/Ephemus.capture-creature-transfer-v1.json",
       "data/capture/showcase/raiiven.capture-creature-transfer-v1.json",
-      "data/capture/showcase/Veldra_crea.capture-creature-transfer-v1.json"
+      "data/capture/showcase/Vipfer.capture-creature-transfer-v1.json",
+    "data/capture/showcase/polocendre.capture-creature-transfer-v1.json",
+    "data/capture/showcase/Veldra_crea.capture-creature-transfer-v1.json"
     ]
   );
 });

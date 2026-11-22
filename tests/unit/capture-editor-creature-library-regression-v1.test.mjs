@@ -180,8 +180,8 @@ test("real Human Editor startup data keeps historical creature library when auth
 
   assert.equal(
     configuredCreatures.size,
-    112,
-    "Preserve 102 historical creatures; add Loup, Kitsune, Gorice, Sylvorne, Sélachombre, Vyrâme, Veuve jaune, Ephemus, Veldra and Raiiven once each"
+    114,
+    "Preserve 102 historical creatures; add Loup, Kitsune, Gorice, Sylvorne, Sélachombre, Vyrâme, Veuve jaune, Ephemus, Veldra, Raiiven, Vipfer and Polocendre once each"
   );
   assert.equal(
     configuredCreatures.get("crea_maraileron")?.draft?.displayName,
@@ -213,6 +213,8 @@ test("real Human Editor startup data keeps historical creature library when auth
   assert.equal(configuredCreatures.get("Ephemus")?.draft?.displayName, "Ephemus");
   assert.equal(configuredCreatures.get("Veldra_crea")?.draft?.displayName, "Veldra");
   assert.equal(configuredCreatures.get("raiiven")?.draft?.displayName, "Raiiven");
+  assert.equal(configuredCreatures.get("Vipfer")?.draft?.displayName, "Vipfer");
+  assert.equal(configuredCreatures.get("polocendre")?.draft?.displayName, "Polocendre");
   assert.deepEqual(configuredCreatures.get("Ephemus")?.loadout?.slots?.map(s => s.skillId),["ephemus-poussiere-oubli","ephemus-battement-limbes","ephemus-chrysalide-fantome","ephemus-lanterne-ames","ephemus-danse-mille-ames"]);
   assert.deepEqual(configuredCreatures.get("Veldra_crea")?.loadout?.slots?.map(s => s.skillId),
     ["veldra-plume-solaire","veldra-percee-aurore","veldra-egide-zenith","veldra-rayon-cardinal","veldra-releve-celeste"]);
