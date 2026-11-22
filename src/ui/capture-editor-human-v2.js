@@ -450,6 +450,7 @@ function humanTacticalStatusToContractV1(
     if (status.contactDamage !== undefined) {
       output.contactDamage = finiteNumber(status.contactDamage, "Riposte de contact");
     }
+    if (status.consumeOnContact === true) output.consumeOnContact = true;
   }
 
   if (output.kind === "triggered_buff") {
@@ -2742,6 +2743,7 @@ export function humanSkillEditorFieldsFromDraftV1(
     chargedEffects: definition.chargedEffects ?? null,
     decoy: captureDecoySettingsFromDefinitionV1(definition),
     stampede: definition.stampede ?? null,
+    salvo: definition.salvo ?? null,
     echoCopy: definition.echoCopy == null ? null : {...definition.echoCopy,enabled:true},
     echoCopyable: definition.echoCopyable !== false,
     travelMs: definition.travelMs,
@@ -2796,7 +2798,8 @@ export function humanSkillEditorFieldsFromDraftV1(
       travelArrivalLayer: travel?.arrivalLayer ?? "same",
       travelTrajectoryMode: definition.projectileTargeting === "expanding_wave"
         ? "expanding_wave" : definition.projectileTargeting === "stampede"
-        ? "stampede" : travel?.trajectoryMode ?? "linear",
+        ? "stampede" : definition.projectileTargeting === "salvo"
+        ? "salvo" : travel?.trajectoryMode ?? "linear",
       groundMotion: travel?.groundMotion ?? (travel?.trajectoryMode==="under_target"?"rise":"fixed"),
       groundOffsetXPx: travel?.groundOffsetXPx ?? 0,
       groundOffsetYPx: travel?.groundOffsetYPx ?? 0,
@@ -3011,6 +3014,8 @@ export function buildHumanSkillDraftV1(fields) {
   const projectileClash = fields.projectileClash ?? {};
   const isStampede=fields.form==="projectile" &&
     fields.presentation?.travelTrajectoryMode==="stampede";
+  const isSalvo=fields.form==="projectile" &&
+    fields.presentation?.travelTrajectoryMode==="salvo";
   const hasEffects=Object.prototype.hasOwnProperty.call(fields,"effects");
   // Decoys have their own canonical status contract (retaliation and clock).
   // Do not pass these through the legacy generic status-row serializer:
@@ -3059,6 +3064,7 @@ export function buildHumanSkillDraftV1(fields) {
       // other projectiles remain direct. Combat Rules reads only this definition.
       projectileTargeting:
         fields.form !== "projectile" ? "direct"
+          : isSalvo ? "salvo"
           : fields.presentation?.travelTrajectoryMode === "stampede"
             ? "stampede"
           : fields.presentation?.travelTrajectoryMode === "expanding_wave"
@@ -3084,6 +3090,11 @@ export function buildHumanSkillDraftV1(fields) {
         passDurationMs:Number(fields.stampede?.passDurationMs),
         gapMs:Number(fields.stampede?.gapMs),
         cloneCount:Number(fields.stampede?.cloneCount)
+      }} : {}),
+      ...(isSalvo ? {salvo:{
+        shots:positiveInteger(fields.salvo?.shots,"Nombre de tirs de salve"),
+        shotDurationMs:finiteNumber(fields.salvo?.shotDurationMs,"Durée d'un tir"),
+        gapMs:finiteNumber(fields.salvo?.gapMs,"Pause entre tirs")
       }} : {}),
       ...(fields.decoy?.enabled===true ? {decoyFormation:{
         reshuffleMs:Number(fields.decoy.reshuffleMs),
@@ -3115,6 +3126,7 @@ export function buildHumanSkillDraftV1(fields) {
         contactHold: {
           tickIntervalMs: finiteNumber(fields.contactHold.tickIntervalMs, "Intervalle maintien au contact"),
           maxDurationMs: finiteNumber(fields.contactHold.maxDurationMs ?? 0, "Durée maximale au contact"),
+          stopOnDamageFromTarget: fields.contactHold.stopOnDamageFromTarget === true,
           effects: buildHumanTacticalSkillEffectsV1(fields.contactHold.effects ?? [], {
             defaultDamageChannel: fields.element ?? null
           })
@@ -3154,10 +3166,10 @@ export function buildHumanSkillDraftV1(fields) {
         potencyIncreasePct:finiteNumber(fields.chargedEffects.potencyIncreasePct,"Puissance des effets par charge"),
         sizeIncreasePct:finiteNumber(fields.chargedEffects.sizeIncreasePct,"Taille du cast par charge")
       }}),
-      travelMs: isStampede ? stampedeTravelMsV1(fields.stampede) : finiteNumber(
-        fields.travelMs,
-        "Temps pour atteindre la cible"
-      ),
+      travelMs: isStampede ? stampedeTravelMsV1(fields.stampede)
+        : isSalvo ? Number(fields.salvo?.shots)*Number(fields.salvo?.shotDurationMs)+
+            (Number(fields.salvo?.shots)-1)*Number(fields.salvo?.gapMs))
+        : finiteNumber(fields.travelMs,"Temps pour atteindre la cible"),
       recoveryMs: finiteNumber(
         fields.recoveryMs,
         "Temps de récupération"
@@ -3726,6 +3738,8 @@ function writeHumanContactHoldFieldsV1(root, hold, statRegistry = null, statusVi
   one(root, "[data-skill-contact-hold-settings]").hidden = hold === null || hold === undefined;
   one(root, "[data-skill-contact-hold-interval]").value = String(hold?.tickIntervalMs ?? 1000);
   one(root, "[data-skill-contact-hold-duration]").value = String(hold?.maxDurationMs ?? 0);
+  one(root, "[data-skill-contact-hold-stop-target]").checked =
+    hold?.stopOnDamageFromTarget === true;
   renderHumanSkillEffectsV1(root, hold?.effects ?? [], statRegistry, statusVisuals,
     "[data-skill-contact-hold-effects-host]");
 }
@@ -3838,15 +3852,26 @@ function syncSkillIllusionHerdControlsV1(root){
   const panel=root.querySelector("[data-skill-stampede-panel]");
   const selected=root.querySelector("[data-skill-effect-add-kind]")?.value==="stampede";
   if(panel)panel.hidden=!(stampede && selected);
+  const salvo=root.querySelector("[data-skill-form]")?.value==="projectile" &&
+    root.querySelector("[data-skill-trajectory-mode]")?.value==="salvo";
+  const salvoPanel=root.querySelector("[data-skill-salvo-panel]");
+  if(salvoPanel)salvoPanel.hidden=!salvo;
   const travel=root.querySelector("[data-skill-travel-time]");
   if(travel){
-    travel.readOnly=stampede;
+    travel.readOnly=stampede||salvo;
     if(stampede){
       const count=Number(root.querySelector("[data-skill-stampede-passes]")?.value),
         duration=Number(root.querySelector("[data-skill-stampede-pass-ms]")?.value),
         gap=Number(root.querySelector("[data-skill-stampede-gap-ms]")?.value);
       if(Number.isInteger(count)&&count>=2&&Number.isFinite(duration)&&duration>0&&
           Number.isFinite(gap)&&gap>0)travel.value=String(count*duration+(count-1)*gap);
+    }
+    if(salvo){
+      const count=Number(root.querySelector("[data-skill-salvo-shots]")?.value),
+        duration=Number(root.querySelector("[data-skill-salvo-shot-ms]")?.value),
+        gap=Number(root.querySelector("[data-skill-salvo-gap-ms]")?.value);
+      if(Number.isInteger(count)&&count>=2&&Number.isFinite(duration)&&duration>=200&&
+          Number.isFinite(gap)&&gap>=50)travel.value=String(count*duration+(count-1)*gap);
     }
   }
 }
@@ -3974,6 +3999,9 @@ function writeSkillDraftFields(
     ["[data-skill-stampede-passes]",fields.stampede?.passes??3],
     ["[data-skill-stampede-pass-ms]",fields.stampede?.passDurationMs??1800],
     ["[data-skill-stampede-gap-ms]",fields.stampede?.gapMs??600],
+    ["[data-skill-salvo-shots]",fields.salvo?.shots??3],
+    ["[data-skill-salvo-shot-ms]",fields.salvo?.shotDurationMs??550],
+    ["[data-skill-salvo-gap-ms]",fields.salvo?.gapMs??150],
     ["[data-skill-decoy-count]",fields.decoy.count],
     ["[data-skill-decoy-duration]",fields.decoy.durationMs/1000],
     ["[data-skill-decoy-retaliation]",fields.decoy.retaliationDamage],
@@ -4206,6 +4234,9 @@ function prepareNewSkillDraftFields(
     ["[data-skill-stampede-passes]",3],
     ["[data-skill-stampede-pass-ms]",1800],
     ["[data-skill-stampede-gap-ms]",600],
+    ["[data-skill-salvo-shots]",3],
+    ["[data-skill-salvo-shot-ms]",550],
+    ["[data-skill-salvo-gap-ms]",150],
     ["[data-skill-decoy-count]",2],
     ["[data-skill-decoy-duration]",20],
     ["[data-skill-decoy-retaliation]",10],
@@ -5417,6 +5448,16 @@ function appendReflectionAuthorControlsV1(host, status, group) {
     "Armure de pointes : dégâts fixes sur coup de contact touchant (même avec bouclier)",
     fixed
   ));
+  const once = document.createElement("input");
+  once.type = "checkbox";
+  once.dataset.reflectionConsumeOnContact = "true";
+  once.checked = status.consumeOnContact === true;
+  const onceLabel = document.createElement("label");
+  onceLabel.className = "check";
+  onceLabel.append(once, document.createTextNode(
+    "Riposte unique : consommer ce statut au premier contact admissible"
+  ));
+  section.append(onceLabel);
   const hint = document.createElement("small");
   hint.className = "note";
   hint.textContent = "Le pourcentage dépend des PV réellement perdus ; la riposte fixe exige un coup de corps à corps effectivement touchant. Une zone au déclenchement « entrée uniquement » se configure séparément dans Effet de zone.";
@@ -5440,6 +5481,8 @@ function readReflectionAuthorControlsV1(section, status) {
   }
   const fixed = Number(section.querySelector("[data-reflection-contact-damage]")?.value ?? 0);
   if (fixed > 0) status.contactDamage = fixed;
+  if(section.querySelector("[data-reflection-consume-on-contact]")?.checked === true)
+    status.consumeOnContact = true;
 }
 
 const STACK_THRESHOLD_EFFECT_KINDS_V1 = Object.freeze([
@@ -9979,6 +10022,8 @@ function readSkillFields(root) {
       ? {
           tickIntervalMs: numericValue(root, "[data-skill-contact-hold-interval]"),
           maxDurationMs: numericValue(root, "[data-skill-contact-hold-duration]"),
+          stopOnDamageFromTarget:
+            one(root, "[data-skill-contact-hold-stop-target]").checked,
           effects: readHumanSkillEffectsV1(root, "[data-skill-contact-hold-effects-host]")
         }
       : null,
@@ -10070,6 +10115,11 @@ function readSkillFields(root) {
       passDurationMs:numericValue(root,"[data-skill-stampede-pass-ms]"),
       gapMs:numericValue(root,"[data-skill-stampede-gap-ms]"),
       cloneCount:numericValue(root,"[data-skill-stampede-clones]")
+    },
+    salvo:{
+      shots:numericValue(root,"[data-skill-salvo-shots]"),
+      shotDurationMs:numericValue(root,"[data-skill-salvo-shot-ms]"),
+      gapMs:numericValue(root,"[data-skill-salvo-gap-ms]")
     },
     effects: readHumanSkillEffectsV1(root),
     reaction: {
@@ -11227,6 +11277,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   });
   for(const key of ["passes","pass-ms","gap-ms"]){
     listen(one(root,"[data-skill-stampede-"+key+"]"),"input",()=>
+      syncSkillIllusionHerdControlsV1(root));
+  }
+  for(const key of ["shots","shot-ms","gap-ms"]){
+    listen(one(root,"[data-skill-salvo-"+key+"]"),"input",()=>
       syncSkillIllusionHerdControlsV1(root));
   }
   syncSkillIllusionHerdControlsV1(root);
