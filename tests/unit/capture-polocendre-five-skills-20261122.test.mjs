@@ -43,7 +43,7 @@ test("Charge: level 1, physical 10, Embrasement 5% each/5 cap/15 seconds and 8-s
  equal(buff.kind,"apply_status");equal(buff.targetScope,"self");
  equal(buff.status.kind,"outgoing_damage_modifier");equal(buff.status.modifierPct,5);
  equal(buff.status.durationMs,15000);equal(buff.status.maxStacks,5);
- let state=createCombatState({fighters:[{id:"player",maxHp:100,initialHp:100},{id:"enemy",maxHp:100,initialHp:100}]});
+ let state=createCombatState({fighters:[{id:"player",maxHp:100,maxEnergy:10,initialEnergy:10,initialHp:100},{id:"enemy",maxHp:100,maxEnergy:10,initialEnergy:10,initialHp:100}]});
  const result=()=>computeCombatDamageV1({state,attackerId:"player",targetId:"enemy",baseDamage:100,channel:"fire"});
  equal(result().damage,100);
  for(let i=1;i<=6;i++){
@@ -106,8 +106,8 @@ test("Ruée explosive: slow ground charge, one KO ally gate, 60 active / 40 to e
  equal(official[4].draft.presentation.visual.impact.assetId,"pack:capture:sprite-fluide-meteorite-impact-01");
  const format={actors:[{actorId:"p"},{actorId:"ally"},{actorId:"enemy"}],
   teamOf(id){return id==="p"||id==="ally"?"good":"evil"}};
- const state=hp=>createCombatState({fighters:[{id:"p",maxHp:100,initialHp:100},
-  {id:"ally",maxHp:100,initialHp:hp},{id:"enemy",maxHp:100,initialHp:100}]});
+ const state=hp=>createCombatState({fighters:[{id:"p",maxHp:100,maxEnergy:10,initialEnergy:10,initialHp:100},
+  {id:"ally",maxHp:100,maxEnergy:10,initialEnergy:10,initialHp:hp},{id:"enemy",maxHp:100,maxEnergy:10,initialEnergy:10,initialHp:100}]});
  equal(evaluateSkillActivationRequirementsV1({state:state(1),actorId:"p",skill:s,battleFormat:format}).satisfied,false);
  equal(evaluateSkillActivationRequirementsV1({state:state(0),actorId:"p",skill:s,battleFormat:format}).satisfied,true);
 });
