@@ -74,7 +74,26 @@ document.addEventListener("DOMContentLoaded",()=>{
    open("vipfer-broyeur-serpentin");
    check(one("[data-skill-contact-hold-stop-target]")?.checked,
       "attributed ultimate release lost after real save/reload");
-   document.body.dataset.vipferEditorSmoke="pass:salvo:unique-riposte:target-hold:save-reload";
+   open("polocendre-trainee-feu");
+   const authoredZones=[...document.querySelectorAll(
+     "[data-skill-effects-host] [data-skill-effect-row]"
+   )].filter(row=>row.querySelector("[data-skill-effect-kind]")?.value==="persistent_zone");
+   check(authoredZones.length===3,"Polocendre must expose three separate authored fire zones");
+   check(authoredZones.every((row,i)=>row.querySelector("[data-skill-zone-trail-enabled]")?.checked &&
+     Number(row.querySelector("[data-skill-zone-trail-index]")?.value)===i+1 &&
+     Number(row.querySelector("[data-skill-zone-trail-count]")?.value)===3),
+     "Polocendre trail placement cannot be edited or was lost on open");
+   save();
+   open("polocendre-trainee-feu");
+   const reloadedZones=[...document.querySelectorAll(
+     "[data-skill-effects-host] [data-skill-effect-row]"
+   )].filter(row=>row.querySelector("[data-skill-effect-kind]")?.value==="persistent_zone");
+   check(reloadedZones.length===3 && reloadedZones.every((row,i)=>
+      row.querySelector("[data-skill-zone-trail-enabled]")?.checked &&
+      Number(row.querySelector("[data-skill-zone-trail-index]")?.value)===i+1 &&
+      Number(row.querySelector("[data-skill-zone-trail-count]")?.value)===3),
+      "Polocendre trail metadata lost after real native save/reload");
+   document.body.dataset.vipferEditorSmoke="pass:salvo:unique-riposte:target-hold:trail-zones:save-reload";
   }catch(e){document.body.dataset.vipferEditorSmoke="fail:"+String(e.stack||e);}
  },1000);
 });
