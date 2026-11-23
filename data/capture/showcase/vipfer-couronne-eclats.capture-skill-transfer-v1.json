@@ -105,10 +105,10 @@
       "subjectId": "vipfer-couronne-eclats",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-lame-acier-01"
+          "assetId": "pack:capture:icon-skill-vipfer-couronne-eclats-v1"
         },
         "travel": {
-          "assetId": "pack:capture:sprite-steel-wing-projectile-01",
+          "assetId": "pack:capture:sprite-skill-vipfer-couronne-eclats-v1",
           "displayScale": 1.5,
           "displayScaleX": 1,
           "displayScaleY": 1,
@@ -117,31 +117,14 @@
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "travel-start",
-          "playbackMode": "loop",
+          "playbackMode": "stretch",
           "rotationDeg": 0,
           "opacity": 1,
           "layerByView": {
             "player": "front",
             "opponent": "front"
-          }
-        },
-        "impact": {
-          "assetId": "pack:capture:sprite-steel-wing-impact-01",
-          "displayScale": 1.2,
-          "displayScaleX": 1,
-          "displayScaleY": 1,
-          "attachment": "fixed-target",
-          "anchor": null,
-          "offsetX": 0,
-          "offsetY": 0,
-          "trigger": "impact",
-          "playbackMode": "once",
-          "rotationDeg": 0,
-          "opacity": 1,
-          "layerByView": {
-            "player": "front",
-            "opponent": "front"
-          }
+          },
+          "durationMs": 550
         }
       },
       "audio": {},
