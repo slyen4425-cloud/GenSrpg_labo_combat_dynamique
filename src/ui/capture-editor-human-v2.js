@@ -596,6 +596,10 @@ export function buildHumanTacticalSkillEffectsV1(
           "Activations max de zone"
         ),
         radiusGrowthSteps,
+        ...(effect.trailIndex != null || effect.trailCount != null ? {
+          trailIndex:positiveInteger(effect.trailIndex,"Position de la zone sur le trajet"),
+          trailCount:positiveInteger(effect.trailCount,"Nombre total de zones sur le trajet")
+        } : {}),
         ...(effect.damageTrigger !== undefined ? {damageTrigger:effect.damageTrigger} : {}),
         ...(effect.persistAfterRecall === true ? {persistAfterRecall:true} : {}),
         ...(tickEffect.kind === "apply_status"
@@ -7012,6 +7016,28 @@ function appendHumanSkillEffectV1(
     );
   }
 
+  // Optional generic trail placement: any skill may place several separate
+  // zones on its own movement path; never infer a fixed count from a creature.
+  const zoneTrailEnabled=document.createElement("input");
+  zoneTrailEnabled.type="checkbox";
+  zoneTrailEnabled.dataset.skillZoneTrailEnabled="true";
+  zoneTrailEnabled.checked=effect?.trailIndex!=null || effect?.trailCount!=null;
+  const zoneTrailIndex=tacticalNumberInputV1("skillZoneTrailIndex",
+    effect?.trailIndex??1,{min:1,max:5,step:"1"});
+  const zoneTrailCount=tacticalNumberInputV1("skillZoneTrailCount",
+    effect?.trailCount??1,{min:1,max:5,step:"1"});
+  const zoneTrailFields=document.createElement("div");
+  zoneTrailFields.className="skill-status-config__grid";
+  zoneTrailFields.dataset.skillZoneTrailFields="true";
+  zoneTrailFields.append(
+    tacticalFieldV1("Position de cette zone sur le trajet",zoneTrailIndex),
+    tacticalFieldV1("Nombre de zones réparties sur le trajet",zoneTrailCount)
+  );
+  zoneTrailFields.hidden=!zoneTrailEnabled.checked;
+  zoneTrailEnabled.addEventListener("change",()=>{
+    zoneTrailFields.hidden=!zoneTrailEnabled.checked;
+  });
+
   const zoneDuration =
     tacticalNumberInputV1(
       "skillZoneDurationSeconds",
@@ -7229,6 +7255,7 @@ function appendHumanSkillEffectV1(
     "skill-status-config__grid";
   zoneGrid.append(
     zoneId,
+    tacticalFieldV1("Placer cette zone le long d'un trajet",zoneTrailEnabled),
     tacticalFieldV1(
       "Rayon initial",
       zoneRadius
@@ -7261,7 +7288,7 @@ function appendHumanSkillEffectV1(
   zoneNote.textContent =
     "Toute réactivation renouvelle la durée et peut éventuellement agrandir le rayon. La zone contient directement son effet : inutile d’ajouter un buff indépendant. Les champs des dégâts ou du statut apparaissent selon « Effet appliqué ». Le mode « Dans la zone » retire le statut à la sortie ; « À l’entrée » laisse sa durée normale après sortie. La persistance après rappel n’est disponible que pour les zones à statut. La zone suit sa créature : pour une zone fixe en taille, choisir « Garder la même taille » et croissance 0. Le mode « Marqueurs » pose des charges uniquement à l’entrée réelle et conserve la durée propre des marqueurs après la sortie.";
 
-  zoneBox.append(zoneGrid,zoneDamageBox,zoneStatusConfig,zoneMarkerBox,zoneNote);
+  zoneBox.append(zoneGrid,zoneTrailFields,zoneDamageBox,zoneStatusConfig,zoneMarkerBox,zoneNote);
 
   config.append(
     relayBox,
@@ -7527,6 +7554,10 @@ function readHumanSkillEffectsV1(root, hostSelector = "[data-skill-effects-host]
             marker:captureMarkerDefinitionV1(root,row.querySelector("[data-skill-zone-marker-pick]").value),
             charges:Number(row.querySelector("[data-skill-zone-marker-charges]").value)}
         }:{}),
+        ...(row.querySelector("[data-skill-zone-trail-enabled]")?.checked ? {
+          trailIndex:Number(row.querySelector("[data-skill-zone-trail-index]").value),
+          trailCount:Number(row.querySelector("[data-skill-zone-trail-count]").value)
+        } : {}),
         zoneId: row.querySelector(
           "[data-skill-zone-id]"
         ).value,

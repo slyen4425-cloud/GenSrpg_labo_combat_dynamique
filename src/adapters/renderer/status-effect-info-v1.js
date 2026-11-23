@@ -435,11 +435,17 @@ function effectLinesFor(
       ]);
     }
 
-    case "damage_reflection":
-      return Object.freeze([
+    case "damage_reflection": {
+      const lines=[];
+      if(definition.percent>0)lines.push(
         compactNumber(definition.percent * instance.stacks) +
-          " % des dégâts subis renvoyés à l’attaquant"
-      ]);
+          " % des dégâts subis renvoyés à l’attaquant");
+      if(definition.contactDamage>0)lines.push(
+        "Riposte de "+compactNumber(definition.contactDamage)+
+        " dégâts fixes au contact"+
+        (definition.consumeOnContact?" (une seule fois)":""));
+      return Object.freeze(lines.length?lines:["Aucun dégât renvoyé"]);
+    }
 
     case "shield":
       return Object.freeze([
