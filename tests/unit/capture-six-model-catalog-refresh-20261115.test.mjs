@@ -2,14 +2,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js";
-test("one canonical global-assets owner uses refreshed cache revision for published Raiiven, FX and fire horse media",()=>{
+test("one canonical global-assets owner refreshes the Vipfer media revision without breaking earlier published species",()=>{
  const src=readFileSync(new URL("../../src/assets/global-visual-library.js",import.meta.url),"utf8");
- assert.match(src,/2026-11-21-v70-raiiven-skills-25-media-fire-horse/);
+ assert.match(src,/2026-11-23-v71-vipfer-5-icons-3-6f-sprites/);
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
- assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-11-21-v70-raiiven-skills-25-media-fire-horse");
- assert.match(GLOBAL_VISUAL_LIBRARY.catalogUrl,/global-visual-assets\.v1\.json\?v=2026-11-21-v70-raiiven-skills-25-media-fire-horse$/);
+ assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-11-23-v71-vipfer-5-icons-3-6f-sprites");
+ assert.match(GLOBAL_VISUAL_LIBRARY.catalogUrl,/global-visual-assets\.v1\.json\?v=2026-11-23-v71-vipfer-5-icons-3-6f-sprites$/);
  const sprite=globalVisualAssetUrl("capture/creatures/vipfer/runtime/vipfer_face.png");
- assert.ok(sprite.endsWith("?v=2026-11-21-v70-raiiven-skills-25-media-fire-horse"));
+ assert.ok(sprite.endsWith("?v=2026-11-23-v71-vipfer-5-icons-3-6f-sprites"));
  assert.ok(sprite.includes("/global-assets/assets/library/"));
  const veuveIcon=globalVisualAssetUrl("capture/icons/skills/veuve_jaune/toile-paralysante.webp");
  assert.ok(veuveIcon.includes("/global-assets/assets/library/capture/icons/skills/veuve_jaune/"));
