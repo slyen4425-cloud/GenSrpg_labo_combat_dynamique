@@ -35,4 +35,7 @@ jobs:
                   if raw.startswith(b'\x89PNG') and len(raw)>24: dims=str(struct.unpack('>II',raw[16:24]))
                   if raw.startswith(b'RIFF') and raw[8:12]==b'WEBP': dims='webp'
                   print('ENTRY',repr(n.filename),'BYTES',len(raw),'SIG',sig,'DIMS',dims,'SHA256',hashlib.sha256(raw).hexdigest())
+              for doc in ('README_A_LIRE.txt','manifest.json'):
+                  print('DOCUMENT',doc)
+                  print(z.read(doc).decode('utf-8'))
           PY
