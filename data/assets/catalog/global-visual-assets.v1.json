@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 495,
-    "icons": 212,
-    "sprites": 250,
+    "assets": 503,
+    "icons": 217,
+    "sprites": 253,
     "fx": 2,
     "portraits": 26,
     "backgrounds": 5,
@@ -16817,6 +16817,269 @@
       "resource": {
         "file": "capture/creatures/cheval-de-feu/runtime/icone.png",
         "mime": "image/png"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-vipfer-morsure-ressort-v1",
+      "label": "Morsure à ressort",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "vipfer",
+        "skill",
+        "steel",
+        "author-upload"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / sélection de l’auteur, ZIP conservé du 22 novembre 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/vipfer/vipfer-morsure-ressort.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-vipfer-etreinte-acier-v1",
+      "label": "Étreinte d’acier",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "vipfer",
+        "skill",
+        "steel",
+        "author-upload"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / sélection de l’auteur, ZIP conservé du 22 novembre 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/vipfer/vipfer-etreinte-acier.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-vipfer-mue-tranchante-v1",
+      "label": "Mue tranchante",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "vipfer",
+        "skill",
+        "steel",
+        "author-upload"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / sélection de l’auteur, ZIP conservé du 22 novembre 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/vipfer/vipfer-mue-tranchante.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-vipfer-couronne-eclats-v1",
+      "label": "Couronne d’éclats",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "vipfer",
+        "skill",
+        "steel",
+        "author-upload"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / sélection de l’auteur, ZIP conservé du 22 novembre 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/vipfer/vipfer-couronne-eclats.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:icon-skill-vipfer-broyeur-serpentin-v1",
+      "label": "Broyeur serpentin",
+      "assetType": "icon",
+      "mediaType": "image",
+      "category": "skill",
+      "tags": [
+        "capture",
+        "vipfer",
+        "skill",
+        "steel",
+        "author-upload"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / sélection de l’auteur, ZIP conservé du 22 novembre 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/icons/skills/vipfer/vipfer-broyeur-serpentin.webp",
+        "mime": "image/webp"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-vipfer-morsure-ressort-v1",
+      "label": "Morsure à ressort — 6 images",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "impact",
+      "tags": [
+        "capture",
+        "vipfer",
+        "skill",
+        "steel",
+        "impact",
+        "author-upload"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / sélection de l’auteur, ZIP conservé du 22 novembre 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/vipfer/vipfer-morsure-ressort.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 6,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-vipfer-mue-tranchante-v1",
+      "label": "Mue tranchante — 6 images",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "release",
+      "tags": [
+        "capture",
+        "vipfer",
+        "skill",
+        "steel",
+        "release",
+        "author-upload"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / sélection de l’auteur, ZIP conservé du 22 novembre 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/vipfer/vipfer-mue-tranchante.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 6,
+        "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:sprite-skill-vipfer-couronne-eclats-v1",
+      "label": "Couronne d’éclats — 6 images",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "travel",
+      "tags": [
+        "capture",
+        "vipfer",
+        "skill",
+        "steel",
+        "travel",
+        "author-upload"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / sélection de l’auteur, ZIP conservé du 22 novembre 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/sprites/skills/vipfer/vipfer-couronne-eclats.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 6,
+        "frameMs": 120,
+        "playbackMode": "once"
       },
       "compatibility": {
         "uses": [

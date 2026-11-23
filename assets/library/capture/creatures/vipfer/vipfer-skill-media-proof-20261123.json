@@ -1,0 +1,92 @@
+{
+  "status": "imported_to_work_branch_pending_renderer_validation",
+  "sourceArchive": "assets/library/capture/creatures/vipfer/Vipfer_5_icones_3_sprites_conserves_SANS_etreinte_20261122.zip",
+  "sourceSha256": "0edc4481bc8aedf71cdbc43e227f87e1bd6438d68fb35935f66e8088e68e61cc",
+  "originalZIPPreserved": true,
+  "assetIds": [
+    "pack:capture:icon-skill-vipfer-morsure-ressort-v1",
+    "pack:capture:icon-skill-vipfer-etreinte-acier-v1",
+    "pack:capture:icon-skill-vipfer-mue-tranchante-v1",
+    "pack:capture:icon-skill-vipfer-couronne-eclats-v1",
+    "pack:capture:icon-skill-vipfer-broyeur-serpentin-v1",
+    "pack:capture:sprite-skill-vipfer-morsure-ressort-v1",
+    "pack:capture:sprite-skill-vipfer-mue-tranchante-v1",
+    "pack:capture:sprite-skill-vipfer-couronne-eclats-v1"
+  ],
+  "files": [
+    {
+      "sourceMember": "icones/128_webp/icon_skill_vipfer_morsure_a_ressort.webp",
+      "path": "assets/library/capture/icons/skills/vipfer/vipfer-morsure-ressort.webp",
+      "sha256": "c26674c48801bf6ed14c28cf0d123d84d872d34293d9a39546291b6736f22b51",
+      "bytes": 2614
+    },
+    {
+      "sourceMember": "icones/128_webp/icon_skill_vipfer_etreinte_d_acier.webp",
+      "path": "assets/library/capture/icons/skills/vipfer/vipfer-etreinte-acier.webp",
+      "sha256": "efb2721b6cf5ec5492b43c4b30ed203e1bb2a774a4e6cdfa047bd017e65f619b",
+      "bytes": 2500
+    },
+    {
+      "sourceMember": "icones/128_webp/icon_skill_vipfer_mue_tranchante.webp",
+      "path": "assets/library/capture/icons/skills/vipfer/vipfer-mue-tranchante.webp",
+      "sha256": "022d9e0756e630af27110709ef168dba2673034cec9bec9c4c8f30652a18881e",
+      "bytes": 2364
+    },
+    {
+      "sourceMember": "icones/128_webp/icon_skill_vipfer_couronne_d_eclats.webp",
+      "path": "assets/library/capture/icons/skills/vipfer/vipfer-couronne-eclats.webp",
+      "sha256": "4a4e6c3059a3c089230e9ce68147c49bc31b7876586ef7ebdc8afcc0673fabeb",
+      "bytes": 2264
+    },
+    {
+      "sourceMember": "icones/128_webp/icon_skill_vipfer_broyeur_serpentin.webp",
+      "path": "assets/library/capture/icons/skills/vipfer/vipfer-broyeur-serpentin.webp",
+      "sha256": "fedd54b8214087f824ce4783394c6bf6ba495feb45e358b521132fcb0ed6675c",
+      "bytes": 2638
+    },
+    {
+      "sourceMember": "sprites/morsure_a_ressort/atlas/morsure_a_ressort_6f_512_lossless.webp",
+      "path": "assets/library/capture/sprites/skills/vipfer/vipfer-morsure-ressort.webp",
+      "sha256": "eea3d98a89352e0f2252bfa395e791241a2fcbebf561c60b22d3861d480d85fd",
+      "bytes": 1082862
+    },
+    {
+      "sourceMember": "sprites/morsure_a_ressort/preview/morsure_a_ressort_6f.gif",
+      "path": "assets/library/capture/creatures/vipfer/previews/skills/vipfer-morsure-ressort.gif",
+      "sha256": "a2d76ef99d65cb46df068a6d00db1622a178905663ca8c94bcd80d00c42b4738",
+      "bytes": 161951,
+      "previewOnly": true
+    },
+    {
+      "sourceMember": "sprites/mue_tranchante/atlas/mue_tranchante_6f_512_lossless.webp",
+      "path": "assets/library/capture/sprites/skills/vipfer/vipfer-mue-tranchante.webp",
+      "sha256": "d7c106fb8aac96b31cde01b0feb9065dd6ecdd71029c147753cb80780f117ed1",
+      "bytes": 1241278
+    },
+    {
+      "sourceMember": "sprites/mue_tranchante/preview/mue_tranchante_6f.gif",
+      "path": "assets/library/capture/creatures/vipfer/previews/skills/vipfer-mue-tranchante.gif",
+      "sha256": "2d471effe0472fd8b004f5e71f52322f1e894a39153a42d178a9c242ec18a81f",
+      "bytes": 189774,
+      "previewOnly": true
+    },
+    {
+      "sourceMember": "sprites/couronne_d_eclats/atlas/couronne_d_eclats_6f_512_lossless.webp",
+      "path": "assets/library/capture/sprites/skills/vipfer/vipfer-couronne-eclats.webp",
+      "sha256": "6ecf9fd6673cc11335cfbb2f74597e34f81fd8ccf4945f469827397a4934a23c",
+      "bytes": 937478
+    },
+    {
+      "sourceMember": "sprites/couronne_d_eclats/preview/couronne_d_eclats_6f.gif",
+      "path": "assets/library/capture/creatures/vipfer/previews/skills/vipfer-couronne-eclats.gif",
+      "sha256": "81000106cdb02dbb49e213b93c44d54d7a2f10bf946391e14d010f5ff9a458a2",
+      "bytes": 131100,
+      "previewOnly": true
+    }
+  ],
+  "excludedEffects": [
+    "vipfer-etreinte-acier",
+    "vipfer-broyeur-serpentin"
+  ],
+  "notes": "Sprites Étreinte et Broyeur absents du paquet auteur; ne pas substituer des silhouettes."
+}
