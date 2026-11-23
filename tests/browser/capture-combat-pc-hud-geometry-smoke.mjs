@@ -64,7 +64,16 @@ const browserScript = [
   'bench.open=false;',
   'box.enemyName=firstEnemyTitle;box.enemyNameB=secondEnemyTitle;',
   'box.reserveTab=reserveTab;box.reservePopup=reservePopup;',
+  'const abilityTab=arena.querySelector(".combat-test-enemy-skills > summary");',
+  'if(!abilityTab)throw Error("Native opponent skill viewer absent");',
+  'const abilityRect=rect(abilityTab);box.opponentSkillsTab=abilityRect;',
+  'const abilityAt=document.elementFromPoint(abilityRect.left+abilityRect.width/2,abilityRect.top+abilityRect.height/2);',
+  'const abilityClickable=abilityAt===abilityTab||abilityTab.contains(abilityAt);',
   'const data={count,mode,viewport:{width:innerWidth,height:innerHeight},fine:matchMedia("(pointer: fine)").matches,',
+  'enemySkillsVsEnemy:overlap(abilityRect,firstEnemyTitle),',
+  'enemySkillsVsEnemyB:secondEnemyTitle?overlap(abilityRect,secondEnemyTitle):0,',
+  'enemySkillsVsSkills:skills.map(skill=>overlap(abilityRect,rect(skill))),',
+  'enemySkillsClickable:abilityClickable,',
   'reserveTabVsEnemy:overlap(reserveTab,firstEnemyTitle),',
   'reservePopupVsEnemy:overlap(reservePopup,firstEnemyTitle),',
   'reserveTabVsEnemyB:secondEnemyTitle?overlap(reserveTab,secondEnemyTitle):0,',
@@ -187,6 +196,9 @@ try {
       assert(after.reserveTabVsEnemy===0 && after.reservePopupVsEnemy===0 &&
         after.reserveTabVsEnemyB===0 && after.reservePopupVsEnemyB===0,
         "enemy reserve tab/popover covers enemy creature names: "+w+" "+count+" "+JSON.stringify(after));
+      assert(after.enemySkillsVsEnemy===0 && after.enemySkillsVsEnemyB===0 &&
+        after.enemySkillsVsSkills.every(x=>x===0) && after.enemySkillsClickable,
+        "read-only enemy abilities tab blocks existing combat HUD or is not clickable: "+w+" "+count+" "+JSON.stringify(after));
       assert(after.box.reserveTab.right+7<=after.box.enemyName.left,
         "reserve tab must be at least 7px LEFT of opponent name: "+w+" "+count);
       if(count==="1"&&w===1648)
@@ -201,6 +213,9 @@ try {
           assert(close(before.box[el][axis],after.box[el][axis]),
             "approved phone HUD changed "+w+"x"+h+" "+count+" "+el+" "+axis);
       }
+      assert(after.enemySkillsVsEnemy===0 && after.enemySkillsVsEnemyB===0 &&
+        after.enemySkillsVsSkills.every(x=>x===0) && after.enemySkillsClickable,
+        "read-only enemy abilities tab unreachable or obscures names on phone: "+w+" "+count+" "+JSON.stringify(after));
       console.log("PASS phone parity "+w+"x"+h+" active="+count);
     }
   }
