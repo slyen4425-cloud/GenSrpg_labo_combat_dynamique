@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vipfer — prévisualisation des médias officiels</title>
+<style>
+:root{color-scheme:dark;font:16px system-ui,sans-serif;background:#101723;color:#edf5ff}
+body{max-width:1150px;margin:0 auto;padding:20px}
+h1{margin:0 0 10px}p{line-height:1.45;color:#b9cce1}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:16px;margin:16px 0 28px}
+figure{margin:0;padding:13px;border:1px solid #415772;border-radius:12px;background:#1a2636;text-align:center}
+img{width:128px;height:128px;display:block;margin:0 auto;object-fit:contain}
+canvas{display:block;margin:0 auto;width:min(100%,260px);height:auto;aspect-ratio:1;object-fit:contain}
+figcaption{margin:10px 0 0;font-size:.9rem}
+span.sub{display:block;font-size:.75rem;color:#a6c0da}
+#status{font-weight:700}
+</style></head><body data-vipfer-media-smoke="pending">
+<h1>Vipfer — médias des compétences</h1>
+<p>Prévisualisation des sources de l’auteur via le catalogue unique <code>global-assets</code>. Les cinq icônes sont définitives. Les trois séquences retenues sont des atlas de six images. Aucun sprite rejeté d’Étreinte ou Broyeur n’est chargé.</p>
+<p id="status">Chargement des vrais médias…</p>
+<h2>Icônes</h2><div class="grid" id="icons"></div>
+<h2>Animations retenues</h2><div class="grid" id="sprites"></div>
+<script type="module">
+import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js";
+import {createGlobalPresentationAssetResolverV1} from "../../src/assets/global-presentation-asset-resolver-v1.js";
+const skills=[
+ ["vipfer-morsure-ressort","Morsure à ressort","impact"],
+ ["vipfer-etreinte-acier","Étreinte d'acier",null],
+ ["vipfer-mue-tranchante","Mue tranchante","cast"],
+ ["vipfer-couronne-eclats","Couronne d'éclats","travel"],
+ ["vipfer-broyeur-serpentin","Broyeur serpentin",null]
+];
+const status=document.getElementById("status");
+const chk=(ok,msg)=>{if(!ok)throw Error(msg);};
+const loadImage=async(url)=>{
+ const img=new Image();img.crossOrigin="anonymous";img.src=url;
+ await img.decode();chk(img.naturalWidth>0&&img.naturalHeight>0,"Image vide: "+url);
+ return img;
+};
+const frameCheck=(img,count)=>{
+ chk(img.naturalWidth===512*count&&img.naturalHeight===512,
+   "Atlas incorrect: "+img.naturalWidth+"×"+img.naturalHeight);
+ const cv=document.createElement("canvas");cv.width=cv.height=512;
+ const ctx=cv.getContext("2d",{willReadFrequently:true});
+ const signatures=[];
+ for(let i=0;i<count;i++){
+  ctx.clearRect(0,0,512,512);ctx.drawImage(img,i*512,0,512,512,0,0,512,512);
+  const rgba=ctx.getImageData(0,0,512,512).data;
+  let nonempty=0,checksum=0;
+  for(let p=0;p<rgba.length;p+=4){if(rgba[p+3]>10)nonempty++;checksum=(checksum+rgba[p+3]*(p/4+1))%2147483647;}
+  chk(nonempty>300,"Sprite sans contenu visible frame "+i);
+  signatures.push(checksum);
+ }
+ chk(new Set(signatures).size>=4,"Séquence non animée ou frames dupliquées");
+ return cv;
+};
+async function boot(){
+ const fetched=await fetch(GLOBAL_VISUAL_LIBRARY.catalogUrl,{cache:"no-store"});
+ chk(fetched.ok,"Catalogue officiel indisponible "+fetched.status);
+ const catalog=await fetched.json();
+ chk(catalog.storage.branch==="global-assets","Un seul propriétaire catalogue");
+ const resolveAsset=createGlobalPresentationAssetResolverV1({assetCatalog:catalog,assetUrlForFile:globalVisualAssetUrl});
+ for(const [skillId,label,spriteSlot] of skills){
+  const response=await fetch("../../data/capture/showcase/"+skillId+".capture-skill-transfer-v1.json",{cache:"no-store"});
+  chk(response.ok,"Compétence native absente "+skillId);
+  const payload=await response.json();
+  chk(payload.draft.id===skillId,"ID modifié "+skillId);
+  const v=payload.draft.presentation.visual;
+  const icon=resolveAsset(v.icon.assetId);
+  chk(icon?.url&&icon.assetId.includes("vipfer"),"Icône officielle absente "+skillId);
+  const iconImage=await loadImage(icon.url);
+  chk(iconImage.naturalWidth===128&&iconImage.naturalHeight===128,"Icône incorrecte "+skillId);
+  const fig=document.createElement("figure");
+  fig.append(iconImage);const cap=document.createElement("figcaption");cap.textContent=label;fig.append(cap);
+  document.getElementById("icons").append(fig);
+  if(spriteSlot){
+   const sprite=resolveAsset(v[spriteSlot]?.assetId);
+   chk(sprite?.frameCount===6,"Sprite canonique introuvable "+skillId);
+   const atlas=await loadImage(sprite.url);
+   const cv=frameCheck(atlas,6);
+   const element=document.createElement("figure");element.append(cv);
+   const title=document.createElement("figcaption");title.textContent=label+" — 6 images";
+   const sub=document.createElement("span");sub.className="sub";sub.textContent="Source réelle • 120 ms/image";
+   title.append(sub);element.append(title);document.getElementById("sprites").append(element);
+   let i=0;const ctx=cv.getContext("2d");
+   setInterval(()=>{i=(i+1)%6;ctx.clearRect(0,0,512,512);ctx.drawImage(atlas,i*512,0,512,512,0,0,512,512)},120);
+  }else chk(Object.keys(v).length===1&&Object.keys(v)[0]==="icon","Sprite exclu affiché "+skillId);
+ }
+ chk(document.querySelectorAll("#icons img").length===5,"Five real icons");
+ chk(document.querySelectorAll("#sprites canvas").length===3,"Three real animations");
+ document.body.dataset.vipferMediaSmoke="pass:5-icons:3-sprites:8-catalog-assets:real-images";
+ status.textContent="Sources officielles chargées et vérifiées : 5 icônes et 3 animations.";
+}
+boot().catch(e=>{status.textContent="Échec de validation : "+String(e);document.body.dataset.vipferMediaSmoke="fail:"+String(e);});
+</script></body></html>
