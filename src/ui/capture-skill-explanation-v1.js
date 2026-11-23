@@ -86,13 +86,19 @@ function statusStory(s){
     case "heal_over_time":line="Rend "+num(s.amount)+" PV "+tick;break;
     case "heal_inversion":line="Transforme "+num(s.percent)+" % des soins reçus en dégâts (la part restante soigne)";break;
     case "shield":line="Accorde un bouclier de "+num(s.amount)+" points";break;
-    case "damage_reflection":
-      line="Renvoie "+num(s.percent)+" % des dégâts reçus";
-      if(s.incomingKinds?.length && s.incomingKinds.length<7)
-        line+=" pour les attaques "+words(s.incomingKinds.map(kind=>kind==="contact"?"au corps à corps":
-          kind==="beam"?"par rayon":kind==="projectile"?"par projectile":kind));
-      if(s.contactDamage>0)line+=" et inflige "+num(s.contactDamage)+" dégâts au contact";
+    case "damage_reflection": {
+      const types=s.incomingKinds?.length && s.incomingKinds.length<7
+        ? " après une attaque "+words(s.incomingKinds.map(kind=>kind==="contact"?"au corps à corps":
+            kind==="beam"?"par rayon":kind==="projectile"?"par projectile":kind))
+        : " après une attaque reçue";
+      const clauses=[];
+      if(s.percent>0)clauses.push("Renvoie "+num(s.percent)+" % des dégâts reçus"+types);
+      if(s.contactDamage>0)clauses.push("Riposte : inflige "+num(s.contactDamage)+
+        " dégâts fixes à l'attaquant"+types+
+        (s.consumeOnContact?" (une seule fois)":""));
+      line=clauses.join(" ; ")||"Ne renvoie aucun dégât";
       break;
+    }
     case "projectile_mirror":line="Renvoie les projectiles reçus";break;
     case "auto_dodge":line="Esquive automatiquement les attaques";break;
     case "immunity":line=s.intangible?"Devient immatérielle et résiste aux dégâts et aux états négatifs":
@@ -563,7 +569,21 @@ export function describeCaptureSkillV1(input,{markerNames={}}={}) {
   if(d.effect.heal>0)phrases.push(finish("Rend "+num(d.effect.heal)+" PV"));
   if(d.effect.stunMs>0)phrases.push(finish("Étourdit pendant "+duration(d.effect.stunMs)));
   if(d.effect.interruptsPreparation)phrases.push("Interrompt l'action en préparation.");
-  phrases.push(...descriptions(d.effects,{markerNames}));
+  // A salvo is one configurable action with independently dodgeable impacts.
+  // Its effects are authored once but resolved for EACH real projectile hit:
+  // describe that shared rule without pretending that it is one single hit.
+  if(d.salvo){
+    const perHit=d.effects.filter(e=>e.kind==="damage"&&e.targetScope==="target");
+    phrases.push(finish("Lance "+num(d.salvo.shots)+
+      " projectiles successifs, esquivables séparément"));
+    if(perHit.length===1){
+      const hit=perHit[0];
+      phrases.push(finish("Chaque projectile qui touche inflige "+num(hit.amount)+
+        " dégâts "+elementOf(hit.channel??d.element)+" chacun ("+
+        num(d.salvo.shots*hit.amount)+" dégâts maximum si tous touchent)"));
+    }
+    phrases.push(...descriptions(d.effects.filter(e=>perHit.length!==1||e!==perHit[0]),{markerNames}));
+  }else phrases.push(...descriptions(d.effects,{markerNames}));
   if(d.channeling){
     const ch=d.channeling;
     // Separate repeated damage from duration-based statuses. This avoids
