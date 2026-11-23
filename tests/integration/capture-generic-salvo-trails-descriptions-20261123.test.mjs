@@ -21,7 +21,10 @@ test("automatic text says fixed first-contact retaliation, never 0% reflection",
   assert.doesNotMatch(description,/Renvoie 0|0 % des dégâts/i);
   const configured=normalizeSkillDefinition({...reflection.definition,
     effects:reflection.definition.effects.map(effect=>effect.status?.kind==="damage_reflection"
-      ? {...effect,status:{...effect.status,contactDamage:17,consumeOnContact:false}}
+      ? {...effect,status:(()=>{
+          const {consumeOnContact,...repeatable}=effect.status;
+          return {...repeatable,contactDamage:17};
+        })()}
       : effect)});
   const custom=explain(configured);
   assert.match(custom,/17 dégâts fixes/);
