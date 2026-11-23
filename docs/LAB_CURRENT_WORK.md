@@ -1,3 +1,11 @@
+## 2026-11-23 — Combat : volet compact des compétences adverses (lecture seule)
+- START `main@2b3438a3f7d0ab13c2b074710ffc7d9925dec071`, checkpoint `checkpoint/lab-start-opponent-skills-readonly-20261123`, branche `work/lab-opponent-skills-readonly-hud-20261123`.
+- La demande auteur de personnalisation générale du HUD suit un autre chantier. Ici, ajouter **uniquement une projection réutilisable** des capacités équipées par les adversaires dans le HUD de test natif, sans créer de nouveau moteur, éditeur de position, registre ou calcul de recharge.
+- Le volet `data-combat-hud-widget="opponent-skill-loadout"` reste replié par défaut : 1v1/2v2, portrait/nom vivant de l'adversaire, icônes actuelles depuis le resolver officiel, nom, coût, statut ultime, recharge exacte depuis `CombatState`. Changement de créature après KO/rappel : `RosterSession.skillIdsFor` est relu, aucune liste figée.
+- L'écran ne prétend pas qu'une action est réalisable avec une simple recharge à zéro : durée, énergie, distance, cibles et conditions sont régies par `CombatSession`. Les lignes sont non interactives, donc ne déclenchent jamais de commande adverse.
+- Un seul DOM de lecture, stable et déplaçable par le futur projet de personnalisation. Respecter la disposition smartphone paysage, les 5 capacités joueur, l'esquive, les cartes adversaires et le menu Réserves. Ne pas modifier le gameplay ou les présentations de compétence.
+- Tests de projection 1v1/2v2, recharge, KO/remplacement, propriétaire DOM et non-régression navigateur/PC/mobile avant fusion. Aucun repin PWA implicite.
+
 ## 2026-11-23 — Description automatique des compétences, salve et zones éditables (Combat uniquement)
 - Objectif auteur : les textes de compétences doivent rester exacts aussi pour **toutes les nouvelles compétences créées par les joueurs**, sans texte codé par créature. Ne changer aucun chiffre ni mécaniques de Vipfer ou de Polocendre.
 - START `main@23623733ab077fd09603848b16ab17806a26ed11`, checkpoint `checkpoint/lab-start-generic-skill-descriptions-salvo-trails-20261123`, branche `work/lab-generic-skill-descriptions-salvo-trails-20261123`.
