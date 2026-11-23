@@ -1,0 +1,38 @@
+name: Vipfer media upload — archive audit
+on:
+  push:
+    branches: [work/global-vipfer-media-20261123]
+    paths: ['.github/workflows/vipfer-media-import-20261123.yml']
+permissions:
+  contents: write
+jobs:
+  inspect-upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/global-vipfer-media-20261123
+          persist-credentials: true
+          sparse-checkout: |
+            .github/workflows/vipfer-media-import-20261123.yml
+            assets/library/capture/creatures/vipfer
+      - name: Audit exact ZIP contents before any media integration
+        run: |
+          python - <<'PY'
+          from zipfile import ZipFile, BadZipFile
+          from pathlib import Path
+          import hashlib, io, struct
+          archive=Path('assets/library/capture/creatures/vipfer/Vipfer_5_icones_3_sprites_conserves_SANS_etreinte_20261122.zip')
+          print('SOURCE_ZIP',archive,'SIZE',archive.stat().st_size,'SHA256',hashlib.sha256(archive.read_bytes()).hexdigest())
+          with ZipFile(archive) as z:
+              print('ZIP_MEMBER_COUNT',len(z.infolist()))
+              for n in z.infolist():
+                  if n.is_dir(): continue
+                  raw=z.read(n)
+                  sig=raw[:16].hex()
+                  dims=''
+                  if raw.startswith(b'\x89PNG') and len(raw)>24: dims=str(struct.unpack('>II',raw[16:24]))
+                  if raw.startswith(b'RIFF') and raw[8:12]==b'WEBP': dims='webp'
+                  print('ENTRY',repr(n.filename),'BYTES',len(raw),'SIG',sig,'DIMS',dims,'SHA256',hashlib.sha256(raw).hexdigest())
+          PY
