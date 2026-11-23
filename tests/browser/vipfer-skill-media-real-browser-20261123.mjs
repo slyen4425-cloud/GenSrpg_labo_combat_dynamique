@@ -78,7 +78,14 @@ try{
   JSON.stringify(last)+"; Chrome stderr: "+errorLines.join("").slice(-500));
 }finally{
  try{ws?.close();}catch{}
- try{chrome?.kill("SIGKILL");}catch{}
+ if(chrome && chrome.exitCode===null && chrome.signalCode===null){
+   // Chrome may still be writing its profile after SIGKILL: wait for the
+   // actual child process to exit before removing files. Never turn a
+   // successful real-media verdict into a false CI failure during cleanup.
+   const closed=once(chrome,"close").catch(()=>{});
+   try{chrome.kill("SIGKILL");}catch{}
+   await Promise.race([closed,delay(4000)]);
+ }
  server.close();
- await rm(profile,{recursive:true,force:true});
+ await rm(profile,{recursive:true,force:true,maxRetries:15,retryDelay:200});
 }
