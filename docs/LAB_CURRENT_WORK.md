@@ -1,3 +1,10 @@
+## 2026-11-23 — Vipfer : Mue tranchante visible pendant le buff natif (Combat uniquement)
+- START `main@2b3438a3f7d0ab13c2b074710ffc7d9925dec071`; checkpoint `checkpoint/lab-start-vipfer-status-sprite-20261123`; branche `work/lab-vipfer-status-sprite-20261123`.
+- Changement **exclusivement de présentation auteur** dans le transfert canonique `vipfer-mue-tranchante` : rattacher le sprite officiel du cast `pack:capture:sprite-skill-vipfer-mue-tranchante-v1` au statut natif de défense `vipfer-mue-tranchante:defense` par `presentation.statusVisuals`, mode `hold-last`.
+- La présentation native joue l'atlas une seule fois, garde sa dernière image tant que le statut de +200 DEF / 8 s est actif, et disparaît lors de l'expiration ou retrait natif. Une riposte consommée ne retire pas le buff ni son visuel. Les auteurs peuvent remplacer `hold-last` par `loop` dans les contrôles **existants** du statut.
+- Aucun nouvel FX, sprite, ID, système de minuterie, type de statut ni second rendu. Gameplay de Vipfer (buff, riposte 25, cooldown, énergie) inchangé. Pas de modification de l'UI de combat / du projet d'éditeur HUD en parallèle.
+- Gate : CI au SHA exact, Chromium réel, contrôle des médias officiels et checkpoint GREEN avant éventuel repin PWA séparé.
+
 ## 2026-11-23 — Description automatique des compétences, salve et zones éditables (Combat uniquement)
 - Objectif auteur : les textes de compétences doivent rester exacts aussi pour **toutes les nouvelles compétences créées par les joueurs**, sans texte codé par créature. Ne changer aucun chiffre ni mécaniques de Vipfer ou de Polocendre.
 - START `main@23623733ab077fd09603848b16ab17806a26ed11`, checkpoint `checkpoint/lab-start-generic-skill-descriptions-salvo-trails-20261123`, branche `work/lab-generic-skill-descriptions-salvo-trails-20261123`.
