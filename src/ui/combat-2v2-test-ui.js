@@ -580,6 +580,35 @@ export function resolveCombatSkillClickTargetV1({
   return available.includes(selectedTargetId) ? selectedTargetId : null;
 }
 
+// Presentation-only projection for the future configurable Combat HUD.
+// Loadouts, cooldowns and fighter state remain owned by RosterSession / CombatSession.
+export function projectOpponentSkillLoadoutV1({
+  enemyActorIds, skillsById, skillIdsFor, actorNameFor, state
+}) {
+  if(!state?.fighters||!Array.isArray(enemyActorIds)||
+     typeof skillIdsFor!=="function"||typeof actorNameFor!=="function")
+    throw new TypeError("Opponent skill HUD requires native Combat state and actor adapters");
+  return Object.freeze(enemyActorIds.map(actorId=>{
+    const fighter=state.fighters[actorId];
+    if(!fighter)throw new RangeError("Unknown opponent actor "+actorId);
+    const ids=skillIdsFor(actorId)??[];
+    if(!Array.isArray(ids))throw new TypeError("Opponent loadout must be an array");
+    return Object.freeze({
+      actorId, name:String(actorNameFor(actorId)??actorId),
+      defeated:Number(fighter.hp)<=0,
+      skills:Object.freeze(ids.map(id=>{
+        const skill=skillsById[id];
+        if(!skill)throw new RangeError("Unknown opponent equipped skill "+id);
+        return Object.freeze({
+          id, name:skill.name, energyCost:skill.energyCost,
+          ultimate:skill.loadoutSlot==="ultimate",
+          cooldownMs:skillCooldownRemainingMs(state,actorId,id)
+        });
+      }))
+    });
+  }));
+}
+
 export async function mountCoop2v2Test({
   root,
   visuals,
@@ -1078,6 +1107,79 @@ export async function mountCoop2v2Test({
     status.dataset.tone = tone;
   }
 
+  // This collapsible HUD widget is read-only and can later be moved by the
+  // canonical layout editor. It never becomes a command or a second loadout.
+  const opponentSkillPanel=root.querySelector("[data-combat-enemy-skills]");
+  const opponentSkillHost=opponentSkillPanel?.querySelector("[data-combat-enemy-skills-list]");
+  const opponentReservePanel=root.querySelector("[data-combat-enemy-reserves]");
+  let opponentSkillPaintSignature="";
+  function renderOpponentSkillLoadouts(state=session.snapshot()) {
+    if(!opponentSkillPanel?.open||!opponentSkillHost)return;
+    const rows=projectOpponentSkillLoadoutV1({
+      enemyActorIds:previewFormat.enemyActorIds,skillsById,
+      skillIdsFor:actorId=>rosterController?.skillIdsFor(actorId)??skillIdsByActor[actorId],
+      actorNameFor:actorId=>actorMeta(actorId)?.displayName, state
+    });
+    const signature=JSON.stringify(rows);
+    if(signature===opponentSkillPaintSignature)return;
+    opponentSkillPaintSignature=signature;
+    const doc=root.ownerDocument;
+    const fragment=doc.createDocumentFragment();
+    for(const group of rows){
+      const section=doc.createElement("section");
+      section.className="combat-enemy-skill-group";
+      section.dataset.opponentActorId=group.actorId;
+      const title=doc.createElement("strong");
+      title.textContent=group.name+(group.defeated?" · KO":"");
+      section.append(title);
+      if(group.skills.length===0){
+        const message=doc.createElement("small");
+        message.textContent="Aucune capacité équipée";
+        section.append(message);
+      }
+      for(const skill of group.skills){
+        const item=doc.createElement("div");
+        item.className="combat-enemy-skill";
+        item.dataset.opponentSkill=skill.id;
+        item.dataset.recharging=skill.cooldownMs>0?"true":"false";
+        const url=opponentSkillIconUrl(group.actorId,skill.id);
+        if(url){
+          const image=doc.createElement("img");
+          image.src=url;
+          image.alt="";
+          image.setAttribute("aria-hidden","true");
+          item.append(image);
+        }
+        const body=doc.createElement("span");
+        const name=doc.createElement("strong");
+        name.textContent=skill.name;
+        const info=doc.createElement("small");
+        info.textContent=(skill.ultimate?"Ultime · ":"")+
+          "Coût "+skill.energyCost+" énergie · "+
+          (group.defeated?"KO":skill.cooldownMs>0
+            ?"Recharge "+Math.ceil(skill.cooldownMs/1000)+" s"
+            :"Hors recharge");
+        body.append(name,info);
+        item.append(body);
+        section.append(item);
+      }
+      fragment.append(section);
+    }
+    opponentSkillHost.replaceChildren(fragment);
+  }
+  if(opponentSkillPanel){
+    listen(opponentSkillPanel,"toggle",()=>{
+      if(opponentSkillPanel.open){
+        if(opponentReservePanel?.open)opponentReservePanel.open=false;
+        renderOpponentSkillLoadouts();
+      }
+    });
+    if(opponentReservePanel)listen(opponentReservePanel,"toggle",()=>{
+      if(opponentReservePanel.open&&opponentSkillPanel.open)
+        opponentSkillPanel.open=false;
+    });
+  }
+
   const opponentSkillIconCache=new Map();
   function opponentSkillIconUrl(actorId,skillId) {
     if (!previewFormat.enemyActorIds.includes(actorId) || !skillId) return null;
@@ -1288,6 +1390,7 @@ export async function mountCoop2v2Test({
     renderTargetSelection();
     renderControlledSelection();
     rosterPanel?.render();
+    renderOpponentSkillLoadouts(state);
   }
 
   function renderAvailability() {
