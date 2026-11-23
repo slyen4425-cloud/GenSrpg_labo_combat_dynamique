@@ -24,6 +24,7 @@ jobs:
         run: python -m pip install Pillow --quiet
       - name: Inspect author's actual 5 icons and 3 approved sprite strips, import only these
         run: |
+          python - <<'PY'
           from pathlib import Path
           import io, json, hashlib
           from zipfile import ZipFile
@@ -111,6 +112,7 @@ jobs:
           proofpath=root/'capture/creatures/vipfer/vipfer-skill-media-proof-20261123.json'
           proofpath.write_text(json.dumps(proof,ensure_ascii=False,indent=2)+'\n')
           print('IMPORT_READY','ASSET_IDS',len(icons+sprites),'FILES',len(provenance),'SOURCE_ZIP_PRESERVED',src.exists(),'CATALOG_ENTRIES',len(catalog['assets']))
+          PY
         shell: bash
       - name: Commit verified canonical assets on work branch, never on main or gh-pages
         run: |
