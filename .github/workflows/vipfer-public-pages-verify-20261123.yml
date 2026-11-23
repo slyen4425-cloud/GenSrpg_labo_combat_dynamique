@@ -1,0 +1,61 @@
+name: Vipfer public Pages HTTPS verification
+on:
+  push:
+    branches: [work/lab-vipfer-pages-verify-20261123]
+    paths: ['.github/workflows/vipfer-public-pages-verify-20261123.yml']
+permissions:
+  contents: read
+jobs:
+  verify-public:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Verify actual published Pages content and canonical global-assets files
+        shell: bash
+        run: |
+          python - <<'PY'
+          import urllib.request, time, json, hashlib
+          base='https://slyen4425-cloud.github.io/GenSrpg_labo_combat_dynamique'
+          version='2026-11-23-v71-vipfer-5-icons-3-6f-sprites'
+          urls={
+            'preview':base+'/examples/dom-demo/vipfer-skill-media-preview-20261123.html',
+            'resolver':base+'/src/assets/global-visual-library.js',
+            'couronne':base+'/data/capture/showcase/vipfer-couronne-eclats.capture-skill-transfer-v1.json',
+            'editor':base+'/examples/dom-demo/capture-editor-v2.html'
+          }
+          source='https://raw.githubusercontent.com/slyen4425-cloud/GenSrpg_labo_combat_dynamique/global-assets/assets/library/'
+          checks={}
+          def get(u):
+            req=urllib.request.Request(u,headers={'User-Agent':'Vipfer-public-certification-20261123','Cache-Control':'no-cache'})
+            with urllib.request.urlopen(req,timeout=18) as f:
+              assert f.status==200,(u,f.status)
+              return f.read()
+          for attempt in range(24):
+            try:
+              data={key:get(url) for key,url in urls.items()}
+              assert b'vipferMediaSmoke' in data['preview'],'preview missing'
+              assert version.encode() in data['resolver'],'site is serving an old cache revision'
+              skill=json.loads(data['couronne'])
+              assert skill['draft']['id']=='vipfer-couronne-eclats'
+              assert skill['draft']['presentation']['visual']['travel']['assetId']=='pack:capture:sprite-skill-vipfer-couronne-eclats-v1'
+              assert b'capture' in data['editor']
+              for kind,slugs in (
+                ('icons',['morsure-ressort','etreinte-acier','mue-tranchante','couronne-eclats','broyeur-serpentin']),
+                ('sprites',['morsure-ressort','mue-tranchante','couronne-eclats'])
+              ):
+                for slug in slugs:
+                  stem='capture/'+kind+'/skills/vipfer/vipfer-'+slug+'.webp'
+                  raw=get(source+stem)
+                  assert raw[:4]==b'RIFF' and raw[8:12]==b'WEBP',(stem,'not a true WebP')
+                  checks[stem]={'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+              print('SUCCESS: public HTTPS Pages served the new main revision, preview, editor and Vipfer authored skill')
+              print('SUCCESS: 5 real source icons + 3 real 6f strips fetched from canonical global-assets')
+              print('PUBLIC_PREVIEW_URL',urls['preview'])
+              print('PUBLIC_EDITOR_URL',urls['editor'])
+              print('ASSETS',json.dumps(checks,sort_keys=True))
+              break
+            except Exception as ex:
+              print('RETRY',attempt+1,'reason',str(ex))
+              if attempt==23: raise
+              time.sleep(10)
+          PY
