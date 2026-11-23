@@ -211,3 +211,60 @@ test("1v1 and 2v2 true paths sync status renderer from Runtime state", async () 
     /getStatusPresentationTargetFor/
   );
 });
+
+
+test("Vipfer Mue tranchante reuses its approved sprite as a hold-last status for the full defense buff", async () => {
+  const {normalizeCaptureSkillTransferV1} =
+    await import("../../src/contracts/capture-skill-transfer-v1.js");
+  const {buildHumanSkillDraftV1,humanSkillEditorFieldsFromDraftV1} =
+    await import("../../src/ui/capture-editor-human-v2.js");
+  const raw=JSON.parse(await readFile(new URL(
+    "../../data/capture/showcase/vipfer-mue-tranchante.capture-skill-transfer-v1.json",
+    import.meta.url),"utf8"));
+  const draft=normalizeCaptureSkillTransferV1(raw).draft;
+  const defense=draft.definition.effects.find(effect=>
+    effect.kind==="apply_status"&&effect.status?.kind==="stat_modifier");
+  const reflect=draft.definition.effects.find(effect=>
+    effect.kind==="apply_status"&&effect.status?.kind==="damage_reflection");
+  assert.equal(defense.status.durationMs,8000);
+  assert.equal(defense.status.deltaPoints,200);
+  assert.equal(reflect.status.contactDamage,25);
+  assert.equal(reflect.status.consumeOnContact,true);
+  const visual=draft.presentation.statusVisuals[defense.status.id];
+  assert.equal(visual.mode,"sprite");
+  assert.equal(visual.sprite.assetId,draft.presentation.visual.cast.assetId);
+  assert.equal(visual.sprite.playbackMode,"hold-last");
+  // Each creature author can change this in the EXISTING status editor.
+  const fromEditor=humanSkillEditorFieldsFromDraftV1(draft);
+  assert.equal(fromEditor.presentation.statusVisuals[defense.status.id].sprite.playbackMode,"hold-last");
+  const saved=buildHumanSkillDraftV1(fromEditor);
+  assert.equal(saved.presentation.statusVisuals[defense.status.id].sprite.playbackMode,"hold-last");
+
+  const assets=createCaptureSkillPresentationAssetsV2({
+    skillPresentations:{[draft.id]:draft.presentation},
+    assetForId(assetId){return {assetId,url:"https://example.test/mue.webp",
+      frameCount:6,frameMs:120};}
+  });
+  const motion=fakeNode(),image=fakeNode();
+  image.src="https://example.test/vipfer.webp";
+  motion.ownerDocument={createElement(){
+    const node=fakeNode();node.ownerDocument=motion.ownerDocument;return node;
+  }};
+  const renderer=createDomStatusFxRenderer({
+    targetFor:()=>({motion,image}),
+    statusPresentationFor:assets.statusPresentationFor
+  });
+  const instance={definition:defense.status,sourceSkillId:draft.id,appliedAtMs:0,expiresAtMs:8000,stacks:1};
+  const state=statusEffects=>({elapsedMs:2000,fighters:{vipfer:{statusEffects}}});
+  renderer.sync(state([instance]));
+  const sprite=motion.children.find(node=>node.dataset.statusFx==="sprite");
+  assert.ok(sprite,"native status renderer must mount the approved Mue FX");
+  assert.equal(sprite.dataset.assetId,visual.sprite.assetId);
+  assert.equal(sprite.style.animationFillMode,"forwards");
+  assert.equal(sprite.style.animationIterationCount,"1");
+  renderer.sync({...state([instance]),elapsedMs:7000});
+  assert.equal(sprite.removed,undefined,"FX stays while defense remains active, even after riposte");
+  renderer.sync({...state([]),elapsedMs:8000});
+  assert.equal(sprite.removed,true,"native expiration removes Mue's FX without a second timer");
+  renderer.dispose();
+});
