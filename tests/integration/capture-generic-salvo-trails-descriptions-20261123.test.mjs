@@ -40,11 +40,11 @@ test("generic salvo text scales with authored 2/3/4 projectiles, damage and slow
     const description=explain(skill);
     assert.match(description,new RegExp(shots+" projectiles successifs"));
     assert.match(description,/esquivables séparément/);
-    assert.match(description,/7 dégâts d’Acier chacun/);
+    assert.match(description,/7 dégâts d['’]Acier chacun/);
     assert.match(description,new RegExp(shots*7+" dégâts maximum"));
     assert.match(description,/22 %/);
     assert.match(description,/11 secondes/);
-    assert.equal((description.match(/7 dégâts d’Acier chacun/g)||[]).length,1);
+    assert.equal((description.match(/7 dégâts d['’]Acier chacun/g)||[]).length,1);
     const saved=buildHumanSkillDraftV1(humanSkillEditorFieldsFromDraftV1({
       ...salvo,definition:skill
     }));
