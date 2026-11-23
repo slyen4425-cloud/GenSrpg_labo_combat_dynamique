@@ -12,10 +12,10 @@ test("Veldra: author ZIP SHA, ten actual WebP binaries, unique IDs and native 16
  const catalog=JSON.parse((await load("data/assets/catalog/global-visual-assets.v1.json")).toString("utf8"));
  const provenance=JSON.parse((await load("docs/LAB_VELDRA_SKILL_MEDIA_PROVENANCE_2026_11_18.json")).toString("utf8"));
  assert.equal(catalog.storage.branch, "global-assets");
- assert.equal(catalog.counts.assets,495);
- assert.equal(catalog.counts.icons,212);
- assert.equal(catalog.counts.sprites,250);
- assert.equal(catalog.assets.length,495);
+ assert.equal(catalog.counts.assets,503);
+ assert.equal(catalog.counts.icons,217);
+ assert.equal(catalog.counts.sprites,253);
+ assert.equal(catalog.assets.length,503);
  assert.equal(new Set(catalog.assets.map(x=>x.id)).size,catalog.assets.length);
  assert.equal(provenance.authorZips.length,2);
  for(const z of provenance.authorZips)assert.equal(hash(await load(z.path)),z.sha256,"author ZIP changed");
