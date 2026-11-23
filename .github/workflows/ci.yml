@@ -120,6 +120,8 @@ jobs:
           node-version: 22
       - name: Real Chromium Vipfer author edit save reload without gameplay loss
         run: node tests/browser/vipfer-editor-native-roundtrip-smoke.mjs
+      - name: Real Chromium Vipfer five official icons and three six-frame sprites with canonical remote resolution
+        run: node tests/browser/vipfer-skill-media-real-browser-20261123.mjs
 
   vipfer-salvo-browser:
     runs-on: ubuntu-latest

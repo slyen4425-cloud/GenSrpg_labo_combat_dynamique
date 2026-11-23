@@ -80,17 +80,17 @@
       "subjectId": "vipfer-morsure-ressort",
       "visual": {
         "icon": {
-          "assetId": "pack:capture:icon-skill-lame-acier-01"
+          "assetId": "pack:capture:icon-skill-vipfer-morsure-ressort-v1"
         },
         "impact": {
-          "assetId": "pack:capture:sprite-claw-impact-01",
+          "assetId": "pack:capture:sprite-skill-vipfer-morsure-ressort-v1",
           "displayScale": 1.3,
           "attachment": "fixed-target",
           "offsetX": 0,
           "offsetY": 0,
           "trigger": "impact",
-          "playbackMode": "stretch",
-          "durationMs": 500
+          "playbackMode": "once",
+          "durationMs": 720
         }
       },
       "audio": {},

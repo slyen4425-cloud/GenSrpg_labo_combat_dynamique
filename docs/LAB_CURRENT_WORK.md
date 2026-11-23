@@ -4999,3 +4999,13 @@ La CI du correctif ciblé relève deux assertions anciennes à `2.5` désormais 
 - Protégés : autres créatures/sorts et bibliothèques, les six ZIP auteur, global-assets, gameplay Combat Runtime, Exploration, GenSRPG, Survie, Dungeon ; ne rien supprimer.
 - Preuve media : MP3 auteur 190638 octets, SHA256 327d2734bca243c90c3b9f0b6bbf2f93fb78a667fbe380dc1be5486e68e250fe ; aucun placeholder ni audio défaite inventé.
 - Gates : CI ciblée, CI 5/5 + browser, publication HTTPS sur `main` SHA exact et checkpoint GREEN. L'issue vient de la fin de toute l'équipe, jamais d'un KO individuel.
+
+## 2026-11-23 — Vipfer : raccord des médias source validés (Labo Combat)
+
+- BASE technique : `main@a100e480504be1e78485eda3ae90c89439a90f0a`, checkpoint START `checkpoint/lab-start-vipfer-skill-media-20261123`, branche courte `work/lab-vipfer-skill-media-20261123`. Propriétaire visuel : `global-assets`, **jamais** un second catalogue.
+- Dépôt source conservé : `assets/library/capture/creatures/vipfer/Vipfer_5_icones_3_sprites_conserves_SANS_etreinte_20261122.zip`, SHA256 `0edc4481bc8aedf71cdbc43e227f87e1bd6438d68fb35935f66e8088e68e61cc`.
+- Import des **5 icônes** 128×128 WebP et **3 atlases** 3072×512 WebP lossless de **6 poses 512×512** (Morsure, Mue, Couronne), et **3 previews GIF**. 8 nouveaux assetIds, 11 fichiers physiques, source conservée. Publication référentiel `global-assets@1d138d8c5abc5b8c300774d5afce6d67ec6e9c35` via PR #381 après vérification des vrais octets/visuels et CI GREEN.
+- `data/capture/showcase/vipfer-*.capture-skill-transfer-v1.json` consomme le **catalogue unique** : cinq icônes, impact Morsure, cast Mue, travel Couronne. `src/assets/global-visual-library.js` invalide le cache pour charger la version source réelle.
+- **Exclusion d’auteur** : aucun sprite humain pour Étreinte d’acier ni Broyeur serpentin. Icônes conservées ; aucun remplacement inventé. Le gameplay précédent des cinq compétences n’est pas altéré, les IDs inchangés.
+- Preview réelle : `examples/dom-demo/vipfer-skill-media-preview-20261123.html`, alimentée par le résolveur officiel + vrais octets WebP. Test unité et Chrome réel obligatoires avant promotion sur `main`. Une PR/CI verte ne vaut pas validation Android et HTTPS.
+
