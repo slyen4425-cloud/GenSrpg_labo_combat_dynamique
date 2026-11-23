@@ -578,8 +578,8 @@ export function describeCaptureSkillV1(input,{markerNames={}}={}) {
       " projectiles successifs, esquivables séparément"));
     if(perHit.length===1){
       const hit=perHit[0];
-      phrases.push(finish("Chaque projectile qui touche inflige "+num(hit.amount)+
-        " dégâts "+elementOf(hit.channel??d.element)+" chacun ("+
+      phrases.push(finish("Chaque projectile touchant la cible inflige "+num(hit.amount)+
+        " dégâts "+elementOf(hit.channel??d.element)+" ("+
         num(d.salvo.shots*hit.amount)+" dégâts maximum si tous touchent)"));
     }
     phrases.push(...descriptions(d.effects.filter(e=>perHit.length!==1||e!==perHit[0]),{markerNames}));
