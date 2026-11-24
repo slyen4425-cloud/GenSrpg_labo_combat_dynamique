@@ -12314,6 +12314,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
 
   function currentEditorDatabaseV1() {
     ensureTransferOwnersReadyV1();
+    const {combatHudLayoutV1:previousHudLayout,...baseMetadata}=universeDatabase?.metadata??{};
 
     return buildCaptureEditorDatabaseV1({
       statRegistry,
@@ -12321,7 +12322,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       configuredCreatures,
       configuredSkills,
       metadata: {
-        ...universeDatabase?.metadata,
+        ...baseMetadata,
         ...(hudLayoutAuthored?{combatHudLayoutV1:hudLayout}:{}),
         producer:
           "capture-human-editor-v2"
@@ -14807,7 +14808,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
 
         if(plan.action==='replace-database'){
           hudLayout=normalizeCaptureHudLayoutV1(transfer.value.metadata?.combatHudLayoutV1);
-          hudLayoutAuthored=true;hudLayoutEditor?.set(hudLayout);
+          hudLayoutAuthored=transfer.value.metadata?.combatHudLayoutV1!==undefined;hudLayoutEditor?.set(hudLayout);
         }
         newSkillDraftMode=false;
         refreshEditorAfterTransferV1({

@@ -64,8 +64,10 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{}}){
  function schedule(){if(!disposed&&!frame)frame=win.requestAnimationFrame(apply);}
  const resize=typeof win.ResizeObserver==='function'?new win.ResizeObserver(schedule):null;
  resize?.observe(arena);for(const node of Object.values(nodes))resize?.observe(node);
- const mutations=typeof win.MutationObserver==='function'?new win.MutationObserver(schedule):null;
- mutations?.observe(arena,{subtree:true,attributes:true,attributeFilter:['hidden','open','data-combat-active-count']});
+ const mutations=typeof win.MutationObserver==='function'?new win.MutationObserver(records=>{
+  if(records.some(record=>record.oldValue!==record.target.getAttribute(record.attributeName)))schedule();
+ }):null;
+ mutations?.observe(arena,{subtree:true,attributes:true,attributeOldValue:true,attributeFilter:['hidden','open','data-combat-active-count']});
  win.addEventListener('resize',schedule);schedule();
  return Object.freeze({dispose(){
   if(disposed)return;disposed=true;if(frame)win.cancelAnimationFrame(frame);

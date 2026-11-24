@@ -97,7 +97,7 @@ def check(context, origin):
     assert page.locator("[data-hud-layout-x]").input_value() == "1"
     assert page.locator("[data-hud-layout-y]").input_value() == "-1"
     # Apply the real layout controller to the ONE editor template in a visible
-    # preview shell. The native game path mounts this same controller.
+    # preview shell. The native author preview mounts this same controller.
     geometry = page.evaluate("""async ([id,profile])=>{
       const {createCaptureUniverseDatabaseStoreV1}=await import('/src/contracts/capture-universe-database-store-v1.js');
       const {mountCaptureHudLayoutPreviewV1}=await import('/src/ui/capture-hud-layout-preview-v1.js');
@@ -106,6 +106,8 @@ def check(context, origin):
       const shell=document.querySelector('[data-capture-preview-shell]');
       const host=document.querySelector('[data-capture-preview-host]');
       host.replaceChildren(document.querySelector('[data-capture-preview-template]').content.cloneNode(true));
+      document.querySelector('[data-capture-editor-human]').hidden=true;
+      document.body.dataset.editorView='preview';
       shell.hidden=false;shell.dataset.landscapeRequired='true';document.body.dataset.previewLandscapeActive='true';
       const root=host.querySelector('[data-combat-demo]'),arena=root.querySelector('[data-combat-arena]');
       arena.dataset.combatActiveCount='1';
@@ -123,12 +125,14 @@ def check(context, origin):
       const bad=updateCaptureHudLayoutV1(layout,profile,'local-status',{dx:-50,dy:0,scale:100});
       const rejected=mountCaptureHudLayoutPreviewV1({root,layout:bad,onStatus:m=>warning=m});
       await wait();const blocked=warning,restored=hp.style.translate;
-      rejected.dispose();host.replaceChildren();shell.hidden=true;
-      return {before:before.x,after:after.x,reset:reset.x,applied,successWarning,blocked,restored,skills:5};
+      rejected.dispose();const skills=grid.children.length;
+      host.replaceChildren();shell.hidden=true;
+      return {before:before.x,after:after.x,reset:reset.x,applied,successWarning,blocked,restored,skills};
     }""", [project, profile])
     assert geometry["applied"] and geometry["after"] > geometry["before"] and not geometry["successWarning"], geometry
     assert abs(geometry["reset"] - geometry["before"]) < 1, geometry
     assert geometry["blocked"].startswith("Disposition non appliquée") and not geometry["restored"], geometry
+    assert geometry["skills"] == 5, geometry
     print("HUD native profile/save/reload/geometry:", page.viewport_size, geometry, flush=True)
 
 
