@@ -94,3 +94,18 @@ test('empty universe data is normalized by one Combat owner with editable rules 
  assert.deepEqual(blank.progressionRules.slotUnlockSchedule,original.progressionRules.slotUnlockSchedule);
  assert.equal(createCaptureUniverseDatabaseStoreV1({storage:storage()}).create(a,blank).database.creatures.length,0);
 });
+
+test('HUD layout uses existing universe database save, exact export/import and no second storage key',async()=>{
+ const {updateCaptureHudLayoutV1}=await import('../../src/contracts/capture-hud-layout-v1.js');
+ const {exportCaptureDatabaseJsonV1,importCaptureDatabaseJsonV1}=await import('../../src/adapters/input/capture/capture-database-transfer-v1.js');
+ const s=storage(),lib=createCaptureUniverseDatabaseStoreV1({storage:s});
+ const original=database();lib.create(a,original);lib.create(b,original);
+ const layout=updateCaptureHudLayoutV1(undefined,'desktop-1v1','dodge',{dx:1,dy:-2,scale:105});
+ const next=lib.save(a,{...original,metadata:{...original.metadata,combatHudLayoutV1:layout}},{expectedRevision:1});
+ assert.deepEqual(next.database.metadata.combatHudLayoutV1,layout);
+ assert.deepEqual(importCaptureDatabaseJsonV1(exportCaptureDatabaseJsonV1(next.database)),next.database);
+ assert.equal(lib.load(b).database.metadata.combatHudLayoutV1,undefined);
+ assert.equal(s.entries().length,3);
+ assert.throws(()=>lib.save(a,{...original,metadata:{combatHudLayoutV1:{schema:'bad',profiles:{}}}},{expectedRevision:2}));
+ assert.equal(lib.load(a).revision,2);
+});

@@ -1,3 +1,4 @@
+import {normalizeCaptureHudLayoutV1} from './capture-hud-layout-v1.js';
 import {
   normalizeCaptureCreatureEditorDraftV3
 } from "./capture-creature-editor-draft-v3.js";
@@ -369,11 +370,12 @@ export function normalizeCaptureDatabaseV1(
     }
   }
 
-  const metadata=
-    normalizeJsonValue(
-      value.metadata ?? {},
-      "metadata"
-    );
+  const rawMetadata=value.metadata??{};
+  const metadata=normalizeJsonValue(
+    rawMetadata?.combatHudLayoutV1===undefined?rawMetadata:
+      {...rawMetadata,combatHudLayoutV1:normalizeCaptureHudLayoutV1(rawMetadata.combatHudLayoutV1)},
+    "metadata"
+  );
 
   return Object.freeze({
     schema:
