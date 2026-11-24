@@ -15329,6 +15329,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       for (let node = heading; node; node = node.parentElement) {
         if (node.tagName === "DETAILS") node.open = true;
       }
+      const card = heading?.closest(".card");
+      if (card?.dataset.collapsed === "true") {
+        card.querySelector("[data-editor-card-toggle]")?.click();
+      }
       heading?.focus();
       heading?.scrollIntoView({block:"start"});
     },
