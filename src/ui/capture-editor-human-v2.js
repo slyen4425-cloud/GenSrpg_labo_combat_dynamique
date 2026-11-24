@@ -163,6 +163,7 @@ import {
 import {
   projectCaptureStatEffectsV1
 } from "../core/combat/capture-stat-effects-v1.js";
+import {evaluateCaptureNewCreatureStatBudgetV1} from "../contracts/capture-creature-stat-budget-v1.js";
 import {captureStatEffectSummaryV1 as humanStatEffectSummaryV1} from "./capture-stat-effect-summary-v1.js";
 export {humanStatEffectSummaryV1};
 import {
@@ -7962,6 +7963,19 @@ function refreshHumanStatValueIconsV1(root){
   }
 }
 
+function refreshSpeciesStatBudget(root, registry) {
+  const output = root.querySelector("[data-creature-stat-budget]");
+  if (!output || !registry) return;
+  try {
+    const statValues = readHumanCreatureStatValuesV1(root, selectedValue(root, "[data-creature-id]"), registry);
+    const {spent, budget, remaining} = evaluateCaptureNewCreatureStatBudgetV1({statValues, statRegistry: registry});
+    output.textContent = spent + " points répartis · budget de création standard " + budget +
+      " · écart au budget " + remaining + ".";
+  } catch (error) {
+    output.textContent = error.message;
+  }
+}
+
 function renderHumanStatValuesV1(
   root,
   registry,
@@ -8011,6 +8025,7 @@ function renderHumanStatValuesV1(
     host.append(label);
   }
   refreshHumanStatValueIconsV1(root);
+  refreshSpeciesStatBudget(root, registry);
 }
 
 function renderHumanStatRegistryV1(
@@ -12300,6 +12315,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       configuredCreatures,
       configuredSkills,
       metadata: {
+        ...universeDatabase?.metadata,
         producer:
           "capture-human-editor-v2"
       }
@@ -13943,6 +13959,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         )
       ) {
         creatureDirty = true;
+        refreshSpeciesStatBudget(root, statRegistry);
 
         const definition =
           statRegistry?.stats.find(
@@ -15304,8 +15321,24 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   return Object.freeze({
     validate,
     ready,
-    readDatabase(){
+    openSpeciesStats(id) {
+      if (disposed) throw new Error("Éditeur fermé");
+      loadCreatureRecord(id);
+      setTab(root, "creature");
+      const heading = root.querySelector("#creature-stats");
+      for (let node = heading; node; node = node.parentElement) {
+        if (node.tagName === "DETAILS") node.open = true;
+      }
+      heading?.focus();
+      heading?.scrollIntoView({block:"start"});
+    },
+    readDatabase({includePendingSpecies = false} = {}){
       if(disposed)throw new Error("Éditeur fermé");
+      if (includePendingSpecies && creatureDirty) {
+        if (!selectedCreatureId || selectedValue(root, "[data-creature-id]") !== selectedCreatureId)
+          throw new Error("Enregistre la nouvelle identité de la créature avant de sauvegarder le catalogue.");
+        persistCurrentCreature("update");
+      }
       return currentEditorDatabaseV1();
     },
     getLastExport() {

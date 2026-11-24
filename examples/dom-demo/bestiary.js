@@ -152,6 +152,15 @@ function renderProfile(){
   elements.facts.replaceChildren(...facts.map(text=>element("span",null,text)));
   // Keep the measured registry's own labels and values; do not invent missing stats.
   renderValues(elements.measures,card.measures);
+  const editStats=el("edit-stats");
+  if(root.dataset.embedded!=="true"){
+    const target=new URL(root.querySelector(".back-link").href);
+    target.searchParams.set("tab","creature");
+    target.searchParams.set("species",card.id);
+    target.hash="creature-stats";
+    editStats.href=target.href;
+    editStats.hidden=false;
+  }
   elements.resistances.replaceChildren(...(card.resistances.length?
     card.resistances.map(item=>{
       const tag=element("span","resistance");
