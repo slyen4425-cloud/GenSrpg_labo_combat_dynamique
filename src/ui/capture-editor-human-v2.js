@@ -32,6 +32,7 @@ import {
 import {
   normalizeCaptureCreatureEditorDraftV2
 } from "../contracts/capture-creature-editor-draft-v2.js";
+import {readCreatureAnimationZipV1,buildCreatureAnimationStripV1} from "../assets/creator-creature-animation-import-v1.js";
 import {
   normalizeCaptureCreatureEditorDraftV3
 } from "../contracts/capture-creature-editor-draft-v3.js";
@@ -9505,6 +9506,88 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
     )
   ) {
     mountCreatorVisualImporter(importer);
+  }
+
+  // The two existing creature animation chapters own their own compact import
+  // controls. The resulting horizontal strip enters the SAME asset session,
+  // selector and CreaturePresentation as manually imported movement/attack.
+  // No second sprite player, animation schema or persistent asset store.
+  const importedCreatureFrameCounts=new Map();
+  for (const importer of root.querySelectorAll("[data-creature-animation-importer]")) {
+    const kind=importer.getAttribute("data-creature-animation-importer");
+    if(kind!=="movement"&&kind!=="attack")continue;
+    const disclosure=importer.querySelector("[data-creature-animation-toggle]");
+    const body=importer.querySelector("[data-creature-animation-body]");
+    if(disclosure&&body){
+      listen(disclosure,"click",()=>{
+        body.hidden=!body.hidden;
+        disclosure.setAttribute("aria-expanded",String(!body.hidden));
+      });
+    }
+    const input=importer.querySelector("[data-creature-animation-files]");
+    const zip=importer.querySelector("[data-creature-animation-zip]");
+    const name=importer.querySelector("[data-creature-animation-name]");
+    const side=importer.querySelector("[data-creature-animation-target]");
+    const button=importer.querySelector("[data-creature-animation-import]");
+    const status=importer.querySelector("[data-creature-animation-status]");
+    const selectors=kind==="movement"?
+      ["[data-creature-movement-visual]","[data-creature-movement-back-visual]"]:
+      ["[data-creature-ranged-attack-visual]","[data-creature-ranged-attack-back-visual]"];
+    const frameSelector=kind==="movement"?
+      "[data-creature-movement-frames]":"[data-creature-ranged-attack-frames]";
+    const modeSelector=kind==="movement"?
+      "[data-creature-movement-mode]":"[data-creature-ranged-attack-mode]";
+    if(!creatorVisualAssets?.importImage){
+      button.disabled=true;status.textContent="Import personnel indisponible";continue;
+    }
+    listen(input,"change",()=>{if(input.files.length)zip.value="";});
+    listen(zip,"change",()=>{if(zip.files.length)input.value="";});
+    listen(button,"click",async()=>{
+      button.disabled=true;status.dataset.tone="info";
+      status.textContent="Vérification des frames et assemblage de la planche…";
+      try{
+        const archive=zip.files?.[0];
+        const files=[...(input.files??[])];
+        if(!!archive===!!files.length)
+          throw Error("Choisis soit des images séparées, soit un ZIP");
+        const source=archive?await readCreatureAnimationZipV1(archive):files;
+        const strip=await buildCreatureAnimationStripV1(source);
+        const sideIndex=side.value==="back"?1:0;
+        const other=root.querySelector(selectors[1-sideIndex]);
+        const oldCount=importedCreatureFrameCounts.get(other?.value);
+        if(oldCount!=null&&oldCount!==strip.frames)
+          throw Error("FACE et DOS doivent avoir le même nombre de frames ("+
+            oldCount+" contre "+strip.frames+"). Réimporte une séquence correspondante.");
+        const label=name.value.trim()||(
+          (kind==="movement"?"Mouvement":"Attaque")+" "+
+          (sideIndex===0?"FACE":"DOS")+" · "+strip.frames+" frames"
+        );
+        const asset=creatorVisualAssets.importImage({
+          file:strip.file,label,role:kind
+        });
+        assets.push(asset);byId.set(asset.id,asset);
+        importedCreatureFrameCounts.set(asset.id,strip.frames);
+        refreshCreatorAssetLists();
+        const target=root.querySelector(selectors[sideIndex]);
+        target.value=asset.id;
+        target.dispatchEvent(new Event("change",{bubbles:true}));
+        const frames=root.querySelector(frameSelector);
+        frames.value=String(strip.frames);
+        frames.dispatchEvent(new Event("change",{bubbles:true}));
+        const mode=root.querySelector(modeSelector);
+        mode.value="sprite";
+        mode.dispatchEvent(new Event("change",{bubbles:true}));
+        status.textContent="Importé : "+strip.frames+" frames · "+
+          strip.frameWidth+"×"+strip.frameHeight+" · "+
+          (sideIndex?"DOS joueur":"FACE adversaire")+
+          ". Planche prête dans la bibliothèque de cette session.";
+        status.dataset.tone="ok";
+        input.value="";zip.value="";
+      }catch(error){
+        status.textContent="Import refusé : "+(error?.message??String(error));
+        status.dataset.tone="error";
+      }finally{button.disabled=false;}
+    });
   }
 
   const scaleInput = one(
