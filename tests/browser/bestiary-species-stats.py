@@ -79,6 +79,58 @@ def check(context, origin):
     assert combat["value"] == before + 25, combat
     assert combat["maxHp"] == combat["value"] * combat["factor"], combat
     print(page.viewport_size, species, before, combat, flush=True)
+    # Real editor, same isolated database and same native arena DOM.
+    editor_url = origin + "/examples/dom-demo/capture-editor-v2.html?tab=combat&universe=" + project
+    page.goto(editor_url, wait_until="domcontentloaded")
+    page.locator("[data-combat-hud-layout-editor] summary").click()
+    profile = "desktop-1v1" if page.evaluate("matchMedia('(min-width:1100px) and (min-height:650px) and (pointer:fine)').matches") else "touch-1v1"
+    page.locator("[data-hud-layout-profile]").select_option(profile)
+    page.locator("[data-hud-layout-role]").select_option("local-status")
+    page.locator("[data-hud-layout-x]").fill("1")
+    page.locator("[data-hud-layout-y]").fill("-1")
+    page.get_by_role("button", name="Enregistrer le catalogue de cet univers").click()
+    page.wait_for_function("document.querySelector('[data-capture-universe-project-editor] [role=status]').textContent.includes('révision 3')")
+    page.goto(editor_url, wait_until="domcontentloaded")
+    page.locator("[data-combat-hud-layout-editor] summary").click()
+    page.locator("[data-hud-layout-profile]").select_option(profile)
+    page.locator("[data-hud-layout-role]").select_option("local-status")
+    assert page.locator("[data-hud-layout-x]").input_value() == "1"
+    assert page.locator("[data-hud-layout-y]").input_value() == "-1"
+    # Apply the real layout controller to the ONE editor template in a visible
+    # preview shell. The native game path mounts this same controller.
+    geometry = page.evaluate("""async ([id,profile])=>{
+      const {createCaptureUniverseDatabaseStoreV1}=await import('/src/contracts/capture-universe-database-store-v1.js');
+      const {mountCaptureHudLayoutPreviewV1}=await import('/src/ui/capture-hud-layout-preview-v1.js');
+      const {updateCaptureHudLayoutV1}=await import('/src/contracts/capture-hud-layout-v1.js');
+      const layout=createCaptureUniverseDatabaseStoreV1({storage:localStorage}).load(id).database.metadata.combatHudLayoutV1;
+      const shell=document.querySelector('[data-capture-preview-shell]');
+      const host=document.querySelector('[data-capture-preview-host]');
+      host.replaceChildren(document.querySelector('[data-capture-preview-template]').content.cloneNode(true));
+      shell.hidden=false;shell.dataset.landscapeRequired='true';document.body.dataset.previewLandscapeActive='true';
+      const root=host.querySelector('[data-combat-demo]'),arena=root.querySelector('[data-combat-arena]');
+      arena.dataset.combatActiveCount='1';
+      for(const node of root.querySelectorAll('[data-preview-actor-ui="local-2"],[data-preview-actor-ui="opponent-2"]'))node.hidden=true;
+      const hp=root.querySelector('.squad-card--local-full');
+      const grid=root.querySelector('[data-combat-skills]');
+      for(let i=0;i<5;i++){const b=document.createElement('button');b.className='action-option action-option--skill';b.textContent='Slot '+(i+1);grid.append(b);}
+      const wait=()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done)));
+      await wait();const before=hp.getBoundingClientRect();
+      let warning='';const mounted=mountCaptureHudLayoutPreviewV1({root,layout,onStatus:m=>warning=m});
+      await wait();const after=hp.getBoundingClientRect(),applied=hp.style.translate;
+      const successWarning=warning;
+      mounted.dispose();
+      const reset=hp.getBoundingClientRect();
+      const bad=updateCaptureHudLayoutV1(layout,profile,'local-status',{dx:-50,dy:0,scale:100});
+      const rejected=mountCaptureHudLayoutPreviewV1({root,layout:bad,onStatus:m=>warning=m});
+      await wait();const blocked=warning,restored=hp.style.translate;
+      rejected.dispose();host.replaceChildren();shell.hidden=true;
+      return {before:before.x,after:after.x,reset:reset.x,applied,successWarning,blocked,restored,skills:5};
+    }""", [project, profile])
+    assert geometry["applied"] and geometry["after"] > geometry["before"] and not geometry["successWarning"], geometry
+    assert abs(geometry["reset"] - geometry["before"]) < 1, geometry
+    assert geometry["blocked"].startswith("Disposition non appliquée") and not geometry["restored"], geometry
+    print("HUD native profile/save/reload/geometry:", page.viewport_size, geometry, flush=True)
+
 
 
 with ThreadingHTTPServer(("127.0.0.1", 0), partial(SimpleHTTPRequestHandler, directory=str(root))) as server:
