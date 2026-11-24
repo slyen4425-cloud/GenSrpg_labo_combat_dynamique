@@ -225,6 +225,14 @@ try {
   throw error;
 }
 
+const speciesFromProfile = new URLSearchParams(location.search).get("species");
+if (speciesFromProfile && location.hash === "#creature-stats") {
+  editor.ready.then(() => editor.openSpeciesStats(speciesFromProfile)).catch(error => {
+    editorStatus.textContent = error.message;
+    editorStatus.dataset.tone = "error";
+  });
+}
+
 if(universeSnapshot){
  const panel=document.createElement("section");
  panel.dataset.captureUniverseProjectEditor="true";
@@ -239,7 +247,7 @@ if(universeSnapshot){
  save.addEventListener("click",async()=>{
   try{
    await editor.ready;
-   const result=universeStore.save(universeId,editor.readDatabase(),
+   const result=universeStore.save(universeId,editor.readDatabase({includePendingSpecies:true}),
     {expectedRevision:universeRevision});
    universeRevision=result.revision;
    notice.textContent="Catalogue sauvegardé dans cet univers (révision "+universeRevision+").";

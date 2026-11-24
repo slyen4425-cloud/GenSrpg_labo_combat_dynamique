@@ -195,3 +195,14 @@ jobs:
           path: artifacts/combat-pc-hud/*.png
           if-no-files-found: warn
 
+
+  bestiary-species-stats:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Bestiary editing, universe saving, transfers and native fighter stats
+        run: |
+          python3 -m venv "$RUNNER_TEMP/bestiary-browser"
+          "$RUNNER_TEMP/bestiary-browser/bin/pip" install --quiet playwright==1.55.0
+          "$RUNNER_TEMP/bestiary-browser/bin/python" tests/browser/bestiary-species-stats.py

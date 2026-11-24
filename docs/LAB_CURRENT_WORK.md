@@ -1,3 +1,6 @@
+## 2026-11-24 — #385 · Statistiques d’une espèce depuis sa fiche
+Base `0543103891b5777fff108cb12a1ae55a519544d9`, checkpoint `checkpoint/lab-start-bestiary-species-stats-20261124`, branche `work/lab-bestiary-species-stats-20261124`. La fiche ouvre l’espèce dans l’éditeur natif. La sauvegarde du catalogue inclut les modifications de la fiche sélectionnée. Vérifier le budget du registre, les espèces historiques, le transfert, les PV réels du combattant et la consultation depuis la collection. Le raccord des rencontres de l’univers appartient aux sources Exploration et Capture.
+
 ## 2026-11-23 — Combat : volet compact des compétences adverses (lecture seule)
 - START `main@2b3438a3f7d0ab13c2b074710ffc7d9925dec071`, checkpoint `checkpoint/lab-start-opponent-skills-readonly-20261123`, branche `work/lab-opponent-skills-readonly-hud-20261123`.
 - La demande auteur de personnalisation générale du HUD suit un autre chantier. Ici, ajouter **uniquement une projection réutilisable** des capacités équipées par les adversaires dans le HUD de test natif, sans créer de nouveau moteur, éditeur de position, registre ou calcul de recharge.
