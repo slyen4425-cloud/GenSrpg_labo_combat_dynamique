@@ -61,15 +61,17 @@ def check(context, origin):
       const {exportCaptureCreatureTransferJsonV1,importCaptureTransferJsonV1}=await import('/src/adapters/input/capture/capture-entity-transfer-v1.js');
       const {buildCaptureEncounterCombatSourceV1}=await import('/src/ui/capture-encounter-combat-source-v1.js');
       const {database}=createCaptureUniverseDatabaseStoreV1({storage:localStorage}).load(id);
-      const record=database.creatures.find(c=>c.draft.id===species);
+      const {readCaptureUniverseEncounterSourceV1}=await import('/src/adapters/input/capture/capture-universe-encounter-source-v1.js');
+      const encounter=readCaptureUniverseEncounterSourceV1({storage:localStorage,universeId:id});
+      const record=encounter.creatureTransfers.find(c=>c.draft.id===species);
       const options={statRegistry:database.statRegistry};
       const text=exportCaptureCreatureTransferJsonV1(record,options);
       const loaded=importCaptureTransferJsonV1(text,options).value;
       const combatRules={schema:'capture-combat-rules-editor-draft-v1',maxEnergy:10,initialEnergy:10,
         energyChargeAmount:1,energyChargeIntervalMs:2000,movementEnergyPerStep:1,chargeTimeModifierPct:0};
       const result=buildCaptureEncounterCombatSourceV1({configuredCreatures:new Map([[species,loaded]]),
-        configuredSkills:new Map(database.skills.map(s=>[s.id,s])),arenaId:'forest',combatRules,
-        statRegistry:database.statRegistry,progressionRules:database.progressionRules,
+        configuredSkills:new Map(encounter.skillTransfers.map(s=>[s.draft.id,s.draft])),arenaId:'forest',combatRules,
+        statRegistry:encounter.statRegistry,progressionRules:encounter.progressionRules,
         local:{speciesId:species,level:1},opponent:{speciesId:species,level:1}});
       return {value:loaded.statValues.values.health,maxHp:result.fighters.find(f=>f.id==='local-1').maxHp,
         factor:database.statRegistry.stats.find(s=>s.id==='health').maxHpPerPoint};
