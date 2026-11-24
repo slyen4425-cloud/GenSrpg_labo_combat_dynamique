@@ -1,3 +1,8 @@
+## 2026-11-24 — #386 · Interface de combat : disposition native (premier jalon)
+- START `826c6cddf81e14f485f5afae2e1a9160e3f8b415`, checkpoint `checkpoint/lab-start-combat-hud-layout-386-20261124`, branche `work/lab-combat-hud-layout-386-20261124`. Dernier GREEN Bestiaire #389 (CI 45442392649, Pages 45442392578). Aucun autre lot Combat actif. Les publications Exploration/PWA en cours épinglent l'ancien SHA Combat et ne sont pas modifiées.
+- Contrat de présentation facultatif dans la base auteur existante, profils PC/mobile et 1v1/2v2. Préserver exactement le HUD natif quand aucun réglage n'est renseigné. Déplacer les blocs existants par rôles stables, vérifier bornes, taille et collisions géométriques. Aucune duplication de DOM combat, CSS parallèle, stockage ou règle de compétence. Jalon : éditeur de disposition + aperçu du vrai HUD ; intégration du transport Aventure et édition individuelle des slots après validation du jalon.
+- Tests : contrat strict, sauvegarde/export/import de la base, sécurité géométrique, anciennes bases, tests de montage du vrai preview. CI et revue obligatoires, aucun repin PWA implicite.
+
 ## 2026-11-24 — #385 · Statistiques d’une espèce depuis sa fiche
 Base `0543103891b5777fff108cb12a1ae55a519544d9`, checkpoint `checkpoint/lab-start-bestiary-species-stats-20261124`, branche `work/lab-bestiary-species-stats-20261124`. La fiche ouvre l’espèce dans l’éditeur natif. La sauvegarde du catalogue inclut les modifications de la fiche sélectionnée. Vérifier le budget du registre, les espèces historiques, le transfert, les PV réels du combattant et la consultation depuis la collection. Le raccord des rencontres de l’univers appartient aux sources Exploration et Capture.
 

@@ -1,3 +1,4 @@
+import {mountCaptureHudLayoutPreviewV1} from '../../src/ui/capture-hud-layout-preview-v1.js';
 import {
   SOUNDTRACK_STARTER_CATALOG_V1,
   SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1,
@@ -586,6 +587,10 @@ const session = createCaptureEditorPreviewSessionV2({
         )
     });
 
+    const layoutWarning=previewShell.querySelector('[data-hud-layout-warning]');
+    const hudLayout=mountCaptureHudLayoutPreviewV1({root:previewRoot,layout:editor.readHudLayout(),
+      onStatus(message){if(layoutWarning){layoutWarning.textContent=message;layoutWarning.hidden=!message;}}});
+
     // Opt-in authored soundtrack. No entry means silence and never blocks
     // existing battle audio. The combat session exclusively owns skill SFX.
     try {
@@ -613,6 +618,7 @@ const session = createCaptureEditorPreviewSessionV2({
         }
         disposed = true;
         soundtrack?.dispose();
+        hudLayout.dispose();
         mounted.dispose();
         previewHost.replaceChildren();
       }
@@ -623,6 +629,10 @@ const session = createCaptureEditorPreviewSessionV2({
 
 testButton.disabled = true;
 setMode("editor");
+
+root.querySelector("[data-hud-layout-preview]")?.addEventListener("click",()=>{
+  if(!testButton.disabled)testButton.click();
+});
 
 testButton.addEventListener("click", async () => {
   testButton.disabled = true;

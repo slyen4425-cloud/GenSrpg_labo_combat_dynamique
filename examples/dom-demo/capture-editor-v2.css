@@ -2393,3 +2393,6 @@ html {
     font-size: .8rem;
   }
 }
+
+/* Author-only warning, outside the native arena; no alternative HUD cascade. */
+.capture-hud-layout-warning:not([hidden]){position:absolute;z-index:30;top:.4rem;left:50%;transform:translateX(-50%);max-width:55%;padding:.35rem .55rem;border-radius:.4rem;background:#542d1f;color:#fff;font-size:.75rem;pointer-events:none;}

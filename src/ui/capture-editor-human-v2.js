@@ -183,6 +183,8 @@ import {
   exportCaptureDatabaseJsonV1
 } from "../adapters/input/capture/capture-database-transfer-v1.js";
 import {normalizeCaptureDatabaseV1} from '../contracts/capture-database-v1.js';
+import {normalizeCaptureHudLayoutV1} from '../contracts/capture-hud-layout-v1.js';
+import {mountCaptureHudLayoutEditorV1} from './capture-hud-layout-editor-v1.js';
 import {
   buildCaptureEditorDatabaseV1,
   applyCaptureTransferPlanToEditorStateV1,
@@ -11234,6 +11236,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
   }
 
   const universeDatabase = initialDatabase === null ? null : normalizeCaptureDatabaseV1(initialDatabase);
+  let hudLayoutAuthored=universeDatabase?.metadata?.combatHudLayoutV1!==undefined;
+  let hudLayout=normalizeCaptureHudLayoutV1(universeDatabase?.metadata?.combatHudLayoutV1);
   const listeners = [];
   const sockets = initialSocketStore();
   const configuredSkills = new Map();
@@ -11261,6 +11265,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     );
   }
 
+  const hudLayoutEditor=mountCaptureHudLayoutEditorV1({host:root.querySelector('[data-combat-hud-layout-editor]'),
+    initialLayout:hudLayout,listen,onChange(value){hudLayout=value;hudLayoutAuthored=true;}});
   mountSkillSpriteRecolorSlidersV1(root, listen);
 
   const markerLibraryController = mountCaptureMarkerLibraryV1({
@@ -12308,6 +12314,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
 
   function currentEditorDatabaseV1() {
     ensureTransferOwnersReadyV1();
+    const {combatHudLayoutV1:previousHudLayout,...baseMetadata}=universeDatabase?.metadata??{};
 
     return buildCaptureEditorDatabaseV1({
       statRegistry,
@@ -12315,7 +12322,8 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       configuredCreatures,
       configuredSkills,
       metadata: {
-        ...universeDatabase?.metadata,
+        ...baseMetadata,
+        ...(hudLayoutAuthored?{combatHudLayoutV1:hudLayout}:{}),
         producer:
           "capture-human-editor-v2"
       }
@@ -14798,6 +14806,10 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         progressionRules =
           applyResult.progressionRules;
 
+        if(plan.action==='replace-database'){
+          hudLayout=normalizeCaptureHudLayoutV1(transfer.value.metadata?.combatHudLayoutV1);
+          hudLayoutAuthored=transfer.value.metadata?.combatHudLayoutV1!==undefined;hudLayoutEditor?.set(hudLayout);
+        }
         newSkillDraftMode=false;
         refreshEditorAfterTransferV1({
           plan,
@@ -15336,6 +15348,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       heading?.focus();
       heading?.scrollIntoView({block:"start"});
     },
+    readHudLayout(){return hudLayout;},
     readDatabase({includePendingSpecies = false} = {}){
       if(disposed)throw new Error("Éditeur fermé");
       if (includePendingSpecies && creatureDirty) {

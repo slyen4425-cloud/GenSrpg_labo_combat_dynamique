@@ -997,6 +997,24 @@
         </fieldset>
       </article>
 
+      <details class="card" data-combat-hud-layout-editor>
+        <summary><strong>Interface de combat · Disposition</strong></summary>
+        <p class="note">Personnalise les blocs du HUD existant. Les profils PC et mobile sont indépendants, en 1v1 et 2v2. Un décalage de 0 % et une taille de 100 % conservent exactement la disposition actuelle.</p>
+        <div class="grid two">
+          <label>Profil <select data-hud-layout-profile></select></label>
+          <label>Bloc à déplacer <select data-hud-layout-role></select></label>
+          <label>Décalage horizontal (% de l’arène)<input data-hud-layout-x type="range" min="-50" max="50" value="0" step="1"></label>
+          <label>Décalage vertical (% de l’arène)<input data-hud-layout-y type="range" min="-50" max="50" value="0" step="1"></label>
+          <label>Taille (%)<input data-hud-layout-scale type="range" min="85" max="125" value="100" step="1"></label>
+        </div>
+        <p data-hud-layout-status role="status"></p>
+        <div class="grid two">
+          <button type="button" data-hud-layout-reset-role>Réinitialiser ce bloc</button>
+          <button type="button" data-hud-layout-reset-profile>Réinitialiser ce profil</button>
+        </div>
+        <button type="button" data-hud-layout-preview>Prévisualiser le vrai combat</button>
+        <p class="note">L’aperçu utilise le profil correspondant à cet écran et au nombre de combattants. Une disposition qui recouvre un autre bloc ou réduit trop une commande tactile est refusée. Export/import de la base complète ou sauvegarde du catalogue de l’univers pour conserver les réglages.</p>
+      </details>
       <article class="card" data-combat-light-settings>
         <div class="card-title">
           <span class="step">5</span>
@@ -2503,6 +2521,7 @@
     <button type="button" class="capture-preview-back" data-preview-back-editor>
       Retour à l’éditeur
     </button>
+    <output class="capture-hud-layout-warning" data-hud-layout-warning hidden role="status"></output>
     <div class="capture-preview-host" data-capture-preview-host></div>
 
     <template data-capture-preview-template>
