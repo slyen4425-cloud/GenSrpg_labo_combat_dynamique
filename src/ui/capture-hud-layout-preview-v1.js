@@ -108,6 +108,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
     // Reject if the actual grid or its contents cannot fit the authored rectangle.
     if(content.left<box.left-1||content.right>box.right+1||content.top<box.top-1||content.bottom>box.bottom+1||
        grid.scrollHeight>grid.clientHeight+2||grid.scrollWidth>grid.clientWidth+2)return 'Agrandis le volet pour accueillir ses cases';
+    if(!desktop&&[...grid.querySelectorAll('[data-hud-empty-skill]:not([data-hud-page-hidden])')].some(cell=>cell.getBoundingClientRect().width<43))return 'Cases tactiles trop étroites';
    }
    const nav=pages.navigation();
    if(nav){
@@ -124,7 +125,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   if(allPages)for(const option of options){pages.select(option.id);error=applyCurrent();if(error)break;}
   if(selected)pages.select(selected);
   if(!error)error=applyCurrent();
-  if(error){restore();pages.suspend();report('Disposition non appliquée — '+error);return false;}
+  if(error){restore();pages.sync([],null);pages.suspend();report('Disposition non appliquée — '+error);return false;}
   report('');return true;
  }
  function schedule(){if(!disposed&&!frame)frame=win.requestAnimationFrame(()=>apply());}
@@ -139,6 +140,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
  win.addEventListener('resize',schedule);schedule();
  return Object.freeze({
   profile:profileKey,
+  lastError:()=>last,
   pageOptions:()=>pages.options(),
   currentPage:()=>pages.current(),
   showPage(id){

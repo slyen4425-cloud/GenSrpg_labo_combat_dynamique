@@ -115,7 +115,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   })[0]?.[0]??null;
  }
  function apply(candidate){
-  if(!hudOwner.set(candidate)){status.textContent='Placement refusé : zone protégée, chevauchement ou commande trop petite.';schedule();return false;}
+  if(!hudOwner.set(candidate)){status.textContent=hudOwner.lastError?.()||'Placement refusé : zone protégée, chevauchement ou commande trop petite.';schedule();return false;}
   writeLayout(candidate);status.textContent='Disposition modifiée';schedule();return true;
  }
  listen(overlay,'pointerdown',event=>{

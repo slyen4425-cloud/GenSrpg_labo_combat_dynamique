@@ -24,14 +24,20 @@ export function mountCaptureHudSkillPagesV1({grid,onChange=()=>{}}){
  }
  function projectEmpty(used){
   const count=config?Math.max(0,config.slots-used):0;
-  while(empty.length>count)empty.pop().remove();
-  while(empty.length<count){
+  // Keep the same nodes while measuring or switching pages. Creating/removing
+  // nodes on every suspend/resume would feed the owner's MutationObserver.
+  const pool=config?.slots??0;
+  while(empty.length>pool)empty.pop().remove();
+  while(empty.length<pool){
    const cell=grid.ownerDocument.createElement('span');
    cell.dataset.hudEmptySkill='true';cell.setAttribute('aria-hidden','true');cell.textContent='+';
    empty.push(cell);
   }
   // The native renderer can replaceChildren on roster changes.
-  for(const cell of empty)if(cell.parentElement!==grid)grid.append(cell);
+  empty.forEach((cell,index)=>{
+   if(index>=count)cell.dataset.hudPageHidden='true';else delete cell.dataset.hudPageHidden;
+   if(cell.parentElement!==grid)grid.append(cell);
+  });
   if(config)grid.dataset.hudGridColumns=String(config.columns);else delete grid.dataset.hudGridColumns;
   if(config)grid.style.setProperty('--hud-authored-columns',String(config.columns));else grid.style.removeProperty('--hud-authored-columns');
  }
