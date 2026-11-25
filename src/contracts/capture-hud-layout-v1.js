@@ -37,6 +37,35 @@ function integer(v,min,max,label){
  if(!Number.isSafeInteger(v)||v<min||v>max)throw new RangeError(label+' hors limites');
  return v;
 }
+// Coordinates in thousandths of arena dimensions, independent of device pixels.
+export const CAPTURE_HUD_BOX_UNITS_V1=1000;
+export function normalizeCaptureHudBoxV1(raw){
+ exact(raw,['x','y','w','h'],'Rectangle HUD');
+ const x=integer(raw.x,0,999,'Position X'),y=integer(raw.y,0,999,'Position Y');
+ const w=integer(raw.w,40,1000,'Largeur'),h=integer(raw.h,40,1000,'Hauteur');
+ if(x+w>1000||y+h>1000)throw new RangeError('Région hors arène');
+ return Object.freeze({x,y,w,h});
+}
+export function captureHudBoxFromRectsV1(rect,arena){
+ const unit=CAPTURE_HUD_BOX_UNITS_V1;
+ const bound=(v,min,max)=>Math.max(min,Math.min(max,Math.round(v)));
+ const w=bound(unit*rect.width/arena.width,40,unit),h=bound(unit*rect.height/arena.height,40,unit);
+ return normalizeCaptureHudBoxV1({x:bound(unit*(rect.left-arena.left)/arena.width,0,unit-w),
+  y:bound(unit*(rect.top-arena.top)/arena.height,0,unit-h),w,h});
+}
+export function captureHudBoxGestureV1({box,edge,deltaX,deltaY,width,height}){
+ const {x,y,w,h}=normalizeCaptureHudBoxV1(box);
+ if(!(width>0&&height>0))throw new RangeError('Arène non visible');
+ const dx=Math.round(1000*deltaX/width),dy=Math.round(1000*deltaY/height);
+ const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+ if(edge==='move')return normalizeCaptureHudBoxV1({x:clamp(x+dx,0,1000-w),y:clamp(y+dy,0,1000-h),w,h});
+ if(!['n','s','e','w','ne','nw','se','sw'].includes(edge))throw new RangeError('Poignée inconnue');
+ const left=edge.includes('w')?clamp(x+dx,0,x+w-40):x;
+ const top=edge.includes('n')?clamp(y+dy,0,y+h-40):y;
+ const right=edge.includes('e')?clamp(x+w+dx,x+40,1000):x+w;
+ const bottom=edge.includes('s')?clamp(y+h+dy,y+40,1000):y+h;
+ return normalizeCaptureHudBoxV1({x:left,y:top,w:right-left,h:bottom-top});
+}
 export function normalizeCaptureHudLayoutV1(raw){
  if(raw===undefined||raw===null)raw={schema:CAPTURE_HUD_LAYOUT_SCHEMA_V1,profiles:{}};
  exact(raw,['schema','profiles','groups'],'Disposition HUD');
@@ -47,6 +76,13 @@ export function normalizeCaptureHudLayoutV1(raw){
   if(!plain(roles)||Object.keys(roles).some(role=>!captureHudRoleLabelV1(role)))throw new TypeError('Rôles HUD invalides');
   const normalized={};
   for(const [role,value] of Object.entries(roles)){
+   if(value?.box!==undefined){
+    // A real region replaces the previous transform for this role. Never both.
+    exact(value,['box'],'Région HUD');
+    if(role!=='command-dock')throw new RangeError('Région non prise en charge : '+role);
+    normalized[role]=Object.freeze({box:normalizeCaptureHudBoxV1(value.box)});
+    continue;
+   }
    exact(value,['dx','dy','scale'],'Réglage HUD');
    const dx=integer(value.dx,-50,50,'Décalage horizontal');
    const dy=integer(value.dy,-50,50,'Décalage vertical');

@@ -25,6 +25,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
  }});
  let nodes={};
  const originals=new Map();
+ const styleKeys=['translate','scale','transform-origin','position','left','top','right','bottom','width','height','min-width','min-height','max-width','max-height','box-sizing'];
  function syncNodes(){
   const next=Object.fromEntries(Object.entries(selectors).map(([key,selector])=>[key,arena.querySelector(selector)]).filter(([,node])=>node));
   for(const node of arena.querySelectorAll('[data-combat-hud-skill-role]')){
@@ -33,18 +34,14 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   }
   for(const node of originals.keys())if(!Object.values(next).includes(node)){resize?.unobserve(node);originals.delete(node);}
   for(const node of Object.values(next))if(!originals.has(node)){
-   originals.set(node,[
-    node.style.getPropertyValue('translate'),node.style.getPropertyPriority('translate'),
-    node.style.getPropertyValue('scale'),node.style.getPropertyPriority('scale'),
-    node.style.getPropertyValue('transform-origin'),node.style.getPropertyPriority('transform-origin')
-   ]);
+   originals.set(node,styleKeys.flatMap(key=>[node.style.getPropertyValue(key),node.style.getPropertyPriority(key)]));
    resize?.observe(node);
   }
   nodes=next;
  }
  let frame=0,disposed=false,last='';
  function restore(){
-  for(const [node,v] of originals)for(const [i,key] of ['translate','scale','transform-origin'].entries()){
+  for(const [node,v] of originals)for(const [i,key] of styleKeys.entries()){
    if(v[2*i])node.style.setProperty(key,v[2*i],v[2*i+1]);else node.style.removeProperty(key);
   }
  }
@@ -93,6 +90,14 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
    }
    for(const [role,value] of Object.entries(values)){
     const node=nodes[role];if(!node||!baseline[role])continue;
+    if(value.box){
+     const {x,y,w,h}=value.box;
+     const styles={position:'absolute',left:x/10+'%',top:y/10+'%',right:'auto',bottom:'auto',
+      width:w/10+'%',height:h/10+'%','min-width':'0','min-height':'0','max-width':'none','max-height':'none',
+      'box-sizing':'border-box',translate:'none',scale:'none'};
+     for(const [key,val] of Object.entries(styles))node.style.setProperty(key,val);
+     continue;
+    }
     node.style.setProperty('translate',a.width*value.dx/100+'px '+a.height*value.dy/100+'px');
     node.style.setProperty('scale',String(value.scale/100));
     node.style.setProperty('transform-origin','center');

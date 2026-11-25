@@ -1,4 +1,4 @@
-import {CAPTURE_HUD_ROLES_V1,captureHudRoleLabelV1,isCaptureHudSkillRoleV1,editCaptureHudGroupV1,updateCaptureHudLayoutV1} from '../contracts/capture-hud-layout-v1.js';
+import {CAPTURE_HUD_ROLES_V1,captureHudRoleLabelV1,isCaptureHudSkillRoleV1,editCaptureHudGroupV1,updateCaptureHudLayoutV1,captureHudBoxFromRectsV1,captureHudBoxGestureV1} from '../contracts/capture-hud-layout-v1.js';
 const names={'desktop-1v1':'PC · 1v1','desktop-2v2':'PC · 2v2','touch-1v1':'Mobile · 1v1','touch-2v2':'Mobile · 2v2'};
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,Math.round(n)));
 const defaultValue=()=>({dx:0,dy:0,scale:100});
@@ -23,8 +23,10 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
  const $=s=>toolbar.querySelector(s),status=$('[data-hud-author-status]');
  const overlay=doc.createElement('div');overlay.dataset.hudAuthorOverlay='true';
  const outline=doc.createElement('div');outline.className='hud-author-outline';outline.hidden=true;
- const handle=doc.createElement('div');handle.className='hud-author-handle';handle.hidden=true;
- overlay.append(outline,handle);arena.append(overlay);toolbar.hidden=false;
+ const handles=['nw','n','ne','w','e','sw','s','se'].map(edge=>{
+  const node=doc.createElement('div');node.className='hud-author-handle';node.dataset.hudResizeEdge=edge;node.hidden=true;return node;
+ });
+ overlay.append(outline,...handles);arena.append(overlay);toolbar.hidden=false;
  let role=null,groupId=null,gesture=null,disposed=false,frame=0,history=[],cleanups=[];
  const listen=(el,event,fn,options)=>{el.addEventListener(event,fn,options);cleanups.push(()=>el.removeEventListener(event,fn,options));};
  // The pointer overlay alone cannot stop keyboard activation of native
@@ -42,7 +44,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
  const groups=()=>readLayout().groups?.[profile()]??[];
  const selectedGroup=()=>groups().find(group=>group.id===groupId);
  const selectedRoles=()=>selectedGroup()?.roles??(role?[role]:[]);
- const parentScale=key=>isCaptureHudSkillRoleV1(key)?actual('command-dock').scale/100:1;
+ const parentScale=key=>isCaptureHudSkillRoleV1(key)?(actual('command-dock').scale??100)/100:1;
  const groupEditor=$('[data-hud-author-group-editor]'),groupSelect=$('[data-hud-author-group-select]');
  const pageSelect=$('[data-hud-author-page-select]');
  const groupName=$('[data-hud-author-group-name]'),groupFold=$('[data-hud-author-group-foldable]'),groupRoles=$('[data-hud-author-group-roles]');
@@ -90,9 +92,16 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   $('[data-hud-author-group]').disabled=!role?.startsWith('skill-');
   const r=selectionBounds(),a=arena.getBoundingClientRect();
   const valid=!!r;
-  outline.hidden=handle.hidden=!valid;
-  if(valid){Object.assign(outline.style,{left:r.left-a.left+'px',top:r.top-a.top+'px',width:r.width+'px',height:r.height+'px'});
-   Object.assign(handle.style,{left:r.right-a.left+'px',top:r.bottom-a.top+'px'});}
+  outline.hidden=!valid;
+  for(const handle of handles){
+   const edge=handle.dataset.hudResizeEdge;
+   handle.hidden=!valid||(!(role==='command-dock'&&!groupId)&&edge!=='se');
+   if(!handle.hidden)Object.assign(handle.style,{
+    left:(edge.includes('w')?r.left:edge.includes('e')?r.right:(r.left+r.right)/2)-a.left+'px',
+    top:(edge.includes('n')?r.top:edge.includes('s')?r.bottom:(r.top+r.bottom)/2)-a.top+'px'
+   });
+  }
+  if(valid)Object.assign(outline.style,{left:r.left-a.left+'px',top:r.top-a.top+'px',width:r.width+'px',height:r.height+'px'});
  }
  function schedule(){if(!disposed&&!frame)frame=win.requestAnimationFrame(draw);}
  function choose(x,y){
@@ -109,7 +118,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
  }
  listen(overlay,'pointerdown',event=>{
   if(event.button!==0||gesture)return;
-  const resize=event.target===handle;
+  const edge=event.target.dataset.hudResizeEdge,resize=!!edge;
   if(!resize){
    const picked=choose(event.clientX,event.clientY),selected=selectionBounds();
    if(!((selectedGroup()||role==='command-dock')&&selected&&event.clientX>=selected.left&&event.clientX<=selected.right&&event.clientY>=selected.top&&event.clientY<=selected.bottom)){
@@ -120,12 +129,22 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   const a=arena.getBoundingClientRect();
   const members=selectedRoles().map(key=>({role:key,value:actual(key),parentScale:parentScale(key)}));
   gesture={id:event.pointerId,profile:profile(),members,mode:resize?'resize':'move',x:event.clientX,y:event.clientY,
-   before:readLayout(),width:a.width,height:a.height,elementWidth:r.width,changed:false};
+   before:readLayout(),width:a.width,height:a.height,elementWidth:r.width,changed:false,
+   ...(role==='command-dock'&&!groupId?{box:captureHudBoxFromRectsV1(r,a),edge:edge??'move'}:{})};
   overlay.setPointerCapture(event.pointerId);event.preventDefault();
  });
  listen(overlay,'pointermove',event=>{
   const g=gesture;if(!g||event.pointerId!==g.id||g.profile!==profile())return;
   const args={...g,deltaX:event.clientX-g.x,deltaY:event.clientY-g.y};
+  if(g.box){
+   const box=captureHudBoxGestureV1(args);
+   if(JSON.stringify(box)===JSON.stringify(actual('command-dock').box??g.box))return;
+   if(apply(updateCaptureHudLayoutV1(readLayout(),g.profile,'command-dock',{box})))g.changed=true;
+   return;
+  }
+  // Groups containing a real region must not accidentally feed its rectangle to
+  // the legacy offset operation. The full region-tree gesture replaces this next.
+  if(g.members.some(member=>member.value.box))return;
   const edits=g.members.length===1?[{role:g.members[0].role,value:captureHudPointerValueV1({...args,...g.members[0]})}]:captureHudGroupPointerValuesV1(args);
   if(edits.every(({role,value})=>{const old=actual(role);return old.dx===value.dx&&old.dy===value.dy&&old.scale===value.scale;}))return;
   const candidate=edits.reduce((layout,{role,value})=>updateCaptureHudLayoutV1(layout,g.profile,role,value),readLayout());

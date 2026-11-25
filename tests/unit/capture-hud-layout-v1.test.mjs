@@ -107,3 +107,21 @@ test('only the visual HUD author remains reachable',async()=>{
  assert.doesNotMatch(html,/data-hud-layout-(?:profile|role|x|y|scale|reset-role|reset-profile)\b/);
  assert.doesNotMatch(source,/mountCaptureHudLayoutEditorV1|hudLayoutEditor/);
 });
+
+import {captureHudBoxFromRectsV1,captureHudBoxGestureV1} from '../../src/contracts/capture-hud-layout-v1.js';
+test('real region dimensions are independent, bounded, and replace legacy transforms',()=>{
+ const profile='touch-1v1';
+ const before=updateCaptureHudLayoutV1(undefined,profile,'command-dock',{dx:1,dy:0,scale:110});
+ const box=captureHudBoxFromRectsV1({left:400,top:260,width:200,height:100},{left:0,top:0,width:800,height:400});
+ assert.deepEqual(box,{x:500,y:650,w:250,h:250});
+ const args={box,width:800,height:400,deltaX:-80,deltaY:-40};
+ assert.deepEqual(captureHudBoxGestureV1({...args,edge:'w'}),{x:400,y:650,w:350,h:250});
+ assert.deepEqual(captureHudBoxGestureV1({...args,edge:'n'}),{x:500,y:550,w:250,h:350});
+ const grown=captureHudBoxGestureV1({...args,edge:'nw'});
+ assert.deepEqual(grown,{x:400,y:550,w:350,h:350});
+ const after=updateCaptureHudLayoutV1(before,profile,'command-dock',{box:grown});
+ assert.deepEqual(after.profiles[profile]['command-dock'],{box:grown});
+ assert.deepEqual(normalizeCaptureHudLayoutV1(JSON.parse(JSON.stringify(after))),after);
+ assert.throws(()=>updateCaptureHudLayoutV1(after,profile,'command-dock',{box:grown,scale:110}));
+ assert.deepEqual(captureHudBoxGestureV1({...args,edge:'move',deltaX:999,deltaY:999}),{x:750,y:750,w:250,h:250});
+});
