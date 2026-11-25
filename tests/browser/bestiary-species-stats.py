@@ -111,6 +111,37 @@ def check(context, origin):
     hp.wait_for(state="visible")
     assert arena.locator("[data-combat-hud-skill-role]").count() > 0
     assert page.locator("[data-hud-author-overlay]").count() == 1
+    # Move the actual editor chrome (not a persisted combat role) on both devices.
+    grip = toolbar.locator("[data-hud-author-drag]")
+    before_toolbar = toolbar.bounding_box()
+    def drag_toolbar(dx,dy):
+        b = grip.bounding_box()
+        x,y = b["x"]+b["width"]/2,b["y"]+b["height"]/2
+        if page.evaluate("navigator.maxTouchPoints>0"):
+            cdp = context.new_cdp_session(page)
+            cdp.send("Input.dispatchTouchEvent", {"type":"touchStart","touchPoints":[{"x":x,"y":y}]})
+            cdp.send("Input.dispatchTouchEvent", {"type":"touchMove","touchPoints":[{"x":x+dx,"y":y+dy}]})
+            cdp.send("Input.dispatchTouchEvent", {"type":"touchEnd","touchPoints":[]})
+            cdp.detach()
+        else:
+            page.mouse.move(x,y)
+            page.mouse.down()
+            page.mouse.move(x+dx,y+dy,steps=4)
+            page.mouse.up()
+    drag_toolbar(35,65)
+    moved = toolbar.bounding_box()
+    assert moved["y"] >= before_toolbar["y"]+45, (before_toolbar,moved)
+    assert moved["x"] >= 0 and moved["x"]+moved["width"] <= page.viewport_size["width"]+1
+    collapse = toolbar.locator("[data-hud-author-collapse]")
+    collapse.click()
+    assert not toolbar.locator("[data-hud-author-palette]").is_visible()
+    assert toolbar.bounding_box()["height"] < moved["height"]
+    assert grip.is_visible() and collapse.is_visible()
+    collapse.click()
+    assert toolbar.locator("[data-hud-author-palette]").is_visible()
+    drag_toolbar(before_toolbar["x"]-toolbar.bounding_box()["x"],before_toolbar["y"]-toolbar.bounding_box()["y"])
+    assert abs(toolbar.bounding_box()["y"]-before_toolbar["y"]) < 6
+    print("Floating toolbar pointer move, collapse and reopen",page.viewport_size,flush=True)
     # Native keyboard activation must not reach the actor or skill handlers
     # while authoring, even when a control is focused programmatically.
     actor = arena.locator('[data-target-actor="local-1"]').first
@@ -131,6 +162,8 @@ def check(context, origin):
         strip=arena.locator(selector+" > summary .hud-reserve-portrait:not([hidden]) img")
         assert strip.count()==1, (side,strip.count())
         assert strip.first.is_visible() and strip.first.get_attribute("src"), side
+        assert toggle.get_attribute("aria-pressed") == "true"
+        assert "1 portrait" in toolbar.locator("[data-hud-author-reserve-help]").inner_text()
         toggle.click()
         assert not strip.first.is_visible(), side
     print("Native real reserve portraits toggled",page.viewport_size,flush=True)

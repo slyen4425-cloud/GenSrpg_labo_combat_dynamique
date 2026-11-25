@@ -2533,16 +2533,20 @@
       Retour à l’éditeur
     </button>
     <div data-hud-author-toolbar hidden class="capture-hud-author-toolbar" aria-label="Aménagement du combat">
-      <span data-hud-author-profile></span><span data-hud-author-selection>Choisis un élément</span>
+      <div data-hud-author-header class="hud-author-header">
+        <button type="button" data-hud-author-drag aria-label="Déplacer le panneau de réglages" title="Glisser ou utiliser les flèches du clavier">✥ Déplacer</button>
+        <span data-hud-author-profile></span><span data-hud-author-selection>Choisis un élément</span>
+        <button type="button" data-hud-author-collapse aria-expanded="true">Réduire</button>
+      </div>
       <select data-hud-author-palette aria-label="Éléments de l’interface"></select>
       <button type="button" data-hud-author-group>Volet principal</button>
-      <button type="button" data-hud-author-add-slot>+ Case</button>
-      <button type="button" data-hud-author-remove-slot>− Case</button>
+      <button type="button" data-hud-author-add-slot>+ Case compétence</button>
+      <button type="button" data-hud-author-remove-slot>− Case compétence</button>
       <button type="button" data-hud-author-add-column>+ Colonne</button>
       <button type="button" data-hud-author-remove-column>− Colonne</button>
       <span data-hud-author-grid-count aria-live="polite"></span>
-      <button type="button" data-hud-author-portraits-local aria-pressed="false">Réserves alliées · icônes</button>
-      <button type="button" data-hud-author-portraits-opponent aria-pressed="false">Réserves adverses · icônes</button>
+      <button type="button" data-hud-author-portraits-local aria-pressed="false">Afficher portraits alliés</button>
+      <button type="button" data-hud-author-portraits-opponent aria-pressed="false">Afficher portraits adverses</button>
       <select data-hud-author-page-select aria-label="Volet affiché" hidden></select>
       <details data-hud-author-group-editor>
         <summary>Ajouter / gérer un volet</summary>
@@ -2562,6 +2566,7 @@
       <button type="button" data-hud-author-reset>Réinitialiser l’élément</button>
       <button type="button" data-hud-author-apply>Appliquer</button>
       <button type="button" data-hud-author-test>Tester la disposition</button>
+      <span data-hud-author-reserve-help class="hud-author-reserve-help" aria-live="polite">Portraits : un emplacement par créature en réserve dans les équipes du test.</span>
       <output data-hud-author-status role="status"></output>
     </div>
     <output class="capture-hud-layout-warning" data-hud-layout-warning hidden role="status"></output>

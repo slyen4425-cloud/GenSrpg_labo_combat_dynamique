@@ -6,6 +6,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout:
  const arena=root.querySelector('[data-combat-arena]'),doc=root.ownerDocument,win=doc.defaultView;
  if(!arena||!toolbar||!hudOwner)throw new Error('Édition HUD native indisponible');
  const $=s=>toolbar.querySelector(s),status=$('[data-hud-author-status]');
+ const grip=$('[data-hud-author-drag]'),collapse=$('[data-hud-author-collapse]'),reserveHelp=$('[data-hud-author-reserve-help]');
  const overlay=doc.createElement('div');overlay.dataset.hudAuthorOverlay='true';
  const outline=doc.createElement('div');outline.className='hud-author-outline';outline.hidden=true;
  const handles=['nw','n','ne','w','e','sw','s','se'].map(edge=>{
@@ -14,11 +15,60 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout:
  overlay.append(outline,...handles);arena.append(overlay);arena.dataset.hudAuthoring='true';toolbar.hidden=false;
  let role=null,groupId=null,gesture=null,disposed=false,frame=0,history=[],cleanups=[];
  const listen=(el,event,fn,options)=>{el.addEventListener(event,fn,options);cleanups.push(()=>el.removeEventListener(event,fn,options));};
+ // Editing chrome has its own transient position, never a saved combat role.
+ let toolbarDrag=null,toolbarPosition=null;
+ const toolbarStyles=['left','top','transform','--hud-author-popup-space'];
+ const toolbarOriginal=toolbarStyles.map(key=>[key,toolbar.style.getPropertyValue(key),toolbar.style.getPropertyPriority(key)]);
+ function toolbarBounds(){return (toolbar.offsetParent??toolbar.parentElement).getBoundingClientRect();}
+ function positionToolbar(x,y){
+  const bounds=toolbarBounds(),r=toolbar.getBoundingClientRect(),margin=4;
+  toolbarPosition={x:Math.max(margin,Math.min(x,Math.max(margin,bounds.width-r.width-margin))),
+   y:Math.max(margin,Math.min(y,Math.max(margin,bounds.height-r.height-margin)))};
+  toolbar.style.left=toolbarPosition.x+'px';toolbar.style.top=toolbarPosition.y+'px';toolbar.style.transform='none';
+  fitGroupPopup();
+ }
+ function fitGroupPopup(){
+  const bounds=toolbarBounds(),r=toolbar.getBoundingClientRect();
+  const above=Math.max(0,r.top-bounds.top-4),below=Math.max(0,bounds.bottom-r.bottom-4);
+  toolbar.dataset.hudToolbarPopupAbove=String(above>below);
+  toolbar.style.setProperty('--hud-author-popup-space',Math.max(40,Math.floor(Math.max(above,below)))+'px');
+ }
+ function keepToolbarReachable(){
+  if(toolbarPosition)positionToolbar(toolbarPosition.x,toolbarPosition.y);else fitGroupPopup();
+ }
+ listen(grip,'pointerdown',event=>{
+  if(event.button!==0||toolbarDrag)return;
+  const bounds=toolbarBounds(),r=toolbar.getBoundingClientRect();
+  toolbarDrag={id:event.pointerId,x:event.clientX,y:event.clientY,left:r.left-bounds.left,top:r.top-bounds.top};
+  grip.setPointerCapture(event.pointerId);event.preventDefault();
+ });
+ listen(grip,'pointermove',event=>{
+  const g=toolbarDrag;if(!g||g.id!==event.pointerId)return;
+  positionToolbar(g.left+event.clientX-g.x,g.top+event.clientY-g.y);
+ });
+ function endToolbarDrag(event){
+  if(toolbarDrag?.id!==event.pointerId)return;toolbarDrag=null;
+  if(grip.hasPointerCapture(event.pointerId))grip.releasePointerCapture(event.pointerId);
+ }
+ for(const event of ['pointerup','pointercancel','lostpointercapture'])listen(grip,event,endToolbarDrag);
+ listen(grip,'keydown',event=>{
+  const delta={ArrowLeft:[-24,0],ArrowRight:[24,0],ArrowUp:[0,-24],ArrowDown:[0,24]}[event.key];
+  if(!delta)return;event.preventDefault();
+  const r=toolbar.getBoundingClientRect(),bounds=toolbarBounds();
+  positionToolbar(r.left-bounds.left+delta[0],r.top-bounds.top+delta[1]);
+ });
+ listen(collapse,'click',()=>{
+  const collapsed=toolbar.dataset.hudToolbarCollapsed!=='true';
+  toolbar.dataset.hudToolbarCollapsed=String(collapsed);
+  collapse.setAttribute('aria-expanded',String(!collapsed));collapse.textContent=collapsed?'Développer':'Réduire';
+  if(collapsed)$('[data-hud-author-group-editor]').open=false;
+  keepToolbarReachable();
+ });
  // The pointer overlay alone cannot stop keyboard activation of native
  // buttons or actor controls. Intercept activation only inside this mounted
  // combat root while authoring; never alter native geometry or gameplay.
  const blockNativeActivation=event=>{
-  if(overlay.contains(event.target))return;
+  if(overlay.contains(event.target)||toolbar.contains(event.target))return;
   if(event.type==='keydown'&&event.key!=='Enter'&&event.key!==' ')return;
   event.preventDefault();event.stopPropagation();
  };
@@ -91,7 +141,18 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout:
   $('[data-hud-author-group]').disabled=role==='command-dock';
   const grid=regionValue().grid??actual('command-dock').grid??{columns:5,slots:5};
   $('[data-hud-author-grid-count]').textContent=grid.slots+' cases · '+grid.columns+' colonnes';
-  for(const key of ['local','opponent'])$('[data-hud-author-portraits-'+key+']').setAttribute('aria-pressed',String(!!actual(key+'-reserves').portraits));
+  for(const key of ['local','opponent']){
+   const button=$('[data-hud-author-portraits-'+key+']'),enabled=!!actual(key+'-reserves').portraits;
+   button.setAttribute('aria-pressed',String(enabled));
+   button.textContent=(enabled?'Masquer':'Afficher')+' portraits '+(key==='local'?'alliés':'adverses');
+  }
+  if(role==='local-reserves'||role==='opponent-reserves'){
+   const node=hudOwner.elements()[role],count=node?.querySelectorAll('.hud-reserve-portrait:not([hidden])').length??0;
+   reserveHelp.textContent=count
+    ? count+' portrait'+(count>1?'s':'')+' disponible'+(count>1?'s':'')+' · Déplace le bloc de réserve dans l’arène.'
+    : 'Aucun portrait de réserve disponible. Ajoute une créature en réserve aux équipes du test (avec une icône).';
+  }else reserveHelp.textContent='Portraits : un emplacement par créature en réserve. + Case compétence ne crée pas de portrait.';
+  keepToolbarReachable();
   const r=selectionBounds(),a=arena.getBoundingClientRect();
   const valid=!!r;
   outline.hidden=!valid;
@@ -222,7 +283,14 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout:
   const candidate=group?editCaptureHudGroupV1(before,profile(),group.id,{label:group.label,roles:group.roles,foldable:true}):roles.reduce((layout,key)=>updateCaptureHudLayoutV1(layout,profile(),key,null),before);
   if(apply(candidate))history.push(before);schedule();
  });
- function dispose(){if(disposed)return;disposed=true;if(frame)win.cancelAnimationFrame(frame);for(const f of cleanups.splice(0))f();observer?.disconnect();overlay.remove();delete arena.dataset.hudAuthoring;delete toolbar.dataset.hudDraftInvalid;toolbar.hidden=true;}
+ function dispose(){if(disposed)return;disposed=true;if(frame)win.cancelAnimationFrame(frame);
+  if(toolbarDrag&&grip.hasPointerCapture(toolbarDrag.id))grip.releasePointerCapture(toolbarDrag.id);
+  for(const f of cleanups.splice(0))f();observer?.disconnect();overlay.remove();delete arena.dataset.hudAuthoring;delete toolbar.dataset.hudDraftInvalid;
+  delete toolbar.dataset.hudToolbarCollapsed;delete toolbar.dataset.hudToolbarPopupAbove;
+  collapse.setAttribute('aria-expanded','true');collapse.textContent='Réduire';
+  for(const [key,value,priority] of toolbarOriginal){if(value)toolbar.style.setProperty(key,value,priority);else toolbar.style.removeProperty(key);}
+  toolbar.hidden=true;
+ }
  listen($('[data-hud-author-apply]'),'click',accept);
  listen($('[data-hud-author-test]'),'click',()=>{if(accept()){dispose();startTest();}});
  refreshGroups();
