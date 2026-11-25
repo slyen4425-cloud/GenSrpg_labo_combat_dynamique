@@ -60,6 +60,19 @@ export function captureHudBoxFromRectsV1(rect,arena){
  return normalizeCaptureHudBoxV1({x:bound(unit*(rect.left-arena.left)/arena.width,0,unit-w),
   y:bound(unit*(rect.top-arena.top)/arena.height,0,unit-h),w,h});
 }
+// Legacy offsets are a read-only migration input. Resolve against the actual
+// native baseline and use the SAME rectangle projection as a newly authored role.
+export function resolveCaptureHudRoleBoxV1(value,rect,arena){
+ if(value.box)return normalizeCaptureHudBoxV1(value.box);
+ if(!value.dx&&!value.dy&&value.scale===100)return null;
+ const scale=value.scale/100;
+ const w=rect.width*scale,h=rect.height*scale;
+ const left=rect.left+(rect.width-w)/2+arena.width*value.dx/100;
+ const top=rect.top+(rect.height-h)/2+arena.height*value.dy/100;
+ const right=left+w,bottom=top+h;
+ if(left<arena.left-1||top<arena.top-1||right>arena.right+1||bottom>arena.bottom+1)throw new RangeError('Ancienne disposition hors arène');
+ return captureHudBoxFromRectsV1({left,top,width:w,height:h},arena);
+}
 export function captureHudBoxGestureV1({box,edge,deltaX,deltaY,width,height}){
  const {x,y,w,h}=normalizeCaptureHudBoxV1(box);
  if(!(width>0&&height>0))throw new RangeError('Arène non visible');

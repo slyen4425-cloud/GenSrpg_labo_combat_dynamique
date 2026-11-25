@@ -9,7 +9,8 @@ const rosterCode = readFileSync(new URL("../../src/ui/capture-combat-roster-cont
 
 function node(tag="div") {
   return {tagName:tag.toUpperCase(),dataset:{},children:[],hidden:false,disabled:false,attributes:{},
-    textContent:"",append(...v){this.children.push(...v)},replaceChildren(...v){this.children=v},
+    get textContent(){return (this._text??'')+this.children.map(n=>n.textContent??'').join('')},set textContent(v){this._text=String(v??'');this.children=[]},
+    append(...v){this.children.push(...v)},replaceChildren(...v){this._text='';this.children=v},
     setAttribute(k,v){this.attributes[k]=String(v)},getAttribute(k){return this.attributes[k]??null},
     addEventListener(){},removeEventListener(){},querySelector(){return null}};
 }

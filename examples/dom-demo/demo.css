@@ -2454,3 +2454,5 @@ button.reserve-card {
 [data-hud-box="command-dock"] [data-combat-skills]{height:100%;grid-auto-rows:minmax(44px,1fr);}
 [data-hud-box="command-dock"] [data-combat-skills] > .action-option--skill:not([data-hud-box]){aspect-ratio:auto;min-height:44px;height:100%;}
 [data-hud-box="local-reserves"] > summary,[data-hud-box="opponent-reserves"] > summary{height:100%;box-sizing:border-box;}
+
+[data-hud-authoring="true"] [data-hud-empty-skill]:not([data-hud-page-hidden])::before{content:"+";font-weight:800;}

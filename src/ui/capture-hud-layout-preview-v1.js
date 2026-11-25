@@ -1,4 +1,4 @@
-import {normalizeCaptureHudLayoutV1,validateCaptureHudGeometryV1,isCaptureHudSkillRoleV1,captureHudPageRegionV1} from '../contracts/capture-hud-layout-v1.js';
+import {normalizeCaptureHudLayoutV1,validateCaptureHudGeometryV1,isCaptureHudSkillRoleV1,captureHudPageRegionV1,resolveCaptureHudRoleBoxV1} from '../contracts/capture-hud-layout-v1.js';
 import {mountCaptureHudSkillPagesV1} from './capture-hud-skill-pages-v1.js';
 // Stable role selectors point to the ONE native HUD, never species IDs.
 const selectors=Object.freeze({
@@ -68,7 +68,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
    const bounds=[relative(r,a),...targets,...panels];
    result[key]={left:Math.min(...bounds.map(b=>b.left)),top:Math.min(...bounds.map(b=>b.top)),
     right:Math.max(...bounds.map(b=>b.right)),bottom:Math.max(...bounds.map(b=>b.bottom)),targets,
-    ...(key!=='command-dock'&&!independent.includes(key)&&nodes['command-dock']?.contains(node)?{parentRole:'command-dock'}:{})};
+    ...(key!=='command-dock'&&nodes['command-dock']?.contains(node)?{parentRole:'command-dock'}:{})};
   }
   return result;
  }
@@ -105,8 +105,10 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
    for(const [role,value] of ordered){
     const node=nodes[role];if(!node||!baseline[role])continue;
     if(value.portraits)node.dataset.hudReservePortraits='true';
-    if(value.box){
-     const {x,y,w,h}=value.box;
+    let resolved;
+    try{resolved=resolveCaptureHudRoleBoxV1(value,node.getBoundingClientRect(),a);}catch(error){return error.message+' : '+role;}
+    if(resolved){
+     const {x,y,w,h}=resolved;
      // Existing nodes retain their DOM ownership/listeners, including roster
      // and skill controls. Convert arena coordinates to their actual offset parent.
      const styles={position:'absolute',right:'auto',bottom:'auto',
@@ -117,11 +119,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
      node.style.setProperty('left',a.left+a.width*x/1000-p.left-(parent.clientLeft??0)+(parent.scrollLeft??0)+'px');
      node.style.setProperty('top',a.top+a.height*y/1000-p.top-(parent.clientTop??0)+(parent.scrollTop??0)+'px');
      node.dataset.hudBox=role;
-     continue;
     }
-    node.style.setProperty('translate',a.width*value.dx/100+'px '+a.height*value.dy/100+'px');
-    node.style.setProperty('scale',String(value.scale/100));
-    node.style.setProperty('transform-origin','center');
    }
    const dock=nodes['command-dock'],grid=arena.querySelector('[data-combat-skills]');
    if(values['command-dock']?.box&&dock&&grid){
@@ -167,7 +165,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   showPage(id){
    const previous=pages.current();if(!pages.select(id))return false;
    if(apply())return true;
-   pages.select(previous);apply();return false;
+   const rejected=last;apply();if(previous&&pages.select(previous))apply();report(rejected);return false;
   },
   elements(){syncNodes();return {...nodes};},
   set(value){

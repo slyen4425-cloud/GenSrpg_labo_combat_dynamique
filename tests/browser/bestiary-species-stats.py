@@ -129,7 +129,7 @@ def check(context, origin):
     page.mouse.click(x,y)
     assert "PV" in toolbar.locator("[data-hud-author-selection]").inner_text()
     toolbar.locator("[data-hud-author-reset]").click()
-    page.wait_for_function("!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
+    page.wait_for_function("!document.querySelector('[data-capture-preview-host] .squad-card--local-full').dataset.hudBox")
     box, bounds = hp.bounding_box(), arena.bounding_box()
     x, y = box["x"]+box["width"]/2, box["y"]+box["height"]/2
     dx, dy = bounds["width"]/100, -bounds["height"]/100
@@ -147,9 +147,9 @@ def check(context, origin):
     page.wait_for_function("document.querySelector('[data-capture-preview-host] .squad-card--local-full').dataset.hudBox==='local-status'")
     assert hp.bounding_box()["x"] > box["x"], "direct pointer drag did not move the native HUD"
     toolbar.locator("[data-hud-author-undo]").click()
-    page.wait_for_function("!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
+    page.wait_for_function("!document.querySelector('[data-capture-preview-host] .squad-card--local-full').dataset.hudBox")
     toolbar.locator("[data-hud-author-undo]").click()
-    page.wait_for_function("!!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
+    page.wait_for_function("document.querySelector('[data-capture-preview-host] .squad-card--local-full').dataset.hudBox==='local-status'")
     # Create a real named collapsible panel in the visual editor. It must
     # partition the same native skill nodes, not manufacture alternative buttons.
     group_form = toolbar.locator("[data-hud-author-group-editor]")
@@ -188,7 +188,8 @@ def check(context, origin):
     handle.wait_for(state="visible")
     b = handle.bounding_box()
     gesture(b["x"]+b["width"]/2,b["y"]+b["height"]/2,0,-40)
-    page.wait_for_function("document.querySelector('.coop-command-stack').dataset.hudBox==='command-dock'")
+    print("Panel north handle",page.viewport_size,original_dock,b,toolbar.locator("[data-hud-author-status]").text_content(),dock.bounding_box(),flush=True)
+    assert dock.get_attribute("data-hud-box") == "command-dock", toolbar.locator("[data-hud-author-status]").text_content()
     grown = dock.bounding_box()
     assert grown["height"] >= original_dock["height"]+30, (original_dock,grown)
     assert abs(grown["width"]-original_dock["width"]) < 3, (original_dock,grown)
@@ -196,6 +197,7 @@ def check(context, origin):
     b=arena.locator('[data-hud-resize-edge="w"]').bounding_box()
     gesture(b["x"]+b["width"]/2,b["y"]+b["height"]/2,-24,0)
     wider=dock.bounding_box()
+    print("Panel west handle",page.viewport_size,grown,wider,toolbar.locator("[data-hud-author-status]").text_content(),flush=True)
     assert wider["width"] >= grown["width"]+15, (grown,wider,toolbar.locator("[data-hud-author-status]").text_content())
     assert abs(wider["height"]-grown["height"]) < 3, (grown,wider)
     toolbar.locator("[data-hud-author-add-slot]").click()
@@ -301,13 +303,13 @@ def check(context, origin):
       const wait=()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done)));
       await wait();const before=hp.getBoundingClientRect();
       let warning='';const mounted=mountCaptureHudLayoutPreviewV1({root,layout,onStatus:m=>warning=m});
-      await wait();const after=hp.getBoundingClientRect(),applied=hp.style.translate;
+      await wait();const after=hp.getBoundingClientRect(),applied=hp.dataset.hudBox;
       const successWarning=warning;
       mounted.dispose();
       const reset=hp.getBoundingClientRect();
       const bad=updateCaptureHudLayoutV1(layout,profile,'local-status',{dx:-50,dy:0,scale:100});
       const rejected=mountCaptureHudLayoutPreviewV1({root,layout:bad,onStatus:m=>warning=m});
-      await wait();const blocked=warning,restored=hp.style.translate;
+      await wait();const blocked=warning,restored=hp.dataset.hudBox??'';
       rejected.dispose();const skills=grid.children.length;
       host.replaceChildren();shell.hidden=true;
       return {before:before.x,after:after.x,reset:reset.x,applied,successWarning,blocked,restored,skills};
