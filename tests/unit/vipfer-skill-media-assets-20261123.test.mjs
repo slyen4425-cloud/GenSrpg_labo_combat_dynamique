@@ -18,9 +18,9 @@ test("Vipfer author's 5 actual skill icons, 3 transparent six-frame strips, prev
  const cat=JSON.parse(catBytes),p=JSON.parse(proofBytes);
  assert.equal(cat.catalogId,"gensrpg-global-visual-assets");
  assert.equal(cat.storage.branch,"global-assets");
- assert.equal(cat.counts.assets,503);
+ assert.equal(cat.counts.assets,507);
  assert.equal(cat.counts.icons,217);
- assert.equal(cat.counts.sprites,253);
+ assert.equal(cat.counts.sprites,257);
  assert.equal(cat.assets.length,cat.counts.assets);
  assert.equal(new Set(cat.assets.map(x=>x.id)).size,cat.assets.length,"no duplicated media identity");
  assert.equal(p.sourceSha256,hash(await read(p.sourceArchive)),"original user ZIP changed");
