@@ -1,3 +1,5 @@
+import {captureHudSkillRoleV1,normalizeCaptureHudLayoutV1} from '../contracts/capture-hud-layout-v1.js';
+import {mountCaptureHudLayoutPreviewV1} from './capture-hud-layout-preview-v1.js';
 import {resolveCaptureCombatBattleOutcomeV1} from "./capture-combat-battle-outcome-v1.js";
 import {createDomDecoyOverlayV1} from "../adapters/renderer/dom-decoy-overlay-v1.js";
 import {activeDecoyForV1} from "../core/combat/decoy-hit-v1.js";
@@ -617,8 +619,11 @@ export async function mountCoop2v2Test({
   formatUrl = DATA_URLS.format,
   nativeCombatSource = null,
   embeddedBattle = null,
+  hudLayout = nativeCombatSource?.hudLayout,
+  onHudLayoutStatus = message => { if(message)console.warn(message); },
   onBattleOutcome = () => {}
 }) {
+  const authoredHudLayout=normalizeCaptureHudLayoutV1(hudLayout);
   if (typeof onBattleOutcome !== "function") throw new TypeError("onBattleOutcome callback required");
   if (!root || typeof root.querySelector !== "function") {
     throw new TypeError("root must provide querySelector()");
@@ -1994,7 +1999,10 @@ export async function mountCoop2v2Test({
       const skill = skillsById[skillId];
       if (!skill) throw new RangeError(`Unknown local skill: ${skillId}`);
       skillRefs.set(skill.id, { skill, ...createSkillButton(skill) });
-      skillContainer.append(skillRefs.get(skill.id).button);
+      const button=skillRefs.get(skill.id).button;
+      const role=captureHudSkillRoleV1(nativeCombatSource?.hudSkillSlotsByCreature?.[actorMeta(controlledActorId())?.creatureId],skill.id);
+      if(role)button.dataset.combatHudSkillRole=role;
+      skillContainer.append(button);
     }
   }
 
@@ -2407,6 +2415,7 @@ export async function mountCoop2v2Test({
 
   renderTargetSelection();
   renderState();
+  const hudOwner=mountCaptureHudLayoutPreviewV1({root,layout:authoredHudLayout,onStatus:onHudLayoutStatus});
   runtime.start();
   queueAiDecisions();
 
@@ -2433,6 +2442,7 @@ export async function mountCoop2v2Test({
         return;
       }
       disposed = true;
+      hudOwner.dispose();
       rosterPanel?.dispose();
       rosterController?.dispose();
       koTransitions.clear();
