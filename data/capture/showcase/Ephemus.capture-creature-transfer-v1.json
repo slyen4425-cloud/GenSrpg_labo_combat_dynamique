@@ -146,6 +146,42 @@
         },
         "icon": {
           "assetId": "pack:capture:creature-ephemus-icon-01"
+        },
+        "movement": {
+          "assetId": "pack:capture:creature-ephemus-movement-opponent-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 12,
+          "transitionMs": 20
+        },
+        "movementBack": {
+          "assetId": "pack:capture:creature-ephemus-movement-player-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 12,
+          "transitionMs": 20
+        },
+        "rangedAttack": {
+          "assetId": "pack:capture:creature-ephemus-attack-opponent-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 12,
+          "transitionMs": 80
+        },
+        "rangedAttackBack": {
+          "assetId": "pack:capture:creature-ephemus-attack-player-12-v1",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 12,
+          "transitionMs": 80
+        },
+        "movementPlayback": {
+          "frameMs": 83,
+          "mode": "loop"
         }
       },
       "sockets": [
