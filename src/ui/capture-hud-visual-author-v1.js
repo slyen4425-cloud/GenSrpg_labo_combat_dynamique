@@ -31,10 +31,12 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout:
  const groups=()=>readLayout().groups?.[profile()]??[];
  const selectedGroup=()=>groups().find(group=>group.id===groupId);
  const selectedRoles=()=>selectedGroup()?.foldable?['command-dock']:(selectedGroup()?.roles??(role?[role]:[]));
- const regionGroup=()=>selectedGroup()?.foldable?selectedGroup():null;
- const regionValue=()=>regionGroup()??actual('command-dock');
+ const visibleRegionGroup=()=>groups().find(group=>group.foldable&&hudOwner.currentPage()?.startsWith(group.id+':'));
+ const regionGroup=()=>selectedGroup()?.foldable?selectedGroup():role==='command-dock'?visibleRegionGroup():null;
+ const regionValue=()=>visibleRegionGroup()??actual('command-dock');
  function writeRegion(layout,key,value){
-  const group=regionGroup();
+  // The displayed page owns its geometry, regardless of how it was selected.
+  const group=visibleRegionGroup();
   return group?editCaptureHudGroupV1(layout,key,group.id,{...group,...value}):updateCaptureHudLayoutV1(layout,key,'command-dock',value);
  }
 
@@ -181,7 +183,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout:
   if(nextRows>oldRows){const extra=Math.ceil((nextRows-oldRows)*48/a.height*1000);const grow=Math.min(box.y,extra);if(grow>0)candidates.push({...box,y:box.y-grow,h:box.h+grow});}
   // Grow first when a new row is needed; the draft is deliberately allowed
   // to show a temporary overlap while its author moves other regions.
-  const region=candidates.at(-1);if(apply(writeRegion(before,profile(),{box:region,grid}))){history.push(before);if(!regionGroup()){groupId=null;role='command-dock';}schedule();return;}
+  const region=candidates.at(-1);if(apply(writeRegion(before,profile(),{box:region,grid}))){history.push(before);groupId=visibleRegionGroup()?.id??null;role=groupId?null:'command-dock';schedule();return;}
   status.textContent='Agrandis le volet avec ses poignées, puis ajoute la case ou la colonne.';
  }
  for(const [selector,field,delta] of [

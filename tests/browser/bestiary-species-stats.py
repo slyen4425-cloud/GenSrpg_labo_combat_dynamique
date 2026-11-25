@@ -196,6 +196,10 @@ def check(context, origin):
             page.mouse.down()
             page.mouse.move(x+dx,y+dy,steps=3)
             page.mouse.up()
+    # Re-select the displayed dock via the palette. The named page, not
+    # the principal page, must receive all rectangle and capacity edits.
+    toolbar.locator("[data-hud-author-palette]").select_option("command-dock")
+    assert toolbar.locator("[data-hud-author-page-select]").input_value()=="hud-group-1:0"
     original_dock = dock.bounding_box()
     handle = arena.locator('[data-hud-resize-edge="n"]')
     handle.wait_for(state="visible")
