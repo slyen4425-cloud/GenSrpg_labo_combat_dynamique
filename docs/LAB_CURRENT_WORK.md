@@ -1,3 +1,8 @@
+## 2026-11-25 — #386 / PR #393 : reprise de certification (NON GREEN)
+- CI 45574553576 sur 8627b5d : 11/12, échec navigateur Bestiaire à la sélection de l'équipe, carte « Équipes du test » repliée. Le test ouvre désormais son vrai volet au lieu de forcer une interaction cachée.
+- Revue Codex : le clavier traversait l'overlay auteur. Correction dans le propriétaire du mode auteur, interception locale des activations clavier/clic dans le montage natif pendant l'édition, retirée lors du test ou de la fermeture. Aucune modification du runtime, du DOM des compétences ou de la géométrie.
+- Sentinelle navigateur : activation au clavier et clic natif bloqués en mode auteur, rétablis après Tester. Commits f2b51b8 et 49e2803. Nouvelle CI et revue requises sur le SHA final. Groupes/volets personnalisés et présentation extensible restent au jalon suivant après certification ; aucun repin PWA.
+
 ## 2026-11-25 — #386 jalon visuel : preuve réelle
 - PR #393. Édition sur le montage natif existant, runtime/IA en attente jusqu'au bouton Tester. PointerEvent, sélection du bloc ou compétence, poignée, groupe dock, historique, reset. Retour à la même métadonnée et contrôle géométrique propriétaire. Ancien panneau numérique replié, aucun doublon de DOM ou stockage.
 - Test Chromium de la vraie page auteur en PC/tactile : lancer le montage, reset, drag, undo, tester sans remonter l'arène, retour. Les tests avancés ouvrent désormais leur volet. Aucun changement au contrat loadout (4 + ultime) ; jalon de groupes personnalisables reste à faire après GREEN. Statut NON GREEN tant que les tests ne sont pas terminés.
