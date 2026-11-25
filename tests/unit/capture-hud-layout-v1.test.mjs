@@ -44,21 +44,18 @@ test('individual skills may move inside their dock but cannot cover another skil
  assert.match(verify({...base,a:{...base.a,targets:[{width:40,height:50,hit:false}]}}),/recouverte/);
 });
 
-import {captureHudPointerValueV1} from '../../src/ui/capture-hud-visual-author-v1.js';
-test('visual pointer edits write the same normalized offsets, nested skills compensate dock scale',()=>{
- const base={dx:0,dy:0,scale:100};
- const args={value:base,mode:'move',deltaX:80,deltaY:-45,width:800,height:450,elementWidth:50};
- assert.deepEqual(captureHudPointerValueV1(args),{dx:10,dy:-10,scale:100});
- assert.deepEqual(captureHudPointerValueV1({...args,parentScale:1.25}),{dx:8,dy:-8,scale:100});
- assert.equal(captureHudPointerValueV1({...args,deltaX:900}).dx,50);
- assert.equal(captureHudPointerValueV1({...args,mode:'resize',deltaX:100}).scale,125);
- assert.equal(captureHudPointerValueV1({...args,mode:'resize',deltaX:-100}).scale,85);
- const result=updateCaptureHudLayoutV1(undefined,'desktop-1v1','dodge',captureHudPointerValueV1(args));
- assert.deepEqual(normalizeCaptureHudLayoutV1(JSON.parse(JSON.stringify(result))),result);
+import {captureHudGroupBoxesV1} from '../../src/contracts/capture-hud-layout-v1.js';
+test('a visual edit replaces a legacy offset with a real region for any supported role',()=>{
+ const profile='touch-1v1';
+ const legacy=updateCaptureHudLayoutV1(undefined,profile,'dodge',{dx:2,dy:0,scale:100});
+ const box={x:500,y:750,w:90,h:120};
+ const next=updateCaptureHudLayoutV1(legacy,profile,'dodge',{box});
+ assert.deepEqual(next.profiles[profile].dodge,{box});
+ assert.deepEqual(normalizeCaptureHudLayoutV1(JSON.parse(JSON.stringify(next))),next);
 });
 
 import {editCaptureHudGroupV1,captureHudSkillPagesV1,captureHudRoleLabelV1} from '../../src/contracts/capture-hud-layout-v1.js';
-import {captureHudGroupPointerValuesV1} from '../../src/ui/capture-hud-visual-author-v1.js';
+
 test('named groups round trip in the same metadata, with profile isolation and stable generated ids',()=>{
  const empty=normalizeCaptureHudLayoutV1(),profile='touch-1v1';
  const first=editCaptureHudGroupV1(empty,profile,null,{label:' Attaques ',roles:['skill-slot-1','skill-slot-5'],foldable:true});
@@ -88,12 +85,93 @@ test('foldable and overflow views use all and only supplied native slots, withou
  assert.equal(pages.flatMap(p=>p.roles).includes('skill-slot-8'),false);
  assert.deepEqual(captureHudSkillPagesV1(future).flatMap(p=>p.roles),future);
 });
-test('group gesture moves all roles as one in screen space and preserves relative scale bounds',()=>{
- const members=[{role:'dodge',value:{dx:2,dy:0,scale:100},parentScale:1},
-  {role:'skill-slot-1',value:{dx:0,dy:0,scale:110},parentScale:1.25}];
- const args={members,width:800,height:450,elementWidth:160,deltaX:80,deltaY:-45};
- const moved=captureHudGroupPointerValuesV1({...args,mode:'move'});
- assert.deepEqual(moved.map(x=>x.value),[{dx:12,dy:-10,scale:100},{dx:8,dy:-8,scale:110}]);
- const scaled=captureHudGroupPointerValuesV1({...args,mode:'resize',deltaX:160});
- assert.equal(scaled[1].value.scale,125);assert.equal(scaled[0].value.scale,114);
+test('group gesture moves and resizes all real member rectangles',()=>{
+ const box={x:100,y:200,w:300,h:200},members=[
+  {role:'dodge',value:{},rect:{x:100,y:200,w:100,h:100}},
+  {role:'skill-slot-1',value:{},rect:{x:250,y:300,w:150,h:100}}];
+ const args={box,members,width:1000,height:1000,deltaX:100,deltaY:50};
+ assert.deepEqual(captureHudGroupBoxesV1({...args,edge:'move'}).map(x=>x.value.box),[
+  {x:200,y:250,w:100,h:100},{x:350,y:350,w:150,h:100}]);
+ assert.deepEqual(captureHudGroupBoxesV1({...args,edge:'se'}).map(x=>x.value.box),[
+  {x:100,y:200,w:133,h:125},{x:300,y:325,w:200,h:125}]);
+});
+
+// The legacy numeric editor must not be a second authoring surface.
+import {readFile} from 'node:fs/promises';
+test('only the visual HUD author remains reachable',async()=>{
+ const html=await readFile(new URL('../../examples/dom-demo/capture-editor-v2.html',import.meta.url),'utf8');
+ const source=await readFile(new URL('../../src/ui/capture-editor-human-v2.js',import.meta.url),'utf8');
+ assert.match(html,/data-hud-layout-preview/);
+ assert.doesNotMatch(html,/data-hud-layout-(?:profile|role|x|y|scale|reset-role|reset-profile)\b/);
+ assert.doesNotMatch(source,/mountCaptureHudLayoutEditorV1|hudLayoutEditor/);
+});
+
+import {captureHudBoxFromRectsV1,captureHudBoxGestureV1} from '../../src/contracts/capture-hud-layout-v1.js';
+test('real region dimensions are independent, bounded, and replace legacy transforms',()=>{
+ const profile='touch-1v1';
+ const before=updateCaptureHudLayoutV1(undefined,profile,'command-dock',{dx:1,dy:0,scale:110});
+ const box=captureHudBoxFromRectsV1({left:400,top:260,width:200,height:100},{left:0,top:0,width:800,height:400});
+ assert.deepEqual(box,{x:500,y:650,w:250,h:250});
+ const args={box,width:800,height:400,deltaX:-80,deltaY:-40};
+ assert.deepEqual(captureHudBoxGestureV1({...args,edge:'w'}),{x:400,y:650,w:350,h:250});
+ assert.deepEqual(captureHudBoxGestureV1({...args,edge:'n'}),{x:500,y:550,w:250,h:350});
+ const grown=captureHudBoxGestureV1({...args,edge:'nw'});
+ assert.deepEqual(grown,{x:400,y:550,w:350,h:350});
+ const after=updateCaptureHudLayoutV1(before,profile,'command-dock',{box:grown});
+ assert.deepEqual(after.profiles[profile]['command-dock'],{box:grown});
+ assert.deepEqual(normalizeCaptureHudLayoutV1(JSON.parse(JSON.stringify(after))),after);
+ assert.throws(()=>updateCaptureHudLayoutV1(after,profile,'command-dock',{box:grown,scale:110}));
+ assert.deepEqual(captureHudBoxGestureV1({...args,edge:'move',deltaX:999,deltaY:999}),{x:750,y:750,w:250,h:250});
+});
+
+test('authored grid capacity replaces fixed pagination without creating gameplay actions',()=>{
+ const profile='desktop-1v1',box={x:500,y:600,w:490,h:390},grid={columns:4,slots:8};
+ const layout=updateCaptureHudLayoutV1(undefined,profile,'command-dock',{box,grid});
+ assert.deepEqual(normalizeCaptureHudLayoutV1(JSON.parse(JSON.stringify(layout))),layout);
+ const skills=['skill-slot-1','skill-slot-2','skill-slot-3','skill-slot-4','skill-slot-ultimate'];
+ assert.deepEqual(captureHudSkillPagesV1(skills,[],grid),[]);
+ const group={id:'hud-group-1',label:'Attaques',roles:skills.slice(0,4),foldable:true};
+ assert.equal(captureHudSkillPagesV1(skills,[group],grid).length,2);
+ assert.deepEqual(captureHudSkillPagesV1(skills,[group],grid).flatMap(p=>p.roles).sort(),skills.slice().sort());
+ assert.throws(()=>updateCaptureHudLayoutV1(layout,profile,'command-dock',{box,grid:{columns:0,slots:8}}));
+});
+
+test('reserve portraits are authored on the same native roles and survive round-trip',()=>{
+ const profile='touch-1v1',value={dx:0,dy:0,scale:100,portraits:true};
+ const layout=updateCaptureHudLayoutV1(undefined,profile,'local-reserves',value);
+ assert.deepEqual(layout.profiles[profile]['local-reserves'],value);
+ assert.deepEqual(normalizeCaptureHudLayoutV1(JSON.parse(JSON.stringify(layout))),layout);
+ assert.deepEqual(updateCaptureHudLayoutV1(layout,profile,'local-reserves',{...value,portraits:false}),normalizeCaptureHudLayoutV1());
+ assert.throws(()=>updateCaptureHudLayoutV1(layout,profile,'dodge',value));
+});
+
+import {captureHudPageRegionV1} from '../../src/contracts/capture-hud-layout-v1.js';
+test('each named skill panel owns optional independent geometry and capacity',()=>{
+ const profile='desktop-1v1',dock={box:{x:600,y:650,w:390,h:340},grid:{columns:5,slots:5}};
+ const panel={box:{x:100,y:700,w:480,h:290},grid:{columns:3,slots:6}};
+ const base=updateCaptureHudLayoutV1(undefined,profile,'command-dock',dock);
+ const layout=editCaptureHudGroupV1(base,profile,null,{label:'Défense',foldable:true,roles:['skill-slot-1','skill-slot-2','skill-slot-3','skill-slot-4'],...panel});
+ assert.deepEqual(captureHudPageRegionV1(layout,profile,'main:0'),dock);
+ assert.deepEqual(captureHudPageRegionV1(layout,profile,'hud-group-1:0'),panel);
+ assert.deepEqual(normalizeCaptureHudLayoutV1(JSON.parse(JSON.stringify(layout))),layout);
+ const pages=captureHudSkillPagesV1(['skill-slot-1','skill-slot-2','skill-slot-3','skill-slot-4','skill-slot-ultimate'],layout.groups[profile],dock.grid);
+ assert.equal(pages.find(p=>p.groupId==='hud-group-1').roles.length,4);
+});
+
+test('an empty named panel can reserve space without inventing any skill',()=>{
+ const profile='desktop-1v1';
+ const layout=editCaptureHudGroupV1(undefined,profile,null,{label:'Objets futurs',roles:[],foldable:true});
+ const pages=captureHudSkillPagesV1(['skill-slot-1'],layout.groups[profile]);
+ assert.deepEqual(pages.find(p=>p.groupId==='hud-group-1').roles,[]);
+ assert.deepEqual(pages.flatMap(p=>p.roles),['skill-slot-1']);
+});
+
+import {resolveCaptureHudRoleBoxV1} from '../../src/contracts/capture-hud-layout-v1.js';
+test('legacy offsets resolve through real rectangle geometry without a second transform',()=>{
+ const arena={left:0,top:0,right:1000,bottom:500,width:1000,height:500};
+ const rect={left:200,top:200,width:200,height:50};
+ const legacy={dx:5,dy:-2,scale:100};
+ assert.deepEqual(resolveCaptureHudRoleBoxV1(legacy,rect,arena),{x:250,y:380,w:200,h:100});
+ assert.equal(resolveCaptureHudRoleBoxV1({dx:0,dy:0,scale:100},rect,arena),null);
+ assert.throws(()=>resolveCaptureHudRoleBoxV1({dx:-50,dy:0,scale:100},rect,arena),/hors arène/);
 });

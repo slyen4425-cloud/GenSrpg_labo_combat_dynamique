@@ -2412,3 +2412,21 @@ html {
 .hud-author-group-roles label{display:flex;align-items:center;gap:.25rem;font-size:.7rem;min-height:32px;}
 .hud-author-group-actions{display:flex;flex-wrap:wrap;gap:.25rem;}
 .capture-hud-author-toolbar select{max-width:10rem;min-height:36px;}
+
+/* Directional handles use the real region edge, including inward-facing edges. */
+.hud-author-handle[data-hud-resize-edge="n"],.hud-author-handle[data-hud-resize-edge="s"]{cursor:ns-resize;}
+.hud-author-handle[data-hud-resize-edge="w"],.hud-author-handle[data-hud-resize-edge="e"]{cursor:ew-resize;}
+.hud-author-handle[data-hud-resize-edge="ne"],.hud-author-handle[data-hud-resize-edge="sw"]{cursor:nesw-resize;}
+
+/* Compact portraits in the native roster summary, without duplicating actions. */
+.hud-reserve-portraits{display:none;}
+[data-hud-reserve-portraits="true"] > summary .hud-reserve-portraits{display:flex;align-items:center;flex-wrap:wrap;gap:2px;min-width:0;}
+.hud-reserve-portrait:not([hidden]){display:block;flex:0 0 auto;}
+.hud-reserve-portrait__image{display:block;width:clamp(20px,6dvh,34px);height:clamp(20px,6dvh,34px);object-fit:contain;border-radius:.25rem;background:#091b26;}
+.hud-reserve-portrait[data-defeated="true"]{opacity:.45;filter:grayscale(1);}
+.capture-hud-author-toolbar button[aria-pressed="true"]{background:#28677b;color:#fff;}
+
+.capture-hud-author-toolbar[data-hud-draft-invalid="true"] [data-hud-author-status]{color:#ffd7a0;}
+
+[data-hud-reserve-portraits="true"] > summary > span:not(.hud-reserve-portraits):not([data-combat-recall-countdown]){min-width:0;flex:1 1 auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+[data-hud-reserve-portraits="true"] > summary .hud-reserve-portraits{flex:0 1 auto;}

@@ -1022,22 +1022,8 @@
 
       <details class="card" data-combat-hud-layout-editor>
         <summary><strong>Interface de combat · Disposition</strong></summary>
-        <p class="note">Ouvre le véritable écran de combat. Touche un bloc ou une compétence, déplace-le et redimensionne-le directement. Le profil suit l’écran et le format de combat sélectionnés.</p>
+        <p class="note">Choisis un élément ou un volet, déplace-le et tire ses bords. Les chevauchements temporaires restent visibles pendant l’aménagement. Applique ou teste uniquement une disposition valide, puis sauvegarde le catalogue de ton univers.</p>
         <button type="button" data-hud-layout-preview>Aménager l’écran de combat</button>
-        <details><summary>Ajustements précis · avancés</summary>
-        <div class="grid two">
-          <label>Profil <select data-hud-layout-profile></select></label>
-          <label>Bloc ou compétence à déplacer <select data-hud-layout-role></select></label>
-          <label>Décalage horizontal (% de l’arène)<input data-hud-layout-x type="range" min="-50" max="50" value="0" step="1"></label>
-          <label>Décalage vertical (% de l’arène)<input data-hud-layout-y type="range" min="-50" max="50" value="0" step="1"></label>
-          <label>Taille (%)<input data-hud-layout-scale type="range" min="85" max="125" value="100" step="1"></label>
-        </div>
-        <p data-hud-layout-status role="status"></p>
-        <div class="grid two">
-          <button type="button" data-hud-layout-reset-role>Réinitialiser ce bloc</button>
-          <button type="button" data-hud-layout-reset-profile>Réinitialiser ce profil</button>
-        </div>
-        </details>
         <p class="note">L’aperçu utilise le profil correspondant à cet écran et au nombre de combattants. Une disposition qui recouvre un autre bloc ou réduit trop une commande tactile est refusée. Export/import de la base complète ou sauvegarde du catalogue de l’univers pour conserver les réglages.</p>
       </details>
       <article class="card" data-combat-light-settings>
@@ -2548,10 +2534,18 @@
     </button>
     <div data-hud-author-toolbar hidden class="capture-hud-author-toolbar" aria-label="Aménagement du combat">
       <span data-hud-author-profile></span><span data-hud-author-selection>Choisis un élément</span>
-      <button type="button" data-hud-author-group>Bloc commandes</button>
+      <select data-hud-author-palette aria-label="Éléments de l’interface"></select>
+      <button type="button" data-hud-author-group>Volet principal</button>
+      <button type="button" data-hud-author-add-slot>+ Case</button>
+      <button type="button" data-hud-author-remove-slot>− Case</button>
+      <button type="button" data-hud-author-add-column>+ Colonne</button>
+      <button type="button" data-hud-author-remove-column>− Colonne</button>
+      <span data-hud-author-grid-count aria-live="polite"></span>
+      <button type="button" data-hud-author-portraits-local aria-pressed="false">Réserves alliées · icônes</button>
+      <button type="button" data-hud-author-portraits-opponent aria-pressed="false">Réserves adverses · icônes</button>
       <select data-hud-author-page-select aria-label="Volet affiché" hidden></select>
       <details data-hud-author-group-editor>
-        <summary>Groupes / volets</summary>
+        <summary>Ajouter / gérer un volet</summary>
         <div class="hud-author-group-fields">
           <label>Groupe <select data-hud-author-group-select></select></label>
           <label>Nom <input data-hud-author-group-name maxlength="40" placeholder="Ex. Attaques"></label>
@@ -2566,6 +2560,7 @@
       </details>
       <button type="button" data-hud-author-undo>Annuler</button>
       <button type="button" data-hud-author-reset>Réinitialiser l’élément</button>
+      <button type="button" data-hud-author-apply>Appliquer</button>
       <button type="button" data-hud-author-test>Tester la disposition</button>
       <output data-hud-author-status role="status"></output>
     </div>
