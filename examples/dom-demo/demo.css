@@ -2437,3 +2437,7 @@ button.reserve-card {
 .arena[data-combat-entity-arena-active="true"] .skill-fx--projectile.skill-fx--layer-behind[data-fx-actor-side="player"] {
   z-index: 3;
 }
+
+/* Native HUD: compact opt-in skill pages. Buttons keep their original owner. */
+[data-combat-skills] > [data-hud-skill-page-nav]{grid-column:span 2;align-self:stretch;min-width:0;width:100%;min-height:44px;padding:.15rem;color:#eefcff;background:#193743;border:1px solid #69a9c3;border-radius:.4rem;font:inherit;font-size:.7rem;}
+[data-combat-skills] > [data-hud-page-hidden], [data-combat-skills] > [data-hud-page-suspended]{display:none;}

@@ -621,6 +621,7 @@ export async function mountCoop2v2Test({
   embeddedBattle = null,
   hudLayout = nativeCombatSource?.hudLayout,
   onHudLayoutStatus = message => { if(message)console.warn(message); },
+  hudAuthoring = false,
   onBattleOutcome = () => {}
 }) {
   const authoredHudLayout=normalizeCaptureHudLayoutV1(hudLayout);
@@ -2023,7 +2024,7 @@ export async function mountCoop2v2Test({
   );
 
   function queueAiDecisions() {
-    if (disposed || aiDecisionQueued || !runtime) {
+    if (disposed || hudAuthoring || aiDecisionQueued || !runtime) {
       return;
     }
 
@@ -2415,11 +2416,13 @@ export async function mountCoop2v2Test({
 
   renderTargetSelection();
   renderState();
-  const hudOwner=mountCaptureHudLayoutPreviewV1({root,layout:authoredHudLayout,onStatus:onHudLayoutStatus});
-  runtime.start();
-  queueAiDecisions();
+  const hudOwner=mountCaptureHudLayoutPreviewV1({root,layout:authoredHudLayout,onStatus:onHudLayoutStatus,authoring:hudAuthoring});
+  if(!hudAuthoring){runtime.start();queueAiDecisions();}
+  let authoring=hudAuthoring;
 
   return Object.freeze({
+    hudOwner,
+    startHudTest(){if(!authoring||disposed)return false;authoring=false;hudAuthoring=false;runtime.start();queueAiDecisions();return true;},
     format,
     session,
     runtime,

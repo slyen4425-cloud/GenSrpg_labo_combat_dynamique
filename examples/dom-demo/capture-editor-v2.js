@@ -48,6 +48,7 @@ import {
 import {
   createPrivateAudioPreviewControllerV1
 } from "../../src/ui/private-audio-preview-controller-v1.js";
+import {mountCaptureHudVisualAuthorV1} from '../../src/ui/capture-hud-visual-author-v1.js';
 import {
   createCapturePreviewDisplayModeV1
 } from "../../src/ui/capture-preview-display-mode-v1.js";
@@ -518,6 +519,7 @@ function buildPreviewPresentationAssets(
   });
 }
 
+let hudAuthoringRequested=false;
 const session = createCaptureEditorPreviewSessionV2({
   editor,
   adaptVisualExport(exported) {
@@ -579,6 +581,7 @@ const session = createCaptureEditorPreviewSessionV2({
       nativeVisualSource,
       arenaLight: readCombatLightEditor(),
       hudLayout:editor.readHudLayout(),
+      hudAuthoring:hudAuthoringRequested,
       onHudLayoutStatus(message){if(layoutWarning){layoutWarning.textContent=message;layoutWarning.hidden=!message;}},
       onBattleOutcome(outcome) {
         soundtrack?.transitionTo("capture:combat:"+outcome);
@@ -588,6 +591,14 @@ const session = createCaptureEditorPreviewSessionV2({
           nativeCombatSource
         )
     });
+
+    let visualAuthor=null;
+    try{if(hudAuthoringRequested)visualAuthor=mountCaptureHudVisualAuthorV1({
+      root:previewRoot,toolbar:previewShell.querySelector('[data-hud-author-toolbar]'),
+      hudOwner:mounted.combat.hudOwner,readLayout:()=>editor.readHudLayout(),
+      writeLayout:value=>editor.writeHudLayout(value),
+      startTest:()=>{if(mounted.combat.startHudTest())soundtrack?.transitionTo('capture:combat:normal');}
+    });}catch(error){mounted.dispose();previewHost.replaceChildren();throw error;}
 
     // Opt-in authored soundtrack. No entry means silence and never blocks
     // existing battle audio. The combat session exclusively owns skill SFX.
@@ -601,7 +612,7 @@ const session = createCaptureEditorPreviewSessionV2({
           console.warn("Soundtrack indisponible en prévisualisation", error);
         }
       });
-      soundtrack.transitionTo("capture:combat:normal");
+      if(!hudAuthoringRequested)soundtrack.transitionTo("capture:combat:normal");
     } catch (error) {
       console.warn("Musique de prévisualisation désactivée",error);
       soundtrack?.dispose();
@@ -615,6 +626,7 @@ const session = createCaptureEditorPreviewSessionV2({
           return;
         }
         disposed = true;
+        visualAuthor?.dispose();
         soundtrack?.dispose();
         mounted.dispose();
         previewHost.replaceChildren();
@@ -628,7 +640,7 @@ testButton.disabled = true;
 setMode("editor");
 
 root.querySelector("[data-hud-layout-preview]")?.addEventListener("click",()=>{
-  if(!testButton.disabled)testButton.click();
+  if(!testButton.disabled){hudAuthoringRequested=true;testButton.click();}
 });
 
 testButton.addEventListener("click", async () => {
@@ -646,7 +658,7 @@ testButton.addEventListener("click", async () => {
     ]);
     await displayModePromise;
     const launchResult =
-      await session.launch();
+      await session.launch({hudAuthoring:hudAuthoringRequested});
 
     if (launchResult?.ok !== true) {
       await previewDisplayMode.leave();
@@ -658,6 +670,7 @@ testButton.addEventListener("click", async () => {
     editorStatus.dataset.tone = "error";
     setMode("editor");
   } finally {
+    hudAuthoringRequested=false;
     testButton.disabled =
       visualContext === null ||
       session.previewActive;

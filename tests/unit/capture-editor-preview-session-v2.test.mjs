@@ -228,3 +228,19 @@ test("preview session V2 refuses invalid editor export before either adapter", a
   });
   assert.deepEqual(calls, ["validate"]);
 });
+
+test("HUD authoring reuses the same preview pipeline with explicit validation intent", async () => {
+  const calls=[];
+  const exported=Object.freeze({ marker:"saved-catalogue" });
+  const session=createCaptureEditorPreviewSessionV2({
+    editor:{validate(...args){calls.push(args);return exported;},dispose(){}},
+    adaptCombatExport(value){assert.equal(value,exported);return value;},
+    adaptVisualExport(value){assert.equal(value,exported);return value;},
+    mountPreview(){return {dispose(){}};}
+  });
+  assert.equal((await session.launch({hudAuthoring:true})).ok,true);
+  session.returnToEditor();
+  assert.equal((await session.launch()).ok,true);
+  assert.deepEqual(calls,[[{hudAuthoring:true}],[]]);
+  session.dispose();
+});
