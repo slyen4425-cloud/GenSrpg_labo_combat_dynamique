@@ -1,3 +1,7 @@
+## 2026-11-25 — #386 / PR #393 : preuve navigateur obtenue, sentinelles unitaires (NON GREEN)
+- CI 45577390774 sur 1688ea2 : sentinelle navigateur Bestiaire/HUD auteur PC+tactile réussie, sentinelle ombres/contact réussie sans modification du moteur. Trois tests unitaires statiques/VM en échec parce que l'appel de launch porte désormais l'intention hudAuthoring et le banc VM doit fournir ce booléen. Les attentes exactes et le contexte VM sont adaptés sans affaiblir la vérification de l'ordre plein écran, des erreurs et des reprises.
+- Pas de publication PWA : validation utilisateur sur le Labo Combat demandée avant raccord. Pas de checkpoint GREEN avant nouvelle CI exacte et revue.
+
 ## 2026-11-25 — #386 / PR #393 : découplage de l'aménagement et des brouillons (NON GREEN)
 - CI 45576446153 : échec navigateur auteur avant montage du HUD, et échec distinct de la sentinelle ombres/contact. La cause exacte du premier échec n'est pas visible dans le journal actuel. Le chemin de validation existant exige cependant une créature et une capacité en cours d'édition même lorsqu'on veut seulement aménager le HUD.
 - Dans le mode auteur seulement, assembler le même export de test depuis le catalogue enregistré et les réglages d'équipes existants (première créature enregistrée si aucune sélection). Ne pas enregistrer de brouillon de compétence/créature pour aménager l'interface ; le test ordinaire conserve sa transaction actuelle. Pas de seconde configuration, pas de modification des règles, aucun repin.
