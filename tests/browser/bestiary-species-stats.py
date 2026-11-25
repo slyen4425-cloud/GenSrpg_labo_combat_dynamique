@@ -210,7 +210,7 @@ def check(context, origin):
     assert arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()
     assert abs(dock.bounding_box()["width"]-original_dock["width"])<4, "main page must keep independent layout"
     toolbar.locator("[data-hud-author-test]").click()
-    assert page.locator("[data-hud-author-overlay]").count() == 0
+    assert page.locator("[data-hud-author-overlay]").count() == 0, toolbar.locator("[data-hud-author-status]").text_content()
     nav = arena.locator("[data-hud-skill-page-nav]")
     nav.select_option("hud-group-1:0")
     page.wait_for_function("document.querySelector('[data-combat-hud-skill-role=skill-slot-1]').getBoundingClientRect().width>0")

@@ -24,7 +24,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
  }
  const pages=mountCaptureHudSkillPagesV1({grid:arena.querySelector('[data-combat-skills]'),onChange:previous=>{
   if(frame){win.cancelAnimationFrame(frame);frame=0;}
-  if(!apply()){const rejected=last;if(pages.select(previous))apply();report(rejected);}
+  if(!apply(false,draftMode)&&!draftMode){const rejected=last;apply();if(previous&&pages.select(previous))apply();report(rejected);}
  }});
  let nodes={};
  const originals=new Map(),portraitOriginals=new Map(),boxOriginals=new Map();
@@ -44,7 +44,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   }
   nodes=next;
  }
- let frame=0,disposed=false,last='';
+ let frame=0,disposed=false,last='',draftMode=false;
  function restore(){
   for(const [node,v] of originals)for(const [i,key] of styleKeys.entries()){
    if(v[2*i])node.style.setProperty(key,v[2*i],v[2*i+1]);else node.style.removeProperty(key);
@@ -73,7 +73,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   return result;
  }
  function profileKey(){return (win.matchMedia(desktopQuery).matches?'desktop':'touch')+'-'+(arena.dataset.combatActiveCount==='2'?'2v2':'1v1');}
- function apply(allPages=false){
+ function apply(allPages=false,keepInvalid=false){
   frame=0;if(disposed)return false;
   restore();syncNodes();
   const a=arena.getBoundingClientRect();if(a.width<=0||a.height<=0)return false;
@@ -97,9 +97,10 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
    if(Object.keys(region).length)values['command-dock']=region;
    const independent=Object.entries(values).filter(([role,v])=>role!=='command-dock'&&v.box).map(([role])=>role);
    const baseline=measure(a,independent);
+   let nativeError=null;
    if(native&&!values['command-dock']?.box&&!independent.length){
     const error=validateCaptureHudGeometryV1({baseline:native,proposed:topOnly(baseline),width:a.width,height:a.height,touch:!desktop});
-    if(error)return error;
+    if(error)nativeError=error;
    }
    const ordered=Object.entries(values).sort(([a],[b])=>a==='command-dock'?-1:b==='command-dock'?1:0);
    for(const [role,value] of ordered){
@@ -137,17 +138,21 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
      return 'Sélecteur de volet inaccessible';
     if(!desktop&&(r.width<43||r.height<43))return 'Sélecteur de volet trop petit';
    }
-   return validateCaptureHudGeometryV1({baseline,proposed:measure(a,independent),width:a.width,height:a.height,touch:!desktop,authoredRegions:ordered.filter(([,value])=>value.box).map(([role])=>role)});
+   return nativeError??validateCaptureHudGeometryV1({baseline,proposed:measure(a,independent),width:a.width,height:a.height,touch:!desktop,authoredRegions:ordered.filter(([,value])=>value.box).map(([role])=>role)});
   }
   const selected=pages.current();
   let error=null;
   if(allPages)for(const option of options){pages.select(option.id);error=applyCurrent();if(error)break;}
   if(selected)pages.select(selected);
   if(!error)error=applyCurrent();
-  if(error){restore();pages.sync([],null);pages.suspend();report('Disposition non appliquée — '+error);return false;}
+  if(error){
+   if(keepInvalid){if(allPages)applyCurrent();report('Brouillon à corriger — '+error);}
+   else{restore();pages.sync([],null);pages.suspend();report('Disposition non appliquée — '+error);}
+   return false;
+  }
   report('');return true;
  }
- function schedule(){if(!disposed&&!frame)frame=win.requestAnimationFrame(()=>apply());}
+ function schedule(){if(!disposed&&!frame)frame=win.requestAnimationFrame(()=>apply(false,draftMode));}
  const resize=typeof win.ResizeObserver==='function'?new win.ResizeObserver(schedule):null;
  resize?.observe(arena);syncNodes();
  const mutations=typeof win.MutationObserver==='function'?new win.MutationObserver(records=>{
@@ -164,16 +169,23 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   currentPage:()=>pages.current(),
   showPage(id){
    const previous=pages.current();if(!pages.select(id))return false;
+   if(draftMode){apply(false,true);return true;}
    if(apply())return true;
    const rejected=last;apply();if(previous&&pages.select(previous))apply();report(rejected);return false;
   },
   elements(){syncNodes();return {...nodes};},
+  setDraft(value){
+   if(!authoring)throw new Error('Brouillon hors mode auteur');
+   normalized=normalizeCaptureHudLayoutV1(value);draftMode=true;
+   if(frame){win.cancelAnimationFrame(frame);frame=0;}
+   return apply(false,true);
+  },
   set(value){
-   const previous=normalized,previousPage=pages.current();
-   normalized=normalizeCaptureHudLayoutV1(value);
+   const previous=normalized,previousPage=pages.current(),wasDraft=draftMode;
+   normalized=normalizeCaptureHudLayoutV1(value);draftMode=false;
    if(frame){win.cancelAnimationFrame(frame);frame=0;}
    if(apply(true))return true;
-   const rejected=last;normalized=previous;apply();if(previousPage&&pages.select(previousPage))apply();report(rejected);return false;
+   const rejected=last;normalized=previous;draftMode=wasDraft;apply(false,wasDraft);if(previousPage&&pages.select(previousPage))apply(false,wasDraft);report(rejected);return false;
   },
   dispose(){
   if(disposed)return;disposed=true;if(frame)win.cancelAnimationFrame(frame);

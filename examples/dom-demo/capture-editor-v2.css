@@ -2425,3 +2425,5 @@ html {
 .hud-reserve-portrait__image{display:block;width:clamp(20px,6dvh,34px);height:clamp(20px,6dvh,34px);object-fit:contain;border-radius:.25rem;background:#091b26;}
 .hud-reserve-portrait[data-defeated="true"]{opacity:.45;filter:grayscale(1);}
 .capture-hud-author-toolbar button[aria-pressed="true"]{background:#28677b;color:#fff;}
+
+.capture-hud-author-toolbar[data-hud-draft-invalid="true"] [data-hud-author-status]{color:#ffd7a0;}
