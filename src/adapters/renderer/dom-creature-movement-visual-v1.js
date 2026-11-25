@@ -42,12 +42,12 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
             ctx.clearRect(0,0,canvas.width,canvas.height);
             ctx.drawImage(frame,0,0);
             frames.push(canvas.toDataURL("image/png"));
-            if(Number.isFinite(frame.duration)&&frame.duration>0)
-              durations.push(frame.duration/1000); // WebCodecs uses microseconds.
+            durations.push(Number.isFinite(frame.duration)&&frame.duration>0
+              ? frame.duration/1000 : 83); // WebCodecs uses microseconds.
           } finally { frame.close(); }
         }
         return Object.freeze({frames:Object.freeze(frames),
-          frameMs:durations.length ? durations.reduce((a,b)=>a+b,0)/durations.length : 83});
+          frameDurationsMs:Object.freeze(durations)});
       } catch { return null; } // Keep original native GIF if WebCodecs is unavailable.
       finally { decoder?.close?.(); }
     })();
@@ -172,7 +172,8 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
       image.style.opacity = "0";
       const playback = applySpriteVisual(sprite, {
         ...visual,
-        ...(decodedGif ? {frames:decodedGif.frames,frameMs:decodedGif.frameMs}:{}),
+        ...(decodedGif ? {frames:decodedGif.frames,
+          frameDurationsMs:decodedGif.frameDurationsMs}:{}),
         frameCount:decodedGif?.frames.length ?? frame.count,
         playbackMode:visual.playbackMode ?? (frame.count>1 ? "loop" : "once")
       },duration);

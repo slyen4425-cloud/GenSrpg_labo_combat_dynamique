@@ -5,6 +5,7 @@ import {
   normalizeCreaturePresentationBinding
 } from "../../src/contracts/creature-presentation-binding.js";
 import {normalizeCreatureIdleVisualV1} from "../../src/contracts/creature-presentation-binding-v11.js";
+import {spriteFrameTimingV1} from "../../src/adapters/renderer/dom-skill-fx.js";
 import {createCreatorVisualAssetSessionV1} from "../../src/assets/creator-visual-asset-session-v1.js";
 import {captureEditorAssetMatchesRoleV1,buildHumanCreatureDraftV3} from "../../src/ui/capture-editor-human-v2.js";
 
@@ -155,4 +156,18 @@ test("Dracendre idle binds both original Rigby views without changing four valid
  assert.equal(visual.rangedAttack.assetId,"pack:capture:creature-braisombre-attack-face-12-v1");
  assert.equal(visual.rangedAttackBack.assetId,"pack:capture:creature-braisombre-attack-dos-12-v1");
  assert.deepEqual(normalizeCreaturePresentationBinding(d.presentation).visual.idle,visual.idle);
+});
+
+test("authored unequal GIF delays retain their exact ratios when changing playback speed",()=>{
+ const weighted=spriteFrameTimingV1({frameDurationsMs:[100,900],frameMs:500},2);
+ assert.equal(weighted.totalMs,1000);
+ assert.deepEqual([...weighted.boundaries],[0,0.1,1]);
+ const constant=spriteFrameTimingV1({frameMs:100},2);
+ assert.deepEqual([...constant.boundaries],[0,0.5,1]);
+ // A 2× loop of the authored animation must show 50ms then 450ms,
+ // never two uniformly distributed 250ms poses.
+ const speed=2;
+ const durations=weighted.boundaries.slice(1).map((end,i)=>
+   (end-weighted.boundaries[i])*weighted.totalMs/speed);
+ assert.deepEqual(durations.map(Math.round),[50,450]);
 });
