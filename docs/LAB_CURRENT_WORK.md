@@ -1,3 +1,8 @@
+## 2026-11-25 — #386 / PR #393 : découplage de l'aménagement et des brouillons (NON GREEN)
+- CI 45576446153 : échec navigateur auteur avant montage du HUD, et échec distinct de la sentinelle ombres/contact. La cause exacte du premier échec n'est pas visible dans le journal actuel. Le chemin de validation existant exige cependant une créature et une capacité en cours d'édition même lorsqu'on veut seulement aménager le HUD.
+- Dans le mode auteur seulement, assembler le même export de test depuis le catalogue enregistré et les réglages d'équipes existants (première créature enregistrée si aucune sélection). Ne pas enregistrer de brouillon de compétence/créature pour aménager l'interface ; le test ordinaire conserve sa transaction actuelle. Pas de seconde configuration, pas de modification des règles, aucun repin.
+- Sentinelle navigateur : état explicite du lancement et erreur visible en cas d'échec ; contrôle qu'aucun brouillon n'a été enregistré. Vérifier les deux formats d'écran, CI complète, revue et publication selon charte avant GREEN. Ombres : ne pas toucher le moteur hors périmètre sans cause démontrée.
+
 ## 2026-11-25 — #386 / PR #393 : reprise de certification (NON GREEN)
 - CI 45574553576 sur 8627b5d : 11/12, échec navigateur Bestiaire à la sélection de l'équipe, carte « Équipes du test » repliée. Le test ouvre désormais son vrai volet au lieu de forcer une interaction cachée.
 - Revue Codex : le clavier traversait l'overlay auteur. Correction dans le propriétaire du mode auteur, interception locale des activations clavier/clic dans le montage natif pendant l'édition, retirée lors du test ou de la fermeture. Aucune modification du runtime, du DOM des compétences ou de la géométrie.
