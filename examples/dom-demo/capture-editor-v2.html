@@ -999,7 +999,9 @@
 
       <details class="card" data-combat-hud-layout-editor>
         <summary><strong>Interface de combat · Disposition</strong></summary>
-        <p class="note">Personnalise les blocs du HUD existant et chaque emplacement de compétence (indépendamment de la créature). Les profils PC et mobile sont indépendants, en 1v1 et 2v2. Un décalage de 0 % et une taille de 100 % conservent exactement la disposition actuelle.</p>
+        <p class="note">Ouvre le véritable écran de combat. Touche un bloc ou une compétence, déplace-le et redimensionne-le directement. Le profil suit l’écran et le format de combat sélectionnés.</p>
+        <button type="button" data-hud-layout-preview>Aménager l’écran de combat</button>
+        <details><summary>Ajustements précis · avancés</summary>
         <div class="grid two">
           <label>Profil <select data-hud-layout-profile></select></label>
           <label>Bloc ou compétence à déplacer <select data-hud-layout-role></select></label>
@@ -1012,7 +1014,7 @@
           <button type="button" data-hud-layout-reset-role>Réinitialiser ce bloc</button>
           <button type="button" data-hud-layout-reset-profile>Réinitialiser ce profil</button>
         </div>
-        <button type="button" data-hud-layout-preview>Prévisualiser le vrai combat</button>
+        </details>
         <p class="note">L’aperçu utilise le profil correspondant à cet écran et au nombre de combattants. Une disposition qui recouvre un autre bloc ou réduit trop une commande tactile est refusée. Export/import de la base complète ou sauvegarde du catalogue de l’univers pour conserver les réglages.</p>
       </details>
       <article class="card" data-combat-light-settings>
@@ -2521,6 +2523,14 @@
     <button type="button" class="capture-preview-back" data-preview-back-editor>
       Retour à l’éditeur
     </button>
+    <div data-hud-author-toolbar hidden class="capture-hud-author-toolbar" aria-label="Aménagement du combat">
+      <span data-hud-author-profile></span><span data-hud-author-selection>Choisis un élément</span>
+      <button type="button" data-hud-author-group>Déplacer le groupe</button>
+      <button type="button" data-hud-author-undo>Annuler</button>
+      <button type="button" data-hud-author-reset>Réinitialiser l’élément</button>
+      <button type="button" data-hud-author-test>Tester la disposition</button>
+      <output data-hud-author-status role="status"></output>
+    </div>
     <output class="capture-hud-layout-warning" data-hud-layout-warning hidden role="status"></output>
     <div class="capture-preview-host" data-capture-preview-host></div>
 

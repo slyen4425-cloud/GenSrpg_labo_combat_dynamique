@@ -14499,7 +14499,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     }
   }
 
-  function validate() {
+  function validate({hudAuthoring=false}={}) {
     try {
       const useSavedCreatureForTest = shouldTestSavedCreatureWhenEvolutionIncompleteV1({
         selectedCreatureId,
@@ -14508,10 +14508,33 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
         evolutionTargetId: selectedValue(root, "[data-evolution-target]"),
         configuredCreatures
       });
-      if (selectedLegacyState !== null && !selectedLegacyState.runtimeReady) {
+      if (!hudAuthoring && selectedLegacyState !== null && !selectedLegacyState.runtimeReady) {
         throw new Error("La capacité sélectionnée n’est pas encore utilisable en combat.");
       }
-      const result = prepareCaptureEditorCombatEditsV1({
+      // HUD authoring is presentation-only: use the saved catalogue and
+      // existing team configuration, without staging unrelated form drafts.
+      const buildExport=()=>{
+        const teams=combatTeamControls.read();
+        if(hudAuthoring&&!configuredCreatures.has(teams.localCreatureIds[0])){
+          const first=configuredCreatures.keys().next().value;
+          if(!first)throw new Error("Crée ou importe une créature avant d’aménager le combat.");
+          teams.localCreatureIds[0]=first;
+        }
+        return buildCaptureEditorCombatTestV1({
+          configuredCreatures, configuredSkills,
+          ...teams,
+          arenaId: selectedValue(root, "[data-test-arena]"),
+          combatRules: readHumanCombatRulesV1(root),
+          gameOptions: readHumanGameOptionsV1(root),
+          skillSpeedMultiplier: captureCombatPaceToSkillSpeedV1(numericValue(root, "[data-combat-skill-speed]")),
+          recallPreparationMs: numericValue(root, "[data-recall-seconds]") * 1000,
+          statRegistry, progressionRules,
+          previewLevel: numericValue(root, "[data-test-creature-level]")
+        });
+      };
+      const result = hudAuthoring
+        ? {exported:buildExport(),skillDraft:null,creatureRecord:null}
+        : prepareCaptureEditorCombatEditsV1({
         configuredSkills, configuredCreatures,
         selectedSkillId: librarySelect.value || null,
         selectedCreatureId,
@@ -14521,17 +14544,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
           ? null
           : creatureDirty || selectedCreatureId === null
             ? currentCreatureRecord() : null,
-        buildExport: () => buildCaptureEditorCombatTestV1({
-          configuredCreatures, configuredSkills,
-          ...combatTeamControls.read(),
-          arenaId: selectedValue(root, "[data-test-arena]"),
-          combatRules: readHumanCombatRulesV1(root),
-          gameOptions: readHumanGameOptionsV1(root),
-          skillSpeedMultiplier: captureCombatPaceToSkillSpeedV1(numericValue(root, "[data-combat-skill-speed]")),
-          recallPreparationMs: numericValue(root, "[data-recall-seconds]") * 1000,
-          statRegistry, progressionRules,
-          previewLevel: numericValue(root, "[data-test-creature-level]")
-        })
+        buildExport
       });
       lastExport = result.exported;
       if (result.skillDraft !== null) {
@@ -14555,11 +14568,11 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       );
       one(root, "[data-editor-summary]").textContent =
         teamSizes.join(" contre ") + " monstres · " + lastExport.actors.length + " actifs";
-      setStatus(root, useSavedCreatureForTest
+      setStatus(root, hudAuthoring ? "Aménagement prêt avec le catalogue enregistré ; brouillons inchangés." : useSavedCreatureForTest
         ? "Test de capacité prêt avec la créature enregistrée. Le brouillon créature reste inchangé : choisis une cible d'évolution ou décoche Évolution avant de l'enregistrer."
         : result.skillDraft !== null || result.creatureRecord !== null
           ? "Configuration valide. Modifications enregistrées pour le test."
-          : "Configuration valide. Le combat de test est prêt.", useSavedCreatureForTest ? "warning" : "ok");
+          : "Configuration valide. Le combat de test est prêt.", !hudAuthoring && useSavedCreatureForTest ? "warning" : "ok");
       return lastExport;
     } catch (error) {
       lastExport = null;
@@ -15349,6 +15362,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       heading?.scrollIntoView({block:"start"});
     },
     readHudLayout(){return hudLayout;},
+    writeHudLayout(value){hudLayout=normalizeCaptureHudLayoutV1(value);hudLayoutAuthored=true;hudLayoutEditor?.set(hudLayout);},
     readDatabase({includePendingSpecies = false} = {}){
       if(disposed)throw new Error("Éditeur fermé");
       if (includePendingSpecies && creatureDirty) {

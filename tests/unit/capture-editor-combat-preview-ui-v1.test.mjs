@@ -94,7 +94,7 @@ test("Capture editor page composes Session V2 with native combat and visual owne
     source,
     /const opponentCreatureDraft\s*=\s*\{/
   );
-  assert.match(source, /session\.launch\(\)/);
+  assert.match(source, /session\.launch\(\{\s*hudAuthoring:\s*hudAuthoringRequested\s*\}\)/);
   assert.match(source, /session\.returnToEditor\(\)/);
 });
 
@@ -168,6 +168,7 @@ test("native test button allows a retry after invalid fields and a failed previe
   runInNewContext(source.slice(start, end), {
     testButton,
     backButton,
+    hudAuthoringRequested: false,
     session,
     editorStatus,
     previewDisplayMode,

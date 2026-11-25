@@ -82,7 +82,8 @@ def check(context, origin):
     # Real editor, same isolated database and same native arena DOM.
     editor_url = origin + "/examples/dom-demo/capture-editor-v2.html?tab=combat&universe=" + project
     page.goto(editor_url, wait_until="domcontentloaded")
-    page.locator("[data-combat-hud-layout-editor] summary").click()
+    page.locator("[data-combat-hud-layout-editor] > summary").click()
+    page.locator("[data-combat-hud-layout-editor] > details > summary").click()
     profile = "desktop-1v1" if page.evaluate("matchMedia('(min-width:1100px) and (min-height:650px) and (pointer:fine)').matches") else "touch-1v1"
     page.locator("[data-hud-layout-profile]").select_option(profile)
     page.locator("[data-hud-layout-role]").select_option("local-status")
@@ -91,11 +92,86 @@ def check(context, origin):
     page.get_by_role("button", name="Enregistrer le catalogue de cet univers").click()
     page.wait_for_function("document.querySelector('[data-capture-universe-project-editor] [role=status]').textContent.includes('révision 3')")
     page.goto(editor_url, wait_until="domcontentloaded")
-    page.locator("[data-combat-hud-layout-editor] summary").click()
+    page.locator("[data-combat-hud-layout-editor] > summary").click()
+    page.locator("[data-combat-hud-layout-editor] > details > summary").click()
     page.locator("[data-hud-layout-profile]").select_option(profile)
     page.locator("[data-hud-layout-role]").select_option("local-status")
     assert page.locator("[data-hud-layout-x]").input_value() == "1"
     assert page.locator("[data-hud-layout-y]").input_value() == "-1"
+    # Native pointer editing, not synthetic style injection. A real editor launch
+    # creates the native arena, real species and existing runtime, in author mode.
+    page.get_by_role("button", name="Dérouler Équipes du test", exact=True).click()
+    page.locator("[data-test-local-team-size]").select_option("1")
+    page.locator("[data-test-opponent-team-size]").select_option("1")
+    page.locator("[data-active-per-team]").select_option("1")
+    page.locator("[data-test-opponent-creature]").first.select_option(species)
+    page.wait_for_function("!document.querySelector('[data-editor-test-combat]').disabled")
+    draft_fields = page.locator("[data-creature-id], [data-skill-id], [data-creature-library-select], [data-skill-library-select]")
+    drafts_before = draft_fields.evaluate_all("els=>els.map(e=>e.value)")
+    page.locator("[data-hud-layout-preview]").click()
+    toolbar = page.locator("[data-hud-author-toolbar]")
+    try:
+        toolbar.wait_for(state="visible")
+    except Exception as error:
+        raise AssertionError("HUD author launch failed: " + page.locator("[data-editor-status]").text_content()) from error
+    arena = page.locator("[data-capture-preview-host] [data-combat-arena]")
+    hp = arena.locator(".squad-card--local-full")
+    hp.wait_for(state="visible")
+    assert arena.locator("[data-combat-hud-skill-role]").count() > 0
+    assert page.locator("[data-hud-author-overlay]").count() == 1
+    # Native keyboard activation must not reach the actor or skill handlers
+    # while authoring, even when a control is focused programmatically.
+    actor = arena.locator('[data-target-actor="local-1"]').first
+    actor.evaluate("""el=>{el.dataset.authorActivationCount='0';
+      for(const type of ['keydown','click'])el.addEventListener(type,()=>{el.dataset.authorActivationCount=String(Number(el.dataset.authorActivationCount)+1);});}""")
+    actor.focus()
+    page.keyboard.press("Enter")
+    page.keyboard.press("Space")
+    actor.evaluate("el=>el.click()")
+    assert actor.get_attribute("data-author-activation-count") == "0"
+    skill = arena.locator("[data-combat-hud-skill-role]").first
+    assert skill.evaluate("el=>!el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}))"), "native skill activation must be cancelled"
+
+    # Reset via the native editing chrome, then move by the same safe +1/-1
+    # percent offset that was previously certified with the exact profile.
+    box = hp.bounding_box()
+    x, y = box["x"]+box["width"]/2, box["y"]+box["height"]/2
+    page.mouse.click(x,y)
+    assert "PV" in toolbar.locator("[data-hud-author-selection]").inner_text()
+    toolbar.locator("[data-hud-author-reset]").click()
+    page.wait_for_function("!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
+    box, bounds = hp.bounding_box(), arena.bounding_box()
+    x, y = box["x"]+box["width"]/2, box["y"]+box["height"]/2
+    dx, dy = bounds["width"]/100, -bounds["height"]/100
+    if context.pages[0].evaluate("navigator.maxTouchPoints>0"):
+        cdp = context.new_cdp_session(page)
+        cdp.send("Input.dispatchTouchEvent", {"type":"touchStart","touchPoints":[{"x":x,"y":y}]})
+        cdp.send("Input.dispatchTouchEvent", {"type":"touchMove","touchPoints":[{"x":x+dx,"y":y+dy}]})
+        cdp.send("Input.dispatchTouchEvent", {"type":"touchEnd","touchPoints":[]})
+        cdp.detach()
+    else:
+        page.mouse.move(x,y)
+        page.mouse.down()
+        page.mouse.move(x+dx,y+dy,steps=3)
+        page.mouse.up()
+    page.wait_for_function("!!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
+    assert hp.bounding_box()["x"] > box["x"], "direct pointer drag did not move the native HUD"
+    toolbar.locator("[data-hud-author-undo]").click()
+    page.wait_for_function("!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
+    toolbar.locator("[data-hud-author-undo]").click()
+    page.wait_for_function("!!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
+    toolbar.locator("[data-hud-author-test]").click()
+    assert page.locator("[data-hud-author-overlay]").count() == 0
+    assert arena.is_visible(), "test must retain the same arena"
+    actor.focus()
+    page.keyboard.press("Enter")
+    assert int(actor.get_attribute("data-author-activation-count")) > 0, "native keyboard activation must be restored"
+
+    page.locator("[data-preview-back-editor]").click()
+    assert page.locator("[data-hud-author-overlay]").count() == 0
+    assert page.locator("[data-hud-layout-x]").input_value() == "1"
+    assert draft_fields.evaluate_all("els=>els.map(e=>e.value)") == drafts_before, "HUD authoring must not save or replace unrelated drafts"
+    print("Native pointer author / undo / test passed",page.viewport_size,flush=True)
     # Apply the real layout controller to the ONE editor template in a visible
     # preview shell. The native author preview mounts this same controller.
     geometry = page.evaluate("""async ([id,profile])=>{

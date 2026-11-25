@@ -43,3 +43,16 @@ test('individual skills may move inside their dock but cannot cover another skil
  assert.match(verify({...base,a:{...base.a,left:475,right:515}}),/Chevauchement/);
  assert.match(verify({...base,a:{...base.a,targets:[{width:40,height:50,hit:false}]}}),/recouverte/);
 });
+
+import {captureHudPointerValueV1} from '../../src/ui/capture-hud-visual-author-v1.js';
+test('visual pointer edits write the same normalized offsets, nested skills compensate dock scale',()=>{
+ const base={dx:0,dy:0,scale:100};
+ const args={value:base,mode:'move',deltaX:80,deltaY:-45,width:800,height:450,elementWidth:50};
+ assert.deepEqual(captureHudPointerValueV1(args),{dx:10,dy:-10,scale:100});
+ assert.deepEqual(captureHudPointerValueV1({...args,parentScale:1.25}),{dx:8,dy:-8,scale:100});
+ assert.equal(captureHudPointerValueV1({...args,deltaX:900}).dx,50);
+ assert.equal(captureHudPointerValueV1({...args,mode:'resize',deltaX:100}).scale,125);
+ assert.equal(captureHudPointerValueV1({...args,mode:'resize',deltaX:-100}).scale,85);
+ const result=updateCaptureHudLayoutV1(undefined,'desktop-1v1','dodge',captureHudPointerValueV1(args));
+ assert.deepEqual(normalizeCaptureHudLayoutV1(JSON.parse(JSON.stringify(result))),result);
+});

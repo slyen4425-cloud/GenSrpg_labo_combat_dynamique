@@ -12,9 +12,9 @@ const selectors=Object.freeze({
  ...Object.fromEntries(Object.keys(CAPTURE_HUD_SKILL_ROLES_V1).map(role=>[role,'[data-combat-hud-skill-role="'+role+'"]']))
 });
 const desktopQuery='(min-width: 1100px) and (min-height: 650px) and (pointer: fine)';
-export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{}}){
- const normalized=normalizeCaptureHudLayoutV1(layout);
- if(!Object.keys(normalized.profiles).length)return Object.freeze({dispose(){}});
+export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},authoring=false}){
+ let normalized=normalizeCaptureHudLayoutV1(layout);
+ if(!authoring&&!Object.keys(normalized.profiles).length)return Object.freeze({dispose(){}});
  const arena=root.querySelector('[data-combat-arena]'),win=root.ownerDocument.defaultView;
  if(!arena||!win)throw new TypeError('Arène native requise');
  let nodes={};
@@ -46,7 +46,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{}}){
    const r=node.getBoundingClientRect();if(node.hidden||r.width<=0||r.height<=0)continue;
    const elements=[...(node.matches('button,summary')?[node]:[]),...node.querySelectorAll('button,summary')];
    const targets=elements.filter(el=>!el.hidden&&el.getClientRects().length).map(el=>{
-    const rect=el.getBoundingClientRect(),hit=root.ownerDocument.elementFromPoint(rect.x+rect.width/2,rect.y+rect.height/2);
+    const rect=el.getBoundingClientRect(),hit=(root.ownerDocument.elementsFromPoint?.(rect.x+rect.width/2,rect.y+rect.height/2)??[root.ownerDocument.elementFromPoint(rect.x+rect.width/2,rect.y+rect.height/2)]).find(el=>el&&!el.closest('[data-hud-author-overlay]'));
     return {...relative(rect,a),hit:!!hit&&(hit===el||el.contains(hit))};
    }).filter(r=>r.width>0&&r.height>0);
    const panels=[...node.querySelectorAll('details[open] > :not(summary)')].map(el=>relative(el.getBoundingClientRect(),a)).filter(r=>r.width>0&&r.height>0);
@@ -57,14 +57,15 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{}}){
   }
   return result;
  }
+ function profileKey(){return (win.matchMedia(desktopQuery).matches?'desktop':'touch')+'-'+(arena.dataset.combatActiveCount==='2'?'2v2':'1v1');}
  function apply(){
-  frame=0;if(disposed)return;
+  frame=0;if(disposed)return false;
   restore();syncNodes();
-  const a=arena.getBoundingClientRect();if(a.width<=0||a.height<=0)return;
+  const a=arena.getBoundingClientRect();if(a.width<=0||a.height<=0)return false;
   const desktop=win.matchMedia(desktopQuery).matches;
-  const profile=(desktop?'desktop':'touch')+'-'+(arena.dataset.combatActiveCount==='2'?'2v2':'1v1');
+  const profile=profileKey();
   const values=normalized.profiles[profile];
-  if(!values){report('');return;}
+  if(!values){report('');return true;}
   const baseline=measure(a);
   for(const [role,value] of Object.entries(values)){
    const node=nodes[role];if(!node||!baseline[role])continue;
@@ -73,8 +74,8 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{}}){
    node.style.setProperty('transform-origin','center');
   }
   const error=validateCaptureHudGeometryV1({baseline,proposed:measure(a),width:a.width,height:a.height,touch:!desktop});
-  if(error){restore();report('Disposition non appliquée — '+error);}
-  else report('');
+  if(error){restore();report('Disposition non appliquée — '+error);return false;}
+  report('');return true;
  }
  function schedule(){if(!disposed&&!frame)frame=win.requestAnimationFrame(apply);}
  const resize=typeof win.ResizeObserver==='function'?new win.ResizeObserver(schedule):null;
@@ -86,7 +87,17 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{}}){
  }):null;
  mutations?.observe(arena,{subtree:true,childList:true,attributes:true,attributeOldValue:true,attributeFilter:['hidden','open','data-combat-active-count']});
  win.addEventListener('resize',schedule);schedule();
- return Object.freeze({dispose(){
+ return Object.freeze({
+  profile:profileKey,
+  elements(){syncNodes();return {...nodes};},
+  set(value){
+   const previous=normalized;
+   normalized=normalizeCaptureHudLayoutV1(value);
+   if(frame){win.cancelAnimationFrame(frame);frame=0;}
+   if(apply())return true;
+   const rejected=last;normalized=previous;apply();report(rejected);return false;
+  },
+  dispose(){
   if(disposed)return;disposed=true;if(frame)win.cancelAnimationFrame(frame);
   resize?.disconnect();mutations?.disconnect();win.removeEventListener('resize',schedule);restore();report('');
  }});

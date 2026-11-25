@@ -62,7 +62,7 @@ export function createCaptureEditorPreviewSessionV2({
     current.dispose?.();
   }
 
-  async function launch() {
+  async function launch({hudAuthoring=false}={}) {
     if (disposed) {
       throw new Error(
         "CaptureEditorPreviewSessionV2 is disposed"
@@ -75,7 +75,7 @@ export function createCaptureEditorPreviewSessionV2({
     }
 
     const exported = await Promise.resolve(
-      editorController.validate()
+      hudAuthoring ? editorController.validate({hudAuthoring:true}) : editorController.validate()
     );
 
     if (!exported) {
