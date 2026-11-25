@@ -658,7 +658,7 @@ testButton.addEventListener("click", async () => {
     ]);
     await displayModePromise;
     const launchResult =
-      await session.launch();
+      await session.launch({hudAuthoring:hudAuthoringRequested});
 
     if (launchResult?.ok !== true) {
       await previewDisplayMode.leave();
