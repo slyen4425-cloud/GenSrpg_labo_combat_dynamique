@@ -137,10 +137,14 @@ def check(context, origin):
     assert not toolbar.locator("[data-hud-author-palette]").is_visible()
     assert toolbar.bounding_box()["height"] < moved["height"]
     assert grip.is_visible() and collapse.is_visible()
+    grip_box = grip.bounding_box()
+    drag_toolbar(1-grip_box["x"]-grip_box["width"]/2,1-grip_box["y"]-grip_box["height"]/2)
+    assert grip.evaluate("""el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))}"""), "Back button covers the toolbar grip"
     collapse.click()
     assert toolbar.locator("[data-hud-author-palette]").is_visible()
     drag_toolbar(before_toolbar["x"]-toolbar.bounding_box()["x"],before_toolbar["y"]-toolbar.bounding_box()["y"])
-    assert abs(toolbar.bounding_box()["y"]-before_toolbar["y"]) < 6
+    assert toolbar.bounding_box()["y"] >= 0
+    assert grip.evaluate("""el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))}""")
     print("Floating toolbar pointer move, collapse and reopen",page.viewport_size,flush=True)
     # Native keyboard activation must not reach the actor or skill handlers
     # while authoring, even when a control is focused programmatically.
@@ -266,9 +270,13 @@ def check(context, origin):
     # the principal page, must receive all rectangle and capacity edits.
     toolbar.locator("[data-hud-author-palette]").select_option("command-dock")
     assert toolbar.locator("[data-hud-author-page-select]").input_value()=="hud-group-1:0"
+    # The full floating panel may obscure a handle; reduce it like the author
+    # would, then prove the same real resize gesture and retained draft.
+    collapse.click()
     original_dock = dock.bounding_box()
     handle = arena.locator('[data-hud-resize-edge="n"]')
     handle.wait_for(state="visible")
+    assert handle.evaluate("""el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))}"""), "Reduced palette must release the north handle"
     b = handle.bounding_box()
     gesture(b["x"]+b["width"]/2,b["y"]+b["height"]/2,0,-40)
     print("Panel north handle",page.viewport_size,original_dock,b,toolbar.locator("[data-hud-author-status]").text_content(),dock.bounding_box(),flush=True)
@@ -283,6 +291,9 @@ def check(context, origin):
     print("Panel west handle",page.viewport_size,grown,wider,toolbar.locator("[data-hud-author-status]").text_content(),flush=True)
     assert wider["width"] >= grown["width"]+15, (grown,wider,toolbar.locator("[data-hud-author-status]").text_content())
     assert abs(wider["height"]-grown["height"]) < 3, (grown,wider)
+    collapse.click()
+    assert toolbar.locator("[data-hud-author-palette]").is_visible()
+    assert abs(dock.bounding_box()["width"]-wider["width"])<3, "Reopening must preserve the draft"
     toolbar.locator("[data-hud-author-add-slot]").click()
     assert arena.locator("[data-hud-empty-skill]:visible").count() >= 1, toolbar.locator("[data-hud-author-status]").text_content()
     assert arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.every(e=>e.dataset.nativeHudProof==='same')")
@@ -301,8 +312,10 @@ def check(context, origin):
                     and db["y"]+db["height"]>authored_dock["y"] and db["y"]<authored_dock["y"]+authored_dock["height"])
         if intersects:
             toolbar.locator("[data-hud-author-palette]").select_option("dodge")
+            collapse.click()
             gesture(db["x"]+db["width"]/2,db["y"]+db["height"]/2,authored_dock["x"]-db["x"]-db["width"]-12,0)
             assert dodge.bounding_box()["x"]+dodge.bounding_box()["width"] < authored_dock["x"]
+            collapse.click()
     toolbar.locator("[data-hud-author-page-select]").select_option("main:0")
     assert not arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
     assert arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()

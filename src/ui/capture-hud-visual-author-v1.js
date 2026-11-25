@@ -22,8 +22,22 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout:
  function toolbarBounds(){return (toolbar.offsetParent??toolbar.parentElement).getBoundingClientRect();}
  function positionToolbar(x,y){
   const bounds=toolbarBounds(),r=toolbar.getBoundingClientRect(),margin=4;
-  toolbarPosition={x:Math.max(margin,Math.min(x,Math.max(margin,bounds.width-r.width-margin))),
-   y:Math.max(margin,Math.min(y,Math.max(margin,bounds.height-r.height-margin)))};
+  const maxX=Math.max(margin,bounds.width-r.width-margin),maxY=Math.max(margin,bounds.height-r.height-margin);
+  let left=Math.max(margin,Math.min(x,maxX)),top=Math.max(margin,Math.min(y,maxY));
+  // The native Back button has a higher layer. Keep it and the drag grip
+  // independently reachable; never allow an accidental exit over the grip.
+  const back=toolbar.parentElement.querySelector('[data-preview-back-editor]');
+  const b=back?.getBoundingClientRect(),g=grip.getBoundingClientRect();
+  if(b&&b.width>0&&b.height>0){
+   const gx=g.left-r.left,gy=g.top-r.top,bl=b.left-bounds.left,bt=b.top-bounds.top,
+    br=b.right-bounds.left,bb=b.bottom-bounds.top;
+   if(left+gx<br+margin&&left+gx+g.width>bl-margin&&top+gy<bb+margin&&top+gy+g.height>bt-margin){
+    const right=br+margin-gx,below=bb+margin-gy;
+    if(right<=maxX)left=Math.max(left,right);
+    else if(below<=maxY)top=Math.max(top,below);
+   }
+  }
+  toolbarPosition={x:left,y:top};
   toolbar.style.left=toolbarPosition.x+'px';toolbar.style.top=toolbarPosition.y+'px';toolbar.style.transform='none';
   fitGroupPopup();
  }
