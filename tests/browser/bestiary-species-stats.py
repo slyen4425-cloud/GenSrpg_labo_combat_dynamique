@@ -144,7 +144,7 @@ def check(context, origin):
         page.mouse.down()
         page.mouse.move(x+dx,y+dy,steps=3)
         page.mouse.up()
-    page.wait_for_function("!!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
+    page.wait_for_function("document.querySelector('[data-capture-preview-host] .squad-card--local-full').dataset.hudBox==='local-status'")
     assert hp.bounding_box()["x"] > box["x"], "direct pointer drag did not move the native HUD"
     toolbar.locator("[data-hud-author-undo]").click()
     page.wait_for_function("!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
@@ -168,32 +168,45 @@ def check(context, origin):
     assert not arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()
     assert arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.map(e=>e.dataset.combatHudSkillRole)") == original_roles
     assert arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.every(e=>e.dataset.nativeHudProof==='same')")
-    # The selected group is a single gesture on the native arena. Moving it
-    # must update both members; undo restores the original canonical offsets.
-    first_skill = arena.locator('[data-combat-hud-skill-role="skill-slot-1"]')
-    second_skill = arena.locator('[data-combat-hud-skill-role="skill-slot-2"]')
-    first_box, second_box, arena_box = first_skill.bounding_box(), second_skill.bounding_box(), arena.bounding_box()
-    x, y = first_box["x"] + first_box["width"]/2, first_box["y"] + first_box["height"]/2
-    dx = arena_box["width"]/100
-    if context.pages[0].evaluate("navigator.maxTouchPoints>0"):
-        cdp = context.new_cdp_session(page)
-        cdp.send("Input.dispatchTouchEvent", {"type":"touchStart","touchPoints":[{"x":x,"y":y}]})
-        cdp.send("Input.dispatchTouchEvent", {"type":"touchMove","touchPoints":[{"x":x+dx,"y":y}]})
-        cdp.send("Input.dispatchTouchEvent", {"type":"touchEnd","touchPoints":[]})
-        cdp.detach()
-    else:
-        page.mouse.move(x,y)
-        page.mouse.down()
-        page.mouse.move(x+dx,y,steps=3)
-        page.mouse.up()
-    page.wait_for_function("""['skill-slot-1','skill-slot-2'].every(role=>!!document.querySelector('[data-combat-hud-skill-role="'+role+'"]').style.translate)""")
-    assert first_skill.bounding_box()["x"] > first_box["x"]
-    assert second_skill.bounding_box()["x"] > second_box["x"]
-    toolbar.locator("[data-hud-author-undo]").click()
-    page.wait_for_function("""['skill-slot-1','skill-slot-2'].every(role=>!document.querySelector('[data-combat-hud-skill-role="'+role+'"]').style.translate)""")
+    # A named page is now a real region: resize the native dock itself rather
+    # than scaling the two skill buttons. The page keeps those exact nodes.
+    dock = arena.locator(".coop-command-stack")
+    def gesture(x,y,dx,dy):
+        if page.evaluate("navigator.maxTouchPoints>0"):
+            cdp = context.new_cdp_session(page)
+            cdp.send("Input.dispatchTouchEvent", {"type":"touchStart","touchPoints":[{"x":x,"y":y}]})
+            cdp.send("Input.dispatchTouchEvent", {"type":"touchMove","touchPoints":[{"x":x+dx,"y":y+dy}]})
+            cdp.send("Input.dispatchTouchEvent", {"type":"touchEnd","touchPoints":[]})
+            cdp.detach()
+        else:
+            page.mouse.move(x,y)
+            page.mouse.down()
+            page.mouse.move(x+dx,y+dy,steps=3)
+            page.mouse.up()
+    original_dock = dock.bounding_box()
+    handle = arena.locator('[data-hud-resize-edge="n"]')
+    handle.wait_for(state="visible")
+    b = handle.bounding_box()
+    gesture(b["x"]+b["width"]/2,b["y"]+b["height"]/2,0,-40)
+    page.wait_for_function("document.querySelector('.coop-command-stack').dataset.hudBox==='command-dock'")
+    grown = dock.bounding_box()
+    assert grown["height"] >= original_dock["height"]+30, (original_dock,grown)
+    assert abs(grown["width"]-original_dock["width"]) < 3, (original_dock,grown)
+    # Width is independent, moving the west edge. The south edge stays put.
+    b=arena.locator('[data-hud-resize-edge="w"]').bounding_box()
+    gesture(b["x"]+b["width"]/2,b["y"]+b["height"]/2,-24,0)
+    wider=dock.bounding_box()
+    assert wider["width"] >= grown["width"]+15, (grown,wider,toolbar.locator("[data-hud-author-status]").text_content())
+    assert abs(wider["height"]-grown["height"]) < 3, (grown,wider)
+    toolbar.locator("[data-hud-author-add-slot]").click()
+    assert arena.locator("[data-hud-empty-skill]:visible").count() >= 1, toolbar.locator("[data-hud-author-status]").text_content()
+    assert arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.every(e=>e.dataset.nativeHudProof==='same')")
+    authored_dock=dock.bounding_box()
+    print("Native independent panel geometry",page.viewport_size,original_dock,authored_dock,flush=True)
     toolbar.locator("[data-hud-author-page-select]").select_option("main:0")
     assert not arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
     assert arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()
+    assert abs(dock.bounding_box()["width"]-original_dock["width"])<4, "main page must keep independent layout"
     toolbar.locator("[data-hud-author-test]").click()
     assert page.locator("[data-hud-author-overlay]").count() == 0
     nav = arena.locator("[data-hud-skill-page-nav]")
@@ -220,6 +233,7 @@ def check(context, origin):
       return layout.groups[profile][0];
     }""", [project,profile])
     assert stored["label"] == "Attaques rapides" and stored["foldable"] and stored["roles"] == ["skill-slot-1","skill-slot-2"], stored
+    assert stored["box"]["w"] > 0 and stored["grid"]["slots"] == 6, stored
     page.goto(editor_url, wait_until="domcontentloaded")
     page.locator("[data-combat-hud-layout-editor] > summary").click()
     page.wait_for_function("!document.querySelector('[data-editor-test-combat]').disabled")
@@ -232,6 +246,8 @@ def check(context, origin):
     toolbar.locator("[data-hud-author-page-select]").wait_for(state="visible")
     toolbar.locator("[data-hud-author-page-select]").select_option("hud-group-1:0")
     assert arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
+    assert arena.locator("[data-hud-empty-skill]:visible").count() >= 1
+    assert abs(dock.bounding_box()["width"]-authored_dock["width"])<4
     page.locator("[data-preview-back-editor]").click()
     # Same native author flow with two active fighters; profiles must stay
     # independent. This is not a new HUD or a fabricated combat runtime.

@@ -31,7 +31,7 @@ export function mountCaptureHudSkillPagesV1({grid,onChange=()=>{}}){
   while(empty.length>pool)empty.pop().remove();
   while(empty.length<pool){
    const cell=grid.ownerDocument.createElement('span');
-   cell.dataset.hudEmptySkill='true';cell.setAttribute('aria-hidden','true');cell.textContent='+';
+   cell.dataset.hudEmptySkill='true';cell.setAttribute('aria-hidden','true');cell.textContent='';
    empty.push(cell);
   }
   // The native renderer can replaceChildren on roster changes.

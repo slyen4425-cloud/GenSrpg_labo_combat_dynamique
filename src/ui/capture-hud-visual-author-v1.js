@@ -11,7 +11,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
  const handles=['nw','n','ne','w','e','sw','s','se'].map(edge=>{
   const node=doc.createElement('div');node.className='hud-author-handle';node.dataset.hudResizeEdge=edge;node.hidden=true;return node;
  });
- overlay.append(outline,...handles);arena.append(overlay);toolbar.hidden=false;
+ overlay.append(outline,...handles);arena.append(overlay);arena.dataset.hudAuthoring='true';toolbar.hidden=false;
  let role=null,groupId=null,gesture=null,disposed=false,frame=0,history=[],cleanups=[];
  const listen=(el,event,fn,options)=>{el.addEventListener(event,fn,options);cleanups.push(()=>el.removeEventListener(event,fn,options));};
  // The pointer overlay alone cannot stop keyboard activation of native
@@ -49,7 +49,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
  }
  function loadGroupDraft(){
   const group=groups().find(g=>g.id===groupSelect.value),taken=new Set(groups().filter(g=>g.id!==group?.id).flatMap(g=>g.roles));
-  groupName.value=group?.label??'';groupFold.checked=group?.foldable??false;
+  groupName.value=group?.label??('Volet '+(groups().length+1));groupFold.checked=group?.foldable??true;
   const keys=[...new Set([...Object.keys(CAPTURE_HUD_ROLES_V1),...Object.keys(hudOwner.elements()),...(group?.roles??[])])].filter(captureHudRoleLabelV1);
   groupRoles.replaceChildren(...keys.map(key=>{
    const label=doc.createElement('label'),input=doc.createElement('input');
@@ -164,10 +164,16 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   const before=readLayout(),node=hudOwner.elements()['command-dock'];
   if(!node)return;
   const value=regionValue(),grid={...(value.grid??actual('command-dock').grid??{columns:5,slots:5})};
-  grid[field]=clamp(grid[field]+delta,1,field==='columns'?12:48);
-  const box=value.box??captureHudBoxFromRectsV1(node.getBoundingClientRect(),arena.getBoundingClientRect());
-  const candidate=writeRegion(before,profile(),{box,grid});
-  if(apply(candidate)){history.push(before);if(!regionGroup()){groupId=null;role='command-dock';}schedule();}
+  const old={...grid};grid[field]=clamp(grid[field]+delta,1,field==='columns'?12:48);
+  if(grid[field]===old[field])return;
+  const a=arena.getBoundingClientRect(),box=value.box??captureHudBoxFromRectsV1(node.getBoundingClientRect(),a);
+  const nextRows=Math.ceil(grid.slots/grid.columns),oldRows=Math.ceil(old.slots/old.columns);
+  // First keep the authored rectangle. If an added row needs more room,
+  // attempt a bounded upward expansion with the bottom edge fixed.
+  const candidates=[box];
+  if(nextRows>oldRows){const extra=Math.ceil((nextRows-oldRows)*48/a.height*1000);const grow=Math.min(box.y,extra);if(grow>0)candidates.push({...box,y:box.y-grow,h:box.h+grow});}
+  for(const region of candidates){if(apply(writeRegion(before,profile(),{box:region,grid}))){history.push(before);if(!regionGroup()){groupId=null;role='command-dock';}schedule();return;}}
+  status.textContent='Agrandis le volet avec ses poignées, puis ajoute la case ou la colonne.';
  }
  for(const [selector,field,delta] of [
   ['[data-hud-author-add-slot]','slots',1],['[data-hud-author-remove-slot]','slots',-1],
@@ -204,7 +210,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   const candidate=group?editCaptureHudGroupV1(before,profile(),group.id,{label:group.label,roles:group.roles,foldable:true}):roles.reduce((layout,key)=>updateCaptureHudLayoutV1(layout,profile(),key,null),before);
   if(apply(candidate))history.push(before);schedule();
  });
- function dispose(){if(disposed)return;disposed=true;if(frame)win.cancelAnimationFrame(frame);for(const f of cleanups.splice(0))f();observer?.disconnect();overlay.remove();toolbar.hidden=true;}
+ function dispose(){if(disposed)return;disposed=true;if(frame)win.cancelAnimationFrame(frame);for(const f of cleanups.splice(0))f();observer?.disconnect();overlay.remove();delete arena.dataset.hudAuthoring;toolbar.hidden=true;}
  listen($('[data-hud-author-test]'),'click',()=>{dispose();startTest();});
  refreshGroups();
  const observer=typeof win.ResizeObserver==='function'?new win.ResizeObserver(schedule):null;observer?.observe(arena);

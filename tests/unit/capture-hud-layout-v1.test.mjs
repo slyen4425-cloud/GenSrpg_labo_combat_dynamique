@@ -157,3 +157,11 @@ test('each named skill panel owns optional independent geometry and capacity',()
  const pages=captureHudSkillPagesV1(['skill-slot-1','skill-slot-2','skill-slot-3','skill-slot-4','skill-slot-ultimate'],layout.groups[profile],dock.grid);
  assert.equal(pages.find(p=>p.groupId==='hud-group-1').roles.length,4);
 });
+
+test('an empty named panel can reserve space without inventing any skill',()=>{
+ const profile='desktop-1v1';
+ const layout=editCaptureHudGroupV1(undefined,profile,null,{label:'Objets futurs',roles:[],foldable:true});
+ const pages=captureHudSkillPagesV1(['skill-slot-1'],layout.groups[profile]);
+ assert.deepEqual(pages.find(p=>p.groupId==='hud-group-1').roles,[]);
+ assert.deepEqual(pages.flatMap(p=>p.roles),['skill-slot-1']);
+});
