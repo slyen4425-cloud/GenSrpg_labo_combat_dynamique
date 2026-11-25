@@ -112,6 +112,28 @@ export function mountCaptureCombatRosterPanelV1({
     parent.append(portrait);
     return true;
   }
+  // Summary portraits are a read-only projection of the same native roster;
+  // never separate reserve selection, storage, or gameplay.
+  function portraitStrip(summaryNode){
+    if(!summaryNode)return null;
+    const strip=root.ownerDocument.createElement('span');strip.className='hud-reserve-portraits';strip.setAttribute('aria-hidden','true');summaryNode.append(strip);return strip;
+  }
+  const allyStrip=portraitStrip(summary);
+  const enemySummaryLabel=enemySummary?root.ownerDocument.createElement('span'):null;
+  if(enemySummaryLabel){enemySummaryLabel.textContent=enemySummary.textContent;enemySummary.replaceChildren(enemySummaryLabel);}
+  const enemyStrip=portraitStrip(enemySummary);
+  function summaryPortrait(strip,member){
+    if(!strip)return null;
+    const holder=root.ownerDocument.createElement('span');holder.className='hud-reserve-portrait';
+    if(!attachPortrait(holder,member.creatureId,'hud-reserve-portrait__image'))return null;
+    holder.hidden=Boolean(member.active);strip.append(holder);return holder;
+  }
+  function paintSummaryPortrait(portrait,member){
+    if(!portrait)return;
+    if(portrait.hidden!==Boolean(member.active))portrait.hidden=Boolean(member.active);
+    portrait.dataset.defeated=member.hp<=0?'true':'false';
+    portrait.title=member.displayName+' · '+Math.round(member.hp)+' / '+Math.round(member.maxHp)+' PV';
+  }
   const memberRefs = new Map();
   const initial = controller.snapshot();
   host.replaceChildren();
@@ -139,7 +161,7 @@ export function mountCaptureCombatRosterPanelV1({
       const label = root.ownerDocument.createElement("span");
       label.className = "combat-reserve-member__label";
       node.append(label);
-      memberRefs.set(member.id, { actorId: actor.actorId, node, label });
+      memberRefs.set(member.id, { actorId: actor.actorId, node, label, portrait:summaryPortrait(allyStrip,member) });
       group.append(node);
     }
     host.append(group);
@@ -173,7 +195,7 @@ export function mountCaptureCombatRosterPanelV1({
         const hpText = root.ownerDocument.createElement("small");
         hpText.className = "combat-enemy-reserves__value";
         row.append(label,hp,hpText);
-        enemyRefs.set(actor.actorId+":"+member.id,{actorId:actor.actorId,memberId:member.id,row,label,hp,hpText});
+        enemyRefs.set(actor.actorId+":"+member.id,{actorId:actor.actorId,memberId:member.id,row,label,hp,hpText,portrait:summaryPortrait(enemyStrip,member)});
         group.append(row);
       }
       enemyHost.append(group);
@@ -214,6 +236,7 @@ export function mountCaptureCombatRosterPanelV1({
     for (const team of Object.values(state)) for (const member of team.members) {
       const ref = memberRefs.get(member.id);
       if (!ref) continue;
+      paintSummaryPortrait(ref.portrait,member);
       ref.label.textContent = member.displayName + " · " + Math.round(member.hp) + "/" + Math.round(member.maxHp) + " PV · "
         + (member.hp <= 0 ? "KO" : member.active ? "Actif" : "Réserve");
       // The Roster preview is authoritative: the allied relay may target KO,
@@ -233,6 +256,7 @@ export function mountCaptureCombatRosterPanelV1({
       for (const ref of enemyRefs.values()) {
         const member = state[ref.actorId]?.members.find(x=>x.id===ref.memberId);
         if (!member) { ref.row.hidden = true; continue; }
+        paintSummaryPortrait(ref.portrait,member);
         ref.row.hidden = Boolean(member.active);
         if (member.active) continue;
         benchCount++;
@@ -253,7 +277,7 @@ export function mountCaptureCombatRosterPanelV1({
       }
       enemyPanel.hidden = false;
       if (emptyEnemyBench) emptyEnemyBench.hidden = benchCount !== 0;
-      if(enemySummary)enemySummary.textContent="Réserves adverses · "+benchCount;
+      if(enemySummaryLabel)enemySummaryLabel.textContent="Réserves adverses · "+benchCount;
     }
     const remainingMs = state[getControlledActorId()]?.voluntarySwitchCooldownRemainingMs ?? 0;
     if (recallCountdown) {
@@ -333,6 +357,7 @@ export function mountCaptureCombatRosterPanelV1({
     dispose(){
       panel.removeEventListener("click",onClick);
       enemyPanel?.removeEventListener("click",onEnemyClick);
+      allyStrip?.remove();enemyStrip?.remove();
       memberRefs.clear();enemyRefs.clear();
     }
   });

@@ -2445,4 +2445,4 @@ button.reserve-card {
 /* Authored native grid: the same skill nodes reflow, empty positions are not commands. */
 [data-combat-skills][data-hud-grid-columns]{grid-template-columns:repeat(var(--hud-authored-columns),minmax(0,1fr));grid-auto-rows:minmax(44px,auto);height:auto;}
 [data-combat-skills][data-hud-grid-columns] > [data-hud-skill-page-nav]{grid-column:1/-1;}
-[data-combat-skills] > [data-hud-empty-skill]{display:grid;place-items:center;box-sizing:border-box;min-height:44px;border:1px dashed #68899a;border-radius:.4rem;color:#7899aa;pointer-events:none;}
+[data-combat-skills] > [data-hud-empty-skill]:not([data-hud-page-hidden]){display:grid;place-items:center;box-sizing:border-box;min-height:44px;border:1px dashed #68899a;border-radius:.4rem;color:#7899aa;pointer-events:none;}

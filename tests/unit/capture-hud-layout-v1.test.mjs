@@ -137,3 +137,12 @@ test('authored grid capacity replaces fixed pagination without creating gameplay
  assert.deepEqual(captureHudSkillPagesV1(skills,[group],grid).flatMap(p=>p.roles).sort(),skills.slice().sort());
  assert.throws(()=>updateCaptureHudLayoutV1(layout,profile,'command-dock',{box,grid:{columns:0,slots:8}}));
 });
+
+test('reserve portraits are authored on the same native roles and survive round-trip',()=>{
+ const profile='touch-1v1',value={dx:0,dy:0,scale:100,portraits:true};
+ const layout=updateCaptureHudLayoutV1(undefined,profile,'local-reserves',value);
+ assert.deepEqual(layout.profiles[profile]['local-reserves'],value);
+ assert.deepEqual(normalizeCaptureHudLayoutV1(JSON.parse(JSON.stringify(layout))),layout);
+ assert.deepEqual(updateCaptureHudLayoutV1(layout,profile,'local-reserves',{...value,portraits:false}),normalizeCaptureHudLayoutV1());
+ assert.throws(()=>updateCaptureHudLayoutV1(layout,profile,'dodge',value));
+});

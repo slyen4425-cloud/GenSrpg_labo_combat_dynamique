@@ -6,6 +6,7 @@ const selectors=Object.freeze({
  'opponent-status':'.squad-card--opponent',
  'opponent-secondary-status':'.squad-card--opponent-b',
  'opponent-reserves':'[data-combat-enemy-reserves]',
+ 'local-reserves':'[data-combat-team-menu]',
  'opponent-skills':'[data-combat-enemy-skills]',
  'command-dock':'.coop-command-stack',
  'dodge':'[data-combat-dodge]',
@@ -24,7 +25,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   if(!apply()){const rejected=last;if(pages.select(previous))apply();report(rejected);}
  }});
  let nodes={};
- const originals=new Map();
+ const originals=new Map(),portraitOriginals=new Map();
  const styleKeys=['translate','scale','transform-origin','position','left','top','right','bottom','width','height','min-width','min-height','max-width','max-height','box-sizing'];
  function syncNodes(){
   const next=Object.fromEntries(Object.entries(selectors).map(([key,selector])=>[key,arena.querySelector(selector)]).filter(([,node])=>node));
@@ -32,8 +33,9 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
    const role=node.dataset.combatHudSkillRole;
    if(isCaptureHudSkillRoleV1(role)&&!Object.hasOwn(next,role))next[role]=node;
   }
-  for(const node of originals.keys())if(!Object.values(next).includes(node)){resize?.unobserve(node);originals.delete(node);}
+  for(const node of originals.keys())if(!Object.values(next).includes(node)){resize?.unobserve(node);originals.delete(node);portraitOriginals.delete(node);}
   for(const node of Object.values(next))if(!originals.has(node)){
+   if(node.matches('[data-combat-team-menu],[data-combat-enemy-reserves]'))portraitOriginals.set(node,node.getAttribute('data-hud-reserve-portraits'));
    originals.set(node,styleKeys.flatMap(key=>[node.style.getPropertyValue(key),node.style.getPropertyPriority(key)]));
    resize?.observe(node);
   }
@@ -44,6 +46,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   for(const [node,v] of originals)for(const [i,key] of styleKeys.entries()){
    if(v[2*i])node.style.setProperty(key,v[2*i],v[2*i+1]);else node.style.removeProperty(key);
   }
+  for(const [node,value] of portraitOriginals){if(value===null)node.removeAttribute('data-hud-reserve-portraits');else node.setAttribute('data-hud-reserve-portraits',value);}
  }
  function report(message){if(message!==last){last=message;onStatus(message);}}
  const relative=(r,a)=>({left:r.left-a.left,top:r.top-a.top,right:r.right-a.left,bottom:r.bottom-a.top,width:r.width,height:r.height});
@@ -60,7 +63,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
    const bounds=[relative(r,a),...targets,...panels];
    result[key]={left:Math.min(...bounds.map(b=>b.left)),top:Math.min(...bounds.map(b=>b.top)),
     right:Math.max(...bounds.map(b=>b.right)),bottom:Math.max(...bounds.map(b=>b.bottom)),targets,
-    ...(key.startsWith('skill-slot-')&&nodes['command-dock']?.contains(node)?{parentRole:'command-dock'}:{})};
+    ...((key.startsWith('skill-slot-')||key==='local-reserves')&&nodes['command-dock']?.contains(node)?{parentRole:'command-dock'}:{})};
   }
   return result;
  }
@@ -90,6 +93,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
    }
    for(const [role,value] of Object.entries(values)){
     const node=nodes[role];if(!node||!baseline[role])continue;
+    if(value.portraits)node.dataset.hudReservePortraits='true';
     if(value.box){
      const {x,y,w,h}=value.box;
      const styles={position:'absolute',left:x/10+'%',top:y/10+'%',right:'auto',bottom:'auto',

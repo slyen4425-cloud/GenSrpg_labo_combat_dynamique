@@ -92,6 +92,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   $('[data-hud-author-group]').disabled=role==='command-dock';
   const grid=actual('command-dock').grid??{columns:5,slots:5};
   $('[data-hud-author-grid-count]').textContent=grid.slots+' cases · '+grid.columns+' colonnes';
+  for(const key of ['local','opponent'])$('[data-hud-author-portraits-'+key+']').setAttribute('aria-pressed',String(!!actual(key+'-reserves').portraits));
   const r=selectionBounds(),a=arena.getBoundingClientRect();
   const valid=!!r;
   outline.hidden=!valid;
@@ -156,6 +157,11 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   if(g.changed)history.push(g.before);if(overlay.hasPointerCapture(g.id))overlay.releasePointerCapture(g.id);schedule();}
  listen(overlay,'pointerup',end);listen(overlay,'pointercancel',end);listen(overlay,'lostpointercapture',end);
  listen($('[data-hud-author-group]'),'click',()=>{groupId=null;role='command-dock';schedule();});
+ function togglePortraits(key){
+  const before=readLayout(),value=actual(key),next={...value,portraits:!value.portraits};
+  if(apply(updateCaptureHudLayoutV1(before,profile(),key,next))){history.push(before);groupId=null;role=key;schedule();}
+ }
+ for(const key of ['local','opponent'])listen($('[data-hud-author-portraits-'+key+']'),'click',()=>togglePortraits(key+'-reserves'));
  function changeGrid(field,delta){
   const before=readLayout(),node=hudOwner.elements()['command-dock'];
   if(!node)return;

@@ -16,6 +16,7 @@ export const CAPTURE_HUD_ROLES_V1=Object.freeze({
  'opponent-status':'PV et statut adverses',
  'opponent-secondary-status':'PV du deuxième adversaire',
  'opponent-reserves':'Réserves adverses',
+ 'local-reserves':'Réserves alliées',
  'opponent-skills':'Capacités adverses',
  'command-dock':'Capacités, énergie et rappel',
  'dodge':'Esquive / défense',
@@ -87,11 +88,12 @@ export function normalizeCaptureHudLayoutV1(raw){
     normalized[role]=Object.freeze({box:normalizeCaptureHudBoxV1(value.box),...(value.grid?{grid:normalizeCaptureHudGridV1(value.grid)}:{})});
     continue;
    }
-   exact(value,['dx','dy','scale'],'Réglage HUD');
+   exact(value,['dx','dy','scale','portraits'],'Réglage HUD');
+   if(value.portraits!==undefined&&(!['local-reserves','opponent-reserves'].includes(role)||typeof value.portraits!=='boolean'))throw new TypeError('Portraits de réserve invalides');
    const dx=integer(value.dx,-50,50,'Décalage horizontal');
    const dy=integer(value.dy,-50,50,'Décalage vertical');
    const scale=integer(value.scale,85,125,'Taille');
-   if(dx!==0||dy!==0||scale!==100)normalized[role]=Object.freeze({dx,dy,scale});
+   if(dx!==0||dy!==0||scale!==100||value.portraits)normalized[role]=Object.freeze({dx,dy,scale,...(value.portraits?{portraits:true}:{})});
   }
   if(Object.keys(normalized).length)profiles[profile]=Object.freeze(normalized);
  }
