@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 553,
+    "assets": 555,
     "icons": 217,
-    "sprites": 303,
+    "sprites": 305,
     "fx": 2,
     "portraits": 26,
     "backgrounds": 5,
@@ -18792,6 +18792,78 @@
       },
       "resource": {
         "file": "capture/creatures/renard_lunaire/animations/idle/player/kitsune_lunaire_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-braisombre-idle-opponent-gif-v1",
+      "label": "Dracendre — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent",
+        "dracendre",
+        "braisombre"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/braisombre/animations/idle/opponent/braisombre_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-braisombre-idle-player-gif-v1",
+      "label": "Dracendre — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player",
+        "dracendre",
+        "braisombre"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/braisombre/animations/idle/player/braisombre_idle_dos.gif",
         "format": "animated-image",
         "mime": "image/gif",
         "frameCount": 1,
