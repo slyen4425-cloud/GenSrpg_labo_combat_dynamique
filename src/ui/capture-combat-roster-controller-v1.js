@@ -88,7 +88,12 @@ export function mountCaptureCombatRosterPanelV1({
   const enemySummary = enemyPanel?.querySelector("[data-combat-enemy-reserves-summary]") ?? null;
   const host = panel.querySelector("[data-combat-team-rosters]");
   const summary = panel.querySelector("[data-combat-team-summary]");
-  const summaryLabel = summary.querySelector?.("[data-combat-team-summary-label]") ?? summary;
+  let summaryLabel = summary.querySelector?.("[data-combat-team-summary-label]");
+  if(!summaryLabel){
+    summaryLabel=root.ownerDocument.createElement("span");
+    summaryLabel.textContent=summary.textContent;
+    summary.replaceChildren(summaryLabel);
+  }
   const recallCountdown = summary.querySelector?.("[data-combat-recall-countdown]") ?? null;
   const buttons = [...panel.querySelectorAll("[data-combat-roster-command]")];
   const recallDuration = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 3 }).format(commands.switch.preparationMs / 1000)

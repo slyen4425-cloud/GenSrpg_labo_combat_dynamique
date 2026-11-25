@@ -44,7 +44,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
  const groups=()=>readLayout().groups?.[profile()]??[];
  const selectedGroup=()=>groups().find(group=>group.id===groupId);
  const selectedRoles=()=>selectedGroup()?.roles??(role?[role]:[]);
- const parentScale=key=>isCaptureHudSkillRoleV1(key)?(actual('command-dock').scale??100)/100:1;
+ const parentScale=key=>isCaptureHudSkillRoleV1(key)||key==='local-reserves'?(actual('command-dock').scale??100)/100:1;
  const groupEditor=$('[data-hud-author-group-editor]'),groupSelect=$('[data-hud-author-group-select]');
  const pageSelect=$('[data-hud-author-page-select]');
  const groupName=$('[data-hud-author-group-name]'),groupFold=$('[data-hud-author-group-foldable]'),groupRoles=$('[data-hud-author-group-roles]');
