@@ -100,6 +100,7 @@ def check(context, origin):
     assert page.locator("[data-hud-layout-y]").input_value() == "-1"
     # Native pointer editing, not synthetic style injection. A real editor launch
     # creates the native arena, real species and existing runtime, in author mode.
+    page.get_by_role("button", name="Dérouler Équipes du test", exact=True).click()
     page.locator("[data-test-local-team-size]").select_option("1")
     page.locator("[data-test-opponent-team-size]").select_option("1")
     page.locator("[data-active-per-team]").select_option("1")
@@ -113,6 +114,19 @@ def check(context, origin):
     hp.wait_for(state="visible")
     assert arena.locator("[data-combat-hud-skill-role]").count() > 0
     assert page.locator("[data-hud-author-overlay]").count() == 1
+    # Native keyboard activation must not reach the actor or skill handlers
+    # while authoring, even when a control is focused programmatically.
+    actor = arena.locator('[data-target-actor="local-1"]').first
+    actor.evaluate("""el=>{el.dataset.authorActivationCount='0';
+      for(const type of ['keydown','click'])el.addEventListener(type,()=>{el.dataset.authorActivationCount=String(Number(el.dataset.authorActivationCount)+1);});}""")
+    actor.focus()
+    page.keyboard.press("Enter")
+    page.keyboard.press("Space")
+    actor.evaluate("el=>el.click()")
+    assert actor.get_attribute("data-author-activation-count") == "0"
+    skill = arena.locator("[data-combat-hud-skill-role]").first
+    assert skill.evaluate("el=>!el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}))"), "native skill activation must be cancelled"
+
     # Reset via the native editing chrome, then move by the same safe +1/-1
     # percent offset that was previously certified with the exact profile.
     box = hp.bounding_box()
@@ -144,6 +158,10 @@ def check(context, origin):
     toolbar.locator("[data-hud-author-test]").click()
     assert page.locator("[data-hud-author-overlay]").count() == 0
     assert arena.is_visible(), "test must retain the same arena"
+    actor.focus()
+    page.keyboard.press("Enter")
+    assert int(actor.get_attribute("data-author-activation-count")) > 0, "native keyboard activation must be restored"
+
     page.locator("[data-preview-back-editor]").click()
     assert page.locator("[data-hud-author-overlay]").count() == 0
     assert page.locator("[data-hud-layout-x]").input_value() == "1"
