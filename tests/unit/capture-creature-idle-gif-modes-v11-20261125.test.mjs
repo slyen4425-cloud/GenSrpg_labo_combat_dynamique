@@ -137,3 +137,22 @@ test("submitted Veuve jaune animation references are preserved in one canonical 
  assert.equal(value.draft.presentation.profileId,"serpentine");
  assert.equal(value.draft.combat.maxHp,110);
 });
+
+test("Dracendre idle binds both original Rigby views without changing four validated action strips",()=>{
+ const d=JSON.parse(readFileSync(new URL("../../data/capture/showcase/crea_dracendre.capture-creature-transfer-v1.json",import.meta.url),"utf8")).draft;
+ assert.equal(d.id,"crea_dracendre");
+ assert.equal(d.presentation.version,11);
+ const visual=d.presentation.visual;
+ assert.deepEqual(visual.idle,{
+  mode:"gif",
+  frontAssetId:"pack:capture:creature-braisombre-idle-opponent-gif-v1",
+  backAssetId:"pack:capture:creature-braisombre-idle-player-gif-v1",
+  front:{displayScale:1,offsetX:0,offsetY:0,frameSpeedMultiplier:1},
+  back:{displayScale:1,offsetX:0,offsetY:0,frameSpeedMultiplier:1}
+ });
+ assert.equal(visual.movement.assetId,"pack:capture:creature-braisombre-movement-face-12-v1");
+ assert.equal(visual.movementBack.assetId,"pack:capture:creature-braisombre-movement-dos-12-v1");
+ assert.equal(visual.rangedAttack.assetId,"pack:capture:creature-braisombre-attack-face-12-v1");
+ assert.equal(visual.rangedAttackBack.assetId,"pack:capture:creature-braisombre-attack-dos-12-v1");
+ assert.deepEqual(normalizeCreaturePresentationBinding(d.presentation).visual.idle,visual.idle);
+});
