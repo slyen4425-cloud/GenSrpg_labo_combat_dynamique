@@ -2511,7 +2511,8 @@
     </button>
     <div data-hud-author-toolbar hidden class="capture-hud-author-toolbar" aria-label="Aménagement du combat">
       <span data-hud-author-profile></span><span data-hud-author-selection>Choisis un élément</span>
-      <button type="button" data-hud-author-group>Bloc commandes</button>
+      <select data-hud-author-palette aria-label="Éléments de l’interface"></select>
+      <button type="button" data-hud-author-group>Volet principal</button>
       <button type="button" data-hud-author-add-slot>+ Case</button>
       <button type="button" data-hud-author-remove-slot>− Case</button>
       <button type="button" data-hud-author-add-column>+ Colonne</button>
@@ -2521,7 +2522,7 @@
       <button type="button" data-hud-author-portraits-opponent aria-pressed="false">Réserves adverses · icônes</button>
       <select data-hud-author-page-select aria-label="Volet affiché" hidden></select>
       <details data-hud-author-group-editor>
-        <summary>Groupes / volets</summary>
+        <summary>Ajouter / gérer un volet</summary>
         <div class="hud-author-group-fields">
           <label>Groupe <select data-hud-author-group-select></select></label>
           <label>Nom <input data-hud-author-group-name maxlength="40" placeholder="Ex. Attaques"></label>

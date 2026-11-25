@@ -2446,3 +2446,11 @@ button.reserve-card {
 [data-combat-skills][data-hud-grid-columns]{grid-template-columns:repeat(var(--hud-authored-columns),minmax(0,1fr));grid-auto-rows:minmax(44px,auto);height:auto;}
 [data-combat-skills][data-hud-grid-columns] > [data-hud-skill-page-nav]{grid-column:1/-1;}
 [data-combat-skills] > [data-hud-empty-skill]:not([data-hud-page-hidden]){display:grid;place-items:center;box-sizing:border-box;min-height:44px;border:1px dashed #68899a;border-radius:.4rem;color:#7899aa;pointer-events:none;}
+
+/* A real dock rectangle allocates its vertical space to the native grid, not a zoomed row. */
+[data-hud-box="command-dock"]{align-content:stretch;grid-template-rows:minmax(0,1fr);}
+[data-hud-box="command-dock"] > .coop-controls{display:flex;flex-direction:column;min-height:0;min-width:0;box-sizing:border-box;}
+[data-hud-box="command-dock"] .combat-primary-actions{flex:1 1 auto;min-height:0;}
+[data-hud-box="command-dock"] [data-combat-skills]{height:100%;grid-auto-rows:minmax(44px,1fr);}
+[data-hud-box="command-dock"] [data-combat-skills] > .action-option--skill:not([data-hud-box]){aspect-ratio:auto;min-height:44px;height:100%;}
+[data-hud-box="local-reserves"] > summary,[data-hud-box="opponent-reserves"] > summary{height:100%;box-sizing:border-box;}

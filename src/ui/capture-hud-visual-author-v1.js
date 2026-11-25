@@ -1,22 +1,7 @@
-import {CAPTURE_HUD_ROLES_V1,captureHudRoleLabelV1,isCaptureHudSkillRoleV1,editCaptureHudGroupV1,updateCaptureHudLayoutV1,captureHudBoxFromRectsV1,captureHudBoxGestureV1} from '../contracts/capture-hud-layout-v1.js';
+import {CAPTURE_HUD_ROLES_V1,captureHudRoleLabelV1,isCaptureHudSkillRoleV1,editCaptureHudGroupV1,updateCaptureHudLayoutV1,captureHudBoxFromRectsV1,captureHudBoxGestureV1,captureHudGroupBoxesV1} from '../contracts/capture-hud-layout-v1.js';
 const names={'desktop-1v1':'PC · 1v1','desktop-2v2':'PC · 2v2','touch-1v1':'Mobile · 1v1','touch-2v2':'Mobile · 2v2'};
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,Math.round(n)));
 const defaultValue=()=>({dx:0,dy:0,scale:100});
-export function captureHudPointerValueV1({value,mode,deltaX,deltaY,width,height,elementWidth,parentScale=1}){
- if(mode==='resize')return {...value,scale:clamp(value.scale*(1+deltaX/Math.max(1,elementWidth)),85,125)};
- return {...value,dx:clamp(value.dx+100*deltaX/(width*parentScale),-50,50),
-  dy:clamp(value.dy+100*deltaY/(height*parentScale),-50,50)};
-}
-// Shared gesture: each native role keeps its own canonical geometry.
-export function captureHudGroupPointerValuesV1({members,mode,deltaX,deltaY,width,height,elementWidth}){
- if(mode==='resize'){
-  const ratio=Math.max(...members.map(m=>85/m.value.scale),Math.min(...members.map(m=>125/m.value.scale),1+deltaX/Math.max(1,elementWidth)));
-  return members.map(m=>({role:m.role,value:{...m.value,scale:clamp(m.value.scale*ratio,85,125)}}));
- }
- const x=Math.max(...members.map(m=>(-50-m.value.dx)*m.parentScale),Math.min(...members.map(m=>(50-m.value.dx)*m.parentScale),100*deltaX/width));
- const y=Math.max(...members.map(m=>(-50-m.value.dy)*m.parentScale),Math.min(...members.map(m=>(50-m.value.dy)*m.parentScale),100*deltaY/height));
- return members.map(m=>({role:m.role,value:{...m.value,dx:clamp(m.value.dx+x/m.parentScale,-50,50),dy:clamp(m.value.dy+y/m.parentScale,-50,50)}}));
-}
 export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,writeLayout,startTest}){
  const arena=root.querySelector('[data-combat-arena]'),doc=root.ownerDocument,win=doc.defaultView;
  if(!arena||!toolbar||!hudOwner)throw new Error('Édition HUD native indisponible');
@@ -50,11 +35,12 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   const group=regionGroup();
   return group?editCaptureHudGroupV1(layout,key,group.id,{...group,...value}):updateCaptureHudLayoutV1(layout,key,'command-dock',value);
  }
- const parentScale=key=>isCaptureHudSkillRoleV1(key)||key==='local-reserves'?(actual('command-dock').scale??100)/100:1;
+
  const groupEditor=$('[data-hud-author-group-editor]'),groupSelect=$('[data-hud-author-group-select]');
  const pageSelect=$('[data-hud-author-page-select]');
  const groupName=$('[data-hud-author-group-name]'),groupFold=$('[data-hud-author-group-foldable]'),groupRoles=$('[data-hud-author-group-roles]');
- let pageSignature='',draftProfile=null;
+ let pageSignature='',draftProfile=null,paletteSignature='';
+ const palette=$('[data-hud-author-palette]');
  function option(value,label){const o=doc.createElement('option');o.value=value;o.textContent=label;return o;}
  function refreshPages(){
   const options=hudOwner.pageOptions?.()??[],signature=JSON.stringify(options);
@@ -93,6 +79,9 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   if(groupId&&!selectedGroup())groupId=null;
   $('[data-hud-author-selection]').textContent=selectedGroup()?.label??captureHudRoleLabelV1(role)??'Touche un élément';
   refreshPages();if(groupEditor.open&&draftProfile!==profile())refreshGroups();
+  const keys=Object.keys(hudOwner.elements()).filter(captureHudRoleLabelV1),signature=keys.join('|');
+  if(paletteSignature!==signature){paletteSignature=signature;palette.replaceChildren(option('','Choisir un élément'),...keys.map(key=>option(key,captureHudRoleLabelV1(key))));}
+  palette.value=role??'';
   $('[data-hud-author-undo]').disabled=!history.length;
   $('[data-hud-author-reset]').disabled=!selectedRoles().length;
   $('[data-hud-author-group]').disabled=role==='command-dock';
@@ -104,7 +93,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   outline.hidden=!valid;
   for(const handle of handles){
    const edge=handle.dataset.hudResizeEdge;
-   handle.hidden=!valid||(!(role==='command-dock'||regionGroup())&&edge!=='se');
+   handle.hidden=!valid;
    if(!handle.hidden)Object.assign(handle.style,{
     left:(edge.includes('w')?r.left:edge.includes('e')?r.right:(r.left+r.right)/2)-a.left+'px',
     top:(edge.includes('n')?r.top:edge.includes('s')?r.bottom:(r.top+r.bottom)/2)-a.top+'px'
@@ -136,34 +125,36 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   }
   draw();const r=selectionBounds();if(!r)return;
   const a=arena.getBoundingClientRect();
-  const members=selectedRoles().map(key=>({role:key,value:actual(key),parentScale:parentScale(key)}));
-  gesture={id:event.pointerId,profile:profile(),members,mode:resize?'resize':'move',x:event.clientX,y:event.clientY,
-   before:readLayout(),width:a.width,height:a.height,elementWidth:r.width,changed:false,
-   ...((role==='command-dock'||regionGroup())?{box:captureHudBoxFromRectsV1(r,a),edge:edge??'move'}:{})};
+  const nodes=hudOwner.elements();
+  const members=selectedRoles().flatMap(key=>{
+   const rect=nodes[key]?.getBoundingClientRect();return rect?.width&&rect.height?[{role:key,value:actual(key),rect:captureHudBoxFromRectsV1(rect,a)}]:[];
+  });
+  if(!members.length)return;
+  gesture={id:event.pointerId,profile:profile(),members,x:event.clientX,y:event.clientY,
+   before:readLayout(),width:a.width,height:a.height,changed:false,
+   box:captureHudBoxFromRectsV1(r,a),edge:edge??'move',region:role==='command-dock'||!!regionGroup()};
   overlay.setPointerCapture(event.pointerId);event.preventDefault();
  });
  listen(overlay,'pointermove',event=>{
   const g=gesture;if(!g||event.pointerId!==g.id||g.profile!==profile())return;
   const args={...g,deltaX:event.clientX-g.x,deltaY:event.clientY-g.y};
-  if(g.box){
+  if(g.region){
    const box=captureHudBoxGestureV1(args);
    if(JSON.stringify(box)===JSON.stringify(regionValue().box??g.box))return;
    const grid=regionValue().grid;
    if(apply(writeRegion(readLayout(),g.profile,{box,...(grid?{grid}:{})})))g.changed=true;
    return;
   }
-  // Groups containing a real region must not accidentally feed its rectangle to
-  // the legacy offset operation. The full region-tree gesture replaces this next.
-  if(g.members.some(member=>member.value.box))return;
-  const edits=g.members.length===1?[{role:g.members[0].role,value:captureHudPointerValueV1({...args,...g.members[0]})}]:captureHudGroupPointerValuesV1(args);
-  if(edits.every(({role,value})=>{const old=actual(role);return old.dx===value.dx&&old.dy===value.dy&&old.scale===value.scale;}))return;
+  const edits=captureHudGroupBoxesV1(args);
+  if(edits.every(({role,value})=>JSON.stringify(value)===JSON.stringify(actual(role))))return;
   const candidate=edits.reduce((layout,{role,value})=>updateCaptureHudLayoutV1(layout,g.profile,role,value),readLayout());
   if(apply(candidate))g.changed=true;
  });
  function end(event){if(!gesture||event.pointerId!==gesture.id)return;const g=gesture;gesture=null;
   if(g.changed)history.push(g.before);if(overlay.hasPointerCapture(g.id))overlay.releasePointerCapture(g.id);schedule();}
  listen(overlay,'pointerup',end);listen(overlay,'pointercancel',end);listen(overlay,'lostpointercapture',end);
- listen($('[data-hud-author-group]'),'click',()=>{groupId=null;role='command-dock';schedule();});
+ listen($('[data-hud-author-group]'),'click',()=>{groupId=null;role='command-dock';hudOwner.showPage('main:0');schedule();});
+ listen(palette,'change',()=>{groupId=null;role=palette.value||null;schedule();});
  function togglePortraits(key){
   const before=readLayout(),value=actual(key),next={...value,portraits:!value.portraits};
   if(apply(updateCaptureHudLayoutV1(before,profile(),key,next))){history.push(before);groupId=null;role=key;schedule();}
@@ -182,7 +173,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   ['[data-hud-author-add-slot]','slots',1],['[data-hud-author-remove-slot]','slots',-1],
   ['[data-hud-author-add-column]','columns',1],['[data-hud-author-remove-column]','columns',-1]
  ])listen($(selector),'click',()=>changeGrid(field,delta));
- listen(pageSelect,'change',()=>{if(!hudOwner.showPage(pageSelect.value))status.textContent='Volet indisponible dans cette disposition';schedule();});
+ listen(pageSelect,'change',()=>{if(!hudOwner.showPage(pageSelect.value))status.textContent='Volet indisponible dans cette disposition';else{const group=groups().find(g=>pageSelect.value.startsWith(g.id+':'));groupId=group?.id??null;role=group?null:'command-dock';}schedule();});
  listen(groupEditor,'toggle',()=>{if(groupEditor.open)refreshGroups();});
  listen(groupSelect,'change',loadGroupDraft);
  listen($('[data-hud-author-group-save]'),'click',()=>{

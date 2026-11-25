@@ -5,6 +5,8 @@ const selectors=Object.freeze({
  'local-status':'.squad-card--local-full',
  'opponent-status':'.squad-card--opponent',
  'opponent-secondary-status':'.squad-card--opponent-b',
+ 'ally-status':'.squad-card--command-ally',
+ 'energy':'.hud__energy',
  'opponent-reserves':'[data-combat-enemy-reserves]',
  'local-reserves':'[data-combat-team-menu]',
  'opponent-skills':'[data-combat-enemy-skills]',
@@ -25,17 +27,18 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   if(!apply()){const rejected=last;if(pages.select(previous))apply();report(rejected);}
  }});
  let nodes={};
- const originals=new Map(),portraitOriginals=new Map();
- const styleKeys=['translate','scale','transform-origin','position','left','top','right','bottom','width','height','min-width','min-height','max-width','max-height','box-sizing'];
+ const originals=new Map(),portraitOriginals=new Map(),boxOriginals=new Map();
+ const styleKeys=['translate','scale','transform-origin','position','left','top','right','bottom','width','height','min-width','min-height','max-width','max-height','box-sizing','margin','aspect-ratio'];
  function syncNodes(){
   const next=Object.fromEntries(Object.entries(selectors).map(([key,selector])=>[key,arena.querySelector(selector)]).filter(([,node])=>node));
   for(const node of arena.querySelectorAll('[data-combat-hud-skill-role]')){
    const role=node.dataset.combatHudSkillRole;
    if(isCaptureHudSkillRoleV1(role)&&!Object.hasOwn(next,role))next[role]=node;
   }
-  for(const node of originals.keys())if(!Object.values(next).includes(node)){resize?.unobserve(node);originals.delete(node);portraitOriginals.delete(node);}
+  for(const node of originals.keys())if(!Object.values(next).includes(node)){resize?.unobserve(node);originals.delete(node);portraitOriginals.delete(node);boxOriginals.delete(node);}
   for(const node of Object.values(next))if(!originals.has(node)){
    if(node.matches('[data-combat-team-menu],[data-combat-enemy-reserves]'))portraitOriginals.set(node,node.getAttribute('data-hud-reserve-portraits'));
+   boxOriginals.set(node,node.getAttribute('data-hud-box'));
    originals.set(node,styleKeys.flatMap(key=>[node.style.getPropertyValue(key),node.style.getPropertyPriority(key)]));
    resize?.observe(node);
   }
@@ -46,6 +49,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   for(const [node,v] of originals)for(const [i,key] of styleKeys.entries()){
    if(v[2*i])node.style.setProperty(key,v[2*i],v[2*i+1]);else node.style.removeProperty(key);
   }
+  for(const [node,value] of boxOriginals){if(value===null)node.removeAttribute('data-hud-box');else node.setAttribute('data-hud-box',value);}
   for(const [node,value] of portraitOriginals){if(value===null)node.removeAttribute('data-hud-reserve-portraits');else node.setAttribute('data-hud-reserve-portraits',value);}
  }
  function report(message){if(message!==last){last=message;onStatus(message);}}
@@ -63,7 +67,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
    const bounds=[relative(r,a),...targets,...panels];
    result[key]={left:Math.min(...bounds.map(b=>b.left)),top:Math.min(...bounds.map(b=>b.top)),
     right:Math.max(...bounds.map(b=>b.right)),bottom:Math.max(...bounds.map(b=>b.bottom)),targets,
-    ...((key.startsWith('skill-slot-')||key==='local-reserves')&&nodes['command-dock']?.contains(node)?{parentRole:'command-dock'}:{})};
+    ...(key!=='command-dock'&&nodes['command-dock']?.contains(node)?{parentRole:'command-dock'}:{})};
   }
   return result;
  }
@@ -95,15 +99,22 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
     const error=validateCaptureHudGeometryV1({baseline:native,proposed:topOnly(baseline),width:a.width,height:a.height,touch:!desktop});
     if(error)return error;
    }
-   for(const [role,value] of Object.entries(values)){
+   const ordered=Object.entries(values).sort(([a],[b])=>a==='command-dock'?-1:b==='command-dock'?1:0);
+   for(const [role,value] of ordered){
     const node=nodes[role];if(!node||!baseline[role])continue;
     if(value.portraits)node.dataset.hudReservePortraits='true';
     if(value.box){
      const {x,y,w,h}=value.box;
-     const styles={position:'absolute',left:x/10+'%',top:y/10+'%',right:'auto',bottom:'auto',
-      width:w/10+'%',height:h/10+'%','min-width':'0','min-height':'0','max-width':'none','max-height':'none',
-      'box-sizing':'border-box',translate:'none',scale:'none'};
+     // Existing nodes retain their DOM ownership/listeners, including roster
+     // and skill controls. Convert arena coordinates to their actual offset parent.
+     const styles={position:'absolute',right:'auto',bottom:'auto',
+      width:a.width*w/1000+'px',height:a.height*h/1000+'px','min-width':'0','min-height':'0','max-width':'none','max-height':'none',
+      'box-sizing':'border-box',translate:'none',scale:'none',margin:'0','aspect-ratio':'auto'};
      for(const [key,val] of Object.entries(styles))node.style.setProperty(key,val);
+     const parent=node.offsetParent??arena,p=parent.getBoundingClientRect();
+     node.style.setProperty('left',a.left+a.width*x/1000-p.left-(parent.clientLeft??0)+(parent.scrollLeft??0)+'px');
+     node.style.setProperty('top',a.top+a.height*y/1000-p.top-(parent.clientTop??0)+(parent.scrollTop??0)+'px');
+     node.dataset.hudBox=role;
      continue;
     }
     node.style.setProperty('translate',a.width*value.dx/100+'px '+a.height*value.dy/100+'px');
@@ -126,7 +137,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
      return 'Sélecteur de volet inaccessible';
     if(!desktop&&(r.width<43||r.height<43))return 'Sélecteur de volet trop petit';
    }
-   return validateCaptureHudGeometryV1({baseline,proposed:measure(a),width:a.width,height:a.height,touch:!desktop});
+   return validateCaptureHudGeometryV1({baseline,proposed:measure(a),width:a.width,height:a.height,touch:!desktop,authoredRegions:ordered.filter(([,value])=>value.box).map(([role])=>role)});
   }
   const selected=pages.current();
   let error=null;
@@ -158,11 +169,11 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   },
   elements(){syncNodes();return {...nodes};},
   set(value){
-   const previous=normalized;
+   const previous=normalized,previousPage=pages.current();
    normalized=normalizeCaptureHudLayoutV1(value);
    if(frame){win.cancelAnimationFrame(frame);frame=0;}
    if(apply(true))return true;
-   const rejected=last;normalized=previous;apply();report(rejected);return false;
+   const rejected=last;normalized=previous;apply();if(previousPage&&pages.select(previousPage))apply();report(rejected);return false;
   },
   dispose(){
   if(disposed)return;disposed=true;if(frame)win.cancelAnimationFrame(frame);
