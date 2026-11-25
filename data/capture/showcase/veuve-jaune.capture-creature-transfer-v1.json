@@ -148,6 +148,60 @@
         },
         "icon": {
           "assetId": "pack:capture:creature-veuve-jaune-icon-01"
+        },
+        "movement": {
+          "assetId": "pack:capture:creature-veuve-jaune-movement-opponent-5-20261125",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 3,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttack": {
+          "assetId": "pack:capture:creature-veuve-jaune-attack-opponent-6-20261125",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttackBack": {
+          "assetId": "pack:capture:creature-veuve-jaune-attack-player-9-20261125",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 0,
+          "frameCount": 1,
+          "transitionMs": 80
+        },
+        "rangedAttackPlacement": {
+          "front": {
+            "x": 0,
+            "y": 0
+          },
+          "back": {
+            "x": 0,
+            "y": -20
+          }
+        },
+        "movementScaleByView": {
+          "player": 1,
+          "opponent": 1
+        },
+        "rangedAttackScaleByView": {
+          "player": 1.2,
+          "opponent": 1
+        },
+        "movementPlayback": {
+          "frameMs": 0,
+          "mode": "loop"
+        },
+        "movementBack": {
+          "assetId": "pack:capture:creature-veuve-jaune-movement-player-6-20261125",
+          "mode": "sprite",
+          "displayScale": 1,
+          "rotationTurns": 3,
+          "frameCount": 1,
+          "transitionMs": 80
         }
       },
       "sockets": [
