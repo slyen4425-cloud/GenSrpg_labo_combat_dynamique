@@ -128,7 +128,7 @@
     ],
     "presentation": {
       "id": "creature:crea_dracendre",
-      "version": 9,
+      "version": 11,
       "subjectType": "creature",
       "subjectId": "crea_dracendre",
       "profileId": "flying",
@@ -210,6 +210,23 @@
           "rotationTurns": 3,
           "frameCount": 1,
           "transitionMs": 80
+        },
+        "idle": {
+          "mode": "gif",
+          "frontAssetId": "pack:capture:creature-braisombre-idle-opponent-gif-v1",
+          "backAssetId": "pack:capture:creature-braisombre-idle-player-gif-v1",
+          "front": {
+            "displayScale": 1,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          },
+          "back": {
+            "displayScale": 1,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          }
         }
       },
       "sockets": [],
