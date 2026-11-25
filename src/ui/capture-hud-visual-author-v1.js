@@ -43,7 +43,13 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
  const actual=key=>readLayout().profiles[profile()]?.[key]??defaultValue();
  const groups=()=>readLayout().groups?.[profile()]??[];
  const selectedGroup=()=>groups().find(group=>group.id===groupId);
- const selectedRoles=()=>selectedGroup()?.roles??(role?[role]:[]);
+ const selectedRoles=()=>selectedGroup()?.foldable?['command-dock']:(selectedGroup()?.roles??(role?[role]:[]));
+ const regionGroup=()=>selectedGroup()?.foldable?selectedGroup():null;
+ const regionValue=()=>regionGroup()??actual('command-dock');
+ function writeRegion(layout,key,value){
+  const group=regionGroup();
+  return group?editCaptureHudGroupV1(layout,key,group.id,{...group,...value}):updateCaptureHudLayoutV1(layout,key,'command-dock',value);
+ }
  const parentScale=key=>isCaptureHudSkillRoleV1(key)||key==='local-reserves'?(actual('command-dock').scale??100)/100:1;
  const groupEditor=$('[data-hud-author-group-editor]'),groupSelect=$('[data-hud-author-group-select]');
  const pageSelect=$('[data-hud-author-page-select]');
@@ -90,7 +96,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   $('[data-hud-author-undo]').disabled=!history.length;
   $('[data-hud-author-reset]').disabled=!selectedRoles().length;
   $('[data-hud-author-group]').disabled=role==='command-dock';
-  const grid=actual('command-dock').grid??{columns:5,slots:5};
+  const grid=regionValue().grid??actual('command-dock').grid??{columns:5,slots:5};
   $('[data-hud-author-grid-count]').textContent=grid.slots+' cases · '+grid.columns+' colonnes';
   for(const key of ['local','opponent'])$('[data-hud-author-portraits-'+key+']').setAttribute('aria-pressed',String(!!actual(key+'-reserves').portraits));
   const r=selectionBounds(),a=arena.getBoundingClientRect();
@@ -98,7 +104,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   outline.hidden=!valid;
   for(const handle of handles){
    const edge=handle.dataset.hudResizeEdge;
-   handle.hidden=!valid||(!(role==='command-dock'&&!groupId)&&edge!=='se');
+   handle.hidden=!valid||(!(role==='command-dock'||regionGroup())&&edge!=='se');
    if(!handle.hidden)Object.assign(handle.style,{
     left:(edge.includes('w')?r.left:edge.includes('e')?r.right:(r.left+r.right)/2)-a.left+'px',
     top:(edge.includes('n')?r.top:edge.includes('s')?r.bottom:(r.top+r.bottom)/2)-a.top+'px'
@@ -133,7 +139,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   const members=selectedRoles().map(key=>({role:key,value:actual(key),parentScale:parentScale(key)}));
   gesture={id:event.pointerId,profile:profile(),members,mode:resize?'resize':'move',x:event.clientX,y:event.clientY,
    before:readLayout(),width:a.width,height:a.height,elementWidth:r.width,changed:false,
-   ...(role==='command-dock'&&!groupId?{box:captureHudBoxFromRectsV1(r,a),edge:edge??'move'}:{})};
+   ...((role==='command-dock'||regionGroup())?{box:captureHudBoxFromRectsV1(r,a),edge:edge??'move'}:{})};
   overlay.setPointerCapture(event.pointerId);event.preventDefault();
  });
  listen(overlay,'pointermove',event=>{
@@ -141,8 +147,9 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   const args={...g,deltaX:event.clientX-g.x,deltaY:event.clientY-g.y};
   if(g.box){
    const box=captureHudBoxGestureV1(args);
-   if(JSON.stringify(box)===JSON.stringify(actual('command-dock').box??g.box))return;
-   if(apply(updateCaptureHudLayoutV1(readLayout(),g.profile,'command-dock',{box,...(actual('command-dock').grid?{grid:actual('command-dock').grid}:{})})))g.changed=true;
+   if(JSON.stringify(box)===JSON.stringify(regionValue().box??g.box))return;
+   const grid=regionValue().grid;
+   if(apply(writeRegion(readLayout(),g.profile,{box,...(grid?{grid}:{})})))g.changed=true;
    return;
   }
   // Groups containing a real region must not accidentally feed its rectangle to
@@ -165,11 +172,11 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
  function changeGrid(field,delta){
   const before=readLayout(),node=hudOwner.elements()['command-dock'];
   if(!node)return;
-  const value=actual('command-dock'),grid={...(value.grid??{columns:5,slots:5})};
+  const value=regionValue(),grid={...(value.grid??actual('command-dock').grid??{columns:5,slots:5})};
   grid[field]=clamp(grid[field]+delta,1,field==='columns'?12:48);
   const box=value.box??captureHudBoxFromRectsV1(node.getBoundingClientRect(),arena.getBoundingClientRect());
-  const candidate=updateCaptureHudLayoutV1(before,profile(),'command-dock',{box,grid});
-  if(apply(candidate)){history.push(before);groupId=null;role='command-dock';schedule();}
+  const candidate=writeRegion(before,profile(),{box,grid});
+  if(apply(candidate)){history.push(before);if(!regionGroup()){groupId=null;role='command-dock';}schedule();}
  }
  for(const [selector,field,delta] of [
   ['[data-hud-author-add-slot]','slots',1],['[data-hud-author-remove-slot]','slots',-1],
@@ -181,7 +188,9 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
  listen($('[data-hud-author-group-save]'),'click',()=>{
   try{
    const before=readLayout(),id=groupSelect.value||null;
-   const value={label:groupName.value,foldable:groupFold.checked,roles:[...groupRoles.querySelectorAll('input:checked')].map(el=>el.value)};
+   const existing=groups().find(g=>g.id===id);
+   const value={label:groupName.value,foldable:groupFold.checked,roles:[...groupRoles.querySelectorAll('input:checked')].map(el=>el.value),
+    ...(groupFold.checked&&existing?.box?{box:existing.box,...(existing.grid?{grid:existing.grid}:{})}:{})};
    const candidate=editCaptureHudGroupV1(before,profile(),id,value);
    const nextId=id??candidate.groups[profile()].at(-1).id;
    if(apply(candidate)){history.push(before);refreshGroups(nextId);status.textContent='Groupe enregistré dans la disposition';}
@@ -200,7 +209,8 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
  listen($('[data-hud-author-undo]'),'click',()=>{if(history.length&&apply(history.at(-1))){history.pop();if(groupEditor.open)refreshGroups();}schedule();});
  listen($('[data-hud-author-reset]'),'click',()=>{
   const roles=selectedRoles();if(!roles.length)return;const before=readLayout();
-  const candidate=roles.reduce((layout,key)=>updateCaptureHudLayoutV1(layout,profile(),key,null),before);
+  const group=regionGroup();
+  const candidate=group?editCaptureHudGroupV1(before,profile(),group.id,{label:group.label,roles:group.roles,foldable:true}):roles.reduce((layout,key)=>updateCaptureHudLayoutV1(layout,profile(),key,null),before);
   if(apply(candidate))history.push(before);schedule();
  });
  function dispose(){if(disposed)return;disposed=true;if(frame)win.cancelAnimationFrame(frame);for(const f of cleanups.splice(0))f();observer?.disconnect();overlay.remove();toolbar.hidden=true;}

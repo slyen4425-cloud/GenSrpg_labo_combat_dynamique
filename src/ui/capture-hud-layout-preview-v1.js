@@ -1,4 +1,4 @@
-import {normalizeCaptureHudLayoutV1,validateCaptureHudGeometryV1,isCaptureHudSkillRoleV1} from '../contracts/capture-hud-layout-v1.js';
+import {normalizeCaptureHudLayoutV1,validateCaptureHudGeometryV1,isCaptureHudSkillRoleV1,captureHudPageRegionV1} from '../contracts/capture-hud-layout-v1.js';
 import {mountCaptureHudSkillPagesV1} from './capture-hud-skill-pages-v1.js';
 // Stable role selectors point to the ONE native HUD, never species IDs.
 const selectors=Object.freeze({
@@ -73,10 +73,11 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   restore();syncNodes();
   const a=arena.getBoundingClientRect();if(a.width<=0||a.height<=0)return false;
   const desktop=win.matchMedia(desktopQuery).matches,profile=profileKey();
-  const values=normalized.profiles[profile]??{};
-  pages.sync(normalized.groups?.[profile]??[],values['command-dock']?.grid??null);
+  const baseValues=normalized.profiles[profile]??{};
+  const groups=normalized.groups?.[profile]??[];
+  pages.sync(groups,baseValues['command-dock']?.grid??null);
   const options=pages.options();
-  if(!options.length&&!Object.keys(values).length){report('');return true;}
+  if(!options.length&&!Object.keys(baseValues).length){report('');return true;}
   // Compare the native dock against the projected page without treating
   // intentionally folded skills as lost actions. Each view is then checked
   // with its actual controls by the existing geometry owner.
@@ -86,6 +87,9 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   if(options.length){pages.suspend();native=topOnly(measure(a));pages.resume();}
   function applyCurrent(){
    restore();
+   const values={...baseValues};
+   const region=captureHudPageRegionV1(normalized,profile,pages.current());
+   if(Object.keys(region).length)values['command-dock']=region;
    const baseline=measure(a);
    if(native&&!values['command-dock']?.box){
     const error=validateCaptureHudGeometryV1({baseline:native,proposed:topOnly(baseline),width:a.width,height:a.height,touch:!desktop});

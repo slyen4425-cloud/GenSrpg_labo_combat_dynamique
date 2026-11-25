@@ -146,3 +146,16 @@ test('reserve portraits are authored on the same native roles and survive round-
  assert.deepEqual(updateCaptureHudLayoutV1(layout,profile,'local-reserves',{...value,portraits:false}),normalizeCaptureHudLayoutV1());
  assert.throws(()=>updateCaptureHudLayoutV1(layout,profile,'dodge',value));
 });
+
+import {captureHudPageRegionV1} from '../../src/contracts/capture-hud-layout-v1.js';
+test('each named skill panel owns optional independent geometry and capacity',()=>{
+ const profile='desktop-1v1',dock={box:{x:600,y:650,w:390,h:340},grid:{columns:5,slots:5}};
+ const panel={box:{x:100,y:700,w:480,h:290},grid:{columns:3,slots:6}};
+ const base=updateCaptureHudLayoutV1(undefined,profile,'command-dock',dock);
+ const layout=editCaptureHudGroupV1(base,profile,null,{label:'Défense',foldable:true,roles:['skill-slot-1','skill-slot-2','skill-slot-3','skill-slot-4'],...panel});
+ assert.deepEqual(captureHudPageRegionV1(layout,profile,'main:0'),dock);
+ assert.deepEqual(captureHudPageRegionV1(layout,profile,'hud-group-1:0'),panel);
+ assert.deepEqual(normalizeCaptureHudLayoutV1(JSON.parse(JSON.stringify(layout))),layout);
+ const pages=captureHudSkillPagesV1(['skill-slot-1','skill-slot-2','skill-slot-3','skill-slot-4','skill-slot-ultimate'],layout.groups[profile],dock.grid);
+ assert.equal(pages.find(p=>p.groupId==='hud-group-1').roles.length,4);
+});

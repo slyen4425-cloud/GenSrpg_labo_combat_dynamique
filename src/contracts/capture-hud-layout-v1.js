@@ -103,7 +103,7 @@ export function normalizeCaptureHudLayoutV1(raw){
   if(!Array.isArray(entries)||entries.length>12)throw new RangeError('12 groupes maximum par profil');
   const ids=new Set(),members=new Set();
   const checked=entries.map(entry=>{
-   exact(entry,['id','label','roles','foldable'],'Groupe HUD');
+   exact(entry,['id','label','roles','foldable','box','grid'],'Groupe HUD');
    const {id,label,roles,foldable}=entry;
    if(typeof id!=='string'||!/^hud-group-[1-9][0-9]{0,2}$/.test(id)||ids.has(id))throw new RangeError('Identifiant de groupe invalide ou dupliqué');
    ids.add(id);
@@ -114,7 +114,11 @@ export function normalizeCaptureHudLayoutV1(raw){
     if(!captureHudRoleLabelV1(role)||members.has(role)||foldable&&!isCaptureHudSkillRoleV1(role))throw new RangeError('Élément invalide, déjà groupé ou non repliable : '+role);
     members.add(role);
    }
-   return Object.freeze({id,label:label.trim(),roles:Object.freeze([...roles]),foldable});
+   if(!foldable&&(entry.box||entry.grid))throw new RangeError('Seul un volet possède sa région');
+   if(entry.grid&&!entry.box)throw new RangeError('Une grille de volet nécessite un rectangle');
+   return Object.freeze({id,label:label.trim(),roles:Object.freeze([...roles]),foldable,
+    ...(entry.box?{box:normalizeCaptureHudBoxV1(entry.box)}:{}),
+    ...(entry.grid?{grid:normalizeCaptureHudGridV1(entry.grid)}:{})});
   });
   if(checked.length)groups[profile]=Object.freeze(checked);
  }
@@ -161,15 +165,23 @@ export function captureHudSkillPagesV1(roles,groups=[],grid=null){
  if(!folded.length&&roles.length<=(grid?capacity:5))return [];
  const assigned=new Set(folded.flatMap(group=>group.roles));
  const buckets=[{id:'main',label:'Principal',roles:roles.filter(role=>!assigned.has(role))},
-  ...folded.map(group=>({id:group.id,label:group.label,roles:roles.filter(role=>group.roles.includes(role))}))];
+  ...folded.map(group=>({id:group.id,label:group.label,roles:roles.filter(role=>group.roles.includes(role)),capacity:group.grid?.slots}))];
  return buckets.flatMap(bucket=>{
-  const count=Math.max(1,Math.ceil(bucket.roles.length/capacity));
+  const pageCapacity=bucket.capacity??capacity;
+  const count=Math.max(1,Math.ceil(bucket.roles.length/pageCapacity));
   return Array.from({length:count},(_,index)=>({
    id:bucket.id+':'+index,groupId:bucket.id,
    label:bucket.label+(count>1?' '+(index+1)+'/'+count:''),
-   roles:bucket.roles.slice(index*capacity,index*capacity+capacity)
+   roles:bucket.roles.slice(index*pageCapacity,index*pageCapacity+pageCapacity)
   }));
  });
+}
+// The visible page has exactly one resolved dock region. A named page can
+// inherit the default or replace it, never apply two transforms/boxes.
+export function captureHudPageRegionV1(layout,profile,pageId){
+ const dock=layout.profiles[profile]?.['command-dock']??{};
+ const group=layout.groups?.[profile]?.find(g=>g.foldable&&pageId?.startsWith(g.id+':'));
+ return group?.box?{box:group.box,...(group.grid??dock.grid?{grid:group.grid??dock.grid}:{})}:dock;
 }
 const overlap=(a,b)=>Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))*
  Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top));

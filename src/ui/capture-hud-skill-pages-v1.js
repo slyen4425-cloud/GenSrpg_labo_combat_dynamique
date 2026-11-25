@@ -6,7 +6,7 @@ export function mountCaptureHudSkillPagesV1({grid,onChange=()=>{}}){
  const nav=grid.ownerDocument.createElement('select');
  nav.dataset.hudSkillPageNav='true';nav.setAttribute('aria-label','Volets de compétences');
  nav.title='Ouvrir un volet de compétences';
- let buttons=[],keys=[],pages=[],active=null,signature='',suspended=false,disposed=false,config=null,empty=[];
+ let buttons=[],keys=[],pages=[],active=null,signature='',suspended=false,disposed=false,config=null,groupsConfig=[],empty=[];
  function clear(){
   for(const button of buttons)delete button.dataset.hudPageHidden;
  }
@@ -23,10 +23,11 @@ export function mountCaptureHudSkillPagesV1({grid,onChange=()=>{}}){
   projectEmpty(page.roles.length);
  }
  function projectEmpty(used){
-  const count=config?Math.max(0,config.slots-used):0;
+  const gridConfig=suspended?null:(groupsConfig.find(g=>g.foldable&&active?.startsWith(g.id+':'))?.grid??config);
+  const count=gridConfig?Math.max(0,gridConfig.slots-used):0;
   // Keep the same nodes while measuring or switching pages. Creating/removing
   // nodes on every suspend/resume would feed the owner's MutationObserver.
-  const pool=config?.slots??0;
+  const pool=Math.max(config?.slots??0,...groupsConfig.map(g=>g.grid?.slots??0));
   while(empty.length>pool)empty.pop().remove();
   while(empty.length<pool){
    const cell=grid.ownerDocument.createElement('span');
@@ -38,13 +39,13 @@ export function mountCaptureHudSkillPagesV1({grid,onChange=()=>{}}){
    if(index>=count)cell.dataset.hudPageHidden='true';else delete cell.dataset.hudPageHidden;
    if(cell.parentElement!==grid)grid.append(cell);
   });
-  if(config)grid.dataset.hudGridColumns=String(config.columns);else delete grid.dataset.hudGridColumns;
-  if(config)grid.style.setProperty('--hud-authored-columns',String(config.columns));else grid.style.removeProperty('--hud-authored-columns');
+  if(gridConfig)grid.dataset.hudGridColumns=String(gridConfig.columns);else delete grid.dataset.hudGridColumns;
+  if(gridConfig)grid.style.setProperty('--hud-authored-columns',String(gridConfig.columns));else grid.style.removeProperty('--hud-authored-columns');
  }
  function sync(groups,gridConfig=null){
   if(disposed)return;
   const current=[...grid.children].filter(node=>node.tagName==='BUTTON');
-  const nextSignature=JSON.stringify([groups,gridConfig]);config=gridConfig;
+  const nextSignature=JSON.stringify([groups,gridConfig]);config=gridConfig;groupsConfig=groups;
   if(nextSignature!==signature||current.length!==buttons.length||current.some((node,i)=>node!==buttons[i])){
    clear();buttons=current;signature=nextSignature;
    const seen=new Set();
@@ -70,6 +71,6 @@ export function mountCaptureHudSkillPagesV1({grid,onChange=()=>{}}){
  return Object.freeze({
   sync,navigation:()=>pages.length&&!suspended?nav:null,options:()=>pages.map(({id,label,groupId})=>({id,label,groupId})),current:()=>active,select,
   suspend(){suspended=true;project();},resume(){suspended=false;project();},
-  dispose(){if(disposed)return;disposed=true;clear();nav.removeEventListener('change',change);nav.remove();config=null;projectEmpty(0);}
+  dispose(){if(disposed)return;disposed=true;clear();nav.removeEventListener('change',change);nav.remove();config=null;groupsConfig=[];projectEmpty(0);}
  });
 }
