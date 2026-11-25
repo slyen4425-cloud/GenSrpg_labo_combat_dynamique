@@ -203,6 +203,25 @@ export function adaptCaptureExportToNativeVisualSourceV1({
     });
   }
 
+  function idleFxForView(binding,view) {
+    const idle=binding.version >= 11 ? binding.visual?.idle : null;
+    if (!idle || idle.mode === "engine") return null;
+    const id=view === "player"
+      ? (idle.backAssetId ?? idle.frontAssetId)
+      : (idle.frontAssetId ?? idle.backAssetId);
+    if (!id) return null;
+    const asset=assetById.get(id);
+    if (!asset || asset.mediaType !== "image") throw new RangeError("unknown idle image: "+id);
+    const resource=asset.resource ?? {};
+    const count=Math.max(1,Number(resource.frameCount) || 1);
+    return Object.freeze({
+      assetId:id,url:assetUrl(id),mode:"sprite",
+      frameCount:count,
+      frameMs:Math.max(80,Number(resource.frameMs) || 120),
+      playbackMode:"loop",displayScale:1,rotationTurns:0,transitionMs:0
+    });
+  }
+
   function rangedAttackFxFor(binding, view = "front") {
     const slot = view === "back"
       ? (binding.version >= 6 ? binding.visual?.rangedAttackBack ?? null : null)
@@ -259,6 +278,7 @@ export function adaptCaptureExportToNativeVisualSourceV1({
         fxAnchors: Object.freeze({ player: {}, opponent: {} }),
         dodgeFx: null,
         movementFx: null,
+        idleMode: "engine",idleFxByView:Object.freeze({player:null,opponent:null}),
         rangedAttackFx: null,
         rangedAttackBackFx: null
       });
@@ -362,6 +382,11 @@ export function adaptCaptureExportToNativeVisualSourceV1({
       }),
       audio: binding.audio,
       dodgeFx: dodgeFxFor(binding),
+      idleMode: binding.version >= 11 ? binding.visual?.idle?.mode ?? "engine" : "engine",
+      idleFxByView:Object.freeze({
+        player:idleFxForView(binding,"player"),
+        opponent:idleFxForView(binding,"opponent")
+      }),
       movementFx: movementFxFor(binding),
       movementFxByView: Object.freeze({
         player: movementFxForView(binding, "player"),

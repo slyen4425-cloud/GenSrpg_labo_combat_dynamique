@@ -518,6 +518,18 @@ export async function mountCombatDemo({
       return null;
     }
 
+    const idleMode=slot.meta?.idleMode ?? "engine";
+    const idleVisual=slot.meta?.idleFxByView?.[slot.view] ?? null;
+    const useSprite=(idleMode==="gif" || idleMode==="both") && Boolean(idleVisual?.url);
+    if(useSprite) {
+      slot.playMovementAppearance(idleVisual,1200,1);
+    } else {
+      slot.cancelMovementAppearance();
+    }
+    if(idleMode==="gif" && useSprite) {
+      slot.renderer.cancel();
+      return Object.freeze({status:"idle-gif"});
+    }
     const event = normalizeCombatVisualEvent({
       type: "idle",
       actorId: slot.actor.id,
@@ -628,6 +640,8 @@ export async function mountCombatDemo({
       finalBoundaryMs: durationMs
     });
 
+    // End previous idle artwork before a real travel animation takes ownership.
+    slot.cancelMovementAppearance();
     const movementAppearance = slot.playMovementAppearance(
       creatureMovementAppearanceForViewV1(slot.meta, slot.view),
       durationMs,
@@ -672,13 +686,18 @@ export async function mountCombatDemo({
       return Promise.resolve({ status: "hidden" });
     }
 
+    if (type === "idle") {
+      // Public idle event uses the same mode selector as startup/recovery.
+      return Promise.resolve(startIdleFor(slotKey));
+    }
     if (type === "defense") {
-      // Reuse the creature's own dodge FX sprite, but not Dodge's vanish
-      // animation. Defense keeps the model visible and CombatDamage owns
-      // the reduction; this branch is presentation-only.
-      return Promise.resolve(
-        playDodgeAppearanceFx(slotKey, metadata?.durationMs).finished
-      );
+      slot.cancelMovementAppearance();
+      // Defense is presentation-only, but the authored GIF must resume after it.
+      return Promise.resolve(playDodgeAppearanceFx(slotKey,metadata?.durationMs).finished)
+        .then(result=>{
+          if(!disposed && slot.visible) startIdleFor(slotKey);
+          return result;
+        });
     }
 
     const heldAttack = heldAttackBySlot.get(slotKey);
@@ -715,6 +734,7 @@ export async function mountCombatDemo({
         : null;
 
     try {
+      if (type !== "idle") slot.cancelMovementAppearance();
       const event = normalizeCombatVisualEvent({
         type,
         actorId: slot.actor.id,
@@ -831,6 +851,7 @@ export async function mountCombatDemo({
       return Promise.resolve({ status: "hidden" });
     }
 
+    slot.cancelMovementAppearance();
     const actorRect = slot.motion.getBoundingClientRect();
     const targetRect = target.motion.getBoundingClientRect();
     const arenaRect = arena.getBoundingClientRect();
@@ -1506,7 +1527,8 @@ function createSlot({
       creatureMovementAppearanceForViewV1(meta, view),
       runtimeUrl,
       meta.rangedAttackFx ?? null,
-      meta.rangedAttackBackFx ?? null
+      meta.rangedAttackBackFx ?? null,
+      meta.idleFxByView?.[view] ?? null
     );
     // The actor/profile must exist before a cached image may fire onload.
     // A late callback from an older sprite cannot become a second owner.
