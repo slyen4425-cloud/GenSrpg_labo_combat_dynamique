@@ -1,0 +1,96 @@
+{
+  "schema": "gensrpg-veuve-jaune-4-animations-v1",
+  "sourceBranch": "main",
+  "canonicalBranch": "global-assets",
+  "status": "validated by author in conversation 23-25 November 2026",
+  "items": [
+    {
+      "id": "pack:capture:creature-veuve-jaune-movement-opponent-5-20261125",
+      "file": "capture/creatures/veuve_jaune/animations/movement-opponent-5f-20261125.webp",
+      "sha256": "c91392c5160f420cada49ac41c04332b65ca1c06904927938463598375ec8fb8",
+      "bytes": 913832,
+      "sourceArchive": "veuve_jaune_mouvement_face_6f_PROPOSITION.zip",
+      "sourceSha256": "bb6bf4f23ba0cd52c54f82c7b511ce541c9832b111315f2a4298e1fa863187a3",
+      "sourceFrames": 6,
+      "sourceFrameSha256": [
+        "72894a8de9cd2bf32211d739a73d826a8b22257dd549872b60e6399cfceb43bc",
+        "1dfcc624b17e75932a6830bf7688ddd35ba45fe47577f55e44bd29fd2ee5c6c8",
+        "ea5b7a4cf434a78d71ae3efd69f37b86ecdc6c840f06c9f4546aa94ace21d46b",
+        "b291580839c0d55797b4a9e64344997701bc6b23e7c873a0a8017cad3be6535b",
+        "61717f866dd8d82f0fb1d30b4b609deb59b0dcfba29f7161512ff07ef5c1d639",
+        "72894a8de9cd2bf32211d739a73d826a8b22257dd549872b60e6399cfceb43bc"
+      ],
+      "runtimeFrames": 5,
+      "frameMs": 120,
+      "playbackMode": "loop",
+      "note": "Approved face-walk duplicate end frame omitted only from loop"
+    },
+    {
+      "id": "pack:capture:creature-veuve-jaune-attack-opponent-6-20261125",
+      "file": "capture/creatures/veuve_jaune/animations/attack-opponent-6f-20261125.webp",
+      "sha256": "7be81ec843c2aaa031859675dff0941bd96518af220ada923bf1990d2588f890",
+      "bytes": 1215240,
+      "sourceArchive": "veuve_jaune_attaque_face_6f_VALIDE.zip",
+      "sourceSha256": "56251c9487d318ed8ba86aad0f423b1278d762352eaba01f4c9a529ea74e7e2c",
+      "sourceFrames": 6,
+      "sourceFrameSha256": [
+        "c12497e2ce7f4acfb50d245c23ea5af8dac17effd66d7ee03ad4f036bdf04f07",
+        "0056b06c1ee90b0a4f722638371eed6821c6718966543176f920037f167cf4e8",
+        "bc69476cb99971833da7fe6b48bdc653aca40fc917e9507e732ce71472440dbe",
+        "6ca25dca18ce340191427ee5bc0dc710fa18251705dcbc62c3c9820371dae007",
+        "696422da9a76ff3a93b482e52a79338d9be4f8efa55d91d56a0b24c7c4476200",
+        "8f1519cdb296884ed79d7a29f3b433dda865a155c000b71d29b970217adb1d77"
+      ],
+      "runtimeFrames": 6,
+      "frameMs": 150,
+      "playbackMode": "once",
+      "note": "alpha matte below 10/255 cleared without changing pose"
+    },
+    {
+      "id": "pack:capture:creature-veuve-jaune-movement-player-6-20261125",
+      "file": "capture/creatures/veuve_jaune/animations/movement-player-6f-20261125.webp",
+      "sha256": "584c49669e296f5371e82f68dbde25f319c4c25191cfc5c263343dc242c1b044",
+      "bytes": 932924,
+      "sourceArchive": "veuve_jaune_mouvement_dos_6f_VALIDE.zip",
+      "sourceSha256": "af0e7898b1fed998a3793719db9109e6b3b2460948f4620a8be2b1dd2a8592df",
+      "sourceFrames": 6,
+      "sourceFrameSha256": [
+        "5c77947151098c2c86a9cca5eb484d82ac3b33adeba41bf8044f6f9f1b783cbc",
+        "b0f47b5bbe19eabb480a42c7832a3d5dd387460c60177a03a651413c06f941d0",
+        "854aeb68eaacca430df9fd7232f3f93bf1c906a4839072edbb80428793384292",
+        "cb6e8d50ffbc14c4b93454f83a0b8cd35b0491b700791249d2ad71979a998054",
+        "755ecd45e610d1baaf43fa038c72db2d31478cf6f8c7e2296da173ea8fd8a008",
+        "15444c658b7557d152e522b46914c11d85a147cbff4c98358ab01251a8fe8210"
+      ],
+      "runtimeFrames": 6,
+      "frameMs": 140,
+      "playbackMode": "loop",
+      "note": "poses unchanged"
+    },
+    {
+      "id": "pack:capture:creature-veuve-jaune-attack-player-9-20261125",
+      "file": "capture/creatures/veuve_jaune/animations/attack-player-9f-20261125.webp",
+      "sha256": "befb977231f188329d4080ae331dec51670795525d57caba0de514fa33dffe07",
+      "bytes": 1134378,
+      "sourceArchive": "veuve_jaune_attaque_dos_9f_fluide_essai.zip",
+      "sourceSha256": "1143a3de8495e992fa99b72c4ce82ab7eb55a1e78d35cfb37899c760c1ef89fd",
+      "sourceFrames": 9,
+      "sourceFrameSha256": [
+        "ff33eefd6d4ed6e16c079d32f4cc861e9ba7676f902c7ca50b8c934f8cd95713",
+        "c47650e63823a036cbeff885476ce5d22dde601d9e7997b7d219f16ce55d85b2",
+        "3af8eae0a42d7ba6f540c003523f94de49c3d3ff5a4e30eb1063845896b7a6ef",
+        "e6810fcaff72af6cf369c704abd86e91b27051228501d8de23f257fd6d4ea6b6",
+        "82668cb9e481bad26067b918f3e45c271448fe00c13a4ff324b9296555809317",
+        "a5f827a9d07ca8cc23f027e748ce29f35f76a1a5a5e55a6e10f7972b6c2578df",
+        "3c7457af4497bbe0382b427df1589ea248abdb67b99ce037762f73916ca3cf7d",
+        "02d81b1aac7ecb7e56050f44bb18381e530f3004b5af6e43df556ab7ea4f50bf",
+        "ff33eefd6d4ed6e16c079d32f4cc861e9ba7676f902c7ca50b8c934f8cd95713"
+      ],
+      "runtimeFrames": 9,
+      "frameMs": 90,
+      "playbackMode": "once",
+      "note": "poses unchanged"
+    }
+  ],
+  "preserved": "Original face/dos/icon, abilities and all other creatures untouched; original ZIP uploads remain in Combat main"
+}

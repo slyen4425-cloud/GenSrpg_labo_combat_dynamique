@@ -10,7 +10,11 @@
   "assetIds": {
     "opponent": "pack:capture:creature-veuve-jaune-opponent-01",
     "player": "pack:capture:creature-veuve-jaune-player-01",
-    "icon": "pack:capture:creature-veuve-jaune-icon-01"
+    "icon": "pack:capture:creature-veuve-jaune-icon-01",
+    "movementOpponent": "pack:capture:creature-veuve-jaune-movement-opponent-5-20261125",
+    "attackOpponent": "pack:capture:creature-veuve-jaune-attack-opponent-6-20261125",
+    "movementPlayer": "pack:capture:creature-veuve-jaune-movement-player-6-20261125",
+    "attackPlayer": "pack:capture:creature-veuve-jaune-attack-player-9-20261125"
   },
   "canvas": {
     "combat": [
@@ -116,5 +120,12 @@
       "archiveMember": "sprites_512/icone.png"
     }
   },
-  "notes": "Source auteur conservée; visuels réels seulement, aucune fiche gameplay ni capacité inventée. Preview revue séparée."
+  "notes": "Source auteur conservée; visuels réels seulement, aucune fiche gameplay ni capacité inventée. Preview revue séparée.",
+  "animations": {
+    "movementOpponent": "animations/movement-opponent-5f-20261125.webp",
+    "attackOpponent": "animations/attack-opponent-6f-20261125.webp",
+    "movementPlayer": "animations/movement-player-6f-20261125.webp",
+    "attackPlayer": "animations/attack-player-9f-20261125.webp"
+  },
+  "animationProvenance": "veuve_jaune.animations.provenance.json"
 }

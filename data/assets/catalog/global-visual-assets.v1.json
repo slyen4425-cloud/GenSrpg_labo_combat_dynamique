@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 503,
+    "assets": 507,
     "icons": 217,
-    "sprites": 253,
+    "sprites": 257,
     "fx": 2,
     "portraits": 26,
     "backgrounds": 5,
@@ -17079,6 +17079,158 @@
         "format": "sprite-strip",
         "frameCount": 6,
         "frameMs": 120,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veuve-jaune-movement-opponent-5-20261125",
+      "label": "Veuve jaune — déplacement face (5 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "veuve_jaune",
+        "creature",
+        "2026-11-25",
+        "author-approved",
+        "animated",
+        "movement",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Séquence auteur approuvée 23-25 novembre 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veuve_jaune/animations/movement-opponent-5f-20261125.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 5,
+        "frameMs": 120,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veuve-jaune-attack-opponent-6-20261125",
+      "label": "Veuve jaune — attaque face (6 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "veuve_jaune",
+        "creature",
+        "2026-11-25",
+        "author-approved",
+        "animated",
+        "attack",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Séquence auteur approuvée 23-25 novembre 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veuve_jaune/animations/attack-opponent-6f-20261125.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 6,
+        "frameMs": 150,
+        "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veuve-jaune-movement-player-6-20261125",
+      "label": "Veuve jaune — déplacement dos (6 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "veuve_jaune",
+        "creature",
+        "2026-11-25",
+        "author-approved",
+        "animated",
+        "movement",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Séquence auteur approuvée 23-25 novembre 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veuve_jaune/animations/movement-player-6f-20261125.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 6,
+        "frameMs": 140,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veuve-jaune-attack-player-9-20261125",
+      "label": "Veuve jaune — attaque dos (9 frames)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "veuve_jaune",
+        "creature",
+        "2026-11-25",
+        "author-approved",
+        "animated",
+        "attack",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "Séquence auteur approuvée 23-25 novembre 2026",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veuve_jaune/animations/attack-player-9f-20261125.webp",
+        "mime": "image/webp",
+        "format": "sprite-strip",
+        "frameCount": 9,
+        "frameMs": 90,
         "playbackMode": "once"
       },
       "compatibility": {

@@ -17,7 +17,7 @@ test("Cheval de feu: auteur icone PNG intacte, sept médias canoniques et catalo
  ]);
  const catalog=JSON.parse(json.toString("utf8"));
  const meta=JSON.parse(rawMeta.toString("utf8"));
- assert.equal(catalog.counts.assets,503);
+ assert.equal(catalog.counts.assets,507);
  assert.equal(catalog.counts.portraits,26);
  assert.equal(new Set(catalog.assets.map(x=>x.id)).size,catalog.assets.length);
  assert.equal(Buffer.compare(icon,uploaded),0,"le portrait auteur ne doit pas être modifié");
