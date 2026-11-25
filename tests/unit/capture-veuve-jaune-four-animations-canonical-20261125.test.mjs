@@ -20,10 +20,10 @@ test("Veuve jaune: four real validated WebP strips, original models untouched, e
  const meta=JSON.parse((await load(dir+"veuve_jaune.meta.json")).toString("utf8"));
  const provenance=JSON.parse((await load(dir+"veuve_jaune.animations.provenance.json")).toString("utf8"));
  assert.equal(catalog.storage.branch,"global-assets");
- assert.equal(catalog.counts.assets,553);
- assert.equal(catalog.counts.sprites,303);
- assert.equal(catalog.assets.length,553);
- assert.equal(new Set(catalog.assets.map(a=>a.id)).size,507);
+ assert.ok(catalog.counts.assets>=553,'new idle creatures must be additive');
+ assert.ok(catalog.counts.sprites>=303);
+ assert.equal(catalog.assets.length,catalog.counts.assets);
+ assert.equal(new Set(catalog.assets.map(a=>a.id)).size,catalog.assets.length,'preserve unique asset IDs');
  assert.equal(meta.id,"veuve_jaune");
  assert.deepEqual(meta.views,{
   opponent:"runtime/veuve_jaune_face.png",
