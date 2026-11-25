@@ -2,10 +2,10 @@ name: Bestiary idle GIF canonical import
 on:
   pull_request:
     branches: [main]
-    paths: ['scripts/import-bestiary-idle-gif-20261125.py', '.github/workflows/import-bestiary-idle-gif-20261125.yml', 'tests/unit/bestiary-idle-gif-20261125.test.mjs']
+    paths: ['scripts/import-bestiary-idle-gif-20261125.py', '.github/workflows/import-bestiary-idle-gif-20261125.yml', 'tests/unit/bestiary-idle-gif-20261125.test.mjs', 'scripts/idle-import-build/**']
   push:
     branches: [main]
-    paths: ['scripts/import-bestiary-idle-gif-20261125.py', '.github/workflows/import-bestiary-idle-gif-20261125.yml']
+    paths: ['scripts/import-bestiary-idle-gif-20261125.py', '.github/workflows/import-bestiary-idle-gif-20261125.yml', 'scripts/idle-import-build/**']
 permissions:
   contents: read
 concurrency:
