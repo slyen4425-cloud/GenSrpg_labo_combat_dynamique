@@ -6,7 +6,7 @@ export const CAPTURE_HUD_SKILL_ROLES_V1=Object.freeze(Object.fromEntries(
 export function captureHudSkillRoleV1(slots,skillId){
  const slot=Array.isArray(slots)?slots.find(s=>s?.skillId===skillId):null;
  const role=slot?'skill-'+slot.id:null;
- return role&&Object.hasOwn(CAPTURE_HUD_SKILL_ROLES_V1,role)?role:null;
+ return isCaptureHudSkillRoleV1(role)?role:null;
 }
 // Optional authored presentation data only. No skill, fighter or runtime rule.
 export const CAPTURE_HUD_LAYOUT_SCHEMA_V1='capture-hud-layout-v1';
@@ -21,6 +21,14 @@ export const CAPTURE_HUD_ROLES_V1=Object.freeze({
  'dodge':'Esquive / défense',
  ...CAPTURE_HUD_SKILL_ROLES_V1
 });
+// Accept future *real* canonical numbered slots without minting skills or changing progression.
+export function isCaptureHudSkillRoleV1(role){
+ return typeof role==='string'&&(role==='skill-slot-ultimate'||/^skill-slot-[1-9][0-9]{0,2}$/.test(role));
+}
+export function captureHudRoleLabelV1(role){
+ return Object.hasOwn(CAPTURE_HUD_ROLES_V1,role)?CAPTURE_HUD_ROLES_V1[role]:
+  isCaptureHudSkillRoleV1(role)?'Compétence '+role.slice('skill-slot-'.length):null;
+}
 const plain=(v)=>v!==null&&typeof v==='object'&&!Array.isArray(v);
 const exact=(v,keys,label)=>{
  if(!plain(v)||Object.keys(v).some(k=>!keys.includes(k)))throw new TypeError(label+' invalide');
@@ -31,12 +39,12 @@ function integer(v,min,max,label){
 }
 export function normalizeCaptureHudLayoutV1(raw){
  if(raw===undefined||raw===null)raw={schema:CAPTURE_HUD_LAYOUT_SCHEMA_V1,profiles:{}};
- exact(raw,['schema','profiles'],'Disposition HUD');
+ exact(raw,['schema','profiles','groups'],'Disposition HUD');
  if(raw.schema!==CAPTURE_HUD_LAYOUT_SCHEMA_V1)throw new RangeError('Version disposition HUD inconnue');
  exact(raw.profiles,CAPTURE_HUD_PROFILES_V1,'Profils HUD');
  const profiles={};
  for(const [profile,roles] of Object.entries(raw.profiles)){
-  exact(roles,Object.keys(CAPTURE_HUD_ROLES_V1),'Rôles HUD');
+  if(!plain(roles)||Object.keys(roles).some(role=>!captureHudRoleLabelV1(role)))throw new TypeError('Rôles HUD invalides');
   const normalized={};
   for(const [role,value] of Object.entries(roles)){
    exact(value,['dx','dy','scale'],'Réglage HUD');
@@ -47,11 +55,33 @@ export function normalizeCaptureHudLayoutV1(raw){
   }
   if(Object.keys(normalized).length)profiles[profile]=Object.freeze(normalized);
  }
- return Object.freeze({schema:CAPTURE_HUD_LAYOUT_SCHEMA_V1,profiles:Object.freeze(profiles)});
+ const groups={};
+ exact(raw.groups??{},CAPTURE_HUD_PROFILES_V1,'Groupes HUD');
+ for(const [profile,entries] of Object.entries(raw.groups??{})){
+  if(!Array.isArray(entries)||entries.length>12)throw new RangeError('12 groupes maximum par profil');
+  const ids=new Set(),members=new Set();
+  const checked=entries.map(entry=>{
+   exact(entry,['id','label','roles','foldable'],'Groupe HUD');
+   const {id,label,roles,foldable}=entry;
+   if(typeof id!=='string'||!/^hud-group-[1-9][0-9]{0,2}$/.test(id)||ids.has(id))throw new RangeError('Identifiant de groupe invalide ou dupliqué');
+   ids.add(id);
+   if(typeof label!=='string'||!label.trim()||label.trim().length>40)throw new RangeError('Nom du groupe : 1 à 40 caractères');
+   if(typeof foldable!=='boolean'||!Array.isArray(roles)||!roles.length||roles.length>100)throw new TypeError('Composition du groupe invalide');
+   if(roles.includes('command-dock')&&roles.some(isCaptureHudSkillRoleV1))throw new RangeError('Le bloc de commandes contient déjà ses compétences');
+   for(const role of roles){
+    if(!captureHudRoleLabelV1(role)||members.has(role)||foldable&&!isCaptureHudSkillRoleV1(role))throw new RangeError('Élément invalide, déjà groupé ou non repliable : '+role);
+    members.add(role);
+   }
+   return Object.freeze({id,label:label.trim(),roles:Object.freeze([...roles]),foldable});
+  });
+  if(checked.length)groups[profile]=Object.freeze(checked);
+ }
+ return Object.freeze({schema:CAPTURE_HUD_LAYOUT_SCHEMA_V1,profiles:Object.freeze(profiles),
+  ...(Object.keys(groups).length?{groups:Object.freeze(groups)}:{})});
 }
 export function updateCaptureHudLayoutV1(raw,profile,role,value){
  const layout=normalizeCaptureHudLayoutV1(raw);
- if(!CAPTURE_HUD_PROFILES_V1.includes(profile)||!Object.hasOwn(CAPTURE_HUD_ROLES_V1,role))
+ if(!CAPTURE_HUD_PROFILES_V1.includes(profile)||!captureHudRoleLabelV1(role))
   throw new RangeError('Profil ou rôle HUD inconnu');
  const roles={...layout.profiles[profile]};
  if(value===null)delete roles[role];else roles[role]=value;
@@ -61,7 +91,42 @@ export function resetCaptureHudProfileV1(raw,profile){
  const layout=normalizeCaptureHudLayoutV1(raw);
  if(!CAPTURE_HUD_PROFILES_V1.includes(profile))throw new RangeError('Profil HUD inconnu');
  const profiles={...layout.profiles};delete profiles[profile];
- return normalizeCaptureHudLayoutV1({...layout,profiles});
+ const groups={...layout.groups};delete groups[profile];
+ return normalizeCaptureHudLayoutV1({...layout,profiles,groups});
+}
+// One layout transaction; no extra storage or manual ID input.
+export function editCaptureHudGroupV1(raw,profile,id,value){
+ const layout=normalizeCaptureHudLayoutV1(raw);
+ if(!CAPTURE_HUD_PROFILES_V1.includes(profile))throw new RangeError('Profil HUD inconnu');
+ const entries=[...(layout.groups?.[profile]??[])];
+ if(id===null){
+  if(value===null)throw new RangeError('Groupe inconnu');
+  let index=1;while(entries.some(group=>group.id==='hud-group-'+index))index++;
+  entries.push({...value,id:'hud-group-'+index});
+ }else{
+  const index=entries.findIndex(group=>group.id===id);
+  if(index<0)throw new RangeError('Groupe inconnu');
+  if(value===null)entries.splice(index,1);else entries[index]={...value,id};
+ }
+ return normalizeCaptureHudLayoutV1({...layout,groups:{...layout.groups,[profile]:entries}});
+}
+// A viewport page is only a presentation of *supplied* native controls.
+// With no configured panel and at most five controls, preserve the historic row.
+// A selector occupies two columns, leaving three touch-sized skill cells.
+export function captureHudSkillPagesV1(roles,groups=[]){
+ const folded=groups.filter(group=>group.foldable&&group.roles.some(role=>roles.includes(role)));
+ if(!folded.length&&roles.length<=5)return [];
+ const assigned=new Set(folded.flatMap(group=>group.roles));
+ const buckets=[{id:'main',label:'Principal',roles:roles.filter(role=>!assigned.has(role))},
+  ...folded.map(group=>({id:group.id,label:group.label,roles:roles.filter(role=>group.roles.includes(role))}))];
+ return buckets.flatMap(bucket=>{
+  const count=Math.max(1,Math.ceil(bucket.roles.length/3));
+  return Array.from({length:count},(_,index)=>({
+   id:bucket.id+':'+index,groupId:bucket.id,
+   label:bucket.label+(count>1?' '+(index+1)+'/'+count:''),
+   roles:bucket.roles.slice(index*3,index*3+3)
+  }));
+ });
 }
 const overlap=(a,b)=>Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))*
  Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top));
