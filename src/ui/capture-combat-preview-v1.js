@@ -40,6 +40,7 @@ export async function mountCaptureCombatPreviewV1({
   embeddedBattle = null,
   hudLayout = undefined,
   onHudLayoutStatus = undefined,
+  hudAuthoring = false,
   onBattleOutcome = null,
   soundtrackProject = SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1,
   soundtrackCatalog = SOUNDTRACK_STARTER_CATALOG_V1,
@@ -97,6 +98,7 @@ export async function mountCaptureCombatPreviewV1({
         embeddedBattle,
         ...(hudLayout===undefined?{}:{hudLayout}),
         ...(onHudLayoutStatus===undefined?{}:{onHudLayoutStatus}),
+        ...(hudAuthoring?{hudAuthoring:true}:{}),
         presentationAssets,
         onBattleOutcome:presentBattleOutcome
       }),

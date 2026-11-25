@@ -15349,6 +15349,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       heading?.scrollIntoView({block:"start"});
     },
     readHudLayout(){return hudLayout;},
+    writeHudLayout(value){hudLayout=normalizeCaptureHudLayoutV1(value);hudLayoutAuthored=true;hudLayoutEditor?.set(hudLayout);},
     readDatabase({includePendingSpecies = false} = {}){
       if(disposed)throw new Error("Éditeur fermé");
       if (includePendingSpecies && creatureDirty) {
