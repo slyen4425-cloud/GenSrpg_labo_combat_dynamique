@@ -91,10 +91,12 @@ def check(context, origin):
     # Native pointer editing, not synthetic style injection. A real editor launch
     # creates the native arena, real species and existing runtime, in author mode.
     page.get_by_role("button", name="Dérouler Équipes du test", exact=True).click()
-    page.locator("[data-test-local-team-size]").select_option("1")
-    page.locator("[data-test-opponent-team-size]").select_option("1")
+    page.locator("[data-test-local-team-size]").select_option("2")
+    page.locator("[data-test-opponent-team-size]").select_option("2")
     page.locator("[data-active-per-team]").select_option("1")
+    page.locator("[data-test-local-creature]").first.select_option(species)
     page.locator("[data-test-opponent-creature]").first.select_option(species)
+    page.locator("[data-test-opponent-creature]").nth(1).select_option(species)
     page.wait_for_function("!document.querySelector('[data-editor-test-combat]').disabled")
     draft_fields = page.locator("[data-creature-id], [data-skill-id], [data-creature-library-select], [data-skill-library-select]")
     drafts_before = draft_fields.evaluate_all("els=>els.map(e=>e.value)")
@@ -121,6 +123,17 @@ def check(context, origin):
     assert actor.get_attribute("data-author-activation-count") == "0"
     skill = arena.locator("[data-combat-hud-skill-role]").first
     assert skill.evaluate("el=>!el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}))"), "native skill activation must be cancelled"
+    # Real bench members, not fabricated portraits. The author controls
+    # project the same canonical icons already present in the roster picker.
+    for side,selector in [("local","[data-combat-team-menu]"),("opponent","[data-combat-enemy-reserves]")]:
+        toggle=toolbar.locator("[data-hud-author-portraits-"+side+"]")
+        toggle.click()
+        strip=arena.locator(selector+" > summary .hud-reserve-portrait:not([hidden]) img")
+        assert strip.count()==1, (side,strip.count())
+        assert strip.first.is_visible() and strip.first.get_attribute("src"), side
+        toggle.click()
+        assert not strip.first.is_visible(), side
+    print("Native real reserve portraits toggled",page.viewport_size,flush=True)
 
     # Reset via the native editing chrome, then move by the same safe +1/-1
     # percent offset that was previously certified with the exact profile.

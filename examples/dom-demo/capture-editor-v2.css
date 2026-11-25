@@ -2427,3 +2427,6 @@ html {
 .capture-hud-author-toolbar button[aria-pressed="true"]{background:#28677b;color:#fff;}
 
 .capture-hud-author-toolbar[data-hud-draft-invalid="true"] [data-hud-author-status]{color:#ffd7a0;}
+
+[data-hud-reserve-portraits="true"] > summary > span:not(.hud-reserve-portraits):not([data-combat-recall-countdown]){min-width:0;flex:1 1 auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+[data-hud-reserve-portraits="true"] > summary .hud-reserve-portraits{flex:0 1 auto;}

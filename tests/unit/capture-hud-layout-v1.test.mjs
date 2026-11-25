@@ -165,3 +165,13 @@ test('an empty named panel can reserve space without inventing any skill',()=>{
  assert.deepEqual(pages.find(p=>p.groupId==='hud-group-1').roles,[]);
  assert.deepEqual(pages.flatMap(p=>p.roles),['skill-slot-1']);
 });
+
+import {resolveCaptureHudRoleBoxV1} from '../../src/contracts/capture-hud-layout-v1.js';
+test('legacy offsets resolve through real rectangle geometry without a second transform',()=>{
+ const arena={left:0,top:0,right:1000,bottom:500,width:1000,height:500};
+ const rect={left:200,top:200,width:200,height:50};
+ const legacy={dx:5,dy:-2,scale:100};
+ assert.deepEqual(resolveCaptureHudRoleBoxV1(legacy,rect,arena),{x:250,y:380,w:200,h:100});
+ assert.equal(resolveCaptureHudRoleBoxV1({dx:0,dy:0,scale:100},rect,arena),null);
+ assert.throws(()=>resolveCaptureHudRoleBoxV1({dx:-50,dy:0,scale:100},rect,arena),/hors arène/);
+});
