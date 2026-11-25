@@ -592,12 +592,13 @@ const session = createCaptureEditorPreviewSessionV2({
         )
     });
 
-    const visualAuthor=hudAuthoringRequested?mountCaptureHudVisualAuthorV1({
+    let visualAuthor=null;
+    try{if(hudAuthoringRequested)visualAuthor=mountCaptureHudVisualAuthorV1({
       root:previewRoot,toolbar:previewShell.querySelector('[data-hud-author-toolbar]'),
       hudOwner:mounted.combat.hudOwner,readLayout:()=>editor.readHudLayout(),
       writeLayout:value=>editor.writeHudLayout(value),
-      startTest:()=>mounted.combat.startHudTest()
-    }):null;
+      startTest:()=>{if(mounted.combat.startHudTest())soundtrack?.transitionTo('capture:combat:normal');}
+    });}catch(error){mounted.dispose();previewHost.replaceChildren();throw error;}
 
     // Opt-in authored soundtrack. No entry means silence and never blocks
     // existing battle audio. The combat session exclusively owns skill SFX.

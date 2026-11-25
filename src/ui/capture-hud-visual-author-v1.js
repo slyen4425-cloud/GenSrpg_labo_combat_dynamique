@@ -25,6 +25,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   $('[data-hud-author-selection]').textContent=CAPTURE_HUD_ROLES_V1[role]??'Touche un élément';
   $('[data-hud-author-undo]').disabled=!history.length;
   $('[data-hud-author-reset]').disabled=!role;
+  $('[data-hud-author-group]').disabled=!role?.startsWith('skill-');
   const node=hudOwner.elements()[role],r=node?.getBoundingClientRect(),a=arena.getBoundingClientRect();
   const valid=r&&r.width>0&&r.height>0&&!node.hidden;
   outline.hidden=handle.hidden=!valid;
@@ -47,7 +48,13 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
  listen(overlay,'pointerdown',event=>{
   if(event.button!==0||gesture)return;
   const resize=event.target===handle;
-  if(!resize)role=choose(event.clientX,event.clientY);
+  if(!resize){
+   const picked=choose(event.clientX,event.clientY);
+   const selected=hudOwner.elements()[role]?.getBoundingClientRect();
+   // After explicitly selecting the dock, dragging anywhere inside it
+   // moves the whole group. Clicking outside selects a new element.
+   if(!(role==='command-dock'&&selected&&event.clientX>=selected.left&&event.clientX<=selected.right&&event.clientY>=selected.top&&event.clientY<=selected.bottom))role=picked;
+  }
   draw();if(!role)return;
   const node=hudOwner.elements()[role],a=arena.getBoundingClientRect(),r=node.getBoundingClientRect();
   const parentScale=role.startsWith('skill-')?(readLayout().profiles[profile()]?.['command-dock']?.scale??100)/100:1;
@@ -64,6 +71,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
  function end(event){if(!gesture||event.pointerId!==gesture.id)return;const g=gesture;gesture=null;
   if(g.changed)history.push(g.before);if(overlay.hasPointerCapture(g.id))overlay.releasePointerCapture(g.id);schedule();}
  listen(overlay,'pointerup',end);listen(overlay,'pointercancel',end);listen(overlay,'lostpointercapture',end);
+ listen($('[data-hud-author-group]'),'click',()=>{role='command-dock';schedule();});
  listen($('[data-hud-author-undo]'),'click',()=>{if(history.length&&apply(history.at(-1)))history.pop();schedule();});
  listen($('[data-hud-author-reset]'),'click',()=>{if(!role)return;const before=readLayout();if(apply(updateCaptureHudLayoutV1(before,profile(),role,null)))history.push(before);schedule();});
  function dispose(){if(disposed)return;disposed=true;if(frame)win.cancelAnimationFrame(frame);for(const f of cleanups.splice(0))f();observer?.disconnect();overlay.remove();toolbar.hidden=true;}

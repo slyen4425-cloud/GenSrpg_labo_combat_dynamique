@@ -12,8 +12,9 @@ const selectors=Object.freeze({
  ...Object.fromEntries(Object.keys(CAPTURE_HUD_SKILL_ROLES_V1).map(role=>[role,'[data-combat-hud-skill-role="'+role+'"]']))
 });
 const desktopQuery='(min-width: 1100px) and (min-height: 650px) and (pointer: fine)';
-export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{}}){
+export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},authoring=false}){
  let normalized=normalizeCaptureHudLayoutV1(layout);
+ if(!authoring&&!Object.keys(normalized.profiles).length)return Object.freeze({dispose(){}});
  const arena=root.querySelector('[data-combat-arena]'),win=root.ownerDocument.defaultView;
  if(!arena||!win)throw new TypeError('Arène native requise');
  let nodes={};

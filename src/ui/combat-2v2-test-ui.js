@@ -2416,7 +2416,7 @@ export async function mountCoop2v2Test({
 
   renderTargetSelection();
   renderState();
-  const hudOwner=mountCaptureHudLayoutPreviewV1({root,layout:authoredHudLayout,onStatus:onHudLayoutStatus});
+  const hudOwner=mountCaptureHudLayoutPreviewV1({root,layout:authoredHudLayout,onStatus:onHudLayoutStatus,authoring:hudAuthoring});
   if(!hudAuthoring){runtime.start();queueAiDecisions();}
   let authoring=hudAuthoring;
 
