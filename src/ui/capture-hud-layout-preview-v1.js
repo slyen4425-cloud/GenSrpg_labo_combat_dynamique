@@ -19,7 +19,10 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   if(!authoring&&!Object.keys(normalized.profiles).length&&!normalized.groups)return Object.freeze({dispose(){}});
   throw new TypeError('Arène native requise');
  }
- const pages=mountCaptureHudSkillPagesV1({grid:arena.querySelector('[data-combat-skills]'),onChange:()=>schedule()});
+ const pages=mountCaptureHudSkillPagesV1({grid:arena.querySelector('[data-combat-skills]'),onChange:previous=>{
+  if(frame){win.cancelAnimationFrame(frame);frame=0;}
+  if(!apply()){const rejected=last;if(pages.select(previous))apply();report(rejected);}
+ }});
  let nodes={};
  const originals=new Map();
  function syncNodes(){
@@ -93,6 +96,14 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
     node.style.setProperty('translate',a.width*value.dx/100+'px '+a.height*value.dy/100+'px');
     node.style.setProperty('scale',String(value.scale/100));
     node.style.setProperty('transform-origin','center');
+   }
+   const nav=pages.navigation();
+   if(nav){
+    const r=nav.getBoundingClientRect();
+    const hit=(root.ownerDocument.elementsFromPoint?.(r.x+r.width/2,r.y+r.height/2)??[root.ownerDocument.elementFromPoint(r.x+r.width/2,r.y+r.height/2)]).find(el=>el&&!el.closest('[data-hud-author-overlay]'));
+    if(!hit||!(hit===nav||nav.contains(hit))||r.left<a.left-1||r.right>a.right+1||r.top<a.top-1||r.bottom>a.bottom+1)
+     return 'Sélecteur de volet inaccessible';
+    if(!desktop&&(r.width<43||r.height<43))return 'Sélecteur de volet trop petit';
    }
    return validateCaptureHudGeometryV1({baseline,proposed:measure(a),width:a.width,height:a.height,touch:!desktop});
   }

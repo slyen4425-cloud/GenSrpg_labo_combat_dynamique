@@ -178,6 +178,29 @@ def check(context, origin):
     assert not arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()
     assert arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.map(e=>e.dataset.combatHudSkillRole)") == original_roles
     assert arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.every(e=>e.dataset.nativeHudProof==='same')")
+    # The selected group is a single gesture on the native arena. Moving it
+    # must update both members; undo restores the original canonical offsets.
+    first_skill = arena.locator('[data-combat-hud-skill-role="skill-slot-1"]')
+    second_skill = arena.locator('[data-combat-hud-skill-role="skill-slot-2"]')
+    first_box, second_box, arena_box = first_skill.bounding_box(), second_skill.bounding_box(), arena.bounding_box()
+    x, y = first_box["x"] + first_box["width"]/2, first_box["y"] + first_box["height"]/2
+    dx = arena_box["width"]/100
+    if context.pages[0].evaluate("navigator.maxTouchPoints>0"):
+        cdp = context.new_cdp_session(page)
+        cdp.send("Input.dispatchTouchEvent", {"type":"touchStart","touchPoints":[{"x":x,"y":y}]})
+        cdp.send("Input.dispatchTouchEvent", {"type":"touchMove","touchPoints":[{"x":x+dx,"y":y}]})
+        cdp.send("Input.dispatchTouchEvent", {"type":"touchEnd","touchPoints":[]})
+        cdp.detach()
+    else:
+        page.mouse.move(x,y)
+        page.mouse.down()
+        page.mouse.move(x+dx,y,steps=3)
+        page.mouse.up()
+    page.wait_for_function("""['skill-slot-1','skill-slot-2'].every(role=>!!document.querySelector('[data-combat-hud-skill-role="'+role+'"]').style.translate)""")
+    assert first_skill.bounding_box()["x"] > first_box["x"]
+    assert second_skill.bounding_box()["x"] > second_box["x"]
+    toolbar.locator("[data-hud-author-undo]").click()
+    page.wait_for_function("""['skill-slot-1','skill-slot-2'].every(role=>!document.querySelector('[data-combat-hud-skill-role="'+role+'"]').style.translate)""")
     toolbar.locator("[data-hud-author-page-select]").select_option("main:0")
     assert not arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
     assert arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()
@@ -219,7 +242,33 @@ def check(context, origin):
     toolbar.locator("[data-hud-author-page-select]").select_option("hud-group-1:0")
     assert arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
     page.locator("[data-preview-back-editor]").click()
-    print("Native pointer author / undo / test / group save and reload passed",page.viewport_size,flush=True)
+    # Same native author flow with two active fighters; profiles must stay
+    # independent. This is not a new HUD or a fabricated combat runtime.
+    page.locator("[data-test-local-team-size]").select_option("2")
+    page.locator("[data-test-opponent-team-size]").select_option("2")
+    page.locator("[data-active-per-team]").select_option("2")
+    page.locator("[data-test-local-creature]").first.select_option(species)
+    page.locator("[data-test-opponent-creature]").nth(1).select_option(species)
+    page.locator("[data-hud-layout-preview]").click()
+    toolbar.wait_for(state="visible")
+    page.wait_for_function("document.querySelector('[data-combat-arena]').dataset.combatActiveCount==='2'")
+    assert "2v2" in toolbar.locator("[data-hud-author-profile]").text_content()
+    assert arena.locator("[data-hud-skill-page-nav]").count() == 0
+    group_form.locator("summary").click()
+    group_form.locator("[data-hud-author-group-name]").fill("Volet duo")
+    group_form.locator("[data-hud-author-group-foldable]").check()
+    group_form.locator('input[value="skill-slot-1"]').check()
+    group_form.locator('input[value="skill-slot-2"]').check()
+    group_form.locator("[data-hud-author-group-save]").click()
+    assert "Groupe enregistré" in toolbar.locator("[data-hud-author-status]").text_content(), toolbar.locator("[data-hud-author-status]").text_content()
+    group_form.locator("[data-hud-author-group-move]").click()
+    assert arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
+    assert not arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()
+    toolbar.locator("[data-hud-author-test]").click()
+    arena.locator("[data-hud-skill-page-nav]").select_option("main:0")
+    assert arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()
+    page.locator("[data-preview-back-editor]").click()
+    print("Native pointer author / undo / test / group save and reload / 1v1 and 2v2 passed",page.viewport_size,flush=True)
     # Apply the real layout controller to the ONE editor template in a visible
     # preview shell. The native author preview mounts this same controller.
     geometry = page.evaluate("""async ([id,profile])=>{

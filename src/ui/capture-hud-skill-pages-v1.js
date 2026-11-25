@@ -2,7 +2,7 @@ import {captureHudSkillPagesV1} from '../contracts/capture-hud-layout-v1.js';
 // Only project the native buttons. No cloned handlers, skill definitions,
 // hidden alternative HUD, or storage. Reconcile on the existing roster render.
 export function mountCaptureHudSkillPagesV1({grid,onChange=()=>{}}){
- if(!grid)return Object.freeze({sync(){},options:()=>[],current:()=>null,select:()=>false,suspend(){},resume(){},dispose(){}});
+ if(!grid)return Object.freeze({sync(){},navigation:()=>null,options:()=>[],current:()=>null,select:()=>false,suspend(){},resume(){},dispose(){}});
  const nav=grid.ownerDocument.createElement('select');
  nav.dataset.hudSkillPageNav='true';nav.setAttribute('aria-label','Volets de compétences');
  nav.title='Ouvrir un volet de compétences';
@@ -45,10 +45,10 @@ export function mountCaptureHudSkillPagesV1({grid,onChange=()=>{}}){
   if(!pages.some(page=>page.id===id))return false;
   active=id;suspended=false;project();return true;
  }
- const change=()=>{if(select(nav.value))onChange();};
+ const change=()=>{const previous=active;if(select(nav.value))onChange(previous);};
  nav.addEventListener('change',change);
  return Object.freeze({
-  sync,options:()=>pages.map(({id,label,groupId})=>({id,label,groupId})),current:()=>active,select,
+  sync,navigation:()=>pages.length&&!suspended?nav:null,options:()=>pages.map(({id,label,groupId})=>({id,label,groupId})),current:()=>active,select,
   suspend(){suspended=true;project();},resume(){suspended=false;project();},
   dispose(){if(disposed)return;disposed=true;clear();nav.removeEventListener('change',change);nav.remove();}
  });
