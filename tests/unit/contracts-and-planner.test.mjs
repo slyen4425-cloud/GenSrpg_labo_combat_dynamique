@@ -180,7 +180,11 @@ test("idle profiles encode the requested morphology differences", () => {
   assert.ok(serpentine.idle.bobY <= 0.5);
   assert.ok(flying.idle.bobY > serpentine.idle.bobY);
   assert.ok(flying.idle.swayX <= 0.5);
-  assert.ok(flying.idle.swayRotate < serpentine.idle.swayRotate);
+  assert.equal(serpentine.idle.swayRotate, 0);
+  assert.equal(serpentine.idle.swayX, 0);
+  assert.ok(serpentine.idle.scaleXDelta > 0);
+  assert.ok(serpentine.idle.scaleYDelta > 0);
+  assert.ok(Math.abs(flying.idle.swayRotate) <= 0.5);
   assert.ok(flying.idle.scaleYDelta > 0);
 });
 
