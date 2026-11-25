@@ -686,14 +686,18 @@ export async function mountCombatDemo({
       return Promise.resolve({ status: "hidden" });
     }
 
+    if (type === "idle") {
+      // Public idle event uses the same mode selector as startup/recovery.
+      return Promise.resolve(startIdleFor(slotKey));
+    }
     if (type === "defense") {
       slot.cancelMovementAppearance();
-      // Reuse the creature's own dodge FX sprite, but not Dodge's vanish
-      // animation. Defense keeps the model visible and CombatDamage owns
-      // the reduction; this branch is presentation-only.
-      return Promise.resolve(
-        playDodgeAppearanceFx(slotKey, metadata?.durationMs).finished
-      );
+      // Defense is presentation-only, but the authored GIF must resume after it.
+      return Promise.resolve(playDodgeAppearanceFx(slotKey,metadata?.durationMs).finished)
+        .then(result=>{
+          if(!disposed && slot.visible) startIdleFor(slotKey);
+          return result;
+        });
     }
 
     const heldAttack = heldAttackBySlot.get(slotKey);
