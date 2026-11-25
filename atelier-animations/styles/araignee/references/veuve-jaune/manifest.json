@@ -1,0 +1,56 @@
+{
+  "schema": "gensrpg-animation-production-reference-v1",
+  "styleId": "araignee",
+  "referenceCreature": "veuve_jaune",
+  "status": "reference-only-no-runtime-integration",
+  "source": {
+    "repository": "slyen4425-cloud/GenSrpg_labo_combat_dynamique",
+    "branch": "global-assets"
+  },
+  "frameSize": [
+    512,
+    512
+  ],
+  "assets": [
+    {
+      "file": "attack-opponent-6f-20261125.webp",
+      "sourcePath": "assets/library/capture/creatures/veuve_jaune/animations/attack-opponent-6f-20261125.webp",
+      "sourceGitBlobSha": "70f57aa1927fc7adabf5590b0158a40a09aff367",
+      "copyPath": "atelier-animations/styles/araignee/references/veuve-jaune/attack-opponent-6f-20261125.webp",
+      "kind": "atlas",
+      "action": "attack",
+      "view": "face",
+      "frameCount": 6
+    },
+    {
+      "file": "attack-player-9f-20261125.webp",
+      "sourcePath": "assets/library/capture/creatures/veuve_jaune/animations/attack-player-9f-20261125.webp",
+      "sourceGitBlobSha": "f2a4fd616d335b1ff1137ddcec256eddf76db563",
+      "copyPath": "atelier-animations/styles/araignee/references/veuve-jaune/attack-player-9f-20261125.webp",
+      "kind": "atlas",
+      "action": "attack",
+      "view": "dos",
+      "frameCount": 9
+    },
+    {
+      "file": "movement-opponent-5f-20261125.webp",
+      "sourcePath": "assets/library/capture/creatures/veuve_jaune/animations/movement-opponent-5f-20261125.webp",
+      "sourceGitBlobSha": "b07de3a498687dc16c79b1c9946bf36b9f275853",
+      "copyPath": "atelier-animations/styles/araignee/references/veuve-jaune/movement-opponent-5f-20261125.webp",
+      "kind": "atlas",
+      "action": "movement",
+      "view": "face",
+      "frameCount": 5
+    },
+    {
+      "file": "movement-player-6f-20261125.webp",
+      "sourcePath": "assets/library/capture/creatures/veuve_jaune/animations/movement-player-6f-20261125.webp",
+      "sourceGitBlobSha": "ebd9f0a275d2a0b656dc307842ded15cbe308f00",
+      "copyPath": "atelier-animations/styles/araignee/references/veuve-jaune/movement-player-6f-20261125.webp",
+      "kind": "atlas",
+      "action": "movement",
+      "view": "dos",
+      "frameCount": 6
+    }
+  ]
+}
