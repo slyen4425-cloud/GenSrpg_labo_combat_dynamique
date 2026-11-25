@@ -16,7 +16,17 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
  const handle=doc.createElement('div');handle.className='hud-author-handle';handle.hidden=true;
  overlay.append(outline,handle);arena.append(overlay);toolbar.hidden=false;
  let role=null,gesture=null,disposed=false,frame=0,history=[],cleanups=[];
- const listen=(el,event,fn)=>{el.addEventListener(event,fn);cleanups.push(()=>el.removeEventListener(event,fn));};
+ const listen=(el,event,fn,options)=>{el.addEventListener(event,fn,options);cleanups.push(()=>el.removeEventListener(event,fn,options));};
+ // The pointer overlay alone cannot stop keyboard activation of native
+ // buttons or actor controls. Intercept activation only inside this mounted
+ // combat root while authoring; never alter native geometry or gameplay.
+ const blockNativeActivation=event=>{
+  if(overlay.contains(event.target))return;
+  if(event.type==='keydown'&&event.key!=='Enter'&&event.key!==' ')return;
+  event.preventDefault();event.stopPropagation();
+ };
+ listen(root,'click',blockNativeActivation,true);
+ listen(root,'keydown',blockNativeActivation,true);
  const profile=()=>hudOwner.profile();
  const actual=()=>readLayout().profiles[profile()]?.[role]??defaultValue();
  function draw(){
