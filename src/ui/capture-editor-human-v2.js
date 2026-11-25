@@ -2329,6 +2329,13 @@ export function buildHumanCreatureDraftV3(fields) {
     y: finiteNumber(fields?.shadowOffset?.y ?? 0, "Décalage Y de l’ombre")
   };
   const hasShadowOffset = shadowOffset.x !== 0 || shadowOffset.y !== 0;
+  const idleMode = fields?.visual?.idleMode ?? "engine";
+  const idleFrontAssetId = optionalText(fields?.visual?.idleFrontAssetId);
+  const idleBackAssetId = optionalText(fields?.visual?.idleBackAssetId);
+  const hasIdleSettings = idleMode !== "engine" || idleFrontAssetId !== null || idleBackAssetId !== null;
+  const idleVisual = hasIdleSettings ? {
+    mode:idleMode,frontAssetId:idleFrontAssetId,backAssetId:idleBackAssetId
+  } : null;
   const hasAppearanceV8 = (
     (movementScaleByView !== null && (
       movementScaleByView.player !== commonMovement.displayScale ||
@@ -2376,7 +2383,7 @@ export function buildHumanCreatureDraftV3(fields) {
         : {
             ...base.presentation,
             version:
-              hasShadowOffset ? 10 : (hasAppearanceV9 ? 9 : (hasAppearanceV8 ? 8 : (hasAttackPlacement ? 7 : (rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3))))))),
+              hasIdleSettings ? 11 : (hasShadowOffset ? 10 : (hasAppearanceV9 ? 9 : (hasAppearanceV8 ? 8 : (hasAttackPlacement ? 7 : (rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3)))))))),
             displayScale,
             ...(hasShadowOffset ? { shadowOffset } : {}),
             ...(fields?.viewOverrides == null ? {} : { viewOverrides: fields.viewOverrides }),
@@ -2390,9 +2397,10 @@ export function buildHumanCreatureDraftV3(fields) {
                 x: "50%",
                 y: "50%"
               },
-            ...((dodgeVisual === null && movementVisual === null && movementBackVisual === null && rangedAttackVisual === null && rangedAttackBackVisual === null) ? {} : {
+            ...((idleVisual === null && dodgeVisual === null && movementVisual === null && movementBackVisual === null && rangedAttackVisual === null && rangedAttackBackVisual === null) ? {} : {
               visual: {
                 ...base.presentation.visual,
+                ...(idleVisual === null ? {} : { idle: idleVisual }),
                 ...(dodgeVisual === null ? {} : { dodge: dodgeVisual }),
                 ...(movementVisual === null ? {} : { movement: movementVisual }),
                 ...(movementBackVisual === null ? {} : { movementBack: movementBackVisual }),
@@ -4516,6 +4524,9 @@ function writeCreatureRecordFields(
       "[data-creature-dodge-offset-y]",
       presentation?.visual?.dodge?.offsetY ?? 0
     ],
+    ["[data-creature-idle-mode]", presentation?.visual?.idle?.mode ?? "engine"],
+    ["[data-creature-idle-front-visual]", presentation?.visual?.idle?.frontAssetId ?? ""],
+    ["[data-creature-idle-back-visual]", presentation?.visual?.idle?.backAssetId ?? ""],
     ["[data-creature-movement-visual]", presentation?.visual?.movement?.assetId ?? ""],
     ["[data-creature-movement-back-visual]", presentation?.visual?.movementBack?.assetId ?? ""],
     ["[data-creature-movement-mode]", movementEditorSlot?.mode ?? "roll"],
@@ -4744,6 +4755,9 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-dodge-duration]", 700],
     ["[data-creature-dodge-offset-x]", 0],
     ["[data-creature-dodge-offset-y]", 0],
+    ["[data-creature-idle-mode]", "engine"],
+    ["[data-creature-idle-front-visual]", ""],
+    ["[data-creature-idle-back-visual]", ""],
     ["[data-creature-movement-visual]", ""],
     ["[data-creature-movement-back-visual]", ""],
     ["[data-creature-movement-mode]", "roll"],
@@ -8419,6 +8433,7 @@ export function captureEditorCreatureVisualKindV1(asset) {
     asset.assetType === "portrait" && tags.includes("creature") ||
     tags.includes("creature") && (tags.includes("attack") || tags.includes("movement"));
   if (!creatureOwned) return null;
+  if (tags.includes("idle")) return "idle";
   if (asset.category === "movement" || tags.includes("movement") || tags.includes("roll")) return "movement";
   if (asset.category === "attack" || tags.includes("attack")) return "attack";
   return "model";
@@ -8444,6 +8459,13 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
       (role === "creature-icon" &&
         asset.assetType === "portrait" &&
         asset.tags?.includes("creature"));
+  }
+  if (role === "idle") {
+    return captureEditorCreatureVisualKindV1(asset) === "idle" &&
+      asset.assetType === "sprite" &&
+      (asset.resource?.mime === "image/gif" ||
+       Number(asset.resource?.frameCount) > 1 ||
+       asset.resource?.mime === "image/webp");
   }
   if (role === "movement" || role === "attack") {
     // The selectable catalog contains genuine animated creature sprite strips
@@ -8632,7 +8654,7 @@ function populateSelect(select, assets, role) {
     }
   ];
 
-  const creatureAnimationSelector = role === "movement" || role === "attack";
+  const creatureAnimationSelector = role === "movement" || role === "attack" || role === "idle";
   for (const libraryGroup of libraryGroups) {
     const groupAssets =
       matchingAssets.filter(
@@ -9440,7 +9462,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
             creatorImportFile.files?.[0];
           if (!file) {
             throw new Error(
-              "Choisis une image PNG, WebP ou JPEG."
+              "Choisis une image PNG, WebP, JPEG ou GIF pour l’idle."
             );
           }
 
@@ -9970,6 +9992,9 @@ function readCreatureFields(
         root,
         "[data-creature-dodge-offset-y]"
       ),
+      idleMode: selectedValue(root, "[data-creature-idle-mode]"),
+      idleFrontAssetId: selectedValue(root, "[data-creature-idle-front-visual]"),
+      idleBackAssetId: selectedValue(root, "[data-creature-idle-back-visual]"),
       movementAssetId: selectedValue(root, "[data-creature-movement-visual]"),
       movementBackAssetId: selectedValue(root, "[data-creature-movement-back-visual]"),
       movementMode: selectedValue(root, "[data-creature-movement-mode]"),

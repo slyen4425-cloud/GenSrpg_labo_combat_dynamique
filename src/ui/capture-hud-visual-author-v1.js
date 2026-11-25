@@ -43,7 +43,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout:
  const groupEditor=$('[data-hud-author-group-editor]'),groupSelect=$('[data-hud-author-group-select]');
  const pageSelect=$('[data-hud-author-page-select]');
  const groupName=$('[data-hud-author-group-name]'),groupFold=$('[data-hud-author-group-foldable]'),groupRoles=$('[data-hud-author-group-roles]');
- let pageSignature='',draftProfile=null,paletteSignature='';
+ let pageSignature='',draftProfile=null,groupSignature='',paletteSignature='';
  const palette=$('[data-hud-author-palette]');
  function option(value,label){const o=doc.createElement('option');o.value=value;o.textContent=label;return o;}
  function refreshPages(){
@@ -64,7 +64,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout:
   $('[data-hud-author-group-move]').disabled=!group;
  }
  function refreshGroups(id=groupSelect.value){
-  draftProfile=profile();
+  draftProfile=profile();groupSignature=JSON.stringify(groups());
   groupSelect.replaceChildren(option('','Nouveau groupe / volet'),...groups().map(g=>option(g.id,g.label)));
   groupSelect.value=groups().some(g=>g.id===id)?id:'';
   loadGroupDraft();
@@ -191,7 +191,8 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout:
   ['[data-hud-author-add-column]','columns',1],['[data-hud-author-remove-column]','columns',-1]
  ])listen($(selector),'click',()=>changeGrid(field,delta));
  listen(pageSelect,'change',()=>{if(!hudOwner.showPage(pageSelect.value))status.textContent='Volet indisponible dans cette disposition';else{const group=groups().find(g=>pageSelect.value.startsWith(g.id+':'));groupId=group?.id??null;role=group?null:'command-dock';}schedule();});
- listen(groupEditor,'toggle',()=>{if(groupEditor.open)refreshGroups();});
+ // A queued details toggle must not wipe a form already being edited.
+ listen(groupEditor,'toggle',()=>{if(groupEditor.open&&(draftProfile!==profile()||groupSignature!==JSON.stringify(groups())))refreshGroups();});
  listen(groupSelect,'change',loadGroupDraft);
  listen($('[data-hud-author-group-save]'),'click',()=>{
   try{

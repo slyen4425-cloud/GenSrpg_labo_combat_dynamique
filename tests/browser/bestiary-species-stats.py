@@ -204,8 +204,12 @@ def check(context, origin):
     arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.forEach(e=>e.dataset.nativeHudProof='same')")
     group_form.locator("[data-hud-author-group-save]").click()
     assert "Groupe enregistré" in toolbar.locator("[data-hud-author-status]").text_content(), toolbar.locator("[data-hud-author-status]").text_content()
+    assert group_form.locator("[data-hud-author-group-name]").input_value() == "Attaques rapides", "group form was reset before save"
     group_form.locator("[data-hud-author-group-move]").click()
-    page.wait_for_function("document.querySelector('[data-hud-author-selection]').textContent==='Attaques rapides'")
+    try:
+        page.wait_for_function("document.querySelector('[data-hud-author-selection]').textContent==='Attaques rapides'")
+    except Exception as error:
+        raise AssertionError("Named page selection failed: " + toolbar.inner_text()) from error
     assert arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
     assert not arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()
     assert arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.map(e=>e.dataset.combatHudSkillRole)") == original_roles

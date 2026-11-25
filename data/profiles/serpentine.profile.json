@@ -4,16 +4,16 @@
   "description": "Profil pour créatures longues, souples, ondulantes ou aquatiques.",
   "idle": {
     "bobY": 0,
-    "swayRotate": 1,
+    "swayRotate": 0,
     "swayX": 0,
-    "scaleXDelta": 0.002,
-    "scaleYDelta": -0.001,
-    "durationMs": 2200,
+    "scaleXDelta": 0.012,
+    "scaleYDelta": 0.018,
+    "durationMs": 2800,
     "transformOrigin": {
       "x": "50%",
       "y": "94%"
     },
-    "swayMode": "alternate"
+    "swayMode": "single"
   },
   "attack": {
     "lungeX": 40,

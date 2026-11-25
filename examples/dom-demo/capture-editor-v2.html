@@ -387,8 +387,30 @@
         </details>
 
         <details class="creature-appearance-group" data-creature-appearance-group="animations" open>
-          <summary><strong>3. Animations</strong><small>Déplacement · attaques à distance</small></summary>
+          <summary><strong>3. Animations</strong><small>Idle · déplacement · attaques</small></summary>
           <div class="creature-appearance-group__body">
+        <section class="creature-animation-chapter" aria-label="Réglages idle">
+          <h3 class="creature-animation-title">REPOS (IDLE) <small>moteur · GIF · combinaison</small></h3>
+          <fieldset data-creature-idle-settings>
+            <legend>Animation au repos, distincte du déplacement et de l’attaque</legend>
+            <div class="grid two">
+              <label>Animation au repos
+                <select data-creature-idle-mode>
+                  <option value="engine">Moteur uniquement (par défaut)</option>
+                  <option value="gif">GIF / animation importée uniquement</option>
+                  <option value="both">Moteur + GIF simultanément</option>
+                </select>
+              </label>
+              <label>Idle — FACE (adversaire)
+                <select data-creature-idle-front-visual data-asset-role="idle"><option value="">Aucune animation</option></select>
+              </label>
+              <label>Idle — DOS (joueur)
+                <select data-creature-idle-back-visual data-asset-role="idle"><option value="">Même animation que face si définie</option></select>
+              </label>
+            </div>
+            <p class="note">Les GIF animés ou atlas WebP idle importés sont joués en boucle seulement au repos. Attaque, déplacement, esquive et KO les interrompent ; ils reprennent au repos. « Moteur + GIF » conserve le mouvement moteur au-dessus de l’animation. Sans animation choisie, l’idle moteur existant est conservé.</p>
+          </fieldset>
+        </section>
         <section class="creature-animation-chapter" aria-label="Réglages déplacement">
         <h3 class="creature-animation-title">DÉPLACEMENT <small>forme · taille · lecture</small></h3>
         <fieldset data-creature-movement-appearance>
@@ -503,7 +525,7 @@
           <div class="creature-appearance-group__body">
         <div class="creator-visual-import" data-creator-visual-importer data-creature-visual-importer>
           <h3>Mes visuels / Importer</h3>
-          <p class="note">PNG, WebP ou JPEG. L’asset est ajouté à la bibliothèque de cette session avec un ID user:… puis utilisable dans les listes Créature / Cast / Projectile / Impact / Zone / Statut / Esquive / Animation. La persistance projet sera un lot séparé.</p>
+          <p class="note">PNG, WebP, JPEG ou GIF (usage Idle). L’asset est ajouté à la bibliothèque de cette session avec un ID user:… puis utilisable dans les listes Créature / Cast / Projectile / Impact / Zone / Statut / Esquive / Animation. La persistance projet sera un lot séparé.</p>
           <div class="grid three">
             <label>Usage
               <select data-creator-visual-role>
@@ -515,6 +537,7 @@
                 <option value="zone">Zone / aura</option>
                 <option value="status">Statut</option>
                 <option value="dodge">Esquive / disparition</option>
+                <option value="idle">Animation idle de créature (GIF ou WebP)</option>
                 <option value="movement">Animation de déplacement de créature</option>
                 <option value="attack">Animation d’attaque de créature</option>
               </select>
@@ -523,7 +546,7 @@
               <input type="text" placeholder="Mon sprite" data-creator-visual-label>
             </label>
             <label>Fichier
-              <input type="file" accept="image/png,image/webp,image/jpeg" data-creator-visual-file>
+              <input type="file" accept="image/png,image/webp,image/jpeg,image/gif" data-creator-visual-file>
             </label>
           </div>
           <button type="button" data-creator-visual-import>Importer dans la session</button>
@@ -1936,7 +1959,7 @@
               <input type="text" placeholder="Mon sprite" data-creator-visual-label>
             </label>
             <label>Fichier
-              <input type="file" accept="image/png,image/webp,image/jpeg" data-creator-visual-file>
+              <input type="file" accept="image/png,image/webp,image/jpeg,image/gif" data-creator-visual-file>
             </label>
           </div>
           <button type="button" class="primary-action" data-creator-visual-import>Importer mon sprite</button>
