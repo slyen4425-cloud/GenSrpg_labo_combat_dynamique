@@ -1,3 +1,7 @@
+## 2026-11-25 — #386 C4 : largeur tactile des cases occupées (NON GREEN)
+- Revue Codex P2 sur 50a8d48 : la mesure de référence est postérieure à la projection des colonnes. 82cb3c9 vérifie désormais le minimum de 43 px sur les boutons natifs visibles et les cases réservées dans la grille personnalisée, sans imposer ce seuil au HUD historique non modifié. Aucun changement moteur, aucun nouveau propriétaire.
+- 7d2ca12 ajoute une sentinelle navigateur mobile : grille sans case vide, boutons réellement trop étroits, refus explicite Appliquer et Tester, restauration par Annuler. Tests non encore certifiés sur le HEAD exact. Ne pas fusionner ni raccorder PWA avant CI complète, revue et preuve 1v1/2v2 PC/tactile. Conserver la branche et PR #396 uniques.
+
 ## 2026-11-25 — #386 C4 : revue, propriété du volet visible (NON GREEN)
 - Revue Codex sur 84b74f1 : P2, sélectionner le dock depuis la palette alors qu'un volet nommé est affiché pouvait écrire silencieusement dans le principal. L'écriture de rectangle/grille utilise maintenant le volet effectivement affiché, quel que soit le mode de sélection. Sentinelle réelle : sélectionner le dock via la palette sur le volet nommé, agrandir et vérifier que le principal reste inchangé. Revue sur HEAD exact requise.
 
