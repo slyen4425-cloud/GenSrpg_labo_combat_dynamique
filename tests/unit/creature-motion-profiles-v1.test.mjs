@@ -94,25 +94,49 @@ test("serpentine idle remains essentially grounded while flying keeps visible ve
   );
 });
 
-test("serpentine alternate idle anchors the base and sways the upper body both ways", async () => {
+test("serpentine idle breathes subtly without rocking or lifting, on both sides", async () => {
   const profile = await json(profilePaths.serpentine);
-  const plan = planAnimation({
-    event: event("idle", "serpentine-actor"),
-    actor: actor("serpentine"),
-    profile
-  });
-
-  assert.equal(profile.idle.swayMode, "alternate");
-  assert.equal(plan.transformOrigin?.y, "94%");
-  assert.deepEqual(
-    plan.segments.map((segment) => segment.label),
-    ["idle-right", "idle-center-1", "idle-left", "idle-home"]
+  const { animationPlanToDomTimeline } = await import(
+    "../../src/adapters/renderer/dom-keyframes.js"
   );
-  assert.ok(plan.segments[0].transform.rotateDeg > 0);
-  assert.ok(plan.segments[2].transform.rotateDeg < 0);
-  for (const segment of plan.segments) {
-    assert.equal(segment.transform.translateX, 0);
-    assert.equal(segment.transform.translateY, 0);
+  assert.equal(profile.idle.swayMode, "single");
+  assert.equal(profile.idle.swayRotate, 0);
+  for (const [view, facing] of [["player", "right"], ["opponent", "left"]]) {
+    const currentActor = normalizeVisualActor({
+      id: "serpentine-" + view,
+      creatureId: "serpentine-creature",
+      profile: "serpentine",
+      asset: "test.webp",
+      view, facing, scale: 1
+    });
+    const plan = planAnimation({
+      event: event("idle", currentActor.id),
+      actor: currentActor,
+      profile
+    });
+    assert.equal(plan.loop, true);
+    assert.deepEqual(plan.transformOrigin, { x: "50%", y: "94%" });
+    assert.deepEqual(plan.segments.map(segment => segment.label),
+      ["idle-out", "idle-home"]);
+    for (const segment of plan.segments) {
+      assert.ok(segment.transform.translateX === 0);
+      assert.ok(segment.transform.translateY === 0);
+      assert.ok(segment.transform.rotateDeg === 0, "no rocking");
+      assert.equal(segment.easing, "ease-in-out");
+    }
+    const peak = plan.segments[0].transform;
+    assert.ok(peak.scaleX >= 1.005 && peak.scaleX <= 1.025);
+    assert.ok(peak.scaleY >= 1.005 && peak.scaleY <= 1.025);
+    assert.equal(plan.segments.at(-1).transform.scaleX, 1);
+    assert.equal(plan.segments.at(-1).transform.scaleY, 1);
+    const timeline = animationPlanToDomTimeline(plan, currentActor);
+    assert.equal(timeline.totalDurationMs, 2800);
+    assert.equal(timeline.options.iterations, Infinity);
+    assert.deepEqual(timeline.keyframes.map(frame => frame.offset), [0, 0.5, 1]);
+    assert.match(timeline.keyframes[1].transform, /rotate\(0deg\) scale\(1\.012, 1\.018\)/);
+    assert.equal(timeline.keyframes[0].transform, timeline.keyframes.at(-1).transform);
+    assert.ok(timeline.shadowKeyframes.every(frame =>
+      frame.transform === timeline.shadowKeyframes[0].transform), "shadow stays grounded");
   }
 });
 
