@@ -163,6 +163,35 @@ def check(context, origin):
     page.wait_for_function("!document.querySelector('[data-capture-preview-host] .squad-card--local-full').dataset.hudBox")
     toolbar.locator("[data-hud-author-undo]").click()
     page.wait_for_function("document.querySelector('[data-capture-preview-host] .squad-card--local-full').dataset.hudBox==='local-status'")
+    # P2 regression: an authored grid with occupied cells only must not
+    # accept a touch layout whose real native skill buttons are too narrow.
+    if profile.startswith("touch"):
+        toolbar.locator("[data-hud-author-palette]").select_option("command-dock")
+        add_column = toolbar.locator("[data-hud-author-add-column]")
+        undo = toolbar.locator("[data-hud-author-undo]")
+        grid = arena.locator("[data-combat-skills]")
+        edits = 0
+        add_column.click()
+        edits += 1
+        while grid.locator("[data-hud-empty-skill]:visible").count():
+            toolbar.locator("[data-hud-author-remove-slot]").click()
+            edits += 1
+            assert edits <= 5, "fixture must have occupied native skill cells"
+        for _ in range(6):
+            add_column.click()
+            edits += 1
+        assert grid.locator("[data-hud-empty-skill]:visible").count() == 0
+        assert grid.locator("button:visible").evaluate_all(
+            "els=>els.some(e=>e.getBoundingClientRect().width<43)"
+        ), "fixture must produce a genuinely narrow native button"
+        for action in ("apply", "test"):
+            toolbar.locator("[data-hud-author-"+action+"]").click()
+            assert "Cases tactiles trop étroites" in toolbar.locator("[data-hud-author-status]").text_content()
+            assert page.locator("[data-hud-author-overlay]").count() == 1
+        for _ in range(edits):
+            undo.click()
+        assert grid.get_attribute("data-hud-grid-columns") is None
+        print("Occupied-only narrow touch grid rejected by Apply and Test", flush=True)
     # Create a real named collapsible panel in the visual editor. It must
     # partition the same native skill nodes, not manufacture alternative buttons.
     group_form = toolbar.locator("[data-hud-author-group-editor]")
