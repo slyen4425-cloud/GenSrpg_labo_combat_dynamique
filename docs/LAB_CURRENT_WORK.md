@@ -1,3 +1,6 @@
+## 2026-11-25 — Import idle : accès atelier privé (NON GREEN)
+- CI 45625007261 : clone du dépôt atelier privé impossible avec le jeton du Combat. Pas de secret ajouté ni de dépôt rendu public. Snapshot de fabrication limité au seul Voltige DOS, provenance atelier aa8c7052035e434277a304ff5fc2ad76b1e9d4e0, scripts de rendu/packaging épinglés, source lue depuis checkout canonique et SHA vérifié. Aucun moteur runtime supplémentaire. CI navigateur shadow-light 45625007538 : contact réel absent, autre exécution sur même SHA verte; ne pas modifier ce domaine hors lot. Rejouer CI exacte.
+
 ## 2026-11-25 — Correction Voltige DOS (NON GREEN)
 - CI 45619829745 bloquée par vrai contrôle de master : ancien WebP 77a16d275409c58d8e0e457b53e46fd289f086cd ≠ PNG canonique a2b244d8c643aa9b2095bf4fd536b3582096c63c, poses visuellement différentes. Ne pas relâcher le contrôle. Atelier indépendant corrigé au SHA aa8c7052035e434277a304ff5fc2ad76b1e9d4e0, nouveau maillage spécifique au PNG. Workflow épingle cette source de fabrication et rend uniquement ce DOS, puis importe 45 GIF déposés inchangés + le nouveau DOS validé techniquement. Ancien ZIP intact, provenance de remplacement enregistrée; Voltige conserve moteur par défaut jusqu'à revue de la nouvelle preview, idem réserves précédentes. Aucune dépendance runtime à l'atelier. CI et publication non encore certifiées.
 

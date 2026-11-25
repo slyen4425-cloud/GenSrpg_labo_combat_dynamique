@@ -35,20 +35,19 @@ jobs:
       - run: python -m pip install Pillow==11.3.0
       - name: Render only corrected Voltige DOS with pinned independent atelier
         run: |
-          git clone --no-checkout https://github.com/slyen4425-cloud/GensRPG-Atelier-Animation.git "$RUNNER_TEMP/atelier"
-          git -C "$RUNNER_TEMP/atelier" checkout --detach aa8c7052035e434277a304ff5fc2ad76b1e9d4e0
           git clone --depth 1 --branch v0.6.1 https://github.com/jaisurya-dev-art/rigby2d.git "$RUNNER_TEMP/rigby2d"
           (cd "$RUNNER_TEMP/rigby2d" && npm ci && npx playwright install --with-deps chromium)
-          cd "$RUNNER_TEMP/atelier"
+          export CANONICAL_ROOT="$PWD/canonical"
+          cd source/scripts/idle-import-build
           PYTHONPATH=scripts python -c 'import render_bestiary_idles as r; c=r.CFG["creatures"]["voltige"]; r.render("voltige","dos",c,c["views"]["dos"])'
       - uses: actions/upload-artifact@v4
         with:
           name: voltige-dos-corrected-preview
-          path: ${{ runner.temp }}/atelier/idle-review/voltige/dos/
+          path: source/scripts/idle-import-build/idle-review/voltige/dos/
       - name: Verify and stage exact GIFs twice
         run: |
-          python source/scripts/import-bestiary-idle-gif-20261125.py canonical report.json "$RUNNER_TEMP/atelier/idle-review/voltige/dos"
-          python source/scripts/import-bestiary-idle-gif-20261125.py canonical report-repeat.json "$RUNNER_TEMP/atelier/idle-review/voltige/dos"
+          python source/scripts/import-bestiary-idle-gif-20261125.py canonical report.json "$PWD/source/scripts/idle-import-build/idle-review/voltige/dos"
+          python source/scripts/import-bestiary-idle-gif-20261125.py canonical report-repeat.json "$PWD/source/scripts/idle-import-build/idle-review/voltige/dos"
           cmp report.json report-repeat.json
           git -C canonical diff --check
           GEN_IDLE_CATALOG="$PWD/canonical/data/assets/catalog/global-visual-assets.v1.json" GEN_IDLE_REPORT="$PWD/report.json" node --test source/tests/unit/bestiary-idle-gif-20261125.test.mjs

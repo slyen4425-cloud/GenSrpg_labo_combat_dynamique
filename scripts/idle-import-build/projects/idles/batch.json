@@ -1,0 +1,274 @@
+{
+  "source": {
+    "repository": "slyen4425-cloud/GenSrpg_labo_combat_dynamique",
+    "ref": "30dbd8b91efd1d18418995ca4a0b5894ec93d4f4",
+    "showcaseRef": "8b53086553941d85f199634213a7d8799a84d721"
+  },
+  "frames": 12,
+  "fps": 12,
+  "margin": 42,
+  "creatures": {
+    "voltige": {
+      "displayName": "Voltige",
+      "morphology": "félin électrique en posture bondissante, crinière et queue",
+      "views": {
+        "dos": {
+          "sourcePath": "assets/library/capture/creatures/voltige/runtime/voltige_player.png",
+          "blob": "a2b244d8c643aa9b2095bf4fd536b3582096c63c",
+          "coordCanvas": 512,
+          "normalizedSize": 400,
+          "hover": 0,
+          "parts": [
+            {
+              "name": "breath",
+              "parent": "root",
+              "pivot": [
+                280,
+                313
+              ],
+              "region": [
+                282,
+                266,
+                76,
+                52
+              ],
+              "feather": 17,
+              "motion": {
+                "sx": 0.011,
+                "sy": 0.021,
+                "dy": 1
+              }
+            },
+            {
+              "name": "head",
+              "parent": "root",
+              "pivot": [
+                409,
+                248
+              ],
+              "region": [
+                [
+                  350,
+                  156
+                ],
+                [
+                  433,
+                  151
+                ],
+                [
+                  482,
+                  187
+                ],
+                [
+                  502,
+                  226
+                ],
+                [
+                  487,
+                  263
+                ],
+                [
+                  450,
+                  276
+                ],
+                [
+                  403,
+                  258
+                ]
+              ],
+              "feather": 15,
+              "motion": {
+                "rot": -1.6,
+                "phase": 0.4
+              }
+            },
+            {
+              "name": "crest",
+              "parent": "head",
+              "pivot": [
+                405,
+                215
+              ],
+              "region": [
+                [
+                  332,
+                  152
+                ],
+                [
+                  354,
+                  98
+                ],
+                [
+                  400,
+                  130
+                ],
+                [
+                  427,
+                  122
+                ],
+                [
+                  452,
+                  157
+                ],
+                [
+                  475,
+                  182
+                ],
+                [
+                  459,
+                  226
+                ],
+                [
+                  400,
+                  224
+                ],
+                [
+                  362,
+                  213
+                ]
+              ],
+              "feather": 13,
+              "motion": {
+                "rot": 2,
+                "phase": 0.8
+              }
+            },
+            {
+              "name": "tail",
+              "parent": "root",
+              "pivot": [
+                220,
+                240
+              ],
+              "region": [
+                [
+                  206,
+                  195
+                ],
+                [
+                  159,
+                  138
+                ],
+                [
+                  110,
+                  105
+                ],
+                [
+                  54,
+                  103
+                ],
+                [
+                  18,
+                  133
+                ],
+                [
+                  11,
+                  183
+                ],
+                [
+                  53,
+                  220
+                ],
+                [
+                  105,
+                  247
+                ],
+                [
+                  153,
+                  286
+                ],
+                [
+                  200,
+                  271
+                ],
+                [
+                  220,
+                  233
+                ]
+              ],
+              "feather": 15,
+              "motion": {
+                "rot": -2.7,
+                "phase": 0.5
+              }
+            },
+            {
+              "name": "tail_tip",
+              "parent": "tail",
+              "pivot": [
+                92,
+                167
+              ],
+              "region": [
+                [
+                  18,
+                  128
+                ],
+                [
+                  59,
+                  107
+                ],
+                [
+                  108,
+                  124
+                ],
+                [
+                  104,
+                  171
+                ],
+                [
+                  122,
+                  200
+                ],
+                [
+                  165,
+                  239
+                ],
+                [
+                  148,
+                  288
+                ],
+                [
+                  87,
+                  264
+                ],
+                [
+                  39,
+                  232
+                ],
+                [
+                  10,
+                  198
+                ]
+              ],
+              "feather": 13,
+              "motion": {
+                "rot": 3,
+                "phase": 1.1
+              }
+            },
+            {
+              "name": "shoulder",
+              "parent": "root",
+              "pivot": [
+                361,
+                282
+              ],
+              "region": [
+                361,
+                282,
+                44,
+                43
+              ],
+              "feather": 14,
+              "motion": {
+                "rot": -1.1,
+                "phase": 0.9
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
