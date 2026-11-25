@@ -106,6 +106,8 @@ def check(context, origin):
     page.locator("[data-active-per-team]").select_option("1")
     page.locator("[data-test-opponent-creature]").first.select_option(species)
     page.wait_for_function("!document.querySelector('[data-editor-test-combat]').disabled")
+    draft_fields = page.locator("[data-creature-id], [data-skill-id], [data-creature-library-select], [data-skill-library-select]")
+    drafts_before = draft_fields.evaluate_all("els=>els.map(e=>e.value)")
     page.locator("[data-hud-layout-preview]").click()
     toolbar = page.locator("[data-hud-author-toolbar]")
     try:
@@ -168,6 +170,7 @@ def check(context, origin):
     page.locator("[data-preview-back-editor]").click()
     assert page.locator("[data-hud-author-overlay]").count() == 0
     assert page.locator("[data-hud-layout-x]").input_value() == "1"
+    assert draft_fields.evaluate_all("els=>els.map(e=>e.value)") == drafts_before, "HUD authoring must not save or replace unrelated drafts"
     print("Native pointer author / undo / test passed",page.viewport_size,flush=True)
     # Apply the real layout controller to the ONE editor template in a visible
     # preview shell. The native author preview mounts this same controller.
