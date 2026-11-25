@@ -103,6 +103,8 @@ def check(context, origin):
       const {mountCaptureHudLayoutPreviewV1}=await import('/src/ui/capture-hud-layout-preview-v1.js');
       const {updateCaptureHudLayoutV1}=await import('/src/contracts/capture-hud-layout-v1.js');
       const layout=createCaptureUniverseDatabaseStoreV1({storage:localStorage}).load(id).database.metadata.combatHudLayoutV1;
+      const {readCaptureUniverseEncounterSourceV1}=await import('/src/adapters/input/capture/capture-universe-encounter-source-v1.js');
+      if(JSON.stringify(readCaptureUniverseEncounterSourceV1({storage:localStorage,universeId:id}).hudLayout)!==JSON.stringify(layout))throw Error('Lost HUD in encounter source');
       const shell=document.querySelector('[data-capture-preview-shell]');
       const host=document.querySelector('[data-capture-preview-host]');
       host.replaceChildren(document.querySelector('[data-capture-preview-template]').content.cloneNode(true));
@@ -114,7 +116,7 @@ def check(context, origin):
       for(const node of root.querySelectorAll('[data-preview-actor-ui="local-2"],[data-preview-actor-ui="opponent-2"]'))node.hidden=true;
       const hp=root.querySelector('.squad-card--local-full');
       const grid=root.querySelector('[data-combat-skills]');
-      for(let i=0;i<5;i++){const b=document.createElement('button');b.className='action-option action-option--skill';b.textContent='Slot '+(i+1);grid.append(b);}
+      for(let i=0;i<5;i++){const b=document.createElement('button');b.className='action-option action-option--skill';b.textContent='Slot '+(i+1);b.dataset.combatHudSkillRole=i===4?'skill-slot-ultimate':'skill-slot-'+(i+1);grid.append(b);}
       const wait=()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done)));
       await wait();const before=hp.getBoundingClientRect();
       let warning='';const mounted=mountCaptureHudLayoutPreviewV1({root,layout,onStatus:m=>warning=m});

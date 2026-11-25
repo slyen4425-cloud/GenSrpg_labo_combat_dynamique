@@ -15,5 +15,6 @@ export function readCaptureUniverseEncounterSourceV1({storage,universeId}={}){
     schema:CAPTURE_SKILL_TRANSFER_V1_SCHEMA,version:1,draft
   }));
   return Object.freeze({statRegistry,progressionRules,
+    ...(project.database.metadata?.combatHudLayoutV1===undefined?{}:{hudLayout:project.database.metadata.combatHudLayoutV1}),
     creatureTransfers:Object.freeze(creatureTransfers),skillTransfers:Object.freeze(skillTransfers)});
 }

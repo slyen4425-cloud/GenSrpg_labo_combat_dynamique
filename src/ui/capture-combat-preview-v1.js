@@ -38,6 +38,8 @@ export async function mountCaptureCombatPreviewV1({
   presentationAssets = null,
   arenaLight = null,
   embeddedBattle = null,
+  hudLayout = undefined,
+  onHudLayoutStatus = undefined,
   onBattleOutcome = null,
   soundtrackProject = SOUNDTRACK_STARTER_CAPTURE_PROJECT_V1,
   soundtrackCatalog = SOUNDTRACK_STARTER_CATALOG_V1,
@@ -93,6 +95,8 @@ export async function mountCaptureCombatPreviewV1({
         visuals,
         nativeCombatSource,
         embeddedBattle,
+        ...(hudLayout===undefined?{}:{hudLayout}),
+        ...(onHudLayoutStatus===undefined?{}:{onHudLayoutStatus}),
         presentationAssets,
         onBattleOutcome:presentBattleOutcome
       }),
