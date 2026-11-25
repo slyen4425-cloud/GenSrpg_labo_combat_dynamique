@@ -8,6 +8,52 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
   let active = null;
   let sourceUrl = null;
   const preparedByUrl = new Map();
+  // The existing appearance owner decodes GIFs only when an authored speed
+  // differs from native. Browsers cannot speed up an <img> GIF with CSS.
+  // Reuse the native frame-player from dom-skill-fx, not a second idle engine.
+  const decodedGifByUrl = new Map();
+  function gifFrames(visual) {
+    if(!visual?.animatedGif || Number(visual.frameSpeedMultiplier??1)===1)
+      return Promise.resolve(null);
+    const url=String(visual.url);
+    if(decodedGifByUrl.has(url)) return decodedGifByUrl.get(url);
+    const promise=(async()=>{
+      const win=image.ownerDocument.defaultView;
+      if(!win?.ImageDecoder || !win?.fetch ||
+        !(await win.ImageDecoder.isTypeSupported?.("image/gif"))) return null;
+      let decoder=null;
+      try {
+        const response=await win.fetch(url);
+        if(!response.ok) return null;
+        decoder=new win.ImageDecoder({data:await response.arrayBuffer(),type:"image/gif"});
+        await decoder.tracks.ready;
+        const count=decoder.tracks.selectedTrack?.frameCount ?? 0;
+        if(!Number.isInteger(count) || count<2 || count>72) return null;
+        const canvas=image.ownerDocument.createElement("canvas");
+        const ctx=canvas.getContext("2d");
+        if(!ctx) return null;
+        const frames=[],durations=[];
+        for(let i=0;i<count;i++){
+          const decoded=await decoder.decode({frameIndex:i,completeFramesOnly:true});
+          const frame=decoded.image;
+          try {
+            canvas.width=frame.displayWidth;
+            canvas.height=frame.displayHeight;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.drawImage(frame,0,0);
+            frames.push(canvas.toDataURL("image/png"));
+            durations.push(Number.isFinite(frame.duration)&&frame.duration>0
+              ? frame.duration/1000 : 83); // WebCodecs uses microseconds.
+          } finally { frame.close(); }
+        }
+        return Object.freeze({frames:Object.freeze(frames),
+          frameDurationsMs:Object.freeze(durations)});
+      } catch { return null; } // Keep original native GIF if WebCodecs is unavailable.
+      finally { decoder?.close?.(); }
+    })();
+    decodedGifByUrl.set(url,promise);
+    return promise;
+  }
   let disposed = false;
   const originalOpacity = image.style.opacity;
   const originalTransform = image.style.transform;
@@ -84,8 +130,10 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
     const record = { node: null, spin: null, frame: null, swapped: false, tintMaskUrl: null };
     active = record;
     const duration = Math.max(1, Number(durationMs) || 1);
-    Promise.resolve(preparedByUrl.get(preparedKey(visual))?.ready).then(frame => {
+    Promise.resolve(preparedByUrl.get(preparedKey(visual))?.ready).then(async frame => {
       if (disposed || active !== record || !frame) return;
+      const decodedGif=await gifFrames(visual);
+      if (disposed || active !== record) return;
       const transition = Number(visual.transitionMs) || 0;
       image.style.transition = transition ? "opacity " + transition + "ms ease" : "";
       collisionModel.setPresentationScale(Number(visual.displayScale) || 1);
@@ -123,9 +171,14 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
       record.tintMaskUrl = frame.maskSource;
       image.style.opacity = "0";
       const playback = applySpriteVisual(sprite, {
-        ...visual, frameCount: frame.count,
-        playbackMode: visual.playbackMode ?? (frame.count > 1 ? "loop" : "once")
-      }, duration);
+        ...visual,
+        ...(decodedGif ? {frames:decodedGif.frames,
+          frameDurationsMs:decodedGif.frameDurationsMs}:{}),
+        frameCount:decodedGif?.frames.length ?? frame.count,
+        playbackMode:visual.playbackMode ?? (frame.count>1 ? "loop" : "once")
+      },duration);
+      if(visual.animatedGif && visual.frameSpeedMultiplier!==1 && !decodedGif)
+        shell.dataset.idleSpeedFallback="native";
       record.frame = playback;
       // Keep the fighter's actual motion transform, collision owner and
       // gameplay coordinates untouched. Only the presentation shell is nudged,
@@ -156,6 +209,6 @@ export function createDomCreatureMovementVisualV1({ motion, image, collisionMode
         ? Object.freeze({ host: active.node, maskUrl: active.tintMaskUrl })
         : Object.freeze({ host: motion, maskUrl: null });
     },
-    dispose() { cancel(); preparedByUrl.clear(); disposed = true; }
+    dispose() { cancel(); preparedByUrl.clear(); decodedGifByUrl.clear(); disposed = true; }
   });
 }

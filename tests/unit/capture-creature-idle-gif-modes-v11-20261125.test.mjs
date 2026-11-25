@@ -5,6 +5,7 @@ import {
   normalizeCreaturePresentationBinding
 } from "../../src/contracts/creature-presentation-binding.js";
 import {normalizeCreatureIdleVisualV1} from "../../src/contracts/creature-presentation-binding-v11.js";
+import {spriteFrameTimingV1} from "../../src/adapters/renderer/dom-skill-fx.js";
 import {createCreatorVisualAssetSessionV1} from "../../src/assets/creator-visual-asset-session-v1.js";
 import {captureEditorAssetMatchesRoleV1,buildHumanCreatureDraftV3} from "../../src/ui/capture-editor-human-v2.js";
 
@@ -54,6 +55,8 @@ test("real editor saves two-view idle selection without reauthoring the existing
   visual:{
    frontAssetId:v.front.assetId,backAssetId:v.back.assetId,iconAssetId:v.icon.assetId,
    idleMode:"both",idleFrontAssetId:"user:idle-front",idleBackAssetId:"user:idle-back",
+   idleFront:{displayScale:1.4,offsetX:12,offsetY:-23,frameSpeedMultiplier:1.5},
+   idleBack:{displayScale:0.85,offsetX:-7,offsetY:18,frameSpeedMultiplier:0.75},
    dodgeAssetId:v.dodge.assetId,dodgeDisplayScale:v.dodge.displayScale,
    dodgeDurationMs:v.dodge.durationMs,dodgeOffsetX:v.dodge.offsetX,dodgeOffsetY:v.dodge.offsetY,
    movementAssetId:v.movement.assetId,movementBackAssetId:v.movementBack.assetId,
@@ -72,7 +75,11 @@ test("real editor saves two-view idle selection without reauthoring the existing
  };
  const draft=buildHumanCreatureDraftV3(fields);
  assert.equal(draft.presentation.version,11);
- assert.deepEqual(draft.presentation.visual.idle,{mode:"both",frontAssetId:"user:idle-front",backAssetId:"user:idle-back"});
+ assert.deepEqual(draft.presentation.visual.idle,{
+   mode:"both",frontAssetId:"user:idle-front",backAssetId:"user:idle-back",
+   front:{displayScale:1.4,offsetX:12,offsetY:-23,frameSpeedMultiplier:1.5},
+   back:{displayScale:0.85,offsetX:-7,offsetY:18,frameSpeedMultiplier:0.75}
+ });
  assert.equal(draft.presentation.visual.movement.assetId,v.movement.assetId);
  assert.equal(draft.presentation.visual.movementBack.assetId,v.movementBack.assetId);
  assert.equal(draft.presentation.visual.rangedAttackBack.assetId,v.rangedAttackBack.assetId);
@@ -82,7 +89,8 @@ test("the native editor and single battle visual controller expose the idle cont
  const html=readFileSync(new URL("../../examples/dom-demo/capture-editor-v2.html",import.meta.url),"utf8");
  const code=readFileSync(new URL("../../src/ui/capture-editor-human-v2.js",import.meta.url),"utf8");
  const demo=readFileSync(new URL("../../src/ui/demo-app.js",import.meta.url),"utf8");
- for(const key of ["data-creature-idle-mode","data-creature-idle-front-visual","data-creature-idle-back-visual"]){
+ for(const key of ["data-creature-idle-mode","data-creature-idle-front-visual","data-creature-idle-back-visual",
+  ..."front back".split(" ").flatMap(view=>["scale","offset-x","offset-y","speed"].map(part=>"data-creature-idle-"+view+"-"+part))]){
   assert.ok(html.includes(key));
   assert.ok(code.includes(key));
  }
@@ -92,4 +100,74 @@ test("the native editor and single battle visual controller expose the idle cont
  assert.match(demo,/idleFxByView/);
  assert.match(demo,/slot\.cancelMovementAppearance\(\)/);
  assert.ok(!demo.includes("rigby2d"));
+});
+
+test("idle FACE and DOS settings are validated without breaking previous V11 exports",()=>{
+ const legacy=normalizeCreatureIdleVisualV1({mode:"gif",frontAssetId:"pack:capture:idle-front"});
+ assert.deepEqual(legacy,{mode:"gif",frontAssetId:"pack:capture:idle-front",backAssetId:null});
+ const settings={displayScale:1.5,offsetX:24,offsetY:-42,frameSpeedMultiplier:2};
+ const current=normalizeCreatureIdleVisualV1({mode:"both",frontAssetId:"pack:capture:idle-front",
+  front:settings,back:{displayScale:1,offsetX:0,offsetY:0,frameSpeedMultiplier:0.5}});
+ assert.deepEqual(current.front,settings);
+ assert.equal(current.back.frameSpeedMultiplier,0.5);
+ for(const bad of [
+  {displayScale:0.05},{offsetX:1000},{offsetY:Infinity},{frameSpeedMultiplier:0},
+  {frameSpeedMultiplier:5},{frameSpeedMultiplier:"fast"},{unexpected:1}]){
+  assert.throws(()=>normalizeCreatureIdleVisualV1({mode:"gif",frontAssetId:"pack:capture:idle-front",front:bad}));
+ }
+});
+test("one battle presentation renderer owns authored idle transforms and frame decoding",()=>{
+ const adapter=readFileSync(new URL("../../src/adapters/input/capture/capture-export-to-native-visual-source-v1.js",import.meta.url),"utf8");
+ const renderer=readFileSync(new URL("../../src/adapters/renderer/dom-creature-movement-visual-v1.js",import.meta.url),"utf8");
+ assert.match(adapter,/frameSpeedMultiplier:settings\?\.frameSpeedMultiplier/);
+ assert.match(adapter,/animatedGif:resource\.mime==="image\/gif"/);
+ assert.match(renderer,/win\.ImageDecoder/);
+ assert.match(renderer,/await gifFrames\(visual\)/);
+ assert.match(renderer,/frameSpeedMultiplier/);
+ assert.match(renderer,/applySpriteVisual\(sprite/);
+ assert.match(renderer,/decodedGifByUrl\.clear\(\)/);
+});
+test("submitted Veuve jaune animation references are preserved in one canonical showcase",()=>{
+ const value=JSON.parse(readFileSync(new URL("../../data/capture/showcase/veuve-jaune.capture-creature-transfer-v1.json",import.meta.url),"utf8"));
+ assert.equal(value.draft.presentation.subjectId,"veuve-jaune");
+ assert.equal(value.draft.presentation.visual.movement.assetId,"pack:capture:creature-veuve-jaune-movement-opponent-5-20261125");
+ assert.equal(value.draft.presentation.visual.movementBack.assetId,"pack:capture:creature-veuve-jaune-movement-player-6-20261125");
+ assert.equal(value.draft.presentation.visual.rangedAttack.assetId,"pack:capture:creature-veuve-jaune-attack-opponent-6-20261125");
+ assert.equal(value.draft.presentation.visual.rangedAttackBack.assetId,"pack:capture:creature-veuve-jaune-attack-player-9-20261125");
+ assert.deepEqual(value.draft.presentation.visual.rangedAttackPlacement.back,{x:0,y:-20});
+ assert.equal(value.draft.presentation.profileId,"serpentine");
+ assert.equal(value.draft.combat.maxHp,110);
+});
+
+test("Dracendre idle binds both original Rigby views without changing four validated action strips",()=>{
+ const d=JSON.parse(readFileSync(new URL("../../data/capture/showcase/crea_dracendre.capture-creature-transfer-v1.json",import.meta.url),"utf8")).draft;
+ assert.equal(d.id,"crea_dracendre");
+ assert.equal(d.presentation.version,11);
+ const visual=d.presentation.visual;
+ assert.deepEqual(visual.idle,{
+  mode:"gif",
+  frontAssetId:"pack:capture:creature-braisombre-idle-opponent-gif-v1",
+  backAssetId:"pack:capture:creature-braisombre-idle-player-gif-v1",
+  front:{displayScale:1,offsetX:0,offsetY:0,frameSpeedMultiplier:1},
+  back:{displayScale:1,offsetX:0,offsetY:0,frameSpeedMultiplier:1}
+ });
+ assert.equal(visual.movement.assetId,"pack:capture:creature-braisombre-movement-face-12-v1");
+ assert.equal(visual.movementBack.assetId,"pack:capture:creature-braisombre-movement-dos-12-v1");
+ assert.equal(visual.rangedAttack.assetId,"pack:capture:creature-braisombre-attack-face-12-v1");
+ assert.equal(visual.rangedAttackBack.assetId,"pack:capture:creature-braisombre-attack-dos-12-v1");
+ assert.deepEqual(normalizeCreaturePresentationBinding(d.presentation).visual.idle,visual.idle);
+});
+
+test("authored unequal GIF delays retain their exact ratios when changing playback speed",()=>{
+ const weighted=spriteFrameTimingV1({frameDurationsMs:[100,900],frameMs:500},2);
+ assert.equal(weighted.totalMs,1000);
+ assert.deepEqual([...weighted.boundaries],[0,0.1,1]);
+ const constant=spriteFrameTimingV1({frameMs:100},2);
+ assert.deepEqual([...constant.boundaries],[0,0.5,1]);
+ // A 2× loop of the authored animation must show 50ms then 450ms,
+ // never two uniformly distributed 250ms poses.
+ const speed=2;
+ const durations=weighted.boundaries.slice(1).map((end,i)=>
+   (end-weighted.boundaries[i])*weighted.totalMs/speed);
+ assert.deepEqual(durations.map(Math.round),[50,450]);
 });

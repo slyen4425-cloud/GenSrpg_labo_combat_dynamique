@@ -2332,9 +2332,30 @@ export function buildHumanCreatureDraftV3(fields) {
   const idleMode = fields?.visual?.idleMode ?? "engine";
   const idleFrontAssetId = optionalText(fields?.visual?.idleFrontAssetId);
   const idleBackAssetId = optionalText(fields?.visual?.idleBackAssetId);
-  const hasIdleSettings = idleMode !== "engine" || idleFrontAssetId !== null || idleBackAssetId !== null;
+  const idleView=(key,label)=>{
+    const input=fields?.visual?.[key] ?? null;
+    if(input==null) return null;
+    const numeric=(value,fallback,name,min,max)=>{
+      const raw=finiteNumber(value??fallback,"Idle "+label+" "+name);
+      if(raw<min || raw>max) throw new RangeError("Idle "+label+" "+name+" : "+min+" à "+max);
+      return raw;
+    };
+    return {
+      displayScale:numeric(input.displayScale,1,"taille",0.25,8),
+      offsetX:numeric(input.offsetX,0,"X",-400,400),
+      offsetY:numeric(input.offsetY,0,"Y",-400,400),
+      frameSpeedMultiplier:numeric(input.frameSpeedMultiplier,1,"vitesse",0.25,4)
+    };
+  };
+  const idleFrontView=idleView("idleFront","FACE"),idleBackView=idleView("idleBack","DOS");
+  const hasCustomIdleView=[idleFrontView,idleBackView].some(v=>
+    v && (v.displayScale!==1 || v.offsetX!==0 || v.offsetY!==0 || v.frameSpeedMultiplier!==1));
+  const hasIdleSettings = idleMode !== "engine" || idleFrontAssetId !== null ||
+    idleBackAssetId !== null || hasCustomIdleView;
   const idleVisual = hasIdleSettings ? {
-    mode:idleMode,frontAssetId:idleFrontAssetId,backAssetId:idleBackAssetId
+    mode:idleMode,frontAssetId:idleFrontAssetId,backAssetId:idleBackAssetId,
+    ...(idleFrontView ? {front:idleFrontView}:{}),
+    ...(idleBackView ? {back:idleBackView}:{})
   } : null;
   const hasAppearanceV8 = (
     (movementScaleByView !== null && (
@@ -4527,6 +4548,14 @@ function writeCreatureRecordFields(
     ["[data-creature-idle-mode]", presentation?.visual?.idle?.mode ?? "engine"],
     ["[data-creature-idle-front-visual]", presentation?.visual?.idle?.frontAssetId ?? ""],
     ["[data-creature-idle-back-visual]", presentation?.visual?.idle?.backAssetId ?? ""],
+    ["[data-creature-idle-front-scale]", presentation?.visual?.idle?.front?.displayScale ?? 1],
+    ["[data-creature-idle-front-offset-x]", presentation?.visual?.idle?.front?.offsetX ?? 0],
+    ["[data-creature-idle-front-offset-y]", presentation?.visual?.idle?.front?.offsetY ?? 0],
+    ["[data-creature-idle-front-speed]", presentation?.visual?.idle?.front?.frameSpeedMultiplier ?? 1],
+    ["[data-creature-idle-back-scale]", presentation?.visual?.idle?.back?.displayScale ?? 1],
+    ["[data-creature-idle-back-offset-x]", presentation?.visual?.idle?.back?.offsetX ?? 0],
+    ["[data-creature-idle-back-offset-y]", presentation?.visual?.idle?.back?.offsetY ?? 0],
+    ["[data-creature-idle-back-speed]", presentation?.visual?.idle?.back?.frameSpeedMultiplier ?? 1],
     ["[data-creature-movement-visual]", presentation?.visual?.movement?.assetId ?? ""],
     ["[data-creature-movement-back-visual]", presentation?.visual?.movementBack?.assetId ?? ""],
     ["[data-creature-movement-mode]", movementEditorSlot?.mode ?? "roll"],
@@ -4758,6 +4787,14 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-idle-mode]", "engine"],
     ["[data-creature-idle-front-visual]", ""],
     ["[data-creature-idle-back-visual]", ""],
+    ["[data-creature-idle-front-scale]", 1],
+    ["[data-creature-idle-front-offset-x]", 0],
+    ["[data-creature-idle-front-offset-y]", 0],
+    ["[data-creature-idle-front-speed]", 1],
+    ["[data-creature-idle-back-scale]", 1],
+    ["[data-creature-idle-back-offset-x]", 0],
+    ["[data-creature-idle-back-offset-y]", 0],
+    ["[data-creature-idle-back-speed]", 1],
     ["[data-creature-movement-visual]", ""],
     ["[data-creature-movement-back-visual]", ""],
     ["[data-creature-movement-mode]", "roll"],
@@ -9995,6 +10032,18 @@ function readCreatureFields(
       idleMode: selectedValue(root, "[data-creature-idle-mode]"),
       idleFrontAssetId: selectedValue(root, "[data-creature-idle-front-visual]"),
       idleBackAssetId: selectedValue(root, "[data-creature-idle-back-visual]"),
+      idleFront: {
+        displayScale: numericValue(root, "[data-creature-idle-front-scale]"),
+        offsetX: numericValue(root, "[data-creature-idle-front-offset-x]"),
+        offsetY: numericValue(root, "[data-creature-idle-front-offset-y]"),
+        frameSpeedMultiplier: numericValue(root, "[data-creature-idle-front-speed]")
+      },
+      idleBack: {
+        displayScale: numericValue(root, "[data-creature-idle-back-scale]"),
+        offsetX: numericValue(root, "[data-creature-idle-back-offset-x]"),
+        offsetY: numericValue(root, "[data-creature-idle-back-offset-y]"),
+        frameSpeedMultiplier: numericValue(root, "[data-creature-idle-back-speed]")
+      },
       movementAssetId: selectedValue(root, "[data-creature-movement-visual]"),
       movementBackAssetId: selectedValue(root, "[data-creature-movement-back-visual]"),
       movementMode: selectedValue(root, "[data-creature-movement-mode]"),

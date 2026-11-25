@@ -107,11 +107,25 @@ function hasSpriteVisual(visual) {
   );
 }
 
+// Source GIFs may contain intentional unequal holds; derive exact cumulative
+// frame boundaries before adjusting the speed of the existing sprite owner.
+export function spriteFrameTimingV1(visual,frameCount) {
+  const size=Math.max(1,Math.floor(Number(frameCount)||1));
+  const custom=Array.isArray(visual?.frameDurationsMs) &&
+    visual.frameDurationsMs.length===size &&
+    visual.frameDurationsMs.every(value=>typeof value==="number"&&Number.isFinite(value)&&value>0);
+  const durations=custom ? visual.frameDurationsMs :
+    Array(size).fill(Math.max(1,Number(visual?.frameMs)||1));
+  const totalMs=durations.reduce((sum,value)=>sum+value,0);
+  let accumulated=0;
+  const boundaries=[0];
+  for(const ms of durations){ accumulated+=ms;boundaries.push(accumulated/totalMs); }
+  return Object.freeze({totalMs,boundaries:Object.freeze(boundaries)});
+}
+
 function visualPlaybackMs(visual, fallbackMs = 1) {
-  if (Array.isArray(visual?.frames) && visual.frames.length > 0) {
-    const frameMs = Math.max(1, Number(visual.frameMs) || 1);
-    return frameMs * visual.frames.length;
-  }
+  if (Array.isArray(visual?.frames) && visual.frames.length > 0)
+    return spriteFrameTimingV1(visual,visual.frames.length).totalMs;
   return Math.max(1, Number(fallbackMs) || 1);
 }
 
@@ -169,6 +183,7 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
       node.style.backgroundImage = "none";
       const frameAnimations = [];
       const frameCount = frames.length;
+      const frameTiming=spriteFrameTimingV1(visual,frameCount);
 
       frames.forEach((url, index) => {
         const frame =
@@ -180,8 +195,8 @@ export function applySpriteVisual(node, visual, durationMs, animate = defaultAni
         frame.style.opacity = "0";
         node.append(frame);
 
-        const start = index / frameCount;
-        const end = (index + 1) / frameCount;
+        const start = frameTiming.boundaries[index];
+        const end = frameTiming.boundaries[index+1];
         const epsilon = Math.min(
           0.001,
           1 / (frameCount * 100)

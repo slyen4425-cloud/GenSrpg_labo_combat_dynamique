@@ -407,8 +407,32 @@
               <label>Idle — DOS (joueur)
                 <select data-creature-idle-back-visual data-asset-role="idle"><option value="">Même animation que face si définie</option></select>
               </label>
+              <label>Taille idle FACE (×)
+                <input data-creature-idle-front-scale type="number" min="0.25" max="8" step="0.05" value="1">
+              </label>
+              <label>Taille idle DOS (×)
+                <input data-creature-idle-back-scale type="number" min="0.25" max="8" step="0.05" value="1">
+              </label>
+              <label>Décalage X idle FACE
+                <input data-creature-idle-front-offset-x type="number" min="-400" max="400" step="1" value="0">
+              </label>
+              <label>Décalage X idle DOS
+                <input data-creature-idle-back-offset-x type="number" min="-400" max="400" step="1" value="0">
+              </label>
+              <label>Décalage Y idle FACE
+                <input data-creature-idle-front-offset-y type="number" min="-400" max="400" step="1" value="0">
+              </label>
+              <label>Décalage Y idle DOS
+                <input data-creature-idle-back-offset-y type="number" min="-400" max="400" step="1" value="0">
+              </label>
+              <label>Vitesse idle FACE (×)
+                <input data-creature-idle-front-speed type="number" min="0.25" max="4" step="0.25" value="1">
+              </label>
+              <label>Vitesse idle DOS (×)
+                <input data-creature-idle-back-speed type="number" min="0.25" max="4" step="0.25" value="1">
+              </label>
             </div>
-            <p class="note">Les GIF animés ou atlas WebP idle importés sont joués en boucle seulement au repos. Attaque, déplacement, esquive et KO les interrompent ; ils reprennent au repos. « Moteur + GIF » conserve le mouvement moteur au-dessus de l’animation. Sans animation choisie, l’idle moteur existant est conservé.</p>
+            <p class="note">Les GIF animés ou atlas WebP idle importés sont joués en boucle seulement au repos. Attaque, déplacement, esquive et KO les interrompent ; ils reprennent au repos. « Moteur + GIF » conserve le mouvement moteur au-dessus de l’animation. Taille, X/Y et vitesse se règlent indépendamment pour FACE et DOS (1× = vitesse native). Sans animation choisie, l’idle moteur existant est conservé.</p>
           </fieldset>
         </section>
         <section class="creature-animation-chapter" aria-label="Réglages déplacement">

@@ -214,11 +214,17 @@ export function adaptCaptureExportToNativeVisualSourceV1({
     if (!asset || asset.mediaType !== "image") throw new RangeError("unknown idle image: "+id);
     const resource=asset.resource ?? {};
     const count=Math.max(1,Number(resource.frameCount) || 1);
+    const settings=view==="player" ? idle.back : idle.front;
     return Object.freeze({
       assetId:id,url:assetUrl(id),mode:"sprite",
       frameCount:count,
-      frameMs:Math.max(80,Number(resource.frameMs) || 120),
-      playbackMode:"loop",displayScale:1,rotationTurns:0,transitionMs:0
+      frameMs:Math.max(20,Number(resource.frameMs) || 83),
+      playbackMode:"loop",
+      animatedGif:resource.mime==="image/gif",
+      displayScale:settings?.displayScale ?? 1,
+      offsetX:settings?.offsetX ?? 0,offsetY:settings?.offsetY ?? 0,
+      frameSpeedMultiplier:settings?.frameSpeedMultiplier ?? 1,
+      rotationTurns:0,transitionMs:0
     });
   }
 

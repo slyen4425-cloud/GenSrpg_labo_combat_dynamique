@@ -22,8 +22,19 @@ test("both exact author uploads are archived, active points to the newest fully 
   assert.equal(sha(historical),"cdc0d760eddc2558ff8542ec975e5b699af1bd7f41c34ef1ca2b0c76a6ed398e");
   const latest=withoutNewDefaultDodgeV1(json(active)),previous=json(variant);
   assert.deepEqual(latest.draft.presentation.visual.movementScaleByView,{player:1.7,opponent:1.7});
+  // Published Dracendre Rigby idles are additive V11 presentation only.
+  assert.equal(latest.draft.presentation.version,11);
+  assert.deepEqual(latest.draft.presentation.visual.idle,{
+    mode:"gif",
+    frontAssetId:"pack:capture:creature-braisombre-idle-opponent-gif-v1",
+    backAssetId:"pack:capture:creature-braisombre-idle-player-gif-v1",
+    front:{displayScale:1,offsetX:0,offsetY:0,frameSpeedMultiplier:1},
+    back:{displayScale:1,offsetX:0,offsetY:0,frameSpeedMultiplier:1}
+  });
+  delete latest.draft.presentation.visual.idle;
+  latest.draft.presentation.version=previous.draft.presentation.version;
   latest.draft.presentation.visual.movementScaleByView=previous.draft.presentation.visual.movementScaleByView;
-  assert.deepEqual(latest,previous,"archived Dracendre unchanged except the 2 newer author movement scales");
+  assert.deepEqual(latest,previous,"Dracendre V11 adds only idle, preserving archived author data and movement scales");
   assert.equal(presets.filter(p=>p===active).length,1);
   const original=json(base),repeat=json(variant);
   assert.deepEqual(repeat.draft.presentation.audio.movement,
@@ -39,7 +50,7 @@ test("actual editor importer accepts V9 Dragon front/back movement and attack sp
   assert.equal(transfer.kind,"creature");
   const c=transfer.value;
   assert.equal(c.draft.id,"crea_dracendre");
-  assert.equal(c.draft.presentation.version,9);
+  assert.equal(c.draft.presentation.version,11);
   assert.equal(c.draft.presentation.profileId,"flying");
   const v=c.draft.presentation.visual;
   assert.equal(v.movement.assetId,"pack:capture:creature-braisombre-movement-face-12-v1");
