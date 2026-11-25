@@ -34,10 +34,14 @@ def check(context, origin):
     page.on("pageerror", lambda error: print("Chromium:", error, flush=True))
     page.goto(origin + "/data/capture/monster-capture-stat-registry.v1.json")
     project = "unv_" + uuid.uuid4().hex[:16]
+    profile = "desktop-1v1" if page.evaluate("matchMedia('(min-width:1100px) and (min-height:650px) and (pointer:fine)').matches") else "touch-1v1"
+    # Existing authored V1 data is a migration fixture, not a second editor.
+    legacy_layout = {"schema":"capture-hud-layout-v1", "profiles":{profile:{"local-status":{"dx":1,"dy":-1,"scale":100}}}}
+    fixture = {**database, "metadata":{"combatHudLayoutV1":legacy_layout}}
     page.evaluate("""async ([id,database])=>{
       const {createCaptureUniverseDatabaseStoreV1}=await import('/src/contracts/capture-universe-database-store-v1.js');
       createCaptureUniverseDatabaseStoreV1({storage:localStorage}).create(id,database);
-    }""", [project, database])
+    }""", [project, fixture])
     species = record["draft"]["id"]
     url = origin + "/examples/dom-demo/bestiary.html?universe=" + project
     page.goto(url + "#" + species, wait_until="domcontentloaded")
@@ -83,21 +87,7 @@ def check(context, origin):
     editor_url = origin + "/examples/dom-demo/capture-editor-v2.html?tab=combat&universe=" + project
     page.goto(editor_url, wait_until="domcontentloaded")
     page.locator("[data-combat-hud-layout-editor] > summary").click()
-    page.locator("[data-combat-hud-layout-editor] > details > summary").click()
-    profile = "desktop-1v1" if page.evaluate("matchMedia('(min-width:1100px) and (min-height:650px) and (pointer:fine)').matches") else "touch-1v1"
-    page.locator("[data-hud-layout-profile]").select_option(profile)
-    page.locator("[data-hud-layout-role]").select_option("local-status")
-    page.locator("[data-hud-layout-x]").fill("1")
-    page.locator("[data-hud-layout-y]").fill("-1")
-    page.get_by_role("button", name="Enregistrer le catalogue de cet univers").click()
-    page.wait_for_function("document.querySelector('[data-capture-universe-project-editor] [role=status]').textContent.includes('révision 3')")
-    page.goto(editor_url, wait_until="domcontentloaded")
-    page.locator("[data-combat-hud-layout-editor] > summary").click()
-    page.locator("[data-combat-hud-layout-editor] > details > summary").click()
-    page.locator("[data-hud-layout-profile]").select_option(profile)
-    page.locator("[data-hud-layout-role]").select_option("local-status")
-    assert page.locator("[data-hud-layout-x]").input_value() == "1"
-    assert page.locator("[data-hud-layout-y]").input_value() == "-1"
+    assert page.locator("[data-hud-layout-profile], [data-hud-layout-x], [data-hud-layout-scale]").count() == 0, "obsolete numeric editor must not exist in the DOM"
     # Native pointer editing, not synthetic style injection. A real editor launch
     # creates the native arena, real species and existing runtime, in author mode.
     page.get_by_role("button", name="Dérouler Équipes du test", exact=True).click()
@@ -218,15 +208,16 @@ def check(context, origin):
 
     page.locator("[data-preview-back-editor]").click()
     assert page.locator("[data-hud-author-overlay]").count() == 0
-    assert page.locator("[data-hud-layout-x]").input_value() == "1"
     assert draft_fields.evaluate_all("els=>els.map(e=>e.value)") == drafts_before, "HUD authoring must not save or replace unrelated drafts"
     # Save the same universe metadata; reload and read through the encounter
     # source, which is also consumed by the embedded native combat.
     page.get_by_role("button", name="Enregistrer le catalogue de cet univers").click()
-    page.wait_for_function("document.querySelector('[data-capture-universe-project-editor] [role=status]').textContent.includes('révision 4')")
+    page.wait_for_function("document.querySelector('[data-capture-universe-project-editor] [role=status]').textContent.includes('révision 3')")
     stored = page.evaluate("""async ([id,profile])=>{
       const {readCaptureUniverseEncounterSourceV1}=await import('/src/adapters/input/capture/capture-universe-encounter-source-v1.js');
-      return readCaptureUniverseEncounterSourceV1({storage:localStorage,universeId:id}).hudLayout.groups[profile][0];
+      const layout=readCaptureUniverseEncounterSourceV1({storage:localStorage,universeId:id}).hudLayout;
+      if(layout.profiles[profile]['local-status'].dx!==1||layout.profiles[profile]['local-status'].dy!==-1)throw Error('Visual placement lost during save');
+      return layout.groups[profile][0];
     }""", [project,profile])
     assert stored["label"] == "Attaques rapides" and stored["foldable"] and stored["roles"] == ["skill-slot-1","skill-slot-2"], stored
     page.goto(editor_url, wait_until="domcontentloaded")

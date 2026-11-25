@@ -184,7 +184,6 @@ import {
 } from "../adapters/input/capture/capture-database-transfer-v1.js";
 import {normalizeCaptureDatabaseV1} from '../contracts/capture-database-v1.js';
 import {normalizeCaptureHudLayoutV1} from '../contracts/capture-hud-layout-v1.js';
-import {mountCaptureHudLayoutEditorV1} from './capture-hud-layout-editor-v1.js';
 import {
   buildCaptureEditorDatabaseV1,
   applyCaptureTransferPlanToEditorStateV1,
@@ -11265,8 +11264,6 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     );
   }
 
-  const hudLayoutEditor=mountCaptureHudLayoutEditorV1({host:root.querySelector('[data-combat-hud-layout-editor]'),
-    initialLayout:hudLayout,listen,onChange(value){hudLayout=value;hudLayoutAuthored=true;}});
   mountSkillSpriteRecolorSlidersV1(root, listen);
 
   const markerLibraryController = mountCaptureMarkerLibraryV1({
@@ -14821,7 +14818,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
 
         if(plan.action==='replace-database'){
           hudLayout=normalizeCaptureHudLayoutV1(transfer.value.metadata?.combatHudLayoutV1);
-          hudLayoutAuthored=transfer.value.metadata?.combatHudLayoutV1!==undefined;hudLayoutEditor?.set(hudLayout);
+          hudLayoutAuthored=transfer.value.metadata?.combatHudLayoutV1!==undefined;
         }
         newSkillDraftMode=false;
         refreshEditorAfterTransferV1({
@@ -15362,7 +15359,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       heading?.scrollIntoView({block:"start"});
     },
     readHudLayout(){return hudLayout;},
-    writeHudLayout(value){hudLayout=normalizeCaptureHudLayoutV1(value);hudLayoutAuthored=true;hudLayoutEditor?.set(hudLayout);},
+    writeHudLayout(value){hudLayout=normalizeCaptureHudLayoutV1(value);hudLayoutAuthored=true;},
     readDatabase({includePendingSpecies = false} = {}){
       if(disposed)throw new Error("Éditeur fermé");
       if (includePendingSpecies && creatureDirty) {

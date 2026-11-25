@@ -97,3 +97,13 @@ test('group gesture moves all roles as one in screen space and preserves relativ
  const scaled=captureHudGroupPointerValuesV1({...args,mode:'resize',deltaX:160});
  assert.equal(scaled[1].value.scale,125);assert.equal(scaled[0].value.scale,114);
 });
+
+// The legacy numeric editor must not be a second authoring surface.
+import {readFile} from 'node:fs/promises';
+test('only the visual HUD author remains reachable',async()=>{
+ const html=await readFile(new URL('../../examples/dom-demo/capture-editor-v2.html',import.meta.url),'utf8');
+ const source=await readFile(new URL('../../src/ui/capture-editor-human-v2.js',import.meta.url),'utf8');
+ assert.match(html,/data-hud-layout-preview/);
+ assert.doesNotMatch(html,/data-hud-layout-(?:profile|role|x|y|scale|reset-role|reset-profile)\b/);
+ assert.doesNotMatch(source,/mountCaptureHudLayoutEditorV1|hudLayoutEditor/);
+});
