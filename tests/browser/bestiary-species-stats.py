@@ -218,6 +218,21 @@ def check(context, origin):
     assert arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.every(e=>e.dataset.nativeHudProof==='same')")
     authored_dock=dock.bounding_box()
     print("Native independent panel geometry",page.viewport_size,original_dock,authored_dock,flush=True)
+    print("Native geometry details",arena.evaluate("""root=>Object.fromEntries(['.hud__energy','[data-combat-team-menu]','[data-combat-team-summary]','[data-combat-dodge]'].map(s=>{
+      const n=root.querySelector(s),r=n?.getBoundingClientRect(),style=n&&getComputedStyle(n);
+      return [s,{rect:r?.toJSON(),open:n?.open,display:style?.display,position:style?.position}];
+    }))"""),flush=True)
+    # Widening may consume the space previously occupied by dodge. The
+    # builder must let the author rearrange it before applying the draft.
+    dodge=arena.locator("[data-combat-dodge]")
+    if dodge.is_visible():
+        db=dodge.bounding_box()
+        intersects=(db["x"]+db["width"]>authored_dock["x"] and db["x"]<authored_dock["x"]+authored_dock["width"]
+                    and db["y"]+db["height"]>authored_dock["y"] and db["y"]<authored_dock["y"]+authored_dock["height"])
+        if intersects:
+            toolbar.locator("[data-hud-author-palette]").select_option("dodge")
+            gesture(db["x"]+db["width"]/2,db["y"]+db["height"]/2,authored_dock["x"]-db["x"]-db["width"]-12,0)
+            assert dodge.bounding_box()["x"]+dodge.bounding_box()["width"] < authored_dock["x"]
     toolbar.locator("[data-hud-author-page-select]").select_option("main:0")
     assert not arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
     assert arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()

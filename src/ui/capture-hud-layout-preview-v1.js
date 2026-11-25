@@ -54,17 +54,28 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
  }
  function report(message){if(message!==last){last=message;onStatus(message);}}
  const relative=(r,a)=>({left:r.left-a.left,top:r.top-a.top,right:r.right-a.left,bottom:r.bottom-a.top,width:r.width,height:r.height});
+ // Chromium may expose nonzero rectangles for descendants of a closed
+ // <details> (its content-visibility box). They are not visible HUD targets.
+ // Only the native summary is part of the collapsed region.
+ function visible(el){
+  if(el.closest('[hidden],[data-hud-page-hidden]'))return false;
+  for(let parent=el.closest('details:not([open])');parent;parent=parent.parentElement?.closest('details:not([open])')){
+   if(el!==parent&&!parent.querySelector(':scope > summary')?.contains(el))return false;
+  }
+  const style=win.getComputedStyle(el);
+  return style.display!=='none'&&style.visibility!=='hidden'&&el.getClientRects().length>0;
+ }
  function measure(a,independent=[]){
   const result={};
   for(const [key,node] of Object.entries(nodes)){
-   const r=node.getBoundingClientRect();if(node.hidden||r.width<=0||r.height<=0)continue;
+   const r=node.getBoundingClientRect();if(!visible(node)||r.width<=0||r.height<=0)continue;
    const elements=[...(node.matches('button,summary,select')?[node]:[]),...node.querySelectorAll('button,summary,select')];
    const belongs=el=>!independent.some(role=>role!==key&&nodes[role]&&node.contains(nodes[role])&&nodes[role].contains(el));
-   const targets=elements.filter(el=>belongs(el)&&!el.hidden&&el.getClientRects().length).map(el=>{
+   const targets=elements.filter(el=>belongs(el)&&visible(el)).map(el=>{
     const rect=el.getBoundingClientRect(),hit=(root.ownerDocument.elementsFromPoint?.(rect.x+rect.width/2,rect.y+rect.height/2)??[root.ownerDocument.elementFromPoint(rect.x+rect.width/2,rect.y+rect.height/2)]).find(el=>el&&!el.closest('[data-hud-author-overlay],[data-hud-author-toolbar]'));
     return {...relative(rect,a),hit:!!hit&&(hit===el||el.contains(hit))};
    }).filter(r=>r.width>0&&r.height>0);
-   const panels=[...node.querySelectorAll('details[open] > :not(summary)')].filter(belongs).map(el=>relative(el.getBoundingClientRect(),a)).filter(r=>r.width>0&&r.height>0);
+   const panels=[...node.querySelectorAll('details[open] > :not(summary)')].filter(el=>belongs(el)&&visible(el)).map(el=>relative(el.getBoundingClientRect(),a)).filter(r=>r.width>0&&r.height>0);
    const bounds=[relative(r,a),...targets,...panels];
    result[key]={left:Math.min(...bounds.map(b=>b.left)),top:Math.min(...bounds.map(b=>b.top)),
     right:Math.max(...bounds.map(b=>b.right)),bottom:Math.max(...bounds.map(b=>b.bottom)),targets,
