@@ -160,8 +160,34 @@ def check(context, origin):
     page.wait_for_function("!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
     toolbar.locator("[data-hud-author-undo]").click()
     page.wait_for_function("!!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
+    # Create a real named collapsible panel in the visual editor. It must
+    # partition the same native skill nodes, not manufacture alternative buttons.
+    group_form = toolbar.locator("[data-hud-author-group-editor]")
+    group_form.locator("summary").click()
+    group_form.locator("[data-hud-author-group-name]").fill("Attaques rapides")
+    group_form.locator("[data-hud-author-group-foldable]").check()
+    group_form.locator('input[value="skill-slot-1"]').check()
+    group_form.locator('input[value="skill-slot-2"]').check()
+    original_roles = arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.map(e=>e.dataset.combatHudSkillRole)")
+    arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.forEach(e=>e.dataset.nativeHudProof='same')")
+    group_form.locator("[data-hud-author-group-save]").click()
+    assert "Groupe enregistré" in toolbar.locator("[data-hud-author-status]").text_content(), toolbar.locator("[data-hud-author-status]").text_content()
+    group_form.locator("[data-hud-author-group-move]").click()
+    page.wait_for_function("document.querySelector('[data-hud-author-selection]').textContent==='Attaques rapides'")
+    assert arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
+    assert not arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()
+    assert arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.map(e=>e.dataset.combatHudSkillRole)") == original_roles
+    assert arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.every(e=>e.dataset.nativeHudProof==='same')")
+    toolbar.locator("[data-hud-author-page-select]").select_option("main:0")
+    assert not arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
+    assert arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()
     toolbar.locator("[data-hud-author-test]").click()
     assert page.locator("[data-hud-author-overlay]").count() == 0
+    nav = arena.locator("[data-hud-skill-page-nav]")
+    nav.select_option("hud-group-1:0")
+    page.wait_for_function("document.querySelector('[data-combat-hud-skill-role=skill-slot-1]').getBoundingClientRect().width>0")
+    assert not arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()
+    nav.select_option("main:0")
     assert arena.is_visible(), "test must retain the same arena"
     actor.focus()
     page.keyboard.press("Enter")
@@ -171,16 +197,39 @@ def check(context, origin):
     assert page.locator("[data-hud-author-overlay]").count() == 0
     assert page.locator("[data-hud-layout-x]").input_value() == "1"
     assert draft_fields.evaluate_all("els=>els.map(e=>e.value)") == drafts_before, "HUD authoring must not save or replace unrelated drafts"
-    print("Native pointer author / undo / test passed",page.viewport_size,flush=True)
+    # Save the same universe metadata; reload and read through the encounter
+    # source, which is also consumed by the embedded native combat.
+    page.get_by_role("button", name="Enregistrer le catalogue de cet univers").click()
+    page.wait_for_function("document.querySelector('[data-capture-universe-project-editor] [role=status]').textContent.includes('révision 4')")
+    stored = page.evaluate("""async ([id,profile])=>{
+      const {readCaptureUniverseEncounterSourceV1}=await import('/src/adapters/input/capture/capture-universe-encounter-source-v1.js');
+      return readCaptureUniverseEncounterSourceV1({storage:localStorage,universeId:id}).hudLayout.groups[profile][0];
+    }""", [project,profile])
+    assert stored["label"] == "Attaques rapides" and stored["foldable"] and stored["roles"] == ["skill-slot-1","skill-slot-2"], stored
+    page.goto(editor_url, wait_until="domcontentloaded")
+    page.locator("[data-combat-hud-layout-editor] > summary").click()
+    page.wait_for_function("!document.querySelector('[data-editor-test-combat]').disabled")
+    page.get_by_role("button", name="Dérouler Équipes du test", exact=True).click()
+    page.locator("[data-test-local-team-size]").select_option("1")
+    page.locator("[data-test-opponent-team-size]").select_option("1")
+    page.locator("[data-active-per-team]").select_option("1")
+    page.locator("[data-hud-layout-preview]").click()
+    toolbar.wait_for(state="visible")
+    toolbar.locator("[data-hud-author-page-select]").wait_for(state="visible")
+    toolbar.locator("[data-hud-author-page-select]").select_option("hud-group-1:0")
+    assert arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
+    page.locator("[data-preview-back-editor]").click()
+    print("Native pointer author / undo / test / group save and reload passed",page.viewport_size,flush=True)
     # Apply the real layout controller to the ONE editor template in a visible
     # preview shell. The native author preview mounts this same controller.
     geometry = page.evaluate("""async ([id,profile])=>{
       const {createCaptureUniverseDatabaseStoreV1}=await import('/src/contracts/capture-universe-database-store-v1.js');
       const {mountCaptureHudLayoutPreviewV1}=await import('/src/ui/capture-hud-layout-preview-v1.js');
       const {updateCaptureHudLayoutV1}=await import('/src/contracts/capture-hud-layout-v1.js');
-      const layout=createCaptureUniverseDatabaseStoreV1({storage:localStorage}).load(id).database.metadata.combatHudLayoutV1;
+      const storedLayout=createCaptureUniverseDatabaseStoreV1({storage:localStorage}).load(id).database.metadata.combatHudLayoutV1;
+      const {groups,...layout}=storedLayout;
       const {readCaptureUniverseEncounterSourceV1}=await import('/src/adapters/input/capture/capture-universe-encounter-source-v1.js');
-      if(JSON.stringify(readCaptureUniverseEncounterSourceV1({storage:localStorage,universeId:id}).hudLayout)!==JSON.stringify(layout))throw Error('Lost HUD in encounter source');
+      if(JSON.stringify(readCaptureUniverseEncounterSourceV1({storage:localStorage,universeId:id}).hudLayout)!==JSON.stringify(storedLayout))throw Error('Lost HUD in encounter source');
       const shell=document.querySelector('[data-capture-preview-shell]');
       const host=document.querySelector('[data-capture-preview-host]');
       host.replaceChildren(document.querySelector('[data-capture-preview-template]').content.cloneNode(true));

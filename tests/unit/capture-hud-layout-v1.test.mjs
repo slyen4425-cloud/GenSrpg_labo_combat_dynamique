@@ -56,3 +56,44 @@ test('visual pointer edits write the same normalized offsets, nested skills comp
  const result=updateCaptureHudLayoutV1(undefined,'desktop-1v1','dodge',captureHudPointerValueV1(args));
  assert.deepEqual(normalizeCaptureHudLayoutV1(JSON.parse(JSON.stringify(result))),result);
 });
+
+import {editCaptureHudGroupV1,captureHudSkillPagesV1,captureHudRoleLabelV1} from '../../src/contracts/capture-hud-layout-v1.js';
+import {captureHudGroupPointerValuesV1} from '../../src/ui/capture-hud-visual-author-v1.js';
+test('named groups round trip in the same metadata, with profile isolation and stable generated ids',()=>{
+ const empty=normalizeCaptureHudLayoutV1(),profile='touch-1v1';
+ const first=editCaptureHudGroupV1(empty,profile,null,{label:' Attaques ',roles:['skill-slot-1','skill-slot-5'],foldable:true});
+ assert.deepEqual(first.groups[profile][0],{id:'hud-group-1',label:'Attaques',roles:['skill-slot-1','skill-slot-5'],foldable:true});
+ assert.equal(Object.isFrozen(first.groups[profile][0].roles),true);
+ assert.deepEqual(normalizeCaptureHudLayoutV1(JSON.parse(JSON.stringify(first))),first);
+ assert.throws(()=>editCaptureHudGroupV1(first,profile,null,{label:'Doublon',roles:['skill-slot-1'],foldable:false}));
+ assert.throws(()=>editCaptureHudGroupV1(first,profile,null,{label:'PV masqués',roles:['local-status'],foldable:true}));
+ assert.throws(()=>editCaptureHudGroupV1(first,profile,null,{label:'Double mouvement',roles:['command-dock','skill-slot-2'],foldable:false}));
+ assert.equal(captureHudSkillRoleV1([{id:'slot-5',skillId:'new'}],'new'),'skill-slot-5');
+ assert.equal(captureHudRoleLabelV1('skill-slot-5'),'Compétence 5');
+ const offset=updateCaptureHudLayoutV1(first,profile,'skill-slot-5',{dx:1,dy:2,scale:100});
+ assert.equal(offset.profiles[profile]['skill-slot-5'].dx,1);
+ const second=editCaptureHudGroupV1(offset,'desktop-2v2',null,{label:'Défense',roles:['dodge'],foldable:false});
+ assert.deepEqual(resetCaptureHudProfileV1(second,'desktop-2v2'),offset);
+ assert.deepEqual(editCaptureHudGroupV1(first,profile,'hud-group-1',null),empty);
+});
+test('foldable and overflow views use all and only supplied native slots, without modifying progression',()=>{
+ const slots=['skill-slot-1','skill-slot-2','skill-slot-3','skill-slot-4','skill-slot-ultimate'];
+ assert.deepEqual(captureHudSkillPagesV1(slots),[]);
+ const future=[...slots,'skill-slot-5','skill-slot-6','skill-slot-7'];
+ const group={id:'hud-group-1',label:'Attaques',roles:['skill-slot-1','skill-slot-5','skill-slot-6','skill-slot-7','skill-slot-8'],foldable:true};
+ const pages=captureHudSkillPagesV1(future,[group]);
+ assert.equal(pages.filter(p=>p.groupId===group.id).length,2);
+ assert.ok(pages.every(p=>p.roles.length<=3));
+ assert.deepEqual(pages.flatMap(p=>p.roles).sort(),future.slice().sort());
+ assert.equal(pages.flatMap(p=>p.roles).includes('skill-slot-8'),false);
+ assert.deepEqual(captureHudSkillPagesV1(future).flatMap(p=>p.roles),future);
+});
+test('group gesture moves all roles as one in screen space and preserves relative scale bounds',()=>{
+ const members=[{role:'dodge',value:{dx:2,dy:0,scale:100},parentScale:1},
+  {role:'skill-slot-1',value:{dx:0,dy:0,scale:110},parentScale:1.25}];
+ const args={members,width:800,height:450,elementWidth:160,deltaX:80,deltaY:-45};
+ const moved=captureHudGroupPointerValuesV1({...args,mode:'move'});
+ assert.deepEqual(moved.map(x=>x.value),[{dx:12,dy:-10,scale:100},{dx:8,dy:-8,scale:110}]);
+ const scaled=captureHudGroupPointerValuesV1({...args,mode:'resize',deltaX:160});
+ assert.equal(scaled[1].value.scale,125);assert.equal(scaled[0].value.scale,114);
+});
