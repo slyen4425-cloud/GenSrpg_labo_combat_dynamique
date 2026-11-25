@@ -1,3 +1,7 @@
+## 2026-11-25 — #386 jalon visuel : preuve réelle
+- PR #393. Édition sur le montage natif existant, runtime/IA en attente jusqu'au bouton Tester. PointerEvent, sélection du bloc ou compétence, poignée, groupe dock, historique, reset. Retour à la même métadonnée et contrôle géométrique propriétaire. Ancien panneau numérique replié, aucun doublon de DOM ou stockage.
+- Test Chromium de la vraie page auteur en PC/tactile : lancer le montage, reset, drag, undo, tester sans remonter l'arène, retour. Les tests avancés ouvrent désormais leur volet. Aucun changement au contrat loadout (4 + ultime) ; jalon de groupes personnalisables reste à faire après GREEN. Statut NON GREEN tant que les tests ne sont pas terminés.
+
 ## 2026-11-25 — #386 reprise auteur : éditeur HUD visuel natif (C2, NON GREEN)
 - START c02be408963fed0ce8e70e028ae463f3719e1010, CI 45555910228, Pages 45555909754 réussis. Branche temporaire `work/lab-combat-hud-visual-builder-386-20261125`, checkpoint `checkpoint/lab-start-combat-hud-visual-builder-386-20261125`. Lire charte, roadmap, journal et architecture. Aucun autre éditeur HUD actif à créer.
 - Remplacer l'aperçu passif par un mode auteur du même montage natif, sélection, glisser/dimensionner par pointeur, annuler, réinitialiser, tester sans quitter. Le profil est celui de l'écran réel et du format natif sélectionné. Le formulaire numérique existant reste seulement dans un volet avancé, synchronisé à la même métadonnée univers.
