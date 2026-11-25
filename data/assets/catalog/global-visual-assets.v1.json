@@ -14,9 +14,9 @@
     "workBranchesAreNotRuntimeSources": true
   },
   "counts": {
-    "assets": 507,
+    "assets": 553,
     "icons": 217,
-    "sprites": 257,
+    "sprites": 303,
     "fx": 2,
     "portraits": 26,
     "backgrounds": 5,
@@ -17232,6 +17232,1570 @@
         "frameCount": 9,
         "frameMs": 90,
         "playbackMode": "once"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veldra-idle-opponent-gif-v1",
+      "label": "Veldra — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veldra/animations/idle/opponent/veldra_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veldra-idle-player-gif-v1",
+      "label": "Veldra — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veldra/animations/idle/player/veldra_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-vipfer-idle-opponent-gif-v1",
+      "label": "Vipfer — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/vipfer/animations/idle/opponent/vipfer_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-vipfer-idle-player-gif-v1",
+      "label": "Vipfer — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/vipfer/animations/idle/player/vipfer_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veuve-jaune-idle-opponent-gif-v1",
+      "label": "Veuve jaune — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veuve_jaune/animations/idle/opponent/veuve_jaune_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-veuve-jaune-idle-player-gif-v1",
+      "label": "Veuve jaune — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/veuve_jaune/animations/idle/player/veuve_jaune_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-raiiven-idle-opponent-gif-v1",
+      "label": "Raiiven — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/raiiven/animations/idle/opponent/raiiven_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-raiiven-idle-player-gif-v1",
+      "label": "Raiiven — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/raiiven/animations/idle/player/raiiven_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-sylvorne-idle-opponent-gif-v1",
+      "label": "Sylvorne — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/sylvorne/animations/idle/opponent/sylvorne_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-sylvorne-idle-player-gif-v1",
+      "label": "Sylvorne — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/sylvorne/animations/idle/player/sylvorne_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-ailevent-idle-opponent-gif-v1",
+      "label": "Ailevent — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/ailevent/animations/idle/opponent/ailevent_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-ailevent-idle-player-gif-v1",
+      "label": "Ailevent — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/ailevent/animations/idle/player/ailevent_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-loup-volcanique-idle-opponent-gif-v1",
+      "label": "Loup volcanique — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/loup_volcanique/animations/idle/opponent/loup_volcanique_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-loup-volcanique-idle-player-gif-v1",
+      "label": "Loup volcanique — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/loup_volcanique/animations/idle/player/loup_volcanique_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-idle-opponent-gif-v1",
+      "label": "Polocendre — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/cheval-de-feu/animations/idle/opponent/polocendre_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-cheval-de-feu-idle-player-gif-v1",
+      "label": "Polocendre — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/cheval-de-feu/animations/idle/player/polocendre_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pieuvre-idle-opponent-gif-v1",
+      "label": "Krakenor — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/pieuvre/animations/idle/opponent/krakenor_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pieuvre-idle-player-gif-v1",
+      "label": "Krakenor — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/pieuvre/animations/idle/player/krakenor_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-gorille-des-glaces-idle-opponent-gif-v1",
+      "label": "Gorice — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/gorille_des_glaces/animations/idle/opponent/gorice_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-gorille-des-glaces-idle-player-gif-v1",
+      "label": "Gorice — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/gorille_des_glaces/animations/idle/player/gorice_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-guepe-cybernetique-idle-opponent-gif-v1",
+      "label": "Freclairions — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/guepe_cybernetique/animations/idle/opponent/freclairions_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-guepe-cybernetique-idle-player-gif-v1",
+      "label": "Freclairions — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/guepe_cybernetique/animations/idle/player/freclairions_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-requin-idle-opponent-gif-v1",
+      "label": "Sélachombre — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/requin/animations/idle/opponent/selachombre_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-requin-idle-player-gif-v1",
+      "label": "Sélachombre — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/requin/animations/idle/player/selachombre_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-chat-mystique-idle-opponent-gif-v1",
+      "label": "Noctigriffe — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/chat_mystique/animations/idle/opponent/noctigriffe_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-chat-mystique-idle-player-gif-v1",
+      "label": "Noctigriffe — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/chat_mystique/animations/idle/player/noctigriffe_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-renard-magique-dore-idle-opponent-gif-v1",
+      "label": "Lumilo — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/renard_magique_dore/animations/idle/opponent/lumilo_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-renard-magique-dore-idle-player-gif-v1",
+      "label": "Lumilo — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/renard_magique_dore/animations/idle/player/lumilo_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-golem-moussu-idle-opponent-gif-v1",
+      "label": "Moussados — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/golem_moussu/animations/idle/opponent/moussados_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-golem-moussu-idle-player-gif-v1",
+      "label": "Moussados — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/golem_moussu/animations/idle/player/moussados_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-plante-carnivore-idle-opponent-gif-v1",
+      "label": "Gemmor — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/plante_carnivore/animations/idle/opponent/gemmor_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-plante-carnivore-idle-player-gif-v1",
+      "label": "Gemmor — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/plante_carnivore/animations/idle/player/gemmor_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-maraileron-idle-opponent-gif-v1",
+      "label": "Maraileron — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/maraileron/animations/idle/opponent/maraileron_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-maraileron-idle-player-gif-v1",
+      "label": "Maraileron — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/maraileron/animations/idle/player/maraileron_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-heriplante-idle-opponent-gif-v1",
+      "label": "Grainou — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/heriplante/animations/idle/opponent/grainou_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-heriplante-idle-player-gif-v1",
+      "label": "Grainou — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/heriplante/animations/idle/player/grainou_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-scarabacier-idle-opponent-gif-v1",
+      "label": "Scarabacier — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/scarabacier/animations/idle/opponent/scarabacier_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-scarabacier-idle-player-gif-v1",
+      "label": "Scarabacier — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/scarabacier/animations/idle/player/scarabacier_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-venombre-idle-opponent-gif-v1",
+      "label": "Venombre — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/venombre/animations/idle/opponent/venombre_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-venombre-idle-player-gif-v1",
+      "label": "Venombre — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/venombre/animations/idle/player/venombre_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-voltige-idle-opponent-gif-v1",
+      "label": "Voltige — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/voltige/animations/idle/opponent/voltige_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-voltige-idle-player-gif-v1",
+      "label": "Voltige — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/voltige/animations/idle/player/voltige_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pourpre-idle-opponent-gif-v1",
+      "label": "Vyrâme — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_pourpre/animations/idle/opponent/vyrame_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-pourpre-idle-player-gif-v1",
+      "label": "Vyrâme — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/creature_pourpre/animations/idle/player/vyrame_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-renard-lunaire-idle-opponent-gif-v1",
+      "label": "Kitsune Lunaire — idle FACE (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "opponent"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/renard_lunaire/animations/idle/opponent/kitsune_lunaire_idle_face.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
+      },
+      "compatibility": {
+        "uses": [
+          "combat",
+          "capture",
+          "editor"
+        ]
+      }
+    },
+    {
+      "id": "pack:capture:creature-renard-lunaire-idle-player-gif-v1",
+      "label": "Kitsune Lunaire — idle DOS (GIF)",
+      "assetType": "sprite",
+      "mediaType": "image",
+      "category": "creature",
+      "tags": [
+        "capture",
+        "creature",
+        "idle",
+        "animated",
+        "player"
+      ],
+      "source": {
+        "scope": "pack",
+        "packId": "capture",
+        "author": "GenSRPG / Rigby2D",
+        "license": "project-internal"
+      },
+      "resource": {
+        "file": "capture/creatures/renard_lunaire/animations/idle/player/kitsune_lunaire_idle_dos.gif",
+        "format": "animated-image",
+        "mime": "image/gif",
+        "frameCount": 1,
+        "playbackMode": "loop"
       },
       "compatibility": {
         "uses": [

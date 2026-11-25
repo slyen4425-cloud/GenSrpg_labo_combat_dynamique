@@ -20,9 +20,9 @@ test("Veuve jaune: four real validated WebP strips, original models untouched, e
  const meta=JSON.parse((await load(dir+"veuve_jaune.meta.json")).toString("utf8"));
  const provenance=JSON.parse((await load(dir+"veuve_jaune.animations.provenance.json")).toString("utf8"));
  assert.equal(catalog.storage.branch,"global-assets");
- assert.equal(catalog.counts.assets,507);
- assert.equal(catalog.counts.sprites,257);
- assert.equal(catalog.assets.length,507);
+ assert.equal(catalog.counts.assets,553);
+ assert.equal(catalog.counts.sprites,303);
+ assert.equal(catalog.assets.length,553);
  assert.equal(new Set(catalog.assets.map(a=>a.id)).size,507);
  assert.equal(meta.id,"veuve_jaune");
  assert.deepEqual(meta.views,{
