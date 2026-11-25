@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Import the four exact author-deposited GIF archives into the existing canonical catalog."""
+"""Import the four author archives; replace only the obsolete Voltige DOS via native Rigby2D."""
 import hashlib, io, json, re, sys
 from pathlib import Path
 from zipfile import ZipFile
@@ -12,13 +12,16 @@ HASHES = [
  "8b625f190ffda73749f112c865a21d8c6dbd45d9efac83f2ec5df3458269e4ab",
  "340005bef076400728ef2cab44f2ab50859062d51e68032d1776d1f4067a4dff"]
 SPECS = {"veldra":"Veldra_crea","vipfer":"Vipfer","veuve_jaune":"veuve-jaune","raiiven":"raiiven","sylvorne":"crea_sylvorne","ailevent":"crea_ailevent","loup_volcanique":"crea-loup","polocendre":"polocendre","krakenor":"crea_mer_3","gorice":"gorice","freclairions":"crea_foudrillon","selachombre":"crea_selachombre","noctigriffe":"crea_ombre_2","lumilo":"crea_lumilo","moussados":"crea_mossback","gemmor":"crea_crys_2","maraileron":"crea_maraileron","grainou":"crea_nat_1","scarabacier":"crea_scar_2","venombre":"crea_tox_2","voltige":"crea_voltik","vyrame":"crea_vyrame","kitsune_lunaire":"kitsune_lunaire"}
-RESERVES = {"grainou","scarabacier","gemmor"}
+RESERVES = {"grainou","scarabacier","gemmor","voltige"}
+CORRECTION_REV = "aa8c7052035e434277a304ff5fc2ad76b1e9d4e0"
+OLD_VOLTIGE = "77a16d275409c58d8e0e457b53e46fd289f086cd"
+NEW_VOLTIGE = "a2b244d8c643aa9b2095bf4fd536b3582096c63c"
 def sha(b): return hashlib.sha256(b).hexdigest()
 def gitsha(b): return hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()
 def save(path,obj):
     path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+"\n",encoding="utf8")
-def run(root,report):
+def run(root,report,correction):
     catfile=root/CAT
     cat=json.loads(catfile.read_text())
     assert cat["storage"]["branch"]=="global-assets"
@@ -47,13 +50,24 @@ def run(root,report):
                 portrait=known[portrait_id]
                 portrait_path=portrait["resource"]["file"]
                 master=(root/"assets/library"/portrait_path).read_bytes()
-                assert gitsha(master)==m["sourceBlob"],(key,side,portrait_path,"master changed; review required")
+                source_blob=m["sourceBlob"]
+                raw=z.read(m["file"])
+                provenance={}
+                if (key,side)==("voltige","dos"):
+                    assert source_blob==OLD_VOLTIGE and gitsha(master)==NEW_VOLTIGE
+                    fixed=json.loads((correction/"manifest.json").read_text())
+                    assert fixed["creature"]=="voltige" and fixed["view"]=="dos" and fixed["sourceBlob"]==NEW_VOLTIGE
+                    assert fixed["frame01_exact"] and fixed["frames"]==12 and fixed["engine"]=="Rigby2D 0.6.1"
+                    provenance={"supersededGifSha256":sha(raw),"supersededSourceBlob":source_blob,"atelierRevision":CORRECTION_REV}
+                    raw=(correction/"preview.gif").read_bytes()
+                    source_blob=NEW_VOLTIGE
+                assert gitsha(master)==source_blob,(key,side,portrait_path,"master changed; review required")
                 base=re.sub(r"-(opponent|player)-(01|v1)$","",portrait_id)
                 assert base!=portrait_id and base.startswith("pack:capture:creature-")
                 asset_id=f"{base}-idle-{role}-gif-v1"
                 folder=Path(portrait_path).parent.parent
                 rel=(folder/"animations"/"idle"/role/f"{key}_idle_{side}.gif").as_posix()
-                raw=z.read(m["file"]); margins=[]
+                margins=[]
                 with Image.open(io.BytesIO(raw)) as im:
                     assert im.format=="GIF" and im.size==(512,512) and im.n_frames==12 and im.info.get("loop")==0
                     for i in range(12):
@@ -72,7 +86,7 @@ def run(root,report):
                 pair=pairs.setdefault(key,{"showcase":SPECS[key],"mode":"engine" if key in RESERVES else "gif"})
                 assert slot+"AssetId" not in pair
                 pair[slot+"AssetId"]=asset_id
-                records.append({"creature":key,"view":side,"id":asset_id,"file":rel,"sourceArchive":archive,"sourceArchiveSha256":digest,"sourceBlob":m["sourceBlob"],"gifSha256":sha(raw),"minMargin":min(margins),"realFrames":12,"visualReserve":key in RESERVES})
+                records.append({"creature":key,"view":side,"id":asset_id,"file":rel,"sourceArchive":archive,"sourceArchiveSha256":digest,"sourceBlob":source_blob,**provenance,"gifSha256":sha(raw),"minMargin":min(margins),"realFrames":12,"visualReserve":key in RESERVES})
     assert set(pairs)==expected and len(records)==46 and len({r["id"] for r in records})==46
     assert all({"frontAssetId","backAssetId"}<=p.keys() for p in pairs.values())
     assert len(pending) in (0,46),"partial import requires review"
@@ -89,5 +103,5 @@ def run(root,report):
             new=re.sub(r"(catalog\.counts\.sprites\s*,\s*)"+str(old_sprites)+r"\b",lambda m:m[1]+str(old_sprites+46),new)
             if new!=old:path.write_text(new)
     save(report,{"schema":"bestiary-idle-import-v1","items":records,"bindings":pairs})
-    print("PASS: 46 exact GIFs, 23 pairs; source hashes and margins verified; no legacy media replaced")
-if __name__=="__main__":run(Path(sys.argv[1]),Path(sys.argv[2]))
+    print("PASS: 45 deposited GIFs + 1 corrected native Voltige DOS, 23 pairs; source hashes and margins verified; no legacy media replaced")
+if __name__=="__main__":run(Path(sys.argv[1]),Path(sys.argv[2]),Path(sys.argv[3]))
