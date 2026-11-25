@@ -362,7 +362,10 @@ export function mountCaptureCombatRosterPanelV1({
     dispose(){
       panel.removeEventListener("click",onClick);
       enemyPanel?.removeEventListener("click",onEnemyClick);
-      allyStrip?.remove();enemyStrip?.remove();
+      // Remove only the mounted projection; keep the native summary label and
+      // countdown. replaceChildren is also the panel's existing mount API.
+      if(allyStrip)summary.replaceChildren(...Array.from(summary.children).filter(node=>node!==allyStrip));
+      if(enemyStrip)enemySummary.replaceChildren(...Array.from(enemySummary.children).filter(node=>node!==enemyStrip));
       memberRefs.clear();enemyRefs.clear();
     }
   });
