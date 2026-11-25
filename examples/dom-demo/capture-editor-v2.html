@@ -2525,7 +2525,22 @@
     </button>
     <div data-hud-author-toolbar hidden class="capture-hud-author-toolbar" aria-label="Aménagement du combat">
       <span data-hud-author-profile></span><span data-hud-author-selection>Choisis un élément</span>
-      <button type="button" data-hud-author-group>Déplacer le groupe</button>
+      <button type="button" data-hud-author-group>Bloc commandes</button>
+      <select data-hud-author-page-select aria-label="Volet affiché" hidden></select>
+      <details data-hud-author-group-editor>
+        <summary>Groupes / volets</summary>
+        <div class="hud-author-group-fields">
+          <label>Groupe <select data-hud-author-group-select></select></label>
+          <label>Nom <input data-hud-author-group-name maxlength="40" placeholder="Ex. Attaques"></label>
+          <label><input type="checkbox" data-hud-author-group-foldable> Volet repliable (compétences uniquement)</label>
+          <div data-hud-author-group-roles class="hud-author-group-roles"></div>
+          <div class="hud-author-group-actions">
+            <button type="button" data-hud-author-group-save>Enregistrer</button>
+            <button type="button" data-hud-author-group-move>Déplacer ensemble</button>
+            <button type="button" data-hud-author-group-remove>Retirer le groupe</button>
+          </div>
+        </div>
+      </details>
       <button type="button" data-hud-author-undo>Annuler</button>
       <button type="button" data-hud-author-reset>Réinitialiser l’élément</button>
       <button type="button" data-hud-author-test>Tester la disposition</button>
