@@ -81,6 +81,7 @@ export function adaptCaptureCombatExportStackV1(input) {
     skills,
     skillIdsByActor,
     skillIdsByCreature: Object.freeze(Object.fromEntries(exported.creatures.map(creature => [creature.id, creature.skillIds]))),
+    hudSkillSlotsByCreature: Object.freeze(Object.fromEntries(exported.creatures.filter(c=>Array.isArray(c.metadata?.hudSkillSlots)).map(c=>[c.id,c.metadata.hudSkillSlots]))),
     skillPresentations
   });
 }

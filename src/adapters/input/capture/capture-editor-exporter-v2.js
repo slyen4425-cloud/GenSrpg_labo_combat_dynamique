@@ -266,6 +266,8 @@ export function exportCaptureEditorDraftsToCombatExportV2(input) {
         ...creature,
         metadata: {
           ...creature.metadata,
+          // Derived presentation projection of the same validated loadout.
+          hudSkillSlots: loadoutByCreatureId.get(draft.id).slots,
           editor: {
             ...creature.metadata.editor,
             linkedSkillIds: draft.skillIds

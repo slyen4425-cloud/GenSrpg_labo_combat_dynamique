@@ -1,3 +1,13 @@
+import {CAPTURE_STANDARD_SKILL_SLOT_IDS,CAPTURE_ULTIMATE_SKILL_SLOT_ID} from './capture-active-skill-loadout-v1.js';
+export const CAPTURE_HUD_SKILL_ROLES_V1=Object.freeze(Object.fromEntries(
+ [...CAPTURE_STANDARD_SKILL_SLOT_IDS,CAPTURE_ULTIMATE_SKILL_SLOT_ID].map((id,i)=>[
+  'skill-'+id,id===CAPTURE_ULTIMATE_SKILL_SLOT_ID?'Compétence ultime':'Compétence '+(i+1)
+ ])));
+export function captureHudSkillRoleV1(slots,skillId){
+ const slot=Array.isArray(slots)?slots.find(s=>s?.skillId===skillId):null;
+ const role=slot?'skill-'+slot.id:null;
+ return role&&Object.hasOwn(CAPTURE_HUD_SKILL_ROLES_V1,role)?role:null;
+}
 // Optional authored presentation data only. No skill, fighter or runtime rule.
 export const CAPTURE_HUD_LAYOUT_SCHEMA_V1='capture-hud-layout-v1';
 export const CAPTURE_HUD_PROFILES_V1=Object.freeze(['desktop-1v1','desktop-2v2','touch-1v1','touch-2v2']);
@@ -8,7 +18,8 @@ export const CAPTURE_HUD_ROLES_V1=Object.freeze({
  'opponent-reserves':'Réserves adverses',
  'opponent-skills':'Capacités adverses',
  'command-dock':'Capacités, énergie et rappel',
- 'dodge':'Esquive / défense'
+ 'dodge':'Esquive / défense',
+ ...CAPTURE_HUD_SKILL_ROLES_V1
 });
 const plain=(v)=>v!==null&&typeof v==='object'&&!Array.isArray(v);
 const exact=(v,keys,label)=>{
@@ -66,17 +77,18 @@ export function validateCaptureHudGeometryV1({baseline,proposed,width,height,tou
   if(!after)return 'Contrôle masqué : '+role;
   if(outside(after,width,height)>outside(before,width,height)+1)return 'Hors arène : '+role;
   if(overlap(after,center)>overlap(before,center)+4)return 'Zone centrale protégée : '+role;
-  if(touch){
-   const a=before.targets??[],b=after.targets??[];
-   if(a.length!==b.length)return 'Commandes tactiles modifiées : '+role;
-   for(let i=0;i<a.length;i++){
-    if(b[i].width+1<Math.min(44,a[i].width)||b[i].height+1<Math.min(44,a[i].height))
-     return 'Commande tactile trop petite : '+role;
-   }
+  const a=before.targets??[],b=after.targets??[];
+  if(a.length!==b.length)return 'Commandes masquées : '+role;
+  for(let i=0;i<a.length;i++){
+   if(a[i].hit===true&&b[i].hit===false)return 'Commande recouverte : '+role;
+   if(touch&&(b[i].width+1<Math.min(44,a[i].width)||b[i].height+1<Math.min(44,a[i].height)))
+    return 'Commande tactile trop petite : '+role;
   }
  }
  for(let i=0;i<roles.length;i++)for(let j=i+1;j<roles.length;j++){
   const a=roles[i],b=roles[j];
+  // The dock intentionally contains its own slots; compare sibling buttons.
+  if(baseline[a].parentRole===b||baseline[b].parentRole===a)continue;
   if(overlap(proposed[a],proposed[b])>overlap(baseline[a],baseline[b])+4)
    return 'Chevauchement : '+a+' / '+b;
  }
