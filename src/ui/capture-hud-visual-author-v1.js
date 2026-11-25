@@ -89,7 +89,9 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   refreshPages();if(groupEditor.open&&draftProfile!==profile())refreshGroups();
   $('[data-hud-author-undo]').disabled=!history.length;
   $('[data-hud-author-reset]').disabled=!selectedRoles().length;
-  $('[data-hud-author-group]').disabled=!role?.startsWith('skill-');
+  $('[data-hud-author-group]').disabled=role==='command-dock';
+  const grid=actual('command-dock').grid??{columns:5,slots:5};
+  $('[data-hud-author-grid-count]').textContent=grid.slots+' cases · '+grid.columns+' colonnes';
   const r=selectionBounds(),a=arena.getBoundingClientRect();
   const valid=!!r;
   outline.hidden=!valid;
@@ -139,7 +141,7 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   if(g.box){
    const box=captureHudBoxGestureV1(args);
    if(JSON.stringify(box)===JSON.stringify(actual('command-dock').box??g.box))return;
-   if(apply(updateCaptureHudLayoutV1(readLayout(),g.profile,'command-dock',{box})))g.changed=true;
+   if(apply(updateCaptureHudLayoutV1(readLayout(),g.profile,'command-dock',{box,...(actual('command-dock').grid?{grid:actual('command-dock').grid}:{})})))g.changed=true;
    return;
   }
   // Groups containing a real region must not accidentally feed its rectangle to
@@ -154,6 +156,19 @@ export function mountCaptureHudVisualAuthorV1({root,toolbar,hudOwner,readLayout,
   if(g.changed)history.push(g.before);if(overlay.hasPointerCapture(g.id))overlay.releasePointerCapture(g.id);schedule();}
  listen(overlay,'pointerup',end);listen(overlay,'pointercancel',end);listen(overlay,'lostpointercapture',end);
  listen($('[data-hud-author-group]'),'click',()=>{groupId=null;role='command-dock';schedule();});
+ function changeGrid(field,delta){
+  const before=readLayout(),node=hudOwner.elements()['command-dock'];
+  if(!node)return;
+  const value=actual('command-dock'),grid={...(value.grid??{columns:5,slots:5})};
+  grid[field]=clamp(grid[field]+delta,1,field==='columns'?12:48);
+  const box=value.box??captureHudBoxFromRectsV1(node.getBoundingClientRect(),arena.getBoundingClientRect());
+  const candidate=updateCaptureHudLayoutV1(before,profile(),'command-dock',{box,grid});
+  if(apply(candidate)){history.push(before);groupId=null;role='command-dock';schedule();}
+ }
+ for(const [selector,field,delta] of [
+  ['[data-hud-author-add-slot]','slots',1],['[data-hud-author-remove-slot]','slots',-1],
+  ['[data-hud-author-add-column]','columns',1],['[data-hud-author-remove-column]','columns',-1]
+ ])listen($(selector),'click',()=>changeGrid(field,delta));
  listen(pageSelect,'change',()=>{if(!hudOwner.showPage(pageSelect.value))status.textContent='Volet indisponible dans cette disposition';schedule();});
  listen(groupEditor,'toggle',()=>{if(groupEditor.open)refreshGroups();});
  listen(groupSelect,'change',loadGroupDraft);

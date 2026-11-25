@@ -46,6 +46,10 @@ export function normalizeCaptureHudBoxV1(raw){
  if(x+w>1000||y+h>1000)throw new RangeError('Région hors arène');
  return Object.freeze({x,y,w,h});
 }
+export function normalizeCaptureHudGridV1(raw){
+ exact(raw,['columns','slots'],'Grille HUD');
+ return Object.freeze({columns:integer(raw.columns,1,12,'Colonnes'),slots:integer(raw.slots,1,48,'Cases')});
+}
 export function captureHudBoxFromRectsV1(rect,arena){
  const unit=CAPTURE_HUD_BOX_UNITS_V1;
  const bound=(v,min,max)=>Math.max(min,Math.min(max,Math.round(v)));
@@ -78,9 +82,9 @@ export function normalizeCaptureHudLayoutV1(raw){
   for(const [role,value] of Object.entries(roles)){
    if(value?.box!==undefined){
     // A real region replaces the previous transform for this role. Never both.
-    exact(value,['box'],'Région HUD');
+    exact(value,['box','grid'],'Région HUD');
     if(role!=='command-dock')throw new RangeError('Région non prise en charge : '+role);
-    normalized[role]=Object.freeze({box:normalizeCaptureHudBoxV1(value.box)});
+    normalized[role]=Object.freeze({box:normalizeCaptureHudBoxV1(value.box),...(value.grid?{grid:normalizeCaptureHudGridV1(value.grid)}:{})});
     continue;
    }
    exact(value,['dx','dy','scale'],'Réglage HUD');
@@ -149,18 +153,19 @@ export function editCaptureHudGroupV1(raw,profile,id,value){
 // A viewport page is only a presentation of *supplied* native controls.
 // With no configured panel and at most five controls, preserve the historic row.
 // A selector occupies two columns, leaving three touch-sized skill cells.
-export function captureHudSkillPagesV1(roles,groups=[]){
+export function captureHudSkillPagesV1(roles,groups=[],grid=null){
  const folded=groups.filter(group=>group.foldable&&group.roles.some(role=>roles.includes(role)));
- if(!folded.length&&roles.length<=5)return [];
+ const capacity=grid?normalizeCaptureHudGridV1(grid).slots:3;
+ if(!folded.length&&roles.length<=(grid?capacity:5))return [];
  const assigned=new Set(folded.flatMap(group=>group.roles));
  const buckets=[{id:'main',label:'Principal',roles:roles.filter(role=>!assigned.has(role))},
   ...folded.map(group=>({id:group.id,label:group.label,roles:roles.filter(role=>group.roles.includes(role))}))];
  return buckets.flatMap(bucket=>{
-  const count=Math.max(1,Math.ceil(bucket.roles.length/3));
+  const count=Math.max(1,Math.ceil(bucket.roles.length/capacity));
   return Array.from({length:count},(_,index)=>({
    id:bucket.id+':'+index,groupId:bucket.id,
    label:bucket.label+(count>1?' '+(index+1)+'/'+count:''),
-   roles:bucket.roles.slice(index*3,index*3+3)
+   roles:bucket.roles.slice(index*capacity,index*capacity+capacity)
   }));
  });
 }

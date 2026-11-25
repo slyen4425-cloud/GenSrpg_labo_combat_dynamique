@@ -125,3 +125,15 @@ test('real region dimensions are independent, bounded, and replace legacy transf
  assert.throws(()=>updateCaptureHudLayoutV1(after,profile,'command-dock',{box:grown,scale:110}));
  assert.deepEqual(captureHudBoxGestureV1({...args,edge:'move',deltaX:999,deltaY:999}),{x:750,y:750,w:250,h:250});
 });
+
+test('authored grid capacity replaces fixed pagination without creating gameplay actions',()=>{
+ const profile='desktop-1v1',box={x:500,y:600,w:490,h:390},grid={columns:4,slots:8};
+ const layout=updateCaptureHudLayoutV1(undefined,profile,'command-dock',{box,grid});
+ assert.deepEqual(normalizeCaptureHudLayoutV1(JSON.parse(JSON.stringify(layout))),layout);
+ const skills=['skill-slot-1','skill-slot-2','skill-slot-3','skill-slot-4','skill-slot-ultimate'];
+ assert.deepEqual(captureHudSkillPagesV1(skills,[],grid),[]);
+ const group={id:'hud-group-1',label:'Attaques',roles:skills.slice(0,4),foldable:true};
+ assert.equal(captureHudSkillPagesV1(skills,[group],grid).length,2);
+ assert.deepEqual(captureHudSkillPagesV1(skills,[group],grid).flatMap(p=>p.roles).sort(),skills.slice().sort());
+ assert.throws(()=>updateCaptureHudLayoutV1(layout,profile,'command-dock',{box,grid:{columns:0,slots:8}}));
+});

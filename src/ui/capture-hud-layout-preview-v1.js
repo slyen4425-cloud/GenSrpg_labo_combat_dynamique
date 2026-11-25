@@ -71,7 +71,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   const a=arena.getBoundingClientRect();if(a.width<=0||a.height<=0)return false;
   const desktop=win.matchMedia(desktopQuery).matches,profile=profileKey();
   const values=normalized.profiles[profile]??{};
-  pages.sync(normalized.groups?.[profile]??[]);
+  pages.sync(normalized.groups?.[profile]??[],values['command-dock']?.grid??null);
   const options=pages.options();
   if(!options.length&&!Object.keys(values).length){report('');return true;}
   // Compare the native dock against the projected page without treating
@@ -84,7 +84,7 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
   function applyCurrent(){
    restore();
    const baseline=measure(a);
-   if(native){
+   if(native&&!values['command-dock']?.box){
     const error=validateCaptureHudGeometryV1({baseline:native,proposed:topOnly(baseline),width:a.width,height:a.height,touch:!desktop});
     if(error)return error;
    }
@@ -101,6 +101,13 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
     node.style.setProperty('translate',a.width*value.dx/100+'px '+a.height*value.dy/100+'px');
     node.style.setProperty('scale',String(value.scale/100));
     node.style.setProperty('transform-origin','center');
+   }
+   const dock=nodes['command-dock'],grid=arena.querySelector('[data-combat-skills]');
+   if(values['command-dock']?.box&&dock&&grid){
+    const box=dock.getBoundingClientRect(),content=grid.getBoundingClientRect();
+    // Reject if the actual grid or its contents cannot fit the authored rectangle.
+    if(content.left<box.left-1||content.right>box.right+1||content.top<box.top-1||content.bottom>box.bottom+1||
+       grid.scrollHeight>grid.clientHeight+2||grid.scrollWidth>grid.clientWidth+2)return 'Agrandis le volet pour accueillir ses cases';
    }
    const nav=pages.navigation();
    if(nav){
