@@ -108,7 +108,10 @@ def check(context, origin):
     page.wait_for_function("!document.querySelector('[data-editor-test-combat]').disabled")
     page.locator("[data-hud-layout-preview]").click()
     toolbar = page.locator("[data-hud-author-toolbar]")
-    toolbar.wait_for(state="visible")
+    try:
+        toolbar.wait_for(state="visible")
+    except Exception as error:
+        raise AssertionError("HUD author launch failed: " + page.locator("[data-editor-status]").text_content()) from error
     arena = page.locator("[data-capture-preview-host] [data-combat-arena]")
     hp = arena.locator(".squad-card--local-full")
     hp.wait_for(state="visible")
