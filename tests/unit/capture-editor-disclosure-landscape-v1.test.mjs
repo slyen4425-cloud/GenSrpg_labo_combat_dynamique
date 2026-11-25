@@ -117,7 +117,7 @@ test("fullscreen request stays on the Tester en combat user gesture path before 
     click
   );
   const launch = source.indexOf(
-    "await session.launch()",
+    "await session.launch({hudAuthoring:hudAuthoringRequested})",
     click
   );
 
