@@ -134,12 +134,18 @@ export function mountCaptureHudLayoutPreviewV1({root,layout,onStatus=()=>{},auth
     }
    }
    const dock=nodes['command-dock'],grid=arena.querySelector('[data-combat-skills]');
+   // The grid has already been projected when baseline is measured. Enforce
+   // the authored touch-width floor on every visible native or reserved cell,
+   // not just empty cells, without changing the historical unedited layout.
+   if(!desktop&&grid&&(values['command-dock']?.box||values['command-dock']?.grid||grid.hasAttribute('data-hud-grid-columns'))){
+    const cells=[...grid.children].filter(cell=>(cell.matches('button,[data-hud-empty-skill]'))&&visible(cell));
+    if(cells.some(cell=>cell.getBoundingClientRect().width<43))return 'Cases tactiles trop étroites';
+   }
    if(values['command-dock']?.box&&dock&&grid){
     const box=dock.getBoundingClientRect(),content=grid.getBoundingClientRect();
     // Reject if the actual grid or its contents cannot fit the authored rectangle.
     if(content.left<box.left-1||content.right>box.right+1||content.top<box.top-1||content.bottom>box.bottom+1||
        grid.scrollHeight>grid.clientHeight+2||grid.scrollWidth>grid.clientWidth+2)return 'Agrandis le volet pour accueillir ses cases';
-    if(!desktop&&[...grid.querySelectorAll('[data-hud-empty-skill]:not([data-hud-page-hidden])')].some(cell=>cell.getBoundingClientRect().width<43))return 'Cases tactiles trop étroites';
    }
    const nav=pages.navigation();
    if(nav){
