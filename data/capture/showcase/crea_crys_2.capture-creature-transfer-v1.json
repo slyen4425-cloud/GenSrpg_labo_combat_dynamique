@@ -127,7 +127,7 @@
     ],
     "presentation": {
       "id": "creature:crea_crys_2",
-      "version": 3,
+      "version": 11,
       "subjectType": "creature",
       "subjectId": "crea_crys_2",
       "profileId": "biped",
@@ -172,6 +172,23 @@
           "durationMs": 700,
           "offsetX": 0,
           "offsetY": 0
+        },
+        "idle": {
+          "mode": "both",
+          "frontAssetId": "pack:capture:creature-plante-carnivore-idle-opponent-gif-v1",
+          "backAssetId": "pack:capture:creature-plante-carnivore-idle-player-gif-v1",
+          "front": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          },
+          "back": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          }
         }
       },
       "sockets": [],

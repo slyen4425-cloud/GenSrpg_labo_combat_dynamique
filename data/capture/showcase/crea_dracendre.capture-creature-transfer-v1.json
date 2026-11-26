@@ -212,17 +212,17 @@
           "transitionMs": 80
         },
         "idle": {
-          "mode": "gif",
+          "mode": "both",
           "frontAssetId": "pack:capture:creature-braisombre-idle-opponent-gif-v1",
           "backAssetId": "pack:capture:creature-braisombre-idle-player-gif-v1",
           "front": {
-            "displayScale": 1,
+            "displayScale": 1.2,
             "offsetX": 0,
             "offsetY": 0,
             "frameSpeedMultiplier": 1
           },
           "back": {
-            "displayScale": 1,
+            "displayScale": 1.2,
             "offsetX": 0,
             "offsetY": 0,
             "frameSpeedMultiplier": 1
