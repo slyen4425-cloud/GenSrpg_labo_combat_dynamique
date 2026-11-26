@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
@@ -23,11 +24,12 @@ test("RED: author original Gorice V9 is the exact single published transfer, wit
  assert.equal(createHash("sha256").update(archived).digest("hex"),
   "56496a621efe6a5003fdb21c7abefc0f9fd306007390729aabab7bbda2b808d8",
   "original user upload must never be edited");
- assert.equal(published,archived,"active Gorice must be the identical author export, not a rewritten approximation");
+ assert.equal(beforeBestiaryIdleActivationBytesV1(published).toString("utf8"),archived,"active Gorice must be the identical author export, not a rewritten approximation");
  const d=JSON.parse(published);
  assert.equal(d.schema,"capture-creature-transfer-v1");
  assert.equal(d.draft.id,"gorice");
- assert.equal(d.draft.presentation.version,9);
+ assert.equal(d.draft.presentation.version,11);
+ assert.equal(d.draft.presentation.visual.idle.mode,"both");
  assert.equal(d.draft.presentation.visual.movementBack.assetId,
   "pack:capture:creature-gorille-des-glaces-movement-player-12-v1");
  assert.equal(d.draft.presentation.visual.movement.assetId,

@@ -24,7 +24,8 @@ test("Krakenor uses exactly one canonical creature transfer and five active uniq
  assert.equal(c.draft.combat.maxHp,c.statValues.values.health);
  assert.equal(c.draft.resistances.find(x=>x.kind==="element:electric").value,-50);
  assert.equal(c.draft.presentation.profileId,"serpentine");
- assert.deepEqual(Object.keys(c.draft.presentation.visual).sort(),["back","front","icon"]);
+ assert.deepEqual(Object.keys(c.draft.presentation.visual).sort(),["back","front","icon","idle"]);
+ assert.equal(c.draft.presentation.visual.idle.mode,"both");
  assert.deepEqual([
   c.draft.presentation.visual.front.assetId,
   c.draft.presentation.visual.back.assetId,

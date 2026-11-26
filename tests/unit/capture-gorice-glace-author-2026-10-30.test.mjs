@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -57,7 +58,7 @@ test("Gorice historical author source is preserved and new author revision loads
   const prior=JSON.parse(await repoFile(goriceCurrentSourcePath));
   assert.equal(prior.draft.id,"gorice","November 3 original retained as historical source");
   const approved=JSON.parse(await repoFile(goriceFinalSourcePath));
-  assert.deepEqual(JSON.parse(active),approved,"final November 5 author upload is the exact active Gorice V9 source");
+  assert.deepEqual(beforeBestiaryIdleActivationV1(JSON.parse(active)),approved,"final November 5 author upload is the exact active Gorice V9 source");
   assert.equal(approved.draft.presentation.version,9);
   assert.equal(approved.draft.presentation.visual.movementBack.assetId,
     "pack:capture:creature-gorille-des-glaces-movement-player-12-v1");

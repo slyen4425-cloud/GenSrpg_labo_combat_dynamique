@@ -16,7 +16,8 @@ const list=[
 test("Grainou author transfer remains unchanged; media library never overwrites creator data",()=>{
  const draft=normalizeCaptureCreatureEditorDraftV3(record.draft);
  assert.equal(draft.id,"crea_nat_1");
- assert.equal(draft.presentation.version,3);
+ assert.equal(draft.presentation.version,11);
+ assert.equal(draft.presentation.visual.idle.mode,"both");
  assert.equal(draft.presentation.visual.front.assetId,"pack:capture:creature-heriplante-opponent-01");
  assert.equal(draft.presentation.visual.back.assetId,"pack:capture:creature-heriplante-player-01");
  assert.equal(draft.presentation.visual.icon.assetId,"pack:capture:creature-heriplante-icon-01");
