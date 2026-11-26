@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -23,7 +24,7 @@ test("author exports remain byte-exact and replace stable skill/creature IDs",as
   assert.deepEqual(revised.draft.presentation.visual.movementScaleByView,{player:1.1,opponent:1.4});
   assert.deepEqual(revised.draft.presentation.visual.rangedAttackScaleByView,{player:1,opponent:1.4});
   assert.equal(revised.statValues.values.glace,0);
-  const historicEquivalent=structuredClone(revised);
+  const historicEquivalent=beforeBestiaryIdleActivationV1(revised);
   delete historicEquivalent.draft.combat.reaction;
   delete historicEquivalent.draft.capture.rarity;
   historicEquivalent.draft.presentation.visual.movementScaleByView=

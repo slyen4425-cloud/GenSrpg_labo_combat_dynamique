@@ -14,7 +14,8 @@ test("Raiiven author transfer is a complete valid canonical Capture creature", (
   assert.equal(record.statValues.creatureId, record.draft.id);
   assert.equal(record.loadout.creatureId, record.draft.id);
   assert.equal(record.draft.presentation.subjectId, record.draft.id);
-  assert.equal(record.draft.presentation.version, 9);
+  assert.equal(record.draft.presentation.version, 11);
+  assert.equal(record.draft.presentation.visual.idle.mode,"both");
   const visual = record.draft.presentation.visual;
   for (const slot of ["front", "back", "icon"]) {
     assert.ok(visual[slot].assetId.startsWith("pack:capture:creature-raiiven-"));

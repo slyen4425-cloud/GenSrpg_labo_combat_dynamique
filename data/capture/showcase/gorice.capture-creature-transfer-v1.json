@@ -108,7 +108,7 @@
     ],
     "presentation": {
       "id": "creature:gorice",
-      "version": 9,
+      "version": 11,
       "subjectType": "creature",
       "subjectId": "gorice",
       "profileId": "biped",
@@ -200,6 +200,23 @@
           "rotationTurns": 3,
           "frameCount": 1,
           "transitionMs": 80
+        },
+        "idle": {
+          "mode": "both",
+          "frontAssetId": "pack:capture:creature-gorille-des-glaces-idle-opponent-gif-v1",
+          "backAssetId": "pack:capture:creature-gorille-des-glaces-idle-player-gif-v1",
+          "front": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          },
+          "back": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          }
         }
       },
       "sockets": [

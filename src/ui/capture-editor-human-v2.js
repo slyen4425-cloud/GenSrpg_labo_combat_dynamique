@@ -184,7 +184,6 @@ import {
 } from "../adapters/input/capture/capture-database-transfer-v1.js";
 import {normalizeCaptureDatabaseV1} from '../contracts/capture-database-v1.js';
 import {normalizeCaptureHudLayoutV1} from '../contracts/capture-hud-layout-v1.js';
-import {mountCaptureHudLayoutEditorV1} from './capture-hud-layout-editor-v1.js';
 import {
   buildCaptureEditorDatabaseV1,
   applyCaptureTransferPlanToEditorStateV1,
@@ -2330,6 +2329,34 @@ export function buildHumanCreatureDraftV3(fields) {
     y: finiteNumber(fields?.shadowOffset?.y ?? 0, "Décalage Y de l’ombre")
   };
   const hasShadowOffset = shadowOffset.x !== 0 || shadowOffset.y !== 0;
+  const idleMode = fields?.visual?.idleMode ?? "engine";
+  const idleFrontAssetId = optionalText(fields?.visual?.idleFrontAssetId);
+  const idleBackAssetId = optionalText(fields?.visual?.idleBackAssetId);
+  const idleView=(key,label)=>{
+    const input=fields?.visual?.[key] ?? null;
+    if(input==null) return null;
+    const numeric=(value,fallback,name,min,max)=>{
+      const raw=finiteNumber(value??fallback,"Idle "+label+" "+name);
+      if(raw<min || raw>max) throw new RangeError("Idle "+label+" "+name+" : "+min+" à "+max);
+      return raw;
+    };
+    return {
+      displayScale:numeric(input.displayScale,1,"taille",0.25,8),
+      offsetX:numeric(input.offsetX,0,"X",-400,400),
+      offsetY:numeric(input.offsetY,0,"Y",-400,400),
+      frameSpeedMultiplier:numeric(input.frameSpeedMultiplier,1,"vitesse",0.25,4)
+    };
+  };
+  const idleFrontView=idleView("idleFront","FACE"),idleBackView=idleView("idleBack","DOS");
+  const hasCustomIdleView=[idleFrontView,idleBackView].some(v=>
+    v && (v.displayScale!==1 || v.offsetX!==0 || v.offsetY!==0 || v.frameSpeedMultiplier!==1));
+  const hasIdleSettings = idleMode !== "engine" || idleFrontAssetId !== null ||
+    idleBackAssetId !== null || hasCustomIdleView;
+  const idleVisual = hasIdleSettings ? {
+    mode:idleMode,frontAssetId:idleFrontAssetId,backAssetId:idleBackAssetId,
+    ...(idleFrontView ? {front:idleFrontView}:{}),
+    ...(idleBackView ? {back:idleBackView}:{})
+  } : null;
   const hasAppearanceV8 = (
     (movementScaleByView !== null && (
       movementScaleByView.player !== commonMovement.displayScale ||
@@ -2377,7 +2404,7 @@ export function buildHumanCreatureDraftV3(fields) {
         : {
             ...base.presentation,
             version:
-              hasShadowOffset ? 10 : (hasAppearanceV9 ? 9 : (hasAppearanceV8 ? 8 : (hasAttackPlacement ? 7 : (rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3))))))),
+              hasIdleSettings ? 11 : (hasShadowOffset ? 10 : (hasAppearanceV9 ? 9 : (hasAppearanceV8 ? 8 : (hasAttackPlacement ? 7 : (rangedAttackBackVisual !== null ? 6 : (rangedAttackVisual !== null ? 5 : (movementVisual !== null ? 4 : (dodgeVisual === null ? 2 : 3)))))))),
             displayScale,
             ...(hasShadowOffset ? { shadowOffset } : {}),
             ...(fields?.viewOverrides == null ? {} : { viewOverrides: fields.viewOverrides }),
@@ -2391,9 +2418,10 @@ export function buildHumanCreatureDraftV3(fields) {
                 x: "50%",
                 y: "50%"
               },
-            ...((dodgeVisual === null && movementVisual === null && movementBackVisual === null && rangedAttackVisual === null && rangedAttackBackVisual === null) ? {} : {
+            ...((idleVisual === null && dodgeVisual === null && movementVisual === null && movementBackVisual === null && rangedAttackVisual === null && rangedAttackBackVisual === null) ? {} : {
               visual: {
                 ...base.presentation.visual,
+                ...(idleVisual === null ? {} : { idle: idleVisual }),
                 ...(dodgeVisual === null ? {} : { dodge: dodgeVisual }),
                 ...(movementVisual === null ? {} : { movement: movementVisual }),
                 ...(movementBackVisual === null ? {} : { movementBack: movementBackVisual }),
@@ -4517,6 +4545,17 @@ function writeCreatureRecordFields(
       "[data-creature-dodge-offset-y]",
       presentation?.visual?.dodge?.offsetY ?? 0
     ],
+    ["[data-creature-idle-mode]", presentation?.visual?.idle?.mode ?? "engine"],
+    ["[data-creature-idle-front-visual]", presentation?.visual?.idle?.frontAssetId ?? ""],
+    ["[data-creature-idle-back-visual]", presentation?.visual?.idle?.backAssetId ?? ""],
+    ["[data-creature-idle-front-scale]", presentation?.visual?.idle?.front?.displayScale ?? 1],
+    ["[data-creature-idle-front-offset-x]", presentation?.visual?.idle?.front?.offsetX ?? 0],
+    ["[data-creature-idle-front-offset-y]", presentation?.visual?.idle?.front?.offsetY ?? 0],
+    ["[data-creature-idle-front-speed]", presentation?.visual?.idle?.front?.frameSpeedMultiplier ?? 1],
+    ["[data-creature-idle-back-scale]", presentation?.visual?.idle?.back?.displayScale ?? 1],
+    ["[data-creature-idle-back-offset-x]", presentation?.visual?.idle?.back?.offsetX ?? 0],
+    ["[data-creature-idle-back-offset-y]", presentation?.visual?.idle?.back?.offsetY ?? 0],
+    ["[data-creature-idle-back-speed]", presentation?.visual?.idle?.back?.frameSpeedMultiplier ?? 1],
     ["[data-creature-movement-visual]", presentation?.visual?.movement?.assetId ?? ""],
     ["[data-creature-movement-back-visual]", presentation?.visual?.movementBack?.assetId ?? ""],
     ["[data-creature-movement-mode]", movementEditorSlot?.mode ?? "roll"],
@@ -4745,6 +4784,17 @@ function prepareNewCreatureDraftFields(
     ["[data-creature-dodge-duration]", 700],
     ["[data-creature-dodge-offset-x]", 0],
     ["[data-creature-dodge-offset-y]", 0],
+    ["[data-creature-idle-mode]", "engine"],
+    ["[data-creature-idle-front-visual]", ""],
+    ["[data-creature-idle-back-visual]", ""],
+    ["[data-creature-idle-front-scale]", 1],
+    ["[data-creature-idle-front-offset-x]", 0],
+    ["[data-creature-idle-front-offset-y]", 0],
+    ["[data-creature-idle-front-speed]", 1],
+    ["[data-creature-idle-back-scale]", 1],
+    ["[data-creature-idle-back-offset-x]", 0],
+    ["[data-creature-idle-back-offset-y]", 0],
+    ["[data-creature-idle-back-speed]", 1],
     ["[data-creature-movement-visual]", ""],
     ["[data-creature-movement-back-visual]", ""],
     ["[data-creature-movement-mode]", "roll"],
@@ -8420,6 +8470,7 @@ export function captureEditorCreatureVisualKindV1(asset) {
     asset.assetType === "portrait" && tags.includes("creature") ||
     tags.includes("creature") && (tags.includes("attack") || tags.includes("movement"));
   if (!creatureOwned) return null;
+  if (tags.includes("idle")) return "idle";
   if (asset.category === "movement" || tags.includes("movement") || tags.includes("roll")) return "movement";
   if (asset.category === "attack" || tags.includes("attack")) return "attack";
   return "model";
@@ -8445,6 +8496,13 @@ export function captureEditorAssetMatchesRoleV1(asset, role) {
       (role === "creature-icon" &&
         asset.assetType === "portrait" &&
         asset.tags?.includes("creature"));
+  }
+  if (role === "idle") {
+    return captureEditorCreatureVisualKindV1(asset) === "idle" &&
+      asset.assetType === "sprite" &&
+      (asset.resource?.mime === "image/gif" ||
+       Number(asset.resource?.frameCount) > 1 ||
+       asset.resource?.mime === "image/webp");
   }
   if (role === "movement" || role === "attack") {
     // The selectable catalog contains genuine animated creature sprite strips
@@ -8633,7 +8691,7 @@ function populateSelect(select, assets, role) {
     }
   ];
 
-  const creatureAnimationSelector = role === "movement" || role === "attack";
+  const creatureAnimationSelector = role === "movement" || role === "attack" || role === "idle";
   for (const libraryGroup of libraryGroups) {
     const groupAssets =
       matchingAssets.filter(
@@ -9441,7 +9499,7 @@ async function hydrateAssetCatalog(root, listen, creatorVisualAssets = null) {
             creatorImportFile.files?.[0];
           if (!file) {
             throw new Error(
-              "Choisis une image PNG, WebP ou JPEG."
+              "Choisis une image PNG, WebP, JPEG ou GIF pour l’idle."
             );
           }
 
@@ -9971,6 +10029,21 @@ function readCreatureFields(
         root,
         "[data-creature-dodge-offset-y]"
       ),
+      idleMode: selectedValue(root, "[data-creature-idle-mode]"),
+      idleFrontAssetId: selectedValue(root, "[data-creature-idle-front-visual]"),
+      idleBackAssetId: selectedValue(root, "[data-creature-idle-back-visual]"),
+      idleFront: {
+        displayScale: numericValue(root, "[data-creature-idle-front-scale]"),
+        offsetX: numericValue(root, "[data-creature-idle-front-offset-x]"),
+        offsetY: numericValue(root, "[data-creature-idle-front-offset-y]"),
+        frameSpeedMultiplier: numericValue(root, "[data-creature-idle-front-speed]")
+      },
+      idleBack: {
+        displayScale: numericValue(root, "[data-creature-idle-back-scale]"),
+        offsetX: numericValue(root, "[data-creature-idle-back-offset-x]"),
+        offsetY: numericValue(root, "[data-creature-idle-back-offset-y]"),
+        frameSpeedMultiplier: numericValue(root, "[data-creature-idle-back-speed]")
+      },
       movementAssetId: selectedValue(root, "[data-creature-movement-visual]"),
       movementBackAssetId: selectedValue(root, "[data-creature-movement-back-visual]"),
       movementMode: selectedValue(root, "[data-creature-movement-mode]"),
@@ -11265,8 +11338,6 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
     );
   }
 
-  const hudLayoutEditor=mountCaptureHudLayoutEditorV1({host:root.querySelector('[data-combat-hud-layout-editor]'),
-    initialLayout:hudLayout,listen,onChange(value){hudLayout=value;hudLayoutAuthored=true;}});
   mountSkillSpriteRecolorSlidersV1(root, listen);
 
   const markerLibraryController = mountCaptureMarkerLibraryV1({
@@ -14821,7 +14892,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
 
         if(plan.action==='replace-database'){
           hudLayout=normalizeCaptureHudLayoutV1(transfer.value.metadata?.combatHudLayoutV1);
-          hudLayoutAuthored=transfer.value.metadata?.combatHudLayoutV1!==undefined;hudLayoutEditor?.set(hudLayout);
+          hudLayoutAuthored=transfer.value.metadata?.combatHudLayoutV1!==undefined;
         }
         newSkillDraftMode=false;
         refreshEditorAfterTransferV1({
@@ -15362,7 +15433,7 @@ export function mountCaptureEditorHumanV2({ root, creatorVisualAssets = null, cr
       heading?.scrollIntoView({block:"start"});
     },
     readHudLayout(){return hudLayout;},
-    writeHudLayout(value){hudLayout=normalizeCaptureHudLayoutV1(value);hudLayoutAuthored=true;hudLayoutEditor?.set(hudLayout);},
+    writeHudLayout(value){hudLayout=normalizeCaptureHudLayoutV1(value);hudLayoutAuthored=true;},
     readDatabase({includePendingSpecies = false} = {}){
       if(disposed)throw new Error("Éditeur fermé");
       if (includePendingSpecies && creatureDirty) {

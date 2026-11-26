@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
@@ -59,7 +60,7 @@ test("Kitsune is unique in the active catalog; old source remains immutable",()=
      assert.deepEqual(current.draft.presentation.visual.movementScaleByView,{player:1.1,opponent:1.4});
      assert.deepEqual(current.draft.presentation.visual.rangedAttackScaleByView,{player:1,opponent:1.4});
      assert.equal(current.statValues.values.glace,0);
-     const originalEquivalent=structuredClone(current);
+     const originalEquivalent=beforeBestiaryIdleActivationV1(current);
      delete originalEquivalent.draft.combat.reaction;
      delete originalEquivalent.draft.capture.rarity;
      originalEquivalent.draft.presentation.visual.movementScaleByView=
@@ -87,7 +88,8 @@ test("Moussados V9 uses four distinct official 12-frame movement/attack assets F
  const {value}=importCaptureTransferJsonV1(read(active(moss)),{statRegistry:registry});
  const p=value.draft.presentation,visual=p.visual;
  assert.equal(value.draft.displayName,"Moussados");
- assert.equal(p.version,9);
+ assert.equal(p.version,11);
+ assert.equal(p.visual.idle.mode,"both");
  assert.equal(p.profileId,"massive");
  const slots=["front","back","icon","movement","movementBack","rangedAttack","rangedAttackBack"];
  for(const [i,role] of slots.entries())assert.equal(visual[role].assetId,visuals.moss[i],role);

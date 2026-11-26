@@ -12,7 +12,8 @@ const CREATOR_VISUAL_ROLES_V1 = Object.freeze([
   "status",
   "dodge",
   "movement",
-  "attack"
+  "attack",
+  "idle"
 ]);
 
 function defaultCreateId() {
@@ -78,6 +79,13 @@ function definitionFor({
 
   // Creature attack animations are not skill cast/projectile sprites.
   // One shared AssetDefinition and importer remain authoritative.
+  if (role === "idle") {
+    return Object.freeze({
+      ...common,assetType:"sprite",category:"creature",
+      tags:Object.freeze(["creator","creature","idle","animated"]),
+      resource:Object.freeze({...common.resource,frameCount:1,format:"animated-image"})
+    });
+  }
   if (role === "attack") {
     return Object.freeze({
       ...common,
@@ -167,8 +175,8 @@ export function createCreatorVisualAssetSessionV1({
     }
 
     const manager = createImageSourceManager({
-      createObjectURL,
-      revokeObjectURL
+      createObjectURL,revokeObjectURL,
+      ...(role==="idle" ? {acceptedTypes:["image/gif","image/webp"]} : {})
     });
     manager.validateFile(file);
     const runtimeUrl = manager.load(file);

@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -56,7 +57,7 @@ test("Moussados author JSON is exact, unique, imports views without changing sta
   assert.deepEqual(revised.draft.presentation.visual.rangedAttackScaleByView,{player:1,opponent:1.4});
   assert.equal(revised.statValues.values.glace,0);
   // Prove that only author-approved changes differ from the historical V9 record.
-  const previous=structuredClone(revised);
+  const previous=beforeBestiaryIdleActivationV1(revised);
   delete previous.draft.combat.reaction;
   delete previous.draft.capture.rarity;
   previous.draft.presentation.visual.movementScaleByView=original.draft.presentation.visual.movementScaleByView;
@@ -76,7 +77,8 @@ test("Moussados author JSON is exact, unique, imports views without changing sta
     opponent:{displayScale:0.9,position:{x:-30,y:35}}
   });
   assert.equal(draft.presentation.profileId, "massive");
-  assert.equal(draft.presentation.version,9);
+  assert.equal(draft.presentation.version,11);
+  assert.equal(draft.presentation.visual.idle.mode,"both");
   assert.equal(draft.presentation.visual.movementBack.assetId,"pack:capture:creature-golem-moussu-movement-dos-12-v1");
   assert.equal(draft.presentation.visual.rangedAttackBack.assetId,"pack:capture:creature-golem-moussu-attack-dos-12-v1");
   assert.equal(draft.presentation.sockets.find(s=>s.id==="mouth").back.x, 0.9318691325306842);

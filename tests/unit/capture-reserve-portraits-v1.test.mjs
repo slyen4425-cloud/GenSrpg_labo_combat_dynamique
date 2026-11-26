@@ -75,5 +75,15 @@ test("reserve rows show their own canonical creature icon, preserve KO and missi
     assert.equal(noImage.children.some(n=>n.tagName==="IMG" && !n.hidden),false,
       "no fabricated placeholder asset");
     assert.match(noImage.children.map(n=>n.textContent).join(" "),/Inconnu/);
+    const allyStrip=summary.children.find(n=>n.className==="hud-reserve-portraits");
+    const enemyStrip=enemySummary.children.find(n=>n.className==="hud-reserve-portraits");
+    assert.ok(allyStrip&&enemyStrip,"native summaries own their portrait projections");
+    assert.equal(allyStrip.children.filter(n=>!n.hidden).length,1);
+    assert.equal(allyStrip.children.find(n=>!n.hidden).children[0].src,"https://assets.test/beta.webp");
+    assert.equal(enemyStrip.children.find(n=>!n.hidden).dataset.defeated,"true");
+    snapshot.local.members[0].active=false;snapshot.local.members[1].active=true;ui.render();
+    assert.equal(allyStrip.children.find(n=>!n.hidden).children[0].src,"https://assets.test/alpha.webp");
   } finally { ui.dispose(); }
+  assert.ok(summary.children.every(n=>n.className!=="hud-reserve-portraits"));
+  assert.ok(enemySummary.children.every(n=>n.className!=="hud-reserve-portraits"));
 });

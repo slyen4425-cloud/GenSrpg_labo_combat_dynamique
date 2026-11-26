@@ -292,7 +292,8 @@ test("Ephemus and Veldra use the exact author V10 visual positioning in the real
     assert.equal(draft.id, spec.id);
     assert.equal(draft.presentation.id, "creature:" + spec.id);
     assert.equal(draft.presentation.subjectId, spec.id);
-    assert.equal(draft.presentation.version, 10);
+    assert.equal(draft.presentation.version, spec.id==="Ephemus"?10:11);
+    if(spec.id!=="Ephemus") assert.equal(draft.presentation.visual.idle.mode,"both");
     assert.deepEqual(draft.presentation.viewOverrides.player, spec.player);
     assert.deepEqual(draft.presentation.viewOverrides.opponent, spec.opponent);
     assert.equal(draft.presentation.profileId, "flying");

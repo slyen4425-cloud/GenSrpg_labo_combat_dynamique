@@ -108,7 +108,7 @@
     ],
     "presentation": {
       "id": "creature:crea_scar_2",
-      "version": 8,
+      "version": 11,
       "subjectType": "creature",
       "subjectId": "crea_scar_2",
       "profileId": "biped",
@@ -199,6 +199,23 @@
         "movementPlayback": {
           "frameMs": 0,
           "mode": "loop"
+        },
+        "idle": {
+          "mode": "both",
+          "frontAssetId": "pack:capture:creature-scarabacier-idle-opponent-gif-v1",
+          "backAssetId": "pack:capture:creature-scarabacier-idle-player-gif-v1",
+          "front": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          },
+          "back": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          }
         }
       },
       "sockets": [

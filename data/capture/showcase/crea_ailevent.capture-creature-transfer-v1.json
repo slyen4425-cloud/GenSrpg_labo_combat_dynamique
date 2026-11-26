@@ -117,7 +117,7 @@
     ],
     "presentation": {
       "id": "creature:crea_ailevent",
-      "version": 2,
+      "version": 11,
       "subjectType": "creature",
       "subjectId": "crea_ailevent",
       "profileId": "flying",
@@ -155,6 +155,23 @@
         },
         "icon": {
           "assetId": "pack:capture:creature-ailevent-icon-01"
+        },
+        "idle": {
+          "mode": "both",
+          "frontAssetId": "pack:capture:creature-ailevent-idle-opponent-gif-v1",
+          "backAssetId": "pack:capture:creature-ailevent-idle-player-gif-v1",
+          "front": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          },
+          "back": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          }
         }
       },
       "sockets": [

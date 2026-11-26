@@ -34,10 +34,14 @@ def check(context, origin):
     page.on("pageerror", lambda error: print("Chromium:", error, flush=True))
     page.goto(origin + "/data/capture/monster-capture-stat-registry.v1.json")
     project = "unv_" + uuid.uuid4().hex[:16]
+    profile = "desktop-1v1" if page.evaluate("matchMedia('(min-width:1100px) and (min-height:650px) and (pointer:fine)').matches") else "touch-1v1"
+    # Existing authored V1 data is a migration fixture, not a second editor.
+    legacy_layout = {"schema":"capture-hud-layout-v1", "profiles":{profile:{"local-status":{"dx":1,"dy":-1,"scale":100}}}}
+    fixture = {**database, "metadata":{"combatHudLayoutV1":legacy_layout}}
     page.evaluate("""async ([id,database])=>{
       const {createCaptureUniverseDatabaseStoreV1}=await import('/src/contracts/capture-universe-database-store-v1.js');
       createCaptureUniverseDatabaseStoreV1({storage:localStorage}).create(id,database);
-    }""", [project, database])
+    }""", [project, fixture])
     species = record["draft"]["id"]
     url = origin + "/examples/dom-demo/bestiary.html?universe=" + project
     page.goto(url + "#" + species, wait_until="domcontentloaded")
@@ -83,28 +87,16 @@ def check(context, origin):
     editor_url = origin + "/examples/dom-demo/capture-editor-v2.html?tab=combat&universe=" + project
     page.goto(editor_url, wait_until="domcontentloaded")
     page.locator("[data-combat-hud-layout-editor] > summary").click()
-    page.locator("[data-combat-hud-layout-editor] > details > summary").click()
-    profile = "desktop-1v1" if page.evaluate("matchMedia('(min-width:1100px) and (min-height:650px) and (pointer:fine)').matches") else "touch-1v1"
-    page.locator("[data-hud-layout-profile]").select_option(profile)
-    page.locator("[data-hud-layout-role]").select_option("local-status")
-    page.locator("[data-hud-layout-x]").fill("1")
-    page.locator("[data-hud-layout-y]").fill("-1")
-    page.get_by_role("button", name="Enregistrer le catalogue de cet univers").click()
-    page.wait_for_function("document.querySelector('[data-capture-universe-project-editor] [role=status]').textContent.includes('révision 3')")
-    page.goto(editor_url, wait_until="domcontentloaded")
-    page.locator("[data-combat-hud-layout-editor] > summary").click()
-    page.locator("[data-combat-hud-layout-editor] > details > summary").click()
-    page.locator("[data-hud-layout-profile]").select_option(profile)
-    page.locator("[data-hud-layout-role]").select_option("local-status")
-    assert page.locator("[data-hud-layout-x]").input_value() == "1"
-    assert page.locator("[data-hud-layout-y]").input_value() == "-1"
+    assert page.locator("[data-hud-layout-profile], [data-hud-layout-x], [data-hud-layout-scale]").count() == 0, "obsolete numeric editor must not exist in the DOM"
     # Native pointer editing, not synthetic style injection. A real editor launch
     # creates the native arena, real species and existing runtime, in author mode.
     page.get_by_role("button", name="Dérouler Équipes du test", exact=True).click()
-    page.locator("[data-test-local-team-size]").select_option("1")
-    page.locator("[data-test-opponent-team-size]").select_option("1")
+    page.locator("[data-test-local-team-size]").select_option("2")
+    page.locator("[data-test-opponent-team-size]").select_option("2")
     page.locator("[data-active-per-team]").select_option("1")
+    page.locator("[data-test-local-creature]").first.select_option(species)
     page.locator("[data-test-opponent-creature]").first.select_option(species)
+    page.locator("[data-test-opponent-creature]").nth(1).select_option(species)
     page.wait_for_function("!document.querySelector('[data-editor-test-combat]').disabled")
     draft_fields = page.locator("[data-creature-id], [data-skill-id], [data-creature-library-select], [data-skill-library-select]")
     drafts_before = draft_fields.evaluate_all("els=>els.map(e=>e.value)")
@@ -119,6 +111,41 @@ def check(context, origin):
     hp.wait_for(state="visible")
     assert arena.locator("[data-combat-hud-skill-role]").count() > 0
     assert page.locator("[data-hud-author-overlay]").count() == 1
+    # Move the actual editor chrome (not a persisted combat role) on both devices.
+    grip = toolbar.locator("[data-hud-author-drag]")
+    before_toolbar = toolbar.bounding_box()
+    def drag_toolbar(dx,dy):
+        b = grip.bounding_box()
+        x,y = b["x"]+b["width"]/2,b["y"]+b["height"]/2
+        if page.evaluate("navigator.maxTouchPoints>0"):
+            cdp = context.new_cdp_session(page)
+            cdp.send("Input.dispatchTouchEvent", {"type":"touchStart","touchPoints":[{"x":x,"y":y}]})
+            cdp.send("Input.dispatchTouchEvent", {"type":"touchMove","touchPoints":[{"x":x+dx,"y":y+dy}]})
+            cdp.send("Input.dispatchTouchEvent", {"type":"touchEnd","touchPoints":[]})
+            cdp.detach()
+        else:
+            page.mouse.move(x,y)
+            page.mouse.down()
+            page.mouse.move(x+dx,y+dy,steps=4)
+            page.mouse.up()
+    drag_toolbar(35,65)
+    moved = toolbar.bounding_box()
+    assert moved["y"] >= before_toolbar["y"]+45, (before_toolbar,moved)
+    assert moved["x"] >= 0 and moved["x"]+moved["width"] <= page.viewport_size["width"]+1
+    collapse = toolbar.locator("[data-hud-author-collapse]")
+    collapse.click()
+    assert not toolbar.locator("[data-hud-author-palette]").is_visible()
+    assert toolbar.bounding_box()["height"] < moved["height"]
+    assert grip.is_visible() and collapse.is_visible()
+    grip_box = grip.bounding_box()
+    drag_toolbar(1-grip_box["x"]-grip_box["width"]/2,1-grip_box["y"]-grip_box["height"]/2)
+    assert grip.evaluate("""el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))}"""), "Back button covers the toolbar grip"
+    collapse.click()
+    assert toolbar.locator("[data-hud-author-palette]").is_visible()
+    drag_toolbar(before_toolbar["x"]-toolbar.bounding_box()["x"],before_toolbar["y"]-toolbar.bounding_box()["y"])
+    assert toolbar.bounding_box()["y"] >= 0
+    assert grip.evaluate("""el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))}""")
+    print("Floating toolbar pointer move, collapse and reopen",page.viewport_size,flush=True)
     # Native keyboard activation must not reach the actor or skill handlers
     # while authoring, even when a control is focused programmatically.
     actor = arena.locator('[data-target-actor="local-1"]').first
@@ -131,6 +158,19 @@ def check(context, origin):
     assert actor.get_attribute("data-author-activation-count") == "0"
     skill = arena.locator("[data-combat-hud-skill-role]").first
     assert skill.evaluate("el=>!el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}))"), "native skill activation must be cancelled"
+    # Real bench members, not fabricated portraits. The author controls
+    # project the same canonical icons already present in the roster picker.
+    for side,selector in [("local","[data-combat-team-menu]"),("opponent","[data-combat-enemy-reserves]")]:
+        toggle=toolbar.locator("[data-hud-author-portraits-"+side+"]")
+        toggle.click()
+        strip=arena.locator(selector+" > summary .hud-reserve-portrait:not([hidden]) img")
+        assert strip.count()==1, (side,strip.count())
+        assert strip.first.is_visible() and strip.first.get_attribute("src"), side
+        assert toggle.get_attribute("aria-pressed") == "true"
+        assert "1 portrait" in toolbar.locator("[data-hud-author-reserve-help]").inner_text()
+        toggle.click()
+        assert not strip.first.is_visible(), side
+    print("Native real reserve portraits toggled",page.viewport_size,flush=True)
 
     # Reset via the native editing chrome, then move by the same safe +1/-1
     # percent offset that was previously certified with the exact profile.
@@ -139,7 +179,7 @@ def check(context, origin):
     page.mouse.click(x,y)
     assert "PV" in toolbar.locator("[data-hud-author-selection]").inner_text()
     toolbar.locator("[data-hud-author-reset]").click()
-    page.wait_for_function("!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
+    page.wait_for_function("!document.querySelector('[data-capture-preview-host] .squad-card--local-full').dataset.hudBox")
     box, bounds = hp.bounding_box(), arena.bounding_box()
     x, y = box["x"]+box["width"]/2, box["y"]+box["height"]/2
     dx, dy = bounds["width"]/100, -bounds["height"]/100
@@ -154,12 +194,41 @@ def check(context, origin):
         page.mouse.down()
         page.mouse.move(x+dx,y+dy,steps=3)
         page.mouse.up()
-    page.wait_for_function("!!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
+    page.wait_for_function("document.querySelector('[data-capture-preview-host] .squad-card--local-full').dataset.hudBox==='local-status'")
     assert hp.bounding_box()["x"] > box["x"], "direct pointer drag did not move the native HUD"
     toolbar.locator("[data-hud-author-undo]").click()
-    page.wait_for_function("!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
+    page.wait_for_function("!document.querySelector('[data-capture-preview-host] .squad-card--local-full').dataset.hudBox")
     toolbar.locator("[data-hud-author-undo]").click()
-    page.wait_for_function("!!document.querySelector('[data-capture-preview-host] .squad-card--local-full').style.translate")
+    page.wait_for_function("document.querySelector('[data-capture-preview-host] .squad-card--local-full').dataset.hudBox==='local-status'")
+    # P2 regression: an authored grid with occupied cells only must not
+    # accept a touch layout whose real native skill buttons are too narrow.
+    if profile.startswith("touch"):
+        toolbar.locator("[data-hud-author-palette]").select_option("command-dock")
+        add_column = toolbar.locator("[data-hud-author-add-column]")
+        undo = toolbar.locator("[data-hud-author-undo]")
+        grid = arena.locator("[data-combat-skills]")
+        edits = 0
+        add_column.click()
+        edits += 1
+        while grid.locator("[data-hud-empty-skill]:visible").count():
+            toolbar.locator("[data-hud-author-remove-slot]").click()
+            edits += 1
+            assert edits <= 5, "fixture must have occupied native skill cells"
+        for _ in range(6):
+            add_column.click()
+            edits += 1
+        assert grid.locator("[data-hud-empty-skill]:visible").count() == 0
+        assert grid.locator("button:visible").evaluate_all(
+            "els=>els.some(e=>e.getBoundingClientRect().width<43)"
+        ), "fixture must produce a genuinely narrow native button"
+        for action in ("apply", "test"):
+            toolbar.locator("[data-hud-author-"+action+"]").click()
+            assert "Cases tactiles trop étroites" in toolbar.locator("[data-hud-author-status]").text_content()
+            assert page.locator("[data-hud-author-overlay]").count() == 1
+        for _ in range(edits):
+            undo.click()
+        assert grid.get_attribute("data-hud-grid-columns") is None
+        print("Occupied-only narrow touch grid rejected by Apply and Test", flush=True)
     # Create a real named collapsible panel in the visual editor. It must
     # partition the same native skill nodes, not manufacture alternative buttons.
     group_form = toolbar.locator("[data-hud-author-group-editor]")
@@ -172,40 +241,87 @@ def check(context, origin):
     arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.forEach(e=>e.dataset.nativeHudProof='same')")
     group_form.locator("[data-hud-author-group-save]").click()
     assert "Groupe enregistré" in toolbar.locator("[data-hud-author-status]").text_content(), toolbar.locator("[data-hud-author-status]").text_content()
+    assert group_form.locator("[data-hud-author-group-name]").input_value() == "Attaques rapides", "group form was reset before save"
     group_form.locator("[data-hud-author-group-move]").click()
-    page.wait_for_function("document.querySelector('[data-hud-author-selection]').textContent==='Attaques rapides'")
+    try:
+        page.wait_for_function("document.querySelector('[data-hud-author-selection]').textContent==='Attaques rapides'")
+    except Exception as error:
+        raise AssertionError("Named page selection failed: " + toolbar.inner_text()) from error
     assert arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
     assert not arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()
     assert arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.map(e=>e.dataset.combatHudSkillRole)") == original_roles
     assert arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.every(e=>e.dataset.nativeHudProof==='same')")
-    # The selected group is a single gesture on the native arena. Moving it
-    # must update both members; undo restores the original canonical offsets.
-    first_skill = arena.locator('[data-combat-hud-skill-role="skill-slot-1"]')
-    second_skill = arena.locator('[data-combat-hud-skill-role="skill-slot-2"]')
-    first_box, second_box, arena_box = first_skill.bounding_box(), second_skill.bounding_box(), arena.bounding_box()
-    x, y = first_box["x"] + first_box["width"]/2, first_box["y"] + first_box["height"]/2
-    dx = arena_box["width"]/100
-    if context.pages[0].evaluate("navigator.maxTouchPoints>0"):
-        cdp = context.new_cdp_session(page)
-        cdp.send("Input.dispatchTouchEvent", {"type":"touchStart","touchPoints":[{"x":x,"y":y}]})
-        cdp.send("Input.dispatchTouchEvent", {"type":"touchMove","touchPoints":[{"x":x+dx,"y":y}]})
-        cdp.send("Input.dispatchTouchEvent", {"type":"touchEnd","touchPoints":[]})
-        cdp.detach()
-    else:
-        page.mouse.move(x,y)
-        page.mouse.down()
-        page.mouse.move(x+dx,y,steps=3)
-        page.mouse.up()
-    page.wait_for_function("""['skill-slot-1','skill-slot-2'].every(role=>!!document.querySelector('[data-combat-hud-skill-role="'+role+'"]').style.translate)""")
-    assert first_skill.bounding_box()["x"] > first_box["x"]
-    assert second_skill.bounding_box()["x"] > second_box["x"]
-    toolbar.locator("[data-hud-author-undo]").click()
-    page.wait_for_function("""['skill-slot-1','skill-slot-2'].every(role=>!document.querySelector('[data-combat-hud-skill-role="'+role+'"]').style.translate)""")
+    # A named page is now a real region: resize the native dock itself rather
+    # than scaling the two skill buttons. The page keeps those exact nodes.
+    dock = arena.locator(".coop-command-stack")
+    def gesture(x,y,dx,dy):
+        if page.evaluate("navigator.maxTouchPoints>0"):
+            cdp = context.new_cdp_session(page)
+            cdp.send("Input.dispatchTouchEvent", {"type":"touchStart","touchPoints":[{"x":x,"y":y}]})
+            cdp.send("Input.dispatchTouchEvent", {"type":"touchMove","touchPoints":[{"x":x+dx,"y":y+dy}]})
+            cdp.send("Input.dispatchTouchEvent", {"type":"touchEnd","touchPoints":[]})
+            cdp.detach()
+        else:
+            page.mouse.move(x,y)
+            page.mouse.down()
+            page.mouse.move(x+dx,y+dy,steps=3)
+            page.mouse.up()
+    # Re-select the displayed dock via the palette. The named page, not
+    # the principal page, must receive all rectangle and capacity edits.
+    toolbar.locator("[data-hud-author-palette]").select_option("command-dock")
+    assert toolbar.locator("[data-hud-author-page-select]").input_value()=="hud-group-1:0"
+    # The full floating panel may obscure a handle; reduce it like the author
+    # would, then prove the same real resize gesture and retained draft.
+    collapse.click()
+    original_dock = dock.bounding_box()
+    handle = arena.locator('[data-hud-resize-edge="n"]')
+    handle.wait_for(state="visible")
+    assert handle.evaluate("""el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))}"""), "Reduced palette must release the north handle"
+    b = handle.bounding_box()
+    gesture(b["x"]+b["width"]/2,b["y"]+b["height"]/2,0,-40)
+    print("Panel north handle",page.viewport_size,original_dock,b,toolbar.locator("[data-hud-author-status]").text_content(),dock.bounding_box(),flush=True)
+    assert dock.get_attribute("data-hud-box") == "command-dock", toolbar.locator("[data-hud-author-status]").text_content()
+    grown = dock.bounding_box()
+    assert grown["height"] >= original_dock["height"]+30, (original_dock,grown)
+    assert abs(grown["width"]-original_dock["width"]) < 3, (original_dock,grown)
+    # Width is independent, moving the west edge. The south edge stays put.
+    b=arena.locator('[data-hud-resize-edge="w"]').bounding_box()
+    gesture(b["x"]+b["width"]/2,b["y"]+b["height"]/2,-24,0)
+    wider=dock.bounding_box()
+    print("Panel west handle",page.viewport_size,grown,wider,toolbar.locator("[data-hud-author-status]").text_content(),flush=True)
+    assert wider["width"] >= grown["width"]+15, (grown,wider,toolbar.locator("[data-hud-author-status]").text_content())
+    assert abs(wider["height"]-grown["height"]) < 3, (grown,wider)
+    collapse.click()
+    assert toolbar.locator("[data-hud-author-palette]").is_visible()
+    assert abs(dock.bounding_box()["width"]-wider["width"])<3, "Reopening must preserve the draft"
+    toolbar.locator("[data-hud-author-add-slot]").click()
+    assert arena.locator("[data-hud-empty-skill]:visible").count() >= 1, toolbar.locator("[data-hud-author-status]").text_content()
+    assert arena.locator("[data-combat-hud-skill-role]").evaluate_all("els=>els.every(e=>e.dataset.nativeHudProof==='same')")
+    authored_dock=dock.bounding_box()
+    print("Native independent panel geometry",page.viewport_size,original_dock,authored_dock,flush=True)
+    print("Native geometry details",arena.evaluate("""root=>Object.fromEntries(['.hud__energy','[data-combat-team-menu]','[data-combat-team-summary]','[data-combat-dodge]'].map(s=>{
+      const n=root.querySelector(s),r=n?.getBoundingClientRect(),style=n&&getComputedStyle(n);
+      return [s,{rect:r?.toJSON(),open:n?.open,display:style?.display,position:style?.position}];
+    }))"""),flush=True)
+    # Widening may consume the space previously occupied by dodge. The
+    # builder must let the author rearrange it before applying the draft.
+    dodge=arena.locator("[data-combat-dodge]")
+    if dodge.is_visible():
+        db=dodge.bounding_box()
+        intersects=(db["x"]+db["width"]>authored_dock["x"] and db["x"]<authored_dock["x"]+authored_dock["width"]
+                    and db["y"]+db["height"]>authored_dock["y"] and db["y"]<authored_dock["y"]+authored_dock["height"])
+        if intersects:
+            toolbar.locator("[data-hud-author-palette]").select_option("dodge")
+            collapse.click()
+            gesture(db["x"]+db["width"]/2,db["y"]+db["height"]/2,authored_dock["x"]-db["x"]-db["width"]-12,0)
+            assert dodge.bounding_box()["x"]+dodge.bounding_box()["width"] < authored_dock["x"]
+            collapse.click()
     toolbar.locator("[data-hud-author-page-select]").select_option("main:0")
     assert not arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
     assert arena.locator('[data-combat-hud-skill-role="skill-slot-3"]').is_visible()
+    assert abs(dock.bounding_box()["width"]-original_dock["width"])<4, "main page must keep independent layout"
     toolbar.locator("[data-hud-author-test]").click()
-    assert page.locator("[data-hud-author-overlay]").count() == 0
+    assert page.locator("[data-hud-author-overlay]").count() == 0, toolbar.locator("[data-hud-author-status]").text_content()
     nav = arena.locator("[data-hud-skill-page-nav]")
     nav.select_option("hud-group-1:0")
     page.wait_for_function("document.querySelector('[data-combat-hud-skill-role=skill-slot-1]').getBoundingClientRect().width>0")
@@ -218,17 +334,19 @@ def check(context, origin):
 
     page.locator("[data-preview-back-editor]").click()
     assert page.locator("[data-hud-author-overlay]").count() == 0
-    assert page.locator("[data-hud-layout-x]").input_value() == "1"
     assert draft_fields.evaluate_all("els=>els.map(e=>e.value)") == drafts_before, "HUD authoring must not save or replace unrelated drafts"
     # Save the same universe metadata; reload and read through the encounter
     # source, which is also consumed by the embedded native combat.
     page.get_by_role("button", name="Enregistrer le catalogue de cet univers").click()
-    page.wait_for_function("document.querySelector('[data-capture-universe-project-editor] [role=status]').textContent.includes('révision 4')")
+    page.wait_for_function("document.querySelector('[data-capture-universe-project-editor] [role=status]').textContent.includes('révision 3')")
     stored = page.evaluate("""async ([id,profile])=>{
       const {readCaptureUniverseEncounterSourceV1}=await import('/src/adapters/input/capture/capture-universe-encounter-source-v1.js');
-      return readCaptureUniverseEncounterSourceV1({storage:localStorage,universeId:id}).hudLayout.groups[profile][0];
+      const layout=readCaptureUniverseEncounterSourceV1({storage:localStorage,universeId:id}).hudLayout;
+      if(layout.profiles[profile]['local-status'].dx!==1||layout.profiles[profile]['local-status'].dy!==-1)throw Error('Visual placement lost during save');
+      return layout.groups[profile][0];
     }""", [project,profile])
     assert stored["label"] == "Attaques rapides" and stored["foldable"] and stored["roles"] == ["skill-slot-1","skill-slot-2"], stored
+    assert stored["box"]["w"] > 0 and stored["grid"]["slots"] == 6, stored
     page.goto(editor_url, wait_until="domcontentloaded")
     page.locator("[data-combat-hud-layout-editor] > summary").click()
     page.wait_for_function("!document.querySelector('[data-editor-test-combat]').disabled")
@@ -241,6 +359,8 @@ def check(context, origin):
     toolbar.locator("[data-hud-author-page-select]").wait_for(state="visible")
     toolbar.locator("[data-hud-author-page-select]").select_option("hud-group-1:0")
     assert arena.locator('[data-combat-hud-skill-role="skill-slot-1"]').is_visible()
+    assert arena.locator("[data-hud-empty-skill]:visible").count() >= 1
+    assert abs(dock.bounding_box()["width"]-authored_dock["width"])<4
     page.locator("[data-preview-back-editor]").click()
     # Same native author flow with two active fighters; profiles must stay
     # independent. This is not a new HUD or a fabricated combat runtime.
@@ -294,13 +414,13 @@ def check(context, origin):
       const wait=()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done)));
       await wait();const before=hp.getBoundingClientRect();
       let warning='';const mounted=mountCaptureHudLayoutPreviewV1({root,layout,onStatus:m=>warning=m});
-      await wait();const after=hp.getBoundingClientRect(),applied=hp.style.translate;
+      await wait();const after=hp.getBoundingClientRect(),applied=hp.dataset.hudBox;
       const successWarning=warning;
       mounted.dispose();
       const reset=hp.getBoundingClientRect();
       const bad=updateCaptureHudLayoutV1(layout,profile,'local-status',{dx:-50,dy:0,scale:100});
       const rejected=mountCaptureHudLayoutPreviewV1({root,layout:bad,onStatus:m=>warning=m});
-      await wait();const blocked=warning,restored=hp.style.translate;
+      await wait();const blocked=warning,restored=hp.dataset.hudBox??'';
       rejected.dispose();const skills=grid.children.length;
       host.replaceChildren();shell.hidden=true;
       return {before:before.x,after:after.x,reset:reset.x,applied,successWarning,blocked,restored,skills};

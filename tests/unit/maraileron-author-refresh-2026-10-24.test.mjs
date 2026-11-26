@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import {withoutNewDefaultDodgeV1,originalCreatureBytesBeforeDodgeV1} from "../helpers/showcase-author-dodge-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -14,9 +15,10 @@ const registry=normalizeCaptureStatRegistryV1(read("data/capture/monster-capture
 test("Maraileron active Showcase transfer matches the archived author export without replacing its owner",()=>{
   const current=read(currentPath);
   const author=read(sourcePath);
-  assert.deepEqual(withoutNewDefaultDodgeV1(current),author);
+  assert.deepEqual(withoutNewDefaultDodgeV1(beforeBestiaryIdleActivationV1(current)),author);
   assert.equal(current.draft.id,"crea_maraileron");
-  assert.equal(current.draft.presentation.version,9);
+  assert.equal(current.draft.presentation.version,11);
+  assert.equal(current.draft.presentation.visual.idle.mode,"both");
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(p=>p===currentPath).length,1);
   assert.deepEqual(current.loadout.slots.map(s=>s.skillId),
     ["cap_water_atk_1","cap_water_atk_2","cap_water_atk_3","lib_aqua_heal","cap_water_special_2"]);
@@ -36,7 +38,8 @@ test("Maraileron authored movement and attack bindings survive the canonical Cap
   assert.equal(transfer.kind,"creature");
   const d=transfer.value.draft;
   const v=d.presentation.visual;
-  assert.equal(d.presentation.version,9);
+  assert.equal(d.presentation.version,11);
+  assert.equal(v.idle.mode,"both");
   for(const [key,id,rotation] of [
     ["movement","pack:capture:creature-maraileron-movement-opponent-12-v1",3],
     ["movementBack","pack:capture:creature-maraileron-movement-player-6-v1",3],

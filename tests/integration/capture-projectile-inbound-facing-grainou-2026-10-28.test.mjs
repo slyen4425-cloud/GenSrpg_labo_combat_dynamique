@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
@@ -147,7 +148,7 @@ test("latest two author transfers replace the same canonical IDs without losing 
   const expectedCreature=JSON.parse(currentCreature);
   expectedCreature.draft.skillIds.push("liane_venimeuse");
   expectedCreature.loadout.slots[4].skillId="liane_venimeuse";
-  assert.deepEqual(JSON.parse(liveCreature),expectedCreature,
+  assert.deepEqual(beforeBestiaryIdleActivationV1(JSON.parse(liveCreature)),expectedCreature,
     "Oct 30 author changes only the archived r5 Grainou skill ownership and ultimate");
   assert.equal(sha(savedSkill),"ec432fc7141806394c9be527c5f629ecaf870d103cbad7c06fecc927d93f7531");
   assert.equal(sha(savedCreature),"4a3ae6fa27f47382960720aa941d87c973546ba518fbaa6880c6d747ac283f1f");

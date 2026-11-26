@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
@@ -23,7 +24,7 @@ test("RED: Lumilo and Charge solaire exports are archived and active byte-exact,
   for(const item of entries){
     const [source,active]=await Promise.all([read(item.archive),read(item.active)]);
     assert.equal(createHash("sha256").update(source).digest("hex"),item.sha);
-    assert.deepEqual(active,source,"active transfer must match author export without extra repairs");
+    assert.deepEqual(item.kind==="creature"?beforeBestiaryIdleActivationBytesV1(active):active,source,"active transfer must match author export without extra repairs");
     assert.equal(item.catalog.filter(x=>x===item.active).length,1);
     const parsed=importCaptureTransferJsonV1(active.toString("utf8"), item.kind==="creature"?{statRegistry:registry}:{});
     assert.equal(parsed.kind,item.kind);

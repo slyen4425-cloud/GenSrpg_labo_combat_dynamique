@@ -121,7 +121,7 @@
     ],
     "presentation": {
       "id": "creature:crea_voltik",
-      "version": 2,
+      "version": 11,
       "subjectType": "creature",
       "subjectId": "crea_voltik",
       "profileId": "biped",
@@ -159,6 +159,23 @@
         },
         "icon": {
           "assetId": "pack:capture:creature-voltige-icon-01"
+        },
+        "idle": {
+          "mode": "both",
+          "frontAssetId": "pack:capture:creature-voltige-idle-opponent-gif-v1",
+          "backAssetId": "pack:capture:creature-voltige-idle-player-gif-v1",
+          "front": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          },
+          "back": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          }
         }
       },
       "sockets": [

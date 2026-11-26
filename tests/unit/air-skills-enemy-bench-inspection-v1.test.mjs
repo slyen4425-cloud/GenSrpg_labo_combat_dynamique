@@ -51,7 +51,8 @@ test("Tornade and Vent arrière preserve the creator's last visual/status decisi
 });
 function el(tag="span"){
   return {tagName:tag.toUpperCase(),dataset:{},style:{},children:[],disabled:false,hidden:false,open:false,
-    append(...c){this.children.push(...c)},replaceChildren(...c){this.children=c},
+    get textContent(){return (this._text??'')+this.children.map(n=>n.textContent??'').join('')},set textContent(v){this._text=String(v??'');this.children=[]},
+    append(...c){this.children.push(...c)},replaceChildren(...c){this._text='';this.children=c},
     setAttribute(k,v){this[k]=v},getAttribute(k){return this[k]??null},
     addEventListener(k,fn){(this.listeners??={})[k]=fn},removeEventListener(k){delete this.listeners?.[k]},
     closest(sel){if(sel.includes("enemy-reserve-member-id")&&this.dataset.enemyReserveMemberId)return this;return null;}
