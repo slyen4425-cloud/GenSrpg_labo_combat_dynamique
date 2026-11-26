@@ -25,7 +25,7 @@ def run(root):
     prov_file=root/ROOT/'ephemus.animations.provenance.json'
     # Idempotence is verified by rerunning all byte/pixel checks, never appending duplicates.
     previous=json.loads(prov_file.read_text()) if prov_file.exists() else None
-    new=[]; records=[]
+    new=[]; records=[]; repeated=[]
     for archive,hash_,action,slug in SPECS:
         data=(root/'_incoming'/archive).read_bytes()
         assert sha(data)==hash_,archive
@@ -45,7 +45,11 @@ def run(root):
                         bb=im.getchannel('A').getbbox()
                         assert bb and min(bb[0],bb[1],512-bb[2],512-bb[3])>=42
                         frames.append(im.copy());hashes.append(sha(raw))
-                assert len(set(hashes))==12,(archive,side)
+                groups={digest:[i+1 for i,h in enumerate(hashes) if h==digest] for digest in set(hashes)}
+                duplicate_groups=sorted(indices for indices in groups.values() if len(indices)>1)
+                if duplicate_groups:
+                    repeated.append((archive,side,duplicate_groups))
+                    print('DUPLICATE FRAME DIAGNOSTIC',archive,side,duplicate_groups,flush=True)
                 asset_id=f'pack:capture:creature-ephemus-{action}-{view}-12-v1'
                 rel=f'capture/creatures/ephemus/animations/{action}/{view}/ephemus_{action}_{view}_12f.png'
                 dest=root/'assets/library'/rel
@@ -75,6 +79,7 @@ def run(root):
                 record={'id':asset_id,'file':rel,'action':action,'view':view,'frameCount':12,'frameMs':83,'playbackMode':mode,'sourceArchive':archive,'sourceArchiveSha256':hash_,'sourceFrameSha256':hashes,'framesRgbaSha256':[sha(im.tobytes()) for im in frames],'atlasSha256':sha(dest.read_bytes()),'engine':'Rigby2D 0.6.1','runtimeBinding':'deferred-idle-contract' if action=='idle' else 'creature-presentation'}
                 records.append(record)
                 print('PASS',asset_id,'12 exact RGBA frames',flush=True)
+    assert not repeated, ('Duplicate source frames; inspect approved originals before any publication',repeated)
     assert meta['views']==views and all(meta['assetIds'][k]==v for k,v in ids.items())
     prov={'schema':'capture-ephemus-rigby-animation-import-v1','sourceBranch':'global-assets','canonicalBranch':'global-assets','items':records,'authorValidation':'2026-11-25','idleRuntime':'deferred; media only'}
     if previous:
