@@ -601,12 +601,20 @@ const server = createServer(async (req, res) => {
               }finally{URL.createObjectURL=original;}
               const exported=blob?JSON.parse(await blob.text()):null;
               const p=exported?.draft?.presentation;
-              if(p?.version!==9 || p.visual.movement?.assetId!==choices[0] ||
+              if(p?.version!==11 || p.visual.movement?.assetId!==choices[0] ||
                  p.visual.movementBack?.assetId!==choices[1] ||
                  p.visual.movementPlayback?.frameMs!==80 ||
                  p.visual.movementScaleByView?.player!==1.3 ||
                  p.visual.movementScaleByView?.opponent!==0.9)
                 throw Error("real exported movement FACE/DOS not persisted");
+              const idle=p.visual.idle;
+              if(idle?.mode!=="both" ||
+                 idle.frontAssetId!=="pack:capture:creature-loup-volcanique-idle-opponent-gif-v1" ||
+                 idle.backAssetId!=="pack:capture:creature-loup-volcanique-idle-player-gif-v1" ||
+                 idle.front?.displayScale!==1.2 || idle.back?.displayScale!==1.2 ||
+                 idle.front?.offsetX!==0 || idle.front?.offsetY!==0 || idle.front?.frameSpeedMultiplier!==1 ||
+                 idle.back?.offsetX!==0 || idle.back?.offsetY!==0 || idle.back?.frameSpeedMultiplier!==1)
+                throw Error("movement authoring changed the configured FACE/DOS idle");
               document.body.dataset.movementFaceBackProbe="ok:two-selects:save:reload:export";
             }catch(error){
               document.body.dataset.movementFaceBackProbe="fail:"+String(error.message??error).slice(0,160);
