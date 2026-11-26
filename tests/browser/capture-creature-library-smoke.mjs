@@ -205,6 +205,25 @@ const server = createServer(async (req, res) => {
             selectCreature("crea-loup");
             selectCreature("crea_sylvorne");
             check();
+            // Exercise the native editor and its live canonical asset chooser for
+            // each published card, not an injected second catalog or mock GIF.
+            const configuredIds=["crea_nat_1","crea_mossback","crea_tox_2","kitsune_lunaire","crea-loup","gorice","crea_crys_2","crea_maraileron","crea_ailevent","crea_voltik","crea_dracendre","crea_foudrillon","crea_lumilo","crea_ombre_2","crea_scar_2","crea_mer_3","crea_sylvorne","crea_selachombre","crea_vyrame","veuve-jaune","raiiven","Vipfer","polocendre","Veldra_crea"];
+            for(const id of configuredIds){
+              selectCreature(id);
+              const idleFace=q("[data-creature-idle-front-visual]");
+              const idleBack=q("[data-creature-idle-back-visual]");
+              const expectedFace=face.value.replace(/-opponent-(01|v1)$/,"-idle-opponent-gif-v1");
+              const expectedBack=back.value.replace(/-player-(01|v1)$/,"-idle-player-gif-v1");
+              if(q("[data-creature-idle-mode]")?.value!=="both" ||
+                idleFace?.value!==expectedFace || idleBack?.value!==expectedBack ||
+                ![...idleFace.options].some(o=>o.value===expectedFace) ||
+                ![...idleBack.options].some(o=>o.value===expectedBack) ||
+                Number(q("[data-creature-idle-front-scale]")?.value)!==1.2 ||
+                Number(q("[data-creature-idle-back-scale]")?.value)!==1.2)
+                throw Error("idle configuration not projected for "+id);
+            }
+            selectCreature("crea_sylvorne");
+            check();
             document.body.dataset.sylvorneAssetProbe="ok:face:back:icon:reselect";
           }catch(error){
             document.body.dataset.sylvorneAssetProbe="fail:"+error.message;
