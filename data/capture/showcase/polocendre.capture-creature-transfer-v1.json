@@ -108,7 +108,7 @@
     ],
     "presentation": {
       "id": "creature:polocendre",
-      "version": 9,
+      "version": 11,
       "subjectType": "creature",
       "subjectId": "polocendre",
       "profileId": "quadruped",
@@ -186,6 +186,23 @@
           "rotationTurns": 3,
           "frameCount": 7,
           "transitionMs": 80
+        },
+        "idle": {
+          "mode": "both",
+          "frontAssetId": "pack:capture:creature-cheval-de-feu-idle-opponent-gif-v1",
+          "backAssetId": "pack:capture:creature-cheval-de-feu-idle-player-gif-v1",
+          "front": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          },
+          "back": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          }
         }
       },
       "sockets": [
