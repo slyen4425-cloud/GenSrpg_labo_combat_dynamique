@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -6,7 +7,8 @@ import { createHash } from "node:crypto";
 const ROOT = new URL("../../", import.meta.url);
 async function readShowcase(id, kind = "skill") {
   const file = new URL(`data/capture/showcase/${id}.capture-${kind}-transfer-v1.json`, ROOT);
-  const source = await readFile(file);
+  const live = await readFile(file);
+  const source = kind==="creature" ? beforeBestiaryIdleActivationBytesV1(live) : live;
   const gitBlob = createHash("sha1")
     .update(`blob ${source.byteLength}\0`)
     .update(source)
