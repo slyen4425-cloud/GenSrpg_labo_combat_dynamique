@@ -31,7 +31,8 @@ test('Vyrâme: one original approved portrait trio, proper defensive reaction an
  for(const [view,id] of [['front','opponent'],['back','player'],['icon','icon']])
   assert.equal(creature.draft.presentation.visual[view].assetId,'pack:capture:creature-pourpre-'+id+'-01');
  assert.equal(creature.draft.presentation.transformOrigin.y,'88%');
- assert.equal(creature.draft.presentation.version,9,'keep canonical V9 media metadata');
+ assert.equal(creature.draft.presentation.version,11,'keep canonical media metadata with V11 idle');
+ assert.equal(creature.draft.presentation.visual.idle.mode,"both");
  assert.deepEqual(creature.draft.presentation.viewOverrides.player,{displayScale:1.75,position:{x:0,y:0}},'preserve uploaded player settings');
  assert.deepEqual(creature.draft.presentation.viewOverrides.opponent,{displayScale:0.9,position:{x:0,y:50}},'preserve latest uploaded opponent settings');
  assert.equal(creature.draft.presentation.visual.movement.assetId,'pack:capture:creature-pourpre-movement-opponent-12-v1');
