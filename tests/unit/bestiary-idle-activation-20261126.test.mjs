@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
+import {beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import {CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1} from "../../src/catalogs/capture-showcase-creature-presets-v1.js";
 import {normalizeCreaturePresentationBinding} from "../../src/contracts/creature-presentation-binding.js";
 
@@ -32,4 +33,11 @@ test("every published creature with a certified idle pair has its own FACE and D
   configured++;
  }
  assert.equal(configured,24);assert.equal(ids.size,48);assert.equal(waiting,1);
+});
+
+test("all 24 live cards reconstruct the exact pre-activation Git blobs; no other author fields changed",()=>{
+ for(const path of CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1){
+  if(path.endsWith("/Ephemus.capture-creature-transfer-v1.json")) continue;
+  beforeBestiaryIdleActivationBytesV1(readFileSync(new URL("../../"+path,import.meta.url)));
+ }
 });
