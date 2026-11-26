@@ -110,7 +110,7 @@
     ],
     "presentation": {
       "id": "creature:veuve-jaune",
-      "version": 10,
+      "version": 11,
       "subjectType": "creature",
       "subjectId": "veuve-jaune",
       "profileId": "serpentine",
@@ -202,6 +202,23 @@
           "rotationTurns": 3,
           "frameCount": 1,
           "transitionMs": 80
+        },
+        "idle": {
+          "mode": "both",
+          "frontAssetId": "pack:capture:creature-veuve-jaune-idle-opponent-gif-v1",
+          "backAssetId": "pack:capture:creature-veuve-jaune-idle-player-gif-v1",
+          "front": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          },
+          "back": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          }
         }
       },
       "sockets": [

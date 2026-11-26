@@ -47,7 +47,8 @@ const ref=(teamId,memberId)=>({scope:"reserve",teamId,memberId});
 
 test("Five exact Veldra skills are registered, authorable, normalized, and equipped in order",async()=>{
   const creature=(await fromFile("data/capture/showcase/Veldra_crea.capture-creature-transfer-v1.json")).value;
-  assert.equal(creature.draft.presentation.version,10);
+  assert.equal(creature.draft.presentation.version,11);
+  assert.equal(creature.draft.presentation.visual.idle.mode,"both");
   assert.equal(creature.draft.presentation.viewOverrides.player.displayScale,2);
   assert.equal(creature.draft.presentation.viewOverrides.opponent.position.y,20);
   assert.deepEqual(creature.draft.skillIds,ids);

@@ -10,7 +10,9 @@ import {createCreatorVisualAssetSessionV1} from "../../src/assets/creator-visual
 import {captureEditorAssetMatchesRoleV1,buildHumanCreatureDraftV3} from "../../src/ui/capture-editor-human-v2.js";
 
 const author=JSON.parse(readFileSync(new URL("../../data/capture/showcase/crea_foudrillon.capture-creature-transfer-v1.json",import.meta.url),"utf8"));
-const old=author.draft.presentation;
+// Deliberately test a historical V10 binding, even when the published author card is now V11.
+const {idle:publishedIdle,...oldVisual}=author.draft.presentation.visual;
+const old={...author.draft.presentation,version:10,visual:oldVisual};
 
 test("idle uses engine by default and accepts GIF only, combined, and dual-view author modes",()=>{
  assert.equal(normalizeCreaturePresentationBinding(old).version,10);
@@ -145,11 +147,11 @@ test("Dracendre idle binds both original Rigby views without changing four valid
  assert.equal(d.presentation.version,11);
  const visual=d.presentation.visual;
  assert.deepEqual(visual.idle,{
-  mode:"gif",
+  mode:"both",
   frontAssetId:"pack:capture:creature-braisombre-idle-opponent-gif-v1",
   backAssetId:"pack:capture:creature-braisombre-idle-player-gif-v1",
-  front:{displayScale:1,offsetX:0,offsetY:0,frameSpeedMultiplier:1},
-  back:{displayScale:1,offsetX:0,offsetY:0,frameSpeedMultiplier:1}
+  front:{displayScale:1.2,offsetX:0,offsetY:0,frameSpeedMultiplier:1},
+  back:{displayScale:1.2,offsetX:0,offsetY:0,frameSpeedMultiplier:1}
  });
  assert.equal(visual.movement.assetId,"pack:capture:creature-braisombre-movement-face-12-v1");
  assert.equal(visual.movementBack.assetId,"pack:capture:creature-braisombre-movement-dos-12-v1");

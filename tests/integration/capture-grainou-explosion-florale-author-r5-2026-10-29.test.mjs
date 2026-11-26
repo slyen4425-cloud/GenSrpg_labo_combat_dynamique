@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
@@ -43,7 +44,7 @@ test("RED: Grainou author r5 replaces existing one, equips Explosion florale in 
   const expected=JSON.parse(source);
   expected.draft.skillIds.push("liane_venimeuse");
   expected.loadout.slots[4].skillId="liane_venimeuse";
-  assert.deepEqual(JSON.parse(await read(creatureActive)),expected,
+  assert.deepEqual(beforeBestiaryIdleActivationV1(JSON.parse(await read(creatureActive))),expected,
     "Oct 30 author retains archived r5 Grainou and adds only Liane ultimate");
   const creature=JSON.parse(source);
   assert.equal(creature.draft.id,"crea_nat_1");

@@ -13,7 +13,8 @@ test("staged native GIFs resolve in the existing chooser and V11 binding without
   const raw=read(new URL("../../data/capture/showcase/"+pair.showcase+".capture-creature-transfer-v1.json",import.meta.url)).draft.presentation;
   const {showcase,...idle}=pair;
   // Compare using identical V10 migration path so existing optional/default fields remain intact.
-  const migrated=normalizeCreaturePresentationBinding({...raw,version:10});
+  const {idle:configuredIdle,...priorVisual}=raw.visual;
+  const migrated=normalizeCreaturePresentationBinding({...raw,version:10,visual:priorVisual});
   const next=normalizeCreaturePresentationBinding({...raw,version:11,visual:{...raw.visual,idle}});
   const {idle:actual,...rest}=next.visual;
   assert.deepEqual(actual,idle);

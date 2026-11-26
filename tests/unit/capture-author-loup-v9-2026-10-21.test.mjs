@@ -36,7 +36,8 @@ test("exact uploaded Loup transfer is the one and only active preset; the source
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.includes(sourcePath),false);
   const payload=JSON.parse(raw);
   assert.equal(payload.draft.id,"crea-loup");
-  assert.equal(payload.draft.presentation.version,9);
+  assert.equal(payload.draft.presentation.version,11);
+  assert.equal(payload.draft.presentation.visual.idle.mode,"both");
   assert.equal(payload.statValues.values.acier,0);
   assert.equal(payload.draft.combat.approachTimeModifierPct,0);
   assert.equal(payload.loadout.slots.length,5);
@@ -72,7 +73,8 @@ test("same native renderer source projects DOS player and FACE opponent, attack 
     ],creatures:[actorCreature],skills:[],rosters:[],
     presentation:{creatures:{[p.id]:p}},metadata:{}
   };
-  const catalog={assets:Object.values(ids).map(id=>({id,resource:{file:id+".webp",frameCount:12}}))};
+  const catalog={assets:[...Object.values(ids).map(id=>({id,resource:{file:id+".webp",frameCount:12}})),
+    ...["pack:capture:creature-loup-volcanique-idle-player-gif-v1","pack:capture:creature-loup-volcanique-idle-opponent-gif-v1"].map(id=>({id,mediaType:"image",resource:{file:id+".gif",mime:"image/gif",frameCount:1}}))]};
   const visual=adaptCaptureExportToNativeVisualSourceV1({
     exported,assetCatalog:catalog,
     profiles:[{id:"quadruped",idle:{},attack:{},hit:{},ko:{}}],
@@ -84,6 +86,11 @@ test("same native renderer source projects DOS player and FACE opponent, attack 
   assert.equal(creatureRangedAppearanceForViewV1(visual,"opponent").assetId,ids.rangedAttack);
   assert.equal(creatureMovementAppearanceForViewV1(visual,"player").displayScale,1.3);
   assert.equal(creatureMovementAppearanceForViewV1(visual,"opponent").displayScale,1.2);
+  assert.equal(visual.idleMode,"both");
+  assert.equal(visual.idleFxByView.player.assetId,"pack:capture:creature-loup-volcanique-idle-player-gif-v1");
+  assert.equal(visual.idleFxByView.opponent.assetId,"pack:capture:creature-loup-volcanique-idle-opponent-gif-v1");
+  assert.equal(visual.idleFxByView.player.displayScale,1.2);
+  assert.equal(visual.idleFxByView.opponent.displayScale,1.2);
   assert.equal(visual.views.player.endsWith(ids.back+".webp"),true);
   assert.equal(visual.views.opponent.endsWith(ids.front+".webp"),true);
 });

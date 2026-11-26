@@ -131,7 +131,7 @@
     ],
     "presentation": {
       "id": "creature:crea_foudrillon",
-      "version": 10,
+      "version": 11,
       "subjectType": "creature",
       "subjectId": "crea_foudrillon",
       "profileId": "flying",
@@ -212,6 +212,23 @@
           "rotationTurns": 3,
           "frameCount": 1,
           "transitionMs": 80
+        },
+        "idle": {
+          "mode": "both",
+          "frontAssetId": "pack:capture:creature-guepe-cybernetique-idle-opponent-gif-v1",
+          "backAssetId": "pack:capture:creature-guepe-cybernetique-idle-player-gif-v1",
+          "front": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          },
+          "back": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          }
         }
       },
       "sockets": [

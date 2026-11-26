@@ -1,3 +1,7 @@
+## 2026-11-26 — Activation des idles du bestiaire (NON GREEN)
+- Base main dcb464e5bd0f24e1eeeafcc8995822f601e5fd10 ; checkpoint `checkpoint/lab-start-bestiary-idle-activation-20261126`, branche `work/bestiary-idle-activation-20261126`. Plan `docs/LAB_BESTIARY_IDLE_ACTIVATION_20261126.md`.
+- 25 fiches officielles, 24 paires GIF résolues sur catalogue global-assets 3169aaf8ead839683b40d9a17ce4ad1b8ff8cfb6. 24 profils V11 configurés `both`, FACE/DOS 1.2, offsets/vitesse précédents conservés, aucun changement d'attaque, mouvement, stat, échelle générale. Ephemus #398 en attente des GIF natifs, ne pas écraser son travail. 4 réserves visuelles #399 à revoir avant promotion (Grainou, Gemmor, Scarabacier, Voltige). Test de couverture, vérification du vrai éditeur et cache du catalogue mis à jour ; CI exacte + revue visuelle et Pages requises. Pas de publication PWA dans ce lot.
+
 ## 2026-11-25 — Import idle : accès atelier privé (NON GREEN)
 - CI 45625007261 : clone du dépôt atelier privé impossible avec le jeton du Combat. Pas de secret ajouté ni de dépôt rendu public. Snapshot de fabrication limité au seul Voltige DOS, provenance atelier aa8c7052035e434277a304ff5fc2ad76b1e9d4e0, scripts de rendu/packaging épinglés, source lue depuis checkout canonique et SHA vérifié. Aucun moteur runtime supplémentaire. CI navigateur shadow-light 45625007538 : contact réel absent, autre exécution sur même SHA verte; ne pas modifier ce domaine hors lot. Rejouer CI exacte.
 

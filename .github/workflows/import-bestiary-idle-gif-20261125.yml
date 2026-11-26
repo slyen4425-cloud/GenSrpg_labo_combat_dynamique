@@ -55,6 +55,15 @@ jobs:
         with:
           name: bestiary-idle-bindings
           path: report.json
+      - name: Build read-only review sheets for reserved idle pairs
+        if: github.event_name == 'pull_request'
+        run: python source/scripts/idle-import-build/review-reserved-idles.py canonical reserved-idle-review
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'pull_request'
+        with:
+          name: reserved-idle-visual-review
+          path: reserved-idle-review/
+          if-no-files-found: error
       - name: Publish canonical files only from main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         working-directory: canonical

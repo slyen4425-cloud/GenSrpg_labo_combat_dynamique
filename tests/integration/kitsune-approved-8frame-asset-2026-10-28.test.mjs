@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -22,8 +23,9 @@ test('Kitsune approved back attack resolves to the existing 8-frame official cat
  assert.equal(transfer.draft.presentation.visual.rangedAttackBack.assetId,approved,
   'the previously validated 8-frame back attack must be the single author reference');
  assert.equal(raw.includes(previous),false,'obsolete 7-frame ID must not be authored');
- const reverted=raw.replace('"'+approved+'"','"'+previous+'"');
- assert.notEqual(reverted,raw,'only the known authorized string is transformed');
+ const original=beforeBestiaryIdleActivationBytesV1(raw).toString("utf8");
+ const reverted=original.replace('"'+approved+'"','"'+previous+'"');
+ assert.notEqual(reverted,original,'only the known authorized string is transformed');
  assert.equal(gitBlob(reverted),baseBlob,
   'every other byte of original author settings, animations, loadout and skills must be preserved');
 });

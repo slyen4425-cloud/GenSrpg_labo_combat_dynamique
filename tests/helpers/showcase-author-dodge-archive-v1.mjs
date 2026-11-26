@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "./bestiary-idle-activation-archive-v1.mjs";
 // Historical upload sentinels validate the original author bytes, while
 // allowing ONLY the explicitly approved creature Dodge field in live Showcase.
 // Do not alter, rewrite, or regenerate archived source-exports.
@@ -15,7 +16,9 @@ export function withoutNewDefaultDodgeV1(record) {
 }
 
 export function originalCreatureBytesBeforeDodgeV1(raw) {
- const historical=withoutNewDefaultDodgeV1(JSON.parse(Buffer.from(raw).toString("utf8")));
+ const record=JSON.parse(Buffer.from(raw).toString("utf8"));
+ const previous=record.draft?.presentation?.version===11 ? beforeBestiaryIdleActivationV1(record) : record;
+ const historical=withoutNewDefaultDodgeV1(previous);
  // The original Loup, Freclairions and Voltige exports have no trailing newline.
  return Buffer.from(JSON.stringify(historical,null,2),"utf8");
 }
@@ -24,7 +27,8 @@ export function originalCreatureBytesBeforeDodgeV1(raw) {
 // Reconstitue les octets de l'export historique en retirant UNIQUEMENT les
 // six champs de la révision auteur Freclairions du 16/11/2026.
 export function originalFreclairionsBytesBeforeVisualRefreshV1(raw) {
- const current=JSON.parse(Buffer.from(raw).toString("utf8"));
+ const record=JSON.parse(Buffer.from(raw).toString("utf8"));
+ const current=record.draft?.presentation?.version===11 ? beforeBestiaryIdleActivationV1(record) : record;
  assert.equal(current?.draft?.id,"crea_foudrillon");
  const {draft,statValues}=current;
  assert.equal(draft.capture.rarity,"rare");

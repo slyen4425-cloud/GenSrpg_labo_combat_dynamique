@@ -37,6 +37,9 @@ test("Sylvorne: real Showcase -> editor combat export -> native visual adapter -
     compatibility:{uses:["editor","combat","capture"]},
     resource:{file,mime:"image/png"}
   }));
+  for(const id of ["pack:capture:creature-sylvorne-idle-player-gif-v1","pack:capture:creature-sylvorne-idle-opponent-gif-v1"]){
+    assets.push({id,mediaType:"image",assetType:"animated-image",category:"creature",resource:{file:id+".gif",mime:"image/gif",frameCount:1}});
+  }
   const profile=JSON.parse(await read("data/profiles/massive.profile.json"));
   const native=adaptCaptureExportToNativeVisualSourceV1({
     exported,assetCatalog:{assets},profiles:[profile],assetUrlForFile:globalVisualAssetUrl
@@ -45,6 +48,11 @@ test("Sylvorne: real Showcase -> editor combat export -> native visual adapter -
   const meta=native.creatureMetas[0];
   assert.equal(meta.id,"crea_sylvorne");
   assert.equal(meta.profile,"massive");
+  assert.equal(meta.idleMode,"both");
+  assert.equal(meta.idleFxByView.player.assetId,"pack:capture:creature-sylvorne-idle-player-gif-v1");
+  assert.equal(meta.idleFxByView.opponent.assetId,"pack:capture:creature-sylvorne-idle-opponent-gif-v1");
+  assert.equal(meta.idleFxByView.player.displayScale,1.2);
+  assert.equal(meta.idleFxByView.opponent.displayScale,1.2);
   assert.equal(meta.presentationFallback,undefined,"must never use SANS IMAGE");
   assert.equal(meta.runtimePreview.player,globalVisualAssetUrl(media[1][2]));
   assert.equal(meta.runtimePreview.opponent,globalVisualAssetUrl(media[0][2]));

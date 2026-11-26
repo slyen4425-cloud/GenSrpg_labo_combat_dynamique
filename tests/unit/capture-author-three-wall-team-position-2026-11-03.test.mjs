@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
@@ -47,7 +48,7 @@ test("Nov 3 archives stay signed; Nov 5 active Gorice/Gemmor exports preserve ex
     expected=JSON.parse(final);
     assert.equal(expected.draft.presentation.version,9);
   }
-  assert.deepEqual(JSON.parse(current),expected,
+  assert.deepEqual(entry.kind==="creature"?beforeBestiaryIdleActivationV1(JSON.parse(current)):JSON.parse(current),expected,
     entry.id+" must match immutable historical source plus latest explicit author transfer");
   const loaded=importCaptureTransferJsonV1(current,{statRegistry:registry});
   assert.equal(loaded.kind,entry.kind,entry.id);

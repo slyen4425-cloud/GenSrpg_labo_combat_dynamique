@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
@@ -36,14 +37,14 @@ test("Cisaille and Scarabacier are exact author bytes, safely archived and uniqu
    const historical=await read(f.archive);
    assert.equal(createHash("sha256").update(historical).digest("hex"),f.sha,
      "historical author export remains immutable");
-   assert.equal(raw,await read(latestArchiveCreature),
+   assert.equal(beforeBestiaryIdleActivationBytesV1(raw).toString("utf8"),await read(latestArchiveCreature),
      "active Scarabacier must preserve the exact 21 October author extraction");
    const priorV8=JSON.parse(await read(currentArchiveCreature));
    assert.equal(priorV8.draft.presentation.version,8,"19 October V8 archive stays immutable");
    assert.deepEqual(priorV8.draft.skillIds,["cisaille","cap_water_atk_1"],"19 October author archive is untouched");
    const previous=JSON.parse(await read(previousArchiveCreature));
    assert.equal(previous.draft.presentation.version,7,"previous V7 author export is immutable");
-   assert.equal(JSON.parse(raw).draft.presentation.version,8,"new author Scarabacier remains presentation V8");
+   assert.equal(JSON.parse(raw).draft.presentation.version,11,"new author Scarabacier remains presentation V8");
    assert.notEqual(raw,await read(currentArchiveCreature),"21 October source replaces old active preset without altering historical archive");
    assert.notEqual(raw,historical,"new export must not be silently replaced by old template");
    assert.notEqual(raw,await read(previousArchiveCreature),"V8 must replace the previous V7");
@@ -103,7 +104,8 @@ test("Scarabacier and Cisaille travel the canonical configured owner path, leavi
  assert.equal(configuredSkills.get("lib_lifesteal_strike"),originalOtherSkill);
  assert.equal(configuredSkills.get("cisaille").definition.effects[1].amount,2);
  const actual=configuredCreatures.get("crea_scar_2");
- assert.equal(actual.draft.presentation.version,8);
+ assert.equal(actual.draft.presentation.version,11);
+ assert.equal(actual.draft.presentation.visual.idle.mode,"both");
  assert.equal(actual.draft.presentation.visual.dodge.assetId,"pack:capture:sprite-steel-carapace-hold-01");
  assert.equal(actual.draft.presentation.visual.dodge.displayScale,1);
  assert.deepEqual(actual.draft.presentation.visual.movementScaleByView,{player:1,opponent:1.2});

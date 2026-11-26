@@ -115,7 +115,8 @@ test("Scarabacier replaces the native creature via canonical configuredCreatures
 
 test("Latest Scarabacier V8 author transfer keeps two attack poses, movement playback and both team scales",async()=>{
  const active=JSON.parse(await read(scaraPath));
- assert.equal(active.draft.presentation.version,8);
+ assert.equal(active.draft.presentation.version,11);
+ assert.equal(active.draft.presentation.visual.idle.mode,"both");
  assert.deepEqual(active.draft.presentation.visual.movementScaleByView,{player:1,opponent:1.2});
  assert.deepEqual(active.draft.presentation.visual.rangedAttackScaleByView,{player:0.8,opponent:1});
  assert.deepEqual(active.draft.presentation.visual.movementPlayback,{frameMs:0,mode:"loop"});
