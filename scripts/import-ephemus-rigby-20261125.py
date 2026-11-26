@@ -18,7 +18,7 @@ def run(root):
     assert cat['storage']['branch']=='global-assets'
     old_count=cat['counts']['assets']; old_sprites=cat['counts']['sprites']
     assert old_count==len(cat['assets'])
-    known={x['id'] for x in cat['assets']}; files={x['resource']['file'] for x in cat['assets']}
+    known={x['id'] for x in cat['assets']}; files={x['resource'][key] for x in cat['assets'] for key in ('file','manifest') if key in x['resource']}
     assert len(known)==old_count
     meta_file=root/ROOT/'ephemus.meta.json'; meta=json.loads(meta_file.read_text())
     views=meta['views'].copy(); ids=meta['assetIds'].copy()
