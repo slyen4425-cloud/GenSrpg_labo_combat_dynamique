@@ -107,7 +107,7 @@
     ],
     "presentation": {
       "id": "creature:crea_mer_3",
-      "version": 9,
+      "version": 11,
       "subjectType": "creature",
       "subjectId": "crea_mer_3",
       "profileId": "serpentine",
@@ -145,6 +145,23 @@
         },
         "icon": {
           "assetId": "pack:capture:creature-pieuvre-icon-01"
+        },
+        "idle": {
+          "mode": "both",
+          "frontAssetId": "pack:capture:creature-pieuvre-idle-opponent-gif-v1",
+          "backAssetId": "pack:capture:creature-pieuvre-idle-player-gif-v1",
+          "front": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          },
+          "back": {
+            "displayScale": 1.2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "frameSpeedMultiplier": 1
+          }
         }
       },
       "sockets": [
