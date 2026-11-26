@@ -77,18 +77,25 @@ test("native visual adapter resolves real movement metadata for both flying view
     [visual.movement.assetId,{file:"fly-front-12.webp",frameCount:12,frameMs:100}],
     [visual.rangedAttackBack.assetId,{file:"attack-back-12.webp",frameCount:12,frameMs:100}]
   ]);
+  const idleIds=["pack:capture:creature-guepe-cybernetique-idle-player-gif-v1","pack:capture:creature-guepe-cybernetique-idle-opponent-gif-v1"];
+  const idleAssets=idleIds.map(id=>({id,mediaType:"image",resource:{file:id+".gif",mime:"image/gif",frameCount:1}}));
   const exported={schema:"capture-combat-export-v1",battle:{id:"freclairions-test",localActorId:"player"},
     teams:{players:["player"],enemies:["enemy"]},actors:[
       {actorId:"player",teamId:"players",creatureId:d.id,displayName:d.displayName,controllerId:"human-local"},
       {actorId:"enemy",teamId:"enemies",creatureId:d.id,displayName:d.displayName,controllerId:"ai-enemy"}
     ],creatures:[creature],skills:[],rosters:[],presentation:{creatures:{[presentationId]:d.presentation}},metadata:{}};
   const native=adaptCaptureExportToNativeVisualSourceV1({
-    exported,assetCatalog:{assets:[...fileById].map(([id,resource])=>({id,resource}))},
+    exported,assetCatalog:{assets:[...[...fileById].map(([id,resource])=>({id,resource})),...idleAssets]},
     profiles:[{id:"flying",idle:{},attack:{},hit:{},ko:{}}],
     assetUrlForFile:file=>"https://assets.test/"+file
   });
   const meta=native.creatureMetas.find(x=>x.id===d.id);
   assert.ok(meta);
+  assert.equal(meta.idleMode,"both");
+  assert.equal(meta.idleFxByView.player.assetId,idleIds[0]);
+  assert.equal(meta.idleFxByView.opponent.assetId,idleIds[1]);
+  assert.equal(meta.idleFxByView.player.displayScale,1.2);
+  assert.equal(meta.idleFxByView.opponent.displayScale,1.2);
   assert.equal(meta.movementFxByView.player.frameCount,12);
   assert.equal(meta.rangedAttackBackFx.frameCount,12);
   assert.equal(creatureMovementAppearanceForApproachV1(meta,"player","aerial").assetId,visual.movementBack.assetId);
