@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
@@ -45,7 +46,7 @@ for(const [id,kind] of [["crea_nat_1","creature"],["coupe_feuille","skill"]]){
     const expected=JSON.parse(await read(latest));
     expected.draft.skillIds.push("liane_venimeuse");
     expected.loadout.slots[4].skillId="liane_venimeuse";
-    assert.deepEqual(JSON.parse(await read(live)),expected,
+    assert.deepEqual(beforeBestiaryIdleActivationV1(JSON.parse(await read(live))),expected,
       "historical r5 remains immutable; Oct 30 author added only Liane in skillIds and ultimate");
   }
   const catalog=kind==="creature"?CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1:CAPTURE_SHOWCASE_SKILL_PRESET_FILES_V1;

@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
@@ -28,7 +29,8 @@ test("Author transfers including latest Lumilo are byte-exact and uniquely activ
     [lumilo,5499,"d3856255f406ed55ae673a0d377af9cb99211337bfdc7f8302b210058815541f"],
     [original,1992,"55b6115d35d1b29b8199aff907a38d81892d78da2e0eefbbb93485ab5a68dd8a"]
   ]){
-    const raw=await read(p);
+    const current=await read(p);
+    const raw=p===lumilo?beforeBestiaryIdleActivationBytesV1(current):current;
     assert.equal(raw.length,len,p+" author length");
     assert.equal(sha(raw),hash,p+" author hash");
   }
