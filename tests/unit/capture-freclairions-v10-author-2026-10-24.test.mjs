@@ -22,7 +22,8 @@ test("one stable Freclairions authority retains author's exact uploaded V10 tran
   assert.equal(transfer.kind,"creature");
   assert.equal(source.draft.id,"crea_foudrillon");
   assert.equal(source.draft.displayName,"Freclairions");
-  assert.equal(source.draft.presentation.version,10);
+  assert.equal(source.draft.presentation.version,11);
+  assert.equal(source.draft.presentation.visual.idle.mode,"both");
   const authorBytes=originalFreclairionsBytesBeforeVisualRefreshV1(bytes(active));
   assert.ok(authorBytes.equals(bytes(author)),"archive author bytes must survive the approved live Dodge addition");
   assert.equal(authorBytes.length,5992);

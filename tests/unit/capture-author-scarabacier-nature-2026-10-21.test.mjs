@@ -1,3 +1,4 @@
+import {beforeBestiaryIdleActivationV1,beforeBestiaryIdleActivationBytesV1} from "../helpers/bestiary-idle-activation-archive-v1.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
@@ -53,13 +54,14 @@ test("Nature stat values normalize, legacy creature without nature remains valid
   assert.equal(Object.hasOwn(old.values,"nature"),false,"legacy values remain backwards-compatible");
 });
 test("the author's Scarabacier is the only active preset; archived extraction matches exactly",()=>{
-  assert.equal(read(activePath),read(sourcePath));
+  assert.equal(beforeBestiaryIdleActivationBytesV1(read(activePath)).toString("utf8"),read(sourcePath));
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.filter(x=>x===activePath).length,1);
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.includes(sourcePath),false);
   assert.equal(scar.schema,"capture-creature-transfer-v1");
   assert.equal(scar.draft.id,"crea_scar_2");
   assert.equal(scar.draft.displayName,"Scarabacier");
-  assert.equal(scar.draft.presentation.version,8);
+  assert.equal(scar.draft.presentation.version,11);
+  assert.equal(scar.draft.presentation.visual.idle.mode,"both");
   assert.deepEqual(scar.draft.skillIds,
     ["cisaille","cap_water_atk_1","carapce_acier","Tempete_metallique","sangsue","tempete_rouille"]);
   assert.deepEqual(scar.loadout.slots.map(s=>s.skillId),

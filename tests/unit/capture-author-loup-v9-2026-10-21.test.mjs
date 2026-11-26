@@ -36,7 +36,8 @@ test("exact uploaded Loup transfer is the one and only active preset; the source
   assert.equal(CAPTURE_SHOWCASE_CREATURE_PRESET_FILES_V1.includes(sourcePath),false);
   const payload=JSON.parse(raw);
   assert.equal(payload.draft.id,"crea-loup");
-  assert.equal(payload.draft.presentation.version,9);
+  assert.equal(payload.draft.presentation.version,11);
+  assert.equal(payload.draft.presentation.visual.idle.mode,"both");
   assert.equal(payload.statValues.values.acier,0);
   assert.equal(payload.draft.combat.approachTimeModifierPct,0);
   assert.equal(payload.loadout.slots.length,5);
