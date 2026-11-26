@@ -37,7 +37,7 @@ test("Vipfer retains five exact stable skill IDs and author-approved media refer
 });
 test("Vipfer media references resolve only through canonical global-assets branch and cache revision",()=>{
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
- assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-11-26-v73-bestiary-idle-activation");
+ assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-11-26-v74-bestiary-idle-ephemus-rigby");
  assert.ok(GLOBAL_VISUAL_LIBRARY.catalogUrl.includes("/global-assets/data/assets/catalog/global-visual-assets.v1.json"));
  assert.ok(globalVisualAssetUrl("capture/icons/skills/vipfer/vipfer-morsure-ressort.webp").includes("/global-assets/assets/library/"));
 });

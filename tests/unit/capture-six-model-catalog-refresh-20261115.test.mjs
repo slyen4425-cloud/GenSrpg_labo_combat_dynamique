@@ -4,12 +4,12 @@ import {readFileSync} from "node:fs";
 import {GLOBAL_VISUAL_LIBRARY,globalVisualAssetUrl} from "../../src/assets/global-visual-library.js";
 test("one canonical global-assets owner refreshes the Vipfer media revision without breaking earlier published species",()=>{
  const src=readFileSync(new URL("../../src/assets/global-visual-library.js",import.meta.url),"utf8");
- assert.match(src,/2026-11-26-v73-bestiary-idle-activation/);
+ assert.match(src,/2026-11-26-v74-bestiary-idle-ephemus-rigby/);
  assert.equal(GLOBAL_VISUAL_LIBRARY.branch,"global-assets");
- assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-11-26-v73-bestiary-idle-activation");
- assert.match(GLOBAL_VISUAL_LIBRARY.catalogUrl,/global-visual-assets\.v1\.json\?v=2026-11-26-v73-bestiary-idle-activation$/);
+ assert.equal(GLOBAL_VISUAL_LIBRARY.revision,"2026-11-26-v74-bestiary-idle-ephemus-rigby");
+ assert.match(GLOBAL_VISUAL_LIBRARY.catalogUrl,/global-visual-assets\.v1\.json\?v=2026-11-26-v74-bestiary-idle-ephemus-rigby$/);
  const sprite=globalVisualAssetUrl("capture/creatures/vipfer/runtime/vipfer_face.png");
- assert.ok(sprite.endsWith("?v=2026-11-26-v73-bestiary-idle-activation"));
+ assert.ok(sprite.endsWith("?v=2026-11-26-v74-bestiary-idle-ephemus-rigby"));
  assert.ok(sprite.includes("/global-assets/assets/library/"));
  const veuveIcon=globalVisualAssetUrl("capture/icons/skills/veuve_jaune/toile-paralysante.webp");
  assert.ok(veuveIcon.includes("/global-assets/assets/library/capture/icons/skills/veuve_jaune/"));
