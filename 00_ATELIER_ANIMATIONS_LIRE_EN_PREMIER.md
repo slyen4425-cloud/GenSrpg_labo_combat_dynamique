@@ -23,3 +23,8 @@ C'est la **chaîne de référence pour fabriquer et valider les animations des c
 ## Règle de validation
 
 Comparer au modèle approuvé, vérifier chaque frame, les pattes, les vues, l'ancrage, les boucles et une vraie preview. Toute nouvelle animation attend la validation artistique de l'auteur avant son raccord.
+
+## Référence Héros d'exploration
+
+➡️ **[Standard HÉROS — huit directions](atelier-animations/styles/heros/README.md)**  
+➡️ **[Héros vert — référence validée en jeu le 27/11/2026](atelier-animations/styles/heros/references/heros-vert/README.md)**
