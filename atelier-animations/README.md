@@ -40,3 +40,11 @@ Les prochains styles seront ajoutés ici, **sans réécrire ni altérer les réf
 ### Intégrité
 
 Exécuter `python3 scripts/verify-animation-production-raiiven.py` à la racine. Vérifie la présence et l'identité Git exacte des 10 références, les dimensions PNG et l'ordre des copies. Pour le gorille : `python3 scripts/verify-animation-production-gorice.py` (nécessite Pillow) ; contrôle des 16 copies, 4 atlas et 4 previews animées. Le contrôle visuel/artistique reste distinct.
+
+## Standard d'exploration — Héros (validé en jeu)
+
+| Morphologie | Standard | Référence | État |
+|---|---|---|---|
+| Héros humanoïde chibi / marche 8 directions | [Héros](styles/heros/README.md) | [Héros vert — 48 PNG, pack HD et previews](styles/heros/references/heros-vert/README.md) | **MARCHE VALIDÉE EN JEU — 27/11/2026** |
+
+Pour les héros, suivre la fiche spécifique (8 directions, 6 poses chacune, ancrage commun et miroir validé) plutôt que la procédure FACE/DOS des créatures de combat. Idle artistique séparé, raccord éditeur reporté.

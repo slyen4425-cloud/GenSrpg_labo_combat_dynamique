@@ -1,0 +1,304 @@
+{
+  "schema": "atelier-animation-reference-v1",
+  "standard": "heros",
+  "reference": "heros-vert",
+  "validation": {
+    "date": "2026-11-27",
+    "walk": "validated-in-game-by-author",
+    "idle": "artwork-only-not-integrated-in-directional-mode"
+  },
+  "source": {
+    "repository": "slyen4425-cloud/laboratoire_dynamique_exploration-",
+    "commit": "3ed0c06e0ffdc798a011ecfcafe9037712864d9c",
+    "pullRequest": 565,
+    "heroId": "hero.official.02_heros_vert",
+    "authorPack": {
+      "path": "GenSRPG_heros_vert_complet_test_jeu.zip",
+      "gitBlob": "f2665b93e98aa28abd791234d14b7c754c4ef54e",
+      "bytes": 7282665
+    }
+  },
+  "walk": {
+    "frameSize": [
+      128,
+      160
+    ],
+    "authorFrameSize": [
+      512,
+      512
+    ],
+    "format": "PNG RGBA",
+    "fps": 16,
+    "loop": true,
+    "framesPerDirection": 6,
+    "mirrors": {
+      "SW": "SE",
+      "NE": "NW"
+    },
+    "directions": {
+      "N": [
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/N/00.png",
+          "gitBlob": "bbb79f2af544263625e28faefe83ce68d7bdc300",
+          "bytes": 17713
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/N/01.png",
+          "gitBlob": "f60b8386cbd62ae1eb85c04fbf8f866ca1e71146",
+          "bytes": 17530
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/N/02.png",
+          "gitBlob": "ab5e07eec42b257b7dd9d6fa3893fce00952b5c6",
+          "bytes": 17251
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/N/03.png",
+          "gitBlob": "a29b6452e90c42fdde8eba54754e6884c003dae3",
+          "bytes": 17387
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/N/04.png",
+          "gitBlob": "52e199761bc14a5a9cd12a86512f778e1ca81e1b",
+          "bytes": 17723
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/N/05.png",
+          "gitBlob": "2e5a181e30e20001f004a00a72376643aba92ebd",
+          "bytes": 17489
+        }
+      ],
+      "NE": [
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/NE/00.png",
+          "gitBlob": "5cf21e8e2f1b89d274d4d56337326bf558af9e9d",
+          "bytes": 17213
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/NE/01.png",
+          "gitBlob": "1670e5fd6e155d7e30c6ac400abf1cd611517104",
+          "bytes": 18194
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/NE/02.png",
+          "gitBlob": "8f0c686ef70258c19be5143171ee6d812bec0ab9",
+          "bytes": 18862
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/NE/03.png",
+          "gitBlob": "97bb9db76c3dacae888226c71d30634bae4ca578",
+          "bytes": 18309
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/NE/04.png",
+          "gitBlob": "827b4e8c1b16225b7560afb0a43eaa8106314350",
+          "bytes": 18601
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/NE/05.png",
+          "gitBlob": "f7ce4733b49d7d001398bad7898d40ea11e09d56",
+          "bytes": 17511
+        }
+      ],
+      "E": [
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/E/00.png",
+          "gitBlob": "634f800c7517bcc7e5cf5a2ab08ea4c698fc23eb",
+          "bytes": 18273
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/E/01.png",
+          "gitBlob": "b49642d62056fdb227c4f0546e56490d086d0c55",
+          "bytes": 20215
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/E/02.png",
+          "gitBlob": "ab479e214694bcd5a7e029777cc888a9bd108c7a",
+          "bytes": 20493
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/E/03.png",
+          "gitBlob": "ce68a91f05830d2028f68d143db4feb992030fad",
+          "bytes": 18295
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/E/04.png",
+          "gitBlob": "8c354e4a49052237668b8972f7b10edbfc5518f1",
+          "bytes": 20397
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/E/05.png",
+          "gitBlob": "ee0d5220ccbab0ffbc503f3621e5887600a5e244",
+          "bytes": 18207
+        }
+      ],
+      "SE": [
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/SE/00.png",
+          "gitBlob": "e1257d5dc2d8fa5ca18dfb5bb74bdb5c79775506",
+          "bytes": 21601
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/SE/01.png",
+          "gitBlob": "126d53f4c7029090373f48ce9ca203e012124219",
+          "bytes": 21676
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/SE/02.png",
+          "gitBlob": "a5866d1c661f3770ec8923c9041290e40da0cb91",
+          "bytes": 21560
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/SE/03.png",
+          "gitBlob": "aad173987dc7956aab4f3d70ffcfe44bcad50ac4",
+          "bytes": 21001
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/SE/04.png",
+          "gitBlob": "5b2d05ce7b4f4ab1f8ee3367d38c647b3164e109",
+          "bytes": 21552
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/SE/05.png",
+          "gitBlob": "fb4964c11b5e9f01cab7743e4ed7f84dfb818951",
+          "bytes": 20906
+        }
+      ],
+      "S": [
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/S/00.png",
+          "gitBlob": "eddce64b56703eb7149270a18349a48a1f50172c",
+          "bytes": 19889
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/S/01.png",
+          "gitBlob": "24cfbe29c8905192696a8b32eadd04fb68dc6f51",
+          "bytes": 19571
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/S/02.png",
+          "gitBlob": "312487c3ee0430e0bd13c8a585fcff1a19c4292b",
+          "bytes": 19185
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/S/03.png",
+          "gitBlob": "e8d9281615fceaa1c8e406864ff38fd8cd53032c",
+          "bytes": 19122
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/S/04.png",
+          "gitBlob": "72a223b1b7d552e1d3a960d1fe28f08ed1f8b9cb",
+          "bytes": 19344
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/S/05.png",
+          "gitBlob": "18aa1ac60ca9fea482e5f913299e3e61692cd114",
+          "bytes": 20008
+        }
+      ],
+      "SW": [
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/SW/00.png",
+          "gitBlob": "c4e51577994c4d873c96200426c370e86a233e41",
+          "bytes": 21503
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/SW/01.png",
+          "gitBlob": "b565e9abe2e75348b6471a646b5f77bd46b8f624",
+          "bytes": 21634
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/SW/02.png",
+          "gitBlob": "f1ac16a6675a062292cd208f246645a165653c39",
+          "bytes": 21501
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/SW/03.png",
+          "gitBlob": "9e2a297526aec5c437631ac070b36e6aaf4a47b5",
+          "bytes": 20975
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/SW/04.png",
+          "gitBlob": "af90c7b11feadf9fc293da0979cf9150b92c6211",
+          "bytes": 21552
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/SW/05.png",
+          "gitBlob": "e9afc9de5f7c9fa152351ea8597ed95a5d6d51ed",
+          "bytes": 20870
+        }
+      ],
+      "W": [
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/W/00.png",
+          "gitBlob": "b4fa816b4aed1658e89e54faba00794c018b8f8d",
+          "bytes": 17689
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/W/01.png",
+          "gitBlob": "2019cc64cd4a66df24ecaeb50e459ccf5e3fcf9c",
+          "bytes": 19932
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/W/02.png",
+          "gitBlob": "0319407556b07ba499a4f642ec240a31e236d2c9",
+          "bytes": 19859
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/W/03.png",
+          "gitBlob": "090f1f362685591e676267fbb6047b2466e0da2b",
+          "bytes": 19135
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/W/04.png",
+          "gitBlob": "72d21f94a93b142c716a8960a18007866ee7fe5a",
+          "bytes": 19881
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/W/05.png",
+          "gitBlob": "e3b0e7aed561807af1eed48fc5d1665932cb7504",
+          "bytes": 19249
+        }
+      ],
+      "NW": [
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/NW/00.png",
+          "gitBlob": "111a6bf0893770463737116a0536e7c7c4d09dad",
+          "bytes": 17182
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/NW/01.png",
+          "gitBlob": "4584f91481e31bc300a40c82bbdcab9a827150cf",
+          "bytes": 18208
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/NW/02.png",
+          "gitBlob": "621fa1d63b5369fae5888485324fe06ee7f117bf",
+          "bytes": 18835
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/NW/03.png",
+          "gitBlob": "a5129e1bfba5e3a13f70aff16e71f8503f1adf02",
+          "bytes": 18288
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/NW/04.png",
+          "gitBlob": "c2af881fc889fc4a42619881c783d9740c86086e",
+          "bytes": 18583
+        },
+        {
+          "path": "assets/exploration/actors/official/02_heros_vert/frames/NW/05.png",
+          "gitBlob": "e131191af7cd74ff7abfe8c1dca3905248f21f1c",
+          "bytes": 17484
+        }
+      ]
+    }
+  },
+  "idle": {
+    "direction": "S",
+    "frames": 6,
+    "source": "authorPack",
+    "runtimeValidated": false
+  },
+  "ownership": "Exploration canonical assets; atelier references only, no runtime copy"
+}
